@@ -14,8 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.ClientParams;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalLauncher;
@@ -43,7 +41,7 @@ public class PayPalFragment extends BaseFragment {
         billingAgreementButton.setOnClickListener(this::launchBillingAgreement);
         singlePaymentButton.setOnClickListener(this::launchSinglePayment);
 
-        payPalClient = new PayPalClient(new ClientParams(requireContext(), super.getAuthStringArg()));
+        payPalClient = new PayPalClient(requireContext(), super.getAuthStringArg());
         payPalLauncher = new PayPalLauncher(
                 paymentAuthResult -> payPalClient.tokenize(
                         paymentAuthResult, (payPalAccountNonce, error) -> {
@@ -76,7 +74,7 @@ public class PayPalFragment extends BaseFragment {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
-        dataCollector = new DataCollector(new ClientParams(requireContext(), super.getAuthStringArg()));
+        dataCollector = new DataCollector(requireContext(), super.getAuthStringArg());
 
         if (Settings.shouldCollectDeviceData(requireActivity())) {
             dataCollector.collectDeviceData(requireActivity(), (deviceDataResult, error) -> {

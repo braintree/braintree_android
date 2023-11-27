@@ -25,10 +25,12 @@ public class LocalPaymentClient {
 
     /**
      * Initializes a new {@link LocalPaymentClient} instance
-     * @param clientParams configurable {@link ClientParams}
+     *
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
      */
-    public LocalPaymentClient(@NonNull ClientParams clientParams) {
-        this(new BraintreeClient(clientParams));
+    public LocalPaymentClient(@NonNull Context context, @NonNull String authorization) {
+        this(new BraintreeClient(context, authorization));
     }
 
    @VisibleForTesting

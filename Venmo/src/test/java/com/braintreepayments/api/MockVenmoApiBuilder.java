@@ -65,7 +65,7 @@ public class MockVenmoApiBuilder {
                 any(VenmoApiCallback.class));
 
         doAnswer((Answer<Void>) invocation -> {
-            VenmoTokenizeCallback callback = (VenmoTokenizeCallback) invocation.getArguments()[1];
+            VenmoInternalCallback callback = (VenmoInternalCallback) invocation.getArguments()[1];
             if (createNonceFromPaymentContextSuccess != null) {
                 callback.onResult(createNonceFromPaymentContextSuccess, null);
             } else if (createNonceFromPaymentContextError != null) {
@@ -74,10 +74,10 @@ public class MockVenmoApiBuilder {
 
             return null;
         }).when(venmoApi)
-                .createNonceFromPaymentContext(anyString(), any(VenmoTokenizeCallback.class));
+                .createNonceFromPaymentContext(anyString(), any(VenmoInternalCallback.class));
 
         doAnswer((Answer<Void>) invocation -> {
-            VenmoTokenizeCallback callback = (VenmoTokenizeCallback) invocation.getArguments()[1];
+            VenmoInternalCallback callback = (VenmoInternalCallback) invocation.getArguments()[1];
             if (vaultVenmoAccountNonceSuccess != null) {
                 callback.onResult(vaultVenmoAccountNonceSuccess, null);
             } else if (vaultVenmoAccountNonceError != null) {
@@ -85,7 +85,7 @@ public class MockVenmoApiBuilder {
             }
 
             return null;
-        }).when(venmoApi).vaultVenmoAccountNonce(anyString(), any(VenmoTokenizeCallback.class));
+        }).when(venmoApi).vaultVenmoAccountNonce(anyString(), any(VenmoInternalCallback.class));
 
         return venmoApi;
     }

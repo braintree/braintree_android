@@ -27,10 +27,12 @@ public class SEPADirectDebitClient {
 
     /**
      * Initializes a new {@link SEPADirectDebitClient} instance
-     * @param clientParams configurable {@link ClientParams}
+     *
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
      */
-    public SEPADirectDebitClient(@NonNull ClientParams clientParams) {
-       this(new BraintreeClient(clientParams));
+    public SEPADirectDebitClient(@NonNull Context context, @NonNull String authorization) {
+       this(new BraintreeClient(context, authorization));
     }
 
     @VisibleForTesting

@@ -14,7 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 class VenmoActivityResultContract
-        extends ActivityResultContract<VenmoPaymentAuthRequest, VenmoPaymentAuthResult> {
+        extends ActivityResultContract<VenmoPaymentAuthRequestParams, VenmoPaymentAuthResult> {
 
     static final String VENMO_PACKAGE_NAME = "com.venmo";
     static final String APP_SWITCH_ACTIVITY = "controller.SetupMerchantActivity";
@@ -33,7 +33,7 @@ class VenmoActivityResultContract
 
     @NonNull
     @Override
-    public Intent createIntent(@NonNull Context context, VenmoPaymentAuthRequest input) {
+    public Intent createIntent(@NonNull Context context, VenmoPaymentAuthRequestParams input) {
         Intent venmoIntent = getVenmoIntent()
                 .putExtra(EXTRA_MERCHANT_ID, input.getProfileId())
                 .putExtra(EXTRA_ACCESS_TOKEN, input.getConfiguration().getVenmoAccessToken())

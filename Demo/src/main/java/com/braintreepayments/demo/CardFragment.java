@@ -17,11 +17,9 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
-import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
-import com.braintreepayments.api.ClientParams;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
@@ -72,12 +70,11 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     public void onCreate(Bundle onSaveInstanceState) {
         super.onCreate(onSaveInstanceState);
 
-        ClientParams clientParams = new ClientParams(requireContext(), super.getAuthStringArg());
-        americanExpressClient = new AmericanExpressClient(clientParams);
-        cardClient = new CardClient(clientParams);
-        threeDSecureClient = new ThreeDSecureClient(clientParams);
+        americanExpressClient = new AmericanExpressClient(requireContext(), super.getAuthStringArg());
+        cardClient = new CardClient(requireContext(), super.getAuthStringArg());
+        threeDSecureClient = new ThreeDSecureClient(requireContext(), super.getAuthStringArg());
 
-        dataCollector = new DataCollector(clientParams);
+        dataCollector = new DataCollector(requireContext(), super.getAuthStringArg());
 
         if (onSaveInstanceState != null) {
             threeDSecureRequested = onSaveInstanceState.getBoolean(EXTRA_THREE_D_SECURE_REQUESTED);
@@ -91,7 +88,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         View view = inflater.inflate(R.layout.fragment_card, container, false);
 
         threeDSecureLauncher = new ThreeDSecureLauncher(this,
-                cardinalResult -> threeDSecureClient.onCardinalResult(cardinalResult,
+                paymentAuthResult -> threeDSecureClient.tokenize(paymentAuthResult,
                         this::handleThreeDSecureResult));
 
         cardForm = view.findViewById(R.id.card_form);
@@ -223,7 +220,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                     getString(R.string.loading), true, false);
 
             ThreeDSecureRequest threeDSecureRequest = threeDSecureRequest(paymentMethodNonce);
-            threeDSecureClient.performVerification(requireContext(), threeDSecureRequest,
+            threeDSecureClient.createPaymentAuthRequest(requireContext(), threeDSecureRequest,
                     (threeDSecureResult, error) -> {
                         if (threeDSecureResult != null &&
                                 threeDSecureResult.getLookup().requiresUserAuthentication()) {

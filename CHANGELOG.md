@@ -6,8 +6,8 @@
   * All Modules
     * Bump `minSdkVersion` to API 23
     * Bump target Java version to Java 11
-    * Remove `BraintreeClient` public constructors
-    * Add `ClientParams` for instantiating payment method clients
+    * Update payment method constructor parameters from `braintreeClient` to `context` and
+      `authorization`
   * BraintreeCore
     * Remove `BraintreeClient` public constructors
     * Remove `ClientTokenProvider`
@@ -28,6 +28,7 @@
     * Remove overload constructors, `setListener`, and `onActivityResult` from `VenmoClient`
     * Change `VenmoClient#tokenizeVenmoAccount` parameters and rename to 
       `VenmoClient#tokenize`
+    * Change parameters of `VenmoIsReadyToPayCallback` and add `VenmoReadinessResult`
     * Add `VenmoClient#createPaymentAuthRequest`
   * GooglePay
     * Remove `GooglePayListener` and `GooglePayRequestPaymentCallback`
@@ -40,10 +41,12 @@
     * Add `GooglePayClient#tokenize` 
   * ThreeDSecure
     * Remove `ThreeDSecureListener`
-    * Add `ThreeDSecureLauncher`, `CardinalResult`, and `CardinalResultCallback`
+    * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`, and `ThreeDSecureLancherCallback`
     * Remove overload constructors, `setListener`, `continuePerformVerification`, `onBrowserSwitchResult` and `onActivityResult` from `ThreeDSecureClient`
-    * Change `ThreeDSecureClient#performVerification` and `ThreeDSecureClient#initializeChallengeWithLookupResponse` parameters
-    * Add `ThreeDSecureClient#onCardinalResult`
+    * Change `ThreeDSecureClient#initializeChallengeWithLookupResponse` parameters
+    * Add `ThreeDSecureClient#tokenize`
+    * Rename `ThreeDSecureClient#performVerification` to 
+      `ThreeDSecureClient#createPaymentAuthRequest` and change parameters
     * Remove `versionRequested` from `ThreeDSecureRequest`
     * Add `ThreeDSecureNonce` class
     * Rename `ThreeDSecureResult#tokenizedCard` to `ThreeDSecureResult#threeDSecureNonce`
