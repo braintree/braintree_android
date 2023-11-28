@@ -51,15 +51,14 @@ buildscript {
             "robolectric"                : "org.robolectric:robolectric:4.11.1",
             "mockitoCore"                : "org.mockito:mockito-core:5.7.0",
             "jsonAssert"                 : "org.skyscreamer:jsonassert:1.5.1",
-            "mockk"                      : "io.mockk:mockk:1.13.4",
+            "mockk"                      : "io.mockk:mockk:1.13.8",
     ]
 
     dependencies {
         classpath 'com.android.tools.build:gradle:7.4.2'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2'
-        classpath 'de.marcphilipp.gradle:nexus-publish-plugin:0.4.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
-        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.4.1'
+        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.7.5'
         classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.7.20'
         classpath 'org.jetbrains.dokka:android-documentation-plugin:1.7.20'
     }
