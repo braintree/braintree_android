@@ -10,8 +10,8 @@ buildscript {
     def sdkTargetJavaVersion = JavaVersion.VERSION_11
 
     ext.versions = [
-            "kotlin"         : "1.7.10",
-            "androidxTest"   : "1.4.0",
+            "kotlin"         : "1.9.21",
+            "androidxTest"   : "1.5.0",
             "room"           : "2.6.0",
             "playServices"   : "19.2.1",
             "javaSourceCompatibility": sdkTargetJavaVersion,
@@ -29,16 +29,15 @@ buildscript {
             "kotlinTest"                 : "org.jetbrains.kotlin:kotlin-test-junit:${versions.kotlin}",
             // This library doesn't seem to follow the versioning pattern of the other jetbrains
             // kotlin libraries. Make sure to keep this dependency in line with the kotlin version used.
-            "kotlinCoroutinesCore"       : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2",
+            "kotlinCoroutinesCore"       : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1",
 
             "browserSwitch"              : "com.braintreepayments.api:browser-switch:2.6.0",
             "cardinal"                   : "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.7-5",
             "samsungPay"                 : "com.samsung.android.spay:sdk:2.5.01",
             "playServicesWallet"         : "com.google.android.gms:play-services-wallet:${versions.playServices}",
 
-            // NEXT_MAJOR_VERSION: upgrade to 2.7.1 (or latest) when Java 7 support is explicitly dropped
-            "work"                       : "androidx.work:work-runtime:2.7.0-alpha05",
-            "workTesting"                : "androidx.work:work-testing:2.5.0",
+            "work"                       : "androidx.work:work-runtime:2.8.1",
+            "workTesting"                : "androidx.work:work-testing:2.8.1",
 
             "roomCompiler"               : "androidx.room:room-compiler:${versions.room}",
             "roomRuntime"                : "androidx.room:room-runtime:${versions.room}",
