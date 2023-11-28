@@ -188,7 +188,14 @@ class AnalyticsClientUnitTest {
         every { analyticsEventDao.getAllEvents() } returns events
 
         val analyticsJSONSlot = slot<String>()
-        every { httpClient.post(any(), capture(analyticsJSONSlot), any(), any()) }
+        every {
+            httpClient.post(
+                "https://api-m.paypal.com/v1/tracking/batch/events",
+                capture(analyticsJSONSlot),
+                any(),
+                any()
+            )
+        }
 
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
         sut.uploadAnalytics(context, inputData)

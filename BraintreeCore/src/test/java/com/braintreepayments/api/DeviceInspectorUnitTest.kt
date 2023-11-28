@@ -1,6 +1,7 @@
 package com.braintreepayments.api
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
@@ -197,11 +198,75 @@ class DeviceInspectorUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun getDeviceMetadata_forwardsDropInVersionFromClassHelper() {
-        mockkObject(DeviceInspector) {
-            every { DeviceInspector.getDropInVersion() } returns "drop-in-version"
-            val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-            assertEquals("drop-in-version", metadata.toJSON().getString("dropinVersion"))
-        }
+    fun getSDKEnvironment_forwardsEnvironmentFromConfig() {
+        val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
+        assertEquals("test", metadata.toJSON().getString("merchant_sdk_env"))
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun getMerchantID_forwardsMerchantODFromConfig() {
+        val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
+        assertEquals("integration-merchant-id", metadata.toJSON().getString("merchant_id"))
+    }
+
+    @Test
+    fun isPayPalInstalled_forwardsIsPayPalInstalledResultFromAppHelper() {
+        every { appHelper.isAppInstalled(context, "com.paypal.android.p2pmobile") } returns true
+        assertTrue(sut.isPayPalInstalled(context))
+    }
+
+    @Test
+    fun isVenmoInstalled_forwardsIsVenmoInstalledResultFromAppHelper() {
+        every { appHelper.isAppInstalled(context, "com.venmo") } returns true
+        assertTrue(sut.isVenmoInstalled(context))
+    }
+
+    @Test
+    fun isVenmoAppSwitchAvailable_checksForVenmoIntentAvailability() {
+        sut.isVenmoAppSwitchAvailable(context)
+        val intentSlot = slot<Intent>()
+        verify { appHelper.isIntentAvailable(context, capture(intentSlot)) }
+
+        val intent = intentSlot.captured
+        val component = intent.component
+        assertEquals("com.venmo", component!!.packageName)
+        assertEquals("com.venmo.controller.SetupMerchantActivity", component.className)
+    }
+
+    @Test
+    fun isVenmoAppSwitchAvailable_whenVenmoIsNotInstalled_returnsFalse() {
+        every { appHelper.isIntentAvailable(context, ofType(Intent::class)) } returns false
+        assertFalse(sut.isVenmoAppSwitchAvailable(context))
+    }
+
+    @Test
+    fun isVenmoAppSwitchAvailable_whenVenmoIsInstalledSignatureIsNotValid_returnsFalse() {
+        every { appHelper.isIntentAvailable(context, ofType(Intent::class)) } returns true
+
+        every {
+            signatureVerifier.isSignatureValid(
+                context,
+                "com.venmo",
+                DeviceInspector.VENMO_BASE_64_ENCODED_SIGNATURE
+            )
+        } returns false
+
+        assertFalse(sut.isVenmoAppSwitchAvailable(context))
+    }
+
+    @Test
+    fun isVenmoAppSwitchAvailable_whenVenmoIsInstalledSignatureIsValid_returnsTrue() {
+        every { appHelper.isIntentAvailable(context, ofType(Intent::class)) } returns true
+
+        every {
+            signatureVerifier.isSignatureValid(
+                context,
+                "com.venmo",
+                DeviceInspector.VENMO_BASE_64_ENCODED_SIGNATURE
+            )
+        } returns true
+
+        assertTrue(sut.isVenmoAppSwitchAvailable(context))
     }
 }
