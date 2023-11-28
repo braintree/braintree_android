@@ -17,7 +17,6 @@ buildscript {
             "javaSourceCompatibility": sdkTargetJavaVersion,
             "javaTargetCompatibility": sdkTargetJavaVersion,
     ]
-
     ext.deps = [
             "appCompat"                  : "androidx.appcompat:appcompat:1.6.0",
             "annotation"                 : "androidx.annotation:annotation:1.7.0",
