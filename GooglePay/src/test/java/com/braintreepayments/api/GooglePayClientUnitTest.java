@@ -577,43 +577,6 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void createPaymentAuthRequest_withGoogleMerchantId_sendGoogleMerchantId() throws JSONException {
-        Configuration configuration = new TestConfigurationBuilder()
-                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
-                        .environment("sandbox")
-                        .googleAuthorizationFingerprint("google-auth-fingerprint")
-                        .paypalClientId("paypal-client-id-for-google-payment")
-                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
-                        .enabled(true))
-                .withAnalytics()
-                .buildConfiguration();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
-                .activityInfo(activityInfo)
-                .build();
-
-        GooglePayInternalClient internalGooglePayClient =
-                new MockGooglePayInternalClientBuilder().build();
-
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.createPaymentAuthRequest(baseRequest, intentDataCallback);
-
-        ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
-                GooglePayPaymentAuthRequest.class);
-        verify(intentDataCallback).onResult(captor.capture(), isNull());
-        GooglePayPaymentAuthRequest intent = captor.getValue();
-
-        PaymentDataRequest paymentDataRequest = intent.getPaymentDataRequest();
-        JSONObject paymentDataRequestJson = new JSONObject(paymentDataRequest.toJson());
-
-        assertEquals("google-merchant-id-override", paymentDataRequestJson
-                .getJSONObject("merchantInfo")
-                .getString("merchantId"));
-    }
-
-    @Test
     public void createPaymentAuthRequest_withGoogleMerchantName_sendGoogleMerchantName()
             throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()

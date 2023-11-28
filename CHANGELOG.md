@@ -35,6 +35,7 @@
     * Change `GooglePayClient#requestPayment` parameters and rename to 
       `GooglePayClient#createPaymentAuthRequest`
     * Add `GooglePayClient#tokenize` 
+    * Remove `merchantId` from `GooglePayRequest`
   * ThreeDSecure
     * Remove `ThreeDSecureListener`
     * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`, and `ThreeDSecureLancherCallback`
