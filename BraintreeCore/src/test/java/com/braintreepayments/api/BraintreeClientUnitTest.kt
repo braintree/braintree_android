@@ -650,7 +650,7 @@ class BraintreeClientUnitTest {
         verify {
             analyticsClient.reportCrash(
                 applicationContext,
-                configuration,
+                any(),
                 "session-id",
                 IntegrationType.CUSTOM,
                 authorization

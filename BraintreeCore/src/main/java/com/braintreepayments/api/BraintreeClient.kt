@@ -429,15 +429,16 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun reportCrash() = authorizationLoader.authorizationFromCache?.let { authorization ->
-        getConfiguration { configuration, _ ->
-            analyticsClient.reportCrash(
-                applicationContext,
-                configuration,
-                sessionId,
-                integrationType,
-                authorization
-            )
-        }
+        // TODO: - What to do here? W/o config, we won't get merchantID & env
+        // getConfiguration { configuration, _ ->
+        analyticsClient.reportCrash(
+            applicationContext,
+            null,
+            sessionId,
+            integrationType,
+            authorization
+        )
+        //}
     }
 
     /**

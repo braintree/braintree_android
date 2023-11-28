@@ -24,7 +24,6 @@ internal class DeviceMetadata internal constructor(
         return JSONObject()
             .put(APP_ID_KEY, appId)
             .put(APP_NAME_KEY, appName)
-             // AUTH FING TODO
             .put(CLIENT_SDK_VERSION_KEY, clientSDKVersion)
             .put(CLIENT_OS_KEY, clientOs)
             .put(COMPONENT_KEY, "braintreeclientsdk")
@@ -38,13 +37,11 @@ internal class DeviceMetadata internal constructor(
             .put(MERCHANT_ID_KEY, merchantId)
             .put(PLATFORM_KEY, platform)
             .put(SESSION_ID_KEY, sessionId)
-            // TOKEN KEY TODO
     }
 
     companion object {
         private const val APP_ID_KEY = "app_id"
         private const val APP_NAME_KEY = "app_name"
-        private const val AUTHORIZATION_FINGERPRINT_KEY = "auth_fingerprint"
         private const val CLIENT_SDK_VERSION_KEY = "c_sdk_ver"
         private const val CLIENT_OS_KEY = "client_os"
         private const val COMPONENT_KEY = "comp"
@@ -58,6 +55,5 @@ internal class DeviceMetadata internal constructor(
         private const val MERCHANT_ID_KEY = "merchant_id"
         private const val PLATFORM_KEY = "platform"
         private const val SESSION_ID_KEY = "session_id"
-        private const val TOKENIZATION_KEY = "tokenization_key"
     }
 }
