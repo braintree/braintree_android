@@ -15,7 +15,7 @@ import static com.braintreepayments.UiObjectMatcher.withResourceId;
 import static com.braintreepayments.UiObjectMatcher.withText;
 import static com.braintreepayments.UiObjectMatcher.withTextStartingWith;
 import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.isAppInstalled;
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.junit.Assume.assumeTrue;
 

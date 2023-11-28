@@ -4,9 +4,6 @@
 -dontwarn ch.qos.logback.core.net.**
 -dontwarn org.slf4j.**
 
-## Picasso
--dontwarn com.squareup.okhttp.**
-
 ## Retrofit
 -dontwarn retrofit.**
 -keep class retrofit.** { *; }
@@ -25,12 +22,8 @@
 -dontwarn com.google.gson.**
 -dontwarn com.threatmetrix.**
 -dontwarn com.google.**
--dontwarn okhttp3.**
--dontwarn okio.**
 -keep class com.visa.** { *; }
 -keep class com.threatmetrix.** { *; }
--keep class okio.** { *; }
--keep class okhttp3.** { *; }
 -keep class com.google.gson.** { *; }
 -keep class de.greenrobot.** { *; }
 -keepclassmembers class * {

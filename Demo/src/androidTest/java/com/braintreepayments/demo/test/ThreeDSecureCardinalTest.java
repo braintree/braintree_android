@@ -8,7 +8,7 @@ import static com.braintreepayments.UiObjectMatcher.withResourceId;
 import static com.braintreepayments.UiObjectMatcher.withText;
 import static com.braintreepayments.UiObjectMatcher.withTextContaining;
 import static com.braintreepayments.UiObjectMatcher.withTextStartingWith;
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
 import androidx.preference.PreferenceManager;
@@ -17,7 +17,6 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -107,9 +106,9 @@ public class ThreeDSecureCardinalTest extends TestHelper {
 
         onDevice(withText("Purchase")).perform(click());
 
-        getNonceDetails().check(text(CoreMatchers.containsString("isLiabilityShifted: false")));
-        getNonceDetails().check(text(CoreMatchers.containsString("isLiabilityShiftPossible: false")));
-        getNonceDetails().check(text(CoreMatchers.containsString("wasVerified: true")));
+        getNonceDetails().check(text(containsString("isLiabilityShifted: false")));
+        getNonceDetails().check(text(containsString("isLiabilityShiftPossible: false")));
+        getNonceDetails().check(text(containsString("wasVerified: true")));
     }
 
     private void enterPassword() {

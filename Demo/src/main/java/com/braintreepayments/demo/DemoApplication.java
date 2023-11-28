@@ -21,8 +21,6 @@ public class DemoApplication extends Application implements UncaughtExceptionHan
     public void onCreate() {
         super.onCreate();
 
-        DeveloperTools.setup(this);
-
         defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(this);
     }
