@@ -43,6 +43,10 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11
+    }
 }
 
 
