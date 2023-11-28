@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    namespace "com.braintreepayments.api.googlepay"
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {

@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    namespace "com.braintreepayments.api.venmo"
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {

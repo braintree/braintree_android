@@ -4,6 +4,7 @@ plugins {
 }
 
 android {
+    namespace "com.braintreepayments.api.sharedutils"
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {

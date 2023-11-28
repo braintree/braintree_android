@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    namespace "com.braintreepayments.api.sepadirectdebit"
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {

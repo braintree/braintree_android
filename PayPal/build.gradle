@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    namespace "com.braintreepayments.api.paypal"
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {

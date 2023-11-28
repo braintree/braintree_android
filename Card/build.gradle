@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    namespace "com.braintreepayments.api.card"
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {

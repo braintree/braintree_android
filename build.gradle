@@ -10,7 +10,7 @@ buildscript {
     def sdkTargetJavaVersion = JavaVersion.VERSION_11
 
     ext.versions = [
-            "kotlin"         : "1.7.0",
+            "kotlin"         : "1.9.10",
             "androidxTest"   : "1.5.0",
             "room"           : "2.6.0",
             "playServices"   : "19.2.1",
@@ -25,7 +25,7 @@ buildscript {
 
             "lifecycleRuntime"           : "androidx.lifecycle:lifecycle-runtime:2.6.2",
 
-            "kotlinStdLib"               : "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}",
+            "kotlinStdLib"               : "org.jetbrains.kotlin:kotlin-stdlib:1.9.20",
             "kotlinTest"                 : "org.jetbrains.kotlin:kotlin-test-junit:${versions.kotlin}",
             // This library doesn't seem to follow the versioning pattern of the other jetbrains
             // kotlin libraries. Make sure to keep this dependency in line with the kotlin version used.
@@ -55,17 +55,17 @@ buildscript {
     ]
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.android.tools.build:gradle:8.1.4'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0"
         classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.7.5'
-        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.7.20'
-        classpath 'org.jetbrains.dokka:android-documentation-plugin:1.7.20'
+        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.9.10'
+        classpath 'org.jetbrains.dokka:android-documentation-plugin:1.9.10'
     }
 }
 
 plugins {
-    id 'org.jetbrains.dokka' version '1.7.10'
+    id 'org.jetbrains.dokka' version '1.9.10'
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
     id 'io.gitlab.arturbosch.detekt' version '1.22.0'
 }

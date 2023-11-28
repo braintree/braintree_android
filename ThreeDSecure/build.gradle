@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    namespace "com.braintreepayments.api.threedsecure"
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
