@@ -199,8 +199,7 @@ class AnalyticsClientUnitTest {
         val eventJSON = eventsArray[0] as JSONObject
         assertNotNull("JSON body missing top level `events` key.", eventJSON)
 
-        val batchParams = eventJSON["batch_params"] as JSONObject
-        assertEquals("sandbox_tmxhyf7d_dcpspy2brwdjr3qn", batchParams["tokenization_key"])
+        verifyBatchParams(eventJSON["batch_params"] as JSONObject)
 
         val eventParams = eventJSON.getJSONArray("event_params")
         assertEquals(2, eventParams.length())
@@ -395,9 +394,7 @@ class AnalyticsClientUnitTest {
         val eventJSON = eventsArray[0] as JSONObject
         assertNotNull("JSON body missing top level `events` key.", eventJSON)
 
-        val batchParams = eventJSON["batch_params"] as JSONObject
-        assertEquals("fake-merchant-id", batchParams["merchant_id"])
-        assertNotNull(batchParams)
+        verifyBatchParams(eventJSON["batch_params"] as JSONObject)
 
         val eventParams = eventJSON.getJSONArray("event_params")
         assertEquals(1, eventParams.length())
@@ -405,6 +402,25 @@ class AnalyticsClientUnitTest {
         val eventOne = eventParams.getJSONObject(0)
         assertEquals("android.crash", eventOne.getString("event_name"))
         assertEquals(123, eventOne.getString("t").toLong())
+    }
+
+    private fun verifyBatchParams(batchParams: JSONObject) {
+        assertEquals("fake-app-id", batchParams["app_id"])
+        assertEquals("fake-app-name", batchParams["app_name"])
+        assertEquals("fake-sdk-version", batchParams["c_sdk_ver"])
+        assertEquals("fake-os", batchParams["client_os"])
+        assertEquals("braintreeclientsdk", batchParams["comp"])
+        assertEquals("fake-device-manufacturer", batchParams["device_manufacturer"])
+        assertEquals("fake-mobile-device-model", batchParams["mobile_device_model"])
+        assertEquals("mobile-native", batchParams["event_source"])
+        assertEquals("fake-environment", batchParams["merchant_sdk_env"])
+        assertEquals("fake-integration", batchParams["api_integration_type"])
+        assertFalse(batchParams["is_simulator"] as Boolean)
+        assertEquals("fake-merchant-app-version", batchParams["mapv"])
+        assertEquals("fake-merchant-id", batchParams["merchant_id"])
+        assertEquals("fake-platform", batchParams["platform"])
+        assertEquals("fake-session-id", batchParams["session_id"])
+        assertEquals("sandbox_tmxhyf7d_dcpspy2brwdjr3qn", batchParams["tokenization_key"])
     }
 
     @Test
@@ -426,12 +442,12 @@ class AnalyticsClientUnitTest {
 
     companion object {
         private fun createSampleDeviceMetadata() = DeviceMetadata(
-            appId = "fake-merchant-app-id",
-            appName = "fake-merchant-app-name",
+            appId = "fake-app-id",
+            appName = "fake-app-name",
             clientSDKVersion = "fake-sdk-version",
             clientOs = "fake-os",
             deviceManufacturer = "fake-device-manufacturer",
-            deviceModel = "fake-device-model",
+            deviceModel = "fake-mobile-device-model",
             environment = "fake-environment",
             integrationType = "fake-integration",
             isSimulator = false,
