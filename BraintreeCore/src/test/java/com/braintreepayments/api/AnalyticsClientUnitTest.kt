@@ -200,8 +200,7 @@ class AnalyticsClientUnitTest {
         assertNotNull("JSON body missing top level `events` key.", eventJSON)
 
         val batchParams = eventJSON["batch_params"] as JSONObject
-        assertEquals("fake-merchant-id", batchParams["merchant_id"])
-        assertNotNull(batchParams)
+        assertEquals("sandbox_tmxhyf7d_dcpspy2brwdjr3qn", batchParams["tokenization_key"])
 
         val eventParams = eventJSON.getJSONArray("event_params")
         assertEquals(2, eventParams.length())
@@ -246,6 +245,37 @@ class AnalyticsClientUnitTest {
 
         // or confirmVerified(httpClient)
         verify { httpClient wasNot Called }
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun uploadAnalytics_whenAuthorizationIsClientToken_includesAuthFingerprintBatchParam() {
+        val inputData = Data.Builder()
+            .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, Fixtures.BASE64_CLIENT_TOKEN2)
+            .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
+            .putString(AnalyticsClient.WORK_INPUT_KEY_SESSION_ID, sessionId)
+            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration)
+            .build()
+
+        every {
+            deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
+        } returns createSampleDeviceMetadata()
+
+        val events: MutableList<AnalyticsEvent> = ArrayList()
+        events.add(AnalyticsEvent("event0", 123))
+        every { analyticsEventDao.getAllEvents() } returns events
+
+        val analyticsJSONSlot = slot<String>()
+        every { httpClient.post(any(), capture(analyticsJSONSlot), any(), any()) }
+
+        val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
+        sut.uploadAnalytics(context, inputData)
+
+        val analyticsJson = JSONObject(analyticsJSONSlot.captured)
+
+        val eventJSON = analyticsJson.getJSONArray("events")[0] as JSONObject
+        val batchParams = eventJSON["batch_params"] as JSONObject
+        assertEquals("encoded_auth_fingerprint", batchParams["authorization_fingerprint"])
     }
 
     @Test
