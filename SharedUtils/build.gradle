@@ -48,7 +48,6 @@ dependencies {
     androidTestImplementation deps.androidxTestRunner
     androidTestImplementation deps.junitTest
     androidTestImplementation deps.appCompat
-    androidTestImplementation deps.dexmakerMockito
 }
 
 // region signing and publishing

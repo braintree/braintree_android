@@ -49,7 +49,6 @@ dependencies {
     testImplementation deps.androidxTestCore
     testImplementation project(':TestUtils')
 
-    androidTestImplementation deps.dexmakerMockito
     androidTestImplementation deps.androidxTestRules
     androidTestImplementation deps.androidxTestRunner
     androidTestImplementation deps.junitTest
