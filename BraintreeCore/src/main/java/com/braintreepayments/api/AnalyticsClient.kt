@@ -106,27 +106,6 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         workManager.enqueueUniqueWork(
             WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
         )
-        workManager.enqueueUniqueWork(
-            WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
-        )
-        workManager.enqueueUniqueWork(
-            WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
-        )
-        workManager.enqueueUniqueWork(
-            WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
-        )
-        workManager.enqueueUniqueWork(
-            WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
-        )
-        workManager.enqueueUniqueWork(
-            WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
-        )
-        workManager.enqueueUniqueWork(
-            WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
-        )
-        workManager.enqueueUniqueWork(
-            WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
-        )
 
         return analyticsWorkRequest.id
     }
@@ -216,25 +195,28 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         val eventParamsJSON = JSONArray()
         for (analyticsEvent in events) {
             val singleEventJSON = JSONObject()
-                .put(KIND_KEY, analyticsEvent.name)
+                .put(EVENT_NAME_KEY, analyticsEvent.name)
                 .put(TIMESTAMP_KEY, analyticsEvent.timestamp)
-                .put("tenant_name", "Braintree")
+                .put(TENANT_NAME_KEY, "Braintree")
             eventParamsJSON.put(singleEventJSON)
         }
         eventsContainerJSON.put(EVENT_PARAMS_KEY, eventParamsJSON)
 
         // Single-element "events" array required by FPTI formatting
         val eventsArray = JSONArray(arrayOf(eventsContainerJSON));
-        return JSONObject().put("events", eventsArray)
+        return JSONObject().put(EVENTS_CONTAINER_KEY, eventsArray)
     }
 
     companion object {
-        private const val EVENT_PARAMS_KEY = "event_params"
-        private const val KIND_KEY = "event_name"
-        private const val TIMESTAMP_KEY = "t"
+        private const val EVENTS_CONTAINER_KEY = "events"
         private const val BATCH_PARAMS_KEY = "batch_params"
-        private const val TOKENIZATION_KEY = "tokenization_key"
         private const val AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint"
+        private const val TOKENIZATION_KEY = "tokenization_key"
+        private const val EVENT_PARAMS_KEY = "event_params"
+        private const val EVENT_NAME_KEY = "event_name"
+        private const val TIMESTAMP_KEY = "t"
+        private const val TENANT_NAME_KEY = "tenant_name"
+
         private const val INVALID_TIMESTAMP: Long = -1
         const val WORK_NAME_ANALYTICS_UPLOAD = "uploadAnalytics"
         const val WORK_NAME_ANALYTICS_WRITE = "writeAnalyticsToDb"
