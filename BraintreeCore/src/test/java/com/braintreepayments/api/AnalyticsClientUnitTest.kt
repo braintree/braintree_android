@@ -10,6 +10,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -178,7 +179,7 @@ class AnalyticsClientUnitTest {
         val metadata = createSampleDeviceMetadata()
 
         every {
-            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
+            deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
@@ -193,19 +194,25 @@ class AnalyticsClientUnitTest {
         sut.uploadAnalytics(context, inputData)
 
         val analyticsJson = JSONObject(analyticsJSONSlot.captured)
-        val meta = analyticsJson.getJSONObject("_meta")
-        JSONAssert.assertEquals(metadata.toJSON(), meta, true)
 
-        val array = analyticsJson.getJSONArray("analytics")
-        assertEquals(2, array.length())
+        val eventsArray = analyticsJson.getJSONArray("events")
+        val eventJSON = eventsArray[0] as JSONObject
+        assertNotNull("JSON body missing top level `events` key.", eventJSON)
 
-        val eventOne = array.getJSONObject(0)
-        assertEquals("event0", eventOne.getString("kind"))
-        assertEquals(123, eventOne.getString("timestamp").toLong())
+        val batchParams = eventJSON["batch_params"] as JSONObject
+        assertEquals("fake-merchant-id", batchParams["merchant_id"])
+        assertNotNull(batchParams)
 
-        val eventTwo = array.getJSONObject(1)
-        assertEquals("event1", eventTwo.getString("kind"))
-        assertEquals(456, eventTwo.getString("timestamp").toLong())
+        val eventParams = eventJSON.getJSONArray("event_params")
+        assertEquals(2, eventParams.length())
+
+        val eventOne = eventParams.getJSONObject(0)
+        assertEquals("event0", eventOne.getString("event_name"))
+        assertEquals(123, eventOne.getString("t").toLong())
+
+        val eventTwo = eventParams.getJSONObject(1)
+        assertEquals("event1", eventTwo.getString("event_name"))
+        assertEquals(456, eventTwo.getString("t").toLong())
     }
 
     @Test
@@ -287,12 +294,7 @@ class AnalyticsClientUnitTest {
 
         val metadata = createSampleDeviceMetadata()
         every {
-            deviceInspector.getDeviceMetadata(
-                context,
-                configuration,
-                sessionId,
-                integration
-            )
+            deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
@@ -316,10 +318,9 @@ class AnalyticsClientUnitTest {
             .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration)
             .build()
 
-        val metadata = createSampleDeviceMetadata()
         every {
-            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
-        } returns metadata
+            deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
+        } returns createSampleDeviceMetadata()
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
         events.add(AnalyticsEvent("event0", 123))
@@ -359,16 +360,21 @@ class AnalyticsClientUnitTest {
         sut.reportCrash(context, configuration, sessionId, integration, 123, authorization)
 
         val analyticsJson = JSONObject(analyticsJSONSlot.captured)
-        // TODO - update test for new structure
-        val meta = analyticsJson.getJSONObject("_meta")
-        JSONAssert.assertEquals(metadata.toJSON(), meta, true)
 
-        val array = analyticsJson.getJSONArray("analytics")
-        assertEquals(1, array.length())
+        val eventsArray = analyticsJson.getJSONArray("events")
+        val eventJSON = eventsArray[0] as JSONObject
+        assertNotNull("JSON body missing top level `events` key.", eventJSON)
 
-        val eventOne = array.getJSONObject(0)
-        assertEquals("android.crash", eventOne.getString("kind"))
-        assertEquals(123, eventOne.getString("timestamp").toLong())
+        val batchParams = eventJSON["batch_params"] as JSONObject
+        assertEquals("fake-merchant-id", batchParams["merchant_id"])
+        assertNotNull(batchParams)
+
+        val eventParams = eventJSON.getJSONArray("event_params")
+        assertEquals(1, eventParams.length())
+
+        val eventOne = eventParams.getJSONObject(0)
+        assertEquals("android.crash", eventOne.getString("event_name"))
+        assertEquals(123, eventOne.getString("t").toLong())
     }
 
     @Test
@@ -390,19 +396,19 @@ class AnalyticsClientUnitTest {
 
     companion object {
         private fun createSampleDeviceMetadata() = DeviceMetadata(
-            appId = "merchant-app-id",
-            appName = "merchant-app-name",
-            clientSDKVersion = "sdk-version",
-            clientOs = "sample-os",
-            deviceManufacturer = "device-manufacturer",
-            deviceModel = "device-model",
-            environment = "environment",
-            integrationType = "sample-integration",
+            appId = "fake-merchant-app-id",
+            appName = "fake-merchant-app-name",
+            clientSDKVersion = "fake-sdk-version",
+            clientOs = "fake-os",
+            deviceManufacturer = "fake-device-manufacturer",
+            deviceModel = "fake-device-model",
+            environment = "fake-environment",
+            integrationType = "fake-integration",
             isSimulator = false,
-            merchantAppVersion = "platform-version",
-            merchantId = "merchant-id",
-            platform = "platform",
-            sessionId = "session-id"
+            merchantAppVersion = "fake-merchant-app-version",
+            merchantId = "fake-merchant-id",
+            platform = "fake-platform",
+            sessionId = "fake-session-id"
         )
     }
 }

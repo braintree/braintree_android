@@ -145,7 +145,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 val analyticsEventDao = analyticsDatabase.analyticsEventDao()
                 val events = analyticsEventDao.getAllEvents()
                 if (events.isNotEmpty()) {
-                    val metadata = deviceInspector.getDeviceMetadata(context, configuration,sessionId, integration)
+                    val metadata = deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
                     val analyticsRequest = serializeEvents(authorization, events, metadata)
                     httpClient.post(
                         fptiAnalyticsURL,
@@ -216,7 +216,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         val eventParamsJSON = JSONArray()
         for (analyticsEvent in events) {
             val singleEventJSON = JSONObject()
-                .put(KIND_KEY, "test-event-name")
+                .put(KIND_KEY, analyticsEvent.name)
                 .put(TIMESTAMP_KEY, analyticsEvent.timestamp)
                 .put("tenant_name", "Braintree")
             eventParamsJSON.put(singleEventJSON)
