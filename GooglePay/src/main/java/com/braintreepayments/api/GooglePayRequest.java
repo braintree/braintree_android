@@ -44,10 +44,6 @@ public class GooglePayRequest implements Parcelable {
     private final HashMap<String, JSONArray> allowedCardNetworks = new HashMap<>();
     private String environment;
     private boolean allowCreditCards = true;
-
-    // NEXT_MAJOR_VERSION: remove googleMerchantId since it is no longer required/included in the
-    // Google Pay API documentation
-    private String googleMerchantId;
     private String googleMerchantName;
     private String countryCode;
     private String totalPriceLabel;
@@ -183,18 +179,6 @@ public class GooglePayRequest implements Parcelable {
     /**
      * Optional.
      *
-     * @deprecated Google Merchant ID is no longer required and will be removed.
-     *
-     * @param merchantId The merchant ID that Google Pay has provided.
-     */
-    @Deprecated
-    public void setGoogleMerchantId(@Nullable String merchantId) {
-        googleMerchantId = merchantId;
-    }
-
-    /**
-     * Optional.
-     *
      * @param merchantName The merchant name that will be presented in Google Pay
      */
     public void setGoogleMerchantName(@Nullable String merchantName) {
@@ -318,10 +302,6 @@ public class GooglePayRequest implements Parcelable {
         JSONObject merchantInfo = new JSONObject();
 
         try {
-            if (!TextUtils.isEmpty(getGoogleMerchantId())) {
-                merchantInfo.put("merchantId", getGoogleMerchantId());
-            }
-
             if (!TextUtils.isEmpty(getGoogleMerchantName())) {
                 merchantInfo.put("merchantName", getGoogleMerchantName());
             }
@@ -475,16 +455,6 @@ public class GooglePayRequest implements Parcelable {
         return environment;
     }
 
-    /**
-     * @deprecated Google Merchant ID is no longer required and will be removed.
-     *
-     * @return The merchant ID that Google Pay has provided.
-     */
-    @Deprecated
-    @Nullable
-    public String getGoogleMerchantId() {
-        return googleMerchantId;
-    }
 
     /**
      * @return The merchant name that will be presented in Google Pay.
@@ -531,7 +501,6 @@ public class GooglePayRequest implements Parcelable {
         dest.writeByte((byte) (allowPrepaidCards ? 1 : 0));
         dest.writeByte((byte) (payPalEnabled ? 1 : 0));
         dest.writeString(environment);
-        dest.writeString(googleMerchantId);
         dest.writeString(googleMerchantName);
         dest.writeString(countryCode);
         dest.writeByte((byte) (allowCreditCards ? 1 : 0));
@@ -549,7 +518,6 @@ public class GooglePayRequest implements Parcelable {
         allowPrepaidCards = in.readByte() != 0;
         payPalEnabled = in.readByte() != 0;
         environment = in.readString();
-        googleMerchantId = in.readString();
         googleMerchantName = in.readString();
         countryCode = in.readString();
         allowCreditCards = in.readByte() != 0;

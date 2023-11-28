@@ -594,8 +594,6 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        baseRequest.setGoogleMerchantId("google-merchant-id-override");
-
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
