@@ -44,7 +44,6 @@ public class GooglePayRequestUnitTest {
         request.setShippingAddressRequirements(shippingAddressRequirements);
         request.setTransactionInfo(transactionInfo);
         request.setEnvironment("production");
-        request.setGoogleMerchantId("google-merchant-id");
         request.setGoogleMerchantName("google-merchant-name");
 
         assertTrue(request.getAllowPrepaidCards());
@@ -56,7 +55,6 @@ public class GooglePayRequestUnitTest {
         assertEquals(shippingAddressRequirements, request.getShippingAddressRequirements());
         assertEquals(transactionInfo, request.getTransactionInfo());
         assertEquals("PRODUCTION", request.getEnvironment());
-        assertEquals("google-merchant-id", request.getGoogleMerchantId());
         assertEquals("google-merchant-name", request.getGoogleMerchantName());
         assertEquals("test", request.getTotalPriceLabel());
     }
@@ -76,7 +74,6 @@ public class GooglePayRequestUnitTest {
         assertNull(request.getTransactionInfo());
         assertNull(request.getEnvironment());
         assertNull(request.getEnvironment());
-        assertNull(request.getGoogleMerchantId());
         assertNull(request.getGoogleMerchantName());
     }
 
@@ -162,7 +159,6 @@ public class GooglePayRequestUnitTest {
         assertTrue(parceled.getShippingAddressRequirements().getAllowedCountryCodes().contains("US"));
         assertFalse(parceled.getAllowPrepaidCards());
         assertNull(parceled.getEnvironment());
-        assertNull(parceled.getGoogleMerchantId());
         assertNull(parceled.getGoogleMerchantName());
         assertNull(parceled.getTotalPriceLabel());
     }
@@ -228,7 +224,6 @@ public class GooglePayRequestUnitTest {
         request.setTotalPriceLabel("Test Label");
 
         request.setEnvironment("production");
-        request.setGoogleMerchantId("GOOGLE_MERCHANT_ID");
         request.setGoogleMerchantName("GOOGLE_MERCHANT_NAME");
 
         String actual = request.toJson();
@@ -296,7 +291,6 @@ public class GooglePayRequestUnitTest {
         request.setTokenizationSpecificationForType("PAYPAL", tokenizationSpecificationParams);
 
         request.setEnvironment("production");
-        request.setGoogleMerchantId("GOOGLE_MERCHANT_ID");
         request.setGoogleMerchantName("GOOGLE_MERCHANT_NAME");
 
         String actual = request.toJson();

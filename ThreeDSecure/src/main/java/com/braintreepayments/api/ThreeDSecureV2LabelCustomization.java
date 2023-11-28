@@ -10,8 +10,7 @@ import com.cardinalcommerce.shared.userinterfaces.LabelCustomization;
 /**
  * Label customization options for 3D Secure 2 flows.
  */
-public class ThreeDSecureV2LabelCustomization extends ThreeDSecureV2BaseCustomization
-        implements Parcelable {
+public class ThreeDSecureV2LabelCustomization implements Parcelable {
 
     private final LabelCustomization cardinalLabelCustomization = new LabelCustomization();
 
