@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace "com.braintreepayments.api.americanexpress"
-    compileSdkVersion rootProject.compileSdkVersion
+    compileSdk rootProject.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion

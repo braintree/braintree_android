@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace "com.braintreepayments.api.visacheckout"
-    compileSdkVersion rootProject.compileSdkVersion
+    compileSdk rootProject.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion

@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace "com.braintreepayments.api.testutils"
-    compileSdkVersion rootProject.compileSdkVersion
+    compileSdk rootProject.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
