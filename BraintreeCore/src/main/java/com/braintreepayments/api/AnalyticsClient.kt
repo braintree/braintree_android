@@ -141,7 +141,11 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     }
 
     fun reportCrash(
-        context: Context?, configuration: Configuration?, sessionId: String?, integration: String?, authorization: Authorization?
+        context: Context?,
+        configuration: Configuration?,
+        sessionId: String?,
+        integration: String?,
+        authorization: Authorization?
     ) {
         reportCrash(context, configuration, sessionId, integration, System.currentTimeMillis(), authorization)
     }
@@ -202,7 +206,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         eventsContainerJSON.put(EVENT_PARAMS_KEY, eventParamsJSON)
 
         // Single-element "events" array required by FPTI formatting
-        val eventsArray = JSONArray(arrayOf(eventsContainerJSON));
+        val eventsArray = JSONArray(arrayOf(eventsContainerJSON))
         return JSONObject().put(EVENTS_CONTAINER_KEY, eventsArray)
     }
 

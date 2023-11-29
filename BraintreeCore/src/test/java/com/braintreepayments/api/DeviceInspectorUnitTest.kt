@@ -52,21 +52,21 @@ class DeviceInspectorUnitTest {
     @Test
     @Throws(JSONException::class)
     fun getDeviceMetadata_returnsPlatform() {
-        val metadata = sut.getDeviceMetadata(context, btConfiguration,"session-id", "integration-type")
+        val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
         assertEquals("Android", metadata.toJSON().getString("platform"))
     }
 
     @Test
     @Throws(JSONException::class)
     fun getDeviceMetadata_returnsEventSource() {
-        val metadata = sut.getDeviceMetadata(context, btConfiguration,"session-id", "integration-type")
+        val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
         assertEquals("mobile-native", metadata.toJSON().getString("event_source"))
     }
 
     @Test
     @Throws(JSONException::class)
     fun getDeviceMetadata_returnsComponent() {
-        val metadata = sut.getDeviceMetadata(context, btConfiguration,"session-id", "integration-type")
+        val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
         assertEquals("braintreeclientsdk", metadata.toJSON().getString("comp"))
     }
 
@@ -96,7 +96,7 @@ class DeviceInspectorUnitTest {
     @Throws(PackageManager.NameNotFoundException::class, JSONException::class)
     fun getDeviceMetadata_whenApplicationInfoUnavailable_returnsApplicationNameUnknown() {
         every { packageManager.getApplicationInfo("com.sample.app", 0) } throws PackageManager.NameNotFoundException()
-        val metadata = sut.getDeviceMetadata(context, btConfiguration,"session-id", "integration-type")
+        val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
         assertEquals(
             "ApplicationNameUnknown",
             metadata.toJSON().getString("app_name")
@@ -117,7 +117,7 @@ class DeviceInspectorUnitTest {
     @Throws(JSONException::class)
     fun getDeviceMetadata_returnsDeviceManufacturer() {
         ReflectionHelpers.setStaticField(Build::class.java, "MANUFACTURER", "device-manufacturer")
-        val metadata = sut.getDeviceMetadata(context, btConfiguration,"session-id", "integration-type")
+        val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
         assertEquals(
             "device-manufacturer",
             metadata.toJSON().getString("device_manufacturer")
