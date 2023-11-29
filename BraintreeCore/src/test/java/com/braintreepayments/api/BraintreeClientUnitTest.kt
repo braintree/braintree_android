@@ -628,6 +628,7 @@ class BraintreeClientUnitTest {
         val sut = BraintreeClient(params)
         sut.reportCrash()
 
+        // TODO: - How to make this test wait for the getConfiguration() callback to load first
         verify {
             analyticsClient.reportCrash(
                 applicationContext,
