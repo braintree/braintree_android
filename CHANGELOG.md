@@ -7,6 +7,8 @@
     * Bump `minSdkVersion` to API 23
     * Bump target Java version to Java 11
     * Remove `BraintreeSharedPreferencesException`
+    * Ugrapde Kotlin version to 1.9.10
+    * Upgrade to Android Gradle Plugin 8
   * UnionPay
     * Remove `union-pay` module
       * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover
