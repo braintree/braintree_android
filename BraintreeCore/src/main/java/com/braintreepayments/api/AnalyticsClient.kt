@@ -21,7 +21,6 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     private val workManager: WorkManager,
     private val deviceInspector: DeviceInspector
 ) {
-    private var fptiAnalyticsURL = "https://api-m.paypal.com/v1/tracking/batch/events"
 
     constructor(context: Context) : this(
         BraintreeHttpClient(),
@@ -127,7 +126,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                     val metadata = deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
                     val analyticsRequest = serializeEvents(authorization, events, metadata)
                     httpClient.post(
-                        fptiAnalyticsURL,
+                        FPTI_ANALYTICS_URL,
                         analyticsRequest.toString(),
                         configuration,
                         authorization
@@ -165,7 +164,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         try {
             val analyticsRequest = serializeEvents(authorization, events, metadata)
             httpClient.post(
-                fptiAnalyticsURL,
+                FPTI_ANALYTICS_URL,
                 analyticsRequest.toString(),
                 null,
                 authorization,
@@ -208,6 +207,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     }
 
     companion object {
+        private const val FPTI_ANALYTICS_URL = "https://api-m.paypal.com/v1/tracking/batch/events"
+
         private const val EVENTS_CONTAINER_KEY = "events"
         private const val BATCH_PARAMS_KEY = "batch_params"
         private const val AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint"
