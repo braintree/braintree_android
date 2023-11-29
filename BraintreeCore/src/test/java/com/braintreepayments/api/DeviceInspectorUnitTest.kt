@@ -58,6 +58,20 @@ class DeviceInspectorUnitTest {
 
     @Test
     @Throws(JSONException::class)
+    fun getDeviceMetadata_returnsEventSource() {
+        val metadata = sut.getDeviceMetadata(context, btConfiguration,"session-id", "integration-type")
+        assertEquals("mobile-native", metadata.toJSON().getString("event_source"))
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun getDeviceMetadata_returnsComponent() {
+        val metadata = sut.getDeviceMetadata(context, btConfiguration,"session-id", "integration-type")
+        assertEquals("braintreeclientsdk", metadata.toJSON().getString("comp"))
+    }
+
+    @Test
+    @Throws(JSONException::class)
     fun getDeviceMetadata_returnsPlatformVersion() {
         ReflectionHelpers.setStaticField(VERSION::class.java, "SDK_INT", 123)
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")

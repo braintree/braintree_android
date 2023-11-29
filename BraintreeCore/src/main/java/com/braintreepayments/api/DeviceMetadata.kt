@@ -8,9 +8,11 @@ internal class DeviceMetadata internal constructor(
     private var appName: String? = null,
     private var clientSDKVersion: String? = null,
     private var clientOs: String? = null,
+    private var component: String? = null,
     private var deviceManufacturer: String? = null,
     private var deviceModel: String? = null,
     private var environment: String? = null,
+    private var eventSource: String? = null,
     private var integrationType: String? = null,
     private var isSimulator: Boolean = false,
     private var merchantAppVersion: String? = null,
@@ -26,10 +28,10 @@ internal class DeviceMetadata internal constructor(
             .put(APP_NAME_KEY, appName)
             .put(CLIENT_SDK_VERSION_KEY, clientSDKVersion)
             .put(CLIENT_OS_KEY, clientOs)
-            .put(COMPONENT_KEY, "braintreeclientsdk")
+            .put(COMPONENT_KEY, component)
             .put(DEVICE_MANUFACTURER_KEY, deviceManufacturer)
             .put(DEVICE_MODEL_KEY, deviceModel)
-            .put(EVENT_SOURCE_KEY, "mobile-native")
+            .put(EVENT_SOURCE_KEY, eventSource)
             .put(ENVIRONMENT_KEY, environment)
             .put(INTEGRATION_TYPE_KEY, integrationType)
             .put(IS_SIMULATOR_KEY, isSimulator)
