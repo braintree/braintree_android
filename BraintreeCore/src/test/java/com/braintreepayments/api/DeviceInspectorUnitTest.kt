@@ -31,7 +31,7 @@ class DeviceInspectorUnitTest {
     private lateinit var sut: DeviceInspector
 
     private val btConfiguration =
-        com.braintreepayments.api.Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
+        com.braintreepayments.api.Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
 
     @Before
     @Throws(PackageManager.NameNotFoundException::class)
@@ -221,7 +221,7 @@ class DeviceInspectorUnitTest {
     @Throws(JSONException::class)
     fun getMerchantID_forwardsMerchantODFromConfig() {
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals("integration-merchant-id", metadata.toJSON().getString("merchant_id"))
+        assertEquals("integration_merchant_id", metadata.toJSON().getString("merchant_id"))
     }
 
     @Test

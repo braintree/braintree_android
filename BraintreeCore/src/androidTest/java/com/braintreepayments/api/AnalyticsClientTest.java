@@ -52,6 +52,7 @@ public class AnalyticsClientTest {
         WorkInfo workInfoAfterDelay = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
         assertEquals(workInfoAfterDelay.getState(), WorkInfo.State.SUCCEEDED);
     }
+    // TODO: - Fix integration tests
 
     @Test(timeout = 10000)
     public void sendsCorrectlyFormattedAnalyticsRequestToProd() throws Exception {

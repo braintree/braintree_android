@@ -72,7 +72,7 @@ class BraintreeClientUnitTest {
             .authorization(authorization)
             .build()
 
-        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
+        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
@@ -339,7 +339,7 @@ class BraintreeClientUnitTest {
             .authorization(authorization)
             .build()
 
-        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
+        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
@@ -375,25 +375,6 @@ class BraintreeClientUnitTest {
             .build()
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(Exception("error"))
-            .build()
-
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
-        val sut = BraintreeClient(params)
-        sut.sendAnalyticsEvent("event.started")
-
-        verify { analyticsClient wasNot Called }
-    }
-
-    @Test
-    @Throws(JSONException::class)
-    fun sendAnalyticsEvent_whenAnalyticsNotEnabled_doesNothing() {
-        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ANALYTICS)
-
-        val authorizationLoader = MockkAuthorizationLoaderBuilder()
-            .authorization(authorization)
-            .build()
-        val configurationLoader = MockkConfigurationLoaderBuilder()
-            .configuration(configuration)
             .build()
 
         val params = createDefaultParams(configurationLoader, authorizationLoader)
@@ -639,7 +620,7 @@ class BraintreeClientUnitTest {
     fun reportCrash_reportsCrashViaAnalyticsClient() {
         every { authorizationLoader.authorizationFromCache } returns authorization
 
-        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
+        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()

@@ -45,7 +45,7 @@ class AnalyticsClientUnitTest {
         integration = "sample-integration"
         authorization = fromString(Fixtures.TOKENIZATION_KEY)
         context = ApplicationProvider.getApplicationContext()
-        configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
+        configuration = fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         httpClient = mockk(relaxed = true)
         deviceInspector = mockk(relaxed = true)
         analyticsDatabase = mockk(relaxed = true)
@@ -206,7 +206,7 @@ class AnalyticsClientUnitTest {
         val eventJSON = eventsArray[0] as JSONObject
         assertNotNull("JSON body missing top level `events` key.", eventJSON)
 
-        verifyBatchParams(eventJSON["batch_params"] as JSONObject)
+         verifyBatchParams(eventJSON["batch_params"] as JSONObject)
 
         val eventParams = eventJSON.getJSONArray("event_params")
         assertEquals(2, eventParams.length())
@@ -416,10 +416,10 @@ class AnalyticsClientUnitTest {
         assertEquals("fake-app-name", batchParams["app_name"])
         assertEquals("fake-sdk-version", batchParams["c_sdk_ver"])
         assertEquals("fake-os", batchParams["client_os"])
-        assertEquals("braintreeclientsdk", batchParams["comp"])
+        assertEquals("fake-component", batchParams["comp"])
         assertEquals("fake-device-manufacturer", batchParams["device_manufacturer"])
         assertEquals("fake-mobile-device-model", batchParams["mobile_device_model"])
-        assertEquals("mobile-native", batchParams["event_source"])
+        assertEquals("fake-event-source", batchParams["event_source"])
         assertEquals("fake-environment", batchParams["merchant_sdk_env"])
         assertEquals("fake-integration", batchParams["api_integration_type"])
         assertFalse(batchParams["is_simulator"] as Boolean)
@@ -453,9 +453,11 @@ class AnalyticsClientUnitTest {
             appName = "fake-app-name",
             clientSDKVersion = "fake-sdk-version",
             clientOs = "fake-os",
+            component = "fake-component",
             deviceManufacturer = "fake-device-manufacturer",
             deviceModel = "fake-mobile-device-model",
             environment = "fake-environment",
+            eventSource = "fake-event-source",
             integrationType = "fake-integration",
             isSimulator = false,
             merchantAppVersion = "fake-merchant-app-version",
