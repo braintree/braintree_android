@@ -23,7 +23,7 @@ import org.robolectric.util.ReflectionHelpers
 class DeviceInspectorUnitTest {
 
     private var context: Context = mockk(relaxed = true)
-    private var configuration: Configuration? = mockk(relaxed = true)
+    private var configuration: Configuration = mockk(relaxed = true)
     private var connectivityManager: ConnectivityManager = mockk(relaxed = true)
     private var packageManager: PackageManager = mockk(relaxed = true)
     private var appHelper: AppHelper = mockk(relaxed = true)
