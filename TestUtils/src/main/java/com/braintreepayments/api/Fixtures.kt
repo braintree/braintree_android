@@ -2408,7 +2408,6 @@ object Fixtures {
           },
           "environment": "PRODUCTION",
           "merchantInfo": {
-            "merchantId": "GOOGLE_MERCHANT_ID",
             "merchantName": "GOOGLE_MERCHANT_NAME"
           },
           "transactionInfo": {
@@ -2486,7 +2485,6 @@ object Fixtures {
           },
           "environment": "PRODUCTION",
           "merchantInfo": {
-            "merchantId": "GOOGLE_MERCHANT_ID",
             "merchantName": "GOOGLE_MERCHANT_NAME"
           },
           "transactionInfo": {

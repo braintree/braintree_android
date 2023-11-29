@@ -10,8 +10,7 @@ import com.cardinalcommerce.shared.userinterfaces.TextBoxCustomization;
 /**
  * Text box customization options for 3D Secure 2 flows.
  */
-public class ThreeDSecureV2TextBoxCustomization extends ThreeDSecureV2BaseCustomization
-        implements Parcelable {
+public class ThreeDSecureV2TextBoxCustomization implements Parcelable {
 
     private final TextBoxCustomization cardinalTextBoxCustomization = new TextBoxCustomization();
 

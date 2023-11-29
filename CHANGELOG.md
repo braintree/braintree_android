@@ -9,6 +9,7 @@
     * Remove `BraintreeClient` public constructors
     * Update payment method constructor parameters from `braintreeClient` to `context` and 
       `authorization`
+    * Remove `BraintreeSharedPreferencesException`
   * UnionPay
     * Remove `union-pay` module
       * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover
@@ -37,6 +38,7 @@
     * Change `GooglePayClient#requestPayment` parameters and rename to 
       `GooglePayClient#createPaymentAuthRequest`
     * Add `GooglePayClient#tokenize` 
+    * Remove `merchantId` from `GooglePayRequest`
   * ThreeDSecure
     * Remove `ThreeDSecureListener`
     * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`, and `ThreeDSecureLancherCallback`
@@ -50,6 +52,7 @@
     * Rename `ThreeDSecureResult#tokenizedCard` to `ThreeDSecureResult#threeDSecureNonce`
     * Remove `ThreeDSecureV1UICustomization`
     * Remove `versionRequesed` from `ThreeDSecureRequest` as version 1 is no longer supported
+    * Remove `ThreeDSecureV2BaseCustomization`
   * PayPal
     * Remove `PayPalListener`
     * Add `PayPalLauncher`, `PayPalPaymentAuthRequest`, `PayPalPaymentAuthResult`, 
