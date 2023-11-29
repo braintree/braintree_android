@@ -60,7 +60,6 @@ buildscript {
         classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.7.5'
         classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.9.10'
         classpath 'org.jetbrains.dokka:android-documentation-plugin:1.9.10'
-        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.7.5'
     }
 }
 
