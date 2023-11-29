@@ -129,8 +129,7 @@ class DeviceInspector @VisibleForTesting internal constructor(
             )
         internal fun getDropInVersion(): String? {
             try {
-                val dropInBuildConfigClass =
-                    Class.forName("com.braintreepayments.api.dropin.BuildConfig")
+                val dropInBuildConfigClass = Class.forName("com.braintreepayments.api.dropin.BuildConfig")
                 val versionNameField = dropInBuildConfigClass.getField("VERSION_NAME")
                 versionNameField.isAccessible = true
                 return versionNameField[String::class] as String?
