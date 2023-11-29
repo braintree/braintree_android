@@ -432,7 +432,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         getConfiguration { configuration, _ ->
             analyticsClient.reportCrash(
                 applicationContext,
-                configuration ?: null,
+                configuration,
                 sessionId,
                 integrationType,
                 authorization
