@@ -10,8 +10,7 @@ import com.cardinalcommerce.shared.userinterfaces.ToolbarCustomization;
 /**
  * Toolbar customization options for 3D Secure 2 flows.
  */
-public class ThreeDSecureV2ToolbarCustomization extends ThreeDSecureV2BaseCustomization
-        implements Parcelable {
+public class ThreeDSecureV2ToolbarCustomization implements Parcelable {
 
     private final ToolbarCustomization cardinalToolbarCustomization = new ToolbarCustomization();
 
