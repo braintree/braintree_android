@@ -14,6 +14,7 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.mock
 import org.robolectric.RobolectricTestRunner
 
@@ -628,7 +629,19 @@ class BraintreeClientUnitTest {
         val sut = BraintreeClient(params)
         sut.reportCrash()
 
-        // TODO: - How to make this test wait for the getConfiguration() callback to load first
+        val authCallbackSlot = slot<AuthorizationCallback>()
+        verify {
+            authorizationLoader.loadAuthorization(capture(authCallbackSlot))
+        }
+        authCallbackSlot.captured.onAuthorizationResult(authorization, null)
+
+        val callbackSlot = slot<ConfigurationLoaderCallback>()
+        verify {
+            configurationLoader.loadConfiguration(authorization, capture(callbackSlot))
+        }
+
+        callbackSlot.captured.onResult(configuration, null)
+
         verify {
             analyticsClient.reportCrash(
                 applicationContext,
