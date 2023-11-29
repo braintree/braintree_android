@@ -33,7 +33,7 @@ class DeviceInspector @VisibleForTesting internal constructor(
             appName = getAppName(context),
             clientSDKVersion = BuildConfig.VERSION_NAME,
             clientOs = getAPIVersion(),
-            component = "braintreeclientsdk2",
+            component = "braintreeclientsdk",
             deviceManufacturer = Build.MANUFACTURER,
             deviceModel = Build.MODEL,
             environment = configuration?.environment,
