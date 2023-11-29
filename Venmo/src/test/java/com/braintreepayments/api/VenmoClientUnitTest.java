@@ -481,7 +481,7 @@ public class VenmoClientUnitTest {
     @Test
     public void isReadyToPay_whenVenmoDisabled_callbackFalse() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS))
+                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT))
                 .build();
 
         VenmoClient sut =
