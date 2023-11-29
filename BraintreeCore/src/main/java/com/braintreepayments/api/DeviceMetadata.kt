@@ -11,6 +11,7 @@ internal class DeviceMetadata internal constructor(
     private var component: String? = null,
     private var deviceManufacturer: String? = null,
     private var deviceModel: String? = null,
+    private var dropInSDKVersion: String? = null,
     private var environment: String? = null,
     private var eventSource: String? = null,
     private var integrationType: String? = null,
@@ -31,6 +32,7 @@ internal class DeviceMetadata internal constructor(
             .put(COMPONENT_KEY, component)
             .put(DEVICE_MANUFACTURER_KEY, deviceManufacturer)
             .put(DEVICE_MODEL_KEY, deviceModel)
+            .put(DROP_IN_SDK_VERSION, dropInSDKVersion)
             .put(EVENT_SOURCE_KEY, eventSource)
             .put(ENVIRONMENT_KEY, environment)
             .put(INTEGRATION_TYPE_KEY, integrationType)
@@ -49,6 +51,7 @@ internal class DeviceMetadata internal constructor(
         private const val COMPONENT_KEY = "comp"
         private const val DEVICE_MANUFACTURER_KEY = "device_manufacturer"
         private const val DEVICE_MODEL_KEY = "mobile_device_model"
+        private const val DROP_IN_SDK_VERSION = "drop_in_sdk_ver"
         private const val EVENT_SOURCE_KEY = "event_source"
         private const val ENVIRONMENT_KEY = "merchant_sdk_env"
         private const val INTEGRATION_TYPE_KEY = "api_integration_type"

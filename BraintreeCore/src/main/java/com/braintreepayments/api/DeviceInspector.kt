@@ -36,6 +36,7 @@ class DeviceInspector @VisibleForTesting internal constructor(
             component = "braintreeclientsdk",
             deviceManufacturer = Build.MANUFACTURER,
             deviceModel = Build.MODEL,
+            dropInSDKVersion = dropInVersion,
             environment = configuration?.environment,
             eventSource = "mobile-native",
             integrationType = integration,
@@ -103,6 +104,15 @@ class DeviceInspector @VisibleForTesting internal constructor(
         return "Android API $sdkInt"
     }
 
+    /**
+     * Gets the current Drop-in version or null.
+     *
+     * @return string representation of the current Drop-in version, or null if
+     * Drop-in is unavailable
+     */
+    private val dropInVersion
+        get() = getDropInVersion()
+
     companion object {
         private const val PAYPAL_APP_PACKAGE = "com.paypal.android.p2pmobile"
         private const val VENMO_APP_PACKAGE = "com.venmo"
@@ -117,5 +127,18 @@ class DeviceInspector @VisibleForTesting internal constructor(
                     "$VENMO_APP_PACKAGE.$VENMO_APP_SWITCH_ACTIVITY"
                 )
             )
+        internal fun getDropInVersion(): String? {
+            try {
+                val dropInBuildConfigClass =
+                    Class.forName("com.braintreepayments.api.dropin.BuildConfig")
+                val versionNameField = dropInBuildConfigClass.getField("VERSION_NAME")
+                versionNameField.isAccessible = true
+                return versionNameField[String::class] as String?
+            } catch (ignored: ClassNotFoundException) {
+            } catch (ignored: NoSuchFieldException) {
+            } catch (ignored: IllegalAccessException) {
+            }
+            return null
+        }
     }
 }

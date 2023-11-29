@@ -212,6 +212,16 @@ class DeviceInspectorUnitTest {
 
     @Test
     @Throws(JSONException::class)
+    fun getDeviceMetadata_forwardsDropInVersionFromClassHelper() {
+        mockkObject(DeviceInspector) {
+            every { DeviceInspector.getDropInVersion() } returns "fake-drop-in-version"
+            val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
+            assertEquals("fake-drop-in-version", metadata.toJSON().getString("drop_in_sdk_ver"))
+        }
+    }
+
+    @Test
+    @Throws(JSONException::class)
     fun getSDKEnvironment_forwardsEnvironmentFromConfig() {
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
         assertEquals("test", metadata.toJSON().getString("merchant_sdk_env"))
@@ -219,7 +229,7 @@ class DeviceInspectorUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun getMerchantID_forwardsMerchantODFromConfig() {
+    fun getMerchantID_forwardsMerchantIdFromConfig() {
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
         assertEquals("integration_merchant_id", metadata.toJSON().getString("merchant_id"))
     }
