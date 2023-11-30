@@ -12,7 +12,7 @@ buildscript {
     ext.versions = [
             "kotlin"         : "1.9.10",
             "androidxTest"   : "1.5.0",
-            "room"           : "2.6.0",
+            "room"           : "2.6.1",
             "playServices"   : "19.2.1",
             "javaSourceCompatibility": sdkTargetJavaVersion,
             "javaTargetCompatibility": sdkTargetJavaVersion,
