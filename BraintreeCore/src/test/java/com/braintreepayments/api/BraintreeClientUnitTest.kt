@@ -29,6 +29,7 @@ class BraintreeClientUnitTest {
     private lateinit var analyticsClient: AnalyticsClient
     private lateinit var manifestValidator: ManifestValidator
     private lateinit var browserSwitchClient: BrowserSwitchClient
+    private lateinit var expectedAuthException: BraintreeException
 
     @Before
     fun beforeEach() {
@@ -43,6 +44,11 @@ class BraintreeClientUnitTest {
         analyticsClient = mockk(relaxed = true)
         manifestValidator = mockk(relaxed = true)
         browserSwitchClient = mockk(relaxed = true)
+
+        val clientSDKSetupURL =
+            "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization"
+        val message = "Valid authorization required. See $clientSDKSetupURL for more info."
+        expectedAuthException = BraintreeException(message)
 
         every { context.applicationContext } returns applicationContext
         WorkManagerTestInitHelper.initializeTestWorkManager(context)
@@ -97,6 +103,19 @@ class BraintreeClientUnitTest {
     }
 
     @Test
+    fun configuration_whenInvalidAuth_callsBackAuthError() {
+        val sut = BraintreeClient(context, "invalid-auth-string")
+
+        val callback = mockk<ConfigurationCallback>(relaxed = true)
+        sut.getConfiguration(callback)
+
+        val authErrorSlot = slot<BraintreeException>()
+        verify { callback.onResult(isNull(), capture(authErrorSlot)) }
+
+        assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
+    }
+
+    @Test
     fun sendGET_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
         val configuration = mockk<Configuration>(relaxed = true)
         val configurationLoader = MockkConfigurationLoaderBuilder()
@@ -132,6 +151,19 @@ class BraintreeClientUnitTest {
         sut.sendGET("sample-url", httpResponseCallback)
 
         verify { httpResponseCallback.onResult(null, configError) }
+    }
+
+    @Test
+    fun sendGET_whenInvalidAuth_callsBackAuthError() {
+        val sut = BraintreeClient(context, "invalid-auth-string")
+
+        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
+        sut.sendGET("sample-url", httpResponseCallback)
+
+        val authErrorSlot = slot<BraintreeException>()
+        verify { httpResponseCallback.onResult(isNull(), capture(authErrorSlot)) }
+
+        assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
     }
 
     @Test
@@ -174,6 +206,19 @@ class BraintreeClientUnitTest {
     }
 
     @Test
+    fun sendPOST_whenInvalidAuth_callsBackAuthError() {
+        val sut = BraintreeClient(context, "invalid-auth-string")
+
+        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
+        sut.sendPOST("sample-url", "{}", httpResponseCallback)
+
+        val authErrorSlot = slot<BraintreeException>()
+        verify { httpResponseCallback.onResult(isNull(), capture(authErrorSlot)) }
+
+        assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
+    }
+
+    @Test
     fun sendGraphQLPOST_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
         val configuration = mockk<Configuration>(relaxed = true)
         val configurationLoader = MockkConfigurationLoaderBuilder()
@@ -208,6 +253,19 @@ class BraintreeClientUnitTest {
 
         sut.sendGraphQLPOST("{}", httpResponseCallback)
         verify { httpResponseCallback.onResult(null, exception) }
+    }
+
+    @Test
+    fun sendGraphQLPOST_whenInvalidAuth_callsBackAuthError() {
+        val sut = BraintreeClient(context, "invalid-auth-string")
+
+        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
+        sut.sendGraphQLPOST("{}", httpResponseCallback)
+
+        val authErrorSlot = slot<BraintreeException>()
+        verify { httpResponseCallback.onResult(isNull(), capture(authErrorSlot)) }
+
+        assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
     }
 
     @Test

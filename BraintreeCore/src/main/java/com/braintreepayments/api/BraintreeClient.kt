@@ -113,6 +113,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param callback [ConfigurationCallback]
      */
     open fun getConfiguration(callback: ConfigurationCallback) {
+        if (authorization is InvalidAuthorization) {
+            callback.onResult(null, createAuthError())
+            return
+        }
         configurationLoader.loadConfiguration(authorization) { configuration, configError ->
             if (configuration != null) {
                 callback.onResult(configuration, null)
@@ -153,6 +157,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendGET(url: String, responseCallback: HttpResponseCallback) {
+        if (authorization is InvalidAuthorization) {
+            responseCallback.onResult(null, createAuthError())
+            return
+        }
         getConfiguration { configuration, configError ->
             if (configuration != null) {
                 httpClient.get(url, configuration, authorization, responseCallback)
@@ -167,6 +175,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendPOST(url: String, data: String, responseCallback: HttpResponseCallback) {
+        if (authorization is InvalidAuthorization) {
+            responseCallback.onResult(null, createAuthError())
+            return
+        }
         getConfiguration { configuration, configError ->
             if (configuration != null) {
                 httpClient.post(
@@ -187,6 +199,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendGraphQLPOST(payload: String?, responseCallback: HttpResponseCallback) {
+        if (authorization is InvalidAuthorization) {
+            responseCallback.onResult(null, createAuthError())
+            return
+        }
         getConfiguration { configuration, configError ->
             if (configuration != null) {
                 graphQLClient.post(
@@ -353,5 +369,12 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     open fun launchesBrowserSwitchAsNewTask(launchesBrowserSwitchAsNewTask: Boolean) {
         this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask
+    }
+
+    private fun createAuthError() : BraintreeException {
+        val clientSDKSetupURL =
+            "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization"
+        val message = "Valid authorization required. See $clientSDKSetupURL for more info."
+        return BraintreeException(message)
     }
 }
