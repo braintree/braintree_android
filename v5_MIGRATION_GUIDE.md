@@ -6,6 +6,7 @@ basics for updating your Braintree integration from v4 to v5.
 ## Table of Contents
 
 1. [Android API](#android-api)
+1. [Braintree Client](#braintree-client)
 1. [Data Collector](#data-collector)
 1. [Union Pay](#union-pay)
 1. [Venmo](#venmo)
@@ -19,6 +20,16 @@ basics for updating your Braintree integration from v4 to v5.
 
 The minimum supported Android API level for v5 of this SDK has increased to 23.
 
+## Braintree Client
+
+You no longer need to instantiate a `BraintreeClient` in order to instantiate the payment method 
+clients. Instead, construct the payment method clients with `context` and `authorization` 
+parameters directly. 
+
+```kotlin
+val cardClient = CardClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+```
+
 ## Data Collector
 
 The `paypal-data-collector` module has been removed and replaced by the `data-collector` module.
@@ -31,7 +42,7 @@ merchantId, callback)` is now `DataCollector#collectDeviceData(context, riskCorr
 callback)`, where `riskCorrelationId` is an optional client metadata ID.
 
 ```kotlin
-val dataCollector = DataCollector(braintreeClient)
+val dataCollector = DataCollector(context, authorization)
 dataCollector.collectDeviceData(context) { deviceData, error ->
     // send deviceData to your server
 }
@@ -63,7 +74,7 @@ need to be instantiated in `OnCreate`.
 class MyActivity : FragmentActivity() {
     
 +   private lateinit var venmoLauncher: VenmoLauncher
-    private lateinit var braintreeClient: BraintreeClient
+-   private lateinit var braintreeClient: BraintreeClient
     private lateinit var venmoClient: VenmoClient
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,9 +92,9 @@ class MyActivity : FragmentActivity() {
     }
     
     fun initializeClients() {
-        braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+-       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       venmoClient = VenmoClient(this, braintreeClient)
-+       venmoClient = VenmoClient(braintreeClient)
++       venmoClient = VenmoClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       venmoClient.setListener(this)
     }
     
@@ -126,7 +137,7 @@ do not need to be instantiated in `OnCreate`.
 class MyActivity : FragmentActivity() {
     
 +   private lateinit var googlePayLauncher: GooglePayLauncher
-    private lateinit var braintreeClient: BraintreeClient
+-   private lateinit var braintreeClient: BraintreeClient
     private lateinit var googlePayClient: GooglePayClient
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -141,9 +152,9 @@ class MyActivity : FragmentActivity() {
     }
     
     fun initializeClients() {
-        braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+-       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       goolePayClient = GooglePayClient(this, braintreeClient)
-+       googlePayClient = GooglePayClient(braintreeClient)
++       googlePayClient = GooglePayClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       googlePayClient.setListener(this)
     }
     
@@ -184,7 +195,7 @@ and `ThreeDSecureV1UICustomization` has been removed.
 class MyActivity : FragmentActivity() {
     
 +   private lateinit var threeDSecureLauncher: ThreeDSecureLauncher
-    private lateinit var braintreeClient: BraintreeClient
+-    private lateinit var braintreeClient: BraintreeClient
     private lateinit var threeDSecureClient: VenmoClient
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -199,9 +210,9 @@ class MyActivity : FragmentActivity() {
     }
     
     fun initializeClients() {
-        braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+-       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       threeDSecureClient = ThreeDSecureClient(this, braintreeClient)
-+       threeDSecureClient = ThreeDSeucreClient(braintreeClient)
++       threeDSecureClient = ThreeDSecureClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       threeDSecureClient.setListener(this)
     }
     
@@ -246,7 +257,7 @@ do not need to be instantiated in `OnCreate`.
 class MyActivity : FragmentActivity() {
 
 +   private lateinit var payPalLauncher: payPalLauncher
-    private lateinit var braintreeClient: BraintreeClient
+-   private lateinit var braintreeClient: BraintreeClient
     private lateinit var payPalClient: PayPalClient
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -272,9 +283,9 @@ class MyActivity : FragmentActivity() {
     
     
     fun initializeClients() {
-        braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+-       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       payPalClient = PayPalClient(this, braintreeClient)
-+       payPalClient = PayPalClient(braintreeClient)
++       payPalClient = PayPalClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       payPalClient.setListener(this)
     }
     
@@ -315,7 +326,7 @@ do not need to be instantiated in `OnCreate`.
 class MyActivity : FragmentActivity() {
 
 +   private lateinit var localPaymentLauncher: localPaymentLauncher
-    private lateinit var braintreeClient: BraintreeClient
+-   private lateinit var braintreeClient: BraintreeClient
     private lateinit var localPaymentClient: LocalPaymentClient
 
     @override fun onCreate(savedInstanceState: Bundle?) {
@@ -342,9 +353,9 @@ class MyActivity : FragmentActivity() {
 
 
     fun initializeClients() {
-        braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+-       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       localPaymentClient = LocalPaymentClient(this, braintreeClient)
-+       localPaymentClient = LocalPaymentClient(braintreeClient)
++       localPaymentClient = LocalPaymentClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       localPaymentClient.setListener(this)
     }
 
@@ -384,7 +395,7 @@ do not need to be instantiated in `OnCreate`.
 class MyActivity : FragmentActivity() {
 
 +   private lateinit var sepaDirectDebitLauncher: SEPADirectDebitLAuncher
-    private lateinit var braintreeClient: BraintreeClient
+-   private lateinit var braintreeClient: BraintreeClient
     private lateinit var sepaDirectDebitClient: SEPADirectDebitClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -410,9 +421,9 @@ class MyActivity : FragmentActivity() {
     }
 
     fun initializeClients() {
-        braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+-        braintreeClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       sepaDirectDebitClient = SEPADirectDebitClient(this, braintreeClient)
-+       sepaDirectDebitClient = SEPADirectDebitClient(braintreeClient)
++       sepaDirectDebitClient = sepaDirectDebitClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       sepaDirectDebitClient.setListener(this)
     }
 

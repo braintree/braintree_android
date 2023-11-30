@@ -12,8 +12,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.GooglePayCapabilities;
 import com.braintreepayments.api.GooglePayClient;
 import com.braintreepayments.api.GooglePayLauncher;
 import com.braintreepayments.api.GooglePayRequest;
@@ -25,7 +23,6 @@ import com.google.android.gms.wallet.WalletConstants;
 public class GooglePayFragment extends BaseFragment {
 
     private ImageButton googlePayButton;
-    private BraintreeClient braintreeClient;
     private GooglePayClient googlePayClient;
     private GooglePayLauncher googlePayLauncher;
 
@@ -38,8 +35,7 @@ public class GooglePayFragment extends BaseFragment {
         googlePayButton = view.findViewById(R.id.google_pay_button);
         googlePayButton.setOnClickListener(this::launchGooglePay);
 
-        braintreeClient = getBraintreeClient();
-        googlePayClient = new GooglePayClient(braintreeClient);
+        googlePayClient = new GooglePayClient(requireContext(), super.getAuthStringArg());
         googlePayLauncher = new GooglePayLauncher(this,
                 paymentAuthResult -> googlePayClient.tokenize(paymentAuthResult,
                         (paymentMethodNonce, error) -> {
@@ -57,27 +53,13 @@ public class GooglePayFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
 
-        braintreeClient.getConfiguration((configuration, error) -> {
-            if (configuration == null) {
-                return;
-            }
-
-            if (GooglePayCapabilities.isGooglePayEnabled(requireActivity(), configuration)) {
-
-                googlePayClient.isReadyToPay(requireActivity(), (isReadyToPay, e) -> {
-                    if (isReadyToPay) {
-                        googlePayButton.setVisibility(View.VISIBLE);
-                    } else {
-                        showDialog(
-                                "Google Payments are not available. The following issues could be the cause:\n\n" +
-                                        "No user is logged in to the device.\n\n" +
-                                        "Google Play Services is missing or out of date.");
-                    }
-                });
+        googlePayClient.isReadyToPay(requireActivity(), (isReadyToPay, e) -> {
+            if (isReadyToPay) {
+                googlePayButton.setVisibility(View.VISIBLE);
             } else {
                 showDialog(
                         "Google Payments are not available. The following issues could be the cause:\n\n" +
-                                "Google Payments are not enabled for the current merchant.\n\n" +
+                                "No user is logged in to the device.\n\n" +
                                 "Google Play Services is missing or out of date.");
             }
         });

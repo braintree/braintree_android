@@ -11,12 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.SamsungPayClient;
 import com.braintreepayments.api.SamsungPayError;
 import com.braintreepayments.api.SamsungPayException;
-import com.braintreepayments.api.SamsungPayNonce;
 import com.braintreepayments.api.SamsungPayListener;
+import com.braintreepayments.api.SamsungPayNonce;
 import com.samsung.android.sdk.samsungpay.v2.SpaySdk;
 import com.samsung.android.sdk.samsungpay.v2.payment.CardInfo;
 import com.samsung.android.sdk.samsungpay.v2.payment.CustomSheetPaymentInfo;
@@ -44,8 +43,7 @@ public class SamsungPayFragment extends BaseFragment implements SamsungPayListen
     @Override
     public void onResume() {
         super.onResume();
-        BraintreeClient braintreeClient = getBraintreeClient();
-        samsungPayClient = new SamsungPayClient(braintreeClient);
+        samsungPayClient = new SamsungPayClient(requireContext(), super.getAuthStringArg());
         setupSamsungPayButton();
     }
 

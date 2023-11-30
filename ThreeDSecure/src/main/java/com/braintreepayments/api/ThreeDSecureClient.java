@@ -10,6 +10,7 @@ import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 /**
  * 3D Secure is a protocol that enables cardholders and issuers to add a layer of security to
  * e-commerce transactions via password entry at checkout.
@@ -26,11 +27,17 @@ public class ThreeDSecureClient {
     private final ThreeDSecureAPI api;
 
     /**
-     * Create a new instance of {@link ThreeDSecureClient} using a {@link BraintreeClient}.
+     * Initializes a new {@link ThreeDSecureClient} instance
      *
-     * @param braintreeClient a {@link BraintreeClient}
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
      */
-    public ThreeDSecureClient(@NonNull BraintreeClient braintreeClient) {
+    public ThreeDSecureClient(@NonNull Context context, @NonNull String authorization) {
+        this(new BraintreeClient(context, authorization));
+    }
+
+    @VisibleForTesting
+    ThreeDSecureClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new CardinalClient(),
                 new ThreeDSecureAPI(braintreeClient));
     }

@@ -28,11 +28,17 @@ public class VenmoClient {
     }
 
     /**
-     * Create a new instance of {@link VenmoClient} using a {@link BraintreeClient}.
+     * Initializes a new {@link VenmoClient} instance
      *
-     * @param braintreeClient a {@link BraintreeClient}
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
      */
-    public VenmoClient(@NonNull BraintreeClient braintreeClient) {
+    public VenmoClient(@NonNull Context context, @NonNull String authorization) {
+        this(new BraintreeClient(context, authorization));
+    }
+
+    @VisibleForTesting
+    VenmoClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new ApiClient(braintreeClient));
     }
 

@@ -20,15 +20,15 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.braintreepayments.api.BraintreeClient;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class DemoActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, ActionBar.OnNavigationListener {
 
-    private BraintreeClient braintreeClient;
     private AppBarConfiguration appBarConfiguration;
+
+    private DemoClientTokenProvider clientTokenProvider;
 
     private SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener;
 
@@ -37,6 +37,7 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_demo);
+        clientTokenProvider = new DemoClientTokenProvider(this);
 
         setupActionBar();
         setProgressBarIndeterminateVisibility(true);
@@ -44,18 +45,8 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         registerSharedPreferencesListener();
     }
 
-    public BraintreeClient getBraintreeClient() {
-        // lazily instantiate braintree client in case the demo has been reset
-        if (braintreeClient == null) {
-            if (Settings.useTokenizationKey(this)) {
-                String tokenizationKey = Settings.getTokenizationKey(this);
-                braintreeClient = new BraintreeClient(this, tokenizationKey);
-            } else {
-                braintreeClient =
-                    BraintreeClientFactory.createBraintreeClientWithAuthorizationProvider(this);
-            }
-        }
-        return braintreeClient;
+    public void fetchAuthorization(BraintreeAuthorizationCallback callback) {
+        clientTokenProvider.getClientToken(callback);
     }
 
     @Override
@@ -104,7 +95,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
 
     private void performReset() {
         setProgressBarIndeterminateVisibility(true);
-        braintreeClient = null;
     }
 
     public void showDialog(String message) {
