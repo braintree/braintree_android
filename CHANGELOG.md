@@ -2,6 +2,7 @@
 
 ## unreleased
 
+* Move from Braintree to PayPal analytics service (FPTI)
 * Breaking Changes
   * All Modules
     * Bump `minSdkVersion` to API 23
