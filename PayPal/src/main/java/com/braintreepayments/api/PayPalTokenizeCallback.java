@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * Callback for receiving result of
@@ -13,5 +12,5 @@ public interface PayPalTokenizeCallback {
      *
      * @param payPalResult a success, failure, or cancel result from the PayPal flow
      */
-    void onResult(@NonNull PayPalResult payPalResult);
+    void onPayPalResult(@NonNull PayPalResult payPalResult);
 }

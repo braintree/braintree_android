@@ -293,7 +293,7 @@ public class PayPalClientUnitTest {
         sut.tokenize(null, payPalTokenizeCallback);
 
         ArgumentCaptor<PayPalResult> captor = ArgumentCaptor.forClass(PayPalResult.class);
-        verify(payPalTokenizeCallback).onResult(captor.capture());
+        verify(payPalTokenizeCallback).onPayPalResult(captor.capture());
 
         PayPalResult result = captor.getValue();
         assertTrue(result instanceof PayPalResult.Failure);
@@ -314,7 +314,7 @@ public class PayPalClientUnitTest {
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback);
 
         ArgumentCaptor<PayPalResult> captor = ArgumentCaptor.forClass(PayPalResult.class);
-        verify(payPalTokenizeCallback).onResult(captor.capture());
+        verify(payPalTokenizeCallback).onPayPalResult(captor.capture());
 
         PayPalResult result = captor.getValue();
         assertTrue(result instanceof PayPalResult.Failure);
@@ -333,7 +333,7 @@ public class PayPalClientUnitTest {
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback);
 
         ArgumentCaptor<PayPalResult> captor = ArgumentCaptor.forClass(PayPalResult.class);
-        verify(payPalTokenizeCallback).onResult(captor.capture());
+        verify(payPalTokenizeCallback).onPayPalResult(captor.capture());
 
         PayPalResult result = captor.getValue();
         assertTrue(result instanceof PayPalResult.Failure);
@@ -555,7 +555,7 @@ public class PayPalClientUnitTest {
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback);
 
         ArgumentCaptor<PayPalResult> captor = ArgumentCaptor.forClass(PayPalResult.class);
-        verify(payPalTokenizeCallback).onResult(captor.capture());
+        verify(payPalTokenizeCallback).onPayPalResult(captor.capture());
 
         PayPalResult result = captor.getValue();
         assertTrue(result instanceof PayPalResult.Cancel);
@@ -580,7 +580,7 @@ public class PayPalClientUnitTest {
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback);
 
         ArgumentCaptor<PayPalResult> captor = ArgumentCaptor.forClass(PayPalResult.class);
-        verify(payPalTokenizeCallback).onResult(captor.capture());
+        verify(payPalTokenizeCallback).onPayPalResult(captor.capture());
 
         PayPalResult result = captor.getValue();
         assertTrue(result instanceof PayPalResult.Cancel);
@@ -620,7 +620,7 @@ public class PayPalClientUnitTest {
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback);
 
         ArgumentCaptor<PayPalResult> captor = ArgumentCaptor.forClass(PayPalResult.class);
-        verify(payPalTokenizeCallback).onResult(captor.capture());
+        verify(payPalTokenizeCallback).onPayPalResult(captor.capture());
 
         PayPalResult result = captor.getValue();
         assertTrue(result instanceof PayPalResult.Success);
