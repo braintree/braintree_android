@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 /**
@@ -11,7 +10,6 @@ public interface PayPalPaymentAuthCallback {
 
     /**
      * @param paymentAuthRequest a request used to launch the PayPal web authentication flow
-     * @param error          an exception that occurred while initiating a PayPal transaction
      */
-    void onResult(PayPalPaymentAuthRequestParams paymentAuthRequest, @Nullable Exception error);
+    void onResult(PayPalPaymentAuthRequest paymentAuthRequest);
 }
