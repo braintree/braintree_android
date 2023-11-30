@@ -105,7 +105,6 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         workManager.enqueueUniqueWork(
             WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
         )
-
         return analyticsWorkRequest.id
     }
 
