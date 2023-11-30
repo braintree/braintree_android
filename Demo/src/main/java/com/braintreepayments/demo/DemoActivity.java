@@ -21,14 +21,12 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.braintreepayments.api.BraintreeClient;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class DemoActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, ActionBar.OnNavigationListener {
 
-    private BraintreeClient braintreeClient;
     private AppBarConfiguration appBarConfiguration;
 
     private DemoClientTokenProvider clientTokenProvider;
@@ -46,11 +44,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         setProgressBarIndeterminateVisibility(true);
 
         registerSharedPreferencesListener();
-    }
-
-    public BraintreeClient getBraintreeClient() {
-        // lazily instantiate braintree client in case the demo has been reset
-        return null;
     }
 
     public void fetchAuthorization(BraintreeAuthorizationCallback callback) {
@@ -103,7 +96,6 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
 
     private void performReset() {
         setProgressBarIndeterminateVisibility(true);
-        braintreeClient = null;
     }
 
     public void showDialog(String message) {

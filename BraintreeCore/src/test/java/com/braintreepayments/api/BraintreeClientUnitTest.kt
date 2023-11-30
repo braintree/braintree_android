@@ -67,7 +67,7 @@ class BraintreeClientUnitTest {
     @Test
     @Throws(JSONException::class)
     fun configuration_onAuthorizationAndConfigurationLoadSuccess_forwardsResult() {
-        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
+        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
@@ -213,7 +213,7 @@ class BraintreeClientUnitTest {
     @Test
     @Throws(JSONException::class)
     fun sendAnalyticsEvent_sendsEventToAnalyticsClient() {
-        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
+        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
@@ -233,22 +233,6 @@ class BraintreeClientUnitTest {
     fun sendAnalyticsEvent_whenConfigurationLoadFails_doesNothing() {
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(Exception("error"))
-            .build()
-
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
-        sut.sendAnalyticsEvent("event.started")
-
-        verify { analyticsClient wasNot Called }
-    }
-
-    @Test
-    @Throws(JSONException::class)
-    fun sendAnalyticsEvent_whenAnalyticsNotEnabled_doesNothing() {
-        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ANALYTICS)
-
-        val configurationLoader = MockkConfigurationLoaderBuilder()
-            .configuration(configuration)
             .build()
 
         val params = createDefaultParams(configurationLoader)
@@ -469,7 +453,7 @@ class BraintreeClientUnitTest {
     @Test
     @Throws(JSONException::class)
     fun reportCrash_reportsCrashViaAnalyticsClient() {
-        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
+        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
@@ -477,9 +461,17 @@ class BraintreeClientUnitTest {
         val sut = BraintreeClient(params)
         sut.reportCrash()
 
+        val callbackSlot = slot<ConfigurationLoaderCallback>()
+        verify {
+            configurationLoader.loadConfiguration(authorization, capture(callbackSlot))
+        }
+
+        callbackSlot.captured.onResult(configuration, null)
+
         verify {
             analyticsClient.reportCrash(
                 applicationContext,
+                any(),
                 "session-id",
                 IntegrationType.CUSTOM,
                 authorization
