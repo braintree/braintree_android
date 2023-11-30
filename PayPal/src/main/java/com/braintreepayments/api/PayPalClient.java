@@ -61,9 +61,9 @@ public class PayPalClient {
     }
 
     /**
-     * Starts the PayPal payment flow by creating a {@link PayPalPaymentAuthRequest} to be used to
+     * Starts the PayPal payment flow by creating a {@link PayPalPaymentAuthRequestParams} to be used to
      * launch the PayPal web authentication flow in
-     * {@link PayPalLauncher#launch(FragmentActivity, PayPalPaymentAuthRequest)}.
+     * {@link PayPalLauncher#launch(FragmentActivity, PayPalPaymentAuthRequestParams)}.
      *
      * @param activity      Android FragmentActivity
      * @param payPalRequest a {@link PayPalRequest} used to customize the request.
@@ -161,7 +161,7 @@ public class PayPalClient {
     }
 
     private BrowserSwitchOptions buildBrowserSwitchOptions(
-            PayPalPaymentAuthRequest paymentAuthRequest)
+            PayPalPaymentAuthRequestParams paymentAuthRequest)
             throws JSONException {
         JSONObject metadata = new JSONObject();
         metadata.put("approval-url", paymentAuthRequest.getApprovalUrl());

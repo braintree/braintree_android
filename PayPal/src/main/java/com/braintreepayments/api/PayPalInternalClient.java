@@ -61,8 +61,8 @@ class PayPalInternalClient {
                                 (responseBody, httpError) -> {
                                     if (responseBody != null) {
                                         try {
-                                            PayPalPaymentAuthRequest paymentAuthRequest =
-                                                    new PayPalPaymentAuthRequest(payPalRequest)
+                                            PayPalPaymentAuthRequestParams paymentAuthRequest =
+                                                    new PayPalPaymentAuthRequestParams(payPalRequest)
                                                             .successUrl(successUrl);
 
                                             PayPalPaymentResource paypalPaymentResource =

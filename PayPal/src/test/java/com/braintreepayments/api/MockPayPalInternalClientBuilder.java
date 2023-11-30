@@ -12,11 +12,11 @@ import org.mockito.stubbing.Answer;
 public class MockPayPalInternalClientBuilder {
 
     private Exception error;
-    private PayPalPaymentAuthRequest successResponse;
+    private PayPalPaymentAuthRequestParams successResponse;
     private PayPalAccountNonce tokenizeSuccess;
 
     public MockPayPalInternalClientBuilder sendRequestSuccess(
-            PayPalPaymentAuthRequest successResponse) {
+            PayPalPaymentAuthRequestParams successResponse) {
         this.successResponse = successResponse;
         return this;
     }

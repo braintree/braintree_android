@@ -52,7 +52,7 @@ public class PayPalClientUnitTest {
         PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest();
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
 
-        PayPalPaymentAuthRequest paymentAuthRequest = new PayPalPaymentAuthRequest(payPalVaultRequest)
+        PayPalPaymentAuthRequestParams paymentAuthRequest = new PayPalPaymentAuthRequestParams(payPalVaultRequest)
                 .approvalUrl("https://example.com/approval/url")
                 .successUrl("https://example.com/success/url")
                 .clientMetadataId("sample-client-metadata-id");
@@ -68,11 +68,11 @@ public class PayPalClientUnitTest {
                 new PayPalClient(braintreeClient, payPalInternalClient);
         sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback);
 
-        ArgumentCaptor<PayPalPaymentAuthRequest> captor =
-                ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
+        ArgumentCaptor<PayPalPaymentAuthRequestParams> captor =
+                ArgumentCaptor.forClass(PayPalPaymentAuthRequestParams.class);
         verify(paymentAuthCallback).onResult(captor.capture(), isNull());
 
-        PayPalPaymentAuthRequest paymentAuthRequestCaptured = captor.getValue();
+        PayPalPaymentAuthRequestParams paymentAuthRequestCaptured = captor.getValue();
 
         BrowserSwitchOptions browserSwitchOptions = paymentAuthRequestCaptured.getBrowserSwitchOptions();
         assertEquals(BraintreeRequestCodes.PAYPAL, browserSwitchOptions.getRequestCode());
@@ -94,7 +94,7 @@ public class PayPalClientUnitTest {
         PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest();
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
 
-        PayPalPaymentAuthRequest paymentAuthRequest = new PayPalPaymentAuthRequest(payPalVaultRequest)
+        PayPalPaymentAuthRequestParams paymentAuthRequest = new PayPalPaymentAuthRequestParams(payPalVaultRequest)
                 .approvalUrl("https://example.com/approval/url")
                 .successUrl("https://example.com/success/url")
                 .clientMetadataId("sample-client-metadata-id");
@@ -111,11 +111,11 @@ public class PayPalClientUnitTest {
                 new PayPalClient(braintreeClient, payPalInternalClient);
         sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback);
 
-        ArgumentCaptor<PayPalPaymentAuthRequest> captor =
-                ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
+        ArgumentCaptor<PayPalPaymentAuthRequestParams> captor =
+                ArgumentCaptor.forClass(PayPalPaymentAuthRequestParams.class);
         verify(paymentAuthCallback).onResult(captor.capture(), isNull());
 
-        PayPalPaymentAuthRequest paymentAuthRequestCaptured = captor.getValue();
+        PayPalPaymentAuthRequestParams paymentAuthRequestCaptured = captor.getValue();
         assertTrue(paymentAuthRequestCaptured.getBrowserSwitchOptions().isLaunchAsNewTask());
     }
 
@@ -124,7 +124,7 @@ public class PayPalClientUnitTest {
         PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest();
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
 
-        PayPalPaymentAuthRequest paymentAuthRequest = new PayPalPaymentAuthRequest(payPalVaultRequest)
+        PayPalPaymentAuthRequestParams paymentAuthRequest = new PayPalPaymentAuthRequestParams(payPalVaultRequest)
                 .approvalUrl("https://example.com/approval/url")
                 .successUrl("https://example.com/success/url")
                 .clientMetadataId("sample-client-metadata-id");
@@ -197,7 +197,7 @@ public class PayPalClientUnitTest {
         payPalCheckoutRequest.setIntent("authorize");
         payPalCheckoutRequest.setMerchantAccountId("sample-merchant-account-id");
 
-        PayPalPaymentAuthRequest paymentAuthRequest = new PayPalPaymentAuthRequest(payPalCheckoutRequest)
+        PayPalPaymentAuthRequestParams paymentAuthRequest = new PayPalPaymentAuthRequestParams(payPalCheckoutRequest)
                 .approvalUrl("https://example.com/approval/url")
                 .successUrl("https://example.com/success/url")
                 .clientMetadataId("sample-client-metadata-id");
