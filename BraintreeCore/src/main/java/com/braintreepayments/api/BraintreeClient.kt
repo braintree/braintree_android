@@ -371,7 +371,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask
     }
 
-    private fun createAuthError() : BraintreeException {
+    private fun createAuthError(): BraintreeException {
         val clientSDKSetupURL =
             "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization"
         val message = "Valid authorization required. See $clientSDKSetupURL for more info."
