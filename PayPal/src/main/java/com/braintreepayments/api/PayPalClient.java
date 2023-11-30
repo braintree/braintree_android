@@ -279,7 +279,7 @@ public class PayPalClient {
                         callback.onResult(new PayPalResult.Failure(new BraintreeException("Unknown error")));
                     }
                 } catch (UserCanceledException e) {
-                    callback.onResult(new PayPalResult.Failure(e));
+                    callback.onResult(PayPalResult.Cancel.INSTANCE);
                     braintreeClient.sendAnalyticsEvent(
                             String.format("%s.browser-switch.canceled", analyticsPrefix));
                 } catch (JSONException | PayPalBrowserSwitchException e) {
