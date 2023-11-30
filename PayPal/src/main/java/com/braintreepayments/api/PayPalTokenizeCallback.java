@@ -5,13 +5,13 @@ import androidx.annotation.Nullable;
 
 /**
  * Callback for receiving result of
- * {@link PayPalClient#onBrowserSwitchResult(BrowserSwitchResult, PayPalTokenizeCallback)}.
+ * {@link PayPalClient#tokenize(PayPalPaymentAuthResult, PayPalTokenizeCallback)}.
  */
 public interface PayPalTokenizeCallback {
 
     /**
-     * @param payPalAccountNonce {@link PayPalAccountNonce}
-     * @param error              an exception that occurred while processing a PayPal result
+     *
+     * @param payPalResult a success, failure, or cancel result from the PayPal flow
      */
     void onResult(@NonNull PayPalResult payPalResult);
 }
