@@ -70,7 +70,7 @@ public class PayPalClientUnitTest {
 
         ArgumentCaptor<PayPalPaymentAuthRequestParams> captor =
                 ArgumentCaptor.forClass(PayPalPaymentAuthRequestParams.class);
-        verify(paymentAuthCallback).onResult();
+        verify(paymentAuthCallback).onPayPalPaymentAuthRequest();
 
         PayPalPaymentAuthRequestParams paymentAuthRequestCaptured = captor.getValue();
 
@@ -113,7 +113,7 @@ public class PayPalClientUnitTest {
 
         ArgumentCaptor<PayPalPaymentAuthRequestParams> captor =
                 ArgumentCaptor.forClass(PayPalPaymentAuthRequestParams.class);
-        verify(paymentAuthCallback).onResult();
+        verify(paymentAuthCallback).onPayPalPaymentAuthRequest();
 
         PayPalPaymentAuthRequestParams paymentAuthRequestCaptured = captor.getValue();
         assertTrue(paymentAuthRequestCaptured.getBrowserSwitchOptions().isLaunchAsNewTask());
@@ -159,7 +159,7 @@ public class PayPalClientUnitTest {
                 paymentAuthCallback);
 
         ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
-        verify(paymentAuthCallback).onResult();
+        verify(paymentAuthCallback).onPayPalPaymentAuthRequest();
         assertTrue(errorCaptor.getValue() instanceof BraintreeException);
         assertEquals("PayPal is not enabled. " +
                 "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
@@ -181,7 +181,7 @@ public class PayPalClientUnitTest {
                 paymentAuthCallback);
 
         ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
-        verify(paymentAuthCallback).onResult();
+        verify(paymentAuthCallback).onPayPalPaymentAuthRequest();
         assertTrue(errorCaptor.getValue() instanceof BraintreeException);
         assertEquals("AndroidManifest.xml is incorrectly configured or another app " +
                         "defines the same browser switch url as this app. See " +

@@ -11,5 +11,5 @@ public interface PayPalPaymentAuthCallback {
     /**
      * @param paymentAuthRequest a request used to launch the PayPal web authentication flow
      */
-    void onResult(PayPalPaymentAuthRequest paymentAuthRequest);
+    void onPayPalPaymentAuthRequest(PayPalPaymentAuthRequest paymentAuthRequest);
 }

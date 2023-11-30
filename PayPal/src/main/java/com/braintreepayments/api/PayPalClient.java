@@ -90,7 +90,7 @@ public class PayPalClient {
         braintreeClient.getConfiguration((configuration, error) -> {
             if (payPalConfigInvalid(configuration)) {
                 Exception configInvalidError = createPayPalError();
-                callback.onResult(new PayPalPaymentAuthRequest.Failure(configInvalidError));
+                callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(configInvalidError));
                 return;
             }
 
@@ -100,7 +100,7 @@ public class PayPalClient {
                 braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
                 Exception manifestInvalidError =
                         createBrowserSwitchError(browserSwitchException);
-                callback.onResult(new PayPalPaymentAuthRequest.Failure(manifestInvalidError));
+                callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(manifestInvalidError));
                 return;
             }
             sendPayPalRequest(activity, payPalCheckoutRequest, callback);
@@ -119,7 +119,7 @@ public class PayPalClient {
         braintreeClient.getConfiguration((configuration, error) -> {
             if (payPalConfigInvalid(configuration)) {
                 Exception configInvalidError = createPayPalError();
-                callback.onResult(new PayPalPaymentAuthRequest.Failure(configInvalidError));
+                callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(configInvalidError));
                 return;
             }
 
@@ -129,7 +129,7 @@ public class PayPalClient {
                 braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
                 Exception manifestInvalidError =
                         createBrowserSwitchError(browserSwitchException);
-                callback.onResult(new PayPalPaymentAuthRequest.Failure(manifestInvalidError));
+                callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(manifestInvalidError));
                 return;
             }
             sendPayPalRequest(activity, payPalVaultRequest, callback);
@@ -150,12 +150,12 @@ public class PayPalClient {
                             BrowserSwitchOptions options =
                                     buildBrowserSwitchOptions(payPalResponse);
                             payPalResponse.setBrowserSwitchOptions(options);
-                            callback.onResult(new PayPalPaymentAuthRequest.ReadyToLaunch(payPalResponse));
+                            callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.ReadyToLaunch(payPalResponse));
                         } catch (JSONException exception) {
-                            callback.onResult(new PayPalPaymentAuthRequest.Failure(exception));
+                            callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(exception));
                         }
                     } else {
-                        callback.onResult(new PayPalPaymentAuthRequest.Failure(error));
+                        callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(error));
                     }
                 });
     }
