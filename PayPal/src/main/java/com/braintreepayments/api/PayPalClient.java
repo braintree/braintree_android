@@ -22,11 +22,17 @@ public class PayPalClient {
     private final PayPalInternalClient internalPayPalClient;
 
     /**
-     * Create a new instance of {@link PayPalClient} using a {@link BraintreeClient}.
+     * Initializes a new {@link PayPalClient} instance
      *
-     * @param braintreeClient a {@link BraintreeClient}
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
      */
-    public PayPalClient(@NonNull BraintreeClient braintreeClient) {
+    public PayPalClient(@NonNull Context context, @NonNull String authorization) {
+        this(new BraintreeClient(context, authorization));
+    }
+
+    @VisibleForTesting
+    PayPalClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new PayPalInternalClient(braintreeClient));
     }
 

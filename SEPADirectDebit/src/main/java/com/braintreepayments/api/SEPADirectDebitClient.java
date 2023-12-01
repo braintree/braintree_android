@@ -26,11 +26,17 @@ public class SEPADirectDebitClient {
     private final BraintreeClient braintreeClient;
 
     /**
-     * Create a new instance of {@link SEPADirectDebitClient} using a {@link BraintreeClient}.
+     * Initializes a new {@link SEPADirectDebitClient} instance
      *
-     * @param braintreeClient a {@link BraintreeClient}
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
      */
-    public SEPADirectDebitClient(@NonNull BraintreeClient braintreeClient) {
+    public SEPADirectDebitClient(@NonNull Context context, @NonNull String authorization) {
+       this(new BraintreeClient(context, authorization));
+    }
+
+    @VisibleForTesting
+    SEPADirectDebitClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new SEPADirectDebitApi(braintreeClient));
     }
 

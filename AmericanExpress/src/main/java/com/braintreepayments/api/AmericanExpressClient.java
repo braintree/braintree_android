@@ -1,8 +1,10 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
 
@@ -16,7 +18,17 @@ public class AmericanExpressClient {
 
     private final BraintreeClient braintreeClient;
 
-    public AmericanExpressClient(@NonNull BraintreeClient braintreeClient) {
+    /**
+     * Initializes a new {@link AmericanExpressClient} instance
+     *
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
+     */
+    public AmericanExpressClient(@NonNull Context context, @NonNull String authorization) {
+        this.braintreeClient = new BraintreeClient(context, authorization);
+    }
+
+    @VisibleForTesting AmericanExpressClient(@NonNull BraintreeClient braintreeClient) {
         this.braintreeClient = braintreeClient;
     }
 

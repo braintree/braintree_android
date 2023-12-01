@@ -13,7 +13,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.UserCanceledException;
 import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.VenmoClient;
@@ -21,8 +20,8 @@ import com.braintreepayments.api.VenmoLauncher;
 import com.braintreepayments.api.VenmoLineItem;
 import com.braintreepayments.api.VenmoPaymentAuthRequest;
 import com.braintreepayments.api.VenmoPaymentMethodUsage;
-import com.braintreepayments.api.VenmoResult;
 import com.braintreepayments.api.VenmoRequest;
+import com.braintreepayments.api.VenmoResult;
 
 import java.util.ArrayList;
 
@@ -31,7 +30,6 @@ public class VenmoFragment extends BaseFragment {
     private ImageButton venmoButton;
     private VenmoClient venmoClient;
     private VenmoLauncher venmoLauncher;
-    private BraintreeClient braintreeClient;
 
     @Nullable
     @Override
@@ -66,8 +64,7 @@ public class VenmoFragment extends BaseFragment {
     public void launchVenmo(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
         if (venmoClient == null) {
-            braintreeClient = getBraintreeClient();
-            venmoClient = new VenmoClient(braintreeClient);
+            venmoClient = new VenmoClient(requireContext(), super.getAuthStringArg());
         }
 
         FragmentActivity activity = getActivity();
@@ -75,34 +72,30 @@ public class VenmoFragment extends BaseFragment {
         boolean shouldVault =
                 Settings.vaultVenmo(activity) && !TextUtils.isEmpty(Settings.getCustomerId(activity));
 
-        braintreeClient.getConfiguration((configuration, error) -> {
-            if (venmoClient.isVenmoAppSwitchAvailable(activity)) {
-                VenmoRequest venmoRequest = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
-                venmoRequest.setProfileId(null);
-                venmoRequest.setShouldVault(shouldVault);
-                venmoRequest.setCollectCustomerBillingAddress(true);
-                venmoRequest.setCollectCustomerShippingAddress(true);
-                venmoRequest.setTotalAmount("20");
-                venmoRequest.setSubTotalAmount("18");
-                venmoRequest.setTaxAmount("1");
-                venmoRequest.setShippingAmount("1");
-                ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
-                lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_CREDIT, "Some Item", 1, "2"));
-                lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
-                venmoRequest.setLineItems(lineItems);
+        if (venmoClient.isVenmoAppSwitchAvailable(activity)) {
+            VenmoRequest venmoRequest = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
+            venmoRequest.setProfileId(null);
+            venmoRequest.setShouldVault(shouldVault);
+            venmoRequest.setCollectCustomerBillingAddress(true);
+            venmoRequest.setCollectCustomerShippingAddress(true);
+            venmoRequest.setTotalAmount("20");
+            venmoRequest.setSubTotalAmount("18");
+            venmoRequest.setTaxAmount("1");
+            venmoRequest.setShippingAmount("1");
+            ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
+            lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_CREDIT, "Some Item", 1, "2"));
+            lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
+            venmoRequest.setLineItems(lineItems);
 
-                venmoClient.createPaymentAuthRequest(requireActivity(), venmoRequest, (paymentAuthRequest) -> {
-                    if (paymentAuthRequest instanceof VenmoPaymentAuthRequest.Failure) {
-                        handleError(((VenmoPaymentAuthRequest.Failure) paymentAuthRequest).getError());
-                    } else if (paymentAuthRequest instanceof VenmoPaymentAuthRequest.ReadyToLaunch) {
-                        venmoLauncher.launch((VenmoPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
-                    }
-                });
-            } else if (configuration.isVenmoEnabled()) {
-                showDialog("Please install the Venmo app first.");
-            } else {
-                showDialog("Venmo is not enabled for the current merchant.");
-            }
-        });
+            venmoClient.createPaymentAuthRequest(requireActivity(), venmoRequest, (paymentAuthRequest) -> {
+                if (paymentAuthRequest instanceof VenmoPaymentAuthRequest.Failure) {
+                    handleError(((VenmoPaymentAuthRequest.Failure) paymentAuthRequest).getError());
+                } else if (paymentAuthRequest instanceof VenmoPaymentAuthRequest.ReadyToLaunch) {
+                    venmoLauncher.launch((VenmoPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
+                }
+            });
+        } else {
+            showDialog("Please install the Venmo app first or confirm that Venmo is enabled for this merchant account");
+        }
     }
 }

@@ -15,8 +15,6 @@ import com.braintreepayments.api.PaymentMethodNonce;
 
 public class MainFragment extends BaseFragment {
 
-    static final String EXTRA_PAYMENT_RESULT = "payment_result";
-    static final String EXTRA_DEVICE_DATA = "device_data";
     static final String EXTRA_COLLECT_DEVICE_DATA = "collect_device_data";
 
     private static final String KEY_NONCE = "nonce";
@@ -71,59 +69,87 @@ public class MainFragment extends BaseFragment {
     }
 
     public void launchGooglePay(View v) {
-        NavDirections action =
-                MainFragmentDirections.actionMainFragmentToGooglePayFragment();
-        Navigation.findNavController(v).navigate(action);
+        fetchAuthorization(authString -> {
+            NavDirections action =
+                    MainFragmentDirections.actionMainFragmentToGooglePayFragment().setAuthString(authString);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 
     public void launchCards(View v) {
         Bundle args = new Bundle();
         args.putBoolean(EXTRA_COLLECT_DEVICE_DATA, Settings.shouldCollectDeviceData(getActivity()));
 
-        MainFragmentDirections.ActionMainFragmentToCardFragment action =
-                MainFragmentDirections.actionMainFragmentToCardFragment();
-        action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(getActivity()));
+        fetchAuthorization(authString -> {
+            MainFragmentDirections.ActionMainFragmentToCardFragment action =
+                    MainFragmentDirections.actionMainFragmentToCardFragment();
+            action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(getActivity()));
+            action.setAuthString(authString);
 
-        Navigation.findNavController(v).navigate(action);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 
     public void launchPayPal(View v) {
-        MainFragmentDirections.ActionMainFragmentToPayPalFragment action =
-                MainFragmentDirections.actionMainFragmentToPayPalFragment();
-        action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(getActivity()));
+        fetchAuthorization(authString -> {
+            MainFragmentDirections.ActionMainFragmentToPayPalFragment action =
+                    MainFragmentDirections.actionMainFragmentToPayPalFragment();
+            action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(getActivity()));
+            action.setAuthString(authString);
 
-        Navigation.findNavController(v).navigate(action);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 
     public void launchVenmo(View v) {
-        NavDirections action = MainFragmentDirections.actionMainFragmentToVenmoFragment();
-        Navigation.findNavController(v).navigate(action);
+        fetchAuthorization(authString -> {
+            NavDirections action = MainFragmentDirections.actionMainFragmentToVenmoFragment()
+                    .setAuthString(authString);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 
     public void launchVisaCheckout(View v) {
-        NavDirections action = MainFragmentDirections.actionMainFragmentToVisaCheckoutFragment();
-        Navigation.findNavController(v).navigate(action);
+        fetchAuthorization(authString -> {
+            NavDirections action = MainFragmentDirections.actionMainFragmentToVisaCheckoutFragment()
+                    .setAuthString(authString);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 
     public void launchLocalPayment(View v) {
-        NavDirections action =
-                MainFragmentDirections.actionMainFragmentToLocalPaymentFragment();
-        Navigation.findNavController(v).navigate(action);
+        fetchAuthorization(authString -> {
+            NavDirections action =
+                    MainFragmentDirections.actionMainFragmentToLocalPaymentFragment()
+                            .setAuthString(authString);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 
     public void launchSamsungPay(View v) {
-        NavDirections action =
-                MainFragmentDirections.actionMainFragmentToSamsungPayFragment();
-        Navigation.findNavController(v).navigate(action);
+        fetchAuthorization(authString -> {
+            NavDirections action =
+                    MainFragmentDirections.actionMainFragmentToSamsungPayFragment()
+                            .setAuthString(authString);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 
     public void launchPayPalNativeCheckout(View v) {
-        NavDirections action = MainFragmentDirections.actionMainFragmentToPayPalNativeCheckoutFragment();
-        Navigation.findNavController(v).navigate(action);
+        fetchAuthorization(authString -> {
+            NavDirections action =
+                    MainFragmentDirections.actionMainFragmentToPayPalNativeCheckoutFragment()
+                            .setAuthString(authString);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 
     public void launchSEPADirectDebit(View v) {
-        NavDirections action = MainFragmentDirections.actionMainFragmentToSepaDirectDebitFragment();
-        Navigation.findNavController(v).navigate(action);
+        fetchAuthorization(authString -> {
+            NavDirections action =
+                    MainFragmentDirections.actionMainFragmentToSepaDirectDebitFragment()
+                            .setAuthString(authString);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 }

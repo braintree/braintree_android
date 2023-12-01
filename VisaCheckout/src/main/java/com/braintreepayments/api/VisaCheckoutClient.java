@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -22,7 +24,18 @@ public class VisaCheckoutClient {
     private final BraintreeClient braintreeClient;
     private final ApiClient apiClient;
 
-    public VisaCheckoutClient(@NonNull BraintreeClient braintreeClient) {
+    /**
+     * Initializes a new {@link VisaCheckoutClient} instance
+     *
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
+     */
+    public VisaCheckoutClient(@NonNull Context context, @NonNull String authorization) {
+        this(new BraintreeClient(context, authorization));
+    }
+
+    @VisibleForTesting
+    VisaCheckoutClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new ApiClient(braintreeClient));
     }
 
