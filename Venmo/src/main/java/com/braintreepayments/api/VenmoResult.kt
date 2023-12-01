@@ -3,7 +3,7 @@ package com.braintreepayments.api
 /**
  * Result of tokenizing a Venmo account
  */
-sealed class VenmoResult {
+sealed class VenmoResult : PaymentResult {
 
     /**
      * The Venmo flow completed successfully. This [nonce] should be sent to your server.
