@@ -40,7 +40,7 @@ public class PayPalLauncherUnitTest {
 
     @Test
     public void launch_startsBrowserSwitch() throws BrowserSwitchException {
-        PayPalPaymentAuthRequest paymentAuthRequest = mock(PayPalPaymentAuthRequest.class);
+        PayPalPaymentAuthRequestParams paymentAuthRequest = mock(PayPalPaymentAuthRequestParams.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
         when(paymentAuthRequest.getBrowserSwitchOptions()).thenReturn(options);
         PayPalLauncher sut = new PayPalLauncher(browserSwitchClient, payPalLauncherCallback);
@@ -52,7 +52,7 @@ public class PayPalLauncherUnitTest {
 
     @Test
     public void launch_onError_callsBackError() throws BrowserSwitchException {
-        PayPalPaymentAuthRequest paymentAuthRequest = mock(PayPalPaymentAuthRequest.class);
+        PayPalPaymentAuthRequestParams paymentAuthRequest = mock(PayPalPaymentAuthRequestParams.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
         when(paymentAuthRequest.getBrowserSwitchOptions()).thenReturn(options);
         BrowserSwitchException exception = new BrowserSwitchException("error");

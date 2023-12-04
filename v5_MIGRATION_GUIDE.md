@@ -264,8 +264,12 @@ class MyActivity : FragmentActivity() {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       payPalLauncher = PayPalLauncher() { paymentAuthResult ->
-+           payPalClient.tokenize(paymentAuthResult) { payPalAccountNonce, error ->
-+               // handle paypal account nonce or error
++           payPalClient.tokenize(paymentAuthResult) { result ->
++               when(result) {
++                   is PayPalResult.Success -> { /* handle result.nonce */ }
++                   is PayPalResult.Failure -> { /* handle result.error */ }
++                   is PayPalResult.Cancel -> { /* handle user canceled */ }
++               }          
 +           }
 +       }
     }
@@ -291,10 +295,12 @@ class MyActivity : FragmentActivity() {
     
     fun onPayPalButtonClick() {
 -       payPalClient.tokenizePayPalAccount(activity, request)
-+       payPalClient.createPaymentAuthRequest(this, request) { paymentAuthRequest, error ->
-+            error?.let { /* handle error */ }
-+            paymentAuthRequest?.let { 
-+                payPalLauncher.launch(requireActivity(), paymentAuthRequest) 
++       payPalClient.createPaymentAuthRequest(this, request) { paymentAuthRequest ->
++           when(paymentAuthRequest) {
++               is PayPalPaymentAuthRequest.ReadyToLaunch -> {
++                   payPalLauncher.launch(paymentAuthRequet)
++               }
++               is PayPalPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error +/ }
 +           }
 +       }
     }
