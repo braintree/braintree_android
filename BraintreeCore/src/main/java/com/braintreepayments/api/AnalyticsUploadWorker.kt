@@ -1,6 +1,7 @@
 package com.braintreepayments.api
 
 import android.content.Context
+import androidx.annotation.RestrictTo
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 
@@ -10,7 +11,8 @@ import androidx.work.WorkerParameters
  * It is not subject to semantic versioning and may change at any time.
  * @suppress
  */
-open class AnalyticsUploadWorker(
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+class AnalyticsUploadWorker(
     context: Context,
     params: WorkerParameters
 ) : Worker(context, params) {
