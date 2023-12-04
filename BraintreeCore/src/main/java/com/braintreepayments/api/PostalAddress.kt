@@ -8,7 +8,7 @@ import android.os.Parcelable
  * Java object representing a postal address
  */
 @Parcelize
-data class PostalAddress (
+data class PostalAddress(
     var recipientName: String?,
     var phoneNumber: String?,
     var streetAddress: String?,
@@ -19,7 +19,7 @@ data class PostalAddress (
     var sortingCode: String?,
     var countryCodeAlpha2: String?) : Parcelable {
 
-    constructor() : this(null,null, null, null, null, null, null, null, null)
+    constructor() : this(null, null, null, null, null, null, null, null, null)
 
     /**
      * A [PostalAddress] is considered empty if it does not have a country code.
@@ -33,5 +33,4 @@ data class PostalAddress (
         return "$recipientName\n$streetAddress\n$extendedAddress\n$locality," +
                 " $region\n$postalCode $countryCodeAlpha2"
     }
-
 }

@@ -2,7 +2,6 @@ package com.braintreepayments.api
 
 import android.os.Bundle
 import org.robolectric.RobolectricTestRunner
-import android.os.Parcel
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.*
