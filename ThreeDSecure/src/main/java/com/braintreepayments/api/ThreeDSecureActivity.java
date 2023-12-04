@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,12 +11,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
-import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
 
 /**
  * The Activity that receives Cardinal SDK result from 3DS v2 flow
  */
-public class ThreeDSecureActivity extends AppCompatActivity implements CardinalValidateReceiver {
+public class ThreeDSecureActivity extends AppCompatActivity {
 
     static final String EXTRA_ERROR_MESSAGE =
             "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_ERROR_MESSAGE";
@@ -82,12 +80,6 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
         result.putExtra(EXTRA_ERROR_MESSAGE, errorMessage);
         setResult(RESULT_COULD_NOT_START_CARDINAL, result);
         finish();
-    }
-
-    // TODO: NEXT_MAJOR_VERSION remove implementation of CardinalValidateReceiver
-    @Override
-    public void onValidated(Context context, ValidateResponse validateResponse, String jwt) {
-        handleValidated(validateResponse, jwt);
     }
 
     private void handleValidated(ValidateResponse validateResponse, String jwt) {
