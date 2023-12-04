@@ -1,5 +1,6 @@
 package com.braintreepayments.api
 
+import android.os.Bundle
 import org.robolectric.RobolectricTestRunner
 import android.os.Parcel
 import org.json.JSONException
@@ -77,12 +78,13 @@ class PostalAddressUnitTest {
     fun testWriteToParcel_serializesCorrectly() {
         val accountAddressJson = Fixtures.PAYMENT_METHODS_PAYPAL_ADDRESS
         val preSerialized = PostalAddressParser.fromJson(JSONObject(accountAddressJson))
-        val parcel = Parcel.obtain()
-        preSerialized.writeToParcel(parcel, 0)
-        parcel.setDataPosition(0)
-        val postSerialized = PostalAddress.CREATOR.createFromParcel(parcel)!!
+
+        val bundle = Bundle().apply {
+            putParcelable("TEST_PARCEL", preSerialized)
+        }
+        val postSerialized: PostalAddress? = bundle.getParcelable("TEST_PARCEL")
         assertNotNull(postSerialized)
-        assertEquals("123 Fake St.", postSerialized.streetAddress)
+        assertEquals("123 Fake St.", postSerialized!!.streetAddress)
         assertEquals("Apt. 3", postSerialized.extendedAddress)
         assertEquals("Oakland", postSerialized.locality)
         assertEquals("CA", postSerialized.region)

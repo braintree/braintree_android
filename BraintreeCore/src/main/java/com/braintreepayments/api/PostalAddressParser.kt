@@ -8,36 +8,36 @@ import org.json.JSONObject
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 object PostalAddressParser {
-    const val RECIPIENT_NAME_KEY = "recipientName"
-    const val STREET_ADDRESS_KEY = "street1"
-    const val EXTENDED_ADDRESS_KEY = "street2"
+    private const val RECIPIENT_NAME_KEY = "recipientName"
+    private const val STREET_ADDRESS_KEY = "street1"
+    private const val EXTENDED_ADDRESS_KEY = "street2"
     const val LOCALITY_KEY = "city"
-    const val COUNTRY_CODE_ALPHA_2_KEY = "country"
-    const val POSTAL_CODE_KEY = "postalCode"
+    private const val COUNTRY_CODE_ALPHA_2_KEY = "country"
+    private const val POSTAL_CODE_KEY = "postalCode"
     const val REGION_KEY = "state"
     const val LINE_1_KEY = "line1"
     const val LINE_2_KEY = "line2"
-    const val COUNTRY_CODE_KEY = "countryCode"
-    const val USER_ADDRESS_NAME_KEY = "name"
-    const val USER_ADDRESS_PHONE_NUMBER_KEY = "phoneNumber"
-    const val USER_ADDRESS_ADDRESS_1_KEY = "address1"
-    const val USER_ADDRESS_ADDRESS_2_KEY = "address2"
-    const val USER_ADDRESS_ADDRESS_3_KEY = "address3"
-    const val USER_ADDRESS_ADDRESS_4_KEY = "address4"
-    const val USER_ADDRESS_ADDRESS_5_KEY = "address5"
-    const val USER_ADDRESS_POSTAL_CODE_KEY = "postalCode"
-    const val USER_ADDRESS_SORTING_CODE_KEY = "sortingCode"
-    const val USER_ADDRESS_COUNTRY_CODE_KEY = "countryCode"
-    const val USER_ADDRESS_LOCALITY_KEY = "locality"
-    const val USER_ADDRESS_ADMINISTRATIVE_AREA_KEY = "administrativeArea"
+    private const val COUNTRY_CODE_KEY = "countryCode"
+    private const val USER_ADDRESS_NAME_KEY = "name"
+    private const val USER_ADDRESS_PHONE_NUMBER_KEY = "phoneNumber"
+    private const val USER_ADDRESS_ADDRESS_1_KEY = "address1"
+    private const val USER_ADDRESS_ADDRESS_2_KEY = "address2"
+    private const val USER_ADDRESS_ADDRESS_3_KEY = "address3"
+    private const val USER_ADDRESS_ADDRESS_4_KEY = "address4"
+    private const val USER_ADDRESS_ADDRESS_5_KEY = "address5"
+    private const val USER_ADDRESS_POSTAL_CODE_KEY = "postalCode"
+    private const val USER_ADDRESS_SORTING_CODE_KEY = "sortingCode"
+    private const val USER_ADDRESS_COUNTRY_CODE_KEY = "countryCode"
+    private const val USER_ADDRESS_LOCALITY_KEY = "locality"
+    private const val USER_ADDRESS_ADMINISTRATIVE_AREA_KEY = "administrativeArea"
     const val COUNTRY_CODE_UNDERSCORE_KEY = "country_code"
     const val POSTAL_CODE_UNDERSCORE_KEY = "postal_code"
     const val RECIPIENT_NAME_UNDERSCORE_KEY = "recipient_name"
-    const val VENMO_GQL_RECIPIENT_KEY = "fullName"
-    const val VENMO_GQL_ADDRESS1_KEY = "addressLine1"
-    const val VENMO_GQL_ADDRESS2_KEY = "addressLine2"
-    const val VENMO_GQL_LOCALITY_KEY = "adminArea2"
-    const val VENMO_GQL_REGION_KEY = "adminArea1"
+    private const val VENMO_GQL_RECIPIENT_KEY = "fullName"
+    private const val VENMO_GQL_ADDRESS1_KEY = "addressLine1"
+    private const val VENMO_GQL_ADDRESS2_KEY = "addressLine2"
+    private const val VENMO_GQL_LOCALITY_KEY = "adminArea2"
+    private const val VENMO_GQL_REGION_KEY = "adminArea1"
 
     @JvmStatic
     fun fromJson(accountAddress: JSONObject?): PostalAddress =
@@ -79,7 +79,7 @@ object PostalAddressParser {
             }
         } ?: PostalAddress()
 
-    fun fromUserAddressJson(json: JSONObject): PostalAddress =
+    private fun fromUserAddressJson(json: JSONObject): PostalAddress =
         PostalAddress().apply {
             recipientName = Json.optString(json, USER_ADDRESS_NAME_KEY, "")
             phoneNumber = Json.optString(json, USER_ADDRESS_PHONE_NUMBER_KEY, "")
@@ -94,7 +94,7 @@ object PostalAddressParser {
 
     private fun formatExtendedUserAddress(address: JSONObject): String =
         (Json.optString(address, USER_ADDRESS_ADDRESS_2_KEY, "") + "\n" +
-        Json.optString(address, USER_ADDRESS_ADDRESS_3_KEY, "") + "\n" +
-        Json.optString(address, USER_ADDRESS_ADDRESS_4_KEY, "") + "\n" +
-        Json.optString(address, USER_ADDRESS_ADDRESS_5_KEY, "")).trim()
+                Json.optString(address, USER_ADDRESS_ADDRESS_3_KEY, "") + "\n" +
+                Json.optString(address, USER_ADDRESS_ADDRESS_4_KEY, "") + "\n" +
+                Json.optString(address, USER_ADDRESS_ADDRESS_5_KEY, "")).trim()
 }
