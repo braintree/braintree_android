@@ -61,8 +61,8 @@ class PayPalInternalClient {
                                 (responseBody, httpError) -> {
                                     if (responseBody != null) {
                                         try {
-                                            PayPalPaymentAuthRequest paymentAuthRequest =
-                                                    new PayPalPaymentAuthRequest(payPalRequest)
+                                            PayPalPaymentAuthRequestParams paymentAuthRequest =
+                                                    new PayPalPaymentAuthRequestParams(payPalRequest)
                                                             .successUrl(successUrl);
 
                                             PayPalPaymentResource paypalPaymentResource =
@@ -112,7 +112,7 @@ class PayPalInternalClient {
         });
     }
 
-    void tokenize(PayPalAccount payPalAccount, final PayPalTokenizeCallback callback) {
+    void tokenize(PayPalAccount payPalAccount, final PayPalInternalTokenizeCallback callback) {
         apiClient.tokenizeREST(payPalAccount, (tokenizationResponse, exception) -> {
             if (tokenizationResponse != null) {
                 try {

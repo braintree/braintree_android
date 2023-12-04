@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'org.jetbrains.dokka'
     id 'kotlin-kapt'
+    id 'kotlin-parcelize'
 }
 
 def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"'

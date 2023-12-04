@@ -12,11 +12,11 @@ import org.mockito.stubbing.Answer;
 public class MockPayPalInternalClientBuilder {
 
     private Exception error;
-    private PayPalPaymentAuthRequest successResponse;
+    private PayPalPaymentAuthRequestParams successResponse;
     private PayPalAccountNonce tokenizeSuccess;
 
     public MockPayPalInternalClientBuilder sendRequestSuccess(
-            PayPalPaymentAuthRequest successResponse) {
+            PayPalPaymentAuthRequestParams successResponse) {
         this.successResponse = successResponse;
         return this;
     }
@@ -52,13 +52,13 @@ public class MockPayPalInternalClientBuilder {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                PayPalTokenizeCallback callback =
-                        (PayPalTokenizeCallback) invocation.getArguments()[1];
+                PayPalInternalTokenizeCallback callback =
+                        (PayPalInternalTokenizeCallback) invocation.getArguments()[1];
                 callback.onResult(tokenizeSuccess, null);
                 return null;
             }
         }).when(payPalInternalClient)
-                .tokenize(any(PayPalAccount.class), any(PayPalTokenizeCallback.class));
+                .tokenize(any(PayPalAccount.class), any(PayPalInternalTokenizeCallback.class));
 
         return payPalInternalClient;
     }
