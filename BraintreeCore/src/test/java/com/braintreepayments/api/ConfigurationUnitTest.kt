@@ -13,11 +13,6 @@ import java.util.*
 class ConfigurationUnitTest {
 
     @Test(expected = JSONException::class)
-    fun fromJson_throwsForNull() {
-        Configuration.fromJson(null)
-    }
-
-    @Test(expected = JSONException::class)
     fun fromJson_throwsForEmptyString() {
         Configuration.fromJson("")
     }
@@ -221,18 +216,6 @@ class ConfigurationUnitTest {
     }
 
     @Test
-    fun isKountEnabled_alwaysReturnsFalse() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_KOUNT)
-        assertFalse(sut.isKountEnabled)
-    }
-
-    @Test
-    fun kountMerchantId_alwaysReturnsEmptyString() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_KOUNT)
-        assertEquals("", sut.kountMerchantId)
-    }
-
-    @Test
     fun isLocalPaymentsEnabled_whenPayPalEnabled_returnsTrue() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
         assertTrue(sut.isLocalPaymentEnabled)
@@ -354,8 +337,6 @@ class ConfigurationUnitTest {
         assertEquals("pay-pal-client-id", sut.googlePayPayPalClientId)
     }
 
-    @Ignore("Update Samsung Pay Configuration to only check configuration instead of checking " +
-            "for `braintree-android-samsung-pay` classes to be present on Java classpath.")
     @Test
     @Throws(JSONException::class)
     fun isSamsungPayEnabled_returnsTrueWhenSamsungPayEnabledInConfiguration() {
