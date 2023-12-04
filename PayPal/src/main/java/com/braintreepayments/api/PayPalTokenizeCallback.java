@@ -1,16 +1,16 @@
 package com.braintreepayments.api;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 /**
  * Callback for receiving result of
- * {@link PayPalClient#onBrowserSwitchResult(BrowserSwitchResult, PayPalTokenizeCallback)}.
+ * {@link PayPalClient#tokenize(PayPalPaymentAuthResult, PayPalTokenizeCallback)}.
  */
 public interface PayPalTokenizeCallback {
 
     /**
-     * @param payPalAccountNonce {@link PayPalAccountNonce}
-     * @param error              an exception that occurred while processing a PayPal result
+     *
+     * @param payPalResult a success, failure, or cancel result from the PayPal flow
      */
-    void onResult(@Nullable PayPalAccountNonce payPalAccountNonce, @Nullable Exception error);
+    void onPayPalResult(@NonNull PayPalResult payPalResult);
 }

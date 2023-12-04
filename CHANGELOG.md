@@ -13,6 +13,7 @@
       `authorization`
     * Remove `BraintreeSharedPreferencesException`
     * Convert `PostalAddress` to data class
+    * Remove `open` modifier on `Configuration`
   * UnionPay
     * Remove `union-pay` module
       * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover
@@ -56,10 +57,12 @@
     * Remove `ThreeDSecureV1UICustomization`
     * Remove `versionRequesed` from `ThreeDSecureRequest` as version 1 is no longer supported
     * Remove `ThreeDSecureV2BaseCustomization`
+    * Remove `CardinalValidateReceiver` from `ThreeDSecureActivity`
+    * Make empty `ThreeDSecureLookup` constructor package-private
   * PayPal
     * Remove `PayPalListener`
     * Add `PayPalLauncher`, `PayPalPaymentAuthRequest`, `PayPalPaymentAuthResult`, 
-      `PayPalPaymentAuthCallback`, and `PayPalTokenizeCallback`
+      `PayPalPaymentAuthCallback`, `PayPalTokenizeCallback`, and `PayPalResult`
     * Remove`PayPalFlowStartedCallback`
     * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
       `clearActiveBrowserSwitchResult`, `requestOneTimePayment`, and `requestBillingAgreement` from 

@@ -675,19 +675,6 @@ object Fixtures {
     """
 
     // language=JSON
-    const val CONFIGURATION_WITH_KOUNT = """
-        {
-            "clientApiUrl": "client_api_url",
-            "environment": "test",
-            "merchantId": "integration_merchant_id",
-            "merchantAccountId": "integration_merchant_account_id",
-            "kount": {
-                "kountMerchantId": "600000"
-            }
-        }
-    """
-
-    // language=JSON
     const val CONFIGURATION_WITH_LIVE_PAYPAL = """
         {
           "clientApiUrl": "client-api-url",
