@@ -7,11 +7,12 @@
   * All Modules
     * Bump `minSdkVersion` to API 23
     * Bump target Java version to Java 11
+  * BraintreeCore
     * Remove `BraintreeClient` public constructors
-    * Update payment method constructor parameters from `braintreeClient` to `context` and 
+    * Update payment method constructor parameters from `braintreeClient` to `context` and
       `authorization`
     * Remove `BraintreeSharedPreferencesException`
-  * BraintreeCore
+    * Convert `PostalAddress` to data class
     * Remove `open` modifier on `Configuration`
   * UnionPay
     * Remove `union-pay` module
