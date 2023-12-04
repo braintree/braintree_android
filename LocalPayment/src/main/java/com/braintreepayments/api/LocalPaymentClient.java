@@ -24,11 +24,17 @@ public class LocalPaymentClient {
     private final LocalPaymentApi localPaymentApi;
 
     /**
-     * Create a new instance of {@link LocalPaymentClient} using a {@link BraintreeClient}.
+     * Initializes a new {@link LocalPaymentClient} instance
      *
-     * @param braintreeClient a {@link BraintreeClient}
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
      */
-    public LocalPaymentClient(@NonNull BraintreeClient braintreeClient) {
+    public LocalPaymentClient(@NonNull Context context, @NonNull String authorization) {
+        this(new BraintreeClient(context, authorization));
+    }
+
+   @VisibleForTesting
+    LocalPaymentClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new DataCollector(braintreeClient),
                 new LocalPaymentApi(braintreeClient));
     }

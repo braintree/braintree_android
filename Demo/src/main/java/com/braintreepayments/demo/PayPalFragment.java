@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalLauncher;
@@ -28,7 +27,6 @@ public class PayPalFragment extends BaseFragment {
     private String deviceData;
     private String amount;
 
-    private BraintreeClient braintreeClient;
     private PayPalClient payPalClient;
     private PayPalLauncher payPalLauncher;
 
@@ -45,8 +43,7 @@ public class PayPalFragment extends BaseFragment {
         billingAgreementButton.setOnClickListener(this::launchBillingAgreement);
         singlePaymentButton.setOnClickListener(this::launchSinglePayment);
 
-        braintreeClient = getBraintreeClient();
-        payPalClient = new PayPalClient(braintreeClient);
+        payPalClient = new PayPalClient(requireContext(), super.getAuthStringArg());
         payPalLauncher = new PayPalLauncher(
                 paymentAuthResult -> payPalClient.tokenize(
                         paymentAuthResult, (payPalResult) -> {
@@ -79,20 +76,18 @@ public class PayPalFragment extends BaseFragment {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
-        dataCollector = new DataCollector(braintreeClient);
+        dataCollector = new DataCollector(requireContext(), super.getAuthStringArg());
 
-        braintreeClient.getConfiguration((configuration, configError) -> {
-            if (Settings.shouldCollectDeviceData(requireActivity())) {
-                dataCollector.collectDeviceData(requireActivity(), (deviceDataResult, error) -> {
-                    if (deviceDataResult != null) {
-                        deviceData = deviceDataResult;
-                    }
-                    launchPayPal(activity, isBillingAgreement, amount);
-                });
-            } else {
+        if (Settings.shouldCollectDeviceData(requireActivity())) {
+            dataCollector.collectDeviceData(requireActivity(), (deviceDataResult, error) -> {
+                if (deviceDataResult != null) {
+                    deviceData = deviceDataResult;
+                }
                 launchPayPal(activity, isBillingAgreement, amount);
-            }
-        });
+            });
+        } else {
+            launchPayPal(activity, isBillingAgreement, amount);
+        }
     }
 
     private void launchPayPal(FragmentActivity activity, boolean isBillingAgreement,

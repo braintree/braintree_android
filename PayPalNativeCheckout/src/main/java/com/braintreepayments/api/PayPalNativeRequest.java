@@ -51,6 +51,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
     private String riskCorrelationId;
     private final ArrayList<PayPalNativeCheckoutLineItem> lineItems;
     private String returnUrl;
+    private String userAuthenticationEmail;
 
     /**
      * Constructs a request for PayPal Checkout and Vault flows.
@@ -205,6 +206,20 @@ public abstract class PayPalNativeRequest implements Parcelable {
         this.returnUrl = returnUrl;
     }
 
+    @Nullable
+    public String getUserAuthenticationEmail() {
+        return userAuthenticationEmail;
+    }
+
+    /**
+     * Optional: User email to initiate a quicker authentication flow in cases where the user has a PayPal Account with the same email.
+     *
+     * @param userAuthenticationEmail the users email address
+     */
+    public void setUserAuthenticationEmail(@Nullable String userAuthenticationEmail) {
+        this.userAuthenticationEmail = userAuthenticationEmail;
+    }
+
     public String getReturnUrl() {
         return returnUrl;
     }
@@ -258,6 +273,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
         riskCorrelationId = in.readString();
         lineItems = in.createTypedArrayList(PayPalNativeCheckoutLineItem.CREATOR);
         returnUrl = in.readString();
+        userAuthenticationEmail = in.readString();
     }
 
     @Override
@@ -278,6 +294,6 @@ public abstract class PayPalNativeRequest implements Parcelable {
         parcel.writeString(riskCorrelationId);
         parcel.writeTypedList(lineItems);
         parcel.writeString(returnUrl);
-
+        parcel.writeString(userAuthenticationEmail);
     }
 }

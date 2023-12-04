@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
@@ -7,6 +9,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.paypal.checkout.PayPalCheckout;
 import com.paypal.checkout.approve.ApprovalData;
+import com.paypal.checkout.config.AuthConfig;
 import com.paypal.checkout.config.CheckoutConfig;
 import com.paypal.checkout.config.Environment;
 import com.paypal.checkout.config.SettingsConfig;
@@ -30,26 +33,17 @@ public class PayPalNativeCheckoutClient {
     private PayPalNativeCheckoutListener listener;
 
     /**
-     * @param fragment        a {@link Fragment
-     * @param braintreeClient a {@link BraintreeClient}
-     * @deprecated see
-     * {@link PayPalNativeCheckoutClient#PayPalNativeCheckoutClient(BraintreeClient)}
-     * <p>
-     * Create a new instance of {@link PayPalNativeCheckoutClient} from within a Fragment using a
-     * {@link BraintreeClient}.
+     * Initializes a new {@link PayPalNativeCheckoutClient} instance
+     *
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
      */
-    @Deprecated
-    public PayPalNativeCheckoutClient(@NonNull Fragment fragment,
-                                      @NonNull BraintreeClient braintreeClient) {
-        this(braintreeClient, new PayPalNativeCheckoutInternalClient(braintreeClient));
+    public PayPalNativeCheckoutClient(@NonNull Context context, @NonNull String authorization) {
+        this(new BraintreeClient(context, authorization));
     }
 
-    /**
-     * Create a new instance of {@link PayPalNativeCheckoutClient} using a {@link BraintreeClient}.
-     *
-     * @param braintreeClient a {@link BraintreeClient}
-     */
-    public PayPalNativeCheckoutClient(@NonNull BraintreeClient braintreeClient) {
+    @VisibleForTesting
+     PayPalNativeCheckoutClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new PayPalNativeCheckoutInternalClient(braintreeClient));
     }
 
@@ -177,22 +171,28 @@ public class PayPalNativeCheckoutClient {
                 } else {
                     environment = Environment.LIVE;
                 }
+                String email = payPalRequest.getUserAuthenticationEmail();
+                AuthConfig authConfig = null;
+                if (email != null) {
+                    authConfig = new AuthConfig(email);
+                }
 
                 // Start PayPalCheckout flow
                 PayPalCheckout.setConfig(
-                        new CheckoutConfig(
-                                activity.getApplication(),
-                                configuration.getPayPalClientId(),
-                                environment,
-                                null,
-                                null,
-                                null,
-                                new SettingsConfig(),
-                                new UIConfig(
-                                        false
-                                ),
-                                payPalRequest.getReturnUrl()
-                        )
+                    new CheckoutConfig(
+                        activity.getApplication(),
+                        configuration.getPayPalClientId(),
+                        environment,
+                        null,
+                        null,
+                        null,
+                        new SettingsConfig(),
+                        new UIConfig(
+                            false
+                        ),
+                        payPalRequest.getReturnUrl(),
+                        authConfig
+                    )
                 );
 
                 String infoMessage = "BrainTree";

@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -17,6 +18,8 @@ import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_READY;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_NOT_SUPPORTED;
 import static com.samsung.android.sdk.samsungpay.v2.SpaySdk.SPAY_READY;
 
+import android.content.Context;
+
 public class SamsungPayClient {
 
     private final BraintreeClient braintreeClient;
@@ -24,7 +27,18 @@ public class SamsungPayClient {
     @VisibleForTesting
     SamsungPayInternalClient internalClient;
 
-    public SamsungPayClient(BraintreeClient braintreeClient) {
+    /**
+     * Initializes a new {@link SamsungPayClient} instance
+     *
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
+     */
+    public SamsungPayClient(@NonNull Context context, @NonNull String authorization) {
+        this(new BraintreeClient(context, authorization));
+    }
+
+    @VisibleForTesting
+    SamsungPayClient(BraintreeClient braintreeClient) {
         this.braintreeClient = braintreeClient;
     }
 

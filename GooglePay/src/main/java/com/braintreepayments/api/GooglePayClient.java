@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.text.TextUtils;
 
@@ -47,11 +48,17 @@ public class GooglePayClient {
     private final GooglePayInternalClient internalGooglePayClient;
 
     /**
-     * Create a new instance of {@link GooglePayClient} using a {@link BraintreeClient}.
+     * Initializes a new {@link GooglePayClient} instance
      *
-     * @param braintreeClient a {@link BraintreeClient}
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
      */
-    public GooglePayClient(@NonNull BraintreeClient braintreeClient) {
+    public GooglePayClient(@NonNull Context context, @NonNull String authorization) {
+        this(new BraintreeClient(context, authorization));
+    }
+
+    @VisibleForTesting
+    GooglePayClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new GooglePayInternalClient());
     }
 

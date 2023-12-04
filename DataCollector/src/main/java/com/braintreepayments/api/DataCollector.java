@@ -22,7 +22,18 @@ public class DataCollector {
     private final UUIDHelper uuidHelper;
     private final BraintreeClient braintreeClient;
 
-    public DataCollector(@NonNull BraintreeClient braintreeClient) {
+    /**
+     * Initializes a new {@link DataCollector} instance
+     *
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
+     */
+    public DataCollector(@NonNull Context context, @NonNull String authorization) {
+        this(new BraintreeClient(context, authorization));
+    }
+
+    @VisibleForTesting
+    DataCollector(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new MagnesInternalClient(), new UUIDHelper());
     }
 

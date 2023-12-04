@@ -2,10 +2,15 @@
 
 ## unreleased
 
+* Move from Braintree to PayPal analytics service (FPTI)
 * Breaking Changes
   * All Modules
     * Bump `minSdkVersion` to API 23
     * Bump target Java version to Java 11
+    * Remove `BraintreeClient` public constructors
+    * Update payment method constructor parameters from `braintreeClient` to `context` and 
+      `authorization`
+    * Remove `BraintreeSharedPreferencesException`
   * UnionPay
     * Remove `union-pay` module
       * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover
@@ -34,6 +39,7 @@
     * Change `GooglePayClient#requestPayment` parameters and rename to 
       `GooglePayClient#createPaymentAuthRequest`
     * Add `GooglePayClient#tokenize` 
+    * Remove `merchantId` from `GooglePayRequest`
   * ThreeDSecure
     * Remove `ThreeDSecureListener`
     * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`, and `ThreeDSecureLancherCallback`
@@ -47,6 +53,7 @@
     * Rename `ThreeDSecureResult#tokenizedCard` to `ThreeDSecureResult#threeDSecureNonce`
     * Remove `ThreeDSecureV1UICustomization`
     * Remove `versionRequesed` from `ThreeDSecureRequest` as version 1 is no longer supported
+    * Remove `ThreeDSecureV2BaseCustomization`
   * PayPal
     * Remove `PayPalListener`
     * Add `PayPalLauncher`, `PayPalPaymentAuthRequest`, `PayPalPaymentAuthResult`, 
@@ -84,8 +91,11 @@
     * Replace `SEPADirectDebitClient#tokenize` with`SEPADirectDebitClient#createPaymentAuthRequest` 
       and modify parameters
 
-## unreleased 
+## 4.40.0 (2023-11-16)
 
+* PayPalNativeCheckout
+  * Bump native-checkout version to release `1.2.0`
+  * Add `setUserAuthenticationEmail()` to `PayPalNativeRequest`
 * GooglePay
   * Bump `play-services-wallet` version to `19.2.1`
   * Add `totalPriceLabel` to `GooglePayRequest`
