@@ -10,10 +10,11 @@
   * BraintreeCore
     * Remove `BraintreeClient` public constructors
     * Remove `ClientTokenProvider`
-    * Remove `BraintreeClient` public constructors
-    * Update payment method constructor parameters from `braintreeClient` to `context` and 
+    * Update payment method constructor parameters from `braintreeClient` to `context` and
       `authorization`
     * Remove `BraintreeSharedPreferencesException`
+    * Convert `PostalAddress` to data class
+    * Remove `open` modifier on `Configuration`
   * UnionPay
     * Remove `union-pay` module
       * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover
@@ -57,6 +58,8 @@
     * Remove `ThreeDSecureV1UICustomization`
     * Remove `versionRequesed` from `ThreeDSecureRequest` as version 1 is no longer supported
     * Remove `ThreeDSecureV2BaseCustomization`
+    * Remove `CardinalValidateReceiver` from `ThreeDSecureActivity`
+    * Make empty `ThreeDSecureLookup` constructor package-private
   * PayPal
     * Remove `PayPalListener`
     * Add `PayPalLauncher`, `PayPalPaymentAuthRequest`, `PayPalPaymentAuthResult`, 
