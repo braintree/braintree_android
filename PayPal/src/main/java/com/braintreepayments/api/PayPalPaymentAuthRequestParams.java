@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-public class PayPalPaymentAuthRequest {
+public class PayPalPaymentAuthRequestParams {
 
     private String approvalUrl;
     private String clientMetadataId;
@@ -11,7 +11,7 @@ public class PayPalPaymentAuthRequest {
 
     private BrowserSwitchOptions browserSwitchOptions;
 
-    PayPalPaymentAuthRequest(PayPalRequest payPalRequest) {
+    PayPalPaymentAuthRequestParams(PayPalRequest payPalRequest) {
         this.payPalRequest = payPalRequest;
     }
 
@@ -19,7 +19,7 @@ public class PayPalPaymentAuthRequest {
         return approvalUrl;
     }
 
-    PayPalPaymentAuthRequest approvalUrl(String value) {
+    PayPalPaymentAuthRequestParams approvalUrl(String value) {
         approvalUrl = value;
         return this;
     }
@@ -28,7 +28,7 @@ public class PayPalPaymentAuthRequest {
         return clientMetadataId;
     }
 
-    PayPalPaymentAuthRequest clientMetadataId(String value) {
+    PayPalPaymentAuthRequestParams clientMetadataId(String value) {
         clientMetadataId = value;
         return this;
     }
@@ -59,7 +59,7 @@ public class PayPalPaymentAuthRequest {
         return pairingId;
     }
 
-    PayPalPaymentAuthRequest pairingId(String value) {
+    PayPalPaymentAuthRequestParams pairingId(String value) {
         pairingId = value;
         return this;
     }
@@ -68,7 +68,7 @@ public class PayPalPaymentAuthRequest {
         return successUrl;
     }
 
-    PayPalPaymentAuthRequest successUrl(String value) {
+    PayPalPaymentAuthRequestParams successUrl(String value) {
         successUrl = value;
         return this;
     }

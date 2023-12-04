@@ -60,7 +60,7 @@
   * PayPal
     * Remove `PayPalListener`
     * Add `PayPalLauncher`, `PayPalPaymentAuthRequest`, `PayPalPaymentAuthResult`, 
-      `PayPalPaymentAuthCallback`, and `PayPalTokenizeCallback`
+      `PayPalPaymentAuthCallback`, `PayPalTokenizeCallback`, and `PayPalResult`
     * Remove`PayPalFlowStartedCallback`
     * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
       `clearActiveBrowserSwitchResult`, `requestOneTimePayment`, and `requestBillingAgreement` from 
