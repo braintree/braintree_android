@@ -4,9 +4,6 @@ import androidx.annotation.RestrictTo
 import org.json.JSONException
 import org.json.JSONObject
 
-// NEXT MAJOR VERSION: remove 'open' modifiers, Java classes/methods are open by default
-// Ref: https://kotlin-quick-reference.com/102c-R-open-final-classes.html
-
 /**
  * Contains the remote configuration for the Braintree Android SDK.
  *
@@ -37,7 +34,7 @@ import org.json.JSONObject
  * @property payPalUserAgreementUrl the PayPal app user agreement url.
  * @property supportedCardTypes a list of card types supported by the merchant.
  */
-open class Configuration internal constructor(configurationString: String?) {
+class Configuration internal constructor(configurationString: String) {
 
     /**
      * @suppress
@@ -63,32 +60,32 @@ open class Configuration internal constructor(configurationString: String?) {
 
         @JvmStatic
         @Throws(JSONException::class)
-        fun fromJson(configurationString: String?): Configuration {
-            // NEXT MAJOR VERSION: remove JSON static factory method from public facing API
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+        fun fromJson(configurationString: String): Configuration {
             return Configuration(configurationString)
         }
     }
 
     // region Public Properties
-    open val assetsUrl: String
-    open val cardinalAuthenticationJwt: String?
-    open val clientApiUrl: String
-    open val environment: String
-    open val isCvvChallengePresent: Boolean
-    open val isGooglePayEnabled: Boolean
-    open val isLocalPaymentEnabled: Boolean
-    open val isPayPalEnabled: Boolean
-    open val isPostalCodeChallengePresent: Boolean
-    open val isSamsungPayEnabled: Boolean
-    open val isThreeDSecureEnabled: Boolean
-    open val isVenmoEnabled: Boolean
-    open val isVisaCheckoutEnabled: Boolean
-    open val merchantAccountId: String?
-    open val merchantId: String
-    open val payPalDirectBaseUrl: String?
-    open val payPalPrivacyUrl: String?
-    open val payPalUserAgreementUrl: String?
-    open val supportedCardTypes: List<String>
+    val assetsUrl: String
+    val cardinalAuthenticationJwt: String?
+    val clientApiUrl: String
+    val environment: String
+    val isCvvChallengePresent: Boolean
+    val isGooglePayEnabled: Boolean
+    val isLocalPaymentEnabled: Boolean
+    val isPayPalEnabled: Boolean
+    val isPostalCodeChallengePresent: Boolean
+    val isSamsungPayEnabled: Boolean
+    val isThreeDSecureEnabled: Boolean
+    val isVenmoEnabled: Boolean
+    val isVisaCheckoutEnabled: Boolean
+    val merchantAccountId: String?
+    val merchantId: String
+    val payPalDirectBaseUrl: String?
+    val payPalPrivacyUrl: String?
+    val payPalUserAgreementUrl: String?
+    val supportedCardTypes: List<String>
     // endregion
 
     // region Internal Properties
@@ -161,22 +158,10 @@ open class Configuration internal constructor(configurationString: String?) {
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val isGraphQLEnabled: Boolean
 
     /**
-     * @return `true` if Kount is enabled for the merchant account; `false` otherwise.
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val isKountEnabled: Boolean
-
-    /**
      * @return `true` if PayPal touch is currently disabled, `false` otherwise.
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val isPayPalTouchDisabled: Boolean
-
-    /**
-     * @return the Kount merchant id set in the Gateway.
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val kountMerchantId: String
 
     /**
      * @return the PayPal app client id.
@@ -287,11 +272,6 @@ open class Configuration internal constructor(configurationString: String?) {
     // endregion
 
     init {
-        // TODO: make configuration non-null once ConfigurationLoader is migrated to Kotlin
-        if (configurationString == null) {
-            throw JSONException("Configuration cannot be null")
-        }
-
         this.configurationString = configurationString
         val json = JSONObject(configurationString)
         assetsUrl = Json.optString(json, ASSETS_URL_KEY, "")
@@ -342,10 +322,7 @@ open class Configuration internal constructor(configurationString: String?) {
         isBraintreeApiEnabled = braintreeApiConfiguration.isEnabled
         isFraudDataCollectionEnabled = cardConfiguration.isFraudDataCollectionEnabled
         isGraphQLEnabled = graphQLConfiguration.isEnabled
-        // NEXT MAJOR VERSION: remove Kount related properties
-        isKountEnabled = false
         isPayPalTouchDisabled = payPalConfiguration.isTouchDisabled
-        kountMerchantId = ""
         payPalClientId = payPalConfiguration.clientId
         payPalCurrencyIsoCode = payPalConfiguration.currencyIsoCode
         payPalDisplayName = payPalConfiguration.displayName
@@ -369,7 +346,7 @@ open class Configuration internal constructor(configurationString: String?) {
     /**
      * @return Configuration as a json [String].
      */
-    open fun toJson(): String {
+    fun toJson(): String {
         return configurationString
     }
     // endregion

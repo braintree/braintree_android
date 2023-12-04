@@ -62,7 +62,7 @@ internal class ConfigurationLoader internal constructor(
 
     private fun getCachedConfiguration(authorization: Authorization, configUrl: String): Configuration? {
         val cacheKey = createCacheKey(authorization, configUrl)
-        val cachedConfigResponse = configurationCache.getConfiguration(cacheKey)
+        val cachedConfigResponse = configurationCache.getConfiguration(cacheKey) ?: return null
         return try {
             Configuration.fromJson(cachedConfigResponse)
         } catch (e: JSONException) {
