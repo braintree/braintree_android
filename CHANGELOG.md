@@ -93,8 +93,11 @@
     * Replace `SEPADirectDebitClient#tokenize` with`SEPADirectDebitClient#createPaymentAuthRequest` 
       and modify parameters
 
-## unreleased 
+## 4.40.0 (2023-11-16)
 
+* PayPalNativeCheckout
+  * Bump native-checkout version to release `1.2.0`
+  * Add `setUserAuthenticationEmail()` to `PayPalNativeRequest`
 * GooglePay
   * Bump `play-services-wallet` version to `19.2.1`
   * Add `totalPriceLabel` to `GooglePayRequest`
