@@ -1,6 +1,7 @@
 package com.braintreepayments.api
 
 import android.content.Context
+import androidx.work.Worker
 import androidx.work.WorkerParameters
 
 /**
@@ -12,10 +13,10 @@ import androidx.work.WorkerParameters
 open class AnalyticsUploadWorker(
     context: Context,
     params: WorkerParameters
-) : AnalyticsBaseWorker(context, params) {
+) : Worker(context, params) {
 
     override fun doWork(): Result {
-        val analyticsClient = createAnalyticsClientFromInputData()
+        val analyticsClient = AnalyticsClient(applicationContext)
         return analyticsClient.uploadAnalytics(applicationContext, inputData)
     }
 }
