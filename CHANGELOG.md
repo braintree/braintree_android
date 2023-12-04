@@ -54,6 +54,8 @@
     * Remove `ThreeDSecureV1UICustomization`
     * Remove `versionRequesed` from `ThreeDSecureRequest` as version 1 is no longer supported
     * Remove `ThreeDSecureV2BaseCustomization`
+    * Remove `CardinalValidateReceiver` from `ThreeDSecureActivity`
+    * Make empty `ThreeDSecureLookup` constructor package-private
   * PayPal
     * Remove `PayPalListener`
     * Add `PayPalLauncher`, `PayPalPaymentAuthRequest`, `PayPalPaymentAuthResult`, 
