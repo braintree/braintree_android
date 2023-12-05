@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
@@ -75,10 +76,12 @@ public class CardClientUnitTest {
 
         sut.tokenize(card, cardTokenizeCallback);
 
-        ArgumentCaptor<CardNonce> captor = ArgumentCaptor.forClass(CardNonce.class);
+        ArgumentCaptor<CardResult> captor = ArgumentCaptor.forClass(CardResult.class);
         verify(cardTokenizeCallback).onCardResult(captor.capture());
 
-        CardNonce cardNonce = captor.getValue();
+        CardResult result = captor.getValue();
+        assertTrue(result instanceof CardResult.Success);
+        CardNonce cardNonce = ((CardResult.Success) result).getNonce();
         assertEquals("3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1", cardNonce.getString());
     }
 
@@ -96,10 +99,12 @@ public class CardClientUnitTest {
 
         sut.tokenize(card, cardTokenizeCallback);
 
-        ArgumentCaptor<CardNonce> captor = ArgumentCaptor.forClass(CardNonce.class);
+        ArgumentCaptor<CardResult> captor = ArgumentCaptor.forClass(CardResult.class);
         verify(cardTokenizeCallback).onCardResult(captor.capture());
 
-        CardNonce cardNonce = captor.getValue();
+        CardResult result = captor.getValue();
+        assertTrue(result instanceof CardResult.Success);
+        CardNonce cardNonce = ((CardResult.Success) result).getNonce();
         assertEquals("123456-12345-12345-a-adfa", cardNonce.getString());
     }
 
@@ -149,7 +154,13 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(cardTokenizeCallback).onCardResult(null);
+        ArgumentCaptor<CardResult> captor = ArgumentCaptor.forClass(CardResult.class);
+        verify(cardTokenizeCallback).onCardResult(captor.capture());
+
+        CardResult result = captor.getValue();
+        assertTrue(result instanceof CardResult.Failure);
+        Exception actualError = ((CardResult.Failure) result).getError();
+        assertEquals(error, actualError);
     }
 
     @Test
@@ -166,7 +177,13 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(cardTokenizeCallback).onCardResult(null);
+        ArgumentCaptor<CardResult> captor = ArgumentCaptor.forClass(CardResult.class);
+        verify(cardTokenizeCallback).onCardResult(captor.capture());
+
+        CardResult result = captor.getValue();
+        assertTrue(result instanceof CardResult.Failure);
+        Exception actualError = ((CardResult.Failure) result).getError();
+        assertEquals(error, actualError);
     }
 
     @Test
@@ -213,6 +230,12 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(cardTokenizeCallback).onCardResult(null);
+        ArgumentCaptor<CardResult> captor = ArgumentCaptor.forClass(CardResult.class);
+        verify(cardTokenizeCallback).onCardResult(captor.capture());
+
+        CardResult result = captor.getValue();
+        assertTrue(result instanceof CardResult.Failure);
+        Exception actualError = ((CardResult.Failure) result).getError();
+        assertEquals(configError, actualError);
     }
 }
