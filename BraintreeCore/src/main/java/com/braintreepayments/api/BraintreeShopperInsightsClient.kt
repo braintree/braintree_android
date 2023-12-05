@@ -9,9 +9,7 @@ import androidx.annotation.VisibleForTesting
  * you can improve conversion, increase sales/repeat buys and boost user retention/loyalty.
  * - Note: This feature is in beta. It's public API may change in future releases.
  */
-open class BraintreeShopperInsightsClient @VisibleForTesting internal constructor(
-    private val httpClient: BraintreeHttpClient,
-){
+open class BraintreeShopperInsightsClient @VisibleForTesting internal constructor() {
 
     /**
      * Retrieves recommended payment methods based on the provided shopper insights request.
@@ -23,13 +21,20 @@ open class BraintreeShopperInsightsClient @VisibleForTesting internal constructo
      * @param request The `ShopperInsightRequest` containing information about the shopper.
      * @return A `ShopperInsightResult` object indicating the recommended payment methods.
      */
-    fun getRecommendedPaymentMethods(request: ShopperInsightRequest) : ShopperInsightResult {
+    fun getRecommendedPaymentMethods(
+        request: ShopperInsightRequest,
+        callback: ShopperInsightCallback
+    ) {
         // TODO: - Add isAppInstalled checks for PP & Venmo. DTBTSDK-3176
         // TODO: - Make API call to PaymentReadyAPI. DTBTSDK-3176
         // Hardcoded result
-        return ShopperInsightResult(
-            isPayPalRecommended = false,
-            isVenmoRecommended = false
+        callback.onResult(
+            ShopperInsightResult.Success(
+                ShopperInsightResponse(
+                    isPayPalRecommended = false,
+                    isVenmoRecommended = false
+                )
+            )
         )
     }
 
