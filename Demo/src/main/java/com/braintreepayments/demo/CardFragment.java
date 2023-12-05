@@ -182,7 +182,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         card.setShouldValidate(false); 
         card.setPostalCode(cardForm.getPostalCode());
 
-        cardClient.tokenize(card, (cardNonce, tokenizeError) -> {
+        cardClient.tokenize(card, (cardResult) -> {
             if (cardNonce != null) {
                 handlePaymentMethodNonceCreated(cardNonce);
             } else {

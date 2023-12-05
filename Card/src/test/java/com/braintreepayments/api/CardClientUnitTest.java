@@ -76,7 +76,7 @@ public class CardClientUnitTest {
         sut.tokenize(card, cardTokenizeCallback);
 
         ArgumentCaptor<CardNonce> captor = ArgumentCaptor.forClass(CardNonce.class);
-        verify(cardTokenizeCallback).onResult(captor.capture(), isNull());
+        verify(cardTokenizeCallback).onCardResult(captor.capture());
 
         CardNonce cardNonce = captor.getValue();
         assertEquals("3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1", cardNonce.getString());
@@ -97,7 +97,7 @@ public class CardClientUnitTest {
         sut.tokenize(card, cardTokenizeCallback);
 
         ArgumentCaptor<CardNonce> captor = ArgumentCaptor.forClass(CardNonce.class);
-        verify(cardTokenizeCallback).onResult(captor.capture(), isNull());
+        verify(cardTokenizeCallback).onCardResult(captor.capture());
 
         CardNonce cardNonce = captor.getValue();
         assertEquals("123456-12345-12345-a-adfa", cardNonce.getString());
@@ -149,7 +149,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(cardTokenizeCallback).onResult(null, error);
+        verify(cardTokenizeCallback).onCardResult(null);
     }
 
     @Test
@@ -166,7 +166,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(cardTokenizeCallback).onResult(null, error);
+        verify(cardTokenizeCallback).onCardResult(null);
     }
 
     @Test
@@ -213,6 +213,6 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(cardTokenizeCallback).onResult(null, configError);
+        verify(cardTokenizeCallback).onCardResult(null);
     }
 }
