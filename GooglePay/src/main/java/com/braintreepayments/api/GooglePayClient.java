@@ -236,7 +236,7 @@ public class GooglePayClient {
     void tokenize(PaymentData paymentData, GooglePayTokenizeCallback callback) {
         try {
             JSONObject result = new JSONObject(paymentData.toJson());
-            callback.onResult(GooglePayCardNonce.fromJSON(result), null);
+            callback.onResult(new GooglePayResult.Success(GooglePayCardNonce.fromJSON(result)));
             braintreeClient.sendAnalyticsEvent("google-payment.nonce-received");
         } catch (JSONException | NullPointerException e) {
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
@@ -245,9 +245,9 @@ public class GooglePayClient {
                 String token =
                         new JSONObject(paymentData.toJson()).getJSONObject("paymentMethodData")
                                 .getJSONObject("tokenizationData").getString("token");
-                callback.onResult(null, ErrorWithResponse.fromJson(token));
+                callback.onResult(new GooglePayResult.Failure(ErrorWithResponse.fromJson(token)));
             } catch (JSONException | NullPointerException e1) {
-                callback.onResult(null, e1);
+                callback.onResult(new GooglePayResult.Failure(e1));
             }
         }
     }
@@ -273,7 +273,7 @@ public class GooglePayClient {
             } else {
                 braintreeClient.sendAnalyticsEvent("google-payment.failed");
             }
-            callback.onResult(null, paymentAuthResult.getError());
+            callback.onResult(new GooglePayResult.Failure(paymentAuthResult.getError()));
         }
     }
 

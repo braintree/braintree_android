@@ -1004,7 +1004,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<PaymentMethodNonce> captor =
                 ArgumentCaptor.forClass(PaymentMethodNonce.class);
-        verify(activityResultCallback).onResult(captor.capture(), isNull());
+        verify(activityResultCallback).onResult(captor.capture());
 
         assertTrue(captor.getValue() instanceof GooglePayCardNonce);
     }
@@ -1039,7 +1039,7 @@ public class GooglePayClientUnitTest {
 
         ArgumentCaptor<PaymentMethodNonce> captor =
                 ArgumentCaptor.forClass(PaymentMethodNonce.class);
-        verify(activityResultCallback).onResult(captor.capture(), (Exception) isNull());
+        verify(activityResultCallback).onResult(captor.capture());
 
         assertTrue(captor.getValue() instanceof PayPalAccountNonce);
     }
@@ -1066,7 +1066,7 @@ public class GooglePayClientUnitTest {
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.authorized"));
         ArgumentCaptor<PaymentMethodNonce> captor =
                 ArgumentCaptor.forClass(PaymentMethodNonce.class);
-        verify(activityResultCallback).onResult(captor.capture(), isNull());
+        verify(activityResultCallback).onResult(captor.capture());
 
         PaymentMethodNonce nonce = captor.getValue();
         JSONObject result = new JSONObject(paymentData.toJson());
@@ -1088,7 +1088,7 @@ public class GooglePayClientUnitTest {
         sut.tokenize(googlePayPaymentAuthResult, activityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.failed"));
-        verify(activityResultCallback).onResult(null, error);
+        verify(activityResultCallback).onResult(null);
     }
 
     @Test
@@ -1106,7 +1106,7 @@ public class GooglePayClientUnitTest {
         sut.tokenize(googlePayPaymentAuthResult, activityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.canceled"));
-        verify(activityResultCallback).onResult(null, userCanceledError);
+        verify(activityResultCallback).onResult(null);
     }
 
     // endregion
