@@ -56,8 +56,7 @@ public class VenmoLauncher {
      * Launches the Venmo authentication flow by switching to the Venmo app.
      *
      * @param venmoPaymentAuthRequest the result of
-     *                                {@link VenmoClient#createPaymentAuthRequest(FragmentActivity,
-     *                                VenmoRequest, VenmoPaymentAuthRequestCallback)}
+     *                                {@link VenmoClient#createPaymentAuthRequest(android.content.Context, VenmoRequest, VenmoPaymentAuthRequestCallback)}
      */
     public void launch(VenmoPaymentAuthRequest.ReadyToLaunch venmoPaymentAuthRequest) {
         activityLauncher.launch(venmoPaymentAuthRequest.getRequestParams());
