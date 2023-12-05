@@ -4,7 +4,8 @@ plugins {
 }
 
 android {
-    compileSdkVersion rootProject.compileSdkVersion
+    namespace "com.braintreepayments.api.sharedutils"
+    compileSdk rootProject.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -29,6 +30,16 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
+
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+
+    kotlin {
+        jvmToolchain {
+            languageVersion.set(JavaLanguageVersion.of("11"))
+        }
+    }
 }
 
 dependencies {
@@ -44,7 +55,6 @@ dependencies {
     androidTestImplementation deps.androidxTestRunner
     androidTestImplementation deps.junitTest
     androidTestImplementation deps.appCompat
-    androidTestImplementation deps.dexmakerMockito
 }
 
 // region signing and publishing

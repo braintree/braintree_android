@@ -13,8 +13,8 @@ import static com.braintreepayments.AutomatorAssertion.text;
 import static com.braintreepayments.DeviceAutomator.onDevice;
 import static com.braintreepayments.UiObjectMatcher.withText;
 import static com.braintreepayments.UiObjectMatcher.withTextStartingWith;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.endsWith;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class PayPalBrowserSwitchTest extends TestHelper {

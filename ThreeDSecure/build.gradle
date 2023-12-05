@@ -5,7 +5,8 @@ plugins {
 }
 
 android {
-    compileSdkVersion rootProject.compileSdkVersion
+    namespace "com.braintreepayments.api.threedsecure"
+    compileSdk rootProject.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -28,6 +29,16 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
+
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+
+    kotlin {
+        jvmToolchain {
+            languageVersion.set(JavaLanguageVersion.of("11"))
+        }
+    }
 }
 
 dependencies {
@@ -45,7 +56,6 @@ dependencies {
     testImplementation deps.androidxTestCore
     testImplementation project(':TestUtils')
 
-    androidTestImplementation deps.dexmakerMockito
     androidTestImplementation deps.androidxTestRules
     androidTestImplementation deps.androidxTestRunner
     androidTestImplementation deps.junitTest

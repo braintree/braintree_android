@@ -16,4 +16,3 @@ The Braintree SDK uses code from the following libraries:
  * [Retrofit](https://github.com/square/retrofit), Apache License Version 2.0
  * [Robolectric](https://github.com/robolectric/robolectric), MIT License
  * [SDK Manager Plugin](https://github.com/JakeWharton/sdk-manager-plugin), Apache License Version 2.0
- * [Stetho](https://github.com/facebook/stetho), BSD License

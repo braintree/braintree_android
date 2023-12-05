@@ -9,7 +9,8 @@ plugins {
 def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"'
 
 android {
-    compileSdkVersion rootProject.compileSdkVersion
+    namespace "com.braintreepayments.api"
+    compileSdk rootProject.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -19,6 +20,11 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
         buildConfigField "String", "VERSION_NAME", "\"${rootProject.versionName}\""
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
 
     testOptions {
@@ -44,6 +50,16 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
+
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+
+    kotlin {
+        jvmToolchain {
+            languageVersion.set(JavaLanguageVersion.of("11"))
+        }
+    }
 }
 
 
@@ -63,7 +79,6 @@ dependencies {
     api project(':SharedUtils')
 
     androidTestImplementation deps.playServicesWallet
-    androidTestImplementation deps.dexmakerMockito
     androidTestImplementation deps.androidxTestRules
     androidTestImplementation deps.androidxTestRunner
     androidTestImplementation deps.junitTest
@@ -85,7 +100,7 @@ dependencies {
     testImplementation project(':Card')
 
     // Ref: https://kotlin.github.io/dokka/1.8.0-SNAPSHOT/user_guide/applying/gradle/#applying-plugins
-    dokkaHtmlPartialPlugin 'org.jetbrains.dokka:android-documentation-plugin:1.7.20'
+    dokkaHtmlPartialPlugin 'org.jetbrains.dokka:android-documentation-plugin:1.9.10'
 }
 
 android.buildTypes.each { type ->
