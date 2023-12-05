@@ -20,6 +20,7 @@ import com.braintreepayments.api.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
+import com.braintreepayments.api.CardResult;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
@@ -183,10 +184,10 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         card.setPostalCode(cardForm.getPostalCode());
 
         cardClient.tokenize(card, (cardResult) -> {
-            if (cardNonce != null) {
-                handlePaymentMethodNonceCreated(cardNonce);
-            } else {
-                handleError(tokenizeError);
+            if (cardResult instanceof CardResult.Success) {
+                handlePaymentMethodNonceCreated(((CardResult.Success) cardResult).getNonce());
+            } else if (cardResult instanceof CardResult.Failure) {
+                handleError(((CardResult.Failure) cardResult).getError());
             }
         });
     }

@@ -8,6 +8,7 @@ basics for updating your Braintree integration from v4 to v5.
 1. [Android API](#android-api)
 1. [Braintree Client](#braintree-client)
 1. [Data Collector](#data-collector)
+1. [Card](#card)
 1. [Union Pay](#union-pay)
 1. [Venmo](#venmo)
 1. [Google Pay](#google-pay)
@@ -45,6 +46,24 @@ callback)`, where `riskCorrelationId` is an optional client metadata ID.
 val dataCollector = DataCollector(context, authorization)
 dataCollector.collectDeviceData(context) { deviceData, error ->
     // send deviceData to your server
+}
+```
+
+## Card
+
+The card tokenization integration has been updated to simplify instantiation and result handling.
+
+```kotlin
+- val braintreeClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+- val cardClient = CardClient(braintreeClient)
++ val cardClient = CardClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+
+- cardClient.tokenize(card) { cardNonce, error ->
++ cardClient.tokenize(card) { cardResult ->
++    when (cardResult) {
++       is CardResult.Success -> { /* handle cardResult.nonce */ }
++       is CardResult.Failure -> { /* handle cardResult.error */ }
++    }    
 }
 ```
 
