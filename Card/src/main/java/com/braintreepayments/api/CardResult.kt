@@ -14,5 +14,4 @@ sealed class CardResult {
      * There was an [error] during card tokenization.
      */
     class Failure(val error: Exception) : CardResult()
-
 }
