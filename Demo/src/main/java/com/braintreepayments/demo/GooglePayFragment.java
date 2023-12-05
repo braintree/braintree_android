@@ -19,6 +19,7 @@ import com.braintreepayments.api.GooglePayReadinessResult;
 import com.braintreepayments.api.GooglePayRequest;
 import com.braintreepayments.api.GooglePayResult;
 import com.braintreepayments.api.PaymentMethodNonce;
+import com.braintreepayments.api.UserCanceledException;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
@@ -46,6 +47,8 @@ public class GooglePayFragment extends BaseFragment {
                                 handleError(((GooglePayResult.Failure) googlePayResult).getError());
                             } else if (googlePayResult instanceof GooglePayResult.Success){
                                 handleGooglePayActivityResult(((GooglePayResult.Success) googlePayResult).getNonce());
+                            } else if (googlePayResult instanceof GooglePayResult.Cancel) {
+                                handleError(new UserCanceledException("User canceled Google Pay"));
                             }
                         }));
 
