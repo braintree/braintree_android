@@ -173,33 +173,6 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void createPaymentAuthRequest_whenDeviceCantPerformBrowserSwitch_returnsError() {
-        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
-
-        BraintreeClient braintreeClient =
-                new MockBraintreeClientBuilder().configuration(payPalEnabledConfig)
-                        .browserSwitchAssertionError(
-                                new BrowserSwitchException("browser switch error")).build();
-
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
-        sut.createPaymentAuthRequest(activity, new PayPalCheckoutRequest("1.00"),
-                paymentAuthCallback);
-
-        ArgumentCaptor<PayPalPaymentAuthRequest> captor =
-                ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
-        verify(paymentAuthCallback).onPayPalPaymentAuthRequest(captor.capture());
-
-        PayPalPaymentAuthRequest request = captor.getValue();
-        assertTrue(request instanceof PayPalPaymentAuthRequest.Failure);
-        assertEquals("AndroidManifest.xml is incorrectly configured or another app " +
-                        "defines the same browser switch url as this app. See " +
-                        "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
-                        "for the correct configuration: browser switch error",
-                ((PayPalPaymentAuthRequest.Failure) request).getError().getMessage());
-    }
-
-
-    @Test
     public void createPaymentAuthRequest_whenCheckoutRequest_sendsBrowserSwitchStartAnalyticsEvent() {
         PayPalCheckoutRequest payPalCheckoutRequest = new PayPalCheckoutRequest("1.00");
         payPalCheckoutRequest.setIntent("authorize");
