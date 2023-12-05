@@ -59,7 +59,6 @@ class ApiClientUnitTest {
     fun tokenizeGraphQL_tokenizesCardsWithGraphQL() {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLEnabledConfig)
-            .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
             .build()
 
         val graphQLBodySlot = slot<String>()

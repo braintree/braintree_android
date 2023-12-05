@@ -7,7 +7,7 @@ import com.braintreepayments.api.IntegrationType.Integration
 internal data class BraintreeClientParams @VisibleForTesting constructor(
     val context: Context,
     val sessionId: String,
-    val authorizationLoader: AuthorizationLoader,
+    val authorization: Authorization,
     val returnUrlScheme: String,
     val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
     val graphQLClient: BraintreeGraphQLClient = BraintreeGraphQLClient(),
@@ -21,9 +21,7 @@ internal data class BraintreeClientParams @VisibleForTesting constructor(
 
     constructor(options: BraintreeOptions) : this(
         context = options.context,
-        authorizationLoader = options.run {
-            AuthorizationLoader(initialAuthString, clientTokenProvider)
-        },
+        authorization = options.authorization,
         sessionId = options.sessionId ?: createUniqueSessionId(),
         returnUrlScheme = options.returnUrlScheme ?: createDefaultReturnUrlScheme(options.context),
         integrationType = options.integrationType ?: IntegrationType.CUSTOM

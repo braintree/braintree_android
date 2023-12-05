@@ -11,7 +11,6 @@ class MockkBraintreeClientBuilder {
     private var sendGraphQLPOSTError: ErrorWithResponse? = null
 
     private var configurationSuccess: Configuration? = null
-    private var authorizationSuccess: Authorization? = null
 
     fun configurationSuccess(configurationSuccess: Configuration): MockkBraintreeClientBuilder {
         this.configurationSuccess = configurationSuccess
@@ -23,11 +22,6 @@ class MockkBraintreeClientBuilder {
         return this
     }
 
-    fun authorizationSuccess(authorizationSuccess: Authorization): MockkBraintreeClientBuilder {
-        this.authorizationSuccess = authorizationSuccess
-        return this
-    }
-
     fun build(): BraintreeClient {
         val braintreeClient = mockk<BraintreeClient>(relaxed = true)
         every { braintreeClient.sessionId } returns sessionId
@@ -35,11 +29,6 @@ class MockkBraintreeClientBuilder {
         every { braintreeClient.getConfiguration(any()) } answers { call ->
             val callback = call.invocation.args[0] as ConfigurationCallback
             configurationSuccess?.let { callback.onResult(it, null) }
-        }
-
-        every { braintreeClient.getAuthorization(any()) } answers { call ->
-            val callback = call.invocation.args[0] as AuthorizationCallback
-            authorizationSuccess?.let { callback.onAuthorizationResult(it, null) }
         }
 
         every { braintreeClient.sendGraphQLPOST(any(), any()) } answers { call ->
