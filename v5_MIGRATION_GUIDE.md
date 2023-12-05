@@ -54,16 +54,13 @@ dataCollector.collectDeviceData(context) { deviceData, error ->
 The card tokenization integration has been updated to simplify instantiation and result handling.
 
 ```kotlin
-- val braintreeClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
-- val cardClient = CardClient(braintreeClient)
-+ val cardClient = CardClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+val cardClient = CardClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 
-- cardClient.tokenize(card) { cardNonce, error ->
-+ cardClient.tokenize(card) { cardResult ->
-+    when (cardResult) {
-+       is CardResult.Success -> { /* handle cardResult.nonce */ }
-+       is CardResult.Failure -> { /* handle cardResult.error */ }
-+    }    
+cardClient.tokenize(card) { cardResult ->
+    when (cardResult) {
+        is CardResult.Success -> { /* handle cardResult.nonce */ }
+        is CardResult.Failure -> { /* handle cardResult.error */ }
+    }
 }
 ```
 
