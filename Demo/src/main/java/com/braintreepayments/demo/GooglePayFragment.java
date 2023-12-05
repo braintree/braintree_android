@@ -53,7 +53,7 @@ public class GooglePayFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
 
-        googlePayClient.isReadyToPay(requireActivity(), (isReadyToPay, e) -> {
+        googlePayClient.isReadyToPay(requireContext(), (isReadyToPay, e) -> {
             if (isReadyToPay) {
                 googlePayButton.setVisibility(View.VISIBLE);
             } else {
