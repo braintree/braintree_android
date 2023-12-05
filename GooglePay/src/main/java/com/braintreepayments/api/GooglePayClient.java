@@ -181,39 +181,38 @@ public class GooglePayClient {
         braintreeClient.sendAnalyticsEvent("google-payment.selected");
 
         if (!validateManifest()) {
-            callback.onResult(null, new BraintreeException(
-                    "GooglePayActivity was " + "not found in the " + "Android " +
-                            "manifest, or did not have a theme of R.style.bt_transparent_activity"));
+            callback.onGooglePayPaymentAuthRequest(new GooglePayPaymentAuthRequest.Failure(new BraintreeException(
+                    "GooglePayActivity was not found in the Android " +
+                            "manifest, or did not have a theme of R.style.bt_transparent_activity")));
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
             return;
         }
 
         //noinspection ConstantConditions
         if (request == null) {
-            callback.onResult(null, new BraintreeException(
-                    "Cannot pass null " + "GooglePayRequest to " + "requestPayment"));
+            callback.onGooglePayPaymentAuthRequest(new GooglePayPaymentAuthRequest.Failure(new BraintreeException(
+                    "Cannot pass null GooglePayRequest to requestPayment")));
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
             return;
         }
 
         if (request.getTransactionInfo() == null) {
-            callback.onResult(null, new BraintreeException(
-                    "Cannot pass null " + "TransactionInfo to" + " requestPayment"));
+            callback.onGooglePayPaymentAuthRequest(new GooglePayPaymentAuthRequest.Failure(new BraintreeException(
+                    "Cannot pass null TransactionInfo to requestPayment")));
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
             return;
         }
 
         braintreeClient.getConfiguration((configuration, configError) -> {
-            if (configuration == null) {
-                callback.onResult(null, configError);
+            if (configuration == null && configError != null) {
+                callback.onGooglePayPaymentAuthRequest(new GooglePayPaymentAuthRequest.Failure(configError));
                 return;
             }
 
             if (!configuration.isGooglePayEnabled()) {
-                callback.onResult(null, new BraintreeException(
-                        "Google Pay " +
-                                "is not enabled for your Braintree account," +
-                                " or Google Play Services are not configured correctly."));
+                callback.onGooglePayPaymentAuthRequest(new GooglePayPaymentAuthRequest.Failure(new BraintreeException(
+                        "Google Pay is not enabled for your Braintree account," +
+                                " or Google Play Services are not configured correctly.")));
                 return;
             }
 
@@ -223,10 +222,10 @@ public class GooglePayClient {
             PaymentDataRequest paymentDataRequest =
                     PaymentDataRequest.fromJson(request.toJson());
 
-            GooglePayPaymentAuthRequestParams intent =
+            GooglePayPaymentAuthRequestParams params =
                     new GooglePayPaymentAuthRequestParams(getGooglePayEnvironment(configuration),
                             paymentDataRequest);
-            callback.onResult(intent, null);
+            callback.onGooglePayPaymentAuthRequest(new GooglePayPaymentAuthRequest.ReadyToLaunch(params));
 
         });
 

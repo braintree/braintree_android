@@ -102,7 +102,7 @@ public class GooglePayFragment extends BaseFragment {
                 .build());
 
         googlePayClient.createPaymentAuthRequest(googlePayRequest,
-                (paymentAuthRequest, error) -> googlePayLauncher.launch(paymentAuthRequest));
+                (paymentAuthRequest) -> googlePayLauncher.launch(paymentAuthRequest));
     }
 
     private void handleGooglePayActivityResult(PaymentMethodNonce paymentMethodNonce) {
