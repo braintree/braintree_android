@@ -143,6 +143,14 @@ class MyActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
+
+-       googlePayClient.isReadyToPay(this) { isReadyToPay, error ->
++       googlePayClient.isReadyToPay(this) { readinessResult ->
++           if (readinessResult is GooglePayReadinessResult.ReadyToPay) {
++                // show Google Pay button 
++           }
++        }
+        
 +       googlePayLauncher = GooglePayLauncher(this) { paymentAuthResult ->
 +            googlePayClient.tokenize(paymentAuthResult) { googlePayResult ->
 +               when (googlePayResult) {
