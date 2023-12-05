@@ -12,13 +12,9 @@ sealed class GooglePayReadinessResult {
     object ReadyToPay : GooglePayReadinessResult()
 
     /**
-     * The Google Pay API is supported or not set up on this device.
+     * The Google Pay API is supported or not set up on this device, or there was an [error]
+     * determining readiness.
      */
-    object NotReadyToPay : GooglePayReadinessResult()
-
-    /**
-     * There was an [error] determining readiness to Google Pay
-     */
-    class Failure(val error: Exception) : GooglePayReadinessResult()
+    class NotReadyToPay(val error: Exception?) : GooglePayReadinessResult()
 
 }

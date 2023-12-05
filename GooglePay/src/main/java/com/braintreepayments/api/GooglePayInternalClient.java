@@ -21,10 +21,10 @@ class GooglePayInternalClient {
                 if (isReady) {
                     callback.onGooglePayReadinessResult(GooglePayReadinessResult.ReadyToPay.INSTANCE);
                 } else {
-                    callback.onGooglePayReadinessResult(GooglePayReadinessResult.NotReadyToPay.INSTANCE);
+                    callback.onGooglePayReadinessResult(new GooglePayReadinessResult.NotReadyToPay(null));
                 }
             } catch (ApiException e) {
-                callback.onGooglePayReadinessResult(new GooglePayReadinessResult.Failure(e));
+                callback.onGooglePayReadinessResult(new GooglePayReadinessResult.NotReadyToPay(e));
             }
         });
     }

@@ -117,9 +117,8 @@ class GooglePayInternalClientUnitTest {
         every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns SuccessfulBooleanTask(true)
 
         val sut = GooglePayInternalClient()
-        sut.isReadyToPay(activity, configuration, isReadyToPayRequest) { isReadyToPay, error ->
-            assertTrue(isReadyToPay)
-            assertNull(error)
+        sut.isReadyToPay(activity, configuration, isReadyToPayRequest) { readyToPayResult ->
+            assertTrue(readyToPayResult is GooglePayReadinessResult.ReadyToPay)
             countDownLatch.countDown()
         }
         countDownLatch.await()
@@ -136,9 +135,10 @@ class GooglePayInternalClientUnitTest {
         every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns failedTask
 
         val sut = GooglePayInternalClient()
-        sut.isReadyToPay(activity, configuration, isReadyToPayRequest) { isReadyToPay, error ->
-            assertFalse(isReadyToPay)
-            assertSame(expectedError, error)
+        sut.isReadyToPay(activity, configuration, isReadyToPayRequest) { readyToPayResult ->
+            assertTrue(readyToPayResult is GooglePayReadinessResult.NotReadyToPay)
+            assertSame(expectedError, (readyToPayResult as GooglePayReadinessResult.NotReadyToPay)
+                .error)
             countDownLatch.countDown()
         }
         countDownLatch.await()
