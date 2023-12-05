@@ -122,21 +122,20 @@ public class CardClientTest {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(TOKENIZATION_KEY);
-        sut.tokenize(card, new CardTokenizeCallback() {
-            @Override
-            public void onCardResult(CardResult cardResult) {
-                assertTrue(error instanceof AuthorizationException);
+        sut.tokenize(card, cardResult -> {
+            assertTrue(cardResult instanceof CardResult.Failure);
+            Exception error = ((CardResult.Failure) cardResult).getError();
+            assertTrue(error instanceof AuthorizationException);
 
-                if (requestProtocol.equals(GRAPHQL)) {
-                    assertEquals("You are unauthorized to perform input validation with the provided authentication credentials.",
-                            error.getMessage());
-                } else {
-                    assertEquals("Tokenization key authorization not allowed for this endpoint. Please use an " +
-                            "authentication method with upgraded permissions", error.getMessage());
-                }
-
-                countDownLatch.countDown();
+            if (requestProtocol.equals(GRAPHQL)) {
+                assertEquals("You are unauthorized to perform input validation with the provided authentication credentials.",
+                        error.getMessage());
+            } else {
+                assertEquals("Tokenization key authorization not allowed for this endpoint. Please use an " +
+                        "authentication method with upgraded permissions", error.getMessage());
             }
+
+            countDownLatch.countDown();
         });
 
         countDownLatch.await();
@@ -165,19 +164,18 @@ public class CardClientTest {
         card.setCvv("123");
 
         CardClient sut = setupCardClient(TOKENIZATION_KEY);
-        sut.tokenize(card, new CardTokenizeCallback() {
-            @Override
-            public void onCardResult(CardResult cardResult) {
+        sut.tokenize(card, cardResult -> {
+            assertTrue(cardResult instanceof CardResult.Success);
+            CardNonce cardNonce = ((CardResult.Success) cardResult).getNonce();
 
-                assertNotNull(cardNonce.getBinData());
-                assertEquals("Unknown", cardNonce.getCardType());
-                assertEquals("", cardNonce.getLastFour());
-                assertEquals("", cardNonce.getLastTwo());
-                assertFalse(cardNonce.isDefault());
-                assertNotNull(cardNonce.getString());
+            assertNotNull(cardNonce.getBinData());
+            assertEquals("Unknown", cardNonce.getCardType());
+            assertEquals("", cardNonce.getLastFour());
+            assertEquals("", cardNonce.getLastTwo());
+            assertFalse(cardNonce.isDefault());
+            assertNotNull(cardNonce.getString());
 
-                countDownLatch.countDown();
-            }
+            countDownLatch.countDown();
         });
 
         countDownLatch.await();
@@ -197,6 +195,8 @@ public class CardClientTest {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(authorization);
         sut.tokenize(card, (cardResult) -> {
+            assertTrue(cardResult instanceof CardResult.Failure);
+            Exception error = ((CardResult.Failure) cardResult).getError();
             assertEquals("CVV verification failed",
                     ((ErrorWithResponse) error).errorFor("creditCard").getFieldErrors().get(0).getMessage());
             countDownLatch.countDown();
@@ -232,6 +232,8 @@ public class CardClientTest {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(authorization);
         sut.tokenize(card, (cardResult) -> {
+            assertTrue(cardResult instanceof CardResult.Failure);
+            Exception error = ((CardResult.Failure) cardResult).getError();
             assertEquals("Postal code verification failed",
                     ((ErrorWithResponse) error).errorFor("creditCard").errorFor("billingAddress")
                             .getFieldErrors().get(0).getMessage());
@@ -255,6 +257,8 @@ public class CardClientTest {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(authorization);
         sut.tokenize(card, (cardResult) -> {
+            assertTrue(cardResult instanceof CardResult.Failure);
+            Exception error = ((CardResult.Failure) cardResult).getError();
             assertEquals("Country code (alpha3) is not an accepted country",
                     ((ErrorWithResponse) error).errorFor("creditCard").errorFor("billingAddress")
                             .getFieldErrors().get(0).getMessage());
@@ -294,6 +298,8 @@ public class CardClientTest {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         sut.tokenize(card, (cardResult) -> {
 
+            assertTrue(cardResult instanceof CardResult.Success);
+            CardNonce cardNonce = ((CardResult.Success) cardResult).getNonce();
             assertNotNull(cardNonce.getString());
             assertEquals("Visa", cardNonce.getCardType());
             assertEquals("1111", cardNonce.getLastFour());
