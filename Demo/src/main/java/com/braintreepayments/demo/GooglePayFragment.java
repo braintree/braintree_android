@@ -14,6 +14,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.GooglePayClient;
 import com.braintreepayments.api.GooglePayLauncher;
+import com.braintreepayments.api.GooglePayReadinessResult;
 import com.braintreepayments.api.GooglePayRequest;
 import com.braintreepayments.api.GooglePayResult;
 import com.braintreepayments.api.PaymentMethodNonce;
@@ -55,7 +56,7 @@ public class GooglePayFragment extends BaseFragment {
         super.onResume();
 
         googlePayClient.isReadyToPay(requireActivity(), (googlePayReadinessResult) -> {
-            if (isReadyToPay) {
+            if (googlePayReadinessResult instanceof GooglePayReadinessResult.ReadyToPay) {
                 googlePayButton.setVisibility(View.VISIBLE);
             } else {
                 showDialog(
