@@ -16,5 +16,4 @@ sealed class GooglePayReadinessResult {
      * determining readiness.
      */
     class NotReadyToPay(val error: Exception?) : GooglePayReadinessResult()
-
 }

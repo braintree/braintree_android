@@ -14,6 +14,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.GooglePayClient;
 import com.braintreepayments.api.GooglePayLauncher;
+import com.braintreepayments.api.GooglePayPaymentAuthRequest;
 import com.braintreepayments.api.GooglePayReadinessResult;
 import com.braintreepayments.api.GooglePayRequest;
 import com.braintreepayments.api.GooglePayResult;
@@ -101,8 +102,14 @@ public class GooglePayFragment extends BaseFragment {
                 .addAllowedCountryCodes(Settings.getGooglePayAllowedCountriesForShipping(activity))
                 .build());
 
-        googlePayClient.createPaymentAuthRequest(googlePayRequest,
-                (paymentAuthRequest) -> googlePayLauncher.launch(paymentAuthRequest));
+        googlePayClient.createPaymentAuthRequest(googlePayRequest, (paymentAuthRequest) -> {
+            if (paymentAuthRequest instanceof GooglePayPaymentAuthRequest.ReadyToLaunch) {
+                googlePayLauncher.launch(
+                        ((GooglePayPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams());
+            } else if (paymentAuthRequest instanceof GooglePayPaymentAuthRequest.Failure) {
+                handleError(((GooglePayPaymentAuthRequest.Failure) paymentAuthRequest).getError());
+            }
+        });
     }
 
     private void handleGooglePayActivityResult(PaymentMethodNonce paymentMethodNonce) {
