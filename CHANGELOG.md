@@ -9,6 +9,7 @@
     * Bump target Java version to Java 11
   * BraintreeCore
     * Remove `BraintreeClient` public constructors
+    * Remove `ClientTokenProvider`
     * Update payment method constructor parameters from `braintreeClient` to `context` and
       `authorization`
     * Remove `BraintreeSharedPreferencesException`

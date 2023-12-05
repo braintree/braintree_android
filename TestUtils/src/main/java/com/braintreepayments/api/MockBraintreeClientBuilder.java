@@ -57,11 +57,6 @@ public class MockBraintreeClientBuilder {
         return this;
     }
 
-    public MockBraintreeClientBuilder authorizationError(Exception authorizationError) {
-        this.authorizationError = authorizationError;
-        return this;
-    }
-
     public MockBraintreeClientBuilder deliverBrowserSwitchResult(
             BrowserSwitchResult browserSwitchResult) {
         this.browserSwitchResult = browserSwitchResult;
@@ -135,15 +130,7 @@ public class MockBraintreeClientBuilder {
         when(braintreeClient.getSessionId()).thenReturn(sessionId);
         when(braintreeClient.getIntegrationType()).thenReturn(integration);
 
-        doAnswer((Answer<Void>) invocation -> {
-            AuthorizationCallback callback = (AuthorizationCallback) invocation.getArguments()[0];
-            if (authorization != null) {
-                callback.onAuthorizationResult(authorization, null);
-            } else if (authorizationError != null) {
-                callback.onAuthorizationResult(null, authorizationError);
-            }
-            return null;
-        }).when(braintreeClient).getAuthorization(any(AuthorizationCallback.class));
+        when(braintreeClient.getAuthorization()).thenReturn(authorization);
 
         when(braintreeClient.getReturnUrlScheme()).thenReturn(returnUrlScheme);
 

@@ -26,25 +26,29 @@ class BraintreeClientUnitTest {
     private lateinit var braintreeHttpClient: BraintreeHttpClient
     private lateinit var braintreeGraphQLClient: BraintreeGraphQLClient
     private lateinit var configurationLoader: ConfigurationLoader
-    private lateinit var authorizationLoader: AuthorizationLoader
     private lateinit var analyticsClient: AnalyticsClient
     private lateinit var manifestValidator: ManifestValidator
     private lateinit var browserSwitchClient: BrowserSwitchClient
+    private lateinit var expectedAuthException: BraintreeException
 
     @Before
     fun beforeEach() {
-        authorization = mockk(relaxed = true)
+        authorization = Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN)
         context = mockk(relaxed = true)
         applicationContext = ApplicationProvider.getApplicationContext()
 
         braintreeHttpClient = mockk(relaxed = true)
         braintreeGraphQLClient = mockk(relaxed = true)
         configurationLoader = mockk(relaxed = true)
-        authorizationLoader = mockk(relaxed = true)
 
         analyticsClient = mockk(relaxed = true)
         manifestValidator = mockk(relaxed = true)
         browserSwitchClient = mockk(relaxed = true)
+
+        val clientSDKSetupURL =
+            "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization"
+        val message = "Valid authorization required. See $clientSDKSetupURL for more info."
+        expectedAuthException = BraintreeException(message)
 
         every { context.applicationContext } returns applicationContext
         WorkManagerTestInitHelper.initializeTestWorkManager(context)
@@ -52,7 +56,8 @@ class BraintreeClientUnitTest {
 
     @Test
     fun constructor_usesSessionIdFromParams() {
-        val params = BraintreeOptions(context = context, sessionId = "session-id")
+        val params = BraintreeOptions(context = context, sessionId = "session-id", authorization =
+        authorization)
         val sut = BraintreeClient(params)
         assertEquals("session-id", sut.sessionId)
     }
@@ -61,23 +66,19 @@ class BraintreeClientUnitTest {
     fun constructor_setsSessionIdFromUUIDHelperIfSessionIdNotIncluded() {
         val uuidRegex = """[a-fA-F0-9]{32}""".toRegex()
 
-        val sut = BraintreeClient(BraintreeOptions(context = context))
+        val sut = BraintreeClient(BraintreeOptions(context = context, authorization = authorization))
         assertTrue(uuidRegex.matches(sut.sessionId))
     }
 
     @Test
     @Throws(JSONException::class)
     fun configuration_onAuthorizationAndConfigurationLoadSuccess_forwardsResult() {
-        val authorizationLoader = MockkAuthorizationLoaderBuilder()
-            .authorization(authorization)
-            .build()
-
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
 
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
         val callback = mockk<ConfigurationCallback>(relaxed = true)
         sut.getConfiguration(callback)
@@ -86,32 +87,13 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun configuration_forwardsAuthorizationLoaderError() {
-        val authFetchError = Exception("auth fetch error")
-        val authorizationLoader = MockkAuthorizationLoaderBuilder()
-            .authorizationError(authFetchError)
-            .build()
-        val callback = mockk<ConfigurationCallback>(relaxed = true)
-
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
-        val sut = BraintreeClient(params)
-
-        sut.getConfiguration(callback)
-        verify { callback.onResult(null, authFetchError) }
-    }
-
-    @Test
     fun configuration_forwardsConfigurationLoaderError() {
-        val authorizationLoader = MockkAuthorizationLoaderBuilder()
-            .authorization(authorization)
-            .build()
-
         val configFetchError = Exception("config fetch error")
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(configFetchError)
             .build()
 
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
 
         val callback = mockk<ConfigurationCallback>(relaxed = true)
@@ -121,40 +103,26 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun authorization_forwardsInvocationToAuthorizationLoader() {
-        val authorizationLoader = MockkAuthorizationLoaderBuilder().build()
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
-        val sut = BraintreeClient(params)
+    fun configuration_whenInvalidAuth_callsBackAuthError() {
+        val sut = BraintreeClient(context, "invalid-auth-string")
 
-        val callback = mockk<AuthorizationCallback>(relaxed = true)
-        sut.getAuthorization(callback)
+        val callback = mockk<ConfigurationCallback>(relaxed = true)
+        sut.getConfiguration(callback)
 
-        verify { authorizationLoader.loadAuthorization(any()) }
-    }
+        val authErrorSlot = slot<BraintreeException>()
+        verify { callback.onResult(isNull(), capture(authErrorSlot)) }
 
-    @Test
-    fun invalidateClientToken_forwardsInvocationToAuthorizationLoader() {
-        val authorizationLoader = MockkAuthorizationLoaderBuilder().build()
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
-
-        val sut = BraintreeClient(params)
-        sut.invalidateClientToken()
-
-        verify { authorizationLoader.invalidateClientToken() }
+        assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
     }
 
     @Test
     fun sendGET_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
-        val authorizationLoader = MockkAuthorizationLoaderBuilder()
-            .authorization(authorization)
-            .build()
-
         val configuration = mockk<Configuration>(relaxed = true)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
 
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
 
@@ -170,34 +138,13 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sendGET_onGetAuthorizationFailure_forwardsErrorToCallback() {
-        val authorizationError = Exception("authorization error")
-        val authorizationLoader = MockkAuthorizationLoaderBuilder()
-            .authorizationError(authorizationError)
-            .build()
-
-        val configurationLoader = MockkConfigurationLoaderBuilder().build()
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
-
-        val sut = BraintreeClient(params)
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-
-        sut.sendGET("sample-url", httpResponseCallback)
-        verify { httpResponseCallback.onResult(null, authorizationError) }
-    }
-
-    @Test
     fun sendGET_onGetConfigurationFailure_forwardsErrorToCallback() {
-        val authorizationLoader = MockkAuthorizationLoaderBuilder()
-            .authorization(authorization)
-            .build()
-
         val configError = Exception("configuration error")
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(configError)
             .build()
 
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
 
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
@@ -207,17 +154,26 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sendPOST_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
-        val authorizationLoader = MockkAuthorizationLoaderBuilder()
-            .authorization(authorization)
-            .build()
+    fun sendGET_whenInvalidAuth_callsBackAuthError() {
+        val sut = BraintreeClient(context, "invalid-auth-string")
 
+        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
+        sut.sendGET("sample-url", httpResponseCallback)
+
+        val authErrorSlot = slot<BraintreeException>()
+        verify { httpResponseCallback.onResult(isNull(), capture(authErrorSlot)) }
+
+        assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
+    }
+
+    @Test
+    fun sendPOST_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
         val configuration = mockk<Configuration>(relaxed = true)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
 
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
 
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
@@ -235,34 +191,13 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sendPOST_onAuthorizationFailure_forwardsErrorToCallback() {
-        val authError = Exception("authorization error")
-        val authorizationLoader = MockkAuthorizationLoaderBuilder()
-            .authorizationError(authError)
-            .build()
-
-        val configurationLoader = MockkConfigurationLoaderBuilder().build()
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
-
-        val sut = BraintreeClient(params)
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        sut.sendPOST("sample-url", "{}", httpResponseCallback)
-
-        verify { httpResponseCallback.onResult(null, authError) }
-    }
-
-    @Test
     fun sendPOST_onGetConfigurationFailure_forwardsErrorToCallback() {
-        val authorizationLoader = MockkAuthorizationLoaderBuilder()
-            .authorization(authorization)
-            .build()
-
         val exception = Exception("configuration error")
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(exception)
             .build()
 
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
 
@@ -271,17 +206,26 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sendGraphQLPOST_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
-        val authorizationLoader = MockkAuthorizationLoaderBuilder()
-            .authorization(authorization)
-            .build()
+    fun sendPOST_whenInvalidAuth_callsBackAuthError() {
+        val sut = BraintreeClient(context, "invalid-auth-string")
 
+        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
+        sut.sendPOST("sample-url", "{}", httpResponseCallback)
+
+        val authErrorSlot = slot<BraintreeException>()
+        verify { httpResponseCallback.onResult(isNull(), capture(authErrorSlot)) }
+
+        assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
+    }
+
+    @Test
+    fun sendGraphQLPOST_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
         val configuration = mockk<Configuration>(relaxed = true)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
 
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
 
@@ -297,34 +241,13 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sendGraphQLPOST_onAuthorizationFailure_forwardsErrorToCallback() {
-        val authError = Exception("authorization error")
-        val authorizationLoader = MockkAuthorizationLoaderBuilder()
-            .authorizationError(authError)
-            .build()
-
-        val configurationLoader = MockkConfigurationLoaderBuilder().build()
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
-        val sut = BraintreeClient(params)
-
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        sut.sendGraphQLPOST("{}", httpResponseCallback)
-
-        verify { httpResponseCallback.onResult(null, authError) }
-    }
-
-    @Test
     fun sendGraphQLPOST_onGetConfigurationFailure_forwardsErrorToCallback() {
-        val authorizationLoader = MockkAuthorizationLoaderBuilder()
-            .authorization(authorization)
-            .build()
-
         val exception = Exception("configuration error")
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(exception)
             .build()
 
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
 
@@ -333,18 +256,27 @@ class BraintreeClientUnitTest {
     }
 
     @Test
+    fun sendGraphQLPOST_whenInvalidAuth_callsBackAuthError() {
+        val sut = BraintreeClient(context, "invalid-auth-string")
+
+        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
+        sut.sendGraphQLPOST("{}", httpResponseCallback)
+
+        val authErrorSlot = slot<BraintreeException>()
+        verify { httpResponseCallback.onResult(isNull(), capture(authErrorSlot)) }
+
+        assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
+    }
+
+    @Test
     @Throws(JSONException::class)
     fun sendAnalyticsEvent_sendsEventToAnalyticsClient() {
-        val authorizationLoader = MockkAuthorizationLoaderBuilder()
-            .authorization(authorization)
-            .build()
-
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
 
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
         sut.sendAnalyticsEvent("event.started")
 
@@ -356,28 +288,12 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sendAnalyticsEvent_whenAuthorizationLoadFails_doesNothing() {
-        val authorizationLoader = MockkAuthorizationLoaderBuilder()
-            .authorizationError(Exception("error"))
-            .build()
-        val configurationLoader = MockkConfigurationLoaderBuilder().build()
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
-        val sut = BraintreeClient(params)
-
-        sut.sendAnalyticsEvent("event.started")
-        verify { analyticsClient wasNot Called }
-    }
-
-    @Test
     fun sendAnalyticsEvent_whenConfigurationLoadFails_doesNothing() {
-        val authorizationLoader = MockkAuthorizationLoaderBuilder()
-            .authorization(authorization)
-            .build()
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(Exception("error"))
             .build()
 
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
         sut.sendAnalyticsEvent("event.started")
 
@@ -390,7 +306,7 @@ class BraintreeClientUnitTest {
         val activity = mockk<FragmentActivity>(relaxed = true)
         val browserSwitchOptions = BrowserSwitchOptions()
 
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
 
         sut.startBrowserSwitch(activity, browserSwitchOptions)
@@ -403,7 +319,7 @@ class BraintreeClientUnitTest {
         val browserSwitchResult = createSuccessfulBrowserSwitchResult()
         every { browserSwitchClient.getResult(activity) } returns browserSwitchResult
 
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
         assertSame(browserSwitchResult, sut.getBrowserSwitchResult(activity))
     }
@@ -411,7 +327,7 @@ class BraintreeClientUnitTest {
     @Test
     fun deliverBrowserSwitchResult_forwardsInvocationToBrowserSwitchClient() {
         val activity = mockk<FragmentActivity>(relaxed = true)
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
 
         val sut = BraintreeClient(params)
         sut.deliverBrowserSwitchResult(activity)
@@ -422,7 +338,7 @@ class BraintreeClientUnitTest {
     @Test
     fun deliverBrowserSwitchResultFromNewTask_forwardsInvocationToBrowserSwitchClient() {
         val context = mockk<Context>(relaxed = true)
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
 
         val sut = BraintreeClient(params)
         sut.deliverBrowserSwitchResultFromNewTask(context)
@@ -433,7 +349,7 @@ class BraintreeClientUnitTest {
     @Test
     fun parseBrowserSwitchResult_forwardsInvocationToBrowserSwitchClient() {
         val context = mockk<Context>(relaxed = true)
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
 
         val expected = mock<BrowserSwitchResult>()
         val intent = Intent()
@@ -447,7 +363,7 @@ class BraintreeClientUnitTest {
     @Test
     fun clearActiveBrowserSwitchRequests_forwardsInvocationToBrowserSwitchClient() {
         val context = mockk<Context>(relaxed = true)
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
 
         val sut = BraintreeClient(params)
         sut.clearActiveBrowserSwitchRequests(context)
@@ -458,7 +374,7 @@ class BraintreeClientUnitTest {
     @Test
     @Throws(BrowserSwitchException::class)
     fun assertCanPerformBrowserSwitch_assertsBrowserSwitchIsPossible() {
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val activity = mockk<FragmentActivity>(relaxed = true)
 
         val sut = BraintreeClient(params)
@@ -484,7 +400,7 @@ class BraintreeClientUnitTest {
         val activity = mockk<FragmentActivity>(relaxed = true)
         every { browserSwitchClient.assertCanPerformBrowserSwitch(activity, any()) } returns Unit
 
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
         try {
             sut.assertCanPerformBrowserSwitch(activity, 123)
@@ -503,7 +419,7 @@ class BraintreeClientUnitTest {
             browserSwitchClient.assertCanPerformBrowserSwitch(activity, any())
         } throws browserSwitchException
 
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
         try {
             sut.assertCanPerformBrowserSwitch(activity, 123)
@@ -523,7 +439,7 @@ class BraintreeClientUnitTest {
             )
         } returns true
 
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
         assertTrue(
             sut.isUrlSchemeDeclaredInAndroidManifest("a-url-scheme", FragmentActivity::class.java)
@@ -537,7 +453,7 @@ class BraintreeClientUnitTest {
             manifestValidator.getActivityInfo(applicationContext, FragmentActivity::class.java)
         } returns activityInfo
 
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
         assertSame(activityInfo, sut.getManifestActivityInfo(FragmentActivity::class.java))
     }
@@ -545,25 +461,23 @@ class BraintreeClientUnitTest {
     @Test
     fun returnUrlScheme_returnsUrlSchemeBasedOnApplicationIdByDefault() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val authorization = Fixtures.BASE64_CLIENT_TOKEN
-        val sut = BraintreeClient(context, authorization)
+        val sut = BraintreeClient(BraintreeOptions(context, authorization))
         assertEquals("com.braintreepayments.api.test.braintree", sut.getReturnUrlScheme())
     }
 
     @Test
     fun returnUrlScheme_returnsUrlSchemeDefinedInConstructor() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val authorization = Fixtures.BASE64_CLIENT_TOKEN
         val returnUrlScheme = "custom-url-scheme"
-        val sut = BraintreeClient(context, authorization, returnUrlScheme)
+        val sut = BraintreeClient(BraintreeOptions(context, authorization, returnUrlScheme =
+        returnUrlScheme))
         assertEquals("custom-url-scheme", sut.getReturnUrlScheme())
     }
 
     @Test
     fun returnUrlScheme_whenDefaultDeepLinkHandlerEnabled_returnsDefaultDeepLinkHandlerScheme() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val authorization = Fixtures.BASE64_CLIENT_TOKEN
-        val sut = BraintreeClient(context, authorization)
+        val sut = BraintreeClient(BraintreeOptions(context, authorization))
         sut.launchesBrowserSwitchAsNewTask(true)
         assertEquals(
             "com.braintreepayments.api.test.braintree.deeplinkhandler",
@@ -572,67 +486,38 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sessionId_withAuthString_returnsSessionIdDefinedInConstructor() {
+    fun sessionId_returnsSessionIdDefinedInConstructor() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val authorization = Fixtures.BASE64_CLIENT_TOKEN
         val sessionId = "custom-session-id"
         val sut = BraintreeClient(context, authorization, sessionId, IntegrationType.DROP_IN)
-        assertEquals("custom-session-id", sut.sessionId)
-    }
-
-    @Test
-    fun sessionId_withClientTokenProvider_returnsSessionIdDefinedInConstructor() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val clientTokenProvider = mockk<ClientTokenProvider>(relaxed = true)
-        val sessionId = "custom-session-id"
-        val sut = BraintreeClient(context, clientTokenProvider, sessionId, IntegrationType.DROP_IN)
         assertEquals("custom-session-id", sut.sessionId)
     }
 
     @Test
     fun integrationType_returnsCustomByDefault() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val authorization = Fixtures.BASE64_CLIENT_TOKEN
-        val sut = BraintreeClient(context, authorization)
+        val sut = BraintreeClient(BraintreeOptions(context, authorization))
         assertEquals("custom", sut.integrationType)
     }
 
     @Test
-    fun integrationType_withAuthString_returnsIntegrationTypeDefinedInConstructor() {
+    fun integrationType_returnsIntegrationTypeDefinedInConstructor() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val authorization = Fixtures.BASE64_CLIENT_TOKEN
         val sessionId = "custom-session-id"
         val sut = BraintreeClient(context, authorization, sessionId, IntegrationType.DROP_IN)
         assertEquals("dropin", sut.integrationType)
     }
 
     @Test
-    fun integrationType_withClientTokenProvider_returnsIntegrationTypeDefinedInConstructor() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val clientTokenProvider = mockk<ClientTokenProvider>(relaxed = true)
-        val sessionId = "custom-session-id"
-        val sut = BraintreeClient(context, clientTokenProvider, sessionId, IntegrationType.DROP_IN)
-        assertEquals("dropin", sut.integrationType)
-    }
-
-    @Test
     @Throws(JSONException::class)
     fun reportCrash_reportsCrashViaAnalyticsClient() {
-        every { authorizationLoader.authorizationFromCache } returns authorization
-
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
         sut.reportCrash()
-
-        val authCallbackSlot = slot<AuthorizationCallback>()
-        verify {
-            authorizationLoader.loadAuthorization(capture(authCallbackSlot))
-        }
-        authCallbackSlot.captured.onAuthorizationResult(authorization, null)
 
         val callbackSlot = slot<ConfigurationLoaderCallback>()
         verify {
@@ -653,13 +538,12 @@ class BraintreeClientUnitTest {
     }
 
     private fun createDefaultParams(
-        configurationLoader: ConfigurationLoader,
-        authorizationLoader: AuthorizationLoader
+        configurationLoader: ConfigurationLoader
     ): BraintreeClientParams =
         BraintreeClientParams(
             context = context,
             sessionId = "session-id",
-            authorizationLoader = authorizationLoader,
+            authorization = authorization,
             returnUrlScheme = "sample-return-url-scheme",
             httpClient = braintreeHttpClient,
             graphQLClient = braintreeGraphQLClient,

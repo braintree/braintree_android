@@ -569,22 +569,6 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_onAuthorizationFailure_forwardsError() throws Exception {
-        Exception authError = new Exception("authorization error");
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorizationError(authError)
-                .build();
-
-        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient,
-                dataCollector, apiClient);
-
-        PayPalNativeCheckoutRequest payPalRequest = new PayPalNativeCheckoutRequest("1.00");
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
-
-        verify(payPalInternalClientCallback).onResult(null, authError);
-    }
-
-    @Test
     public void sendRequest_onConfigurationFailure_forwardsError() throws Exception {
         Exception configurationError = new Exception("configuration error");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
