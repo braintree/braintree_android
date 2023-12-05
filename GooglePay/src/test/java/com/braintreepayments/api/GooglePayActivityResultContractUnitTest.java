@@ -39,8 +39,8 @@ public class GooglePayActivityResultContractUnitTest {
 
         PaymentDataRequest paymentDataRequest = PaymentDataRequest.fromJson(googlePayRequest.toJson());
 
-        GooglePayPaymentAuthRequest
-                intentData = new GooglePayPaymentAuthRequest(1, paymentDataRequest);
+        GooglePayPaymentAuthRequestParams
+                intentData = new GooglePayPaymentAuthRequestParams(1, paymentDataRequest);
 
         Context context = ApplicationProvider.getApplicationContext();
 

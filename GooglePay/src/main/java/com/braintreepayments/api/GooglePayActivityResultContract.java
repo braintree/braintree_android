@@ -16,11 +16,11 @@ import androidx.annotation.Nullable;
 import com.google.android.gms.wallet.AutoResolveHelper;
 import com.google.android.gms.wallet.PaymentData;
 
-class GooglePayActivityResultContract extends ActivityResultContract<GooglePayPaymentAuthRequest, GooglePayPaymentAuthResult> {
+class GooglePayActivityResultContract extends ActivityResultContract<GooglePayPaymentAuthRequestParams, GooglePayPaymentAuthResult> {
 
     @NonNull
     @Override
-    public Intent createIntent(@NonNull Context context, GooglePayPaymentAuthRequest input) {
+    public Intent createIntent(@NonNull Context context, GooglePayPaymentAuthRequestParams input) {
         return new Intent(context, GooglePayActivity.class)
                 .putExtra(EXTRA_ENVIRONMENT, input.getGooglePayEnvironment())
                 .putExtra(EXTRA_PAYMENT_DATA_REQUEST, input.getPaymentDataRequest());

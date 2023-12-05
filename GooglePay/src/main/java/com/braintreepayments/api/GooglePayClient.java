@@ -169,9 +169,9 @@ public class GooglePayClient {
     }
 
     /**
-     * Start the Google Pay payment flow. This will return a {@link GooglePayPaymentAuthRequest} that will
+     * Start the Google Pay payment flow. This will return a {@link GooglePayPaymentAuthRequestParams} that will
      * be used to present Google Pay payment sheet in
-     * {@link GooglePayLauncher#launch(GooglePayPaymentAuthRequest)}
+     * {@link GooglePayLauncher#launch(GooglePayPaymentAuthRequestParams)}
      *
      * @param request  The {@link GooglePayRequest} containing options for the transaction.
      * @param callback {@link GooglePayPaymentAuthRequestCallback}
@@ -223,8 +223,8 @@ public class GooglePayClient {
             PaymentDataRequest paymentDataRequest =
                     PaymentDataRequest.fromJson(request.toJson());
 
-            GooglePayPaymentAuthRequest intent =
-                    new GooglePayPaymentAuthRequest(getGooglePayEnvironment(configuration),
+            GooglePayPaymentAuthRequestParams intent =
+                    new GooglePayPaymentAuthRequestParams(getGooglePayEnvironment(configuration),
                             paymentDataRequest);
             callback.onResult(intent, null);
 
@@ -258,7 +258,7 @@ public class GooglePayClient {
      * method should be invoked to tokenize the payment method to retrieve a
      * {@link PaymentMethodNonce}
      *
-     * @param paymentAuthResult the result of {@link GooglePayLauncher#launch(GooglePayPaymentAuthRequest)}
+     * @param paymentAuthResult the result of {@link GooglePayLauncher#launch(GooglePayPaymentAuthRequestParams)}
      * @param callback        {@link GooglePayTokenizeCallback}
      */
     public void tokenize(GooglePayPaymentAuthResult paymentAuthResult,

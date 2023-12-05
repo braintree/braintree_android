@@ -8,6 +8,6 @@ import androidx.annotation.Nullable;
  */
 public interface GooglePayPaymentAuthRequestCallback {
 
-    void onResult(@Nullable GooglePayPaymentAuthRequest paymentAuthRequest,
+    void onResult(@Nullable GooglePayPaymentAuthRequestParams paymentAuthRequest,
                   @Nullable Exception error);
 }
