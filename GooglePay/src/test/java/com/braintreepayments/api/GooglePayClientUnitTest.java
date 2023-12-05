@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -1002,11 +1003,14 @@ public class GooglePayClientUnitTest {
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
         sut.tokenize(pd, activityResultCallback);
 
-        ArgumentCaptor<PaymentMethodNonce> captor =
-                ArgumentCaptor.forClass(PaymentMethodNonce.class);
-        verify(activityResultCallback).onResult(captor.capture());
+        ArgumentCaptor<GooglePayResult> captor =
+                ArgumentCaptor.forClass(GooglePayResult.class);
+        verify(activityResultCallback).onGooglePayResult(captor.capture());
 
-        assertTrue(captor.getValue() instanceof GooglePayCardNonce);
+        GooglePayResult result = captor.getValue();
+
+        assertTrue(result instanceof GooglePayResult.Success);
+        assertTrue(((GooglePayResult.Success) result).getNonce() instanceof GooglePayCardNonce);
     }
 
     @Test
@@ -1037,11 +1041,13 @@ public class GooglePayClientUnitTest {
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
         sut.tokenize(pd, activityResultCallback);
 
-        ArgumentCaptor<PaymentMethodNonce> captor =
-                ArgumentCaptor.forClass(PaymentMethodNonce.class);
-        verify(activityResultCallback).onResult(captor.capture());
+        ArgumentCaptor<GooglePayResult> captor =
+                ArgumentCaptor.forClass(GooglePayResult.class);
+        verify(activityResultCallback).onGooglePayResult(captor.capture());
 
-        assertTrue(captor.getValue() instanceof PayPalAccountNonce);
+        GooglePayResult result = captor.getValue();
+        assertTrue(result instanceof GooglePayResult.Success);
+        assertTrue(((GooglePayResult.Success) result).getNonce() instanceof PayPalAccountNonce);
     }
 
     // endregion
@@ -1064,13 +1070,14 @@ public class GooglePayClientUnitTest {
         sut.tokenize(googlePayPaymentAuthResult, activityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.authorized"));
-        ArgumentCaptor<PaymentMethodNonce> captor =
-                ArgumentCaptor.forClass(PaymentMethodNonce.class);
-        verify(activityResultCallback).onResult(captor.capture());
+        ArgumentCaptor<GooglePayResult> captor =
+                ArgumentCaptor.forClass(GooglePayResult.class);
+        verify(activityResultCallback).onGooglePayResult(captor.capture());
 
-        PaymentMethodNonce nonce = captor.getValue();
-        JSONObject result = new JSONObject(paymentData.toJson());
-        PaymentMethodNonce expectedNonce = GooglePayCardNonce.fromJSON(result);
+        GooglePayResult result = captor.getValue();
+        assertTrue(result instanceof GooglePayResult.Success);
+        PaymentMethodNonce nonce = ((GooglePayResult.Success) result).getNonce();
+        PaymentMethodNonce expectedNonce = GooglePayCardNonce.fromJSON(new JSONObject(paymentDataJson));
         assertEquals(nonce.getString(), expectedNonce.getString());
     }
 
@@ -1088,7 +1095,13 @@ public class GooglePayClientUnitTest {
         sut.tokenize(googlePayPaymentAuthResult, activityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.failed"));
-        verify(activityResultCallback).onResult(null);
+
+        ArgumentCaptor<GooglePayResult> captor = ArgumentCaptor.forClass(GooglePayResult.class);
+        verify(activityResultCallback).onGooglePayResult(captor.capture());
+
+        GooglePayResult result = captor.getValue();
+        assertTrue(result instanceof GooglePayResult.Failure);
+        assertEquals(error, ((GooglePayResult.Failure) result).getError());
     }
 
     @Test
@@ -1106,7 +1119,12 @@ public class GooglePayClientUnitTest {
         sut.tokenize(googlePayPaymentAuthResult, activityResultCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(eq("google-payment.canceled"));
-        verify(activityResultCallback).onResult(null);
+
+        ArgumentCaptor<GooglePayResult> captor = ArgumentCaptor.forClass(GooglePayResult.class);
+        verify(activityResultCallback).onGooglePayResult(captor.capture());
+
+        GooglePayResult result = captor.getValue();
+        assertTrue(result instanceof GooglePayResult.Cancel);
     }
 
     // endregion

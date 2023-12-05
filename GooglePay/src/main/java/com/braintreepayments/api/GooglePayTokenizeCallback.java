@@ -12,5 +12,5 @@ public interface GooglePayTokenizeCallback {
     /**
      * @param googlePayResult {@link PaymentMethodNonce}
      */
-    void onResult(@Nullable GooglePayResult googlePayResult);
+    void onGooglePayResult(@Nullable GooglePayResult googlePayResult);
 }

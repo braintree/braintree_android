@@ -236,7 +236,7 @@ public class GooglePayClient {
     void tokenize(PaymentData paymentData, GooglePayTokenizeCallback callback) {
         try {
             JSONObject result = new JSONObject(paymentData.toJson());
-            callback.onResult(new GooglePayResult.Success(GooglePayCardNonce.fromJSON(result)));
+            callback.onGooglePayResult(new GooglePayResult.Success(GooglePayCardNonce.fromJSON(result)));
             braintreeClient.sendAnalyticsEvent("google-payment.nonce-received");
         } catch (JSONException | NullPointerException e) {
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
@@ -245,9 +245,9 @@ public class GooglePayClient {
                 String token =
                         new JSONObject(paymentData.toJson()).getJSONObject("paymentMethodData")
                                 .getJSONObject("tokenizationData").getString("token");
-                callback.onResult(new GooglePayResult.Failure(ErrorWithResponse.fromJson(token)));
+                callback.onGooglePayResult(new GooglePayResult.Failure(ErrorWithResponse.fromJson(token)));
             } catch (JSONException | NullPointerException e1) {
-                callback.onResult(new GooglePayResult.Failure(e1));
+                callback.onGooglePayResult(new GooglePayResult.Failure(e1));
             }
         }
     }
@@ -270,10 +270,11 @@ public class GooglePayClient {
         } else if (paymentAuthResult.getError() != null) {
             if (paymentAuthResult.getError() instanceof UserCanceledException) {
                 braintreeClient.sendAnalyticsEvent("google-payment.canceled");
-            } else {
-                braintreeClient.sendAnalyticsEvent("google-payment.failed");
+                callback.onGooglePayResult(GooglePayResult.Cancel.INSTANCE);
+                return;
             }
-            callback.onResult(new GooglePayResult.Failure(paymentAuthResult.getError()));
+            braintreeClient.sendAnalyticsEvent("google-payment.failed");
+            callback.onGooglePayResult(new GooglePayResult.Failure(paymentAuthResult.getError()));
         }
     }
 
