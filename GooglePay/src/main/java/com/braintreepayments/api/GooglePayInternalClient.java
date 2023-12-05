@@ -1,11 +1,8 @@
 package com.braintreepayments.api;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.gms.wallet.IsReadyToPayRequest;
 import com.google.android.gms.wallet.PaymentsClient;
 import com.google.android.gms.wallet.Wallet;
@@ -18,14 +15,16 @@ class GooglePayInternalClient {
                 new Wallet.WalletOptions.Builder()
                         .setEnvironment(getGooglePayEnvironment(configuration))
                         .build());
-        paymentsClient.isReadyToPay(isReadyToPayRequest).addOnCompleteListener(new OnCompleteListener<Boolean>() {
-            @Override
-            public void onComplete(@NonNull Task<Boolean> task) {
-                try {
-                    callback.onResult(task.getResult(ApiException.class), null);
-                } catch (ApiException e) {
-                    callback.onResult(false, e);
+        paymentsClient.isReadyToPay(isReadyToPayRequest).addOnCompleteListener(task -> {
+            try {
+                Boolean isReady = task.getResult(ApiException.class);
+                if (isReady) {
+                    callback.onGooglePayReadinessResult(GooglePayReadinessResult.ReadyToPay.INSTANCE);
+                } else {
+                    callback.onGooglePayReadinessResult(GooglePayReadinessResult.NotReadyToPay.INSTANCE);
                 }
+            } catch (ApiException e) {
+                callback.onGooglePayReadinessResult(new GooglePayReadinessResult.Failure(e));
             }
         });
     }

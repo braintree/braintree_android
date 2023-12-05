@@ -34,9 +34,9 @@ class MockGooglePayInternalClientBuilder {
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 GooglePayIsReadyToPayCallback callback = (GooglePayIsReadyToPayCallback) invocation.getArguments()[3];
                 if (isReadyToPayError != null) {
-                    callback.onResult(false, isReadyToPayError);
+                    callback.onGooglePayReadinessResult(false);
                 } else {
-                    callback.onResult(isReadyToPay, null);
+                    callback.onGooglePayReadinessResult(isReadyToPay);
                 }
                 return null;
             }

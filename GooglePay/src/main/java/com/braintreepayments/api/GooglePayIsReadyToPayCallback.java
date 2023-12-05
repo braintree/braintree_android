@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 /**
@@ -11,8 +10,7 @@ import androidx.fragment.app.FragmentActivity;
 public interface GooglePayIsReadyToPayCallback {
 
     /**
-     * @param isReadyToPay true if Google Pay is ready; false otherwise.
-     * @param error an exception that occurred while checking if Google Pay is ready
+     * @param googlePayReadinessResult
      */
-    void onResult(boolean isReadyToPay, @Nullable Exception error);
+    void onGooglePayReadinessResult(GooglePayReadinessResult googlePayReadinessResult);
 }

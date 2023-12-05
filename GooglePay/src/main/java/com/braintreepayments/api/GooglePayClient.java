@@ -97,25 +97,24 @@ public class GooglePayClient {
         try {
             Class.forName(PaymentsClient.class.getName());
         } catch (ClassNotFoundException | NoClassDefFoundError e) {
-            callback.onResult(false, null);
+            callback.onGooglePayReadinessResult(GooglePayReadinessResult.NotReadyToPay.INSTANCE);
             return;
         }
 
         braintreeClient.getConfiguration((configuration, e) -> {
             if (configuration == null) {
-                callback.onResult(false, e);
+                callback.onGooglePayReadinessResult(GooglePayReadinessResult.NotReadyToPay.INSTANCE);
                 return;
             }
 
             if (!configuration.isGooglePayEnabled()) {
-                callback.onResult(false, null);
+                callback.onGooglePayReadinessResult(GooglePayReadinessResult.NotReadyToPay.INSTANCE);
                 return;
             }
 
             //noinspection ConstantConditions
             if (activity == null) {
-                callback.onResult(false,
-                        new IllegalArgumentException("Activity cannot be null."));
+                callback.onGooglePayReadinessResult(new GooglePayReadinessResult.Failure(new IllegalArgumentException("Activity cannot be null.")));
                 return;
             }
 

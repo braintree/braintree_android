@@ -153,7 +153,7 @@ public class GooglePayClientUnitTest {
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
 
         sut.isReadyToPay(activity, null, readyToPayCallback);
-        verify(readyToPayCallback).onResult(false, null);
+        verify(readyToPayCallback).onGooglePayReadinessResult(false);
     }
 
     @Test
@@ -176,7 +176,7 @@ public class GooglePayClientUnitTest {
         sut.isReadyToPay(null, null, readyToPayCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(readyToPayCallback).onResult(eq(false), captor.capture());
+        verify(readyToPayCallback).onGooglePayReadinessResult(eq(false));
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof IllegalArgumentException);
