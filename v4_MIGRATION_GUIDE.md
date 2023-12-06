@@ -127,8 +127,8 @@ protected void onResume() {
 
   BrowserSwitchResult browserSwitchResult = braintreeClient.deliverBrowserSwitchResult(this);
   if (browserSwitchResult != null) {
-    threeDSecureClient.onBrowserSwitchResult(browserSwitchResult, (threeDSecureInternalResult, error) -> {
-      // send threeDSecureInternalResult.getTokenizedCard().getString() to your server or handle error
+    threeDSecureClient.onBrowserSwitchResult(browserSwitchResult, (threeDSecureResult, error) -> {
+      // send threeDSecureResult.getTokenizedCard().getString() to your server or handle error
     }); 
   }
 }
@@ -909,20 +909,20 @@ public class ThreeDSecureActivity extends AppCompatActivity {
     threeDSecureRequest.setShippingMethod(ThreeDSecureShippingMethod.GROUND);
     threeDSecureRequest.setAdditionalInformation(additionalInformation);
 
-    threeDSecureClient.performVerification(this, threeDSecureRequest, (threeDSecureInternalResult, error) -> {
-      if (threeDSecureInternalResult != null) {
+    threeDSecureClient.performVerification(this, threeDSecureRequest, (threeDSecureResult, error) -> {
+      if (threeDSecureResult != null) {
         // examine lookup response (if necessary), then continue verification
-        threeDSecureClient.continuePerformVerification(ThreeDSecureActivity.this, threeDSecureRequest, threeDSecureInternalResult, this::handleThreeDSecureResult);
+        threeDSecureClient.continuePerformVerification(ThreeDSecureActivity.this, threeDSecureRequest, threeDSecureResult, this::handleThreeDSecureResult);
       } else {
         // handle error
       }
     });
   }
 
-  private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureInternalResult, Exception error) {
-    if (threeDSecureInternalResult != null) {
+  private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureResult, Exception error) {
+    if (threeDSecureResult != null) {
       // send this nonce to your server
-      String nonce = threeDSecureInternalResult.getTokenizedCard().getString();
+      String nonce = threeDSecureResult.getTokenizedCard().getString();
     } else {
       // handle error
     }
