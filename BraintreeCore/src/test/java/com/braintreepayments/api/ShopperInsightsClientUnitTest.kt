@@ -14,11 +14,11 @@ import kotlin.test.assertIs
  */
 class ShopperInsightsClientUnitTest {
 
-    private lateinit var sut: BraintreeShopperInsightsClient
+    private lateinit var sut: ShopperInsightsClient
 
     @Before
     fun beforeEach() {
-        sut = BraintreeShopperInsightsClient()
+        sut = ShopperInsightsClient()
     }
 
     /**
