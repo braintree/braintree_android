@@ -8,7 +8,7 @@ sealed class ThreeDSecurePaymentAuthRequest {
     /**
      * The request was successfully created and is ready to be launched by [VenmoLauncher]
      */
-    class ReadyToLaunch(val requestParams: ThreeDSecureBundledResult) :
+    class ReadyToLaunch(val requestParams: ThreeDSecureInternalResult) :
         ThreeDSecurePaymentAuthRequest()
 
     class LaunchNotRequired(val threeDSecureNonce: ThreeDSecureNonce, val threeDSecureLookup:

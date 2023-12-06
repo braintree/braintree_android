@@ -21,7 +21,7 @@ class ThreeDSecureAPI {
         braintreeClient.sendPOST(url, data, (responseBody, httpError) -> {
             if (responseBody != null) {
                 try {
-                    ThreeDSecureBundledResult result = ThreeDSecureBundledResult.fromJson(responseBody);
+                    ThreeDSecureInternalResult result = ThreeDSecureInternalResult.fromJson(responseBody);
                     callback.onResult(result, null);
                 } catch (JSONException e) {
                     callback.onResult(null, e);
@@ -32,9 +32,9 @@ class ThreeDSecureAPI {
         });
     }
 
-    void authenticateCardinalJWT(ThreeDSecureBundledResult threeDSecureBundledResult, String cardinalJWT,
+    void authenticateCardinalJWT(ThreeDSecureInternalResult threeDSecureInternalResult, String cardinalJWT,
                                  final ThreeDSecureResultCallback callback) {
-        final ThreeDSecureNonce lookupCardNonce = threeDSecureBundledResult.getThreeDSecureNonce();
+        final ThreeDSecureNonce lookupCardNonce = threeDSecureInternalResult.getThreeDSecureNonce();
 
         braintreeClient.sendAnalyticsEvent(
                 "three-d-secure.verification-flow.upgrade-payment-method.started");
@@ -55,7 +55,7 @@ class ThreeDSecureAPI {
         braintreeClient.sendPOST(url, data, (responseBody, httpError) -> {
             if (responseBody != null) {
                 try {
-                    ThreeDSecureBundledResult result = ThreeDSecureBundledResult.fromJson(responseBody);
+                    ThreeDSecureInternalResult result = ThreeDSecureInternalResult.fromJson(responseBody);
                     if (result.hasError()) {
                         result.setThreeDSecureNonce(lookupCardNonce);
                     }

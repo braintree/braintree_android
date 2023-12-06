@@ -63,10 +63,10 @@ public class ThreeDSecureActivity extends AppCompatActivity {
             extras = new Bundle();
         }
 
-        ThreeDSecureBundledResult threeDSecureBundledResult = extras.getParcelable(EXTRA_THREE_D_SECURE_RESULT);
-        if (threeDSecureBundledResult != null) {
+        ThreeDSecureInternalResult threeDSecureInternalResult = extras.getParcelable(EXTRA_THREE_D_SECURE_RESULT);
+        if (threeDSecureInternalResult != null) {
             try {
-                cardinalClient.continueLookup(threeDSecureBundledResult, challengeObserver);
+                cardinalClient.continueLookup(threeDSecureInternalResult, challengeObserver);
             } catch (BraintreeException e) {
                 finishWithError(e.getMessage());
             }
@@ -85,7 +85,7 @@ public class ThreeDSecureActivity extends AppCompatActivity {
     private void handleValidated(ValidateResponse validateResponse, String jwt) {
         Intent result = new Intent();
         result.putExtra(EXTRA_JWT, jwt);
-        result.putExtra(EXTRA_THREE_D_SECURE_RESULT, (ThreeDSecureBundledResult) getIntent().getExtras()
+        result.putExtra(EXTRA_THREE_D_SECURE_RESULT, (ThreeDSecureInternalResult) getIntent().getExtras()
                 .getParcelable(EXTRA_THREE_D_SECURE_RESULT));
         result.putExtra(EXTRA_VALIDATION_RESPONSE, validateResponse);
 

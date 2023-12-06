@@ -11,8 +11,7 @@ import org.json.JSONObject;
 /**
  * Class to parse and contain 3D Secure authentication responses
  */
-// TODO: Split into separate result objects for createPaymentAuthRequest and tokenize methods
-public class ThreeDSecureBundledResult implements Parcelable {
+class ThreeDSecureInternalResult implements Parcelable {
 
     private static final String ERRORS_KEY = "errors";
     private static final String ERROR_KEY = "error";
@@ -30,10 +29,10 @@ public class ThreeDSecureBundledResult implements Parcelable {
      *
      * @param jsonString The json response from the Braintree Gateway 3D Secure authentication
      *                   route.
-     * @return The {@link ThreeDSecureBundledResult} to use when performing 3D Secure authentication.
+     * @return The {@link ThreeDSecureInternalResult} to use when performing 3D Secure authentication.
      */
-    static ThreeDSecureBundledResult fromJson(String jsonString) throws JSONException {
-        ThreeDSecureBundledResult result = new ThreeDSecureBundledResult();
+    static ThreeDSecureInternalResult fromJson(String jsonString) throws JSONException {
+        ThreeDSecureInternalResult result = new ThreeDSecureInternalResult();
         JSONObject json = new JSONObject(jsonString);
 
         JSONObject cardJson = json.optJSONObject(PAYMENT_METHOD_KEY);
@@ -63,7 +62,7 @@ public class ThreeDSecureBundledResult implements Parcelable {
      * @return The {@link ThreeDSecureNonce} associated with the 3D Secure authentication
      */
     @Nullable
-    public ThreeDSecureNonce getThreeDSecureNonce() {
+    ThreeDSecureNonce getThreeDSecureNonce() {
         return threeDSecureNonce;
     }
 
@@ -75,7 +74,7 @@ public class ThreeDSecureBundledResult implements Parcelable {
      * @return Message describing potential errors that occurred during the authentication
      */
     @Nullable
-    public String getErrorMessage() {
+    String getErrorMessage() {
         return errorMessage;
     }
 
@@ -86,11 +85,11 @@ public class ThreeDSecureBundledResult implements Parcelable {
     /**
      * @return {@link ThreeDSecureLookup} containing details of the 3D Secure lookup.
      */
-    public ThreeDSecureLookup getLookup() {
+    ThreeDSecureLookup getLookup() {
         return lookup;
     }
 
-    ThreeDSecureBundledResult() {
+    ThreeDSecureInternalResult() {
     }
 
     @Override
@@ -105,19 +104,19 @@ public class ThreeDSecureBundledResult implements Parcelable {
         dest.writeParcelable(lookup, flags);
     }
 
-    private ThreeDSecureBundledResult(Parcel in) {
+    private ThreeDSecureInternalResult(Parcel in) {
         threeDSecureNonce = in.readParcelable(CardNonce.class.getClassLoader());
         errorMessage = in.readString();
         lookup = in.readParcelable(ThreeDSecureLookup.class.getClassLoader());
     }
 
-    public static final Creator<ThreeDSecureBundledResult> CREATOR = new Creator<>() {
-        public ThreeDSecureBundledResult createFromParcel(Parcel source) {
-            return new ThreeDSecureBundledResult(source);
+    public static final Creator<ThreeDSecureInternalResult> CREATOR = new Creator<>() {
+        public ThreeDSecureInternalResult createFromParcel(Parcel source) {
+            return new ThreeDSecureInternalResult(source);
         }
 
-        public ThreeDSecureBundledResult[] newArray(int size) {
-            return new ThreeDSecureBundledResult[size];
+        public ThreeDSecureInternalResult[] newArray(int size) {
+            return new ThreeDSecureInternalResult[size];
         }
     };
 }

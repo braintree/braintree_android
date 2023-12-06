@@ -202,9 +202,9 @@ class MyActivity : FragmentActivity() {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       threeDSecureLauncher = ThreeDSecureLauncher(this) { paymentAuthResult ->
-+            threeDSecureClient.tokenize(paymentAuthResult) { threeDSecureBundledResult, error ->
++            threeDSecureClient.tokenize(paymentAuthResult) { threeDSecureInternalResult, error ->
 +                error?.let { /* handle error */ }
-+                threeDSecureBundledResult?.let { /* handle threeDSecureBundledResult.tokenizedCard */ }
++                threeDSecureInternalResult?.let { /* handle threeDSecureInternalResult.tokenizedCard */ }
 +            }
 +       }
     }
@@ -219,19 +219,19 @@ class MyActivity : FragmentActivity() {
     fun onCardTokenization() {
 -       threeDSecureClient.performVerification(activity, threeDSecureRequest) { 
 +       threeDSecureClient.createPaymentAuthRequest(requireContext(), threeDSecureRequest) { 
-          threeDSecureBundledResult, error ->
+          threeDSecureInternalResult, error ->
              error?.let { /* handle error */ }
-             threeDSecureBundledResult?.let {
+             threeDSecureInternalResult?.let {
                 if (it.lookup.requiresAuthentication) {
 -                   threeDSecureClient.continuePerformVerification(MyActivity@this, request, it)
 +                   threeDSecureLauncher.launch(it) 
-                else { /* no additional user authentication needed, handle threeDSecureBundledResult */ }
+                else { /* no additional user authentication needed, handle threeDSecureInternalResult */ }
              }
         }
     }
     
--   override fun onThreeDSecureSuccess(threeDSecureBundledResult: ThreeDSecureResult) {
--        // handle threeDSecureBundledResult.tokenizedCard
+-   override fun onThreeDSecureSuccess(threeDSecureInternalResult: ThreeDSecureResult) {
+-        // handle threeDSecureInternalResult.tokenizedCard
 -   }
       
 -   override fun onThreeDSecureFailure(error: java.lang.Exception) {
