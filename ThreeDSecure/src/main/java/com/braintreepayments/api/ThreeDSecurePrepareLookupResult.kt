@@ -14,7 +14,6 @@ sealed class ThreeDSecurePrepareLookupResult {
     class Success(val request: ThreeDSecureRequest, val clientData: String) :
         ThreeDSecurePrepareLookupResult()
 
-
     /**
      * There was an [error] preparing the lookup
      */
