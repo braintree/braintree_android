@@ -265,10 +265,10 @@ public class ThreeDSecureClient {
      * @param callback       a {@link ThreeDSecureResultCallback}
      */
     public void tokenize(ThreeDSecurePaymentAuthResult paymentAuthResult,
-                         ThreeDSecureResultCallback callback) {
+                         ThreeDSecureTokenizeCallback callback) {
         Exception threeDSecureError = paymentAuthResult.getError();
         if (threeDSecureError != null) {
-            callback.onResult(null, threeDSecureError);
+            callback.onThreeDSecureResult(new ThreeDSecureResult.Failure(threeDSecureError));
         } else {
             ThreeDSecureBundledResult threeDSecureBundledResult = paymentAuthResult.getThreeSecureResult();
             ValidateResponse validateResponse = paymentAuthResult.getValidateResponse();
@@ -288,16 +288,17 @@ public class ThreeDSecureClient {
                                     if (threeDSecureResult1.hasError()) {
                                         braintreeClient.sendAnalyticsEvent(
                                                 "three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
-                                    } else {
+                                        callback.onThreeDSecureResult(new ThreeDSecureResult.Failure(new BraintreeException(threeDSecureResult1.getErrorMessage())));
+                                    } else if (threeDSecureResult1.getThreeDSecureNonce() != null){
                                         braintreeClient.sendAnalyticsEvent(
                                                 "three-d-secure.verification-flow.upgrade-payment-method.succeeded");
                                         sendLiabilityShiftedAnalytics(threeDSecureResult1);
+                                        callback.onThreeDSecureResult(new ThreeDSecureResult.Success(threeDSecureResult1.getThreeDSecureNonce()));
                                     }
-                                    callback.onResult(threeDSecureResult1, null);
                                 } else if (error != null) {
                                     braintreeClient.sendAnalyticsEvent(
                                             "three-d-secure.verification-flow.upgrade-payment-method.errored");
-                                    callback.onResult(null, error);
+                                    callback.onThreeDSecureResult(new ThreeDSecureResult.Failure(error));
                                 }
                             });
 
@@ -306,13 +307,12 @@ public class ThreeDSecureClient {
                     break;
                 case ERROR:
                 case TIMEOUT:
-                    callback.onResult(null,
-                            new BraintreeException(validateResponse.getErrorDescription()));
+                    callback.onThreeDSecureResult(new ThreeDSecureResult.Failure(
+                            new BraintreeException(validateResponse.getErrorDescription())));
                     braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.failed");
                     break;
                 case CANCEL:
-                    callback.onResult(null,
-                            new UserCanceledException("User canceled 3DS.", true));
+                    callback.onThreeDSecureResult(ThreeDSecureResult.Cancel.INSTANCE);
                     braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.canceled");
                     break;
             }
