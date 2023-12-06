@@ -7,8 +7,10 @@ package com.braintreepayments.api
  * The recommendations include flags for whether payment methods like PayPal or Venmo
  * should be displayed with high priority in the user interface.
  *
- * @property isPayPalRecommended If true, indicates that the PayPal payment option should be given high priority in the checkout UI.
- * @property isVenmoRecommended If true, indicates that the Venmo payment option should be given high priority in the checkout UI.
+ * @property isPayPalRecommended If true, indicates that the PayPal payment option
+ * should be given high priority in the checkout UI.
+ * @property isVenmoRecommended If true, indicates that the Venmo payment option
+ * should be given high priority in the checkout UI.
  */
 data class ShopperInsightResponse(
     val isPayPalRecommended: Boolean,

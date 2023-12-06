@@ -32,7 +32,7 @@ class ShopperInsightsClientUnitTest {
             phoneCountryCode = "fake-country-code",
             phoneNationalNumber = "fake-national-phone"
         )
-        sut.getRecommendedPaymentMethods(request, object : ShopperInsightCallback{
+        sut.getRecommendedPaymentMethods(request, object : ShopperInsightCallback {
             override fun onResult(result: ShopperInsightResult) {
                 assertNotNull(result)
                 val successResult = assertIs<ShopperInsightResult.Success>(result)

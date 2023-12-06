@@ -21,6 +21,7 @@ class BraintreeShopperInsightsClient @VisibleForTesting internal constructor() {
      * @param request The `ShopperInsightRequest` containing information about the shopper.
      * @return A `ShopperInsightResult` object indicating the recommended payment methods.
      */
+    @Suppress("UnusedPrivateMember")
     fun getRecommendedPaymentMethods(
         request: ShopperInsightRequest,
         callback: ShopperInsightCallback
@@ -37,5 +38,4 @@ class BraintreeShopperInsightsClient @VisibleForTesting internal constructor() {
             )
         )
     }
-
 }
