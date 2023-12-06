@@ -3,7 +3,7 @@ package com.braintreepayments.api
 import androidx.annotation.VisibleForTesting
 
 /**
- * Use `BTShopperInsightsClient` to optimize your checkout experience
+ * Use [ShopperInsightsClient] to optimize your checkout experience
  * by prioritizing the customer’s preferred payment methods in your UI.
  * By customizing each customer’s checkout experience,
  * you can improve conversion, increase sales/repeat buys and boost user retention/loyalty.
