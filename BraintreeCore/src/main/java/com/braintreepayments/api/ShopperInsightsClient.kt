@@ -14,12 +14,8 @@ class ShopperInsightsClient @VisibleForTesting internal constructor() {
     /**
      * Retrieves recommended payment methods based on the provided shopper insights request.
      *
-     * This function takes a `ShopperInsightRequest` object as input and returns a `ShopperInsightResult`.
-     * The result includes flags indicating whether specific payment methods,
-     * such as PayPal or Venmo, are potentially a high priority for the shopper.
-     *
-     * @param request The `ShopperInsightRequest` containing information about the shopper.
-     * @return A `ShopperInsightResult` object indicating the recommended payment methods.
+     * @param request The [ShopperInsightRequest] containing information about the shopper.
+     * @return A [ShopperInsightResult] object indicating the recommended payment methods.
      */
     @Suppress("UnusedPrivateMember")
     fun getRecommendedPaymentMethods(
