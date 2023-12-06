@@ -10,7 +10,7 @@ package com.braintreepayments.api
  * (excluding the country code).
  */
 data class ShopperInsightRequest(
-    val email: String,
-    val phoneCountryCode: String,
-    val phoneNationalNumber: String
+    var email: String,
+    var phoneCountryCode: String,
+    var phoneNationalNumber: String
 )
