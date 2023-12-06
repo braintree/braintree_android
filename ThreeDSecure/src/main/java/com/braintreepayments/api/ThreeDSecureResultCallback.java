@@ -5,7 +5,7 @@ import androidx.annotation.Nullable;
 
 /**
  * Callback for receiving result of
- * {@link ThreeDSecureClient#createPaymentAuthRequest(android.content.Context, ThreeDSecureRequest, ThreeDSecureResultCallback)},
+ * {@link ThreeDSecureClient#createPaymentAuthRequest(android.content.Context, ThreeDSecureRequest, ThreeDSecurePaymentAuthRequestCallback)},
 
  */
 // TODO: Split into separate callbacks for internal and public methods and for

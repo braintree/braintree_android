@@ -26,14 +26,18 @@ import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
 import com.braintreepayments.api.ThreeDSecureLauncher;
 import com.braintreepayments.api.ThreeDSecureNonce;
+import com.braintreepayments.api.ThreeDSecurePaymentAuthRequest;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
 import com.braintreepayments.api.ThreeDSecureBundledResult;
+import com.braintreepayments.api.ThreeDSecureResult;
+import com.braintreepayments.api.ThreeDSecureTokenizeCallback;
 import com.braintreepayments.api.ThreeDSecureV2ButtonCustomization;
 import com.braintreepayments.api.ThreeDSecureV2LabelCustomization;
 import com.braintreepayments.api.ThreeDSecureV2TextBoxCustomization;
 import com.braintreepayments.api.ThreeDSecureV2ToolbarCustomization;
 import com.braintreepayments.api.ThreeDSecureV2UiCustomization;
+import com.braintreepayments.api.UserCanceledException;
 import com.braintreepayments.cardform.OnCardFormFieldFocusedListener;
 import com.braintreepayments.cardform.OnCardFormSubmitListener;
 import com.braintreepayments.cardform.utils.CardType;
@@ -88,8 +92,17 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         View view = inflater.inflate(R.layout.fragment_card, container, false);
 
         threeDSecureLauncher = new ThreeDSecureLauncher(this,
-                paymentAuthResult -> threeDSecureClient.tokenize(paymentAuthResult,
-                        this::handleThreeDSecureResult));
+                paymentAuthResult -> {
+                    threeDSecureClient.tokenize(paymentAuthResult, threeDSecureResult -> {
+                        if (threeDSecureResult instanceof ThreeDSecureResult.Success) {
+                            handlePaymentMethodNonceCreated(((ThreeDSecureResult.Success) threeDSecureResult).getNonce());
+                        } else if (threeDSecureResult instanceof ThreeDSecureResult.Failure) {
+                            handleError(((ThreeDSecureResult.Failure) threeDSecureResult).getError());
+                        } else if (threeDSecureResult instanceof ThreeDSecureResult.Cancel) {
+                            handleError(new UserCanceledException("User canceled 3DS."));
+                        }
+                    });
+                });
 
         cardForm = view.findViewById(R.id.card_form);
         cardForm.setOnFormFieldFocusedListener(this);
@@ -214,19 +227,21 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
 
         final FragmentActivity activity = getActivity();
         if (!threeDSecureRequested && paymentMethodNonce instanceof CardNonce &&
-                Settings.isThreeDSecureEnabled(activity)) {
+                Settings.isThreeDSecureEnabled(activity) && !(paymentMethodNonce instanceof ThreeDSecureNonce)) {
             threeDSecureRequested = true;
             loading = ProgressDialog.show(activity, getString(R.string.loading),
                     getString(R.string.loading), true, false);
 
             ThreeDSecureRequest threeDSecureRequest = threeDSecureRequest(paymentMethodNonce);
             threeDSecureClient.createPaymentAuthRequest(requireContext(), threeDSecureRequest,
-                    (threeDSecureResult, error) -> {
-                        if (threeDSecureResult != null &&
-                                threeDSecureResult.getLookup().requiresUserAuthentication()) {
-                            threeDSecureLauncher.launch(threeDSecureResult);
-                        } else {
-                            handleThreeDSecureResult(threeDSecureResult, error);
+                    (paymentAuthRequest) -> {
+                        if (paymentAuthRequest instanceof ThreeDSecurePaymentAuthRequest.ReadyToLaunch) {
+                            threeDSecureLauncher.launch(
+                                    (ThreeDSecurePaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
+                        } else if (paymentAuthRequest instanceof ThreeDSecurePaymentAuthRequest.LaunchNotRequired) {
+                            handlePaymentMethodNonceCreated(((ThreeDSecurePaymentAuthRequest.LaunchNotRequired) paymentAuthRequest).getThreeDSecureNonce());
+                        } else if (paymentAuthRequest instanceof ThreeDSecurePaymentAuthRequest.Failure) {
+                            handleError(((ThreeDSecurePaymentAuthRequest.Failure) paymentAuthRequest).getError());
                         }
                         safelyCloseLoadingView();
                     });

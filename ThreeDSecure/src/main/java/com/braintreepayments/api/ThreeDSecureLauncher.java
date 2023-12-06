@@ -63,17 +63,17 @@ public class ThreeDSecureLauncher {
      * Launches the 3DS flow by switching to an authentication Activity. Call this method in the
      * callback of
      * {@link ThreeDSecureClient#createPaymentAuthRequest(Context, ThreeDSecureRequest,
-     * ThreeDSecureResultCallback)} if user authentication is required
+     * ThreeDSecurePaymentAuthRequestCallback)} if user authentication is required
      * {@link ThreeDSecureLookup#requiresUserAuthentication()}
      *
-     * @param threeDSecureBundledResult the result of
+     * @param paymentAuthRequest the result of
      *                           {@link
      *                           ThreeDSecureClient#continuePerformVerification(ThreeDSecureBundledResult,
      *                           ThreeDSecureResultCallback)}
      */
-    public void launch(ThreeDSecureBundledResult threeDSecureBundledResult) {
+    public void launch(ThreeDSecurePaymentAuthRequest.ReadyToLaunch paymentAuthRequest) {
         try {
-            activityLauncher.launch(threeDSecureBundledResult);
+            activityLauncher.launch(paymentAuthRequest.getRequestParams());
         } catch (RuntimeException runtimeException) {
             Throwable exceptionCause = runtimeException.getCause();
             if (exceptionCause instanceof TransactionTooLargeException) {
