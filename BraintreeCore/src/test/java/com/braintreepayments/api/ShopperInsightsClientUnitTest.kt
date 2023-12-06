@@ -7,6 +7,13 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertIs
 
+/**
+ * Unit tests for BraintreeShopperInsightsClient.
+ *
+ * This class contains tests for the shopper insights functionality within the Braintree SDK.
+ * It focuses on testing how the client handles different scenarios when fetching recommended
+ * payment methods.
+ */
 class ShopperInsightsClientUnitTest {
 
     private lateinit var sut: BraintreeShopperInsightsClient
@@ -16,6 +23,10 @@ class ShopperInsightsClientUnitTest {
         sut = BraintreeShopperInsightsClient()
     }
 
+    /**
+     * Tests if the getRecommendedPaymentMethods method returns paypal and venmo recommendations
+     * when providing a shopping insight request.
+     */
     @Test
     fun testGetRecommendedPaymentMethods_returnsDefaultRecommendations() = runBlocking {
         val request = ShopperInsightRequest(
