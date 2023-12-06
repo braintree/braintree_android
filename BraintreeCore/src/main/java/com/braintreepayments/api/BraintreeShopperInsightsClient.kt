@@ -9,7 +9,7 @@ import androidx.annotation.VisibleForTesting
  * you can improve conversion, increase sales/repeat buys and boost user retention/loyalty.
  * - Note: This feature is in beta. It's public API may change in future releases.
  */
-open class BraintreeShopperInsightsClient @VisibleForTesting internal constructor() {
+class BraintreeShopperInsightsClient @VisibleForTesting internal constructor() {
 
     /**
      * Retrieves recommended payment methods based on the provided shopper insights request.
