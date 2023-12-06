@@ -227,7 +227,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                             threeDSecureLauncher.launch(
                                     (ThreeDSecurePaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
                         } else if (paymentAuthRequest instanceof ThreeDSecurePaymentAuthRequest.LaunchNotRequired) {
-                            handlePaymentMethodNonceCreated(((ThreeDSecurePaymentAuthRequest.LaunchNotRequired) paymentAuthRequest).getThreeDSecureNonce());
+                            handlePaymentMethodNonceCreated(((ThreeDSecurePaymentAuthRequest.LaunchNotRequired) paymentAuthRequest).getNonce());
                         } else if (paymentAuthRequest instanceof ThreeDSecurePaymentAuthRequest.Failure) {
                             handleError(((ThreeDSecurePaymentAuthRequest.Failure) paymentAuthRequest).getError());
                         }
