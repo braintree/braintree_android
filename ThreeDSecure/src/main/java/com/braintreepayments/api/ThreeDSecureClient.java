@@ -293,7 +293,7 @@ public class ThreeDSecureClient {
                                         braintreeClient.sendAnalyticsEvent(
                                                 "three-d-secure.verification-flow.upgrade-payment-method.succeeded");
                                         sendLiabilityShiftedAnalytics(threeDSecureResult1);
-                                        callback.onThreeDSecureResult(new ThreeDSecureResult.Success(threeDSecureResult1.getThreeDSecureNonce(), threeDSecureResult1.getLookup()));
+                                        callback.onThreeDSecureResult(new ThreeDSecureResult.Success(threeDSecureResult1.getThreeDSecureNonce()));
                                     }
                                 } else if (error != null) {
                                     braintreeClient.sendAnalyticsEvent(

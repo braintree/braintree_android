@@ -8,7 +8,7 @@ sealed class ThreeDSecureResult {
     /**
      * The 3DS flow completed successfully. This [nonce] should be sent to your server.
      */
-    class Success(val nonce: ThreeDSecureNonce, val threeDSecureLookup: ThreeDSecureLookup?) :
+    class Success(val nonce: ThreeDSecureNonce) :
         ThreeDSecureResult()
 
     /**
