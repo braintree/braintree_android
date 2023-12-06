@@ -6,15 +6,15 @@ public class ThreeDSecurePaymentAuthResult {
 
     private final String jwt;
     private final ValidateResponse validateResponse;
-    private final ThreeDSecureInternalResult threeDSecureInternalResult;
+    private final ThreeDSecureParams threeDSecureParams;
 
     private final Exception error;
 
-    ThreeDSecurePaymentAuthResult(ThreeDSecureInternalResult threeDSecureInternalResult, String jwt,
+    ThreeDSecurePaymentAuthResult(ThreeDSecureParams threeDSecureParams, String jwt,
                                   ValidateResponse validateResponse) {
         this.jwt = jwt;
         this.validateResponse = validateResponse;
-        this.threeDSecureInternalResult = threeDSecureInternalResult;
+        this.threeDSecureParams = threeDSecureParams;
         this.error = null;
     }
 
@@ -22,15 +22,15 @@ public class ThreeDSecurePaymentAuthResult {
         this.error = error;
         this.jwt = null;
         this.validateResponse = null;
-        this.threeDSecureInternalResult = null;
+        this.threeDSecureParams = null;
     }
 
     Exception getError() {
         return error;
     }
 
-    ThreeDSecureInternalResult getThreeSecureResult() {
-        return threeDSecureInternalResult;
+    ThreeDSecureParams getThreeSecureResult() {
+        return threeDSecureParams;
     }
 
     ValidateResponse getValidateResponse() {

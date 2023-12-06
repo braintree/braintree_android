@@ -8,13 +8,11 @@ import androidx.annotation.Nullable;
  * {@link ThreeDSecureClient#createPaymentAuthRequest(android.content.Context, ThreeDSecureRequest, ThreeDSecurePaymentAuthRequestCallback)},
 
  */
-// TODO: Split into separate callbacks for internal and public methods and for
-//  createPaymentAuthRequest and tokenize methods
-public interface ThreeDSecureResultCallback {
+interface ThreeDSecureResultCallback {
 
     /**
-     * @param threeDSecureInternalResult {@link ThreeDSecureInternalResult}
+     * @param threeDSecureParams {@link ThreeDSecureParams}
      * @param error              an exception that occurred while processing a 3D Secure result
      */
-    void onResult(@Nullable ThreeDSecureInternalResult threeDSecureInternalResult, @Nullable Exception error);
+    void onResult(@Nullable ThreeDSecureParams threeDSecureParams, @Nullable Exception error);
 }

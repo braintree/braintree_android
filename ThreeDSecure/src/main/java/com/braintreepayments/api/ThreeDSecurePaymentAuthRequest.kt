@@ -1,17 +1,21 @@
 package com.braintreepayments.api
 
 /**
- * A request used to launch the Venmo app for continuation of the Venmo payment flow.
+ * A request used to launch continuation of the 3D Secure authentication flow.
  */
 sealed class ThreeDSecurePaymentAuthRequest {
 
     /**
-     * The request was successfully created and is ready to be launched by [VenmoLauncher]
+     * The request was successfully created and is ready to be launched by [ThreeDSecureLauncher]
      */
-    class ReadyToLaunch(val requestParams: ThreeDSecureInternalResult) :
+    class ReadyToLaunch(val requestParams: ThreeDSecureParams) :
         ThreeDSecurePaymentAuthRequest()
 
-    class LaunchNotRequired(val threeDSecureNonce: ThreeDSecureNonce, val threeDSecureLookup:
+    /**
+     * No additional authentication challenge is required for the [ThreeDSecureNonce], this
+     * [nonce] can be sent to your server.
+     */
+    class LaunchNotRequired(val nonce: ThreeDSecureNonce, val threeDSecureLookup:
     ThreeDSecureLookup) : ThreeDSecurePaymentAuthRequest()
 
     /**

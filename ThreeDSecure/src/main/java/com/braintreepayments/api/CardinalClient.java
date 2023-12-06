@@ -50,9 +50,9 @@ class CardinalClient {
         }
     }
 
-    void continueLookup(ThreeDSecureInternalResult threeDSecureInternalResult,
+    void continueLookup(ThreeDSecureParams threeDSecureParams,
                         CardinalChallengeObserver challengeObserver) throws BraintreeException {
-        ThreeDSecureLookup lookup = threeDSecureInternalResult.getLookup();
+        ThreeDSecureLookup lookup = threeDSecureParams.getLookup();
         String transactionId = lookup.getTransactionId();
         String paReq = lookup.getPareq();
         try {

@@ -26,24 +26,24 @@ import org.robolectric.RobolectricTestRunner;
 public class ThreeDSecureActivityResultContractUnitTest {
 
     private Context context;
-    private ThreeDSecureInternalResult threeDSecureInternalResult;
+    private ThreeDSecureParams threeDSecureParams;
 
     private ThreeDSecureActivityResultContract sut;
 
     @Before
     public void beforeEach() throws JSONException {
         context = ApplicationProvider.getApplicationContext();
-        threeDSecureInternalResult = ThreeDSecureInternalResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+        threeDSecureParams = ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
     }
 
     @Test
     public void createIntent_returnsIntentWithExtras() {
         sut = new ThreeDSecureActivityResultContract();
-        Intent result = sut.createIntent(context, threeDSecureInternalResult);
+        Intent result = sut.createIntent(context, threeDSecureParams);
 
-        ThreeDSecureInternalResult extraThreeDSecureInternalResult =
+        ThreeDSecureParams extraThreeDSecureParams =
             result.getParcelableExtra(EXTRA_THREE_D_SECURE_RESULT);
-        assertSame(threeDSecureInternalResult, extraThreeDSecureInternalResult);
+        assertSame(threeDSecureParams, extraThreeDSecureParams);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class ThreeDSecureActivityResultContractUnitTest {
         sut = new ThreeDSecureActivityResultContract();
 
         Intent successIntent = new Intent();
-        successIntent.putExtra(EXTRA_THREE_D_SECURE_RESULT, threeDSecureInternalResult);
+        successIntent.putExtra(EXTRA_THREE_D_SECURE_RESULT, threeDSecureParams);
 
         ValidateResponse validateResponse = mock(ValidateResponse.class);
         successIntent.putExtra(EXTRA_VALIDATION_RESPONSE, validateResponse);
@@ -63,7 +63,7 @@ public class ThreeDSecureActivityResultContractUnitTest {
                 paymentAuthResult = sut.parseResult(Activity.RESULT_OK, successIntent);
         assertNotNull(paymentAuthResult);
 
-        assertSame(threeDSecureInternalResult, paymentAuthResult.getThreeSecureResult());
+        assertSame(threeDSecureParams, paymentAuthResult.getThreeSecureResult());
         assertSame(validateResponse, paymentAuthResult.getValidateResponse());
         assertSame(jwt, paymentAuthResult.getJWT());
     }

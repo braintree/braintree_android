@@ -11,7 +11,7 @@ import org.json.JSONObject;
 /**
  * Class to parse and contain 3D Secure authentication responses
  */
-class ThreeDSecureInternalResult implements Parcelable {
+public class ThreeDSecureParams implements Parcelable {
 
     private static final String ERRORS_KEY = "errors";
     private static final String ERROR_KEY = "error";
@@ -29,10 +29,10 @@ class ThreeDSecureInternalResult implements Parcelable {
      *
      * @param jsonString The json response from the Braintree Gateway 3D Secure authentication
      *                   route.
-     * @return The {@link ThreeDSecureInternalResult} to use when performing 3D Secure authentication.
+     * @return The {@link ThreeDSecureParams} to use when performing 3D Secure authentication.
      */
-    static ThreeDSecureInternalResult fromJson(String jsonString) throws JSONException {
-        ThreeDSecureInternalResult result = new ThreeDSecureInternalResult();
+    static ThreeDSecureParams fromJson(String jsonString) throws JSONException {
+        ThreeDSecureParams result = new ThreeDSecureParams();
         JSONObject json = new JSONObject(jsonString);
 
         JSONObject cardJson = json.optJSONObject(PAYMENT_METHOD_KEY);
@@ -85,11 +85,11 @@ class ThreeDSecureInternalResult implements Parcelable {
     /**
      * @return {@link ThreeDSecureLookup} containing details of the 3D Secure lookup.
      */
-    ThreeDSecureLookup getLookup() {
+    public ThreeDSecureLookup getLookup() {
         return lookup;
     }
 
-    ThreeDSecureInternalResult() {
+    ThreeDSecureParams() {
     }
 
     @Override
@@ -104,19 +104,19 @@ class ThreeDSecureInternalResult implements Parcelable {
         dest.writeParcelable(lookup, flags);
     }
 
-    private ThreeDSecureInternalResult(Parcel in) {
+    private ThreeDSecureParams(Parcel in) {
         threeDSecureNonce = in.readParcelable(CardNonce.class.getClassLoader());
         errorMessage = in.readString();
         lookup = in.readParcelable(ThreeDSecureLookup.class.getClassLoader());
     }
 
-    public static final Creator<ThreeDSecureInternalResult> CREATOR = new Creator<>() {
-        public ThreeDSecureInternalResult createFromParcel(Parcel source) {
-            return new ThreeDSecureInternalResult(source);
+    public static final Creator<ThreeDSecureParams> CREATOR = new Creator<>() {
+        public ThreeDSecureParams createFromParcel(Parcel source) {
+            return new ThreeDSecureParams(source);
         }
 
-        public ThreeDSecureInternalResult[] newArray(int size) {
-            return new ThreeDSecureInternalResult[size];
+        public ThreeDSecureParams[] newArray(int size) {
+            return new ThreeDSecureParams[size];
         }
     };
 }

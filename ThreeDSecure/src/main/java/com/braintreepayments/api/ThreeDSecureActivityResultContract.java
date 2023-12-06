@@ -17,11 +17,11 @@ import androidx.annotation.Nullable;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
 class ThreeDSecureActivityResultContract
-        extends ActivityResultContract<ThreeDSecureInternalResult, ThreeDSecurePaymentAuthResult> {
+        extends ActivityResultContract<ThreeDSecureParams, ThreeDSecurePaymentAuthResult> {
 
     @NonNull
     @Override
-    public Intent createIntent(@NonNull Context context, ThreeDSecureInternalResult input) {
+    public Intent createIntent(@NonNull Context context, ThreeDSecureParams input) {
         Intent intent = new Intent(context, ThreeDSecureActivity.class);
 
         Bundle extras = new Bundle();
@@ -44,12 +44,12 @@ class ThreeDSecureActivityResultContract
             String errorMessage = intent.getStringExtra(EXTRA_ERROR_MESSAGE);
             result = new ThreeDSecurePaymentAuthResult(new BraintreeException(errorMessage));
         } else {
-            ThreeDSecureInternalResult threeDSecureInternalResult =
+            ThreeDSecureParams threeDSecureParams =
                     intent.getParcelableExtra(EXTRA_THREE_D_SECURE_RESULT);
             ValidateResponse validateResponse =
                     (ValidateResponse) intent.getSerializableExtra(EXTRA_VALIDATION_RESPONSE);
             String jwt = intent.getStringExtra(EXTRA_JWT);
-            result = new ThreeDSecurePaymentAuthResult(threeDSecureInternalResult, jwt, validateResponse);
+            result = new ThreeDSecurePaymentAuthResult(threeDSecureParams, jwt, validateResponse);
         }
         return result;
     }

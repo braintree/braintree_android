@@ -12,11 +12,11 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
-public class ThreeDSecureInternalResultUnitTest {
+public class ThreeDSecureParamsUnitTest {
 
     @Test
     public void fromJson_parsesCorrectly_v1() throws JSONException {
-        ThreeDSecureInternalResult authResponse = ThreeDSecureInternalResult.fromJson(
+        ThreeDSecureParams authResponse = ThreeDSecureParams.fromJson(
                 Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE);
 
         assertEquals("11", authResponse.getThreeDSecureNonce().getLastTwo());
@@ -28,7 +28,7 @@ public class ThreeDSecureInternalResultUnitTest {
 
     @Test
     public void fromJson_parsesCorrectly_v2() throws JSONException {
-        ThreeDSecureInternalResult authResponse = ThreeDSecureInternalResult.fromJson(
+        ThreeDSecureParams authResponse = ThreeDSecureParams.fromJson(
                 Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE);
 
         assertEquals("91", authResponse.getThreeDSecureNonce().getLastTwo());
@@ -40,7 +40,7 @@ public class ThreeDSecureInternalResultUnitTest {
 
     @Test
     public void fromJson_whenAuthenticationErrorOccurs_parsesCorrectly_v1() throws JSONException {
-        ThreeDSecureInternalResult authResponse = ThreeDSecureInternalResult.fromJson(
+        ThreeDSecureParams authResponse = ThreeDSecureParams.fromJson(
                 Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE_WITH_ERROR);
 
         assertNull(authResponse.getThreeDSecureNonce());
@@ -50,7 +50,7 @@ public class ThreeDSecureInternalResultUnitTest {
 
     @Test
     public void fromJson_whenAuthenticationErrorOccurs_parsesCorrectly_v2() throws JSONException {
-        ThreeDSecureInternalResult authResponse = ThreeDSecureInternalResult.fromJson(
+        ThreeDSecureParams authResponse = ThreeDSecureParams.fromJson(
                 Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE_WITH_ERROR);
 
         assertNull(authResponse.getThreeDSecureNonce());
@@ -60,13 +60,13 @@ public class ThreeDSecureInternalResultUnitTest {
 
     @Test
     public void isParcelable() throws JSONException {
-        ThreeDSecureInternalResult authResponse = ThreeDSecureInternalResult.fromJson(
+        ThreeDSecureParams authResponse = ThreeDSecureParams.fromJson(
                 Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE);
         Parcel parcel = Parcel.obtain();
         authResponse.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        ThreeDSecureInternalResult parceled = ThreeDSecureInternalResult.CREATOR.createFromParcel(parcel);
+        ThreeDSecureParams parceled = ThreeDSecureParams.CREATOR.createFromParcel(parcel);
 
         assertEquals(authResponse.getThreeDSecureNonce().getLastTwo(),
                 parceled.getThreeDSecureNonce().getLastTwo());

@@ -204,9 +204,9 @@ public class ThreeDSecureClient {
     public void initializeChallengeWithLookupResponse(@NonNull final String lookupResponse, @NonNull
     final ThreeDSecurePaymentAuthRequestCallback callback) {
         braintreeClient.getConfiguration((configuration, error) -> {
-            ThreeDSecureInternalResult result;
+            ThreeDSecureParams result;
             try {
-                result = ThreeDSecureInternalResult.fromJson(lookupResponse);
+                result = ThreeDSecureParams.fromJson(lookupResponse);
                 sendAnalyticsAndCallbackResult(result, callback);
             } catch (JSONException e) {
                 callback.onThreeDSecurePaymentAuthRequest(new ThreeDSecurePaymentAuthRequest.Failure(e));
@@ -214,7 +214,7 @@ public class ThreeDSecureClient {
         });
     }
 
-    void sendAnalyticsAndCallbackResult(ThreeDSecureInternalResult result,
+    void sendAnalyticsAndCallbackResult(ThreeDSecureParams result,
                                         ThreeDSecurePaymentAuthRequestCallback callback) {
         ThreeDSecureLookup lookup = result.getLookup();
 
@@ -269,7 +269,7 @@ public class ThreeDSecureClient {
         if (threeDSecureError != null) {
             callback.onThreeDSecureResult(new ThreeDSecureResult.Failure(threeDSecureError, null));
         } else {
-            ThreeDSecureInternalResult threeDSecureInternalResult = paymentAuthResult.getThreeSecureResult();
+            ThreeDSecureParams threeDSecureParams = paymentAuthResult.getThreeSecureResult();
             ValidateResponse validateResponse = paymentAuthResult.getValidateResponse();
             String jwt = paymentAuthResult.getJWT();
 
@@ -281,7 +281,7 @@ public class ThreeDSecureClient {
                 case FAILURE:
                 case NOACTION:
                 case SUCCESS:
-                    api.authenticateCardinalJWT(threeDSecureInternalResult, jwt,
+                    api.authenticateCardinalJWT(threeDSecureParams, jwt,
                             (threeDSecureResult1, error) -> {
                                 if (threeDSecureResult1 != null) {
                                     if (threeDSecureResult1.hasError()) {
@@ -319,8 +319,8 @@ public class ThreeDSecureClient {
     }
 
     private void sendLiabilityShiftedAnalytics(
-            ThreeDSecureInternalResult threeDSecureInternalResult) {
-        ThreeDSecureInfo info = threeDSecureInternalResult.getThreeDSecureNonce().getThreeDSecureInfo();
+            ThreeDSecureParams threeDSecureParams) {
+        ThreeDSecureInfo info = threeDSecureParams.getThreeDSecureNonce().getThreeDSecureInfo();
 
         braintreeClient.sendAnalyticsEvent(
                 String.format("three-d-secure.verification-flow.liability-shifted.%b",
