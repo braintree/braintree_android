@@ -62,8 +62,9 @@ public class ThreeDSecureLauncherUnitTest {
         sut.activityLauncher = activityResultLauncher;
 
         ThreeDSecureBundledResult threeDSecureBundledResult = new ThreeDSecureBundledResult();
+        ThreeDSecurePaymentAuthRequest.ReadyToLaunch paymentAuthRequest = new ThreeDSecurePaymentAuthRequest.ReadyToLaunch(threeDSecureBundledResult);
 
-        sut.launch(threeDSecureBundledResult);
+        sut.launch(paymentAuthRequest);
         verify(activityResultLauncher).launch(threeDSecureBundledResult);
 
     }
@@ -78,6 +79,7 @@ public class ThreeDSecureLauncherUnitTest {
 
         ThreeDSecureBundledResult threeDSecureBundledResult =
                 ThreeDSecureBundledResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+        ThreeDSecurePaymentAuthRequest.ReadyToLaunch paymentAuthRequest = new ThreeDSecurePaymentAuthRequest.ReadyToLaunch(threeDSecureBundledResult);
 
         TransactionTooLargeException transactionTooLargeException =
                 new TransactionTooLargeException();
@@ -87,7 +89,7 @@ public class ThreeDSecureLauncherUnitTest {
         doThrow(runtimeException)
                 .when(activityResultLauncher).launch(any(ThreeDSecureBundledResult.class));
 
-        sut.launch(threeDSecureBundledResult);
+        sut.launch(paymentAuthRequest);
 
         ArgumentCaptor<ThreeDSecurePaymentAuthResult> captor =
                 ArgumentCaptor.forClass(ThreeDSecurePaymentAuthResult.class);

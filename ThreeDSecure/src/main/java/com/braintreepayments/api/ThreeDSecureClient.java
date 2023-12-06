@@ -202,19 +202,18 @@ public class ThreeDSecureClient {
      * @param callback       {@link ThreeDSecureResultCallback}
      */
     public void initializeChallengeWithLookupResponse(@NonNull final String lookupResponse, @NonNull
-    final ThreeDSecureResultCallback callback) {
+    final ThreeDSecurePaymentAuthRequestCallback callback) {
         braintreeClient.getConfiguration((configuration, error) -> {
             ThreeDSecureBundledResult result;
             try {
                 result = ThreeDSecureBundledResult.fromJson(lookupResponse);
-//                sendAnalyticsAndCallbackResult(result, callback);
+                sendAnalyticsAndCallbackResult(result, callback);
             } catch (JSONException e) {
-                callback.onResult(null, e);
+                callback.onThreeDSecurePaymentAuthRequest(new ThreeDSecurePaymentAuthRequest.Failure(e));
             }
         });
     }
 
-    // TODO: Consolidate this method with createPaymentAuthRequest when analytics refactor is complete
     void sendAnalyticsAndCallbackResult(ThreeDSecureBundledResult result,
                                         ThreeDSecurePaymentAuthRequestCallback callback) {
         ThreeDSecureLookup lookup = result.getLookup();
