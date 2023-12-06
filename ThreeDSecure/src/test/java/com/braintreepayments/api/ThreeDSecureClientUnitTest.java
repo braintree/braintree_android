@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -89,10 +90,15 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
         sut.prepareLookup(activity, basicRequest, callback);
 
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(callback).onResult(same(basicRequest), captor.capture(), isNull());
+        ArgumentCaptor<ThreeDSecurePrepareLookupResult> captor = ArgumentCaptor.forClass(ThreeDSecurePrepareLookupResult.class);
+        verify(callback).onPrepareLookupResult(captor.capture());
 
-        String clientData = captor.getValue();
+        ThreeDSecurePrepareLookupResult prepareLookupResult = captor.getValue();
+        assertTrue(prepareLookupResult instanceof ThreeDSecurePrepareLookupResult.Success);
+        assertSame(basicRequest, ((ThreeDSecurePrepareLookupResult.Success) prepareLookupResult).getRequest());
+
+
+        String clientData = ((ThreeDSecurePrepareLookupResult.Success) prepareLookupResult).getClientData();
         JSONObject lookup = new JSONObject(clientData);
         Assert.assertEquals("encoded_auth_fingerprint",
                 lookup.getString("authorizationFingerprint"));
@@ -126,10 +132,14 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
         sut.prepareLookup(activity, basicRequest, callback);
 
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(callback).onResult(same(basicRequest), captor.capture(), (Exception) isNull());
+        ArgumentCaptor<ThreeDSecurePrepareLookupResult> captor = ArgumentCaptor.forClass(ThreeDSecurePrepareLookupResult.class);
+        verify(callback).onPrepareLookupResult(captor.capture());
 
-        String clientData = captor.getValue();
+        ThreeDSecurePrepareLookupResult prepareLookupResult = captor.getValue();
+        assertTrue(prepareLookupResult instanceof ThreeDSecurePrepareLookupResult.Success);
+        assertSame(basicRequest, ((ThreeDSecurePrepareLookupResult.Success) prepareLookupResult).getRequest());
+
+        String clientData = ((ThreeDSecurePrepareLookupResult.Success) prepareLookupResult).getClientData();
         JSONObject lookup = new JSONObject(clientData);
         Assert.assertEquals("encoded_auth_fingerprint",
                 lookup.getString("authorizationFingerprint"));
@@ -186,7 +196,11 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
         sut.prepareLookup(activity, basicRequest, callback);
 
-        verify(callback).onResult(null, null, initializeRuntimeError);
+        ArgumentCaptor<ThreeDSecurePrepareLookupResult> captor = ArgumentCaptor.forClass(ThreeDSecurePrepareLookupResult.class);
+        verify(callback).onPrepareLookupResult(captor.capture());
+        ThreeDSecurePrepareLookupResult prepareLookupResult = captor.getValue();
+        assertTrue(prepareLookupResult instanceof ThreeDSecurePrepareLookupResult.Failure);
+        assertEquals(initializeRuntimeError, ((ThreeDSecurePrepareLookupResult.Failure) prepareLookupResult).getError());
     }
 
     @Test
@@ -208,12 +222,14 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
         sut.prepareLookup(activity, basicRequest, callback);
 
-        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(callback).onResult(isNull(), isNull(),
-                captor.capture());
+        ArgumentCaptor<ThreeDSecurePrepareLookupResult> captor = ArgumentCaptor.forClass(ThreeDSecurePrepareLookupResult.class);
+        verify(callback).onPrepareLookupResult(captor.capture());
+        ThreeDSecurePrepareLookupResult prepareLookupResult = captor.getValue();
+        assertTrue(prepareLookupResult instanceof ThreeDSecurePrepareLookupResult.Failure);
+        Exception error = ((ThreeDSecurePrepareLookupResult.Failure) prepareLookupResult).getError();
 
-        TestCase.assertTrue(captor.getValue() instanceof BraintreeException);
-        Assert.assertEquals(captor.getValue().getMessage(),
+        TestCase.assertTrue(error instanceof BraintreeException);
+        Assert.assertEquals(error.getMessage(),
                 "Merchant is not configured for 3DS 2.0. " +
                         "Please contact Braintree Support for assistance.");
     }
@@ -586,7 +602,7 @@ public class ThreeDSecureClientUnitTest {
         verify(paymentAuthRequestCallback).onThreeDSecurePaymentAuthRequest(captor.capture());
         ThreeDSecurePaymentAuthRequest paymentAuthRequest = captor.getValue();
         assertTrue(paymentAuthRequest instanceof ThreeDSecurePaymentAuthRequest.LaunchNotRequired);
-        assertEquals(threeDSecureParams.getThreeDSecureNonce(), ((ThreeDSecurePaymentAuthRequest.LaunchNotRequired) paymentAuthRequest).getThreeDSecureNonce());
+        assertEquals(threeDSecureParams.getThreeDSecureNonce(), ((ThreeDSecurePaymentAuthRequest.LaunchNotRequired) paymentAuthRequest).getNonce());
         assertEquals(threeDSecureParams.getLookup(), ((ThreeDSecurePaymentAuthRequest.LaunchNotRequired) paymentAuthRequest).getThreeDSecureLookup());
     }
 

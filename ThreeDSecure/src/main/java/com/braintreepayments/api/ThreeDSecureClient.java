@@ -159,15 +159,15 @@ public class ThreeDSecureClient {
         }
 
         braintreeClient.getConfiguration((configuration, configError) -> {
-            if (configuration == null) {
-                callback.onResult(null, null, configError);
+            if (configuration == null && configError != null) {
+                callback.onPrepareLookupResult(new ThreeDSecurePrepareLookupResult.Failure(configError));
                 return;
             }
             if (configuration.getCardinalAuthenticationJwt() == null) {
                 Exception authError1 = new BraintreeException(
                         "Merchant is not configured for 3DS 2.0. " +
                                 "Please contact Braintree Support for assistance.");
-                callback.onResult(null, null, authError1);
+                callback.onPrepareLookupResult(new ThreeDSecurePrepareLookupResult.Failure(authError1));
                 return;
             }
 
@@ -180,7 +180,7 @@ public class ThreeDSecureClient {
                             } catch (JSONException ignored) {
                             }
                         }
-                        callback.onResult(request, lookupJSON.toString(), null);
+                        callback.onPrepareLookupResult(new ThreeDSecurePrepareLookupResult.Success(request, lookupJSON.toString()));
                     };
 
             try {
@@ -189,7 +189,7 @@ public class ThreeDSecureClient {
             } catch (BraintreeException initializeException) {
                 braintreeClient.sendAnalyticsEvent(
                         "three-d-secure.cardinal-sdk.init.failed");
-                callback.onResult(null, null, initializeException);
+                callback.onPrepareLookupResult(new ThreeDSecurePrepareLookupResult.Failure(initializeException));
             }
         });
     }
