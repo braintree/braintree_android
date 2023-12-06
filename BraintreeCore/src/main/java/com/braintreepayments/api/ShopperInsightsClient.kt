@@ -27,7 +27,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor() {
         // Hardcoded result
         callback.onResult(
             ShopperInsightResult.Success(
-                ShopperInsightResponse(
+                ShopperInsightInfo(
                     isPayPalRecommended = false,
                     isVenmoRecommended = false
                 )

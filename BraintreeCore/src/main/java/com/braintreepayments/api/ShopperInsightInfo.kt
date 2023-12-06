@@ -12,7 +12,7 @@ package com.braintreepayments.api
  * @property isVenmoRecommended If true, indicates that the Venmo payment option
  * should be given high priority in the checkout UI.
  */
-data class ShopperInsightResponse(
+data class ShopperInsightInfo(
     val isPayPalRecommended: Boolean,
     val isVenmoRecommended: Boolean
 )
