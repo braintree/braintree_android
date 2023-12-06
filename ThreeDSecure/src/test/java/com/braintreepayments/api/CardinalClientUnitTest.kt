@@ -232,10 +232,10 @@ class CardinalClientUnitTest {
         every { threeDSecureLookup.transactionId } returns "sample-transaction-id"
         every { threeDSecureLookup.pareq } returns "sample-payer-authentication-request"
 
-        val threeDSecureResult = mockk<ThreeDSecureResult>(relaxed = true)
-        every { threeDSecureResult.lookup } returns threeDSecureLookup
+        val threeDSecureBundledResult = mockk<ThreeDSecureBundledResult>(relaxed = true)
+        every { threeDSecureBundledResult.lookup } returns threeDSecureLookup
 
-        sut.continueLookup(threeDSecureResult, cardinalChallengeObserver)
+        sut.continueLookup(threeDSecureBundledResult, cardinalChallengeObserver)
         verify {
             cardinalInstance.cca_continue(
                 "sample-transaction-id",
@@ -257,11 +257,11 @@ class CardinalClientUnitTest {
         every { threeDSecureLookup.transactionId } returns "sample-transaction-id"
         every { threeDSecureLookup.pareq } returns "sample-payer-authentication-request"
 
-        val threeDSecureResult = mockk<ThreeDSecureResult>(relaxed = true)
-        every { threeDSecureResult.lookup } returns threeDSecureLookup
+        val threeDSecureBundledResult = mockk<ThreeDSecureBundledResult>(relaxed = true)
+        every { threeDSecureBundledResult.lookup } returns threeDSecureLookup
 
         try {
-            sut.continueLookup(threeDSecureResult, cardinalChallengeObserver)
+            sut.continueLookup(threeDSecureBundledResult, cardinalChallengeObserver)
             fail("should not get here")
         } catch (e: BraintreeException) {
             assertEquals("Cardinal SDK cca_continue Error.", e.message)

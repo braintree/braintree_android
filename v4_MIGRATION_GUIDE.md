@@ -127,8 +127,8 @@ protected void onResume() {
 
   BrowserSwitchResult browserSwitchResult = braintreeClient.deliverBrowserSwitchResult(this);
   if (browserSwitchResult != null) {
-    threeDSecureClient.onBrowserSwitchResult(browserSwitchResult, (threeDSecureResult, error) -> {
-      // send threeDSecureResult.getTokenizedCard().getString() to your server or handle error
+    threeDSecureClient.onBrowserSwitchResult(browserSwitchResult, (threeDSecureBundledResult, error) -> {
+      // send threeDSecureBundledResult.getTokenizedCard().getString() to your server or handle error
     }); 
   }
 }
@@ -909,20 +909,20 @@ public class ThreeDSecureActivity extends AppCompatActivity {
     threeDSecureRequest.setShippingMethod(ThreeDSecureShippingMethod.GROUND);
     threeDSecureRequest.setAdditionalInformation(additionalInformation);
 
-    threeDSecureClient.performVerification(this, threeDSecureRequest, (threeDSecureResult, error) -> {
-      if (threeDSecureResult != null) {
+    threeDSecureClient.performVerification(this, threeDSecureRequest, (threeDSecureBundledResult, error) -> {
+      if (threeDSecureBundledResult != null) {
         // examine lookup response (if necessary), then continue verification
-        threeDSecureClient.continuePerformVerification(ThreeDSecureActivity.this, threeDSecureRequest, threeDSecureResult, this::handleThreeDSecureResult);
+        threeDSecureClient.continuePerformVerification(ThreeDSecureActivity.this, threeDSecureRequest, threeDSecureBundledResult, this::handleThreeDSecureResult);
       } else {
         // handle error
       }
     });
   }
 
-  private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureResult, Exception error) {
-    if (threeDSecureResult != null) {
+  private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureBundledResult, Exception error) {
+    if (threeDSecureBundledResult != null) {
       // send this nonce to your server
-      String nonce = threeDSecureResult.getTokenizedCard().getString();
+      String nonce = threeDSecureBundledResult.getTokenizedCard().getString();
     } else {
       // handle error
     }

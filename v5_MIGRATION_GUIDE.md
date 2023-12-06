@@ -202,9 +202,9 @@ class MyActivity : FragmentActivity() {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       threeDSecureLauncher = ThreeDSecureLauncher(this) { paymentAuthResult ->
-+            threeDSecureClient.tokenize(paymentAuthResult) { threeDSecureResult, error ->
++            threeDSecureClient.tokenize(paymentAuthResult) { threeDSecureBundledResult, error ->
 +                error?.let { /* handle error */ }
-+                threeDSecureResult?.let { /* handle threeDSecureResult.tokenizedCard */ }
++                threeDSecureBundledResult?.let { /* handle threeDSecureBundledResult.tokenizedCard */ }
 +            }
 +       }
     }
@@ -219,19 +219,19 @@ class MyActivity : FragmentActivity() {
     fun onCardTokenization() {
 -       threeDSecureClient.performVerification(activity, threeDSecureRequest) { 
 +       threeDSecureClient.createPaymentAuthRequest(requireContext(), threeDSecureRequest) { 
-          threeDSecureResult, error ->
+          threeDSecureBundledResult, error ->
              error?.let { /* handle error */ }
-             threeDSecureResult?.let {
+             threeDSecureBundledResult?.let {
                 if (it.lookup.requiresAuthentication) {
 -                   threeDSecureClient.continuePerformVerification(MyActivity@this, request, it)
 +                   threeDSecureLauncher.launch(it) 
-                else { /* no additional user authentication needed, handle threeDSecureResult */ }
+                else { /* no additional user authentication needed, handle threeDSecureBundledResult */ }
              }
         }
     }
     
--   override fun onThreeDSecureSuccess(threeDSecureResult: ThreeDSecureResult) {
--        // handle threeDSecureResult.tokenizedCard
+-   override fun onThreeDSecureSuccess(threeDSecureBundledResult: ThreeDSecureResult) {
+-        // handle threeDSecureBundledResult.tokenizedCard
 -   }
       
 -   override fun onThreeDSecureFailure(error: java.lang.Exception) {

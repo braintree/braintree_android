@@ -28,7 +28,7 @@ import com.braintreepayments.api.ThreeDSecureLauncher;
 import com.braintreepayments.api.ThreeDSecureNonce;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
-import com.braintreepayments.api.ThreeDSecureResult;
+import com.braintreepayments.api.ThreeDSecureBundledResult;
 import com.braintreepayments.api.ThreeDSecureV2ButtonCustomization;
 import com.braintreepayments.api.ThreeDSecureV2LabelCustomization;
 import com.braintreepayments.api.ThreeDSecureV2TextBoxCustomization;
@@ -199,10 +199,10 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         autofillHelper.fillPostalCode("12345");
     }
 
-    private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureResult, Exception error) {
+    private void handleThreeDSecureResult(ThreeDSecureBundledResult threeDSecureBundledResult, Exception error) {
         safelyCloseLoadingView();
-        if (threeDSecureResult != null) {
-            ThreeDSecureNonce paymentMethodNonce = threeDSecureResult.getThreeDSecureNonce();
+        if (threeDSecureBundledResult != null) {
+            ThreeDSecureNonce paymentMethodNonce = threeDSecureBundledResult.getThreeDSecureNonce();
             handlePaymentMethodNonceCreated(paymentMethodNonce);
         } else {
             handleError(error);

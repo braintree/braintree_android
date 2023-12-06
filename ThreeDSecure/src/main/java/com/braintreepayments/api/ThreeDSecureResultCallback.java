@@ -13,8 +13,8 @@ import androidx.annotation.Nullable;
 public interface ThreeDSecureResultCallback {
 
     /**
-     * @param threeDSecureResult {@link ThreeDSecureResult}
+     * @param threeDSecureBundledResult {@link ThreeDSecureBundledResult}
      * @param error              an exception that occurred while processing a 3D Secure result
      */
-    void onResult(@Nullable ThreeDSecureResult threeDSecureResult, @Nullable Exception error);
+    void onResult(@Nullable ThreeDSecureBundledResult threeDSecureBundledResult, @Nullable Exception error);
 }

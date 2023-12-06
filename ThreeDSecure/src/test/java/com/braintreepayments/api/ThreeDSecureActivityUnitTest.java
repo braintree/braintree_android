@@ -27,11 +27,12 @@ public class ThreeDSecureActivityUnitTest {
     @Test
     public void onCreate_withExtras_invokesCardinalWithLookupData()
             throws JSONException, BraintreeException {
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+        ThreeDSecureBundledResult threeDSecureBundledResult =
+                ThreeDSecureBundledResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
 
         Bundle extras = new Bundle();
-        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureResult);
+        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT,
+                threeDSecureBundledResult);
 
         Intent intent = new Intent();
         intent.putExtras(extras);
@@ -42,11 +43,11 @@ public class ThreeDSecureActivityUnitTest {
         CardinalClient cardinalClient = mock(CardinalClient.class);
         sut.launchCardinalAuthChallenge(cardinalClient);
 
-        ArgumentCaptor<ThreeDSecureResult> captor =
-                ArgumentCaptor.forClass(ThreeDSecureResult.class);
+        ArgumentCaptor<ThreeDSecureBundledResult> captor =
+                ArgumentCaptor.forClass(ThreeDSecureBundledResult.class);
         verify(cardinalClient).continueLookup(captor.capture(), any());
 
-        ThreeDSecureResult actualResult = captor.getValue();
+        ThreeDSecureBundledResult actualResult = captor.getValue();
         ThreeDSecureLookup actualLookup = actualResult.getLookup();
         assertEquals("sample-transaction-id", actualLookup.getTransactionId());
         assertEquals("sample-pareq", actualLookup.getPareq());
@@ -55,11 +56,12 @@ public class ThreeDSecureActivityUnitTest {
     @Test
     public void onCreate_withExtrasAndCardinalError_finishesWithError()
             throws JSONException, BraintreeException {
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+        ThreeDSecureBundledResult threeDSecureBundledResult =
+                ThreeDSecureBundledResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
 
         Bundle extras = new Bundle();
-        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureResult);
+        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT,
+                threeDSecureBundledResult);
 
         Intent intent = new Intent();
         intent.putExtras(extras);
@@ -71,7 +73,7 @@ public class ThreeDSecureActivityUnitTest {
 
         CardinalClient cardinalClient = mock(CardinalClient.class);
         doThrow(cardinalError).when(cardinalClient)
-                .continueLookup(any(ThreeDSecureResult.class), any());
+                .continueLookup(any(ThreeDSecureBundledResult.class), any());
 
         sut.launchCardinalAuthChallenge(cardinalClient);
         verify(sut).finish();
@@ -93,7 +95,7 @@ public class ThreeDSecureActivityUnitTest {
         CardinalClient cardinalClient = mock(CardinalClient.class);
         sut.launchCardinalAuthChallenge(cardinalClient);
 
-        verify(cardinalClient, never()).continueLookup(any(ThreeDSecureResult.class),
+        verify(cardinalClient, never()).continueLookup(any(ThreeDSecureBundledResult.class),
                 any(CardinalChallengeObserver.class));
         verify(sut).finish();
 

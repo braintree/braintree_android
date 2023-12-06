@@ -19,7 +19,7 @@ public class ThreeDSecureLauncher {
     private static final String THREE_D_SECURE_RESULT =
             "com.braintreepayments.api.ThreeDSecure.RESULT";
     @VisibleForTesting
-    ActivityResultLauncher<ThreeDSecureResult> activityLauncher;
+    ActivityResultLauncher<ThreeDSecureBundledResult> activityLauncher;
     private final ThreeDSecureLauncherCallback callback;
 
     /**
@@ -66,14 +66,14 @@ public class ThreeDSecureLauncher {
      * ThreeDSecureResultCallback)} if user authentication is required
      * {@link ThreeDSecureLookup#requiresUserAuthentication()}
      *
-     * @param threeDSecureResult the result of
+     * @param threeDSecureBundledResult the result of
      *                           {@link
-     *                           ThreeDSecureClient#continuePerformVerification(ThreeDSecureResult,
+     *                           ThreeDSecureClient#continuePerformVerification(ThreeDSecureBundledResult,
      *                           ThreeDSecureResultCallback)}
      */
-    public void launch(ThreeDSecureResult threeDSecureResult) {
+    public void launch(ThreeDSecureBundledResult threeDSecureBundledResult) {
         try {
-            activityLauncher.launch(threeDSecureResult);
+            activityLauncher.launch(threeDSecureBundledResult);
         } catch (RuntimeException runtimeException) {
             Throwable exceptionCause = runtimeException.getCause();
             if (exceptionCause instanceof TransactionTooLargeException) {
