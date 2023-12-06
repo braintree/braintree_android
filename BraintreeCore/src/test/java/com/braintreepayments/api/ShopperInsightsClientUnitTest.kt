@@ -1,7 +1,5 @@
 package com.braintreepayments.api
 
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
@@ -28,22 +26,19 @@ class ShopperInsightsClientUnitTest {
      * when providing a shopping insight request.
      */
     @Test
-    fun testGetRecommendedPaymentMethods_returnsDefaultRecommendations() = runBlocking {
+    fun testGetRecommendedPaymentMethods_returnsDefaultRecommendations() {
         val request = ShopperInsightRequest(
             email = "fake-email",
             phoneCountryCode = "fake-country-code",
             phoneNationalNumber = "fake-national-phone"
         )
-        val resultDeferred = CompletableDeferred<ShopperInsightResult>()
         sut.getRecommendedPaymentMethods(request, object : ShopperInsightCallback{
             override fun onResult(result: ShopperInsightResult) {
-                resultDeferred.complete(result)
+                assertNotNull(result)
+                val successResult = assertIs<ShopperInsightResult.Success>(result)
+                assertNotNull(successResult.response.isPayPalRecommended)
+                assertNotNull(successResult.response.isVenmoRecommended)
             }
         })
-        val result = resultDeferred.await()
-        assertNotNull(result)
-        val successResult = assertIs<ShopperInsightResult.Success>(result)
-        assertNotNull(successResult.response.isPayPalRecommended)
-        assertNotNull(successResult.response.isVenmoRecommended)
     }
 }
