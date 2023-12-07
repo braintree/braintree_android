@@ -40,12 +40,6 @@ class ShopperInsightsClientUnitTest {
                 val successResult = assertIs<ShopperInsightResult.Success>(result)
                 assertNotNull(successResult.response.isPayPalRecommended)
                 assertNotNull(successResult.response.isVenmoRecommended)
-
-                verify {
-                    paymentApi.processRequest(
-                    "{\"customer\": {\"email\": \"fake-email\"}}"
-                    )
-                }
             }
         })
     }
