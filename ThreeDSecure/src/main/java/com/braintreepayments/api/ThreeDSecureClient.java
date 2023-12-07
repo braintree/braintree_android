@@ -288,7 +288,7 @@ public class ThreeDSecureClient {
                                         braintreeClient.sendAnalyticsEvent(
                                                 "three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
                                         callback.onThreeDSecureResult(new ThreeDSecureResult.Failure(new BraintreeException(threeDSecureResult1.getErrorMessage()), threeDSecureResult1.getThreeDSecureNonce()));
-                                    } else if (threeDSecureResult1.getThreeDSecureNonce() != null){
+                                    } else if (threeDSecureResult1.getThreeDSecureNonce() != null) {
                                         braintreeClient.sendAnalyticsEvent(
                                                 "three-d-secure.verification-flow.upgrade-payment-method.succeeded");
                                         sendLiabilityShiftedAnalytics(threeDSecureResult1);
