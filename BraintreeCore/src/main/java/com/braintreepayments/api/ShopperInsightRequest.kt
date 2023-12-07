@@ -4,15 +4,15 @@ package com.braintreepayments.api
  * Data class representing a request for shopper insights.
  *
  * @property email The email address of the shopper.
- * @property phoneCountryCode The international country code for the shopper's phone number
+ * @property countryCode The international country code for the shopper's phone number
  * (e.g., "1" for the United States).
- * @property phoneNationalNumber The national segment of the shopper's phone number
+ * @property nationalNumber The national segment of the shopper's phone number
  * (excluding the country code).
  */
 
 data class BuyerPhone(
-    var phoneCountryCode: String,
-    var phoneNationalNumber: String
+    var countryCode: String,
+    var nationalNumber: String
 )
 
 data class BuyerEmail(
