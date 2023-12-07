@@ -34,14 +34,13 @@ class ShopperInsightsClientUnitTest {
         val request = ShopperInsightRequest.Email(
             BuyerEmail("fake-email")
         )
-        sut.getRecommendedPaymentMethods(request, object : ShopperInsightCallback {
-            override fun onResult(result: ShopperInsightResult) {
-                assertNotNull(result)
-                val successResult = assertIs<ShopperInsightResult.Success>(result)
-                assertNotNull(successResult.response.isPayPalRecommended)
-                assertNotNull(successResult.response.isVenmoRecommended)
-            }
-        })
+        sut.getRecommendedPaymentMethods(request
+        ) { result ->
+            assertNotNull(result)
+            val successResult = assertIs<ShopperInsightResult.Success>(result)
+            assertNotNull(successResult.response.isPayPalRecommended)
+            assertNotNull(successResult.response.isVenmoRecommended)
+        }
     }
 
     /**
@@ -56,15 +55,13 @@ class ShopperInsightsClientUnitTest {
                 phoneNationalNumber = "123456789"
             )
         )
-        sut.getRecommendedPaymentMethods(request, object : ShopperInsightCallback {
-            override fun onResult(result: ShopperInsightResult) {
-                verify {
-                    paymentApi.processRequest(
-                        "{\"customer\": {\"phone\": {\"countryCode\": \"1\", \"nationalNumber\": \"123456789\"}}}"
-                    )
-                }
+        sut.getRecommendedPaymentMethods(request) {
+            verify {
+                paymentApi.processRequest(
+                    "{\"customer\": {\"phone\": {\"countryCode\": \"1\", \"nationalNumber\": \"123456789\"}}}"
+                )
             }
-        })
+        }
     }
 
     /**
@@ -76,15 +73,13 @@ class ShopperInsightsClientUnitTest {
         val request = ShopperInsightRequest.Email(
             BuyerEmail("fake-email"),
         )
-        sut.getRecommendedPaymentMethods(request, object : ShopperInsightCallback {
-            override fun onResult(result: ShopperInsightResult) {
-                verify {
-                    paymentApi.processRequest(
-                        "{\"customer\": {\"email\": \"fake-email\"}}"
-                    )
-                }
+        sut.getRecommendedPaymentMethods(request) {
+            verify {
+                paymentApi.processRequest(
+                    "{\"customer\": {\"email\": \"fake-email\"}}"
+                )
             }
-        })
+        }
     }
 
 
@@ -101,14 +96,12 @@ class ShopperInsightsClientUnitTest {
                 phoneNationalNumber = "123456789"
             )
         )
-        sut.getRecommendedPaymentMethods(request, object : ShopperInsightCallback {
-            override fun onResult(result: ShopperInsightResult) {
-                verify {
-                    paymentApi.processRequest(
-                        "{\"customer\": {\"email\": \"fake-email\",\"phone\": {\"countryCode\": \"1\", \"nationalNumber\": \"123456789\"}}}"
-                    )
-                }
+        sut.getRecommendedPaymentMethods(request) {
+            verify {
+                paymentApi.processRequest(
+                    "{\"customer\": {\"email\": \"fake-email\",\"phone\": {\"countryCode\": \"1\", \"nationalNumber\": \"123456789\"}}}"
+                )
             }
-        })
+        }
     }
 }
