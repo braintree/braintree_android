@@ -7,6 +7,8 @@
   * All Modules
     * Bump `minSdkVersion` to API 23
     * Bump target Java version to Java 11
+    * Ugrapde Kotlin version to 1.9.10
+    * Upgrade to Android Gradle Plugin 8
   * BraintreeCore
     * Remove `BraintreeClient` public constructors
     * Remove `ClientTokenProvider`

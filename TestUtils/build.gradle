@@ -4,7 +4,8 @@ plugins {
 }
 
 android {
-    compileSdkVersion rootProject.compileSdkVersion
+    namespace "com.braintreepayments.api.testutils"
+    compileSdk rootProject.compileSdkVersion
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -22,6 +23,16 @@ android {
     compileOptions {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
+    }
+
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+
+    kotlin {
+        jvmToolchain {
+            languageVersion.set(JavaLanguageVersion.of("11"))
+        }
     }
 }
 
