@@ -551,7 +551,7 @@ public class VenmoClientUnitTest {
 
         VenmoResult result = captor.getValue();
         assertTrue(result instanceof VenmoResult.Cancel);
-        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED.event);
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_CANCELED.event);
 
     }
 
@@ -695,7 +695,7 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void tokenize_sendsAnalyticsEventOnSuccess() {
+    public void tokenize_sendsAnalyticsEventOnSuccessfulStart() {
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
 
@@ -705,7 +705,6 @@ public class VenmoClientUnitTest {
         sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED.event);
-        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_SUCCEEDED.event);
     }
 
     @Test
