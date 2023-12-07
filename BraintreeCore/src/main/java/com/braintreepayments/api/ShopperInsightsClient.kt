@@ -25,8 +25,8 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         callback: ShopperInsightCallback
     ) {
         val jsonBody = when (request) {
-            is ShopperInsightRequest.Email -> processEmail(request.email)
-            is ShopperInsightRequest.Phone -> processPhone(
+            is ShopperInsightRequest.Email -> createEmailJsonBody(request.email)
+            is ShopperInsightRequest.Phone -> createPhoneJsonBody(
                 request.phoneCountryCode,
                 request.phoneNationalNumber
             )
@@ -44,11 +44,11 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         )
     }
 
-    private fun processEmail(email: String) : String {
+    private fun createEmailJsonBody(email: String) : String {
         return "{\"customer\": {\"email\": \"${email}\"}}"
     }
 
-    private fun processPhone(phoneCountryCode: String, phoneNationalNumber: String) : String {
+    private fun createPhoneJsonBody(phoneCountryCode: String, phoneNationalNumber: String) : String {
         return "{\"customer\": {\"phone\": {\"countryCode\": \"${phoneCountryCode}\", \"nationalNumber\": \"${phoneNationalNumber}\"}}}"
     }
 }
