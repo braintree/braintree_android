@@ -138,7 +138,7 @@ class GooglePayInternalClientUnitTest {
         sut.isReadyToPay(activity, configuration, isReadyToPayRequest) { readyToPayResult ->
             assertTrue(readyToPayResult is GooglePayReadinessResult.NotReadyToPay)
             assertSame(expectedError, (readyToPayResult as GooglePayReadinessResult.NotReadyToPay)
-                .error)
+                .cause)
             countDownLatch.countDown()
         }
         countDownLatch.await()

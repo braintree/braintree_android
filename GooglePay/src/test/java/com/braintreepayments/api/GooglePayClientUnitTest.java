@@ -178,7 +178,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayReadinessResult result = captor.getValue();
         assertTrue(result instanceof GooglePayReadinessResult.NotReadyToPay);
-        Exception exception = ((GooglePayReadinessResult.NotReadyToPay) result).getError();
+        Throwable exception = ((GooglePayReadinessResult.NotReadyToPay) result).getCause();
         assertTrue(exception instanceof IllegalArgumentException);
         assertEquals("Activity cannot be null.", exception.getMessage());
     }
