@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
@@ -46,17 +45,18 @@ public class CardClient {
      * The tokenization result is returned via a {@link CardTokenizeCallback} callback.
      *
      * <p>
-     * On success, the {@link CardTokenizeCallback#onResult(CardNonce, Exception)} method will be
-     * invoked with a nonce.
+     * On success, the {@link CardTokenizeCallback#onCardResult(CardResult)} method will be
+     * invoked with a {@link CardResult.Success} including a nonce.
      *
      * <p>
-     * If creation fails validation, the {@link CardTokenizeCallback#onResult(CardNonce, Exception)}
-     * method will be invoked with an {@link ErrorWithResponse} exception.
+     * If creation fails validation, the {@link CardTokenizeCallback#onCardResult(CardResult)}
+     * method will be invoked with a {@link CardResult.Failure} including an
+     * {@link ErrorWithResponse} exception.
      *
      * <p>
      * If an error not due to validation (server error, network issue, etc.) occurs, the
-     * {@link CardTokenizeCallback#onResult(CardNonce, Exception)} method will be invoked with an
-     * {@link Exception} describing the error.
+     * {@link CardTokenizeCallback#onCardResult(CardResult)} method will be invoked with a
+     * {@link CardResult.Failure} with an {@link Exception} describing the error.
      *
      * @param card     {@link Card}
      * @param callback {@link CardTokenizeCallback}
@@ -64,7 +64,7 @@ public class CardClient {
     public void tokenize(@NonNull final Card card, @NonNull final CardTokenizeCallback callback) {
         braintreeClient.getConfiguration((configuration, error) -> {
             if (error != null) {
-                callback.onResult(null, error);
+                callback.onCardResult(new CardResult.Failure(error));
                 return;
             }
 
@@ -80,7 +80,7 @@ public class CardClient {
                             (tokenizationResponse, exception) -> handleTokenizeResponse(
                                     tokenizationResponse, exception, callback));
                 } catch (BraintreeException | JSONException e) {
-                    callback.onResult(null, e);
+                    callback.onCardResult(new CardResult.Failure(e));
                 }
             } else {
                 apiClient.tokenizeREST(card,
@@ -96,15 +96,15 @@ public class CardClient {
             try {
                 CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
 
-                callback.onResult(cardNonce, null);
+                callback.onCardResult(new CardResult.Success(cardNonce));
                 braintreeClient.sendAnalyticsEvent("card.nonce-received");
 
             } catch (JSONException e) {
-                callback.onResult(null, e);
+                callback.onCardResult(new CardResult.Failure(e));
                 braintreeClient.sendAnalyticsEvent("card.nonce-failed");
             }
-        } else {
-            callback.onResult(null, exception);
+        } else if (exception != null) {
+            callback.onCardResult(new CardResult.Failure(exception));
             braintreeClient.sendAnalyticsEvent("card.nonce-failed");
         }
     }

@@ -88,6 +88,8 @@
   * Card
     * Remove `threeDSecureInfo` from `CardNonce`
     * Move `ThreeDSecureInfo` to `three-d-secure` module
+    * Add `CardResult` object
+    * Change `CardTokenizeCallback` parameters
   * SEPA Direct Debit
     * Remove `SEPADirectDebitLifecycleObserver` and `SEPADirectDebitListener`
     * Add `SEPADirectDebitLauncher`, `SEPADirectDebitLauncherCallback`, 
