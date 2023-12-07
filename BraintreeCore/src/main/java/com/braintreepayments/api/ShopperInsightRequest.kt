@@ -7,7 +7,7 @@ package com.braintreepayments.api
  * @property phoneCountryCode The international country code for the shopper's phone number
  * (e.g., "1" for the United States).
  * @property phoneNationalNumber The national segment of the shopper's phone number
- * (excluding the country code)
+ * (excluding the country code
  */
 
 data class BuyerPhone(
