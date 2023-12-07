@@ -1,5 +1,7 @@
 package com.braintreepayments.api
 
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
@@ -15,10 +17,12 @@ import kotlin.test.assertIs
 class ShopperInsightsClientUnitTest {
 
     private lateinit var sut: ShopperInsightsClient
+    private lateinit var paymentApi: PaymentReadyAPI
 
     @Before
     fun beforeEach() {
-        sut = ShopperInsightsClient()
+        paymentApi = mockk(relaxed = true)
+        sut = ShopperInsightsClient(paymentApi)
     }
 
     /**
@@ -27,10 +31,8 @@ class ShopperInsightsClientUnitTest {
      */
     @Test
     fun testGetRecommendedPaymentMethods_returnsDefaultRecommendations() {
-        val request = ShopperInsightRequest(
-            email = "fake-email",
-            phoneCountryCode = "fake-country-code",
-            phoneNationalNumber = "fake-national-phone"
+        val request = ShopperInsightRequest.Email(
+            email = "fake-email"
         )
         sut.getRecommendedPaymentMethods(request, object : ShopperInsightCallback {
             override fun onResult(result: ShopperInsightResult) {
@@ -38,6 +40,53 @@ class ShopperInsightsClientUnitTest {
                 val successResult = assertIs<ShopperInsightResult.Success>(result)
                 assertNotNull(successResult.response.isPayPalRecommended)
                 assertNotNull(successResult.response.isVenmoRecommended)
+
+                verify {
+                    paymentApi.processRequest(
+                    "{\"customer\": {\"email\": \"fake-email\"}}"
+                    )
+                }
+            }
+        })
+    }
+
+    /**
+     * Tests if the getRecommendedPaymentMethods method passes correct phone body JSON to payment api
+     * when providing a phone request object.
+     */
+    @Test
+    fun testGetRecommendedPaymentMethods_verifyPhoneJson() {
+        val request = ShopperInsightRequest.Phone(
+            phoneCountryCode = "1",
+            phoneNationalNumber = "123456789"
+        )
+        sut.getRecommendedPaymentMethods(request, object : ShopperInsightCallback {
+            override fun onResult(result: ShopperInsightResult) {
+                verify {
+                    paymentApi.processRequest(
+                        "{\"customer\": {\"phone\": {\"countryCode\": \"1\", \"nationalNumber\": \"123456789\"}}}"
+                    )
+                }
+            }
+        })
+    }
+
+    /**
+     * Tests if the getRecommendedPaymentMethods method passes correct email body JSON to payment api
+     * when providing a email request object.
+     */
+    @Test
+    fun testGetRecommendedPaymentMethods_verifyEmailJson() {
+        val request = ShopperInsightRequest.Email(
+            email = "fake-email"
+        )
+        sut.getRecommendedPaymentMethods(request, object : ShopperInsightCallback {
+            override fun onResult(result: ShopperInsightResult) {
+                verify {
+                    paymentApi.processRequest(
+                        "{\"customer\": {\"email\": \"fake-email\"}}"
+                    )
+                }
             }
         })
     }

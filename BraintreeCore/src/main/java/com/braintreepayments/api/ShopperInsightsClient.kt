@@ -9,7 +9,9 @@ import androidx.annotation.VisibleForTesting
  * you can improve conversion, increase sales/repeat buys and boost user retention/loyalty.
  * - Note: This feature is in beta. It's public API may change in future releases.
  */
-class ShopperInsightsClient @VisibleForTesting internal constructor() {
+class ShopperInsightsClient @VisibleForTesting internal constructor(
+    private val paymentReadyAPI: PaymentReadyAPI
+) {
 
     /**
      * Retrieves recommended payment methods based on the provided shopper insights request.
@@ -22,8 +24,15 @@ class ShopperInsightsClient @VisibleForTesting internal constructor() {
         request: ShopperInsightRequest,
         callback: ShopperInsightCallback
     ) {
+        val jsonBody = when (request) {
+            is ShopperInsightRequest.Email -> processEmail(request.email)
+            is ShopperInsightRequest.Phone -> processPhone(
+                request.phoneCountryCode,
+                request.phoneNationalNumber
+            )
+        }
         // TODO: - Add isAppInstalled checks for PP & Venmo. DTBTSDK-3176
-        // TODO: - Make API call to PaymentReadyAPI. DTBTSDK-3176
+        paymentReadyAPI.processRequest(jsonBody)
         // Hardcoded result
         callback.onResult(
             ShopperInsightResult.Success(
@@ -33,5 +42,13 @@ class ShopperInsightsClient @VisibleForTesting internal constructor() {
                 )
             )
         )
+    }
+
+    private fun processEmail(email: String) : String {
+        return "{\"customer\": {\"email\": \"${email}\"}}"
+    }
+
+    private fun processPhone(phoneCountryCode: String, phoneNationalNumber: String) : String {
+        return "{\"customer\": {\"phone\": {\"countryCode\": \"${phoneCountryCode}\", \"nationalNumber\": \"${phoneNationalNumber}\"}}}"
     }
 }
