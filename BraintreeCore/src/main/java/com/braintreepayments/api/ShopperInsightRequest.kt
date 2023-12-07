@@ -9,10 +9,23 @@ package com.braintreepayments.api
  * @property phoneNationalNumber The national segment of the shopper's phone number
  * (excluding the country code).
  */
+
+data class BuyerPhone(
+    var phoneCountryCode: String,
+    var phoneNationalNumber: String
+)
+
+data class BuyerEmail(
+    var email: String
+)
+
 sealed class ShopperInsightRequest {
-    data class Email(var email: String) : ShopperInsightRequest()
+    data class Email(var email: BuyerEmail) : ShopperInsightRequest()
     data class Phone(
-        var phoneCountryCode: String,
-        var phoneNationalNumber: String
+        var phone: BuyerPhone
+    ) : ShopperInsightRequest()
+    data class EmailAndPhone(
+        var email: BuyerEmail,
+        var phone: BuyerPhone
     ) : ShopperInsightRequest()
 }

@@ -27,8 +27,11 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         val jsonBody = when (request) {
             is ShopperInsightRequest.Email -> createEmailJsonBody(request.email)
             is ShopperInsightRequest.Phone -> createPhoneJsonBody(
-                request.phoneCountryCode,
-                request.phoneNationalNumber
+                request.phone
+            )
+            is ShopperInsightRequest.EmailAndPhone -> createEmailPhoneJsonBody(
+                request.email,
+                request.phone
             )
         }
         // TODO: - Add isAppInstalled checks for PP & Venmo. DTBTSDK-3176
@@ -44,11 +47,21 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         )
     }
 
-    private fun createEmailJsonBody(email: String) : String {
-        return "{\"customer\": {\"email\": \"${email}\"}}"
+    private fun createEmailJsonBody(email: BuyerEmail) : String {
+        return "{\"customer\": {\"email\": \"${email.email}\"}}"
     }
 
-    private fun createPhoneJsonBody(phoneCountryCode: String, phoneNationalNumber: String) : String {
-        return "{\"customer\": {\"phone\": {\"countryCode\": \"${phoneCountryCode}\", \"nationalNumber\": \"${phoneNationalNumber}\"}}}"
+    private fun createPhoneJsonBody(phone: BuyerPhone) : String {
+        return "{\"customer\": {\"phone\": {\"countryCode\": \"${phone.phoneCountryCode}\", \"nationalNumber\": \"${phone.phoneNationalNumber}\"}}}"
+    }
+
+    private fun createEmailPhoneJsonBody(email: BuyerEmail, phone: BuyerPhone) : String {
+        return "{\"customer\": {" +
+                "\"email\": \"${email.email}\"," +
+                "\"phone\": " +
+                "{\"countryCode\": \"${phone.phoneCountryCode}\", " +
+                "\"nationalNumber\": \"${phone.phoneNationalNumber}\"}" +
+                "}" +
+                "}"
     }
 }

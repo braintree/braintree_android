@@ -32,7 +32,7 @@ class ShopperInsightsClientUnitTest {
     @Test
     fun testGetRecommendedPaymentMethods_returnsDefaultRecommendations() {
         val request = ShopperInsightRequest.Email(
-            email = "fake-email"
+            BuyerEmail("fake-email")
         )
         sut.getRecommendedPaymentMethods(request, object : ShopperInsightCallback {
             override fun onResult(result: ShopperInsightResult) {
@@ -51,8 +51,10 @@ class ShopperInsightsClientUnitTest {
     @Test
     fun testGetRecommendedPaymentMethods_verifyPhoneJson() {
         val request = ShopperInsightRequest.Phone(
-            phoneCountryCode = "1",
-            phoneNationalNumber = "123456789"
+            BuyerPhone(
+                phoneCountryCode = "1",
+                phoneNationalNumber = "123456789"
+            )
         )
         sut.getRecommendedPaymentMethods(request, object : ShopperInsightCallback {
             override fun onResult(result: ShopperInsightResult) {
@@ -72,13 +74,38 @@ class ShopperInsightsClientUnitTest {
     @Test
     fun testGetRecommendedPaymentMethods_verifyEmailJson() {
         val request = ShopperInsightRequest.Email(
-            email = "fake-email"
+            BuyerEmail("fake-email"),
         )
         sut.getRecommendedPaymentMethods(request, object : ShopperInsightCallback {
             override fun onResult(result: ShopperInsightResult) {
                 verify {
                     paymentApi.processRequest(
                         "{\"customer\": {\"email\": \"fake-email\"}}"
+                    )
+                }
+            }
+        })
+    }
+
+
+    /**
+     * Tests if the getRecommendedPaymentMethods method passes correct email and phone body JSON to payment api
+     * when providing a email and phone request object.
+     */
+    @Test
+    fun testGetRecommendedPaymentMethods_verifyEmailAndPhoneJson() {
+        val request = ShopperInsightRequest.EmailAndPhone(
+            BuyerEmail("fake-email"),
+            BuyerPhone(
+                phoneCountryCode = "1",
+                phoneNationalNumber = "123456789"
+            )
+        )
+        sut.getRecommendedPaymentMethods(request, object : ShopperInsightCallback {
+            override fun onResult(result: ShopperInsightResult) {
+                verify {
+                    paymentApi.processRequest(
+                        "{\"customer\": {\"email\": \"fake-email\",\"phone\": {\"countryCode\": \"1\", \"nationalNumber\": \"123456789\"}}}"
                     )
                 }
             }
