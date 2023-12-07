@@ -77,18 +77,6 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void showVenmoInGooglePlayStore_sendsAnalyticsEvent() {
-        VenmoClient sut =
-                new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
-
-        sut.showVenmoInGooglePlayStore(activity);
-
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-
-        verify(activity).startActivity(captor.capture());
-    }
-
-    @Test
     public void createPaymentAuthRequest_whenCreatePaymentContextFails_collectAddressWithEcdDisabled() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
@@ -325,30 +313,6 @@ public class VenmoClientUnitTest {
     }
 
     @Test
-    public void createPaymentAuthRequest_sendsAnalyticsEventWhenStarted() {
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(venmoEnabledConfiguration)
-                .authorizationSuccess(clientToken)
-                .build();
-
-        VenmoApi venmoApi = new MockVenmoApiBuilder()
-                .createPaymentContextSuccess("venmo-payment-context-id")
-                .build();
-
-        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
-        request.setProfileId(null);
-        request.setShouldVault(false);
-
-        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
-
-        VenmoClient sut =
-                new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
-        sut.createPaymentAuthRequest(activity, request, venmoPaymentAuthRequestCallback);
-
-        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_STARTED.event);
-    }
-
-    @Test
     public void createPaymentAuthRequest_whenShouldVaultIsTrue_persistsVenmoVaultTrue() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
@@ -564,6 +528,55 @@ public class VenmoClientUnitTest {
 
         verify(venmoApi).createNonceFromPaymentContext(eq("payment-context-id"),
                 any(VenmoInternalCallback.class));
+
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED.event);
+    }
+
+    @Test
+    public void tokenize_withPaymentAuthResultError_whenUserCanceledError_returnsCancelAndSendsAnalytics() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .authorizationSuccess(clientToken)
+                .build();
+
+        VenmoClient sut =
+                new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+
+        VenmoPaymentAuthResult venmoPaymentAuthResult =
+                new VenmoPaymentAuthResult(null, null, null, new UserCanceledException("User canceled Venmo."));
+        sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
+
+        ArgumentCaptor<VenmoResult> captor = ArgumentCaptor.forClass(VenmoResult.class);
+        verify(venmoTokenizeCallback).onVenmoResult(captor.capture());
+
+        VenmoResult result = captor.getValue();
+        assertTrue(result instanceof VenmoResult.Cancel);
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED.event);
+
+    }
+
+    @Test
+    public void tokenize_withPaymentAuthResultError_returnsErrorAndSendsAnalytics() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .authorizationSuccess(clientToken)
+                .build();
+
+        VenmoClient sut =
+                new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+
+        BraintreeException error = new BraintreeException("Error");
+        VenmoPaymentAuthResult venmoPaymentAuthResult =
+                new VenmoPaymentAuthResult(null, null, null, error);
+        sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
+
+        ArgumentCaptor<VenmoResult> captor = ArgumentCaptor.forClass(VenmoResult.class);
+        verify(venmoTokenizeCallback).onVenmoResult(captor.capture());
+
+        VenmoResult result = captor.getValue();
+        assertTrue(result instanceof VenmoResult.Failure);
+        assertEquals(error, ((VenmoResult.Failure) result).getError());
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED.event);
     }
 
     @Test
@@ -596,7 +609,7 @@ public class VenmoClientUnitTest {
         assertEquals("fake-venmo-nonce", nonce.getString());
         assertEquals("venmojoe", nonce.getUsername());
 
-        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED.event);
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_SUCCEEDED.event);
     }
 
     @Test
@@ -692,6 +705,7 @@ public class VenmoClientUnitTest {
         sut.tokenize(venmoPaymentAuthResult, venmoTokenizeCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED.event);
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_SUCCEEDED.event);
     }
 
     @Test
