@@ -47,8 +47,8 @@ sealed class ShopperInsightsRequest {
         }.toString()
     }
 
-    fun toJson() : String {
-        return when(this) {
+    fun toJson(): String {
+        return when (this) {
             is Email -> toJson(email = email)
             is Phone -> toJson(phone = phone)
             is EmailAndPhone -> toJson(email = email, phone = phone)
