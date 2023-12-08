@@ -58,7 +58,14 @@ class ShopperInsightsClientUnitTest {
         sut.getRecommendedPaymentMethods(request) {
             verify {
                 paymentApi.processRequest(
-                    "{\"customer\": {\"phone\": {\"countryCode\": \"1\", \"nationalNumber\": \"123456789\"}}}"
+                    """
+                        {\"customer\": 
+                            {\"phone\": 
+                                {\"countryCode\": \"1\",
+                                \"nationalNumber\": \"123456789\"
+                                }
+                            }
+                         }""".trimIndent()
                 )
             }
         }
@@ -82,7 +89,6 @@ class ShopperInsightsClientUnitTest {
         }
     }
 
-
     /**
      * Tests if the getRecommendedPaymentMethods method passes correct email and phone body JSON to payment api
      * when providing a email and phone request object.
@@ -99,7 +105,17 @@ class ShopperInsightsClientUnitTest {
         sut.getRecommendedPaymentMethods(request) {
             verify {
                 paymentApi.processRequest(
-                    "{\"customer\": {\"email\": \"fake-email\",\"phone\": {\"countryCode\": \"1\", \"nationalNumber\": \"123456789\"}}}"
+                    """
+                        {
+                            \"customer\":
+                            {
+                                \"email\": \"fake-email\",
+                                \"phone\": {
+                                    \"countryCode\": \"1\",
+                                    \"nationalNumber\": \"123456789\"
+                                }
+                            }
+                        }""".trimIndent()
                 )
             }
         }
