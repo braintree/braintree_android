@@ -1,6 +1,7 @@
 package com.braintreepayments.api
 
 import androidx.annotation.VisibleForTesting
+import org.json.JSONObject
 
 /**
  * Use [ShopperInsightsClient] to optimize your checkout experience
@@ -25,16 +26,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         request: ShopperInsightRequest,
         callback: ShopperInsightCallback
     ) {
-        val jsonBody = when (request) {
-            is ShopperInsightRequest.Email -> createEmailJsonBody(request.email)
-            is ShopperInsightRequest.Phone -> createPhoneJsonBody(
-                request.phone
-            )
-            is ShopperInsightRequest.EmailAndPhone -> createEmailPhoneJsonBody(
-                request.email,
-                request.phone
-            )
-        }
+        val jsonBody = request.toJson()
         // TODO: - Add isAppInstalled checks for PP & Venmo. DTBTSDK-3176
         paymentReadyAPI.processRequest(jsonBody)
         // Hardcoded result
@@ -46,23 +38,5 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                 )
             )
         )
-    }
-
-    private fun createEmailJsonBody(email: String): String {
-        return "{\"customer\": {\"email\": \"${email}\"}}"
-    }
-
-    private fun createPhoneJsonBody(phone: BuyerPhone): String {
-        return """{\"customer\": {\"phone\": {\"countryCode\": \"${phone.countryCode}\", \"nationalNumber\": \"${phone.nationalNumber}\"}}}"""
-    }
-
-    private fun createEmailPhoneJsonBody(email: String, phone: BuyerPhone): String {
-        return "{\"customer\": {" +
-                "\"email\": \"${email}\"," +
-                "\"phone\": " +
-                "{\"countryCode\": \"${phone.countryCode}\", " +
-                "\"nationalNumber\": \"${phone.nationalNumber}\"}" +
-                "}" +
-                "}"
     }
 }

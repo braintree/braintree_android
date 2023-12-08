@@ -1,5 +1,7 @@
 package com.braintreepayments.api
 
+import org.json.JSONObject
+
 /**
  * Representation of a user phone number.
  * @property countryCode The international country code for the shopper's phone number
@@ -11,7 +13,12 @@ package com.braintreepayments.api
 data class BuyerPhone(
     var countryCode: String,
     var nationalNumber: String
-)
+) {
+    fun toJson(): JSONObject = JSONObject().apply {
+            put("countryCode", countryCode)
+            put("nationalNumber", nationalNumber)
+        }
+}
 
 /**
  * Data class representing a request for shopper insights.
@@ -25,4 +32,26 @@ sealed class ShopperInsightRequest {
         var email: String,
         var phone: BuyerPhone
     ) : ShopperInsightRequest()
+
+    private fun toJson(email: String? = null, phone: BuyerPhone? = null): String {
+        return JSONObject().apply {
+            put("customer", JSONObject().apply {
+                putOpt("email", email)
+                phone?.let {
+                    put("phone", JSONObject().apply {
+                        put("countryCode", it.countryCode)
+                        put("nationalNumber", it.nationalNumber)
+                    })
+                }
+            })
+        }.toString()
+    }
+
+    fun toJson() : String {
+        return when(this) {
+            is Email -> toJson(email = email)
+            is Phone -> toJson(phone = phone)
+            is EmailAndPhone -> toJson(email = email, phone = phone)
+        }
+    }
 }
