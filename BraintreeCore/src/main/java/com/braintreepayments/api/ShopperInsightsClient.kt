@@ -53,7 +53,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
     }
 
     private fun createPhoneJsonBody(phone: BuyerPhone): String {
-        return "{\"customer\": {\"phone\": {\"countryCode\": \"${phone.countryCode}\", \"nationalNumber\": \"${phone.nationalNumber}\"}}}"
+        return """{\"customer\": {\"phone\": {\"countryCode\": \"${phone.countryCode}\", \"nationalNumber\": \"${phone.nationalNumber}\"}}}"""
     }
 
     private fun createEmailPhoneJsonBody(email: String, phone: BuyerPhone): String {

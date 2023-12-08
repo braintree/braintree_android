@@ -72,7 +72,6 @@ class ShopperInsightsClientUnitTest {
 
         assertEquals(testCountryCode, countryCode)
         assertEquals(testNationalNumber, nationalNumber)
-
     }
 
     /**
