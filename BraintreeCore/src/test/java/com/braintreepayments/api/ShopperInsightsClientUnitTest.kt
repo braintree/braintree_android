@@ -34,7 +34,7 @@ class ShopperInsightsClientUnitTest {
      */
     @Test
     fun testGetRecommendedPaymentMethods_returnsDefaultRecommendations() {
-        val request = ShopperInsightRequest.Email("fake-email")
+        val request = ShopperInsightsRequest.Email("fake-email")
         sut.getRecommendedPaymentMethods(request
         ) { result ->
             assertNotNull(result)
@@ -52,7 +52,7 @@ class ShopperInsightsClientUnitTest {
     fun testGetRecommendedPaymentMethods_verifyPhoneJson() {
         val testCountryCode = "1"
         val testNationalNumber = "123456789"
-        val request = ShopperInsightRequest.Phone(
+        val request = ShopperInsightsRequest.Phone(
             BuyerPhone(
                 countryCode = testCountryCode,
                 nationalNumber = testNationalNumber
@@ -81,7 +81,7 @@ class ShopperInsightsClientUnitTest {
     @Test
     fun testGetRecommendedPaymentMethods_verifyEmailJson() {
         val fakeEmail = "fake-email"
-        val request = ShopperInsightRequest.Email(fakeEmail)
+        val request = ShopperInsightsRequest.Email(fakeEmail)
         val slot = CapturingSlot<String>()
         sut.getRecommendedPaymentMethods(request) {
             verify {
@@ -105,7 +105,7 @@ class ShopperInsightsClientUnitTest {
         val testCountryCode = "1"
         val testNationalNumber = "123456789"
 
-        val request = ShopperInsightRequest.EmailAndPhone(
+        val request = ShopperInsightsRequest.EmailAndPhone(
             email = fakeEmail,
             phone = BuyerPhone(
                 countryCode = testCountryCode,

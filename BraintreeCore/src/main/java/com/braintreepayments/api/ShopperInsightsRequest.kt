@@ -23,15 +23,15 @@ data class BuyerPhone(
 /**
  * Data class representing a request for shopper insights.
  */
-sealed class ShopperInsightRequest {
-    data class Email(var email: String) : ShopperInsightRequest()
+sealed class ShopperInsightsRequest {
+    data class Email(var email: String) : ShopperInsightsRequest()
     data class Phone(
         var phone: BuyerPhone
-    ) : ShopperInsightRequest()
+    ) : ShopperInsightsRequest()
     data class EmailAndPhone(
         var email: String,
         var phone: BuyerPhone
-    ) : ShopperInsightRequest()
+    ) : ShopperInsightsRequest()
 
     private fun toJson(email: String? = null, phone: BuyerPhone? = null): String {
         return JSONObject().apply {

@@ -1,7 +1,6 @@
 package com.braintreepayments.api
 
 import androidx.annotation.VisibleForTesting
-import org.json.JSONObject
 
 /**
  * Use [ShopperInsightsClient] to optimize your checkout experience
@@ -18,12 +17,12 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
     /**
      * Retrieves recommended payment methods based on the provided shopper insights request.
      *
-     * @param request The [ShopperInsightRequest] containing information about the shopper.
+     * @param request The [ShopperInsightsRequest] containing information about the shopper.
      * @return A [ShopperInsightResult] object indicating the recommended payment methods.
      */
     @Suppress("UnusedPrivateMember")
     fun getRecommendedPaymentMethods(
-        request: ShopperInsightRequest,
+        request: ShopperInsightsRequest,
         callback: ShopperInsightCallback
     ) {
         val jsonBody = request.toJson()
