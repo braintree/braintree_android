@@ -1,11 +1,14 @@
 package com.braintreepayments.api
 
+import io.mockk.CapturingSlot
 import io.mockk.mockk
 import io.mockk.verify
+import kotlin.test.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertIs
+import org.json.JSONObject
 
 /**
  * Unit tests for BraintreeShopperInsightsClient.
@@ -47,26 +50,29 @@ class ShopperInsightsClientUnitTest {
      */
     @Test
     fun testGetRecommendedPaymentMethods_verifyPhoneJson() {
+        val testCountryCode = "1"
+        val testNationalNumber = "123456789"
         val request = ShopperInsightRequest.Phone(
             BuyerPhone(
-                countryCode = "1",
-                nationalNumber = "123456789"
+                countryCode = testCountryCode,
+                nationalNumber = testNationalNumber
             )
         )
+        val slot = CapturingSlot<String>()
         sut.getRecommendedPaymentMethods(request) {
             verify {
-                paymentApi.processRequest(
-                    """
-                        {\"customer\": 
-                            {\"phone\": 
-                                {\"countryCode\": \"1\",
-                                \"nationalNumber\": \"123456789\"
-                                }
-                            }
-                         }""".trimIndent()
-                )
+                paymentApi.processRequest(capture(slot))
             }
         }
+
+        val customer = JSONObject(slot.captured).getJSONObject("customer")
+        val phone = customer.getJSONObject("phone")
+        val countryCode = phone.getString("countryCode")
+        val nationalNumber = phone.getString("nationalNumber")
+
+        assertEquals(testCountryCode, countryCode)
+        assertEquals(testNationalNumber, nationalNumber)
+
     }
 
     /**
@@ -75,14 +81,19 @@ class ShopperInsightsClientUnitTest {
      */
     @Test
     fun testGetRecommendedPaymentMethods_verifyEmailJson() {
-        val request = ShopperInsightRequest.Email("fake-email")
+        val fakeEmail = "fake-email"
+        val request = ShopperInsightRequest.Email(fakeEmail)
+        val slot = CapturingSlot<String>()
         sut.getRecommendedPaymentMethods(request) {
             verify {
-                paymentApi.processRequest(
-                    "{\"customer\": {\"email\": \"fake-email\"}}"
-                )
+                paymentApi.processRequest(capture(slot))
             }
         }
+
+        val customer = JSONObject(slot.captured).getJSONObject("customer")
+        val email = customer.getString("email")
+
+        assertEquals(fakeEmail, email)
     }
 
     /**
@@ -91,29 +102,33 @@ class ShopperInsightsClientUnitTest {
      */
     @Test
     fun testGetRecommendedPaymentMethods_verifyEmailAndPhoneJson() {
+        val fakeEmail = "fake-email"
+        val testCountryCode = "1"
+        val testNationalNumber = "123456789"
+
         val request = ShopperInsightRequest.EmailAndPhone(
-            email = "fake-email",
+            email = fakeEmail,
             phone = BuyerPhone(
-                countryCode = "1",
-                nationalNumber = "123456789"
+                countryCode = testCountryCode,
+                nationalNumber = testNationalNumber
             )
         )
+
+        val slot = CapturingSlot<String>()
         sut.getRecommendedPaymentMethods(request) {
             verify {
-                paymentApi.processRequest(
-                    """
-                        {
-                            \"customer\":
-                            {
-                                \"email\": \"fake-email\",
-                                \"phone\": {
-                                    \"countryCode\": \"1\",
-                                    \"nationalNumber\": \"123456789\"
-                                }
-                            }
-                        }""".trimIndent()
-                )
+                paymentApi.processRequest(capture(slot))
             }
         }
+
+        val customer = JSONObject(slot.captured).getJSONObject("customer")
+        val email = customer.getString("email")
+        val phone = customer.getJSONObject("phone")
+        val countryCode = phone.getString("countryCode")
+        val nationalNumber = phone.getString("nationalNumber")
+
+        assertEquals(fakeEmail, email)
+        assertEquals(testCountryCode, countryCode)
+        assertEquals(testNationalNumber, nationalNumber)
     }
 }
