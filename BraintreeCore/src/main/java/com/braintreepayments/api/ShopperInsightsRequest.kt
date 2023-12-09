@@ -37,12 +37,7 @@ sealed class ShopperInsightsRequest {
         return JSONObject().apply {
             put("customer", JSONObject().apply {
                 putOpt("email", email)
-                phone?.let {
-                    put("phone", JSONObject().apply {
-                        put("countryCode", it.countryCode)
-                        put("nationalNumber", it.nationalNumber)
-                    })
-                }
+                putOpt("phone", phone?.toJson())
             })
         }.toString()
     }
