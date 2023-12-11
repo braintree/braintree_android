@@ -57,7 +57,7 @@ public class LocalPaymentClient {
      * @param callback {@link LocalPaymentInternalAuthRequestCallback}
      */
     public void createPaymentAuthRequest(@NonNull final LocalPaymentRequest request,
-                                         @NonNull final LocalPaymentInternalAuthRequestCallback callback) {
+                                         @NonNull final LocalPaymentAuthCallback callback) {
         Exception exception = null;
 
         //noinspection ConstantConditions
@@ -74,13 +74,13 @@ public class LocalPaymentClient {
         }
 
         if (exception != null) {
-            callback.onResult(null, exception);
+            callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.Failure(exception));
         } else {
             braintreeClient.getConfiguration((configuration, error) -> {
                 if (configuration != null) {
                     if (!configuration.isPayPalEnabled()) {
-                        callback.onResult(null, new ConfigurationException(
-                                "Local payments are not enabled for this merchant."));
+                        callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.Failure(new ConfigurationException(
+                                "Local payments are not enabled for this merchant.")));
                         return;
                     }
 
@@ -94,14 +94,14 @@ public class LocalPaymentClient {
                                     sendAnalyticsEvent(request.getPaymentType(),
                                             "local-payment.create.succeeded");
                                 } else if (createPaymentMethodError != null) {
-                                    callback.onResult(null, new BraintreeException("An error " +
-                                            "occurred creating the local payment method."));
+                                    callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.Failure(new BraintreeException("An error " +
+                                            "occurred creating the local payment method.")));
                                     sendAnalyticsEvent(request.getPaymentType(),
                                             "local-payment.webswitch.initiate.failed");
                                 }
                             });
                 } else {
-                    callback.onResult(null, error);
+                    callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.Failure(error));
                 }
             });
         }
@@ -109,7 +109,7 @@ public class LocalPaymentClient {
 
     void buildBrowserSwitchOptions(@NonNull
                                    LocalPaymentAuthRequestParams localPaymentAuthRequestParams,
-                                   @NonNull LocalPaymentInternalAuthRequestCallback callback) {
+                                   @NonNull LocalPaymentAuthCallback callback) {
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                 .requestCode(BraintreeRequestCodes.LOCAL_PAYMENT)
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
@@ -124,11 +124,11 @@ public class LocalPaymentClient {
                             localPaymentAuthRequestParams.getRequest().getMerchantAccountId())
                     .put("payment-type", localPaymentAuthRequestParams.getRequest().getPaymentType()));
         } catch (JSONException e) {
-            callback.onResult(null, new BraintreeException("Error parsing local payment request"));
+            callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.Failure(new BraintreeException("Error parsing local payment request")));
         }
 
         localPaymentAuthRequestParams.setBrowserSwitchOptions(browserSwitchOptions);
-        callback.onResult(localPaymentAuthRequestParams, null);
+        callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.ReadyToLaunch(localPaymentAuthRequestParams));
         sendAnalyticsEvent(paymentType, "local-payment.webswitch.initiate.succeeded");
     }
 

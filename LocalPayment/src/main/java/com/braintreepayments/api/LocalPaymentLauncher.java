@@ -41,8 +41,7 @@ public class LocalPaymentLauncher {
      *
      * @param activity           an Android {@link FragmentActivity}
      * @param localPaymentAuthRequestParams the payment auth request created in
-     *                           {@link LocalPaymentClient#createPaymentAuthRequest(LocalPaymentRequest,
-     *                           LocalPaymentInternalAuthRequestCallback)}
+     *                           {@link LocalPaymentClient#createPaymentAuthRequest(LocalPaymentRequest, LocalPaymentAuthCallback)}
      */
     public void launch(@NonNull FragmentActivity activity,
                        @NonNull LocalPaymentAuthRequestParams localPaymentAuthRequestParams) {

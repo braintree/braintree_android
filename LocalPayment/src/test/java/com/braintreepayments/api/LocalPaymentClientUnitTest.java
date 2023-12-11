@@ -33,7 +33,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 public class LocalPaymentClientUnitTest {
 
     private FragmentActivity activity;
-    private LocalPaymentInternalAuthRequestCallback localPaymentInternalAuthRequestCallback;
+    private LocalPaymentAuthCallback localPaymentAuthCallback;
     private LocalPaymentTokenizeCallback localPaymentTokenizeCallback;
     private BraintreeClient braintreeClient;
     private DataCollector dataCollector;
@@ -46,7 +46,7 @@ public class LocalPaymentClientUnitTest {
     @Before
     public void beforeEach() throws JSONException {
         activity = mock(FragmentActivity.class);
-        localPaymentInternalAuthRequestCallback = mock(LocalPaymentInternalAuthRequestCallback.class);
+        localPaymentAuthCallback = mock(LocalPaymentAuthCallback.class);
         localPaymentTokenizeCallback = mock(LocalPaymentTokenizeCallback.class);
 
         braintreeClient =
@@ -73,7 +73,7 @@ public class LocalPaymentClientUnitTest {
                 new LocalPaymentClient(braintreeClient, dataCollector,
                         localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
-        sut.createPaymentAuthRequest(request, localPaymentInternalAuthRequestCallback);
+        sut.createPaymentAuthRequest(request, localPaymentAuthCallback);
 
         verify(localPaymentApi).createPaymentMethod(same(request),
                 any(LocalPaymentInternalAuthRequestCallback.class));
@@ -93,9 +93,15 @@ public class LocalPaymentClientUnitTest {
                 new LocalPaymentClient(braintreeClient, dataCollector,
                         localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
-        sut.createPaymentAuthRequest(request, localPaymentInternalAuthRequestCallback);
+        sut.createPaymentAuthRequest(request, localPaymentAuthCallback);
 
-        verify(localPaymentInternalAuthRequestCallback).onResult(same(localPaymentAuthRequestParams), isNull());
+        ArgumentCaptor<LocalPaymentAuthRequest> captor = ArgumentCaptor.forClass(LocalPaymentAuthRequest.class);
+        verify(localPaymentAuthCallback).onLocalPaymentAuthRequest(captor.capture());
+
+        LocalPaymentAuthRequest paymentAuthRequest = captor.getValue();
+        assertTrue(paymentAuthRequest instanceof LocalPaymentAuthRequest.ReadyToLaunch);
+        LocalPaymentAuthRequestParams params = ((LocalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams();
+        assertEquals(localPaymentAuthRequestParams, params);
     }
 
     @Test
@@ -111,7 +117,7 @@ public class LocalPaymentClientUnitTest {
                 new LocalPaymentClient(braintreeClient, dataCollector,
                         localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
-        sut.createPaymentAuthRequest(request, localPaymentInternalAuthRequestCallback);
+        sut.createPaymentAuthRequest(request, localPaymentAuthCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.start-payment.selected");
         verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.create.succeeded");
@@ -128,9 +134,15 @@ public class LocalPaymentClientUnitTest {
                 new LocalPaymentClient(braintreeClient, dataCollector,
                         localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
-        sut.createPaymentAuthRequest(request, localPaymentInternalAuthRequestCallback);
+        sut.createPaymentAuthRequest(request, localPaymentAuthCallback);
 
-        verify(localPaymentInternalAuthRequestCallback).onResult(isNull(), same(configException));
+        ArgumentCaptor<LocalPaymentAuthRequest> captor = ArgumentCaptor.forClass(LocalPaymentAuthRequest.class);
+        verify(localPaymentAuthCallback).onLocalPaymentAuthRequest(captor.capture());
+
+        LocalPaymentAuthRequest paymentAuthRequest = captor.getValue();
+        assertTrue(paymentAuthRequest instanceof LocalPaymentAuthRequest.Failure);
+        Exception exception = ((LocalPaymentAuthRequest.Failure) paymentAuthRequest).getError();
+        assertEquals(exception, configException);
     }
 
     @Test
@@ -147,26 +159,10 @@ public class LocalPaymentClientUnitTest {
                 new LocalPaymentClient(braintreeClient, dataCollector,
                         localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
-        sut.createPaymentAuthRequest(request, localPaymentInternalAuthRequestCallback);
+        sut.createPaymentAuthRequest(request, localPaymentAuthCallback);
 
         verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.start-payment.selected");
         verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.initiate.failed");
-    }
-
-    @Test
-    public void createPaymentAuthRequest_onConfigurationFetchError_forwardsErrorToCallback() {
-        Exception configError = new Exception("config fetch error");
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configurationError(configError)
-                .build();
-
-        LocalPaymentClient sut =
-                new LocalPaymentClient(braintreeClient, dataCollector,
-                        localPaymentApi);
-        LocalPaymentRequest request = getIdealLocalPaymentRequest();
-        sut.createPaymentAuthRequest(request, localPaymentInternalAuthRequestCallback);
-
-        verify(localPaymentInternalAuthRequestCallback).onResult(null, configError);
     }
 
     @Test
@@ -179,12 +175,14 @@ public class LocalPaymentClientUnitTest {
                 new LocalPaymentClient(braintreeClient, dataCollector,
                         localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
-        sut.createPaymentAuthRequest(request, localPaymentInternalAuthRequestCallback);
+        sut.createPaymentAuthRequest(request, localPaymentAuthCallback);
 
-        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(localPaymentInternalAuthRequestCallback).onResult(isNull(), captor.capture());
+        ArgumentCaptor<LocalPaymentAuthRequest> captor = ArgumentCaptor.forClass(LocalPaymentAuthRequest.class);
+        verify(localPaymentAuthCallback).onLocalPaymentAuthRequest(captor.capture());
 
-        Exception exception = captor.getValue();
+        LocalPaymentAuthRequest paymentAuthRequest = captor.getValue();
+        assertTrue(paymentAuthRequest instanceof LocalPaymentAuthRequest.Failure);
+        Exception exception = ((LocalPaymentAuthRequest.Failure) paymentAuthRequest).getError();
         assertTrue(exception instanceof ConfigurationException);
         assertEquals("Local payments are not enabled for this merchant.", exception.getMessage());
     }
@@ -197,12 +195,14 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         request.setAmount(null);
 
-        sut.createPaymentAuthRequest(request, localPaymentInternalAuthRequestCallback);
+        sut.createPaymentAuthRequest(request, localPaymentAuthCallback);
 
-        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(localPaymentInternalAuthRequestCallback).onResult(isNull(), captor.capture());
+        ArgumentCaptor<LocalPaymentAuthRequest> captor = ArgumentCaptor.forClass(LocalPaymentAuthRequest.class);
+        verify(localPaymentAuthCallback).onLocalPaymentAuthRequest(captor.capture());
 
-        Exception exception = captor.getValue();
+        LocalPaymentAuthRequest paymentAuthRequest = captor.getValue();
+        assertTrue(paymentAuthRequest instanceof LocalPaymentAuthRequest.Failure);
+        Exception exception = ((LocalPaymentAuthRequest.Failure) paymentAuthRequest).getError();
         assertTrue(exception instanceof BraintreeException);
         assertEquals("LocalPaymentRequest is invalid, paymentType and amount are required.",
                 exception.getMessage());
@@ -216,12 +216,14 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         request.setPaymentType(null);
 
-        sut.createPaymentAuthRequest(request, localPaymentInternalAuthRequestCallback);
+        sut.createPaymentAuthRequest(request, localPaymentAuthCallback);
 
-        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(localPaymentInternalAuthRequestCallback).onResult(isNull(), captor.capture());
+        ArgumentCaptor<LocalPaymentAuthRequest> captor = ArgumentCaptor.forClass(LocalPaymentAuthRequest.class);
+        verify(localPaymentAuthCallback).onLocalPaymentAuthRequest(captor.capture());
 
-        Exception exception = captor.getValue();
+        LocalPaymentAuthRequest paymentAuthRequest = captor.getValue();
+        assertTrue(paymentAuthRequest instanceof LocalPaymentAuthRequest.Failure);
+        Exception exception = ((LocalPaymentAuthRequest.Failure) paymentAuthRequest).getError();
         assertTrue(exception instanceof BraintreeException);
         assertEquals("LocalPaymentRequest is invalid, paymentType and amount are required.",
                 exception.getMessage());
@@ -233,12 +235,14 @@ public class LocalPaymentClientUnitTest {
                 new LocalPaymentClient(braintreeClient, dataCollector,
                         localPaymentApi);
 
-        sut.createPaymentAuthRequest(null, localPaymentInternalAuthRequestCallback);
+        sut.createPaymentAuthRequest(null, localPaymentAuthCallback);
 
-        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(localPaymentInternalAuthRequestCallback).onResult(isNull(), captor.capture());
+        ArgumentCaptor<LocalPaymentAuthRequest> captor = ArgumentCaptor.forClass(LocalPaymentAuthRequest.class);
+        verify(localPaymentAuthCallback).onLocalPaymentAuthRequest(captor.capture());
 
-        Exception exception = captor.getValue();
+        LocalPaymentAuthRequest paymentAuthRequest = captor.getValue();
+        assertTrue(paymentAuthRequest instanceof LocalPaymentAuthRequest.Failure);
+        Exception exception = ((LocalPaymentAuthRequest.Failure) paymentAuthRequest).getError();
         assertTrue(exception instanceof BraintreeException);
         assertEquals("A LocalPaymentRequest is required.", exception.getMessage());
     }
@@ -268,12 +272,14 @@ public class LocalPaymentClientUnitTest {
                         localPaymentApi);
 
         sut.createPaymentAuthRequest(getIdealLocalPaymentRequest(),
-                localPaymentInternalAuthRequestCallback);
+                localPaymentAuthCallback);
 
-        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(localPaymentInternalAuthRequestCallback).onResult(isNull(), captor.capture());
+        ArgumentCaptor<LocalPaymentAuthRequest> captor = ArgumentCaptor.forClass(LocalPaymentAuthRequest.class);
+        verify(localPaymentAuthCallback).onLocalPaymentAuthRequest(captor.capture());
 
-        Exception exception = captor.getValue();
+        LocalPaymentAuthRequest paymentAuthRequest = captor.getValue();
+        assertTrue(paymentAuthRequest instanceof LocalPaymentAuthRequest.Failure);
+        Exception exception = ((LocalPaymentAuthRequest.Failure) paymentAuthRequest).getError();
         assertTrue(exception instanceof BraintreeException);
         assertEquals("An error occurred creating the local payment method.",
                 exception.getMessage());
@@ -289,10 +295,15 @@ public class LocalPaymentClientUnitTest {
                 new LocalPaymentClient(braintreeClient, dataCollector,
                         localPaymentApi);
 
-        sut.createPaymentAuthRequest(getIdealLocalPaymentRequest(),
-                localPaymentInternalAuthRequestCallback);
+        sut.createPaymentAuthRequest(getIdealLocalPaymentRequest(), localPaymentAuthCallback);
 
-        verify(localPaymentInternalAuthRequestCallback).onResult(same(localPaymentAuthRequestParams), isNull());
+        ArgumentCaptor<LocalPaymentAuthRequest> captor = ArgumentCaptor.forClass(LocalPaymentAuthRequest.class);
+        verify(localPaymentAuthCallback).onLocalPaymentAuthRequest(captor.capture());
+
+        LocalPaymentAuthRequest paymentAuthRequest = captor.getValue();
+        assertTrue(paymentAuthRequest instanceof LocalPaymentAuthRequest.ReadyToLaunch);
+        LocalPaymentAuthRequestParams params = ((LocalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams();
+        assertEquals(localPaymentAuthRequestParams, params);
     }
 
     @Test
@@ -307,14 +318,15 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentAuthRequestParams
                 transaction = new LocalPaymentAuthRequestParams(request, approvalUrl, "payment-id");
 
-        sut.buildBrowserSwitchOptions(transaction, localPaymentInternalAuthRequestCallback);
+        sut.buildBrowserSwitchOptions(transaction, localPaymentAuthCallback);
 
-        ArgumentCaptor<LocalPaymentAuthRequestParams> captor =
-                ArgumentCaptor.forClass(LocalPaymentAuthRequestParams.class);
-        verify(localPaymentInternalAuthRequestCallback).onResult(captor.capture(), isNull());
+        ArgumentCaptor<LocalPaymentAuthRequest> captor = ArgumentCaptor.forClass(LocalPaymentAuthRequest.class);
+        verify(localPaymentAuthCallback).onLocalPaymentAuthRequest(captor.capture());
 
-        LocalPaymentAuthRequestParams result = captor.getValue();
-        BrowserSwitchOptions browserSwitchOptions = result.getBrowserSwitchOptions();
+        LocalPaymentAuthRequest paymentAuthRequest = captor.getValue();
+        assertTrue(paymentAuthRequest instanceof LocalPaymentAuthRequest.ReadyToLaunch);
+        LocalPaymentAuthRequestParams params = ((LocalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams();
+        BrowserSwitchOptions browserSwitchOptions = params.getBrowserSwitchOptions();
         assertEquals(BraintreeRequestCodes.LOCAL_PAYMENT, browserSwitchOptions.getRequestCode());
         assertEquals(Uri.parse("https://sample.com/approval?token=sample-token"),
                 browserSwitchOptions.getUrl());
@@ -340,14 +352,15 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentAuthRequestParams
                 transaction = new LocalPaymentAuthRequestParams(request, approvalUrl, "payment-id");
 
-        sut.buildBrowserSwitchOptions(transaction, localPaymentInternalAuthRequestCallback);
+        sut.buildBrowserSwitchOptions(transaction, localPaymentAuthCallback);
 
-        ArgumentCaptor<LocalPaymentAuthRequestParams> captor =
-                ArgumentCaptor.forClass(LocalPaymentAuthRequestParams.class);
-        verify(localPaymentInternalAuthRequestCallback).onResult(captor.capture(), isNull());
+        ArgumentCaptor<LocalPaymentAuthRequest> captor = ArgumentCaptor.forClass(LocalPaymentAuthRequest.class);
+        verify(localPaymentAuthCallback).onLocalPaymentAuthRequest(captor.capture());
 
-        LocalPaymentAuthRequestParams result = captor.getValue();
-        BrowserSwitchOptions browserSwitchOptions = result.getBrowserSwitchOptions();
+        LocalPaymentAuthRequest paymentAuthRequest = captor.getValue();
+        assertTrue(paymentAuthRequest instanceof LocalPaymentAuthRequest.ReadyToLaunch);
+        LocalPaymentAuthRequestParams params = ((LocalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams();
+        BrowserSwitchOptions browserSwitchOptions = params.getBrowserSwitchOptions();
 
         assertTrue(browserSwitchOptions.isLaunchAsNewTask());
     }
@@ -363,7 +376,7 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentAuthRequestParams
                 transaction = new LocalPaymentAuthRequestParams(request, approvalUrl, "payment-id");
 
-        sut.buildBrowserSwitchOptions(transaction, localPaymentInternalAuthRequestCallback);
+        sut.buildBrowserSwitchOptions(transaction, localPaymentAuthCallback);
         verify(braintreeClient).sendAnalyticsEvent(
                 "ideal.local-payment.webswitch.initiate.succeeded");
     }
