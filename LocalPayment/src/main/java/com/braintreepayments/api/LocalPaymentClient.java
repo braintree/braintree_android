@@ -54,10 +54,10 @@ public class LocalPaymentClient {
      * authentication flow.
      *
      * @param request  {@link LocalPaymentRequest} with the payment details.
-     * @param callback {@link LocalPaymentAuthRequestCallback}
+     * @param callback {@link LocalPaymentInternalAuthRequestCallback}
      */
     public void createPaymentAuthRequest(@NonNull final LocalPaymentRequest request,
-                                         @NonNull final LocalPaymentAuthRequestCallback callback) {
+                                         @NonNull final LocalPaymentInternalAuthRequestCallback callback) {
         Exception exception = null;
 
         //noinspection ConstantConditions
@@ -109,7 +109,7 @@ public class LocalPaymentClient {
 
     void buildBrowserSwitchOptions(@NonNull
                                    LocalPaymentAuthRequestParams localPaymentAuthRequestParams,
-                                   @NonNull LocalPaymentAuthRequestCallback callback) {
+                                   @NonNull LocalPaymentInternalAuthRequestCallback callback) {
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                 .requestCode(BraintreeRequestCodes.LOCAL_PAYMENT)
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
@@ -141,7 +141,7 @@ public class LocalPaymentClient {
      * @param context                         Android Context
      * @param localPaymentAuthResult a {@link LocalPaymentAuthResult} received
      *                                        in the callback of {@link LocalPaymentLauncher}
-     * @param callback                        {@link LocalPaymentInternalCallback}
+     * @param callback                        {@link LocalPaymentInternalTokenizeCallback}
      */
     public void tokenize(@NonNull final Context context,
                          @Nullable LocalPaymentAuthResult localPaymentAuthResult,

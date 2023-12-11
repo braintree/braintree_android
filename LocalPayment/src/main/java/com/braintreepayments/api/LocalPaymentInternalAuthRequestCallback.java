@@ -4,9 +4,9 @@ import androidx.annotation.Nullable;
 
 /**
  * Callback for receiving result of
- * {@link LocalPaymentClient#createPaymentAuthRequest(LocalPaymentRequest, LocalPaymentAuthRequestCallback)}.
+ * {@link LocalPaymentClient#createPaymentAuthRequest(LocalPaymentRequest, LocalPaymentInternalAuthRequestCallback)}.
  */
-public interface LocalPaymentAuthRequestCallback {
+public interface LocalPaymentInternalAuthRequestCallback {
 
     /**
      * @param localPaymentAuthRequestParams {@link LocalPaymentAuthRequestParams}

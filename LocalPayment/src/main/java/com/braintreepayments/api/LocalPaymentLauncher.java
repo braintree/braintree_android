@@ -42,7 +42,7 @@ public class LocalPaymentLauncher {
      * @param activity           an Android {@link FragmentActivity}
      * @param localPaymentAuthRequestParams the payment auth request created in
      *                           {@link LocalPaymentClient#createPaymentAuthRequest(LocalPaymentRequest,
-     *                           LocalPaymentAuthRequestCallback)}
+     *                           LocalPaymentInternalAuthRequestCallback)}
      */
     public void launch(@NonNull FragmentActivity activity,
                        @NonNull LocalPaymentAuthRequestParams localPaymentAuthRequestParams) {
@@ -66,7 +66,7 @@ public class LocalPaymentLauncher {
      * This method will deliver a {@link LocalPaymentAuthResult} to the
      * {@link LocalPaymentLauncherCallback} used to instantiate this class. The
      * {@link LocalPaymentAuthResult} should be passed to
-     * {@link LocalPaymentClient#tokenize(Context, LocalPaymentAuthResult, LocalPaymentInternalCallback)}
+     * {@link LocalPaymentClient#tokenize(Context, LocalPaymentAuthResult, LocalPaymentInternalTokenizeCallback)}
      *
      * @param context the context used to check for pending results
      * @param intent  the intent to return to your application containing a deep link result from

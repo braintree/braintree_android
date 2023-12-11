@@ -39,8 +39,8 @@ public class MockLocalPaymentApiBuilder {
         LocalPaymentApi localPaymentAPI = mock(LocalPaymentApi.class);
 
         doAnswer((Answer<Void>) invocation -> {
-            LocalPaymentInternalCallback callback =
-                    (LocalPaymentInternalCallback) invocation.getArguments()[3];
+            LocalPaymentInternalTokenizeCallback callback =
+                    (LocalPaymentInternalTokenizeCallback) invocation.getArguments()[3];
             if (tokenizeSuccess != null) {
                 callback.onResult(tokenizeSuccess, null);
             } else if (tokenizeError != null) {
@@ -48,11 +48,11 @@ public class MockLocalPaymentApiBuilder {
             }
             return null;
         }).when(localPaymentAPI).tokenize(anyString(), anyString(), anyString(),
-                any(LocalPaymentInternalCallback.class));
+                any(LocalPaymentInternalTokenizeCallback.class));
 
         doAnswer((Answer<Void>) invocation -> {
-            LocalPaymentAuthRequestCallback callback =
-                    (LocalPaymentAuthRequestCallback) invocation.getArguments()[1];
+            LocalPaymentInternalAuthRequestCallback callback =
+                    (LocalPaymentInternalAuthRequestCallback) invocation.getArguments()[1];
             if (createPaymentMethodSuccess != null) {
                 callback.onResult(createPaymentMethodSuccess, null);
             } else if (createPaymentMethodError != null) {
@@ -60,7 +60,7 @@ public class MockLocalPaymentApiBuilder {
             }
             return null;
         }).when(localPaymentAPI).createPaymentMethod(any(LocalPaymentRequest.class),
-                any(LocalPaymentAuthRequestCallback.class));
+                any(LocalPaymentInternalAuthRequestCallback.class));
 
         return localPaymentAPI;
     }
