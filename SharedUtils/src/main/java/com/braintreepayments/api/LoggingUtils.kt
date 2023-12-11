@@ -12,5 +12,3 @@ object LoggingUtils {
 
     const val LISTENER_WARNING = "Unable to deliver result to null listener"
 }
-
-
