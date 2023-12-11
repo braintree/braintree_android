@@ -144,18 +144,18 @@ public class LocalPaymentClient {
      */
     public void tokenize(@NonNull final Context context,
                          @Nullable LocalPaymentAuthResult localPaymentAuthResult,
-                         @NonNull final LocalPaymentInternalCallback callback) {
+                         @NonNull final LocalPaymentTokenizeCallback callback) {
         //noinspection ConstantConditions
         if (localPaymentAuthResult == null) {
-            callback.onResult(null, new BraintreeException("LocalPaymentAuthResult " +
-                    "cannot be null"));
+            callback.onLocalPaymentResult(new LocalPaymentResult.Failure(new BraintreeException("LocalPaymentAuthResult " +
+                    "cannot be null")));
             return;
         }
 
         BrowserSwitchResult browserSwitchResult =
                 localPaymentAuthResult.getBrowserSwitchResult();
         if (browserSwitchResult == null && localPaymentAuthResult.getError() != null) {
-            callback.onResult(null, localPaymentAuthResult.getError());
+            callback.onLocalPaymentResult(new LocalPaymentResult.Failure(localPaymentAuthResult.getError()));
             return;
         }
 
@@ -168,23 +168,22 @@ public class LocalPaymentClient {
         switch (result) {
             case BrowserSwitchStatus.CANCELED:
                 sendAnalyticsEvent(paymentType, "local-payment.webswitch.canceled");
-                callback.onResult(null, new UserCanceledException("User canceled Local Payment."));
+                callback.onLocalPaymentResult(LocalPaymentResult.Cancel.INSTANCE);
                 return;
             case BrowserSwitchStatus.SUCCESS:
                 Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
                 if (deepLinkUri == null) {
                     sendAnalyticsEvent(paymentType, "local-payment.webswitch-response.invalid");
-                    callback.onResult(null,
+                    callback.onLocalPaymentResult(new LocalPaymentResult.Failure(
                             new BraintreeException("LocalPayment encountered an error, " +
-                                    "return URL is invalid."));
+                                    "return URL is invalid.")));
                     return;
                 }
 
                 final String responseString = deepLinkUri.toString();
                 if (responseString.toLowerCase().contains(LOCAL_PAYMENT_CANCEL.toLowerCase())) {
                     sendAnalyticsEvent(paymentType, "local-payment.webswitch.canceled");
-                    callback.onResult(null,
-                            new UserCanceledException("User canceled Local Payment."));
+                    callback.onLocalPaymentResult(LocalPaymentResult.Cancel.INSTANCE);
                     return;
                 }
                 braintreeClient.getConfiguration((configuration, error) -> {
@@ -195,14 +194,15 @@ public class LocalPaymentClient {
                                     if (localPaymentNonce != null) {
                                         sendAnalyticsEvent(paymentType,
                                                 "local-payment.tokenize.succeeded");
+                                        callback.onLocalPaymentResult(new LocalPaymentResult.Success(localPaymentNonce));
                                     } else if (localPaymentError != null) {
                                         sendAnalyticsEvent(paymentType,
                                                 "local-payment.tokenize.failed");
+                                        callback.onLocalPaymentResult(new LocalPaymentResult.Failure(localPaymentError));
                                     }
-                                    callback.onResult(localPaymentNonce, localPaymentError);
                                 });
                     } else if (error != null) {
-                        callback.onResult(null, error);
+                        callback.onLocalPaymentResult(new LocalPaymentResult.Failure(error));
                     }
                 });
         }
