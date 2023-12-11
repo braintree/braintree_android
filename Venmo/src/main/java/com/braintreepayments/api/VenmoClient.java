@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +33,8 @@ public class VenmoClient {
     static final String EXTRA_PAYMENT_METHOD_NONCE = "com.braintreepayments.api.EXTRA_PAYMENT_METHOD_NONCE";
     static final String EXTRA_USERNAME = "com.braintreepayments.api.EXTRA_USER_NAME";
     static final String EXTRA_RESOURCE_ID = "com.braintreepayments.api.EXTRA_RESOURCE_ID";
+
+    static final String LOGGING_TAG = "Braintree";
 
     private final BraintreeClient braintreeClient;
     private final VenmoApi venmoApi;
@@ -309,12 +312,16 @@ public class VenmoClient {
     private void deliverVenmoSuccess(VenmoAccountNonce venmoAccountNonce) {
         if (listener != null) {
             listener.onVenmoSuccess(venmoAccountNonce);
+        } else {
+            Log.w(LOGGING_TAG, "Unable to deliver result to null listener");
         }
     }
 
     private void deliverVenmoFailure(Exception error) {
         if (listener != null) {
             listener.onVenmoFailure(error);
+        } else {
+            Log.w(LOGGING_TAG, "Unable to deliver result to null listener");
         }
     }
 
