@@ -57,7 +57,6 @@ public class VenmoClient {
      * @param activity used to open the Venmo's Google Play Store
      */
     public void showVenmoInGooglePlayStore(@NonNull FragmentActivity activity) {
-        braintreeClient.sendAnalyticsEvent("android.pay-with-venmo.app-store.invoked");
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(
                 "https://play.google.com/store/apps/details?id=" + VENMO_PACKAGE_NAME));
