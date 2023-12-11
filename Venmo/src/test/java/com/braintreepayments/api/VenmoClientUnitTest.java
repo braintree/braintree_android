@@ -216,13 +216,14 @@ public class VenmoClientUnitTest {
 
         verify(deviceInspector).isVenmoAppSwitchAvailable(same(activity));
 
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_FAILED);
         ArgumentCaptor<VenmoPaymentAuthRequest> captor =
                 ArgumentCaptor.forClass(VenmoPaymentAuthRequest.class);
         verify(venmoPaymentAuthRequestCallback).onVenmoPaymentAuthRequest(captor.capture());
         VenmoPaymentAuthRequest paymentAuthRequest = captor.getValue();
         assertTrue(paymentAuthRequest instanceof VenmoPaymentAuthRequest.Failure);
         assertEquals("Venmo is not installed", ((VenmoPaymentAuthRequest.Failure) paymentAuthRequest).getError().getMessage());
-        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_FAILED);
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED);
     }
 
     @Test

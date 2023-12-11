@@ -93,7 +93,8 @@ public class VenmoClient {
                 return;
             }
             if (!deviceInspector.isVenmoAppSwitchAvailable(activity)) {
-                callbackPaymentAuthAppSwitchFailure(callback,
+                braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_FAILED);
+                callbackPaymentAuthFailure(callback,
                         new VenmoPaymentAuthRequest.Failure(new AppSwitchNotAvailableException("Venmo is not installed")));
                 return;
             }
@@ -252,11 +253,6 @@ public class VenmoClient {
                 callback.onVenmoReadinessResult(new VenmoReadinessResult.Failure(configError));
             }
         });
-    }
-
-    private void callbackPaymentAuthAppSwitchFailure(VenmoPaymentAuthRequestCallback callback, VenmoPaymentAuthRequest request) {
-        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_FAILED);
-        callback.onVenmoPaymentAuthRequest(request);
     }
 
     private void callbackPaymentAuthFailure(VenmoPaymentAuthRequestCallback callback, VenmoPaymentAuthRequest request) {
