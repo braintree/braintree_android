@@ -8,7 +8,7 @@ import androidx.annotation.VisibleForTesting
  * By customizing each customer’s checkout experience,
  * you can improve conversion, increase sales/repeat buys and boost user retention/loyalty.
  *
- * Note: This feature is in beta. It's public API may change in future releases.
+ * Note: **This feature is in beta. It's public API may change in future releases.**
  */
 class ShopperInsightsClient @VisibleForTesting internal constructor(
     private val paymentReadyAPI: PaymentReadyAPI
