@@ -39,8 +39,8 @@ public class MockLocalPaymentApiBuilder {
         LocalPaymentApi localPaymentAPI = mock(LocalPaymentApi.class);
 
         doAnswer((Answer<Void>) invocation -> {
-            LocalPaymentTokenizeCallback callback =
-                    (LocalPaymentTokenizeCallback) invocation.getArguments()[3];
+            LocalPaymentInternalCallback callback =
+                    (LocalPaymentInternalCallback) invocation.getArguments()[3];
             if (tokenizeSuccess != null) {
                 callback.onResult(tokenizeSuccess, null);
             } else if (tokenizeError != null) {
@@ -48,7 +48,7 @@ public class MockLocalPaymentApiBuilder {
             }
             return null;
         }).when(localPaymentAPI).tokenize(anyString(), anyString(), anyString(),
-                any(LocalPaymentTokenizeCallback.class));
+                any(LocalPaymentInternalCallback.class));
 
         doAnswer((Answer<Void>) invocation -> {
             LocalPaymentAuthRequestCallback callback =

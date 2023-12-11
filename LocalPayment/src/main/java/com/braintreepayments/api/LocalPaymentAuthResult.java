@@ -4,8 +4,8 @@ import android.content.Context;
 
 /**
  * Result received from the local payment web flow through
- * {@link LocalPaymentTokenizeCallback}. This result should be passed to
- * {@link LocalPaymentClient#tokenize(Context, LocalPaymentAuthResult, LocalPaymentTokenizeCallback)}
+ * {@link LocalPaymentInternalCallback}. This result should be passed to
+ * {@link LocalPaymentClient#tokenize(Context, LocalPaymentAuthResult, LocalPaymentInternalCallback)}
  * to complete the local payment flow.
  */
 public class LocalPaymentAuthResult {

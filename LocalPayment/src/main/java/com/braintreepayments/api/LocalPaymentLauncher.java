@@ -66,7 +66,7 @@ public class LocalPaymentLauncher {
      * This method will deliver a {@link LocalPaymentAuthResult} to the
      * {@link LocalPaymentLauncherCallback} used to instantiate this class. The
      * {@link LocalPaymentAuthResult} should be passed to
-     * {@link LocalPaymentClient#tokenize(Context, LocalPaymentAuthResult, LocalPaymentTokenizeCallback)}
+     * {@link LocalPaymentClient#tokenize(Context, LocalPaymentAuthResult, LocalPaymentInternalCallback)}
      *
      * @param context the context used to check for pending results
      * @param intent  the intent to return to your application containing a deep link result from

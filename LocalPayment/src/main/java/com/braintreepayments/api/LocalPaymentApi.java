@@ -43,7 +43,7 @@ class LocalPaymentApi {
     }
 
     void tokenize(String merchantAccountId, String responseString, String clientMetadataID,
-                  final LocalPaymentTokenizeCallback callback) {
+                  final LocalPaymentInternalCallback callback) {
         JSONObject payload = new JSONObject();
 
         try {

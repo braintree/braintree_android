@@ -6,9 +6,9 @@ import androidx.annotation.Nullable;
 
 /**
  * Callback for receiving result of
- * {@link LocalPaymentClient#tokenize(Context, LocalPaymentAuthResult, LocalPaymentTokenizeCallback)}.
+ * {@link LocalPaymentClient#tokenize(Context, LocalPaymentAuthResult, LocalPaymentInternalCallback)}.
  */
-public interface LocalPaymentTokenizeCallback {
+public interface LocalPaymentInternalCallback {
 
     /**
      * @param localPaymentNonce {@link LocalPaymentNonce}

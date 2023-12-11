@@ -140,11 +140,11 @@ public class LocalPaymentClient {
      * @param context                         Android Context
      * @param localPaymentAuthResult a {@link LocalPaymentAuthResult} received
      *                                        in the callback of {@link LocalPaymentLauncher}
-     * @param callback                        {@link LocalPaymentTokenizeCallback}
+     * @param callback                        {@link LocalPaymentInternalCallback}
      */
     public void tokenize(@NonNull final Context context,
                          @Nullable LocalPaymentAuthResult localPaymentAuthResult,
-                         @NonNull final LocalPaymentTokenizeCallback callback) {
+                         @NonNull final LocalPaymentInternalCallback callback) {
         //noinspection ConstantConditions
         if (localPaymentAuthResult == null) {
             callback.onResult(null, new BraintreeException("LocalPaymentAuthResult " +
