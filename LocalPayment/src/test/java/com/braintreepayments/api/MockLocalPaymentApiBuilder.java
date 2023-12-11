@@ -11,7 +11,7 @@ public class MockLocalPaymentApiBuilder {
 
     private LocalPaymentNonce tokenizeSuccess;
     private Exception tokenizeError;
-    private LocalPaymentAuthRequest createPaymentMethodSuccess;
+    private LocalPaymentAuthRequestParams createPaymentMethodSuccess;
     private Exception createPaymentMethodError;
 
     public MockLocalPaymentApiBuilder tokenizeSuccess(LocalPaymentNonce tokenizeSuccess) {
@@ -25,7 +25,7 @@ public class MockLocalPaymentApiBuilder {
     }
 
     public MockLocalPaymentApiBuilder createPaymentMethodSuccess(
-            LocalPaymentAuthRequest createPaymentMethodSuccess) {
+            LocalPaymentAuthRequestParams createPaymentMethodSuccess) {
         this.createPaymentMethodSuccess = createPaymentMethodSuccess;
         return this;
     }

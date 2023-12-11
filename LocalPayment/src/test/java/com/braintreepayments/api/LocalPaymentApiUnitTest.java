@@ -113,11 +113,11 @@ public class LocalPaymentApiUnitTest {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.createPaymentMethod(request, localPaymentAuthRequestCallback);
 
-        ArgumentCaptor<LocalPaymentAuthRequest> captor =
-                ArgumentCaptor.forClass(LocalPaymentAuthRequest.class);
+        ArgumentCaptor<LocalPaymentAuthRequestParams> captor =
+                ArgumentCaptor.forClass(LocalPaymentAuthRequestParams.class);
         verify(localPaymentAuthRequestCallback).onResult(captor.capture(), isNull());
 
-        LocalPaymentAuthRequest result = captor.getValue();
+        LocalPaymentAuthRequestParams result = captor.getValue();
         assertNotNull(result);
         assertSame(request, result.getRequest());
         assertEquals("https://checkout.paypal.com/latinum?token=payment-token",

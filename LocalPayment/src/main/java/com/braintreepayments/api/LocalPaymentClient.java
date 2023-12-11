@@ -50,7 +50,7 @@ public class LocalPaymentClient {
 
     /**
      * Starts the payment flow for a {@link LocalPaymentRequest} and calls back a
-     * {@link LocalPaymentAuthRequest} on success that should be used to launch the user
+     * {@link LocalPaymentAuthRequestParams} on success that should be used to launch the user
      * authentication flow.
      *
      * @param request  {@link LocalPaymentRequest} with the payment details.
@@ -107,27 +107,28 @@ public class LocalPaymentClient {
         }
     }
 
-    void buildBrowserSwitchOptions(@NonNull LocalPaymentAuthRequest localPaymentAuthRequest,
+    void buildBrowserSwitchOptions(@NonNull
+                                   LocalPaymentAuthRequestParams localPaymentAuthRequestParams,
                                    @NonNull LocalPaymentAuthRequestCallback callback) {
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                 .requestCode(BraintreeRequestCodes.LOCAL_PAYMENT)
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                 .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
-                .url(Uri.parse(localPaymentAuthRequest.getApprovalUrl()));
+                .url(Uri.parse(localPaymentAuthRequestParams.getApprovalUrl()));
 
-        String paymentType = localPaymentAuthRequest.getRequest().getPaymentType();
+        String paymentType = localPaymentAuthRequestParams.getRequest().getPaymentType();
 
         try {
             browserSwitchOptions.metadata(new JSONObject()
                     .put("merchant-account-id",
-                            localPaymentAuthRequest.getRequest().getMerchantAccountId())
-                    .put("payment-type", localPaymentAuthRequest.getRequest().getPaymentType()));
+                            localPaymentAuthRequestParams.getRequest().getMerchantAccountId())
+                    .put("payment-type", localPaymentAuthRequestParams.getRequest().getPaymentType()));
         } catch (JSONException e) {
             callback.onResult(null, new BraintreeException("Error parsing local payment request"));
         }
 
-        localPaymentAuthRequest.setBrowserSwitchOptions(browserSwitchOptions);
-        callback.onResult(localPaymentAuthRequest, null);
+        localPaymentAuthRequestParams.setBrowserSwitchOptions(browserSwitchOptions);
+        callback.onResult(localPaymentAuthRequestParams, null);
         sendAnalyticsEvent(paymentType, "local-payment.webswitch.initiate.succeeded");
     }
 

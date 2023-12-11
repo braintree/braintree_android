@@ -30,8 +30,8 @@ class LocalPaymentApi {
                             String paymentToken = responseJson.getJSONObject("paymentResource")
                                     .getString("paymentToken");
 
-                            LocalPaymentAuthRequest transaction =
-                                    new LocalPaymentAuthRequest(request, redirectUrl, paymentToken);
+                            LocalPaymentAuthRequestParams transaction =
+                                    new LocalPaymentAuthRequestParams(request, redirectUrl, paymentToken);
                             callback.onResult(transaction, null);
                         } catch (JSONException e) {
                             callback.onResult(null, e);

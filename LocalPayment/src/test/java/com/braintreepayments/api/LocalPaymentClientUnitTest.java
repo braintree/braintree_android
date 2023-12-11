@@ -20,8 +20,6 @@ import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
 
-import net.bytebuddy.asm.Advice;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -40,7 +38,7 @@ public class LocalPaymentClientUnitTest {
     private BraintreeClient braintreeClient;
     private DataCollector dataCollector;
     private LocalPaymentApi localPaymentApi;
-    private LocalPaymentAuthRequest localPaymentAuthRequest;
+    private LocalPaymentAuthRequestParams localPaymentAuthRequestParams;
 
     private Configuration payPalEnabledConfig;
     private Configuration payPalDisabledConfig;
@@ -56,9 +54,9 @@ public class LocalPaymentClientUnitTest {
                         Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)).build();
         dataCollector = mock(DataCollector.class);
         localPaymentApi = mock(LocalPaymentApi.class);
-        localPaymentAuthRequest = mock(LocalPaymentAuthRequest.class);
-        when(localPaymentAuthRequest.getApprovalUrl()).thenReturn("https://");
-        when(localPaymentAuthRequest.getRequest()).thenReturn(getIdealLocalPaymentRequest());
+        localPaymentAuthRequestParams = mock(LocalPaymentAuthRequestParams.class);
+        when(localPaymentAuthRequestParams.getApprovalUrl()).thenReturn("https://");
+        when(localPaymentAuthRequestParams.getRequest()).thenReturn(getIdealLocalPaymentRequest());
 
         payPalEnabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL);
         payPalDisabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_DISABLED_PAYPAL);
@@ -88,7 +86,7 @@ public class LocalPaymentClientUnitTest {
                 .build();
 
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
-                .createPaymentMethodSuccess(localPaymentAuthRequest)
+                .createPaymentMethodSuccess(localPaymentAuthRequestParams)
                 .build();
 
         LocalPaymentClient sut =
@@ -97,7 +95,7 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.createPaymentAuthRequest(request, localPaymentAuthRequestCallback);
 
-        verify(localPaymentAuthRequestCallback).onResult(same(localPaymentAuthRequest), isNull());
+        verify(localPaymentAuthRequestCallback).onResult(same(localPaymentAuthRequestParams), isNull());
     }
 
     @Test
@@ -106,7 +104,7 @@ public class LocalPaymentClientUnitTest {
                 .configuration(payPalEnabledConfig)
                 .build();
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
-                .createPaymentMethodSuccess(localPaymentAuthRequest)
+                .createPaymentMethodSuccess(localPaymentAuthRequestParams)
                 .build();
 
         LocalPaymentClient sut =
@@ -283,7 +281,7 @@ public class LocalPaymentClientUnitTest {
     @Test
     public void createPaymentAuthRequest_whenCreatePaymentMethodSuccess_returnsLocalPaymentResultToCallback() {
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
-                .createPaymentMethodSuccess(localPaymentAuthRequest)
+                .createPaymentMethodSuccess(localPaymentAuthRequestParams)
                 .build();
 
         LocalPaymentClient sut =
@@ -292,7 +290,7 @@ public class LocalPaymentClientUnitTest {
 
         sut.createPaymentAuthRequest(getIdealLocalPaymentRequest(), localPaymentAuthRequestCallback);
 
-        verify(localPaymentAuthRequestCallback).onResult(same(localPaymentAuthRequest), isNull());
+        verify(localPaymentAuthRequestCallback).onResult(same(localPaymentAuthRequestParams), isNull());
     }
 
     @Test
@@ -304,16 +302,16 @@ public class LocalPaymentClientUnitTest {
 
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         String approvalUrl = "https://sample.com/approval?token=sample-token";
-        LocalPaymentAuthRequest
-                transaction = new LocalPaymentAuthRequest(request, approvalUrl, "payment-id");
+        LocalPaymentAuthRequestParams
+                transaction = new LocalPaymentAuthRequestParams(request, approvalUrl, "payment-id");
 
         sut.buildBrowserSwitchOptions(transaction, localPaymentAuthRequestCallback);
 
-        ArgumentCaptor<LocalPaymentAuthRequest> captor =
-                ArgumentCaptor.forClass(LocalPaymentAuthRequest.class);
+        ArgumentCaptor<LocalPaymentAuthRequestParams> captor =
+                ArgumentCaptor.forClass(LocalPaymentAuthRequestParams.class);
         verify(localPaymentAuthRequestCallback).onResult(captor.capture(), isNull());
 
-        LocalPaymentAuthRequest result = captor.getValue();
+        LocalPaymentAuthRequestParams result = captor.getValue();
         BrowserSwitchOptions browserSwitchOptions = result.getBrowserSwitchOptions();
         assertEquals(BraintreeRequestCodes.LOCAL_PAYMENT, browserSwitchOptions.getRequestCode());
         assertEquals(Uri.parse("https://sample.com/approval?token=sample-token"),
@@ -337,16 +335,16 @@ public class LocalPaymentClientUnitTest {
 
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         String approvalUrl = "https://sample.com/approval?token=sample-token";
-        LocalPaymentAuthRequest
-                transaction = new LocalPaymentAuthRequest(request, approvalUrl, "payment-id");
+        LocalPaymentAuthRequestParams
+                transaction = new LocalPaymentAuthRequestParams(request, approvalUrl, "payment-id");
 
         sut.buildBrowserSwitchOptions(transaction, localPaymentAuthRequestCallback);
 
-        ArgumentCaptor<LocalPaymentAuthRequest> captor =
-                ArgumentCaptor.forClass(LocalPaymentAuthRequest.class);
+        ArgumentCaptor<LocalPaymentAuthRequestParams> captor =
+                ArgumentCaptor.forClass(LocalPaymentAuthRequestParams.class);
         verify(localPaymentAuthRequestCallback).onResult(captor.capture(), isNull());
 
-        LocalPaymentAuthRequest result = captor.getValue();
+        LocalPaymentAuthRequestParams result = captor.getValue();
         BrowserSwitchOptions browserSwitchOptions = result.getBrowserSwitchOptions();
 
         assertTrue(browserSwitchOptions.isLaunchAsNewTask());
@@ -360,8 +358,8 @@ public class LocalPaymentClientUnitTest {
 
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         String approvalUrl = "https://sample.com/approval?token=sample-token";
-        LocalPaymentAuthRequest
-                transaction = new LocalPaymentAuthRequest(request, approvalUrl, "payment-id");
+        LocalPaymentAuthRequestParams
+                transaction = new LocalPaymentAuthRequestParams(request, approvalUrl, "payment-id");
 
         sut.buildBrowserSwitchOptions(transaction, localPaymentAuthRequestCallback);
         verify(braintreeClient).sendAnalyticsEvent(
