@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+  * Fix issue where inaccurate error message was being returned on authorization or configuration error (fixes #821)
+
 ## 4.40.0 (2023-11-16)
 
 * PayPalNativeCheckout
