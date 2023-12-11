@@ -34,8 +34,6 @@ public class VenmoClient {
     static final String EXTRA_USERNAME = "com.braintreepayments.api.EXTRA_USER_NAME";
     static final String EXTRA_RESOURCE_ID = "com.braintreepayments.api.EXTRA_RESOURCE_ID";
 
-    static final String LOGGING_TAG = "Braintree";
-
     private final BraintreeClient braintreeClient;
     private final VenmoApi venmoApi;
     private final VenmoSharedPrefsWriter sharedPrefsWriter;
@@ -313,7 +311,7 @@ public class VenmoClient {
         if (listener != null) {
             listener.onVenmoSuccess(venmoAccountNonce);
         } else {
-            Log.w(LOGGING_TAG, "Unable to deliver result to null listener");
+            Log.w(LoggingUtils.TAG, LoggingUtils.LISTENER_WARNING);
         }
     }
 
@@ -321,7 +319,7 @@ public class VenmoClient {
         if (listener != null) {
             listener.onVenmoFailure(error);
         } else {
-            Log.w(LOGGING_TAG, "Unable to deliver result to null listener");
+            Log.w(LoggingUtils.TAG, LoggingUtils.LISTENER_WARNING);
         }
     }
 
