@@ -8,7 +8,7 @@ import androidx.annotation.RestrictTo
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 object LoggingUtils {
 
-    const val TAG = "Braintree"
+    const val TAG = "Braintree SDK"
 
     const val LISTENER_WARNING = "Unable to deliver result to null listener"
 }
