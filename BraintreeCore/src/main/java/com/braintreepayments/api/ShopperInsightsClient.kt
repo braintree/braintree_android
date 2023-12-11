@@ -18,20 +18,20 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
      * Retrieves recommended payment methods based on the provided shopper insights request.
      *
      * @param request The [ShopperInsightsRequest] containing information about the shopper.
-     * @return A [ShopperInsightResult] object indicating the recommended payment methods.
+     * @return A [ShopperInsightsResult] object indicating the recommended payment methods.
      */
     @Suppress("UnusedPrivateMember")
     fun getRecommendedPaymentMethods(
         request: ShopperInsightsRequest,
-        callback: ShopperInsightCallback
+        callback: ShopperInsightsCallback
     ) {
         val jsonBody = request.toJson()
         // TODO: - Add isAppInstalled checks for PP & Venmo. DTBTSDK-3176
         paymentReadyAPI.processRequest(jsonBody)
         // Hardcoded result
         callback.onResult(
-            ShopperInsightResult.Success(
-                ShopperInsightInfo(
+            ShopperInsightsResult.Success(
+                ShopperInsightsInfo(
                     isPayPalRecommended = false,
                     isVenmoRecommended = false
                 )

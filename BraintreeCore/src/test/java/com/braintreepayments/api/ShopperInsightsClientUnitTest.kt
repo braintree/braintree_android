@@ -43,7 +43,7 @@ class ShopperInsightsClientUnitTest {
         sut.getRecommendedPaymentMethods(request
         ) { result ->
             assertNotNull(result)
-            val successResult = assertIs<ShopperInsightResult.Success>(result)
+            val successResult = assertIs<ShopperInsightsResult.Success>(result)
             assertNotNull(successResult.response.isPayPalRecommended)
             assertNotNull(successResult.response.isVenmoRecommended)
         }
