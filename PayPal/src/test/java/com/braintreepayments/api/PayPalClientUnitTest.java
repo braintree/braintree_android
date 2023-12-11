@@ -353,6 +353,22 @@ public class PayPalClientUnitTest {
     }
 
     @Test
+    public void requestOneTimePayment_whenConfigError_forwardsErrorToListener() {
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+
+        Exception authError = new Exception("Error fetching auth");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configurationError(authError)
+                .build();
+
+        PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
+        sut.setListener(listener);
+        sut.tokenizePayPalAccount(activity, new PayPalCheckoutRequest("1.00"));
+
+        verify(listener).onPayPalFailure(authError);
+    }
+
+    @Test
     public void requestOneTimePayment_whenDeviceCantPerformBrowserSwitch_returnsErrorToListener() {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
