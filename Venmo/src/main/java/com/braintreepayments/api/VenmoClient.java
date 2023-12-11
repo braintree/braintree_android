@@ -131,7 +131,7 @@ public class VenmoClient {
         tokenizeVenmoAccount(activity, request, new VenmoTokenizeAccountCallback() {
             @Override
             public void onResult(@Nullable Exception error) {
-                if (error != null ) {
+                if (error != null) {
                     deliverVenmoFailure(error);
                 }
             }
@@ -278,11 +278,11 @@ public class VenmoClient {
                                 vaultVenmoAccountNonce(nonce, new VenmoOnActivityResultCallback() {
                                     @Override
                                     public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
-                                            if (venmoAccountNonce != null) {
-                                                deliverVenmoSuccess(venmoAccountNonce);
-                                            } else if (error != null) {
-                                                deliverVenmoFailure(error);
-                                            }
+                                        if (venmoAccountNonce != null) {
+                                            deliverVenmoSuccess(venmoAccountNonce);
+                                        } else if (error != null) {
+                                            deliverVenmoFailure(error);
+                                        }
                                     }
                                 });
                             } else {
