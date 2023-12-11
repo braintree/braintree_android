@@ -1,5 +1,10 @@
 package com.braintreepayments.api
 
+import com.braintreepayments.api.BuyerPhone.Companion.KEY_COUNTRY_CODE
+import com.braintreepayments.api.BuyerPhone.Companion.KEY_NATIONAL_NUMBER
+import com.braintreepayments.api.ShopperInsightsRequest.Companion.KEY_CUSTOMER
+import com.braintreepayments.api.ShopperInsightsRequest.Companion.KEY_EMAIL
+import com.braintreepayments.api.ShopperInsightsRequest.Companion.KEY_PHONE
 import io.mockk.CapturingSlot
 import io.mockk.mockk
 import io.mockk.verify
@@ -65,10 +70,10 @@ class ShopperInsightsClientUnitTest {
             }
         }
 
-        val customer = JSONObject(slot.captured).getJSONObject("customer")
-        val phone = customer.getJSONObject("phone")
-        val countryCode = phone.getString("countryCode")
-        val nationalNumber = phone.getString("nationalNumber")
+        val customer = JSONObject(slot.captured).getJSONObject(KEY_CUSTOMER)
+        val phone = customer.getJSONObject(KEY_PHONE)
+        val countryCode = phone.getString(KEY_COUNTRY_CODE)
+        val nationalNumber = phone.getString(KEY_NATIONAL_NUMBER)
 
         assertEquals(testCountryCode, countryCode)
         assertEquals(testNationalNumber, nationalNumber)
@@ -89,8 +94,8 @@ class ShopperInsightsClientUnitTest {
             }
         }
 
-        val customer = JSONObject(slot.captured).getJSONObject("customer")
-        val email = customer.getString("email")
+        val customer = JSONObject(slot.captured).getJSONObject(KEY_CUSTOMER)
+        val email = customer.getString(KEY_EMAIL)
 
         assertEquals(fakeEmail, email)
     }
@@ -120,11 +125,11 @@ class ShopperInsightsClientUnitTest {
             }
         }
 
-        val customer = JSONObject(slot.captured).getJSONObject("customer")
-        val email = customer.getString("email")
-        val phone = customer.getJSONObject("phone")
-        val countryCode = phone.getString("countryCode")
-        val nationalNumber = phone.getString("nationalNumber")
+        val customer = JSONObject(slot.captured).getJSONObject(KEY_CUSTOMER)
+        val email = customer.getString(KEY_EMAIL)
+        val phone = customer.getJSONObject(KEY_PHONE)
+        val countryCode = phone.getString(KEY_COUNTRY_CODE)
+        val nationalNumber = phone.getString(KEY_NATIONAL_NUMBER)
 
         assertEquals(fakeEmail, email)
         assertEquals(testCountryCode, countryCode)

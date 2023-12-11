@@ -14,9 +14,14 @@ data class BuyerPhone(
     var countryCode: String,
     var nationalNumber: String
 ) {
+    companion object {
+        internal const val KEY_COUNTRY_CODE = "countryCode"
+        internal const val KEY_NATIONAL_NUMBER = "nationalNumber"
+    }
+
     fun toJson(): JSONObject = JSONObject().apply {
-            put("countryCode", countryCode)
-            put("nationalNumber", nationalNumber)
+            put(KEY_COUNTRY_CODE, countryCode)
+            put(KEY_NATIONAL_NUMBER, nationalNumber)
         }
 }
 
@@ -35,20 +40,26 @@ sealed class ShopperInsightsRequest {
         var phone: BuyerPhone
     ) : ShopperInsightsRequest()
 
-    private fun toJson(email: String? = null, phone: BuyerPhone? = null): String {
-        return JSONObject().apply {
-            put("customer", JSONObject().apply {
-                putOpt("email", email)
-                putOpt("phone", phone?.toJson())
-            })
-        }.toString()
-    }
-
     fun toJson(): String {
         return when (this) {
             is Email -> toJson(email = email)
             is Phone -> toJson(phone = phone)
             is EmailAndPhone -> toJson(email = email, phone = phone)
         }
+    }
+
+    private fun toJson(email: String? = null, phone: BuyerPhone? = null): String {
+        return JSONObject().apply {
+            put(KEY_CUSTOMER, JSONObject().apply {
+                putOpt(KEY_EMAIL, email)
+                putOpt(KEY_PHONE, phone?.toJson())
+            })
+        }.toString()
+    }
+
+    companion object {
+        internal const val KEY_CUSTOMER = "customer"
+        internal const val KEY_EMAIL = "email"
+        internal const val KEY_PHONE = "phone"
     }
 }
