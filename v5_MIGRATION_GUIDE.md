@@ -206,7 +206,7 @@ class MyActivity : FragmentActivity() {
 +               when (result) {
 +                   is ThreeDSecureResult.Success -> { /* send result.nonce to server */}
 +                   is ThreeDSecureResult.Failure -> { /* handle result.error */}
-+                   is ThreeDSecureResult.Cancle -> { /* user canceled authentication */}
++                   is ThreeDSecureResult.Cancel -> { /* user canceled authentication */}
 +            }
 +       }
     }
