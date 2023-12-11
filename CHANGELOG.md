@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Venmo
+  * Fix NPE when `VenmoListener` is null (fixes #832)
+
 ## 4.40.0 (2023-11-16)
 
 * PayPalNativeCheckout
