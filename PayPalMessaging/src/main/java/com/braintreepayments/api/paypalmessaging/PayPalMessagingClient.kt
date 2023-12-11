@@ -1,4 +1,4 @@
 package com.braintreepayments.api.paypalmessaging
-class PayPalMessagingView {
+class PayPalMessagingClient {
     // TODO: Add functionality in a future PR
 }
