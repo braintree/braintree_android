@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* BraintreeCore
+  * Bump `browser-switch` version to `2.6.1` (fixes #799)
 * PayPal
   * Fix issue where inaccurate error message was being returned on authorization or configuration error (fixes #821)
 * Venmo
