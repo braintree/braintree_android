@@ -4,6 +4,8 @@
 
 * PayPal
   * Fix issue where inaccurate error message was being returned on authorization or configuration error (fixes #821)
+* Venmo
+  * Fix NPE when `VenmoListener` is null (fixes #832)
 
 ## 4.40.0 (2023-11-16)
 
