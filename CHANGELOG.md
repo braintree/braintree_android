@@ -76,8 +76,8 @@
   * LocalPayment
     * Remove `LocalPaymentListener`
     * Add `LocalPaymentLauncher`, `LocalPaymentLauncherCallback`, `LocalPaymentTokenizeCallback`,
-      and `LocalPaymentAuthRequest`
-    * Rename `LocalPaymentResult` to `LocalPaymentAuthResult`
+      `LocalPaymentAuthRequest`, `LocalPaymentAuthRequestCallback` and `LocalPaymentAuthResult`
+    * Change `LocalPaymentResult` type 
     * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
       `clearActiveBrowserSwitchResult`, `approveLocalPayment`, and `approvePayment` from 
       `LocalPaymentClient`
