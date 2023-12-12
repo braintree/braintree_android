@@ -47,7 +47,7 @@ public class LocalPaymentLauncherUnitTest {
         LocalPaymentLauncher sut =
                 new LocalPaymentLauncher(browserSwitchClient, localPaymentLauncherCallback);
 
-        sut.launch(activity, localPaymentAuthRequestParams);
+        sut.launch(activity, new LocalPaymentAuthRequest.ReadyToLaunch(localPaymentAuthRequestParams));
 
         verify(browserSwitchClient).start(same(activity), same(options));
     }
@@ -63,7 +63,7 @@ public class LocalPaymentLauncherUnitTest {
         LocalPaymentLauncher sut =
                 new LocalPaymentLauncher(browserSwitchClient, localPaymentLauncherCallback);
 
-        sut.launch(activity, localPaymentAuthRequestParams);
+        sut.launch(activity, new LocalPaymentAuthRequest.ReadyToLaunch(localPaymentAuthRequestParams));
 
         ArgumentCaptor<LocalPaymentAuthResult> captor =
                 ArgumentCaptor.forClass(LocalPaymentAuthResult.class);

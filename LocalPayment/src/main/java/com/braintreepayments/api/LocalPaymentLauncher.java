@@ -44,9 +44,9 @@ public class LocalPaymentLauncher {
      *                           {@link LocalPaymentClient#createPaymentAuthRequest(LocalPaymentRequest, LocalPaymentAuthCallback)}
      */
     public void launch(@NonNull FragmentActivity activity,
-                       @NonNull LocalPaymentAuthRequestParams localPaymentAuthRequestParams) {
+                       @NonNull LocalPaymentAuthRequest.ReadyToLaunch localPaymentAuthRequest) {
         try {
-            browserSwitchClient.start(activity, localPaymentAuthRequestParams.getBrowserSwitchOptions());
+            browserSwitchClient.start(activity, localPaymentAuthRequest.getRequestParams().getBrowserSwitchOptions());
         } catch (BrowserSwitchException e) {
             callback.onResult(new LocalPaymentAuthResult(e));
         }

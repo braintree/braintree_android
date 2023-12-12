@@ -314,7 +314,7 @@ class MyActivity : FragmentActivity() {
 +       payPalClient.createPaymentAuthRequest(this, request) { paymentAuthRequest ->
 +           when(paymentAuthRequest) {
 +               is PayPalPaymentAuthRequest.ReadyToLaunch -> {
-+                   payPalLauncher.launch(paymentAuthRequet)
++                   payPalLauncher.launch(this@MyActivity, paymentAuthRequet)
 +               }
 +               is PayPalPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error +/ }
 +           }
@@ -389,7 +389,7 @@ class MyActivity : FragmentActivity() {
 +       localPaymentClient.createPaymentAuthRequest(this, request) { paymentAuthRequest ->
 +           when(paymentAuthRequest) {
 +               is LocalPaymentAuthRequest.ReadyToLaunch -> {
-+                   lacalPaymentLauncher.launch(paymentAuthRequet)
++                   lacalPaymentLauncher.launch(this@MyActivity, paymentAuthRequet)
 +               }
 +               is LocalPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error +/ }
 +           }
