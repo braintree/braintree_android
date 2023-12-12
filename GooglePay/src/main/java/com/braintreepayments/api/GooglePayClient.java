@@ -97,7 +97,7 @@ public class GooglePayClient {
         try {
             Class.forName(PaymentsClient.class.getName());
         } catch (ClassNotFoundException | NoClassDefFoundError e) {
-            callback.onGooglePayReadinessResult(new GooglePayReadinessResult.NotReadyToPay(e));
+            callback.onGooglePayReadinessResult(new GooglePayReadinessResult.NotReadyToPay(null));
             return;
         }
 

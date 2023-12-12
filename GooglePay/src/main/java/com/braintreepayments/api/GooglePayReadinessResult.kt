@@ -12,8 +12,8 @@ sealed class GooglePayReadinessResult {
     object ReadyToPay : GooglePayReadinessResult()
 
     /**
-     * The Google Pay API is supported or not set up on this device, or there was an issue [cause]
+     * The Google Pay API is supported or not set up on this device, or there was an issue [error]
      * determining readiness.
      */
-    class NotReadyToPay(val cause: Throwable?) : GooglePayReadinessResult()
+    class NotReadyToPay(val error: Exception?) : GooglePayReadinessResult()
 }
