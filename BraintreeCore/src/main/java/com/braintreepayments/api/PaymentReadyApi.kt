@@ -3,7 +3,7 @@ package com.braintreepayments.api
 import org.json.JSONObject
 
 // TODO: Implementation, documentation and interface.
-class PaymentReadyApi {
+internal class PaymentReadyApi {
     fun processRequest(request: ShopperInsightsRequest): String = request.toJson()
 
     private fun ShopperInsightsRequest.toJson(): String {
