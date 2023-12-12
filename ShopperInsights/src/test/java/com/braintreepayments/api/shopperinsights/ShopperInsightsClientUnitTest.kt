@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.shopperinsights
 
 import io.mockk.mockk
 import kotlin.test.assertEquals
