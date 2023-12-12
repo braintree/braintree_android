@@ -24,7 +24,6 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 public class CardClientUnitTest {
 
-    private Context context;
     private Card card;
     private CardTokenizeCallback cardTokenizeCallback;
 
@@ -35,7 +34,6 @@ public class CardClientUnitTest {
 
     @Before
     public void beforeEach() throws JSONException {
-        context = mock(Context.class);
         card = new Card();
         cardTokenizeCallback = mock(CardTokenizeCallback.class);
 
@@ -43,6 +41,17 @@ public class CardClientUnitTest {
 
         graphQLEnabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL);
         graphQLDisabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
+    }
+
+    @Test
+    public void tokenize_sendsTokenizeStartedAnalytics() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        apiClient = new MockApiClientBuilder().build();
+
+        CardClient sut = new CardClient(braintreeClient, apiClient);
+        sut.tokenize(card, cardTokenizeCallback);
+
+        verify(braintreeClient).sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_STARTED);
     }
 
     @Test
@@ -121,7 +130,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent("card.nonce-received");
+        verify(braintreeClient).sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_SUCCEEDED);
     }
 
     @Test
@@ -137,7 +146,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent("card.nonce-received");
+        verify(braintreeClient).sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_SUCCEEDED);
     }
 
     @Test
@@ -200,7 +209,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent("card.nonce-failed");
+        verify(braintreeClient).sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_FAILED);
     }
 
     @Test
@@ -217,7 +226,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent("card.nonce-failed");
+        verify(braintreeClient).sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_FAILED);
     }
 
     @Test

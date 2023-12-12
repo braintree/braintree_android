@@ -62,9 +62,10 @@ public class CardClient {
      * @param callback {@link CardTokenizeCallback}
      */
     public void tokenize(@NonNull final Card card, @NonNull final CardTokenizeCallback callback) {
+        braintreeClient.sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_STARTED);
         braintreeClient.getConfiguration((configuration, error) -> {
             if (error != null) {
-                callback.onCardResult(new CardResult.Failure(error));
+                callbackFailure(callback, new CardResult.Failure(error));
                 return;
             }
 
@@ -80,7 +81,7 @@ public class CardClient {
                             (tokenizationResponse, exception) -> handleTokenizeResponse(
                                     tokenizationResponse, exception, callback));
                 } catch (BraintreeException | JSONException e) {
-                    callback.onCardResult(new CardResult.Failure(e));
+                    callbackFailure(callback, new CardResult.Failure(e));
                 }
             } else {
                 apiClient.tokenizeREST(card,
@@ -95,17 +96,22 @@ public class CardClient {
         if (tokenizationResponse != null) {
             try {
                 CardNonce cardNonce = CardNonce.fromJSON(tokenizationResponse);
-
-                callback.onCardResult(new CardResult.Success(cardNonce));
-                braintreeClient.sendAnalyticsEvent("card.nonce-received");
-
+                callbackSuccess(callback, new CardResult.Success(cardNonce));
             } catch (JSONException e) {
-                callback.onCardResult(new CardResult.Failure(e));
-                braintreeClient.sendAnalyticsEvent("card.nonce-failed");
+                callbackFailure(callback, new CardResult.Failure(e));
             }
         } else if (exception != null) {
-            callback.onCardResult(new CardResult.Failure(exception));
-            braintreeClient.sendAnalyticsEvent("card.nonce-failed");
+            callbackFailure(callback, new CardResult.Failure(exception));
         }
+    }
+
+    private void callbackFailure(CardTokenizeCallback callback, CardResult cardResult) {
+        braintreeClient.sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_FAILED);
+        callback.onCardResult(cardResult);
+    }
+
+    private void callbackSuccess(CardTokenizeCallback callback, CardResult cardResult) {
+        braintreeClient.sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_SUCCEEDED);
+        callback.onCardResult(cardResult);
     }
 }
