@@ -11,23 +11,20 @@ import androidx.annotation.VisibleForTesting
  * Note: **This feature is in beta. It's public API may change in future releases.**
  */
 class ShopperInsightsClient @VisibleForTesting internal constructor(
-    private val paymentReadyAPI: PaymentReadyAPI
+    private val paymentReadyAPI: PaymentReadyApi
 ) {
-
     /**
      * Retrieves recommended payment methods based on the provided shopper insights request.
      *
      * @param request The [ShopperInsightsRequest] containing information about the shopper.
      * @return A [ShopperInsightsResult] object indicating the recommended payment methods.
      */
-    @Suppress("UnusedPrivateMember")
     fun getRecommendedPaymentMethods(
         request: ShopperInsightsRequest,
         callback: ShopperInsightsCallback
     ) {
-        val jsonBody = request.toJson()
         // TODO: - Add isAppInstalled checks for PP & Venmo. DTBTSDK-3176
-        paymentReadyAPI.processRequest(jsonBody)
+        paymentReadyAPI.processRequest(request)
         // Hardcoded result
         callback.onResult(
             ShopperInsightsResult.Success(
