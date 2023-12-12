@@ -209,6 +209,11 @@ public class PayPalClient {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
+                if (error != null) {
+                    callback.onResult(error);
+                    return;
+                }
+
                 if (payPalConfigInvalid(configuration)) {
                     Exception configInvalidError = createPayPalError();
                     callback.onResult(configInvalidError);
@@ -239,6 +244,11 @@ public class PayPalClient {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
+                if (error != null) {
+                    callback.onResult(error);
+                    return;
+                }
+
                 if (payPalConfigInvalid(configuration)) {
                     Exception configInvalidError = createPayPalError();
                     callback.onResult(configInvalidError);
