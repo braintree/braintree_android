@@ -43,7 +43,6 @@ public class CardClientUnitTest {
         graphQLDisabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
     }
 
-
     @Test
     public void tokenize_sendsTokenizeStartedAnalytics() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
