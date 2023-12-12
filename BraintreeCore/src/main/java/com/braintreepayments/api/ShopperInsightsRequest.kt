@@ -6,12 +6,6 @@ package com.braintreepayments.api
  * Note: **This feature is in beta. It's public API may change in future releases.**
  */
 data class ShopperInsightsRequest(
-    val email: String?,
-    val phone: BuyerPhone?
-) {
-    init {
-        require(email != null || phone != null) {
-            "Both email and phone cannot be null."
-        }
-    }
-}
+    var email: String?,
+    var phone: BuyerPhone?
+)

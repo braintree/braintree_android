@@ -23,6 +23,18 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         request: ShopperInsightsRequest,
         callback: ShopperInsightsCallback
     ) {
+        if (request.email == null && request.phone == null) {
+            callback.onResult(
+                ShopperInsightsResult.Failure(
+                    IllegalArgumentException(
+                        "One of ShopperInsightsRequest.email or " +
+                            "ShopperInsightsRequest.phone must be non-null."
+                    )
+                )
+            )
+            return
+        }
+
         // TODO: - Add isAppInstalled checks for PP & Venmo. DTBTSDK-3176
         paymentReadyAPI.processRequest(request)
         // Hardcoded result

@@ -1,6 +1,7 @@
 package com.braintreepayments.api
 
 import io.mockk.mockk
+import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -36,6 +37,21 @@ class ShopperInsightsClientUnitTest {
             val successResult = assertIs<ShopperInsightsResult.Success>(result)
             assertNotNull(successResult.response.isPayPalRecommended)
             assertNotNull(successResult.response.isVenmoRecommended)
+        }
+    }
+
+    @Test
+    fun `testGetRecommendedPaymentMethods - request object has null properties`() {
+        val request = ShopperInsightsRequest(null, null)
+        sut.getRecommendedPaymentMethods(request) { result ->
+            assertNotNull(result)
+            val error = assertIs<ShopperInsightsResult.Failure>(result)
+            val iae = assertIs<IllegalArgumentException>(error.error)
+            assertEquals(
+                "One of ShopperInsightsRequest.email or " +
+                    "ShopperInsightsRequest.phone must be non-null.",
+                iae.message
+            )
         }
     }
 }
