@@ -218,9 +218,11 @@ class MyActivity : FragmentActivity() {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       threeDSecureLauncher = ThreeDSecureLauncher(this) { paymentAuthResult ->
-+            threeDSecureClient.tokenize(paymentAuthResult) { threeDSecureResult, error ->
-+                error?.let { /* handle error */ }
-+                threeDSecureResult?.let { /* handle threeDSecureResult.tokenizedCard */ }
++            threeDSecureClient.tokenize(paymentAuthResult) { result ->
++               when (result) {
++                   is ThreeDSecureResult.Success -> { /* send result.nonce to server */}
++                   is ThreeDSecureResult.Failure -> { /* handle result.error */}
++                   is ThreeDSecureResult.Cancel -> { /* user canceled authentication */}
 +            }
 +       }
     }
@@ -234,20 +236,30 @@ class MyActivity : FragmentActivity() {
     
     fun onCardTokenization() {
 -       threeDSecureClient.performVerification(activity, threeDSecureRequest) { 
-+       threeDSecureClient.createPaymentAuthRequest(requireContext(), threeDSecureRequest) { 
-          threeDSecureResult, error ->
-             error?.let { /* handle error */ }
-             threeDSecureResult?.let {
-                if (it.lookup.requiresAuthentication) {
+-          threeDSecureResult, error ->
+-             error?.let { /* handle error */ }
+-             threeDSecureInternalResult?.let {
+-                if (it.lookup.requiresAuthentication) {
 -                   threeDSecureClient.continuePerformVerification(MyActivity@this, request, it)
-+                   threeDSecureLauncher.launch(it) 
-                else { /* no additional user authentication needed, handle threeDSecureResult */ }
-             }
-        }
+-                else { /* no additional user authentication needed, handle threeDSecureResult */ }
+-              }
++       threeDSecureClient.createPaymentAuthRequest(requireContext(), threeDSecureRequest) { 
++          paymentAuthRequest -> {
++             when (paymentAuthRequest) {
++                is ThreeDSecurePaymentAuthRequest.ReadyToLaunch -> {
++                    threeDSecureLauncher.launch(paymentAuthRequest) 
++                }
++                is ThreeDSecurePaymentAuthRequest.LaunchNotRequired - > {
++                    // no additional authentication challenge needed
++                    // send paymentAuthRequest.nonce to server
++                }
++                is ThreeDSecurePaymentAuthRequest.Failure -> { /* handle error */ }
++            }
++        }
     }
     
--   override fun onThreeDSecureSuccess(threeDSecureResult: ThreeDSecureResult) {
--        // handle threeDSecureResult.tokenizedCard
+-   override fun onThreeDSecureSuccess(threeDSecureParams: ThreeDSecureResult) {
+-        // handle threeDSecureParams.tokenizedCard
 -   }
       
 -   override fun onThreeDSecureFailure(error: java.lang.Exception) {

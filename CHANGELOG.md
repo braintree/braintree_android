@@ -48,9 +48,13 @@
     * Remove `merchantId` from `GooglePayRequest`
   * ThreeDSecure
     * Remove `ThreeDSecureListener`
-    * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`, and `ThreeDSecureLancherCallback`
+    * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`, 
+      `ThreeDSecureTokenizeCallback`, `ThreeDSecurePaymentAuthRequest`, 
+      `ThreeDSecurePaymentAuthRequestCallback`, `ThreeDSecurePrepareLookupResult`, 
+      `ThreeDSecurePrepareLookupCallback`, and `ThreeDSecureLancherCallback`
     * Remove overload constructors, `setListener`, `continuePerformVerification`, `onBrowserSwitchResult` and `onActivityResult` from `ThreeDSecureClient`
     * Change `ThreeDSecureClient#initializeChallengeWithLookupResponse` parameters
+    * Convert `ThreeDSecureResult` into sealed class
     * Add `ThreeDSecureClient#tokenize`
     * Rename `ThreeDSecureClient#performVerification` to 
       `ThreeDSecureClient#createPaymentAuthRequest` and change parameters
