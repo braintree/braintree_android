@@ -11,7 +11,8 @@ class PaymentReadyApiTest {
     fun `test phone to json string conversion`() {
         val testCountryCode = "1"
         val testNationalNumber = "123456789"
-        val request = ShopperInsightsRequest.Phone(
+        val request = ShopperInsightsRequest(
+            null,
             BuyerPhone(
                 countryCode = testCountryCode,
                 nationalNumber = testNationalNumber
@@ -36,7 +37,7 @@ class PaymentReadyApiTest {
     @Test
     fun `test email to json string conversion`() {
         val email = "fake-email@email-provider.com"
-        val request = ShopperInsightsRequest.Email(email)
+        val request = ShopperInsightsRequest(email, null)
 
         val observedJsonString = paymentReadyApi.processRequest(request)
         val expectedJsonString = """
@@ -55,7 +56,7 @@ class PaymentReadyApiTest {
         val email = "fake-email@email-provider.com"
         val testCountryCode = "1"
         val testNationalNumber = "123456789"
-        val request = ShopperInsightsRequest.EmailAndPhone(
+        val request = ShopperInsightsRequest(
             email,
             BuyerPhone(
                 countryCode = testCountryCode,

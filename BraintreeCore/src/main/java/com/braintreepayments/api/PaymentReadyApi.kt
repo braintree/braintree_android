@@ -7,14 +7,6 @@ internal class PaymentReadyApi {
     fun processRequest(request: ShopperInsightsRequest): String = request.toJson()
 
     private fun ShopperInsightsRequest.toJson(): String {
-        return when (this) {
-            is ShopperInsightsRequest.Email -> toJson(email = email)
-            is ShopperInsightsRequest.EmailAndPhone -> toJson(email = email, phone = phone)
-            is ShopperInsightsRequest.Phone -> toJson(phone = phone)
-        }
-    }
-
-    private fun toJson(email: String? = null, phone: BuyerPhone? = null): String {
         return JSONObject().apply {
             put(KEY_CUSTOMER, JSONObject().apply {
                 putOpt(KEY_EMAIL, email)

@@ -30,7 +30,7 @@ class ShopperInsightsClientUnitTest {
      */
     @Test
     fun testGetRecommendedPaymentMethods_returnsDefaultRecommendations() {
-        val request = ShopperInsightsRequest.Email("fake-email")
+        val request = ShopperInsightsRequest("fake-email", null)
         sut.getRecommendedPaymentMethods(request) { result ->
             assertNotNull(result)
             val successResult = assertIs<ShopperInsightsResult.Success>(result)
