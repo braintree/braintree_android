@@ -94,6 +94,11 @@ public class PayPalClient {
         }
 
         braintreeClient.getConfiguration((configuration, error) -> {
+            if (error != null) {
+                callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(error));
+                return;
+            }
+
             if (payPalConfigInvalid(configuration)) {
                 Exception configInvalidError = createPayPalError();
                 callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(configInvalidError));
@@ -123,6 +128,11 @@ public class PayPalClient {
         }
 
         braintreeClient.getConfiguration((configuration, error) -> {
+            if (error != null) {
+                callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(error));
+                return;
+            }
+
             if (payPalConfigInvalid(configuration)) {
                 Exception configInvalidError = createPayPalError();
                 callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(configInvalidError));
