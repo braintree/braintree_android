@@ -44,7 +44,7 @@ public class SEPADirectDebitLauncherUnitTest {
         when(sepaResponse.getBrowserSwitchOptions()).thenReturn(options);
         SEPADirectDebitLauncher sut = new SEPADirectDebitLauncher(browserSwitchClient, sepaLauncherCallback);
 
-        sut.launch(activity, sepaResponse);
+        sut.launch(activity, new SEPADirectDebitPaymentAuthRequest.ReadyToLaunch(sepaResponse));
 
         verify(browserSwitchClient).start(same(activity), same(options));
     }
@@ -59,7 +59,7 @@ public class SEPADirectDebitLauncherUnitTest {
         doThrow(exception).when(browserSwitchClient).start(same(activity), same(options));
         SEPADirectDebitLauncher sut = new SEPADirectDebitLauncher(browserSwitchClient, sepaLauncherCallback);
 
-        sut.launch(activity, sepaResponse);
+        sut.launch(activity, new SEPADirectDebitPaymentAuthRequest.ReadyToLaunch(sepaResponse));
 
         ArgumentCaptor<SEPADirectDebitPaymentAuthResult> captor =
                 ArgumentCaptor.forClass(SEPADirectDebitPaymentAuthResult.class);
