@@ -31,7 +31,7 @@ public class SEPADirectDebitClientUnitTest {
     private BraintreeClient braintreeClient;
     private CreateMandateResult createMandateResult;
     private SEPADirectDebitRequest sepaDirectDebitRequest;
-    private SEPADirectDebitTokenizeCallback sepaTokenizeCallback;
+    private SEPADirectDebitInternalTokenizeCallback sepaTokenizeCallback;
     private SEPADirectDebitPaymentAuthRequestCallback sepaFlowStartedCallback;
 
     @Before
@@ -49,7 +49,7 @@ public class SEPADirectDebitClientUnitTest {
         );
         sepaDirectDebitRequest = new SEPADirectDebitRequest();
 
-        sepaTokenizeCallback = mock(SEPADirectDebitTokenizeCallback.class);
+        sepaTokenizeCallback = mock(SEPADirectDebitInternalTokenizeCallback.class);
         sepaFlowStartedCallback = mock(SEPADirectDebitPaymentAuthRequestCallback.class);
     }
 
@@ -193,7 +193,7 @@ public class SEPADirectDebitClientUnitTest {
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.requested");
         verify(sepaDirectDebitApi).tokenize(eq("1234"), eq("fake-customer-id"),
                 eq("fake-bank-reference-token"), eq("ONE_OFF"),
-                any(SEPADirectDebitTokenizeCallback.class));
+                any(SEPADirectDebitInternalTokenizeCallback.class));
     }
 
     @Test
@@ -311,7 +311,7 @@ public class SEPADirectDebitClientUnitTest {
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.browser-switch.success");
         verify(sepaDirectDebitApi).tokenize(eq("1234"), eq("customer-id"),
                 eq("bank-reference-token"), eq("ONE_OFF"),
-                any(SEPADirectDebitTokenizeCallback.class));
+                any(SEPADirectDebitInternalTokenizeCallback.class));
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.requested");
     }
 
@@ -388,7 +388,7 @@ public class SEPADirectDebitClientUnitTest {
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.failure");
         verify(sepaDirectDebitApi).tokenize(eq("1234"), eq("customer-id"),
                 eq("bank-reference-token"), eq("ONE_OFF"),
-                any(SEPADirectDebitTokenizeCallback.class));
+                any(SEPADirectDebitInternalTokenizeCallback.class));
     }
 
     @Test

@@ -4,9 +4,9 @@ import androidx.annotation.Nullable;
 
 /**
  * Callback for receiving result of
- * {@link SEPADirectDebitClient#tokenize(SEPADirectDebitPaymentAuthResult, SEPADirectDebitTokenizeCallback)}.
+ * {@link SEPADirectDebitClient#tokenize(SEPADirectDebitPaymentAuthResult, SEPADirectDebitInternalTokenizeCallback)}.
  */
-public interface SEPADirectDebitTokenizeCallback {
+public interface SEPADirectDebitInternalTokenizeCallback {
 
     /**
      * @param sepaDirectDebitNonce {@link SEPADirectDebitNonce}

@@ -118,10 +118,10 @@ public class SEPADirectDebitClient {
      *
      * @param paymentAuthResult a {@link SEPADirectDebitPaymentAuthResult} received
      *                                           in the callback of {@link SEPADirectDebitLauncher}
-     * @param callback {@link SEPADirectDebitTokenizeCallback}
+     * @param callback {@link SEPADirectDebitInternalTokenizeCallback}
      */
     public void tokenize(@NonNull SEPADirectDebitPaymentAuthResult paymentAuthResult,
-                         @NonNull final SEPADirectDebitTokenizeCallback callback) {
+                         @NonNull final SEPADirectDebitInternalTokenizeCallback callback) {
         BrowserSwitchResult browserSwitchResult =
                 paymentAuthResult.getBrowserSwitchResult();
         if (browserSwitchResult == null && paymentAuthResult.getError() != null) {
