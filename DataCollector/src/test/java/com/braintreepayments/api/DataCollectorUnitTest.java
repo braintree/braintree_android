@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
@@ -113,7 +114,12 @@ public class DataCollectorUnitTest {
         DataCollectorCallback callback = mock(DataCollectorCallback.class);
         sut.collectDeviceData(context, callback);
 
-        verify(callback).onDataCollectorResult(null);
+        ArgumentCaptor<DataCollectorResult> deviceDataCaptor = ArgumentCaptor.forClass(DataCollectorResult.class);
+        verify(callback).onDataCollectorResult(deviceDataCaptor.capture());
+
+        DataCollectorResult result = deviceDataCaptor.getValue();
+        assertTrue(result instanceof DataCollectorResult.Failure);
+        assertEquals(configError, ((DataCollectorResult.Failure) result).getError());
     }
 
     @Test
@@ -175,10 +181,12 @@ public class DataCollectorUnitTest {
         DataCollectorCallback callback = mock(DataCollectorCallback.class);
         sut.collectDeviceData(context, callback);
 
-        ArgumentCaptor<String> deviceDataCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<DataCollectorResult> deviceDataCaptor = ArgumentCaptor.forClass(DataCollectorResult.class);
         verify(callback).onDataCollectorResult(deviceDataCaptor.capture());
 
-        String deviceData = deviceDataCaptor.getValue();
+        DataCollectorResult result = deviceDataCaptor.getValue();
+        assertTrue(result instanceof DataCollectorResult.Success);
+        String deviceData = ((DataCollectorResult.Success) result).getDeviceData();
         JSONObject json = new JSONObject(deviceData);
         assertEquals("paypal-clientmetadata-id", json.getString("correlation_id"));
     }
