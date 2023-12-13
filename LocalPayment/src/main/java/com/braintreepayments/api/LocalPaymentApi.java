@@ -15,7 +15,7 @@ class LocalPaymentApi {
     }
 
     void createPaymentMethod(final LocalPaymentRequest request,
-                             final LocalPaymentAuthRequestCallback callback) {
+                             final LocalPaymentInternalAuthRequestCallback callback) {
         String returnUrl = braintreeClient.getReturnUrlScheme() + "://" + LOCAL_PAYMENT_SUCCESS;
         String cancel = braintreeClient.getReturnUrlScheme() + "://" + LOCAL_PAYMENT_CANCEL;
 
@@ -30,8 +30,8 @@ class LocalPaymentApi {
                             String paymentToken = responseJson.getJSONObject("paymentResource")
                                     .getString("paymentToken");
 
-                            LocalPaymentAuthRequest transaction =
-                                    new LocalPaymentAuthRequest(request, redirectUrl, paymentToken);
+                            LocalPaymentAuthRequestParams transaction =
+                                    new LocalPaymentAuthRequestParams(request, redirectUrl, paymentToken);
                             callback.onResult(transaction, null);
                         } catch (JSONException e) {
                             callback.onResult(null, e);
@@ -43,7 +43,7 @@ class LocalPaymentApi {
     }
 
     void tokenize(String merchantAccountId, String responseString, String clientMetadataID,
-                  final LocalPaymentTokenizeCallback callback) {
+                  final LocalPaymentInternalTokenizeCallback callback) {
         JSONObject payload = new JSONObject();
 
         try {
