@@ -40,28 +40,30 @@ public class LocalPaymentLauncherUnitTest {
 
     @Test
     public void launch_startsBrowserSwitch() throws BrowserSwitchException {
-        LocalPaymentAuthRequest localPaymentAuthRequest = mock(LocalPaymentAuthRequest.class);
+        LocalPaymentAuthRequestParams
+                localPaymentAuthRequestParams = mock(LocalPaymentAuthRequestParams.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
-        when(localPaymentAuthRequest.getBrowserSwitchOptions()).thenReturn(options);
+        when(localPaymentAuthRequestParams.getBrowserSwitchOptions()).thenReturn(options);
         LocalPaymentLauncher sut =
                 new LocalPaymentLauncher(browserSwitchClient, localPaymentLauncherCallback);
 
-        sut.launch(activity, localPaymentAuthRequest);
+        sut.launch(activity, new LocalPaymentAuthRequest.ReadyToLaunch(localPaymentAuthRequestParams));
 
         verify(browserSwitchClient).start(same(activity), same(options));
     }
 
     @Test
     public void launch_onError_callsBackError() throws BrowserSwitchException {
-        LocalPaymentAuthRequest localPaymentAuthRequest = mock(LocalPaymentAuthRequest.class);
+        LocalPaymentAuthRequestParams
+                localPaymentAuthRequestParams = mock(LocalPaymentAuthRequestParams.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
         BrowserSwitchException exception = new BrowserSwitchException("error");
         doThrow(exception).when(browserSwitchClient).start(same(activity), same(options));
-        when(localPaymentAuthRequest.getBrowserSwitchOptions()).thenReturn(options);
+        when(localPaymentAuthRequestParams.getBrowserSwitchOptions()).thenReturn(options);
         LocalPaymentLauncher sut =
                 new LocalPaymentLauncher(browserSwitchClient, localPaymentLauncherCallback);
 
-        sut.launch(activity, localPaymentAuthRequest);
+        sut.launch(activity, new LocalPaymentAuthRequest.ReadyToLaunch(localPaymentAuthRequestParams));
 
         ArgumentCaptor<LocalPaymentAuthResult> captor =
                 ArgumentCaptor.forClass(LocalPaymentAuthResult.class);

@@ -10,11 +10,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.LocalPaymentAuthRequest;
+import com.braintreepayments.api.LocalPaymentAuthResult;
 import com.braintreepayments.api.LocalPaymentClient;
 import com.braintreepayments.api.LocalPaymentLauncher;
 import com.braintreepayments.api.LocalPaymentNonce;
 import com.braintreepayments.api.LocalPaymentRequest;
+import com.braintreepayments.api.LocalPaymentResult;
 import com.braintreepayments.api.PostalAddress;
+import com.braintreepayments.api.UserCanceledException;
 
 public class LocalPaymentFragment extends BaseFragment {
 
@@ -69,22 +73,28 @@ public class LocalPaymentFragment extends BaseFragment {
         request.setMerchantAccountId("altpay_eur");
         request.setCurrencyCode("EUR");
 
-        localPaymentClient.createPaymentAuthRequest(request, (localPaymentResult, error) -> {
-            if (localPaymentResult != null) {
-                localPaymentLauncher.launch(requireActivity(), localPaymentResult);
-            } else {
-                handleError(error);
+        localPaymentClient.createPaymentAuthRequest(request, (paymentAuthRequest) -> {
+            if (paymentAuthRequest instanceof LocalPaymentAuthRequest.ReadyToLaunch) {
+                localPaymentLauncher.launch(requireActivity(),
+                        (LocalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
+            } else if (paymentAuthRequest instanceof LocalPaymentAuthRequest.Failure) {
+                handleError(((LocalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
             }
         });
     }
 
-    protected void handleLocalPaymentResult(LocalPaymentNonce localPaymentNonce, Exception error) {
-        super.onPaymentMethodNonceCreated(localPaymentNonce);
-
-        if (error != null) {
-            handleError(error);
-            return;
+    protected void handleLocalPaymentResult(LocalPaymentResult localPaymentResult) {
+        if (localPaymentResult instanceof LocalPaymentResult.Success) {
+            onPaymentMethodNonceCreated(((LocalPaymentResult.Success) localPaymentResult).getNonce());
+        } else if (localPaymentResult instanceof LocalPaymentResult.Failure) {
+            handleError(((LocalPaymentResult.Failure) localPaymentResult).getError());
+        } else if (localPaymentResult instanceof LocalPaymentResult.Cancel) {
+            handleError(new UserCanceledException("User canceled Local Payment"));
         }
+    }
+
+    protected void onPaymentMethodNonceCreated(LocalPaymentNonce localPaymentNonce) {
+        super.onPaymentMethodNonceCreated(localPaymentNonce);
 
         LocalPaymentFragmentDirections.ActionLocalPaymentFragmentToDisplayNonceFragment action =
                 LocalPaymentFragmentDirections.actionLocalPaymentFragmentToDisplayNonceFragment(

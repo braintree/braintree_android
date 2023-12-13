@@ -326,9 +326,9 @@ class MyActivity : FragmentActivity() {
 +       payPalClient.createPaymentAuthRequest(this, request) { paymentAuthRequest ->
 +           when(paymentAuthRequest) {
 +               is PayPalPaymentAuthRequest.ReadyToLaunch -> {
-+                   payPalLauncher.launch(paymentAuthRequet)
++                   payPalLauncher.launch(this@MyActivity, paymentAuthRequet)
 +               }
-+               is PayPalPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error +/ }
++               is PayPalPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error */ }
 +           }
 +       }
     }
@@ -367,9 +367,12 @@ class MyActivity : FragmentActivity() {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       localPaymentLauncher = LocalPaymentLauncher() { paymentAuthResult ->
-+           localPaymentClient.tokenize(paymentAuthResult) { 
-+               localPaymentNonce, error ->
-+                   // handle local payment nonce or error
++           localPaymentClient.tokenize(paymentAuthResult) { result -> 
++                when(result) {
++                   is LocalPaymentResult.Success -> { /* handle result.nonce */ }
++                   is LocalPaymentResult.Failure -> { /* handle result.error */ }
++                   is LocalPaymentResult.Cancel -> { /* handle user canceled */ }
++               }        
 +           }
 +       }
     }
@@ -395,10 +398,12 @@ class MyActivity : FragmentActivity() {
 
     fun onPaymentButtonClick() {
 -       localPaymentClient.startPayment(activity, request)
-+       localPaymentClient.createPaymentAuthRequest(this, request) { paymentAuthRequest, error ->
-+            error?.let { /* handle error */ }
-+            paymentAuthRequest?.let { 
-+                localPaymentLauncher.launch(requireActivity(), it) 
++       localPaymentClient.createPaymentAuthRequest(this, request) { paymentAuthRequest ->
++           when(paymentAuthRequest) {
++               is LocalPaymentAuthRequest.ReadyToLaunch -> {
++                   lacalPaymentLauncher.launch(this@MyActivity, paymentAuthRequet)
++               }
++               is LocalPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error */ }
 +           }
 +       }
     }
@@ -411,6 +416,7 @@ class MyActivity : FragmentActivity() {
 -        // handle error
 -   }
 }
+```
 
 ## SEPA Direct Debit
 
