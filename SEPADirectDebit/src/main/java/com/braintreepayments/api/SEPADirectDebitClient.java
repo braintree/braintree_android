@@ -67,7 +67,7 @@ public class SEPADirectDebitClient {
                                     "sepa-direct-debit.create-mandate.success");
                             try {
                                 SEPADirectDebitPaymentAuthRequestParams params =
-                                        new SEPADirectDebitPaymentAuthRequestParams(buildBrowserSwitchOptions(result), null);
+                                        new SEPADirectDebitPaymentAuthRequestParams(buildBrowserSwitchOptions(result));
                                 callback.onResult(new SEPADirectDebitPaymentAuthRequest.ReadyToLaunch(params));
                             } catch (JSONException exception) {
                                 braintreeClient.sendAnalyticsEvent(

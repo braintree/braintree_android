@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 /**
@@ -14,25 +13,13 @@ import androidx.fragment.app.FragmentActivity;
 public class SEPADirectDebitPaymentAuthRequestParams {
 
     private BrowserSwitchOptions browserSwitchOptions;
-    private SEPADirectDebitNonce sepaDirectDebitNonce;
 
-    SEPADirectDebitPaymentAuthRequestParams(BrowserSwitchOptions browserSwitchOptions, SEPADirectDebitNonce sepaDirectDebitNonce) {
+    SEPADirectDebitPaymentAuthRequestParams(BrowserSwitchOptions browserSwitchOptions) {
         this.browserSwitchOptions = browserSwitchOptions;
-        this.sepaDirectDebitNonce = sepaDirectDebitNonce;
     }
 
     BrowserSwitchOptions getBrowserSwitchOptions() {
         return browserSwitchOptions;
     }
 
-    /**
-     * If this nonce is non-null, then the SEPA mandate is already approved.
-     * If this nonce is null, continue to present the SEPA mandate web flow via
-     * {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequestParams)}
-     *
-     * @return {@link SEPADirectDebitNonce}
-     */
-    public @Nullable SEPADirectDebitNonce getNonce() {
-        return this.sepaDirectDebitNonce;
-    }
 }

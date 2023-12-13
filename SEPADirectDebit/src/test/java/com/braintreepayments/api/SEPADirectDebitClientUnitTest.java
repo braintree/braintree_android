@@ -66,16 +66,18 @@ public class SEPADirectDebitClientUnitTest {
         sut.createPaymentAuthRequest(sepaDirectDebitRequest, sepaFlowStartedCallback);
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.selected.started");
 
-        ArgumentCaptor<SEPADirectDebitPaymentAuthRequestParams> captor =
-                ArgumentCaptor.forClass(SEPADirectDebitPaymentAuthRequestParams.class);
+        ArgumentCaptor<SEPADirectDebitPaymentAuthRequest> captor =
+                ArgumentCaptor.forClass(SEPADirectDebitPaymentAuthRequest.class);
         verify(sepaFlowStartedCallback).onResult(captor.capture());
 
-        SEPADirectDebitPaymentAuthRequestParams sepaResponseResult = captor.getValue();
+        SEPADirectDebitPaymentAuthRequest paymentAuthRequest = captor.getValue();
+        assertTrue(paymentAuthRequest instanceof  SEPADirectDebitPaymentAuthRequest.ReadyToLaunch);
+        SEPADirectDebitPaymentAuthRequestParams params = ((SEPADirectDebitPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams();
 
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.requested");
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.success");
 
-        BrowserSwitchOptions browserSwitchOptions = sepaResponseResult.getBrowserSwitchOptions();
+        BrowserSwitchOptions browserSwitchOptions = params.getBrowserSwitchOptions();
         assertEquals(Uri.parse("http://www.example.com"), browserSwitchOptions.getUrl());
         assertEquals("com.example", browserSwitchOptions.getReturnUrlScheme());
         assertEquals(BraintreeRequestCodes.SEPA_DEBIT, browserSwitchOptions.getRequestCode());
@@ -110,10 +112,13 @@ public class SEPADirectDebitClientUnitTest {
 
         sut.createPaymentAuthRequest(sepaDirectDebitRequest, sepaFlowStartedCallback);
 
-        ArgumentCaptor<SEPADirectDebitPaymentAuthRequestParams> captor = ArgumentCaptor.forClass(
-                SEPADirectDebitPaymentAuthRequestParams.class);
+        ArgumentCaptor<SEPADirectDebitPaymentAuthRequest> captor = ArgumentCaptor.forClass(
+                SEPADirectDebitPaymentAuthRequest.class);
         verify(sepaFlowStartedCallback).onResult(captor.capture());
-        assertEquals(captor.getValue().getNonce(), nonce);
+
+        SEPADirectDebitPaymentAuthRequest paymentAuthRequest = captor.getValue();
+        assertTrue(paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.LaunchNotRequired);
+        assertEquals(((SEPADirectDebitPaymentAuthRequest.LaunchNotRequired) paymentAuthRequest).getNonce(), nonce);
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.success");
     }
 
