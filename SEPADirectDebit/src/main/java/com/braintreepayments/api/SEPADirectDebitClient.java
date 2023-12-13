@@ -49,7 +49,7 @@ public class SEPADirectDebitClient {
     /**
      * Starts the SEPA tokenization process by creating a {@link SEPADirectDebitPaymentAuthRequestParams} to be used
      * to launch the SEPA mandate flow in
-     * {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequestParams)}
+     * {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequest.ReadyToLaunch)}
      *
      * @param sepaDirectDebitRequest {@link SEPADirectDebitRequest}
      * @param callback {@link SEPADirectDebitPaymentAuthRequestCallback}

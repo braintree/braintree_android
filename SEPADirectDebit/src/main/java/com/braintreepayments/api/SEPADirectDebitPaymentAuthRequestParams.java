@@ -8,7 +8,7 @@ import androidx.fragment.app.FragmentActivity;
  *
  * Inspect the {@link SEPADirectDebitNonce} property to determine if tokenization is complete, or
  * if you must continue the SEPA mandate web flow via
- * {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequestParams)}
+ * {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequest.ReadyToLaunch)}
  */
 public class SEPADirectDebitPaymentAuthRequestParams {
 

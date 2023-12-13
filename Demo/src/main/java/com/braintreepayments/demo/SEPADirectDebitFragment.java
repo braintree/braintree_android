@@ -14,7 +14,10 @@ import com.braintreepayments.api.SEPADirectDebitClient;
 import com.braintreepayments.api.SEPADirectDebitLauncher;
 import com.braintreepayments.api.SEPADirectDebitMandateType;
 import com.braintreepayments.api.SEPADirectDebitNonce;
+import com.braintreepayments.api.SEPADirectDebitPaymentAuthRequest;
 import com.braintreepayments.api.SEPADirectDebitRequest;
+import com.braintreepayments.api.SEPADirectDebitResult;
+import com.braintreepayments.api.UserCanceledException;
 
 import java.util.UUID;
 
@@ -32,11 +35,13 @@ public class SEPADirectDebitFragment extends BaseFragment {
         sepaDirectDebitClient = new SEPADirectDebitClient(requireContext(), super.getAuthStringArg());
 
         sepaDirectDebitLauncher = new SEPADirectDebitLauncher(sepaDirectDebitBrowserSwitchResult ->
-            sepaDirectDebitClient.tokenize(sepaDirectDebitBrowserSwitchResult, (sepaDirectDebitNonce, error) -> {
-                if (error != null) {
-                    handleError(error);
-                } else {
-                    handleSEPANonce(sepaDirectDebitNonce);
+            sepaDirectDebitClient.tokenize(sepaDirectDebitBrowserSwitchResult, (result) -> {
+                if (result instanceof SEPADirectDebitResult.Failure) {
+                    handleError(((SEPADirectDebitResult.Failure) result).getError());
+                } else if (result instanceof SEPADirectDebitResult.Cancel) {
+                    handleError(new UserCanceledException("User canceled SEPA Direct Debit"));
+                } else if (result instanceof SEPADirectDebitResult.Success) {
+                    handleSEPANonce(((SEPADirectDebitResult.Success) result).getNonce());
                 }
             })
         );
@@ -68,12 +73,12 @@ public class SEPADirectDebitFragment extends BaseFragment {
         request.setMerchantAccountId("EUR-sepa-direct-debit");
 
         sepaDirectDebitClient.createPaymentAuthRequest(request, (paymentAuthRequest) -> {
-            if (error != null) {
-                handleError(error);
-            } else if (sepaDirectDebitResponse.getNonce() != null) { // web-flow mandate not required
-                handleSEPANonce(sepaDirectDebitResponse.getNonce());
-            } else {                                                 // web-flow mandate required
-                sepaDirectDebitLauncher.launch(requireActivity(), sepaDirectDebitResponse);
+            if (paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.Failure) {
+                handleError(((SEPADirectDebitPaymentAuthRequest.Failure) paymentAuthRequest).getError());
+            } else if (paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.LaunchNotRequired) {
+                handleSEPANonce(((SEPADirectDebitPaymentAuthRequest.LaunchNotRequired) paymentAuthRequest).getNonce());
+            } else if (paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.ReadyToLaunch) {
+                sepaDirectDebitLauncher.launch(requireActivity(), (SEPADirectDebitPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
             }
         });
     }
