@@ -391,7 +391,7 @@ class MyActivity : FragmentActivity() {
 +               is LocalPaymentAuthRequest.ReadyToLaunch -> {
 +                   lacalPaymentLauncher.launch(this@MyActivity, paymentAuthRequet)
 +               }
-+               is LocalPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error +/ }
++               is LocalPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error */ }
 +           }
 +       }
     }
