@@ -4,7 +4,7 @@ package com.braintreepayments.api
  * Callback for receiving result of
  * [LocalPaymentClient.tokenize].
  */
-interface LocalPaymentTokenizeCallback {
+fun interface LocalPaymentTokenizeCallback {
     /**
      *
      * @param localPaymentResult a success, failure, or cancel result from the local payment flow
