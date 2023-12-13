@@ -8,5 +8,5 @@ fun interface SEPADirectDebitTokenizeCallback {
      * @param sepaDirectDebitResult a success, failure, or cancel result from the SEPA Direct Debit
      * flow
      */
-    fun onLocalPaymentResult(sepaDirectDebitResult: SEPADirectDebitResult)
+    fun onSEPADirectDebitResult(sepaDirectDebitResult: SEPADirectDebitResult)
 }
