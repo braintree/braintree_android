@@ -1,5 +1,9 @@
-package com.braintreepayments.api.shopperinsights
+package com.braintreepayments.api
 
+import com.braintreepayments.api.PaymentReadyApi
+import com.braintreepayments.api.ShopperInsightsClient
+import com.braintreepayments.api.ShopperInsightsRequest
+import com.braintreepayments.api.ShopperInsightsResult
 import io.mockk.mockk
 import kotlin.test.assertEquals
 import kotlin.test.assertIs

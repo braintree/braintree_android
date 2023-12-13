@@ -1,4 +1,4 @@
-package com.braintreepayments.api.shopperinsights
+package com.braintreepayments.api
 
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert

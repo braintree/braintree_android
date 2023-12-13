@@ -1,4 +1,4 @@
-package com.braintreepayments.api.shopperinsights
+package com.braintreepayments.api
 
 /**
  * Data class encapsulating the result of a shopper insight api request.

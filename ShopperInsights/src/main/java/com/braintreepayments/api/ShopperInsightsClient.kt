@@ -1,4 +1,4 @@
-package com.braintreepayments.api.shopperinsights
+package com.braintreepayments.api
 
 import androidx.annotation.VisibleForTesting
 
