@@ -7,6 +7,7 @@ basics for updating your Braintree integration from v4 to v5.
 
 1. [Android API](#android-api)
 1. [Braintree Client](#braintree-client)
+1. [American Express](#american-express)
 1. [Data Collector](#data-collector)
 1. [Card](#card)
 1. [Union Pay](#union-pay)
@@ -29,6 +30,21 @@ parameters directly.
 
 ```kotlin
 val cardClient = CardClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+```
+
+## American Express
+
+The result handling of fetching American Express rewards balance has been updated so that the 
+`AmericanExpressGetRewardsBalanceCallback` returns a single `AmericanExpressResult` object
+
+```kotlin
+americanExpressClient.getRewardsBalance(nonce, currencyCode) { result ->
+    when(result) {
+        is AmericanExpressResult.Success -> { /* handle result.rewardsBalance */ }
+        is AmericanExpressResult.Failure -> { /* handle result.error */ }
+    }
+}
+
 ```
 
 ## Data Collector

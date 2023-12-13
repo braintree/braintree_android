@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.AmericanExpressClient;
+import com.braintreepayments.api.AmericanExpressResult;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
@@ -240,12 +241,13 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                     getString(R.string.loading), true, false);
             String nonce = paymentMethodNonce.getString();
 
-            americanExpressClient.getRewardsBalance(nonce, "USD", (rewardsBalance, error) -> {
-                if (rewardsBalance != null) {
+            americanExpressClient.getRewardsBalance(nonce, "USD", (americanExpressResult) -> {
+                if (americanExpressResult instanceof AmericanExpressResult.Success) {
                     safelyCloseLoadingView();
-                    showDialog(getAmexRewardsBalanceString(rewardsBalance));
-                } else if (error != null) {
-                    handleError(error);
+                    showDialog(getAmexRewardsBalanceString(
+                            ((AmericanExpressResult.Success) americanExpressResult).getRewardsBalance()));
+                } else if (americanExpressResult instanceof AmericanExpressResult.Failure) {
+                    handleError(((AmericanExpressResult.Failure) americanExpressResult).getError());
                 }
             });
         } else {
