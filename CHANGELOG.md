@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.40.1 (2023-12-13)
 
 * BraintreeCore
   * Bump `browser-switch` version to `2.6.1` (fixes #799)
