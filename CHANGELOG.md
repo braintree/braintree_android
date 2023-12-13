@@ -105,8 +105,10 @@
     * Replace `SEPADirectDebitClient#tokenize` with`SEPADirectDebitClient#createPaymentAuthRequest` 
       and modify parameters
     
-## unreleased
+## 4.40.1 (2023-12-13)
 
+* BraintreeCore
+  * Bump `browser-switch` version to `2.6.1` (fixes #799)
 * PayPal
   * Fix issue where inaccurate error message was being returned on authorization or configuration error (fixes #821)
 * Venmo
