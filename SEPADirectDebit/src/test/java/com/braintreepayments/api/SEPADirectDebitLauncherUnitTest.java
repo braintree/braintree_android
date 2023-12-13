@@ -38,7 +38,8 @@ public class SEPADirectDebitLauncherUnitTest {
 
     @Test
     public void launch_startsBrowserSwitch() throws BrowserSwitchException {
-        SEPADirectDebitPaymentAuthRequest sepaResponse = mock(SEPADirectDebitPaymentAuthRequest.class);
+        SEPADirectDebitPaymentAuthRequestParams
+                sepaResponse = mock(SEPADirectDebitPaymentAuthRequestParams.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
         when(sepaResponse.getBrowserSwitchOptions()).thenReturn(options);
         SEPADirectDebitLauncher sut = new SEPADirectDebitLauncher(browserSwitchClient, sepaLauncherCallback);
@@ -50,7 +51,8 @@ public class SEPADirectDebitLauncherUnitTest {
 
     @Test
     public void launch_onError_callsBackError() throws BrowserSwitchException {
-        SEPADirectDebitPaymentAuthRequest sepaResponse = mock(SEPADirectDebitPaymentAuthRequest.class);
+        SEPADirectDebitPaymentAuthRequestParams
+                sepaResponse = mock(SEPADirectDebitPaymentAuthRequestParams.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
         when(sepaResponse.getBrowserSwitchOptions()).thenReturn(options);
         BrowserSwitchException exception = new BrowserSwitchException("error");

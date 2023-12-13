@@ -47,9 +47,9 @@ public class SEPADirectDebitClient {
     }
 
     /**
-     * Starts the SEPA tokenization process by creating a {@link SEPADirectDebitPaymentAuthRequest} to be used
+     * Starts the SEPA tokenization process by creating a {@link SEPADirectDebitPaymentAuthRequestParams} to be used
      * to launch the SEPA mandate flow in
-     * {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequest)}
+     * {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequestParams)}
      *
      * @param sepaDirectDebitRequest {@link SEPADirectDebitRequest}
      * @param callback {@link SEPADirectDebitPaymentAuthRequestCallback}
@@ -66,8 +66,8 @@ public class SEPADirectDebitClient {
                             braintreeClient.sendAnalyticsEvent(
                                     "sepa-direct-debit.create-mandate.success");
                             try {
-                                SEPADirectDebitPaymentAuthRequest paymentAuthRequest =
-                                        new SEPADirectDebitPaymentAuthRequest(buildBrowserSwitchOptions(result), null);
+                                SEPADirectDebitPaymentAuthRequestParams paymentAuthRequest =
+                                        new SEPADirectDebitPaymentAuthRequestParams(buildBrowserSwitchOptions(result), null);
                                 callback.onResult(paymentAuthRequest, null);
                             } catch (JSONException exception) {
                                 braintreeClient.sendAnalyticsEvent(
@@ -87,8 +87,9 @@ public class SEPADirectDebitClient {
                                         if (sepaDirectDebitNonce != null) {
                                             braintreeClient.sendAnalyticsEvent(
                                                     "sepa-direct-debit.tokenize.success");
-                                            SEPADirectDebitPaymentAuthRequest paymentAuthRequest =
-                                                    new SEPADirectDebitPaymentAuthRequest(null, sepaDirectDebitNonce);
+                                            SEPADirectDebitPaymentAuthRequestParams
+                                                    paymentAuthRequest =
+                                                    new SEPADirectDebitPaymentAuthRequestParams(null, sepaDirectDebitNonce);
                                             callback.onResult(paymentAuthRequest, null);
                                         } else if (tokenizeError != null) {
                                             braintreeClient.sendAnalyticsEvent(

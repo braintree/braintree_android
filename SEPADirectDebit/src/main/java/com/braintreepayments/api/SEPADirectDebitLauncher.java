@@ -21,7 +21,7 @@ public class SEPADirectDebitLauncher {
      * Used to launch the SEPA mandate in a web browser and deliver results to your Activity
      *
      * @param callback a {@link SEPADirectDebitLauncherCallback} to handle the result of
-     * {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequest)}
+     * {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequestParams)}
      */
     public SEPADirectDebitLauncher(@NonNull SEPADirectDebitLauncherCallback callback) {
         this(new BrowserSwitchClient(), callback);
@@ -44,7 +44,7 @@ public class SEPADirectDebitLauncher {
      *                       {@link SEPADirectDebitClient#createPaymentAuthRequest(SEPADirectDebitRequest, SEPADirectDebitPaymentAuthRequestCallback)}
      */
     public void launch(@NonNull FragmentActivity activity, @NonNull
-    SEPADirectDebitPaymentAuthRequest paymentAuthRequest) {
+    SEPADirectDebitPaymentAuthRequestParams paymentAuthRequest) {
         try {
             browserSwitchClient.start(activity, paymentAuthRequest.getBrowserSwitchOptions());
         } catch (BrowserSwitchException e) {
@@ -56,7 +56,7 @@ public class SEPADirectDebitLauncher {
      * Captures and delivers the result of the browser-based SEPA mandate flow.
      * <p>
      * For most integrations, this method should be invoked in the onResume method of the Activity
-     * used to invoke {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequest)}.
+     * used to invoke {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequestParams)}.
      * <p>
      * If the Activity used to launch the SEPA mandate is configured with
      * android:launchMode="singleTop", this method should be invoked in the onNewIntent method of

@@ -66,11 +66,11 @@ public class SEPADirectDebitClientUnitTest {
         sut.createPaymentAuthRequest(sepaDirectDebitRequest, sepaFlowStartedCallback);
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.selected.started");
 
-        ArgumentCaptor<SEPADirectDebitPaymentAuthRequest> captor =
-                ArgumentCaptor.forClass(SEPADirectDebitPaymentAuthRequest.class);
+        ArgumentCaptor<SEPADirectDebitPaymentAuthRequestParams> captor =
+                ArgumentCaptor.forClass(SEPADirectDebitPaymentAuthRequestParams.class);
         verify(sepaFlowStartedCallback).onResult(captor.capture(), isNull());
 
-        SEPADirectDebitPaymentAuthRequest sepaResponseResult = captor.getValue();
+        SEPADirectDebitPaymentAuthRequestParams sepaResponseResult = captor.getValue();
 
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.requested");
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.success");
@@ -110,8 +110,8 @@ public class SEPADirectDebitClientUnitTest {
 
         sut.createPaymentAuthRequest(sepaDirectDebitRequest, sepaFlowStartedCallback);
 
-        ArgumentCaptor<SEPADirectDebitPaymentAuthRequest> captor = ArgumentCaptor.forClass(
-                SEPADirectDebitPaymentAuthRequest.class);
+        ArgumentCaptor<SEPADirectDebitPaymentAuthRequestParams> captor = ArgumentCaptor.forClass(
+                SEPADirectDebitPaymentAuthRequestParams.class);
         verify(sepaFlowStartedCallback).onResult(captor.capture(), isNull());
         assertEquals(captor.getValue().getNonce(), nonce);
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.success");
