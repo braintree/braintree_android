@@ -23,6 +23,14 @@
             android:text="@string/cards"
             android:textSize="12sp" />
 
+        <Button
+            android:id="@+id/shopping_insight"
+            style="?android:attr/buttonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/shopping_insights_button"
+            android:textSize="12sp" />
     </TableRow>
 
     <TableRow
@@ -120,18 +128,4 @@
 
     </TableRow>
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <Button
-            android:id="@+id/shopping_insight"
-            style="?android:attr/buttonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/shopping_insights_button"
-            android:textSize="12sp" />
-
-    </TableRow>
 </TableLayout>
