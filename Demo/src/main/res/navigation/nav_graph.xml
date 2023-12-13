@@ -37,6 +37,9 @@
         <action
             android:id="@+id/action_mainFragment_to_payPalNativeCheckoutFragment"
             app:destination="@id/payPalNativeCheckoutFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_shoppingInsightsFragment"
+            app:destination="@id/shoppingInsightsFragment" />
     </fragment>
     <fragment
         android:id="@+id/cardFragment"
@@ -179,5 +182,9 @@
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="false" />
     </fragment>
-
+    <fragment
+        android:id="@+id/shoppingInsightsFragment"
+        android:name="com.braintreepayments.demo.ShoppingInsightsFragment"
+        tools:layout="@layout/fragment_shopping_insights">
+    </fragment>
 </navigation>
