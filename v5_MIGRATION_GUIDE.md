@@ -316,7 +316,7 @@ class MyActivity : FragmentActivity() {
 +               is PayPalPaymentAuthRequest.ReadyToLaunch -> {
 +                   payPalLauncher.launch(this@MyActivity, paymentAuthRequet)
 +               }
-+               is PayPalPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error +/ }
++               is PayPalPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error */ }
 +           }
 +       }
     }
