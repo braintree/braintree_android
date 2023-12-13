@@ -67,7 +67,7 @@ public class SEPADirectDebitFragment extends BaseFragment {
         request.setBillingAddress(billingAddress);
         request.setMerchantAccountId("EUR-sepa-direct-debit");
 
-        sepaDirectDebitClient.createPaymentAuthRequest(request, (sepaDirectDebitResponse, error) -> {
+        sepaDirectDebitClient.createPaymentAuthRequest(request, (paymentAuthRequest) -> {
             if (error != null) {
                 handleError(error);
             } else if (sepaDirectDebitResponse.getNonce() != null) { // web-flow mandate not required
