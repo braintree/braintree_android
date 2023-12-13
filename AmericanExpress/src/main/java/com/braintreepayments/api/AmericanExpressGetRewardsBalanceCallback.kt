@@ -8,5 +8,5 @@ fun interface AmericanExpressGetRewardsBalanceCallback {
     /**
      * @param americanExpressResult the [AmericanExpressResult]
      */
-    fun onResult(americanExpressResult: AmericanExpressResult?)
+    fun onAmericanExpressResult(americanExpressResult: AmericanExpressResult?)
 }

@@ -51,7 +51,7 @@ public class AmericanExpressClientUnitTest {
 
         ArgumentCaptor<AmericanExpressResult> amexRewardsCaptor =
                 ArgumentCaptor.forClass(AmericanExpressResult.class);
-        verify(amexRewardsCallback).onResult(amexRewardsCaptor.capture());
+        verify(amexRewardsCallback).onAmericanExpressResult(amexRewardsCaptor.capture());
 
         AmericanExpressResult result = amexRewardsCaptor.getValue();
         assertTrue(result instanceof AmericanExpressResult.Success);
@@ -78,7 +78,7 @@ public class AmericanExpressClientUnitTest {
 
         ArgumentCaptor<AmericanExpressResult> amexRewardsCaptor =
                 ArgumentCaptor.forClass(AmericanExpressResult.class);
-        verify(amexRewardsCallback).onResult(amexRewardsCaptor.capture());
+        verify(amexRewardsCallback).onAmericanExpressResult(amexRewardsCaptor.capture());
 
         AmericanExpressResult result = amexRewardsCaptor.getValue();
         assertTrue(result instanceof AmericanExpressResult.Success);
@@ -105,7 +105,7 @@ public class AmericanExpressClientUnitTest {
 
         ArgumentCaptor<AmericanExpressResult> amexRewardsCaptor =
                 ArgumentCaptor.forClass(AmericanExpressResult.class);
-        verify(amexRewardsCallback).onResult(amexRewardsCaptor.capture());
+        verify(amexRewardsCallback).onAmericanExpressResult(amexRewardsCaptor.capture());
 
         AmericanExpressResult result = amexRewardsCaptor.getValue();
         assertTrue(result instanceof AmericanExpressResult.Success);
@@ -134,7 +134,7 @@ public class AmericanExpressClientUnitTest {
 
         ArgumentCaptor<AmericanExpressResult> amexRewardsCaptor =
                 ArgumentCaptor.forClass(AmericanExpressResult.class);
-        verify(amexRewardsCallback).onResult(amexRewardsCaptor.capture());
+        verify(amexRewardsCallback).onAmericanExpressResult(amexRewardsCaptor.capture());
 
         AmericanExpressResult result = amexRewardsCaptor.getValue();
         assertTrue(result instanceof AmericanExpressResult.Failure);

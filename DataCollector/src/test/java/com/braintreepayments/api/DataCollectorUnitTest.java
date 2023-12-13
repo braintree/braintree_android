@@ -113,7 +113,7 @@ public class DataCollectorUnitTest {
         DataCollectorCallback callback = mock(DataCollectorCallback.class);
         sut.collectDeviceData(context, callback);
 
-        verify(callback).onResult(null, configError);
+        verify(callback).onDataCollectorResult(null);
     }
 
     @Test
@@ -176,7 +176,7 @@ public class DataCollectorUnitTest {
         sut.collectDeviceData(context, callback);
 
         ArgumentCaptor<String> deviceDataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(callback).onResult(deviceDataCaptor.capture(), (Exception) isNull());
+        verify(callback).onDataCollectorResult(deviceDataCaptor.capture());
 
         String deviceData = deviceDataCaptor.getValue();
         JSONObject json = new JSONObject(deviceData);

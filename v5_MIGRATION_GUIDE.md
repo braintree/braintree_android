@@ -44,7 +44,6 @@ americanExpressClient.getRewardsBalance(nonce, currencyCode) { result ->
         is AmericanExpressResult.Failure -> { /* handle result.error */ }
     }
 }
-
 ```
 
 ## Data Collector

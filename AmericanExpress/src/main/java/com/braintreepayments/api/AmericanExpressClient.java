@@ -56,13 +56,13 @@ public class AmericanExpressClient {
                 try {
                     AmericanExpressRewardsBalance rewardsBalance =
                             AmericanExpressRewardsBalance.fromJson(responseBody);
-                    callback.onResult(new AmericanExpressResult.Success(rewardsBalance));
+                    callback.onAmericanExpressResult(new AmericanExpressResult.Success(rewardsBalance));
                 } catch (JSONException e) {
                     braintreeClient.sendAnalyticsEvent("amex.rewards-balance.parse.failed");
-                    callback.onResult(new AmericanExpressResult.Failure(e));
+                    callback.onAmericanExpressResult(new AmericanExpressResult.Failure(e));
                 }
             } else if (httpError != null) {
-                callback.onResult(new AmericanExpressResult.Failure(httpError));
+                callback.onAmericanExpressResult(new AmericanExpressResult.Failure(httpError));
                 braintreeClient.sendAnalyticsEvent("amex.rewards-balance.error");
             }
         });
