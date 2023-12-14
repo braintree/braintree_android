@@ -442,9 +442,12 @@ class MyActivity : FragmentActivity() {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       sepaDirectDebitLauncher = SEPADirectDebitLauncher() { paymentAuthResult ->
-+           sepaDirectDebitClient.tokenize(paymentAuthResult) { 
-+               sepaDirectDebitNonce, error ->
-+                   // handle nonce or error
++           sepaDirectDebitClient.tokenize(paymentAuthResult) { result -> 
++                when(result) {
++                   is SEPADirectDebitResult.Success -> { /* handle result.nonce */ }
++                   is SEPADirectDebitResult.Failure -> { /* handle result.error */ }
++                   is SEPADirectDebitResult.Cancel -> { /* handle user canceled */ }
++               }  
 +           }
 +       }
     }
@@ -469,13 +472,16 @@ class MyActivity : FragmentActivity() {
 
     fun onPaymentButtonClick() {
 -       sepaDirectDebitClient.tokenize(activity, request)
-+       sepaDirectDebitClient.tokenize(activity, request) { paymentAuthRequest, error ->
-+           if (error != null) {
-+               // handle error
-+           } else if (paymentAuthRequest.nonce != null) {      // web-flow mandate not required
-+               // handle nonce
-+           } else {                                                 // web-flow mandate required
-+               sepaDirectDebitLauncher.launch(activity, paymentAuthRequest)
++       sepaDirectDebitClient.tokenize(activity, request) { paymentAuthRequest ->
++           when(paymentAuthRequest) {
++               is (SEPADirectDebitPaymentAuthRequest.Failure) -> { 
++                   // handle paymentAuthRequest.error
++               is (SEPADirectDebitPaymentAuthRequest.LaunchNotRequired) -> {      
++                   // web-flow mandate not required, handle paymentAuthRequest.nonce
++               is (SEPADirectDebitPaymentAuthRequest.ReadyToLaunch) -> {
++                    // web-flow mandate required
++                   sepaDirectDebitLauncher.launch(activity, paymentAuthRequest)
++               }
 +           }
 +       }
     }

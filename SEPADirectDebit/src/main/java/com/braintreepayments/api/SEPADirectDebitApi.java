@@ -35,7 +35,7 @@ class SEPADirectDebitApi {
     }
 
     void tokenize(String ibanLastFour, String customerId, String bankReferenceToken,
-                  String mandateType, final SEPADirectDebitTokenizeCallback callback) {
+                  String mandateType, final SEPADirectDebitInternalTokenizeCallback callback) {
         try {
             JSONObject jsonObject =
                     buildTokenizeRequest(ibanLastFour, customerId, bankReferenceToken, mandateType);
