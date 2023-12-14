@@ -31,7 +31,7 @@ public class VisaCheckoutFragment extends BaseFragment {
         checkoutButton = view.findViewById(R.id.visa_checkout_button);
 
         visaCheckoutClient = new VisaCheckoutClient(requireContext(), super.getAuthStringArg());
-        visaCheckoutClient.createProfileBuilder((profileBuilder, error) -> {
+        visaCheckoutClient.createProfileBuilder((profileBuilderResult) -> {
             if (profileBuilder != null) {
                 setupVisaCheckoutButton(profileBuilder);
             } else {

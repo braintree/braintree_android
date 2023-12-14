@@ -5,6 +5,7 @@ import com.braintreepayments.api.TestConfigurationBuilder.TestVisaCheckoutConfig
 import com.visa.checkout.Profile.CardBrand
 import com.visa.checkout.VisaPaymentSummary
 import io.mockk.every
+import io.mockk.internalSubstitute
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
@@ -12,6 +13,7 @@ import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import org.json.JSONException
 import org.json.JSONObject
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,11 +49,13 @@ class VisaCheckoutClientUnitTest {
         val listener = mockk<VisaCheckoutCreateProfileBuilderCallback>(relaxed = true)
         sut.createProfileBuilder(listener)
 
-        val configurationExceptionSlot = slot<ConfigurationException>()
-        verify(exactly = 1) { listener.onResult(null, capture(configurationExceptionSlot)) }
+        val configurationExceptionSlot = slot<VisaCheckoutProfileBuilderResult>()
+        verify(exactly = 1) { listener.onVisaCheckoutProfileBuilderResult(capture(configurationExceptionSlot)) }
 
-        val configurationException = configurationExceptionSlot.captured
-        assertEquals("Visa Checkout is not enabled.", configurationException.message)
+        val profileBuilderResult = configurationExceptionSlot.captured
+        assertTrue(profileBuilderResult is VisaCheckoutProfileBuilderResult.Failure)
+        val exception = (profileBuilderResult as VisaCheckoutProfileBuilderResult.Failure).error
+        assertEquals("Visa Checkout is not enabled.", exception.message)
     }
 
     @Test
@@ -72,10 +76,14 @@ class VisaCheckoutClientUnitTest {
             .configurationSuccess(fromJson(configString))
             .build()
         val sut = VisaCheckoutClient(braintreeClient, apiClient)
-        sut.createProfileBuilder { profileBuilder, error ->
+        sut.createProfileBuilder { profileBuilderResult ->
+            assertTrue(profileBuilderResult is VisaCheckoutProfileBuilderResult.Success)
+            val profileBuilder = (profileBuilderResult as VisaCheckoutProfileBuilderResult
+                .Success).profileBuilder
             val expectedCardBrands = Arrays.asList(CardBrand.VISA, CardBrand.MASTERCARD)
-            val profile = profileBuilder!!.build()
+            val profile = profileBuilder.build()
             assertNotNull(profile)
+            assertEquals(expectedCardBrands, profile.acceptedCardBrands)
             lock.countDown()
         }
         lock.await()
@@ -99,10 +107,13 @@ class VisaCheckoutClientUnitTest {
             .configurationSuccess(fromJson(configString))
             .build()
         val sut = VisaCheckoutClient(braintreeClient, apiClient)
-        sut.createProfileBuilder { profileBuilder, error ->
+        sut.createProfileBuilder { profileBuilderResult ->
+            val profileBuilder = (profileBuilderResult as VisaCheckoutProfileBuilderResult
+            .Success).profileBuilder
             val expectedCardBrands = Arrays.asList(CardBrand.VISA, CardBrand.MASTERCARD)
-            val profile = profileBuilder!!.build()
+            val profile = profileBuilder.build()
             assertNotNull(profile)
+            assertEquals(expectedCardBrands, profile.acceptedCardBrands)
             lock.countDown()
         }
         lock.await()
