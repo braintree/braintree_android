@@ -11,5 +11,5 @@ fun interface SEPADirectDebitPaymentAuthRequestCallback {
      * must trigger the web-based mandate flow via
      * [SEPADirectDebitLauncher.launch]
      */
-    fun onResult(paymentAuthRequest: SEPADirectDebitPaymentAuthRequest)
+    fun onSEPADirectDebitPaymentAuthRequest(paymentAuthRequest: SEPADirectDebitPaymentAuthRequest)
 }
