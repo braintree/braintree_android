@@ -169,8 +169,8 @@ public class GooglePayClient {
     }
 
     /**
-     * Start the Google Pay payment flow. This will return a {@link GooglePayPaymentAuthRequestParams} that will
-     * be used to present Google Pay payment sheet in
+     * Start the Google Pay payment flow. This will return {@link GooglePayPaymentAuthRequestParams} that are
+     * used to present Google Pay payment sheet in
      * {@link GooglePayLauncher#launch(GooglePayPaymentAuthRequestParams)}
      *
      * @param request  The {@link GooglePayRequest} containing options for the transaction.
