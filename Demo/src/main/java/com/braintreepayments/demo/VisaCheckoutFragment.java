@@ -11,6 +11,8 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.VisaCheckoutClient;
+import com.braintreepayments.api.VisaCheckoutProfileBuilderResult;
+import com.braintreepayments.api.VisaCheckoutResult;
 import com.visa.checkout.CheckoutButton;
 import com.visa.checkout.Profile;
 import com.visa.checkout.PurchaseInfo;
@@ -32,10 +34,10 @@ public class VisaCheckoutFragment extends BaseFragment {
 
         visaCheckoutClient = new VisaCheckoutClient(requireContext(), super.getAuthStringArg());
         visaCheckoutClient.createProfileBuilder((profileBuilderResult) -> {
-            if (profileBuilder != null) {
-                setupVisaCheckoutButton(profileBuilder);
-            } else {
-                handleError(error);
+            if (profileBuilderResult instanceof VisaCheckoutProfileBuilderResult.Failure) {
+                handleError(((VisaCheckoutProfileBuilderResult.Failure) profileBuilderResult).getError());
+            } else if (profileBuilderResult instanceof VisaCheckoutProfileBuilderResult.Success) {
+                setupVisaCheckoutButton(((VisaCheckoutProfileBuilderResult.Success) profileBuilderResult).getProfileBuilder());
             }
         });
         return view;
@@ -54,11 +56,11 @@ public class VisaCheckoutFragment extends BaseFragment {
 
             @Override
             public void onResult(VisaPaymentSummary visaPaymentSummary) {
-                visaCheckoutClient.tokenize(visaPaymentSummary, (paymentMethodNonce, error) -> {
-                    if (paymentMethodNonce != null) {
-                        handlePaymentMethodNonceCreated(paymentMethodNonce);
-                    } else {
-                        handleError(error);
+                visaCheckoutClient.tokenize(visaPaymentSummary, (visaCheckoutResult) -> {
+                    if (visaCheckoutResult instanceof VisaCheckoutResult.Failure) {
+                        handleError(((VisaCheckoutResult.Failure) visaCheckoutResult).getError());
+                    } else if (visaCheckoutResult instanceof VisaCheckoutResult.Success) {
+                        handlePaymentMethodNonceCreated(((VisaCheckoutResult.Success) visaCheckoutResult).getNonce());
                     }
                 });
             }

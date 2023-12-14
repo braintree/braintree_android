@@ -119,13 +119,13 @@ public class VisaCheckoutClient {
                         try {
                             VisaCheckoutNonce visaCheckoutNonce =
                                     VisaCheckoutNonce.fromJSON(tokenizationResponse);
-                            callback.onResult(visaCheckoutNonce, null);
+                            callback.onVisaCheckoutResult(new VisaCheckoutResult.Success(visaCheckoutNonce));
                             braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
                         } catch (JSONException e) {
-                            callback.onResult(null, e);
+                            callback.onVisaCheckoutResult(new VisaCheckoutResult.Failure(e));
                         }
-                    } else {
-                        callback.onResult(null, exception);
+                    } else if (exception != null) {
+                        callback.onVisaCheckoutResult(new VisaCheckoutResult.Failure(exception));
                         braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.failed");
                     }
                 });
