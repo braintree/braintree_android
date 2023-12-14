@@ -40,12 +40,13 @@
     * Remove `GooglePayListener` and `GooglePayRequestPaymentCallback`
     * Add `GooglePayLauncher`, `GooglePayPaymentAuthRequest`, 
       `GooglePayPaymentAuthRequestCallback`, `GooglePayPaymentAuthResult`, 
-      `GooglePayTokenizeCallback` and `GooglePayLauncherCallback`
+      `GooglePayTokenizeCallback`, `GooglePayTokenizationParameters` and `GooglePayLauncherCallback`
     * Remove overload constructors, `setListener, and `onActivityResult` from `GooglePayClient`
     * Change `GooglePayClient#requestPayment` parameters and rename to 
       `GooglePayClient#createPaymentAuthRequest`
     * Add `GooglePayClient#tokenize` 
     * Remove `merchantId` from `GooglePayRequest`
+    * Change `GooglePayGetTokenizationParametersCallback` parameters
   * ThreeDSecure
     * Remove `ThreeDSecureListener`
     * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`, 
