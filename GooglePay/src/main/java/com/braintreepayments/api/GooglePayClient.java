@@ -211,8 +211,7 @@ public class GooglePayClient {
 
             if (!configuration.isGooglePayEnabled()) {
                 callback.onGooglePayPaymentAuthRequest(new GooglePayPaymentAuthRequest.Failure(new BraintreeException(
-                        "Google Pay is not enabled for your Braintree account," +
-                                " or Google Play Services are not configured correctly.")));
+                        "Google Pay is not enabled for your Braintree account, or Google Play Services are not configured correctly.")));
                 return;
             }
 
