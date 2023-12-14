@@ -113,6 +113,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.3.5'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
 
     debugImplementation 'com.facebook.stetho:stetho:1.5.0'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
