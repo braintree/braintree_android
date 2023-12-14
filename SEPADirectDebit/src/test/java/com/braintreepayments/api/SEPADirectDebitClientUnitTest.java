@@ -72,6 +72,7 @@ public class SEPADirectDebitClientUnitTest {
 
         SEPADirectDebitPaymentAuthRequest paymentAuthRequest = captor.getValue();
         assertTrue(paymentAuthRequest instanceof  SEPADirectDebitPaymentAuthRequest.ReadyToLaunch);
+
         SEPADirectDebitPaymentAuthRequestParams params = ((SEPADirectDebitPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams();
 
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.requested");
@@ -116,6 +117,7 @@ public class SEPADirectDebitClientUnitTest {
                 SEPADirectDebitPaymentAuthRequest.class);
         verify(paymentAuthRequestCallback).onSEPADirectDebitPaymentAuthRequest(captor.capture());
 
+
         SEPADirectDebitPaymentAuthRequest paymentAuthRequest = captor.getValue();
         assertTrue(paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.LaunchNotRequired);
         assertEquals(((SEPADirectDebitPaymentAuthRequest.LaunchNotRequired) paymentAuthRequest).getNonce(), nonce);
@@ -143,6 +145,7 @@ public class SEPADirectDebitClientUnitTest {
 
         ArgumentCaptor<SEPADirectDebitPaymentAuthRequest> captor = ArgumentCaptor.forClass(SEPADirectDebitPaymentAuthRequest.class);
         verify(paymentAuthRequestCallback).onSEPADirectDebitPaymentAuthRequest(captor.capture());
+
 
         SEPADirectDebitPaymentAuthRequest paymentAuthRequest = captor.getValue();
         assertTrue(paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.Failure);
@@ -193,6 +196,7 @@ public class SEPADirectDebitClientUnitTest {
         sut.createPaymentAuthRequest(sepaDirectDebitRequest, paymentAuthRequestCallback);
         ArgumentCaptor<SEPADirectDebitPaymentAuthRequest> captor = ArgumentCaptor.forClass(SEPADirectDebitPaymentAuthRequest.class);
         verify(paymentAuthRequestCallback).onSEPADirectDebitPaymentAuthRequest(captor.capture());
+
 
         SEPADirectDebitPaymentAuthRequest paymentAuthRequest = captor.getValue();
         assertTrue(paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.Failure);
