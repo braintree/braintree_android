@@ -16,12 +16,17 @@ class ShoppingInsightViewModel : ViewModel() {
     /**
      * Fetches recommended payment methods using the provided buyer details.
      *
-     * @param email The email address of the user.
-     * @param countryCode The country code for the user's phone number.
-     * @param nationalNumber The national number part of the user's phone number.
+     * @param email The email address of the buyer.
+     * @param countryCode The country code for the buyer's phone number.
+     * @param nationalNumber The national number part of the buyer's phone number.
      * @return MutableLiveData containing ShopperInsightsResult.
      */
-    fun getRecommendedPaymentMethods(email: String, countryCode: String, nationalNumber: String): MutableLiveData<ShopperInsightsResult> {
+    fun getRecommendedPaymentMethods(
+        email: String,
+        countryCode: String,
+        nationalNumber: String
+    ): MutableLiveData<ShopperInsightsResult> {
+        @Suppress("UnusedPrivateMember")
         val request = ShopperInsightsRequest(email, BuyerPhone(countryCode, nationalNumber))
 
         // TODO: Call Shopping Insight Client
