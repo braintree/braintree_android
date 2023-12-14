@@ -71,7 +71,7 @@ public class SEPADirectDebitClientUnitTest {
         verify(paymentAuthRequestCallback).onResult(captor.capture());
 
         SEPADirectDebitPaymentAuthRequest paymentAuthRequest = captor.getValue();
-        assertTrue(paymentAuthRequest instanceof  SEPADirectDebitPaymentAuthRequest.ReadyToLaunch);
+        assertTrue(paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.ReadyToLaunch);
         SEPADirectDebitPaymentAuthRequestParams params = ((SEPADirectDebitPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams();
 
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.requested");
