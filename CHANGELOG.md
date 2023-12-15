@@ -105,6 +105,10 @@
       modify parameters
     * Replace `SEPADirectDebitClient#tokenize` with`SEPADirectDebitClient#createPaymentAuthRequest` 
       and modify parameters
+  * Visa Checkout
+    * Change parameters of `VisaCheckoutCreateProfileBuilderCallback` and
+      `VisaCheckoutTokenizeCallback`
+    * Add `VisaCheckoutProfileBuilderResult` and `VisaCheckoutTokenizeResult`
     
 ## 4.40.1 (2023-12-13)
 
