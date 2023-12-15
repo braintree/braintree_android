@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -1247,13 +1248,11 @@ public class GooglePayClientUnitTest {
                 new MockGooglePayInternalClientBuilder().build();
         GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
 
-        GooglePayGetTokenizationParametersCallback getTokenizationParametersCallback =
-                mock(GooglePayGetTokenizationParametersCallback.class);
-        sut.getTokenizationParameters(getTokenizationParametersCallback);
-
-        verify(getTokenizationParametersCallback).onResult(
-                any(PaymentMethodTokenizationParameters.class),
-                eq(sut.getAllowedCardNetworks(configuration)));
+        sut.getTokenizationParameters(tokenizationParameters -> {
+            assertTrue(tokenizationParameters instanceof GooglePayTokenizationParameters.Success);
+            assertNotNull(((GooglePayTokenizationParameters.Success) tokenizationParameters).getParameters());
+            assertEquals(sut.getAllowedCardNetworks(configuration), ((GooglePayTokenizationParameters.Success) tokenizationParameters).getAllowedCardNetworks());
+        });
     }
 
     // endregion

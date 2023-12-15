@@ -158,13 +158,12 @@ public class GooglePayClient {
     public void getTokenizationParameters(
             @NonNull final GooglePayGetTokenizationParametersCallback callback) {
         braintreeClient.getConfiguration((configuration, e) -> {
-            if (configuration == null) {
-                callback.onResult(null, null);
+            if (configuration == null && e != null) {
+                callback.onTokenizationParametersResult(new GooglePayTokenizationParameters.Failure(e));
                 return;
             }
-            callback.onResult(
-                    getTokenizationParameters(configuration, braintreeClient.getAuthorization()),
-                    getAllowedCardNetworks(configuration));
+            callback.onTokenizationParametersResult(new GooglePayTokenizationParameters.Success(
+                    getTokenizationParameters(configuration, braintreeClient.getAuthorization()), getAllowedCardNetworks(configuration)));
         });
 
     }
