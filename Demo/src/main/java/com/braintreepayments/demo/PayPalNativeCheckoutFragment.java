@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.DataCollector;
+import com.braintreepayments.api.DataCollectorResult;
 import com.braintreepayments.api.PayPalNativeCheckoutAccountNonce;
 import com.braintreepayments.api.PayPalNativeCheckoutClient;
 import com.braintreepayments.api.PayPalNativeCheckoutListener;
@@ -57,9 +58,9 @@ public class PayPalNativeCheckoutFragment extends BaseFragment implements PayPal
         dataCollector = new DataCollector(requireContext(), super.getAuthStringArg());
 
         if (Settings.shouldCollectDeviceData(requireActivity())) {
-            dataCollector.collectDeviceData(requireActivity(), (deviceDataResult, error) -> {
-                if (deviceDataResult != null) {
-                    deviceData = deviceDataResult;
+            dataCollector.collectDeviceData(requireActivity(), (dataCollectorResult) -> {
+                if (dataCollectorResult instanceof DataCollectorResult.Success) {
+                    deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
                 }
                 try {
                     if (isBillingAgreement) {
