@@ -16,12 +16,15 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.AmericanExpressClient;
+import com.braintreepayments.api.AmericanExpressResult;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
 import com.braintreepayments.api.CardResult;
 import com.braintreepayments.api.DataCollector;
+import com.braintreepayments.api.DataCollectorCallback;
+import com.braintreepayments.api.DataCollectorResult;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
@@ -147,8 +150,11 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                 .setup(activity);
 
         if (getArguments().getBoolean(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
-            dataCollector.collectDeviceData(activity,
-                    (deviceData, e) -> this.deviceData = deviceData);
+            dataCollector.collectDeviceData(activity, dataCollectorResult -> {
+                if (dataCollectorResult instanceof DataCollectorResult.Success) {
+                    deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
+                }
+            });
         }
     }
 
@@ -240,12 +246,13 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                     getString(R.string.loading), true, false);
             String nonce = paymentMethodNonce.getString();
 
-            americanExpressClient.getRewardsBalance(nonce, "USD", (rewardsBalance, error) -> {
-                if (rewardsBalance != null) {
+            americanExpressClient.getRewardsBalance(nonce, "USD", (americanExpressResult) -> {
+                if (americanExpressResult instanceof AmericanExpressResult.Success) {
                     safelyCloseLoadingView();
-                    showDialog(getAmexRewardsBalanceString(rewardsBalance));
-                } else if (error != null) {
-                    handleError(error);
+                    showDialog(getAmexRewardsBalanceString(
+                            ((AmericanExpressResult.Success) americanExpressResult).getRewardsBalance()));
+                } else if (americanExpressResult instanceof AmericanExpressResult.Failure) {
+                    handleError(((AmericanExpressResult.Failure) americanExpressResult).getError());
                 }
             });
         } else {
