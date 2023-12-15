@@ -131,4 +131,5 @@
     <string name="insights_text_input_national_number">National Number</string>
     <string name="insights_action_button">Submit</string>
     <string name="insights_response_label">Response:</string>
+    <string name="insights_null_switch">Null </string>
 </resources>

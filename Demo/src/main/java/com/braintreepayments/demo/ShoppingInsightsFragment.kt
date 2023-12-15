@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Switch
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
 
 /**
@@ -20,6 +22,9 @@ class ShoppingInsightsFragment : Fragment() {
     private lateinit var emailInput: TextInputLayout
     private lateinit var countryCodeInput: TextInputLayout
     private lateinit var nationalNumberInput: TextInputLayout
+    private lateinit var emailNullSwitch: SwitchMaterial
+    private lateinit var phoneNullSwitch: SwitchMaterial
+
     private val viewModel: ShoppingInsightViewModel by lazy {
         ViewModelProvider(this)[ShoppingInsightViewModel::class.java]
     }
@@ -44,13 +49,15 @@ class ShoppingInsightsFragment : Fragment() {
         emailInput = view.findViewById(R.id.emailInput)
         countryCodeInput = view.findViewById(R.id.countryCodeInput)
         nationalNumberInput = view.findViewById(R.id.nationalNumberInput)
+        emailNullSwitch = view.findViewById(R.id.emailNullSwitch)
+        phoneNullSwitch = view.findViewById(R.id.phoneNullSwitch)
     }
 
     private fun setupActionButton() {
         actionButton.setOnClickListener {
-            val email = emailInput.editText?.text.toString()
-            val countryCode = countryCodeInput.editText?.text.toString()
-            val nationalNumber = nationalNumberInput.editText?.text.toString()
+            val email = if (emailNullSwitch.isChecked) null else emailInput.editText?.text.toString()
+            val countryCode = if (phoneNullSwitch.isChecked) null else countryCodeInput.editText?.text.toString()
+            val nationalNumber = if (phoneNullSwitch.isChecked) null else nationalNumberInput.editText?.text.toString()
             viewModel.getRecommendedPaymentMethods(email, countryCode, nationalNumber)
                 .observe(viewLifecycleOwner) {
                 responseTextView.text = it.toString()

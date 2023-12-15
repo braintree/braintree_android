@@ -22,13 +22,16 @@ class ShoppingInsightViewModel : ViewModel() {
      * @return MutableLiveData containing ShopperInsightsResult.
      */
     fun getRecommendedPaymentMethods(
-        email: String,
-        countryCode: String,
-        nationalNumber: String
+        email: String?,
+        countryCode: String?,
+        nationalNumber: String?
     ): MutableLiveData<ShopperInsightsResult> {
         @Suppress("UnusedPrivateMember")
-        val request = ShopperInsightsRequest(email, BuyerPhone(countryCode, nationalNumber))
-
+        val request = if (countryCode != null && nationalNumber != null) {
+            ShopperInsightsRequest(email, BuyerPhone(countryCode, nationalNumber))
+        } else {
+            ShopperInsightsRequest(email, null)
+        }
         // TODO: Call Shopping Insight Client
         // shopperInsightsClient.getRecommendedPaymentMethods(request) { result ->
         //     shopperInsightsLiveData.postValue(result)
