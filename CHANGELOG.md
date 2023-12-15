@@ -105,6 +105,9 @@
       modify parameters
     * Replace `SEPADirectDebitClient#tokenize` with`SEPADirectDebitClient#createPaymentAuthRequest` 
       and modify parameters
+  * American Express
+    * Change parameters of `AmericanExpressGetRewardsBalanceCallback`
+    * Add `AmericanExpressResult`
     
 ## 4.40.1 (2023-12-13)
 

@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
@@ -48,11 +49,13 @@ public class AmericanExpressClientUnitTest {
         AmericanExpressClient sut = new AmericanExpressClient(braintreeClient);
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
-        ArgumentCaptor<AmericanExpressRewardsBalance> amexRewardsCaptor =
-                ArgumentCaptor.forClass(AmericanExpressRewardsBalance.class);
-        verify(amexRewardsCallback).onResult(amexRewardsCaptor.capture(), (Exception) isNull());
+        ArgumentCaptor<AmericanExpressResult> amexRewardsCaptor =
+                ArgumentCaptor.forClass(AmericanExpressResult.class);
+        verify(amexRewardsCallback).onAmericanExpressResult(amexRewardsCaptor.capture());
 
-        AmericanExpressRewardsBalance rewardsBalance = amexRewardsCaptor.getValue();
+        AmericanExpressResult result = amexRewardsCaptor.getValue();
+        assertTrue(result instanceof AmericanExpressResult.Success);
+        AmericanExpressRewardsBalance rewardsBalance = ((AmericanExpressResult.Success) result).getRewardsBalance();
         assertNotNull(rewardsBalance);
         assertEquals("0.0070", rewardsBalance.getConversionRate());
         assertEquals("316795.03", rewardsBalance.getCurrencyAmount());
@@ -73,11 +76,13 @@ public class AmericanExpressClientUnitTest {
         AmericanExpressClient sut = new AmericanExpressClient(braintreeClient);
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
-        ArgumentCaptor<AmericanExpressRewardsBalance> amexRewardsCaptor =
-                ArgumentCaptor.forClass(AmericanExpressRewardsBalance.class);
-        verify(amexRewardsCallback).onResult(amexRewardsCaptor.capture(), isNull());
+        ArgumentCaptor<AmericanExpressResult> amexRewardsCaptor =
+                ArgumentCaptor.forClass(AmericanExpressResult.class);
+        verify(amexRewardsCallback).onAmericanExpressResult(amexRewardsCaptor.capture());
 
-        AmericanExpressRewardsBalance rewardsBalance = amexRewardsCaptor.getValue();
+        AmericanExpressResult result = amexRewardsCaptor.getValue();
+        assertTrue(result instanceof AmericanExpressResult.Success);
+        AmericanExpressRewardsBalance rewardsBalance = ((AmericanExpressResult.Success) result).getRewardsBalance();
         assertNotNull(rewardsBalance);
         assertNull(rewardsBalance.getConversionRate());
         assertNull(rewardsBalance.getCurrencyAmount());
@@ -98,11 +103,14 @@ public class AmericanExpressClientUnitTest {
         AmericanExpressClient sut = new AmericanExpressClient(braintreeClient);
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
-        ArgumentCaptor<AmericanExpressRewardsBalance> amexRewardsCaptor =
-                ArgumentCaptor.forClass(AmericanExpressRewardsBalance.class);
-        verify(amexRewardsCallback).onResult(amexRewardsCaptor.capture(), (Exception) isNull());
+        ArgumentCaptor<AmericanExpressResult> amexRewardsCaptor =
+                ArgumentCaptor.forClass(AmericanExpressResult.class);
+        verify(amexRewardsCallback).onAmericanExpressResult(amexRewardsCaptor.capture());
 
-        AmericanExpressRewardsBalance rewardsBalance = amexRewardsCaptor.getValue();
+        AmericanExpressResult result = amexRewardsCaptor.getValue();
+        assertTrue(result instanceof AmericanExpressResult.Success);
+
+        AmericanExpressRewardsBalance rewardsBalance = ((AmericanExpressResult.Success) result).getRewardsBalance();
         assertNotNull(rewardsBalance);
         assertNull(rewardsBalance.getConversionRate());
         assertNull(rewardsBalance.getCurrencyAmount());
@@ -113,6 +121,27 @@ public class AmericanExpressClientUnitTest {
         assertEquals("INQ2003", rewardsBalance.getErrorCode());
         assertEquals("Insufficient points on card", rewardsBalance.getErrorMessage());
     }
+
+    @Test
+    public void getRewardsBalance_callsBackFailure_OnHttpError() {
+        Exception expectedError = new Exception("error");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sendGETErrorResponse(expectedError)
+                .build();
+
+        AmericanExpressClient sut = new AmericanExpressClient(braintreeClient);
+        sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
+
+        ArgumentCaptor<AmericanExpressResult> amexRewardsCaptor =
+                ArgumentCaptor.forClass(AmericanExpressResult.class);
+        verify(amexRewardsCallback).onAmericanExpressResult(amexRewardsCaptor.capture());
+
+        AmericanExpressResult result = amexRewardsCaptor.getValue();
+        assertTrue(result instanceof AmericanExpressResult.Failure);
+        Exception actualError = ((AmericanExpressResult.Failure) result).getError();
+        assertEquals(expectedError, actualError);
+    }
+
 
     @Test
     public void getRewardsBalance_sendsAnalyticsEventOnSuccess() {
