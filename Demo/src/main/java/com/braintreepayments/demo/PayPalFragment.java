@@ -1,5 +1,6 @@
 package com.braintreepayments.demo;
 
+import static android.content.Intent.getIntent;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
 
@@ -21,6 +22,7 @@ import com.braintreepayments.api.PayPalPaymentAuthRequest;
 import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PayPalResult;
 import com.braintreepayments.api.PaymentMethodNonce;
+import com.braintreepayments.api.UserCanceledException;
 
 public class PayPalFragment extends BaseFragment {
 
@@ -44,13 +46,15 @@ public class PayPalFragment extends BaseFragment {
         singlePaymentButton.setOnClickListener(this::launchSinglePayment);
 
         payPalClient = new PayPalClient(requireContext(), super.getAuthStringArg());
-        payPalLauncher = new PayPalLauncher(
+        payPalLauncher = new PayPalLauncher(this,
                 paymentAuthResult -> payPalClient.tokenize(
                         paymentAuthResult, (payPalResult) -> {
                             if (payPalResult instanceof PayPalResult.Failure) {
                                 handleError(((PayPalResult.Failure) payPalResult).getError());
                             } else if (payPalResult instanceof PayPalResult.Success) {
                                 handlePayPalResult(((PayPalResult.Success) payPalResult).getNonce());
+                            } else if (payPalResult instanceof PayPalResult.Cancel) {
+                                handleError(new UserCanceledException("User canceled PayPal"));
                             }
                         }));
 
@@ -103,8 +107,7 @@ public class PayPalFragment extends BaseFragment {
                     if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.Failure) {
                         handleError(((PayPalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
                     } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch){
-                        payPalLauncher.launch(requireActivity(),
-                                ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams());
+                        payPalLauncher.launch(((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams());
                     }
                 });
     }

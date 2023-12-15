@@ -5,8 +5,10 @@ import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 /**
@@ -14,8 +16,12 @@ import androidx.fragment.app.FragmentActivity;
  */
 public class PayPalLauncher {
 
-    private final BrowserSwitchClient browserSwitchClient;
+    private BrowserSwitchClient browserSwitchClient;
+    private BrowserSwitchLauncher browserSwitchLauncher;
+
+    private BrowserSwitchResult browserSwitchResult;
     private final PayPalLauncherCallback callback;
+
 
     /**
      * Used to launch the PayPal flow in a web browser and deliver results to your Activity
@@ -32,6 +38,14 @@ public class PayPalLauncher {
                    PayPalLauncherCallback callback) {
         this.browserSwitchClient = browserSwitchClient;
         this.callback = callback;
+    }
+
+    public PayPalLauncher(Fragment fragment, PayPalLauncherCallback callback) {
+        this.callback = callback;
+        this.browserSwitchLauncher = new BrowserSwitchLauncher(fragment, browserSwitchResult -> {
+            this.browserSwitchResult = browserSwitchResult;
+//            browserSwitchLauncher.clearActiveRequests(fragment.getContext());
+        });
     }
 
     /**
@@ -51,6 +65,10 @@ public class PayPalLauncher {
         } catch (BrowserSwitchException e) {
             callback.onResult(new PayPalPaymentAuthResult(e));
         }
+    }
+
+    public void launch(PayPalPaymentAuthRequestParams paymentAuthRequestParams) {
+        browserSwitchLauncher.launch(paymentAuthRequestParams.getBrowserSwitchOptions());
     }
 
     /**
@@ -73,10 +91,13 @@ public class PayPalLauncher {
      *                the PayPal browser flow
      */
     public void handleReturnToAppFromBrowser(@NonNull Context context, @NonNull Intent intent) {
-        BrowserSwitchResult result = browserSwitchClient.parseResult(context, PAYPAL, intent);
+        BrowserSwitchResult result = browserSwitchLauncher.parseResult(context, PAYPAL, intent);
+        if (result == null) {
+            result = this.browserSwitchResult;
+        }
         if (result != null) {
            callback.onResult(new PayPalPaymentAuthResult(result));
-           browserSwitchClient.clearActiveRequests(context);
+           browserSwitchLauncher.clearActiveRequests(context);
         }
     }
 }
