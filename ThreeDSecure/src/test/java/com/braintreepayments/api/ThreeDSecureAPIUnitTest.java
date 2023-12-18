@@ -61,7 +61,7 @@ public class ThreeDSecureAPIUnitTest {
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
         sut.performLookup(threeDSecureRequest, "another-session-id", callback);
 
-        verify(callback).onResult(any(ThreeDSecureResult.class), isNull());
+        verify(callback).onResult(any(ThreeDSecureParams.class), isNull());
     }
 
     @Test
@@ -102,12 +102,12 @@ public class ThreeDSecureAPIUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         sut = new ThreeDSecureAPI(braintreeClient);
 
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+        ThreeDSecureParams threeDSecureParams =
+                ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
         String cardinalJWT = "cardinal-jwt";
 
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.authenticateCardinalJWT(threeDSecureResult, cardinalJWT, callback);
+        sut.authenticateCardinalJWT(threeDSecureParams, cardinalJWT, callback);
 
         ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
@@ -134,14 +134,14 @@ public class ThreeDSecureAPIUnitTest {
                 .build();
         sut = new ThreeDSecureAPI(braintreeClient);
 
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+        ThreeDSecureParams threeDSecureParams =
+                ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
         String cardinalJWT = "cardinal-jwt";
 
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.authenticateCardinalJWT(threeDSecureResult, cardinalJWT, callback);
+        sut.authenticateCardinalJWT(threeDSecureParams, cardinalJWT, callback);
 
-        verify(callback).onResult(any(ThreeDSecureResult.class), (Exception) isNull());
+        verify(callback).onResult(any(ThreeDSecureParams.class), (Exception) isNull());
     }
 
     @Test
@@ -153,18 +153,18 @@ public class ThreeDSecureAPIUnitTest {
                 .build();
         sut = new ThreeDSecureAPI(braintreeClient);
 
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE);
+        ThreeDSecureParams threeDSecureParams =
+                ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE);
         String cardinalJWT = "cardinal-jwt";
 
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.authenticateCardinalJWT(threeDSecureResult, cardinalJWT, callback);
+        sut.authenticateCardinalJWT(threeDSecureParams, cardinalJWT, callback);
 
-        ArgumentCaptor<ThreeDSecureResult> captor =
-                ArgumentCaptor.forClass(ThreeDSecureResult.class);
+        ArgumentCaptor<ThreeDSecureParams> captor =
+                ArgumentCaptor.forClass(ThreeDSecureParams.class);
         verify(callback).onResult(captor.capture(), (Exception) isNull());
 
-        ThreeDSecureResult result = captor.getValue();
+        ThreeDSecureParams result = captor.getValue();
         assertNotNull(result.getThreeDSecureNonce());
     }
 
@@ -176,16 +176,16 @@ public class ThreeDSecureAPIUnitTest {
                 .build();
         sut = new ThreeDSecureAPI(braintreeClient);
 
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE);
+        ThreeDSecureParams threeDSecureParams =
+                ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE);
         String cardinalJWT = "cardinal-jwt";
 
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.authenticateCardinalJWT(threeDSecureResult, cardinalJWT, callback);
+        sut.authenticateCardinalJWT(threeDSecureParams, cardinalJWT, callback);
 
         ArgumentCaptor<Exception> captor =
                 ArgumentCaptor.forClass(Exception.class);
-        verify(callback).onResult((ThreeDSecureResult) isNull(), captor.capture());
+        verify(callback).onResult((ThreeDSecureParams) isNull(), captor.capture());
 
         Exception error = captor.getValue();
         assertTrue(error instanceof JSONException);
@@ -199,16 +199,16 @@ public class ThreeDSecureAPIUnitTest {
                 .build();
         sut = new ThreeDSecureAPI(braintreeClient);
 
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE);
+        ThreeDSecureParams threeDSecureParams =
+                ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE);
         String cardinalJWT = "cardinal-jwt";
 
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.authenticateCardinalJWT(threeDSecureResult, cardinalJWT, callback);
+        sut.authenticateCardinalJWT(threeDSecureParams, cardinalJWT, callback);
 
         ArgumentCaptor<Exception> captor =
                 ArgumentCaptor.forClass(Exception.class);
-        verify(callback).onResult((ThreeDSecureResult) isNull(), captor.capture());
+        verify(callback).onResult((ThreeDSecureParams) isNull(), captor.capture());
 
         Exception error = captor.getValue();
         assertSame(postError, error);
@@ -223,12 +223,12 @@ public class ThreeDSecureAPIUnitTest {
                 .build();
         sut = new ThreeDSecureAPI(braintreeClient);
 
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+        ThreeDSecureParams threeDSecureParams =
+                ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
         String cardinalJWT = "cardinal-jwt";
 
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
-        sut.authenticateCardinalJWT(threeDSecureResult, cardinalJWT, callback);
+        sut.authenticateCardinalJWT(threeDSecureParams, cardinalJWT, callback);
     }
 
     @Test
@@ -238,16 +238,16 @@ public class ThreeDSecureAPIUnitTest {
                 .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE)
                 .build();
 
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+        ThreeDSecureParams threeDSecureParams =
+                ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
         ThreeDSecureResultCallback threeDSecureResultCallback =
                 mock(ThreeDSecureResultCallback.class);
 
         ThreeDSecureAPI sut = new ThreeDSecureAPI(braintreeClient);
-        sut.authenticateCardinalJWT(threeDSecureResult, "jwt", threeDSecureResultCallback);
+        sut.authenticateCardinalJWT(threeDSecureParams, "jwt", threeDSecureResultCallback);
 
-        verify(threeDSecureResultCallback).onResult(any(ThreeDSecureResult.class),
+        verify(threeDSecureResultCallback).onResult(any(ThreeDSecureParams.class),
                 (Exception) isNull());
     }
 
@@ -259,20 +259,20 @@ public class ThreeDSecureAPIUnitTest {
                 .sendPOSTSuccessfulResponse(authResponseJson)
                 .build();
 
-        ThreeDSecureResult threeDSecureResult = ThreeDSecureResult.fromJson(
+        ThreeDSecureParams threeDSecureParams = ThreeDSecureParams.fromJson(
                 Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE_WITHOUT_LIABILITY_WITH_LIABILITY_SHIFT_POSSIBLE);
 
         ThreeDSecureResultCallback threeDSecureResultCallback =
                 mock(ThreeDSecureResultCallback.class);
 
         ThreeDSecureAPI sut = new ThreeDSecureAPI(braintreeClient);
-        sut.authenticateCardinalJWT(threeDSecureResult, "jwt", threeDSecureResultCallback);
+        sut.authenticateCardinalJWT(threeDSecureParams, "jwt", threeDSecureResultCallback);
 
-        ArgumentCaptor<ThreeDSecureResult> captor =
-                ArgumentCaptor.forClass(ThreeDSecureResult.class);
+        ArgumentCaptor<ThreeDSecureParams> captor =
+                ArgumentCaptor.forClass(ThreeDSecureParams.class);
         verify(threeDSecureResultCallback).onResult(captor.capture(), (Exception) isNull());
 
-        ThreeDSecureResult actualResult = captor.getValue();
+        ThreeDSecureParams actualResult = captor.getValue();
         ThreeDSecureNonce cardNonce = actualResult.getThreeDSecureNonce();
         assertNotNull(cardNonce);
 
@@ -291,14 +291,14 @@ public class ThreeDSecureAPIUnitTest {
                 .sendPOSTErrorResponse(exception)
                 .build();
 
-        ThreeDSecureResult threeDSecureResult =
-                ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+        ThreeDSecureParams threeDSecureParams =
+                ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
         ThreeDSecureResultCallback threeDSecureResultCallback =
                 mock(ThreeDSecureResultCallback.class);
 
         ThreeDSecureAPI sut = new ThreeDSecureAPI(braintreeClient);
-        sut.authenticateCardinalJWT(threeDSecureResult, "jwt", threeDSecureResultCallback);
+        sut.authenticateCardinalJWT(threeDSecureParams, "jwt", threeDSecureResultCallback);
 
         verify(threeDSecureResultCallback).onResult(null, exception);
     }

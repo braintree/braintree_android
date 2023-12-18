@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.visa.checkout.Environment;
@@ -11,7 +10,6 @@ import com.visa.checkout.Profile;
 import com.visa.checkout.VisaPaymentSummary;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.List;
 
@@ -75,8 +73,7 @@ public class VisaCheckoutClient {
                     isVisaCheckoutSDKAvailable() && configuration.isVisaCheckoutEnabled();
 
             if (!enabledAndSdkAvailable) {
-                callback.onResult(null,
-                        new ConfigurationException("Visa Checkout is not enabled."));
+                callback.onVisaCheckoutProfileBuilderResult(new VisaCheckoutProfileBuilderResult.Failure(new ConfigurationException("Visa Checkout is not enabled.")));
                 return;
             }
 
@@ -95,7 +92,7 @@ public class VisaCheckoutClient {
             profileBuilder.setDataLevel(Profile.DataLevel.FULL);
             profileBuilder.setExternalClientId(configuration.getVisaCheckoutExternalClientId());
 
-            callback.onResult(profileBuilder, null);
+            callback.onVisaCheckoutProfileBuilderResult(new VisaCheckoutProfileBuilderResult.Success(profileBuilder));
         });
     }
 
@@ -122,13 +119,13 @@ public class VisaCheckoutClient {
                         try {
                             VisaCheckoutNonce visaCheckoutNonce =
                                     VisaCheckoutNonce.fromJSON(tokenizationResponse);
-                            callback.onResult(visaCheckoutNonce, null);
+                            callback.onVisaCheckoutResult(new VisaCheckoutResult.Success(visaCheckoutNonce));
                             braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
                         } catch (JSONException e) {
-                            callback.onResult(null, e);
+                            callback.onVisaCheckoutResult(new VisaCheckoutResult.Failure(e));
                         }
-                    } else {
-                        callback.onResult(null, exception);
+                    } else if (exception != null) {
+                        callback.onVisaCheckoutResult(new VisaCheckoutResult.Failure(exception));
                         braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.failed");
                     }
                 });

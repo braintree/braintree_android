@@ -21,7 +21,7 @@ public class SEPADirectDebitLauncher {
      * Used to launch the SEPA mandate in a web browser and deliver results to your Activity
      *
      * @param callback a {@link SEPADirectDebitLauncherCallback} to handle the result of
-     * {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequest)}
+     * {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequest.ReadyToLaunch)}
      */
     public SEPADirectDebitLauncher(@NonNull SEPADirectDebitLauncherCallback callback) {
         this(new BrowserSwitchClient(), callback);
@@ -44,9 +44,10 @@ public class SEPADirectDebitLauncher {
      *                       {@link SEPADirectDebitClient#createPaymentAuthRequest(SEPADirectDebitRequest, SEPADirectDebitPaymentAuthRequestCallback)}
      */
     public void launch(@NonNull FragmentActivity activity, @NonNull
-    SEPADirectDebitPaymentAuthRequest paymentAuthRequest) {
+    SEPADirectDebitPaymentAuthRequest.ReadyToLaunch paymentAuthRequest) {
         try {
-            browserSwitchClient.start(activity, paymentAuthRequest.getBrowserSwitchOptions());
+            SEPADirectDebitPaymentAuthRequestParams params = paymentAuthRequest.getRequestParams();
+            browserSwitchClient.start(activity, params.getBrowserSwitchOptions());
         } catch (BrowserSwitchException e) {
             callback.onResult(new SEPADirectDebitPaymentAuthResult(e));
         }
@@ -56,7 +57,7 @@ public class SEPADirectDebitLauncher {
      * Captures and delivers the result of the browser-based SEPA mandate flow.
      * <p>
      * For most integrations, this method should be invoked in the onResume method of the Activity
-     * used to invoke {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequest)}.
+     * used to invoke {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequest.ReadyToLaunch)}.
      * <p>
      * If the Activity used to launch the SEPA mandate is configured with
      * android:launchMode="singleTop", this method should be invoked in the onNewIntent method of
@@ -65,7 +66,7 @@ public class SEPADirectDebitLauncher {
      * This method will deliver a {@link SEPADirectDebitPaymentAuthResult} to the
      * {@link SEPADirectDebitLauncherCallback} used to instantiate this class. The
      * {@link SEPADirectDebitPaymentAuthResult} should be passed to
-     * {@link SEPADirectDebitClient#tokenize(SEPADirectDebitPaymentAuthResult, SEPADirectDebitTokenizeCallback)}
+     * {@link SEPADirectDebitClient#tokenize(SEPADirectDebitPaymentAuthResult, SEPADirectDebitTokenizeCallback)} 
      *
      * @param context the context used to check for pending results
      * @param intent  the intent to return to your application containing a deep link result from

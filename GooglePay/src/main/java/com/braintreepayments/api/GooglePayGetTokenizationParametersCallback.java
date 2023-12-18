@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import androidx.annotation.Nullable;
-
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 
 import java.util.Collection;
@@ -17,17 +15,17 @@ public interface GooglePayGetTokenizationParametersCallback {
      * Wallet or Google Pay integrations, or when full control over the
      * {@link com.google.android.gms.wallet.MaskedWalletRequest} and
      * {@link com.google.android.gms.wallet.FullWalletRequest} is required.
-     *
+     * <p>
      * {@link PaymentMethodTokenizationParameters} should be supplied to the
      * {@link com.google.android.gms.wallet.MaskedWalletRequest} via
-     * {@link com.google.android.gms.wallet.MaskedWalletRequest.Builder#setPaymentMethodTokenizationParameters(PaymentMethodTokenizationParameters)}
+     * {@link
+     * com.google.android.gms.wallet.MaskedWalletRequest.Builder#setPaymentMethodTokenizationParameters(PaymentMethodTokenizationParameters)}
      * and {@link Collection<Integer>} allowedCardNetworks should be supplied to the
      * {@link com.google.android.gms.wallet.MaskedWalletRequest} via
-     * {@link com.google.android.gms.wallet.MaskedWalletRequest.Builder#addAllowedCardNetworks(Collection)}.
+     * {@link
+     * com.google.android.gms.wallet.MaskedWalletRequest.Builder#addAllowedCardNetworks(Collection)}.
      *
-     * @param parameters {@link PaymentMethodTokenizationParameters}
-     * @param allowedCardNetworks {@link Collection<Integer>} of card networks supported by the current
-     *        Braintree merchant account.
+     * @param tokenizationParameters {@link GooglePayTokenizationParameters}
      */
-    void onResult(@Nullable PaymentMethodTokenizationParameters parameters, @Nullable Collection<Integer> allowedCardNetworks);
+    void onTokenizationParametersResult(GooglePayTokenizationParameters tokenizationParameters);
 }

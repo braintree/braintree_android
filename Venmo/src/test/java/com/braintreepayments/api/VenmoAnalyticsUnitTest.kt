@@ -9,18 +9,18 @@ class VenmoAnalyticsUnitTest {
     fun testAnalyticsEvents_sendsExpectedEventNames() {
         assertEquals(
             "venmo:tokenize:app-switch:canceled",
-            VenmoAnalytics.APP_SWITCH_CANCELED.event
+            VenmoAnalytics.APP_SWITCH_CANCELED
         )
         assertEquals(
             "venmo:tokenize:app-switch:failed",
-            VenmoAnalytics.APP_SWITCH_FAILED.event
+            VenmoAnalytics.APP_SWITCH_FAILED
         )
         assertEquals(
             "venmo:tokenize:app-switch:succeeded",
-            VenmoAnalytics.APP_SWITCH_SUCCEEDED.event
+            VenmoAnalytics.APP_SWITCH_SUCCEEDED
         )
-        assertEquals("venmo:tokenize:failed", VenmoAnalytics.TOKENIZE_FAILED.event)
-        assertEquals("venmo:tokenize:started", VenmoAnalytics.TOKENIZE_STARTED.event)
-        assertEquals("venmo:tokenize:succeeded", VenmoAnalytics.TOKENIZE_SUCCEEDED.event)
+        assertEquals("venmo:tokenize:failed", VenmoAnalytics.TOKENIZE_FAILED)
+        assertEquals("venmo:tokenize:started", VenmoAnalytics.TOKENIZE_STARTED)
+        assertEquals("venmo:tokenize:succeeded", VenmoAnalytics.TOKENIZE_SUCCEEDED)
     }
 }

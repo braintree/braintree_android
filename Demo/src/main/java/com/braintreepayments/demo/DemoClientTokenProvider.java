@@ -25,6 +25,8 @@ public class DemoClientTokenProvider  {
                     callback.onResult(null);
                 }
             });
+        } else {
+            callback.onResult(Settings.getTokenizationKey(appContext));
         }
     }
 

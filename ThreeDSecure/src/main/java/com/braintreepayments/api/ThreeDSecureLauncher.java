@@ -19,7 +19,7 @@ public class ThreeDSecureLauncher {
     private static final String THREE_D_SECURE_RESULT =
             "com.braintreepayments.api.ThreeDSecure.RESULT";
     @VisibleForTesting
-    ActivityResultLauncher<ThreeDSecureResult> activityLauncher;
+    ActivityResultLauncher<ThreeDSecureParams> activityLauncher;
     private final ThreeDSecureLauncherCallback callback;
 
     /**
@@ -63,17 +63,17 @@ public class ThreeDSecureLauncher {
      * Launches the 3DS flow by switching to an authentication Activity. Call this method in the
      * callback of
      * {@link ThreeDSecureClient#createPaymentAuthRequest(Context, ThreeDSecureRequest,
-     * ThreeDSecureResultCallback)} if user authentication is required
+     * ThreeDSecurePaymentAuthRequestCallback)} if user authentication is required
      * {@link ThreeDSecureLookup#requiresUserAuthentication()}
      *
-     * @param threeDSecureResult the result of
+     * @param paymentAuthRequest the result of
      *                           {@link
-     *                           ThreeDSecureClient#continuePerformVerification(ThreeDSecureResult,
+     *                           ThreeDSecureClient#continuePerformVerification(ThreeDSecureParams,
      *                           ThreeDSecureResultCallback)}
      */
-    public void launch(ThreeDSecureResult threeDSecureResult) {
+    public void launch(ThreeDSecurePaymentAuthRequest.ReadyToLaunch paymentAuthRequest) {
         try {
-            activityLauncher.launch(threeDSecureResult);
+            activityLauncher.launch(paymentAuthRequest.getRequestParams());
         } catch (RuntimeException runtimeException) {
             Throwable exceptionCause = runtimeException.getCause();
             if (exceptionCause instanceof TransactionTooLargeException) {

@@ -7,7 +7,9 @@ basics for updating your Braintree integration from v4 to v5.
 
 1. [Android API](#android-api)
 1. [Braintree Client](#braintree-client)
+1. [American Express](#american-express)
 1. [Data Collector](#data-collector)
+1. [Card](#card)
 1. [Union Pay](#union-pay)
 1. [Venmo](#venmo)
 1. [Google Pay](#google-pay)
@@ -15,6 +17,7 @@ basics for updating your Braintree integration from v4 to v5.
 1. [PayPal](#paypal)
 1. [Local Payment](#local-payment)
 1. [SEPA Direct Debit](#sepa-direct-debit)
+1. [Visa Checkout](#visa-checkout)
 
 ## Android API
 
@@ -34,8 +37,7 @@ val cardClient = CardClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 
 The `paypal-data-collector` module has been removed and replaced by the `data-collector` module.
 The `DataCollector` class within the `data-collector` module has the same
-`collectDeviceData` methods, so if you were previously using the `paypal-data-collector` library,
-no code changes are required aside from updating your dependency.
+`collectDeviceData` methods.
 
 If you were using the `data-collector` library in v4, `DataCollector#collectDeviceData(context,
 merchantId, callback)` is now `DataCollector#collectDeviceData(context, riskCorrelationId,
@@ -43,8 +45,39 @@ callback)`, where `riskCorrelationId` is an optional client metadata ID.
 
 ```kotlin
 val dataCollector = DataCollector(context, authorization)
-dataCollector.collectDeviceData(context) { deviceData, error ->
-    // send deviceData to your server
+dataCollector.collectDeviceData(context) { result ->
+    if (result is DataCollectorResult.Success) {
+        // send result.deviceData to your server
+    } 
+}
+```
+
+## Card
+
+The card tokenization integration has been updated to simplify instantiation and result handling.
+
+```kotlin
+val cardClient = CardClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+
+cardClient.tokenize(card) { cardResult ->
+    when (cardResult) {
+        is CardResult.Success -> { /* handle cardResult.nonce */ }
+        is CardResult.Failure -> { /* handle cardResult.error */ }
+    }
+}
+```
+
+## American Express
+
+The result handling of fetching American Express rewards balance has been updated so that the
+`AmericanExpressGetRewardsBalanceCallback` returns a single `AmericanExpressResult` object
+
+```kotlin
+americanExpressClient.getRewardsBalance(nonce, currencyCode) { result ->
+    when(result) {
+        is AmericanExpressResult.Success -> { /* handle result.rewardsBalance */ }
+        is AmericanExpressResult.Failure -> { /* handle result.error */ }
+    }
 }
 ```
 
@@ -216,9 +249,11 @@ class MyActivity : FragmentActivity() {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       threeDSecureLauncher = ThreeDSecureLauncher(this) { paymentAuthResult ->
-+            threeDSecureClient.tokenize(paymentAuthResult) { threeDSecureResult, error ->
-+                error?.let { /* handle error */ }
-+                threeDSecureResult?.let { /* handle threeDSecureResult.tokenizedCard */ }
++            threeDSecureClient.tokenize(paymentAuthResult) { result ->
++               when (result) {
++                   is ThreeDSecureResult.Success -> { /* send result.nonce to server */}
++                   is ThreeDSecureResult.Failure -> { /* handle result.error */}
++                   is ThreeDSecureResult.Cancel -> { /* user canceled authentication */}
 +            }
 +       }
     }
@@ -232,20 +267,30 @@ class MyActivity : FragmentActivity() {
     
     fun onCardTokenization() {
 -       threeDSecureClient.performVerification(activity, threeDSecureRequest) { 
-+       threeDSecureClient.createPaymentAuthRequest(requireContext(), threeDSecureRequest) { 
-          threeDSecureResult, error ->
-             error?.let { /* handle error */ }
-             threeDSecureResult?.let {
-                if (it.lookup.requiresAuthentication) {
+-          threeDSecureResult, error ->
+-             error?.let { /* handle error */ }
+-             threeDSecureInternalResult?.let {
+-                if (it.lookup.requiresAuthentication) {
 -                   threeDSecureClient.continuePerformVerification(MyActivity@this, request, it)
-+                   threeDSecureLauncher.launch(it) 
-                else { /* no additional user authentication needed, handle threeDSecureResult */ }
-             }
-        }
+-                else { /* no additional user authentication needed, handle threeDSecureResult */ }
+-              }
++       threeDSecureClient.createPaymentAuthRequest(requireContext(), threeDSecureRequest) { 
++          paymentAuthRequest -> {
++             when (paymentAuthRequest) {
++                is ThreeDSecurePaymentAuthRequest.ReadyToLaunch -> {
++                    threeDSecureLauncher.launch(paymentAuthRequest) 
++                }
++                is ThreeDSecurePaymentAuthRequest.LaunchNotRequired - > {
++                    // no additional authentication challenge needed
++                    // send paymentAuthRequest.nonce to server
++                }
++                is ThreeDSecurePaymentAuthRequest.Failure -> { /* handle error */ }
++            }
++        }
     }
     
--   override fun onThreeDSecureSuccess(threeDSecureResult: ThreeDSecureResult) {
--        // handle threeDSecureResult.tokenizedCard
+-   override fun onThreeDSecureSuccess(threeDSecureParams: ThreeDSecureResult) {
+-        // handle threeDSecureParams.tokenizedCard
 -   }
       
 -   override fun onThreeDSecureFailure(error: java.lang.Exception) {
@@ -312,9 +357,9 @@ class MyActivity : FragmentActivity() {
 +       payPalClient.createPaymentAuthRequest(this, request) { paymentAuthRequest ->
 +           when(paymentAuthRequest) {
 +               is PayPalPaymentAuthRequest.ReadyToLaunch -> {
-+                   payPalLauncher.launch(paymentAuthRequet)
++                   payPalLauncher.launch(this@MyActivity, paymentAuthRequet)
 +               }
-+               is PayPalPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error +/ }
++               is PayPalPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error */ }
 +           }
 +       }
     }
@@ -353,9 +398,12 @@ class MyActivity : FragmentActivity() {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       localPaymentLauncher = LocalPaymentLauncher() { paymentAuthResult ->
-+           localPaymentClient.tokenize(paymentAuthResult) { 
-+               localPaymentNonce, error ->
-+                   // handle local payment nonce or error
++           localPaymentClient.tokenize(paymentAuthResult) { result -> 
++                when(result) {
++                   is LocalPaymentResult.Success -> { /* handle result.nonce */ }
++                   is LocalPaymentResult.Failure -> { /* handle result.error */ }
++                   is LocalPaymentResult.Cancel -> { /* handle user canceled */ }
++               }        
 +           }
 +       }
     }
@@ -381,10 +429,12 @@ class MyActivity : FragmentActivity() {
 
     fun onPaymentButtonClick() {
 -       localPaymentClient.startPayment(activity, request)
-+       localPaymentClient.createPaymentAuthRequest(this, request) { paymentAuthRequest, error ->
-+            error?.let { /* handle error */ }
-+            paymentAuthRequest?.let { 
-+                localPaymentLauncher.launch(requireActivity(), it) 
++       localPaymentClient.createPaymentAuthRequest(this, request) { paymentAuthRequest ->
++           when(paymentAuthRequest) {
++               is LocalPaymentAuthRequest.ReadyToLaunch -> {
++                   lacalPaymentLauncher.launch(this@MyActivity, paymentAuthRequet)
++               }
++               is LocalPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error */ }
 +           }
 +       }
     }
@@ -397,6 +447,7 @@ class MyActivity : FragmentActivity() {
 -        // handle error
 -   }
 }
+```
 
 ## SEPA Direct Debit
 
@@ -422,9 +473,12 @@ class MyActivity : FragmentActivity() {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
 +       sepaDirectDebitLauncher = SEPADirectDebitLauncher() { paymentAuthResult ->
-+           sepaDirectDebitClient.tokenize(paymentAuthResult) { 
-+               sepaDirectDebitNonce, error ->
-+                   // handle nonce or error
++           sepaDirectDebitClient.tokenize(paymentAuthResult) { result -> 
++                when(result) {
++                   is SEPADirectDebitResult.Success -> { /* handle result.nonce */ }
++                   is SEPADirectDebitResult.Failure -> { /* handle result.error */ }
++                   is SEPADirectDebitResult.Cancel -> { /* handle user canceled */ }
++               }  
 +           }
 +       }
     }
@@ -449,13 +503,16 @@ class MyActivity : FragmentActivity() {
 
     fun onPaymentButtonClick() {
 -       sepaDirectDebitClient.tokenize(activity, request)
-+       sepaDirectDebitClient.tokenize(activity, request) { paymentAuthRequest, error ->
-+           if (error != null) {
-+               // handle error
-+           } else if (paymentAuthRequest.nonce != null) {      // web-flow mandate not required
-+               // handle nonce
-+           } else {                                                 // web-flow mandate required
-+               sepaDirectDebitLauncher.launch(activity, paymentAuthRequest)
++       sepaDirectDebitClient.tokenize(activity, request) { paymentAuthRequest ->
++           when(paymentAuthRequest) {
++               is (SEPADirectDebitPaymentAuthRequest.Failure) -> { 
++                   // handle paymentAuthRequest.error
++               is (SEPADirectDebitPaymentAuthRequest.LaunchNotRequired) -> {      
++                   // web-flow mandate not required, handle paymentAuthRequest.nonce
++               is (SEPADirectDebitPaymentAuthRequest.ReadyToLaunch) -> {
++                    // web-flow mandate required
++                   sepaDirectDebitLauncher.launch(activity, paymentAuthRequest)
++               }
 +           }
 +       }
     }
@@ -468,3 +525,35 @@ class MyActivity : FragmentActivity() {
 -        // handle error
 -   }
 }
+```
+
+## Visa Checkout
+
+The Visa Checkout integration has been updated to improve result handling.
+
+```diff
+class MyActivity : FragmentActivity() {
+
+-   private lateinit var braintreeClient: BraintreeClient
+    private lateinit var visaCheckoutClient: VisaCheckoutClient
+
+    fun initializeClients() {
+-       braintreeClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+-       visaCheckoutClient = VisaCheckoutClient(braintreeClient)
++       visaCheckoutClient = visaCheckoutClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+    }
+
+    fun onPaymentButtonClick() {
+-       visaCheckoutClient.tokenize(request)
++       sepaDirectDebitClient.tokenize(request) { visaCheckoutResult ->
++           when (visaCheckoutResult) {
++               is VisaCheckoutResult.Failure -> { 
++                   // handle visaCheckoutResult.error
++               is VisaCheckoutResult.Success -> {      
++                   // handle visaCheckoutResult.nonce
++               }
++           }
++       }
+    }
+}
+```

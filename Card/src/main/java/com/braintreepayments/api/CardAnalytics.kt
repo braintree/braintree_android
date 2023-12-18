@@ -1,8 +1,8 @@
 package com.braintreepayments.api
 
-internal enum class CardAnalytics(@JvmField val event: String) {
+internal object CardAnalytics {
 
-    CARD_TOKENIZE_STARTED("card:tokenize:started"),
-    CARD_TOKENIZE_FAILED("card:tokenize:failed"),
-    CARD_TOKENIZE_SUCCEEDED("card:tokenize:succeeded")
+    const val CARD_TOKENIZE_STARTED = "card:tokenize:started"
+    const val CARD_TOKENIZE_FAILED = "card:tokenize:failed"
+    const val CARD_TOKENIZE_SUCCEEDED = "card:tokenize:succeeded"
 }

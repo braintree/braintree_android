@@ -1,9 +1,9 @@
 package com.braintreepayments.api;
 
 /**
- * Result received from the SEPA mandate web flow through {@link SEPADirectDebitTokenizeCallback}.
+ * Result received from the SEPA mandate web flow through {@link SEPADirectDebitInternalTokenizeCallback}.
  * This result should be passed to
- * {@link SEPADirectDebitClient#tokenize(SEPADirectDebitPaymentAuthResult, SEPADirectDebitTokenizeCallback)} )}
+ * {@link SEPADirectDebitClient#tokenize(SEPADirectDebitPaymentAuthResult, SEPADirectDebitInternalTokenizeCallback)} )}
  * to complete the SEPA mandate flow.
  */
 public class SEPADirectDebitPaymentAuthResult {

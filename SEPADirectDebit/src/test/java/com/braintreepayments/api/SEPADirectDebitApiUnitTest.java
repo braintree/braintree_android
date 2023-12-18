@@ -22,7 +22,7 @@ import org.robolectric.RobolectricTestRunner;
 public class SEPADirectDebitApiUnitTest {
 
     private CreateMandateCallback createMandateCallback;
-    private SEPADirectDebitTokenizeCallback sepaDirectDebitTokenizeCallback;
+    private SEPADirectDebitInternalTokenizeCallback sepaDirectDebitTokenizeCallback;
     private SEPADirectDebitRequest request;
     private PostalAddress billingAddress;
     private String returnUrl;
@@ -30,7 +30,7 @@ public class SEPADirectDebitApiUnitTest {
     @Before
     public void beforeEach() {
         createMandateCallback = mock(CreateMandateCallback.class);
-        sepaDirectDebitTokenizeCallback = mock(SEPADirectDebitTokenizeCallback.class);
+        sepaDirectDebitTokenizeCallback = mock(SEPADirectDebitInternalTokenizeCallback.class);
 
         request = new SEPADirectDebitRequest();
         request.setAccountHolderName("John Doe");

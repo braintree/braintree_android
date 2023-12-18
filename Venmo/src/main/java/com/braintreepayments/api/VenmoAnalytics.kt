@@ -1,14 +1,14 @@
 package com.braintreepayments.api
 
-internal enum class VenmoAnalytics(@JvmField val event: String) {
+internal object VenmoAnalytics {
 
     // Conversion Events
-    TOKENIZE_STARTED("venmo:tokenize:started"),
-    TOKENIZE_FAILED("venmo:tokenize:failed"),
-    TOKENIZE_SUCCEEDED("venmo:tokenize:succeeded"),
-    APP_SWITCH_CANCELED("venmo:tokenize:app-switch:canceled"),
+    const val TOKENIZE_STARTED = "venmo:tokenize:started"
+    const val TOKENIZE_FAILED = "venmo:tokenize:failed"
+    const val TOKENIZE_SUCCEEDED = "venmo:tokenize:succeeded"
+    const val APP_SWITCH_CANCELED = "venmo:tokenize:app-switch:canceled"
 
     // Additional Detail Events
-    APP_SWITCH_SUCCEEDED("venmo:tokenize:app-switch:succeeded"),
-    APP_SWITCH_FAILED("venmo:tokenize:app-switch:failed")
+    const val APP_SWITCH_SUCCEEDED = "venmo:tokenize:app-switch:succeeded"
+    const val APP_SWITCH_FAILED = "venmo:tokenize:app-switch:failed"
 }

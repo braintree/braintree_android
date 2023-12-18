@@ -173,7 +173,49 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void createPaymentAuthRequest_whenDeviceCantPerformBrowserSwitch_returnsError() {
+    public void createPaymentAuthRequest_whenCheckoutRequest_whenConfigError_forwardsErrorToListener() {
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+
+        Exception authError = new Exception("Error fetching auth");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configurationError(authError)
+                .build();
+
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
+        sut.createPaymentAuthRequest(activity, new PayPalCheckoutRequest("1.00"), paymentAuthCallback);
+
+        ArgumentCaptor<PayPalPaymentAuthRequest> captor =
+                ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
+        verify(paymentAuthCallback).onPayPalPaymentAuthRequest(captor.capture());
+
+        PayPalPaymentAuthRequest request = captor.getValue();
+        assertTrue(request instanceof PayPalPaymentAuthRequest.Failure);
+        assertEquals(authError, ((PayPalPaymentAuthRequest.Failure) request).getError());
+    }
+
+    @Test
+    public void requestBillingAgreement_whenConfigError_forwardsErrorToListener() {
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+
+        Exception authError = new Exception("Error fetching auth");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configurationError(authError)
+                .build();
+
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
+        sut.createPaymentAuthRequest(activity, new PayPalVaultRequest(), paymentAuthCallback);
+
+        ArgumentCaptor<PayPalPaymentAuthRequest> captor =
+                ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
+        verify(paymentAuthCallback).onPayPalPaymentAuthRequest(captor.capture());
+
+        PayPalPaymentAuthRequest request = captor.getValue();
+        assertTrue(request instanceof PayPalPaymentAuthRequest.Failure);
+        assertEquals(authError, ((PayPalPaymentAuthRequest.Failure) request).getError());
+    }
+
+    @Test
+    public void requestOneTimePayment_whenDeviceCantPerformBrowserSwitch_returnsError() {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         BraintreeClient braintreeClient =

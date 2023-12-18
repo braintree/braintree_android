@@ -23,6 +23,7 @@
   * BraintreeDataCollector
     * Replace `DataCollector#collectDeviceData(context, merchantId, callback)` with 
       `DataCollector#collectDeviceData(context, riskCorrelationId, callback)`
+    * Add `DataCollectorResult` and update `DataCollectorCallback` parameters
   * PayPalDataCollector
     * Remove `paypal-data-collector` module (use `data-collector`)
   * Venmo
@@ -38,20 +39,25 @@
     * Add `VenmoClient#createPaymentAuthRequest`
   * GooglePay
     * Remove `GooglePayListener` and `GooglePayRequestPaymentCallback`
-    * Add `GooglePayLauncher`, `GooglePayPaymentAuthRequest`, `GooglePayResult`, 
-      `GooglePayReadinessResult`, `GooglePayPaymentAuthRequestCallback`, 
-      `GooglePayPaymentAuthResult`, `GooglePayTokenizeCallback` and `GooglePayLauncherCallback`
+    * Add `GooglePayLauncher`, `GooglePayPaymentAuthRequest`, 
+      `GooglePayPaymentAuthRequestCallback`, `GooglePayPaymentAuthResult`, 
+      `GooglePayTokenizeCallback`, `GooglePayTokenizationParameters` and `GooglePayLauncherCallback`
     * Remove overload constructors, `setListener, and `onActivityResult` from `GooglePayClient`
     * Change `GooglePayClient#requestPayment` parameters and rename to 
       `GooglePayClient#createPaymentAuthRequest`
     * Change `GooglePayIsReadyToPayCallback` parameters
     * Add `GooglePayClient#tokenize` 
     * Remove `merchantId` from `GooglePayRequest`
+    * Change `GooglePayGetTokenizationParametersCallback` parameters
   * ThreeDSecure
     * Remove `ThreeDSecureListener`
-    * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`, and `ThreeDSecureLancherCallback`
+    * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`, 
+      `ThreeDSecureTokenizeCallback`, `ThreeDSecurePaymentAuthRequest`, 
+      `ThreeDSecurePaymentAuthRequestCallback`, `ThreeDSecurePrepareLookupResult`, 
+      `ThreeDSecurePrepareLookupCallback`, and `ThreeDSecureLancherCallback`
     * Remove overload constructors, `setListener`, `continuePerformVerification`, `onBrowserSwitchResult` and `onActivityResult` from `ThreeDSecureClient`
     * Change `ThreeDSecureClient#initializeChallengeWithLookupResponse` parameters
+    * Convert `ThreeDSecureResult` into sealed class
     * Add `ThreeDSecureClient#tokenize`
     * Rename `ThreeDSecureClient#performVerification` to 
       `ThreeDSecureClient#createPaymentAuthRequest` and change parameters
@@ -77,8 +83,8 @@
   * LocalPayment
     * Remove `LocalPaymentListener`
     * Add `LocalPaymentLauncher`, `LocalPaymentLauncherCallback`, `LocalPaymentTokenizeCallback`,
-      and `LocalPaymentAuthRequest`
-    * Rename `LocalPaymentResult` to `LocalPaymentAuthResult`
+      `LocalPaymentAuthRequest`, `LocalPaymentAuthRequestCallback` and `LocalPaymentAuthResult`
+    * Change `LocalPaymentResult` type 
     * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
       `clearActiveBrowserSwitchResult`, `approveLocalPayment`, and `approvePayment` from 
       `LocalPaymentClient`
@@ -89,16 +95,35 @@
   * Card
     * Remove `threeDSecureInfo` from `CardNonce`
     * Move `ThreeDSecureInfo` to `three-d-secure` module
+    * Add `CardResult` object
+    * Change `CardTokenizeCallback` parameters
   * SEPA Direct Debit
     * Remove `SEPADirectDebitLifecycleObserver` and `SEPADirectDebitListener`
     * Add `SEPADirectDebitLauncher`, `SEPADirectDebitLauncherCallback`, 
       `SEPADirectDebitPaymentAuthRequestCallback`, `SEPADirectDebitPaymentAuthRequest`, 
-      `SEPADirectDebitPaymentAuthResult`, and `SEPADirectDebitTokenizeCallback`
+      `SEPADirectDebitResult`, `SEPADirectDebitPaymentAuthRequestParams` and 
+      `SEPADirectDebitTokenizeCallback`
     * Remove Fragment or Activity requirement from `SEPADirectDebitClient` constructor
     * Replace `SEPADirectDebitClient#onBrowserSwitchResult` with `SEPADirectDebitClient#tokenize` and 
       modify parameters
     * Replace `SEPADirectDebitClient#tokenize` with`SEPADirectDebitClient#createPaymentAuthRequest` 
       and modify parameters
+  * Visa Checkout
+    * Change parameters of `VisaCheckoutCreateProfileBuilderCallback` and
+      `VisaCheckoutTokenizeCallback`
+    * Add `VisaCheckoutProfileBuilderResult` and `VisaCheckoutTokenizeResult`
+  * American Express
+    * Change parameters of `AmericanExpressGetRewardsBalanceCallback`
+    * Add `AmericanExpressResult`
+    
+## 4.40.1 (2023-12-13)
+
+* BraintreeCore
+  * Bump `browser-switch` version to `2.6.1` (fixes #799)
+* PayPal
+  * Fix issue where inaccurate error message was being returned on authorization or configuration error (fixes #821)
+* Venmo
+  * Fix NPE when `VenmoListener` is null (fixes #832)
 
 ## 4.40.0 (2023-11-16)
 

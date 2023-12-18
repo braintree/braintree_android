@@ -16,16 +16,20 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.AmericanExpressClient;
+import com.braintreepayments.api.AmericanExpressResult;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;
+import com.braintreepayments.api.CardResult;
 import com.braintreepayments.api.DataCollector;
+import com.braintreepayments.api.DataCollectorResult;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.ThreeDSecureClient;
 import com.braintreepayments.api.ThreeDSecureLauncher;
 import com.braintreepayments.api.ThreeDSecureNonce;
+import com.braintreepayments.api.ThreeDSecurePaymentAuthRequest;
 import com.braintreepayments.api.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.ThreeDSecureRequest;
 import com.braintreepayments.api.ThreeDSecureResult;
@@ -34,6 +38,7 @@ import com.braintreepayments.api.ThreeDSecureV2LabelCustomization;
 import com.braintreepayments.api.ThreeDSecureV2TextBoxCustomization;
 import com.braintreepayments.api.ThreeDSecureV2ToolbarCustomization;
 import com.braintreepayments.api.ThreeDSecureV2UiCustomization;
+import com.braintreepayments.api.UserCanceledException;
 import com.braintreepayments.cardform.OnCardFormFieldFocusedListener;
 import com.braintreepayments.cardform.OnCardFormSubmitListener;
 import com.braintreepayments.cardform.utils.CardType;
@@ -88,8 +93,17 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         View view = inflater.inflate(R.layout.fragment_card, container, false);
 
         threeDSecureLauncher = new ThreeDSecureLauncher(this,
-                paymentAuthResult -> threeDSecureClient.tokenize(paymentAuthResult,
-                        this::handleThreeDSecureResult));
+                paymentAuthResult -> {
+                    threeDSecureClient.tokenize(paymentAuthResult, threeDSecureResult -> {
+                        if (threeDSecureResult instanceof ThreeDSecureResult.Success) {
+                            handlePaymentMethodNonceCreated(((ThreeDSecureResult.Success) threeDSecureResult).getNonce());
+                        } else if (threeDSecureResult instanceof ThreeDSecureResult.Failure) {
+                            handleError(((ThreeDSecureResult.Failure) threeDSecureResult).getError());
+                        } else if (threeDSecureResult instanceof ThreeDSecureResult.Cancel) {
+                            handleError(new UserCanceledException("User canceled 3DS."));
+                        }
+                    });
+                });
 
         cardForm = view.findViewById(R.id.card_form);
         cardForm.setOnFormFieldFocusedListener(this);
@@ -135,8 +149,11 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                 .setup(activity);
 
         if (getArguments().getBoolean(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
-            dataCollector.collectDeviceData(activity,
-                    (deviceData, e) -> this.deviceData = deviceData);
+            dataCollector.collectDeviceData(activity, dataCollectorResult -> {
+                if (dataCollectorResult instanceof DataCollectorResult.Success) {
+                    deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
+                }
+            });
         }
     }
 
@@ -182,11 +199,11 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         card.setShouldValidate(false); 
         card.setPostalCode(cardForm.getPostalCode());
 
-        cardClient.tokenize(card, (cardNonce, tokenizeError) -> {
-            if (cardNonce != null) {
-                handlePaymentMethodNonceCreated(cardNonce);
-            } else {
-                handleError(tokenizeError);
+        cardClient.tokenize(card, (cardResult) -> {
+            if (cardResult instanceof CardResult.Success) {
+                handlePaymentMethodNonceCreated(((CardResult.Success) cardResult).getNonce());
+            } else if (cardResult instanceof CardResult.Failure) {
+                handleError(((CardResult.Failure) cardResult).getError());
             }
         });
     }
@@ -199,34 +216,26 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         autofillHelper.fillPostalCode("12345");
     }
 
-    private void handleThreeDSecureResult(ThreeDSecureResult threeDSecureResult, Exception error) {
-        safelyCloseLoadingView();
-        if (threeDSecureResult != null) {
-            ThreeDSecureNonce paymentMethodNonce = threeDSecureResult.getThreeDSecureNonce();
-            handlePaymentMethodNonceCreated(paymentMethodNonce);
-        } else {
-            handleError(error);
-        }
-    }
-
     private void handlePaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         final FragmentActivity activity = getActivity();
         if (!threeDSecureRequested && paymentMethodNonce instanceof CardNonce &&
-                Settings.isThreeDSecureEnabled(activity)) {
+                Settings.isThreeDSecureEnabled(activity) && !(paymentMethodNonce instanceof ThreeDSecureNonce)) {
             threeDSecureRequested = true;
             loading = ProgressDialog.show(activity, getString(R.string.loading),
                     getString(R.string.loading), true, false);
 
             ThreeDSecureRequest threeDSecureRequest = threeDSecureRequest(paymentMethodNonce);
             threeDSecureClient.createPaymentAuthRequest(requireContext(), threeDSecureRequest,
-                    (threeDSecureResult, error) -> {
-                        if (threeDSecureResult != null &&
-                                threeDSecureResult.getLookup().requiresUserAuthentication()) {
-                            threeDSecureLauncher.launch(threeDSecureResult);
-                        } else {
-                            handleThreeDSecureResult(threeDSecureResult, error);
+                    (paymentAuthRequest) -> {
+                        if (paymentAuthRequest instanceof ThreeDSecurePaymentAuthRequest.ReadyToLaunch) {
+                            threeDSecureLauncher.launch(
+                                    (ThreeDSecurePaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
+                        } else if (paymentAuthRequest instanceof ThreeDSecurePaymentAuthRequest.LaunchNotRequired) {
+                            handlePaymentMethodNonceCreated(((ThreeDSecurePaymentAuthRequest.LaunchNotRequired) paymentAuthRequest).getNonce());
+                        } else if (paymentAuthRequest instanceof ThreeDSecurePaymentAuthRequest.Failure) {
+                            handleError(((ThreeDSecurePaymentAuthRequest.Failure) paymentAuthRequest).getError());
                         }
                         safelyCloseLoadingView();
                     });
@@ -236,12 +245,13 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                     getString(R.string.loading), true, false);
             String nonce = paymentMethodNonce.getString();
 
-            americanExpressClient.getRewardsBalance(nonce, "USD", (rewardsBalance, error) -> {
-                if (rewardsBalance != null) {
+            americanExpressClient.getRewardsBalance(nonce, "USD", (americanExpressResult) -> {
+                if (americanExpressResult instanceof AmericanExpressResult.Success) {
                     safelyCloseLoadingView();
-                    showDialog(getAmexRewardsBalanceString(rewardsBalance));
-                } else if (error != null) {
-                    handleError(error);
+                    showDialog(getAmexRewardsBalanceString(
+                            ((AmericanExpressResult.Success) americanExpressResult).getRewardsBalance()));
+                } else if (americanExpressResult instanceof AmericanExpressResult.Failure) {
+                    handleError(((AmericanExpressResult.Failure) americanExpressResult).getError());
                 }
             });
         } else {
