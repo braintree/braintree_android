@@ -1,6 +1,10 @@
 package com.braintreepayments.api;
 
 
+import android.content.Intent;
+import android.net.Uri;
+
+import androidx.activity.ComponentActivity;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.annotation.NonNull;
@@ -17,6 +21,7 @@ public class VenmoLauncher {
     @VisibleForTesting
     ActivityResultLauncher<VenmoPaymentAuthRequestParams> activityLauncher;
     private static final String VENMO_SECURE_RESULT = "com.braintreepayments.api.Venmo.RESULT";
+    static final String VENMO_PACKAGE_NAME = "com.venmo";
 
     /**
      * Used to launch the Venmo authentication flow to tokenize a Venmo account. This class must be
@@ -56,10 +61,21 @@ public class VenmoLauncher {
      * Launches the Venmo authentication flow by switching to the Venmo app.
      *
      * @param venmoPaymentAuthRequest the result of
-     *                                {@link VenmoClient#createPaymentAuthRequest(FragmentActivity,
-     *                                VenmoRequest, VenmoPaymentAuthRequestCallback)}
+     *                                {@link VenmoClient#createPaymentAuthRequest(android.content.Context, VenmoRequest, VenmoPaymentAuthRequestCallback)}
      */
     public void launch(VenmoPaymentAuthRequest.ReadyToLaunch venmoPaymentAuthRequest) {
         activityLauncher.launch(venmoPaymentAuthRequest.getRequestParams());
+    }
+
+    /**
+     * Launches an Android Intent pointing to the Venmo app on the Google Play Store
+     *
+     * @param activity used to open the Venmo's Google Play Store
+     */
+    public void showVenmoInGooglePlayStore(@NonNull ComponentActivity activity) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(
+                "https://play.google.com/store/apps/details?id=" + VENMO_PACKAGE_NAME));
+        activity.startActivity(intent);
     }
 }

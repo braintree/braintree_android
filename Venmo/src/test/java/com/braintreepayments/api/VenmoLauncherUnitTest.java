@@ -1,10 +1,15 @@
 package com.braintreepayments.api;
 
+import static junit.framework.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import android.content.Context;
+import android.content.Intent;
+
+import androidx.activity.ComponentActivity;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.activity.result.contract.ActivityResultContract;
@@ -14,6 +19,7 @@ import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -59,5 +65,20 @@ public class VenmoLauncherUnitTest {
         sut.launch(new VenmoPaymentAuthRequest.ReadyToLaunch(params));
         verify(activityResultLauncher).launch(params);
 
+    }
+
+    @Test
+    public void showVenmoInGooglePlayStore_opensVenmoAppStoreURL() {
+        ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
+        ComponentActivity activity = mock(ComponentActivity.class);
+        VenmoLauncher sut = new VenmoLauncher(activityResultRegistry, activity, callback);
+
+        sut.showVenmoInGooglePlayStore(activity);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+
+        verify(activity).startActivity(captor.capture());
+        assertEquals(captor.getValue().getData().toString(),
+                "https://play.google.com/store/apps/details?id=com.venmo");
     }
 }

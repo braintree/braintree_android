@@ -1,15 +1,11 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.FragmentActivity;
 
 /**
  * Used to create and tokenize Venmo accounts. For more information see the <a
@@ -17,7 +13,6 @@ import androidx.fragment.app.FragmentActivity;
  */
 public class VenmoClient {
 
-    static final String VENMO_PACKAGE_NAME = "com.venmo";
     private final BraintreeClient braintreeClient;
     private final VenmoApi venmoApi;
     private final VenmoSharedPrefsWriter sharedPrefsWriter;
@@ -53,31 +48,18 @@ public class VenmoClient {
     }
 
     /**
-     * Launches an Android Intent pointing to the Venmo app on the Google Play Store
-     *
-     * @param activity used to open the Venmo's Google Play Store
-     */
-    public void showVenmoInGooglePlayStore(@NonNull FragmentActivity activity) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(
-                "https://play.google.com/store/apps/details?id=" + VENMO_PACKAGE_NAME));
-        activity.startActivity(intent);
-    }
-
-
-    /**
-     * Start the Pay With Venmo flow. This will return a {@link VenmoPaymentAuthRequestParams} that will be
-     * used to authenticate the user by switching to the Venmo app in {@link 
-     * VenmoLauncher#launch(VenmoPaymentAuthRequest.ReadyToLaunch)}
+     * Start the Pay With Venmo flow. This will return a {@link VenmoPaymentAuthRequestParams} that
+     * will be used to authenticate the user by switching to the Venmo app in
+     * {@link VenmoLauncher#launch(VenmoPaymentAuthRequest.ReadyToLaunch)}
      * <p>
      * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to
      * {@link VenmoPaymentAuthRequestCallback#onVenmoPaymentAuthRequest(VenmoPaymentAuthRequest)}
      *
-     * @param activity Android FragmentActivity
+     * @param context  Android Context
      * @param request  {@link VenmoRequest}
      * @param callback {@link VenmoPaymentAuthRequestCallback}
      */
-    public void createPaymentAuthRequest(@NonNull final FragmentActivity activity,
+    public void createPaymentAuthRequest(@NonNull final Context context,
                                          @NonNull final VenmoRequest request,
                                          @NonNull VenmoPaymentAuthRequestCallback callback) {
         braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_STARTED);
@@ -92,7 +74,7 @@ public class VenmoClient {
                         new VenmoPaymentAuthRequest.Failure(new AppSwitchNotAvailableException("Venmo is not enabled")));
                 return;
             }
-            if (!deviceInspector.isVenmoAppSwitchAvailable(activity)) {
+            if (!deviceInspector.isVenmoAppSwitchAvailable(context)) {
                 braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_FAILED);
                 callbackPaymentAuthFailure(callback,
                         new VenmoPaymentAuthRequest.Failure(new AppSwitchNotAvailableException("Venmo is not installed")));
@@ -119,7 +101,7 @@ public class VenmoClient {
             venmoApi.createPaymentContext(request, venmoProfileId,
                     (paymentContextId, exception) -> {
                         if (exception == null) {
-                            createPaymentAuthRequest(activity, request, configuration,
+                            createPaymentAuthRequest(context, request, configuration,
                                     braintreeClient.getAuthorization(), finalVenmoProfileId,
                                     paymentContextId, callback);
                         } else {
@@ -130,7 +112,7 @@ public class VenmoClient {
     }
 
     private void createPaymentAuthRequest(
-            final FragmentActivity activity,
+            final Context context,
             final VenmoRequest request,
             final Configuration configuration,
             Authorization authorization,
@@ -140,7 +122,7 @@ public class VenmoClient {
     ) {
         boolean isClientTokenAuth = (authorization instanceof ClientToken);
         boolean shouldVault = request.getShouldVault() && isClientTokenAuth;
-        sharedPrefsWriter.persistVenmoVaultOption(activity, shouldVault);
+        sharedPrefsWriter.persistVenmoVaultOption(context, shouldVault);
         VenmoPaymentAuthRequestParams params =
                 new VenmoPaymentAuthRequestParams(configuration, venmoProfileId, paymentContextId,
                         braintreeClient.getSessionId(), braintreeClient.getIntegrationType());
@@ -149,7 +131,7 @@ public class VenmoClient {
 
     /**
      * After successfully authenticating a Venmo user account via {@link 
-     * VenmoClient#createPaymentAuthRequest(FragmentActivity, VenmoRequest, VenmoPaymentAuthRequestCallback)},
+     * VenmoClient#createPaymentAuthRequest(Context, VenmoRequest, VenmoPaymentAuthRequestCallback)},
      * this method should be invoked to tokenize the account to retrieve a
      * {@link VenmoAccountNonce}.
      * 

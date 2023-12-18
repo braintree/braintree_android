@@ -36,7 +36,7 @@ public class VenmoFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_venmo, container, false);
         venmoButton = view.findViewById(R.id.venmo_button);
-        venmoButton.setOnClickListener(this::launchVenmo);
+        venmoButton.setOnClickListener(this::showVenmo);
 
         venmoLauncher = new VenmoLauncher(this, venmoAuthChallengeResult ->
                 venmoClient.tokenize(venmoAuthChallengeResult, this::handleVenmoResult));
@@ -59,6 +59,9 @@ public class VenmoFragment extends BaseFragment {
         NavDirections action =
                 VenmoFragmentDirections.actionVenmoFragmentToDisplayNonceFragment(venmoAccountNonce);
         NavHostFragment.findNavController(this).navigate(action);
+    }
+    public void showVenmo(View v) {
+        venmoLauncher.showVenmoInGooglePlayStore(requireActivity());
     }
 
     public void launchVenmo(View v) {
