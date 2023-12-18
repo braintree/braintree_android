@@ -17,6 +17,7 @@ basics for updating your Braintree integration from v4 to v5.
 1. [PayPal](#paypal)
 1. [Local Payment](#local-payment)
 1. [SEPA Direct Debit](#sepa-direct-debit)
+1. [Visa Checkout](#visa-checkout)
 
 ## Android API
 
@@ -510,3 +511,35 @@ class MyActivity : FragmentActivity() {
 -        // handle error
 -   }
 }
+```
+
+## Visa Checkout
+
+The Visa Checkout integration has been updated to improve result handling.
+
+```diff
+class MyActivity : FragmentActivity() {
+
+-   private lateinit var braintreeClient: BraintreeClient
+    private lateinit var visaCheckoutClient: VisaCheckoutClient
+
+    fun initializeClients() {
+-       braintreeClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+-       visaCheckoutClient = VisaCheckoutClient(braintreeClient)
++       visaCheckoutClient = visaCheckoutClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+    }
+
+    fun onPaymentButtonClick() {
+-       visaCheckoutClient.tokenize(request)
++       sepaDirectDebitClient.tokenize(request) { visaCheckoutResult ->
++           when (visaCheckoutResult) {
++               is VisaCheckoutResult.Failure -> { 
++                   // handle visaCheckoutResult.error
++               is VisaCheckoutResult.Success -> {      
++                   // handle visaCheckoutResult.nonce
++               }
++           }
++       }
+    }
+}
+```

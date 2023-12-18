@@ -106,6 +106,10 @@
       modify parameters
     * Replace `SEPADirectDebitClient#tokenize` with`SEPADirectDebitClient#createPaymentAuthRequest` 
       and modify parameters
+  * Visa Checkout
+    * Change parameters of `VisaCheckoutCreateProfileBuilderCallback` and
+      `VisaCheckoutTokenizeCallback`
+    * Add `VisaCheckoutProfileBuilderResult` and `VisaCheckoutTokenizeResult`
   * American Express
     * Change parameters of `AmericanExpressGetRewardsBalanceCallback`
     * Add `AmericanExpressResult`

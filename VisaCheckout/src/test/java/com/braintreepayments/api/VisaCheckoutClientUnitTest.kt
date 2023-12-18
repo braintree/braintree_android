@@ -12,11 +12,11 @@ import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import org.json.JSONException
 import org.json.JSONObject
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.util.Arrays
 import java.util.concurrent.CountDownLatch
 
 @RunWith(RobolectricTestRunner::class)
@@ -47,11 +47,13 @@ class VisaCheckoutClientUnitTest {
         val listener = mockk<VisaCheckoutCreateProfileBuilderCallback>(relaxed = true)
         sut.createProfileBuilder(listener)
 
-        val configurationExceptionSlot = slot<ConfigurationException>()
-        verify(exactly = 1) { listener.onResult(null, capture(configurationExceptionSlot)) }
+        val configurationExceptionSlot = slot<VisaCheckoutProfileBuilderResult>()
+        verify(exactly = 1) { listener.onVisaCheckoutProfileBuilderResult(capture(configurationExceptionSlot)) }
 
-        val configurationException = configurationExceptionSlot.captured
-        assertEquals("Visa Checkout is not enabled.", configurationException.message)
+        val profileBuilderResult = configurationExceptionSlot.captured
+        assertTrue(profileBuilderResult is VisaCheckoutProfileBuilderResult.Failure)
+        val exception = (profileBuilderResult as VisaCheckoutProfileBuilderResult.Failure).error
+        assertEquals("Visa Checkout is not enabled.", exception.message)
     }
 
     @Test
@@ -72,10 +74,14 @@ class VisaCheckoutClientUnitTest {
             .configurationSuccess(fromJson(configString))
             .build()
         val sut = VisaCheckoutClient(braintreeClient, apiClient)
-        sut.createProfileBuilder { profileBuilder, error ->
-            val expectedCardBrands = Arrays.asList(CardBrand.VISA, CardBrand.MASTERCARD)
-            val profile = profileBuilder!!.build()
+        sut.createProfileBuilder { profileBuilderResult ->
+            assertTrue(profileBuilderResult is VisaCheckoutProfileBuilderResult.Success)
+            val profileBuilder = (profileBuilderResult as VisaCheckoutProfileBuilderResult
+                .Success).profileBuilder
+            val profile = profileBuilder.build()
             assertNotNull(profile)
+            assertTrue(profile.acceptedCardBrands.contains(CardBrand.VISA))
+            assertTrue(profile.acceptedCardBrands.contains(CardBrand.MASTERCARD))
             lock.countDown()
         }
         lock.await()
@@ -99,10 +105,13 @@ class VisaCheckoutClientUnitTest {
             .configurationSuccess(fromJson(configString))
             .build()
         val sut = VisaCheckoutClient(braintreeClient, apiClient)
-        sut.createProfileBuilder { profileBuilder, error ->
-            val expectedCardBrands = Arrays.asList(CardBrand.VISA, CardBrand.MASTERCARD)
-            val profile = profileBuilder!!.build()
+        sut.createProfileBuilder { profileBuilderResult ->
+            val profileBuilder = (profileBuilderResult as VisaCheckoutProfileBuilderResult
+            .Success).profileBuilder
+            val profile = profileBuilder.build()
             assertNotNull(profile)
+            assertTrue(profile.acceptedCardBrands.contains(CardBrand.VISA))
+            assertTrue(profile.acceptedCardBrands.contains(CardBrand.MASTERCARD))
             lock.countDown()
         }
         lock.await()
@@ -118,9 +127,11 @@ class VisaCheckoutClientUnitTest {
             .configurationSuccess(configurationWithVisaCheckout)
             .build()
         val sut = VisaCheckoutClient(braintreeClient, apiClient)
-        val listener = mockk<VisaCheckoutTokenizeCallback>(relaxed = true)
-        sut.tokenize(visaPaymentSummary, listener)
-        verify { listener.onResult(any(), null) }
+        sut.tokenize(visaPaymentSummary) { visaCheckoutResult ->
+            assertTrue(visaCheckoutResult is VisaCheckoutResult.Success)
+            val nonce = (visaCheckoutResult as VisaCheckoutResult.Success).nonce
+            assertNotNull(nonce)
+        }
     }
 
     @Test
@@ -148,9 +159,11 @@ class VisaCheckoutClientUnitTest {
             .configurationSuccess(configurationWithVisaCheckout)
             .build()
         val sut = VisaCheckoutClient(braintreeClient, apiClient)
-        val listener = mockk<VisaCheckoutTokenizeCallback>(relaxed = true)
-        sut.tokenize(visaPaymentSummary, listener)
-        verify { listener.onResult(null, tokenizeError) }
+        sut.tokenize(visaPaymentSummary) { visaCheckoutResult ->
+            assertTrue(visaCheckoutResult is VisaCheckoutResult.Failure)
+            val error = (visaCheckoutResult as VisaCheckoutResult.Failure).error
+            assertEquals(tokenizeError, error)
+        }
     }
 
     @Test
