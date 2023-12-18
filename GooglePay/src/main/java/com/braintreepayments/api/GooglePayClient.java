@@ -15,6 +15,7 @@ import com.google.android.gms.wallet.PaymentDataRequest;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.PaymentsClient;
 import com.google.android.gms.wallet.WalletConstants;
+import com.braintreepayments.api.googlepay.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
