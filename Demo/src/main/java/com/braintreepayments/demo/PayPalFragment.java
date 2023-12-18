@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.DataCollector;
+import com.braintreepayments.api.DataCollectorResult;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalLauncher;
 import com.braintreepayments.api.PayPalPaymentAuthRequest;
@@ -79,9 +80,9 @@ public class PayPalFragment extends BaseFragment {
         dataCollector = new DataCollector(requireContext(), super.getAuthStringArg());
 
         if (Settings.shouldCollectDeviceData(requireActivity())) {
-            dataCollector.collectDeviceData(requireActivity(), (deviceDataResult, error) -> {
-                if (deviceDataResult != null) {
-                    deviceData = deviceDataResult;
+            dataCollector.collectDeviceData(requireActivity(), (dataCollectorResult) -> {
+                if (dataCollectorResult instanceof DataCollectorResult.Success) {
+                    deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
                 }
                 launchPayPal(activity, isBillingAgreement, amount);
             });

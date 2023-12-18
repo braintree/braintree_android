@@ -23,6 +23,7 @@
   * BraintreeDataCollector
     * Replace `DataCollector#collectDeviceData(context, merchantId, callback)` with 
       `DataCollector#collectDeviceData(context, riskCorrelationId, callback)`
+    * Add `DataCollectorResult` and update `DataCollectorCallback` parameters
   * PayPalDataCollector
     * Remove `paypal-data-collector` module (use `data-collector`)
   * Venmo

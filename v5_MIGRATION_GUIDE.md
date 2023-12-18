@@ -36,8 +36,7 @@ val cardClient = CardClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 
 The `paypal-data-collector` module has been removed and replaced by the `data-collector` module.
 The `DataCollector` class within the `data-collector` module has the same
-`collectDeviceData` methods, so if you were previously using the `paypal-data-collector` library,
-no code changes are required aside from updating your dependency.
+`collectDeviceData` methods.
 
 If you were using the `data-collector` library in v4, `DataCollector#collectDeviceData(context,
 merchantId, callback)` is now `DataCollector#collectDeviceData(context, riskCorrelationId,
@@ -45,8 +44,10 @@ callback)`, where `riskCorrelationId` is an optional client metadata ID.
 
 ```kotlin
 val dataCollector = DataCollector(context, authorization)
-dataCollector.collectDeviceData(context) { deviceData, error ->
-    // send deviceData to your server
+dataCollector.collectDeviceData(context) { result ->
+    if (result is DataCollectorResult.Success) {
+        // send result.deviceData to your server
+    } 
 }
 ```
 

@@ -112,30 +112,27 @@ public class DataCollector {
      * @param callback          {@link DataCollectorCallback}
      */
     public void collectDeviceData(@NonNull final Context context, @Nullable final String riskCorrelationId, @NonNull final DataCollectorCallback callback) {
-        braintreeClient.getConfiguration(new ConfigurationCallback() {
-            @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                if (configuration != null) {
-                    final JSONObject deviceData = new JSONObject();
-                    try {
-                        DataCollectorRequest request = new DataCollectorRequest()
-                                .setApplicationGuid(getPayPalInstallationGUID(context));
-                        if (riskCorrelationId != null) {
-                            request.setRiskCorrelationId(riskCorrelationId);
-                        }
-
-                        String correlationId =
-                                magnesInternalClient.getClientMetadataId(context, configuration, request);
-                        if (!TextUtils.isEmpty(correlationId)) {
-                            deviceData.put(CORRELATION_ID_KEY, correlationId);
-                        }
-                    } catch (JSONException ignored) {
+        braintreeClient.getConfiguration((configuration, error) -> {
+            if (configuration != null) {
+                final JSONObject deviceData = new JSONObject();
+                try {
+                    DataCollectorRequest request = new DataCollectorRequest()
+                            .setApplicationGuid(getPayPalInstallationGUID(context));
+                    if (riskCorrelationId != null) {
+                        request.setRiskCorrelationId(riskCorrelationId);
                     }
-                    callback.onResult(deviceData.toString(), null);
 
-                } else {
-                    callback.onResult(null, error);
+                    String correlationId =
+                            magnesInternalClient.getClientMetadataId(context, configuration, request);
+                    if (!TextUtils.isEmpty(correlationId)) {
+                        deviceData.put(CORRELATION_ID_KEY, correlationId);
+                    }
+                } catch (JSONException ignored) {
                 }
+                callback.onDataCollectorResult(new DataCollectorResult.Success(deviceData.toString()));
+
+            } else if (error != null) {
+                callback.onDataCollectorResult(new DataCollectorResult.Failure(error));
             }
         });
     }
