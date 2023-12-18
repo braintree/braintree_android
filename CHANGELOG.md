@@ -109,6 +109,9 @@
     * Change parameters of `VisaCheckoutCreateProfileBuilderCallback` and
       `VisaCheckoutTokenizeCallback`
     * Add `VisaCheckoutProfileBuilderResult` and `VisaCheckoutTokenizeResult`
+  * American Express
+    * Change parameters of `AmericanExpressGetRewardsBalanceCallback`
+    * Add `AmericanExpressResult`
     
 ## 4.40.1 (2023-12-13)
 
