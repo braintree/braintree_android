@@ -516,7 +516,7 @@ class MyActivity : FragmentActivity() {
     fun onPaymentButtonClick() {
 -       visaCheckoutClient.tokenize(request)
 +       sepaDirectDebitClient.tokenize(request) { visaCheckoutResult ->
-+           when(visaCheckoutResult) {
++           when (visaCheckoutResult) {
 +               is (VisaCheckoutResult.Failure) -> { 
 +                   // handle visaCheckoutResult.error
 +               is (VisaCheckoutResult.Success) -> {      
