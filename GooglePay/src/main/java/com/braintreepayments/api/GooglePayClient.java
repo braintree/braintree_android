@@ -73,7 +73,7 @@ public class GooglePayClient {
      * supported and set up on the device. When the callback is called with {@code true}, show the
      * Google Pay button. When it is called with {@code false}, display other checkout options.
      *
-     * @param context  Android FragmentActivity
+     * @param context  Android Context
      * @param callback {@link GooglePayIsReadyToPayCallback}
      */
     public void isReadyToPay(@NonNull final Context context,
@@ -86,7 +86,7 @@ public class GooglePayClient {
      * supported and set up on the device. When the callback is called with {@code true}, show the
      * Google Pay button. When it is called with {@code false}, display other checkout options.
      *
-     * @param context  Android FragmentActivity
+     * @param context  Android Context
      * @param request  {@link ReadyForGooglePayRequest}
      * @param callback {@link GooglePayIsReadyToPayCallback}
      */
