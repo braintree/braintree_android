@@ -141,6 +141,7 @@ detekt {
             "LocalPayment/src",
             "PayPal/src",
             "PayPalDataCollector/src",
+            "PayPalMessaging/src",
             "PayPalNativeCheckout/src",
             "SEPADirectDebit/src",
             "SharedUtils/src",
