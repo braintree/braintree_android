@@ -2,7 +2,6 @@ package com.braintreepayments.api
 
 import android.app.Activity
 import android.content.Context
-import androidx.fragment.app.FragmentActivity
 import androidx.test.core.app.ApplicationProvider
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Status
@@ -20,7 +19,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executor
 
 @RunWith(RobolectricTestRunner::class)
