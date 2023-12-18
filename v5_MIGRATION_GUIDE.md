@@ -173,8 +173,8 @@ class MyActivity : FragmentActivity() {
 -       googlePayClient.requestPayment(activity, request)
 +       googlePayClient.createPaymentAuthRequest(this, request) { paymentAuthRequest ->
 +           when (paymentAuthRequest) {
-+            is paymentAuthRequest.Failure -> { /* handle error */ }
-+            is paymentAuthRequest.ReadyToLaunch -> { 
++            is GooglePayPaymentAuthRequest.Failure -> { /* handle error */ }
++            is GooglePayPaymentAuthRequest.ReadyToLaunch -> { 
 +               googlePayLauncher.launch(paymentAuthRequest.params) 
 +            }
 +       }
