@@ -154,9 +154,9 @@ class MyActivity : FragmentActivity() {
 +       googlePayLauncher = GooglePayLauncher(this) { paymentAuthResult ->
 +            googlePayClient.tokenize(paymentAuthResult) { googlePayResult ->
 +               when (googlePayResult) {
-+                   is googlePayResult.Failure -> { /* handle error */ }
-+                   is googlePayResult.Cancel -> { /* handle cancel */ }
-+                   is googlePayResult.Success -> { /* handle nonce */ }
++                   is GooglePayResult.Failure -> { /* handle error */ }
++                   is GooglePayResult.Cancel -> { /* handle cancel */ }
++                   is GooglePayResult.Success -> { /* handle nonce */ }
 +               }
 +            }
 +       }
