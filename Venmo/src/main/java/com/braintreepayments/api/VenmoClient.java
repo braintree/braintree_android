@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -132,7 +133,7 @@ public class VenmoClient {
             @Override
             public void onResult(@Nullable Exception error) {
                 if (error != null) {
-                    listener.onVenmoFailure(error);
+                    deliverVenmoFailure(error);
                 }
             }
         });
@@ -254,19 +255,19 @@ public class VenmoClient {
                                                 @Override
                                                 public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
                                                     if (venmoAccountNonce != null) {
-                                                        listener.onVenmoSuccess(venmoAccountNonce);
+                                                        deliverVenmoSuccess(venmoAccountNonce);
                                                     } else if (error != null) {
-                                                        listener.onVenmoFailure(error);
+                                                        deliverVenmoFailure(error);
                                                     }
                                                 }
                                             });
                                         } else {
                                             braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
-                                            listener.onVenmoSuccess(nonce);
+                                            deliverVenmoSuccess(nonce);
                                         }
                                     } else {
                                         braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
-                                        listener.onVenmoFailure(error);
+                                        deliverVenmoFailure(error);
                                     }
                                 }
                             });
@@ -279,21 +280,21 @@ public class VenmoClient {
                                     @Override
                                     public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
                                         if (venmoAccountNonce != null) {
-                                            listener.onVenmoSuccess(venmoAccountNonce);
+                                            deliverVenmoSuccess(venmoAccountNonce);
                                         } else if (error != null) {
-                                            listener.onVenmoFailure(error);
+                                            deliverVenmoFailure(error);
                                         }
                                     }
                                 });
                             } else {
                                 String venmoUsername = venmoResult.getVenmoUsername();
                                 VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(nonce, venmoUsername, false);
-                                listener.onVenmoSuccess(venmoAccountNonce);
+                                deliverVenmoSuccess(venmoAccountNonce);
                             }
 
                         }
                     } else if (authError != null) {
-                        listener.onVenmoFailure(authError);
+                        deliverVenmoFailure(authError);
                     }
                 }
             });
@@ -302,7 +303,23 @@ public class VenmoClient {
             if (venmoResult.getError() instanceof UserCanceledException) {
                 braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.canceled");
             }
-            listener.onVenmoFailure(venmoResult.getError());
+            deliverVenmoFailure(venmoResult.getError());
+        }
+    }
+
+    private void deliverVenmoSuccess(VenmoAccountNonce venmoAccountNonce) {
+        if (listener != null) {
+            listener.onVenmoSuccess(venmoAccountNonce);
+        } else {
+            Log.w(LoggingUtils.TAG, LoggingUtils.LISTENER_WARNING);
+        }
+    }
+
+    private void deliverVenmoFailure(Exception error) {
+        if (listener != null) {
+            listener.onVenmoFailure(error);
+        } else {
+            Log.w(LoggingUtils.TAG, LoggingUtils.LISTENER_WARNING);
         }
     }
 
