@@ -77,7 +77,7 @@ public class VenmoClient {
      * @param request  {@link VenmoRequest}
      * @param callback {@link VenmoPaymentAuthRequestCallback}
      */
-    public void createPaymentAuthRequest(@NonNull final FragmentActivity activity,
+    public void createPaymentAuthRequest(@NonNull final Context context,
                                          @NonNull final VenmoRequest request,
                                          @NonNull VenmoPaymentAuthRequestCallback callback) {
         braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_STARTED);
@@ -92,12 +92,12 @@ public class VenmoClient {
                         new VenmoPaymentAuthRequest.Failure(new AppSwitchNotAvailableException("Venmo is not enabled")));
                 return;
             }
-            if (!deviceInspector.isVenmoAppSwitchAvailable(activity)) {
-                braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_FAILED);
-                callbackPaymentAuthFailure(callback,
-                        new VenmoPaymentAuthRequest.Failure(new AppSwitchNotAvailableException("Venmo is not installed")));
-                return;
-            }
+//            if (!deviceInspector.isVenmoAppSwitchAvailable(activity)) {
+//                braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_FAILED);
+//                callbackPaymentAuthFailure(callback,
+//                        new VenmoPaymentAuthRequest.Failure(new AppSwitchNotAvailableException("Venmo is not installed")));
+//                return;
+//            }
 
             // Merchants are not allowed to collect user addresses unless ECD (Enriched Customer
             // Data) is enabled on the BT Control Panel.
@@ -119,7 +119,7 @@ public class VenmoClient {
             venmoApi.createPaymentContext(request, venmoProfileId,
                     (paymentContextId, exception) -> {
                         if (exception == null) {
-                            createPaymentAuthRequest(activity, request, configuration,
+                            createPaymentAuthRequest(context, request, configuration,
                                     braintreeClient.getAuthorization(), finalVenmoProfileId,
                                     paymentContextId, callback);
                         } else {
@@ -130,7 +130,7 @@ public class VenmoClient {
     }
 
     private void createPaymentAuthRequest(
-            final FragmentActivity activity,
+            final Context context,
             final VenmoRequest request,
             final Configuration configuration,
             Authorization authorization,
@@ -140,7 +140,7 @@ public class VenmoClient {
     ) {
         boolean isClientTokenAuth = (authorization instanceof ClientToken);
         boolean shouldVault = request.getShouldVault() && isClientTokenAuth;
-        sharedPrefsWriter.persistVenmoVaultOption(activity, shouldVault);
+        sharedPrefsWriter.persistVenmoVaultOption(context, shouldVault);
         VenmoPaymentAuthRequestParams params =
                 new VenmoPaymentAuthRequestParams(configuration, venmoProfileId, paymentContextId,
                         braintreeClient.getSessionId(), braintreeClient.getIntegrationType());

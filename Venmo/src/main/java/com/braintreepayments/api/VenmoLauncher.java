@@ -1,6 +1,8 @@
 package com.braintreepayments.api;
 
 
+import androidx.activity.compose.ManagedActivityResultLauncher;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.annotation.NonNull;
@@ -50,6 +52,10 @@ public class VenmoLauncher {
                   VenmoLauncherCallback callback) {
         activityLauncher = registry.register(VENMO_SECURE_RESULT, lifecycleOwner,
                 new VenmoActivityResultContract(), callback::onVenmoPaymentAuthResult);
+    }
+
+    VenmoLauncher(ActivityResultLauncher launcher) {
+        activityLauncher = launcher;
     }
 
     /**

@@ -40,12 +40,20 @@ android {
             languageVersion.set(JavaLanguageVersion.of("11"))
         }
     }
+
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion "1.4.1"
+    }
 }
 
 dependencies {
     api project(':BraintreeCore')
 
     implementation deps.appCompat
+    implementation 'androidx.activity:activity-compose:1.8.2'
 
     testImplementation deps.robolectric
     testImplementation deps.androidxTestCore
