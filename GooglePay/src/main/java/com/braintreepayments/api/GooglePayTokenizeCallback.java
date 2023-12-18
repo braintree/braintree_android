@@ -10,9 +10,7 @@ import androidx.annotation.Nullable;
 public interface GooglePayTokenizeCallback {
 
     /**
-     * @param paymentMethodNonce {@link PaymentMethodNonce}
-     * @param error              an exception that occurred while processing Google Pay activity
-     *                           result
+     * @param googlePayResult {@link PaymentMethodNonce}
      */
-    void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error);
+    void onGooglePayResult(@Nullable GooglePayResult googlePayResult);
 }

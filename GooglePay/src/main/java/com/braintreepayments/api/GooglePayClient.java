@@ -97,25 +97,24 @@ public class GooglePayClient {
         try {
             Class.forName(PaymentsClient.class.getName());
         } catch (ClassNotFoundException | NoClassDefFoundError e) {
-            callback.onResult(false, null);
+            callback.onGooglePayReadinessResult(new GooglePayReadinessResult.NotReadyToPay(null));
             return;
         }
 
         braintreeClient.getConfiguration((configuration, e) -> {
             if (configuration == null) {
-                callback.onResult(false, e);
+                callback.onGooglePayReadinessResult(new GooglePayReadinessResult.NotReadyToPay(e));
                 return;
             }
 
             if (!configuration.isGooglePayEnabled()) {
-                callback.onResult(false, null);
+                callback.onGooglePayReadinessResult(new GooglePayReadinessResult.NotReadyToPay(null));
                 return;
             }
 
             //noinspection ConstantConditions
             if (activity == null) {
-                callback.onResult(false,
-                        new IllegalArgumentException("Activity cannot be null."));
+                callback.onGooglePayReadinessResult(new GooglePayReadinessResult.NotReadyToPay(new IllegalArgumentException("Activity cannot be null.")));
                 return;
             }
 
@@ -169,9 +168,9 @@ public class GooglePayClient {
     }
 
     /**
-     * Start the Google Pay payment flow. This will return a {@link GooglePayPaymentAuthRequest} that will
-     * be used to present Google Pay payment sheet in
-     * {@link GooglePayLauncher#launch(GooglePayPaymentAuthRequest)}
+     * Start the Google Pay payment flow. This will return {@link GooglePayPaymentAuthRequestParams} that are
+     * used to present Google Pay payment sheet in
+     * {@link GooglePayLauncher#launch(GooglePayPaymentAuthRequestParams)}
      *
      * @param request  The {@link GooglePayRequest} containing options for the transaction.
      * @param callback {@link GooglePayPaymentAuthRequestCallback}
@@ -181,39 +180,37 @@ public class GooglePayClient {
         braintreeClient.sendAnalyticsEvent("google-payment.selected");
 
         if (!validateManifest()) {
-            callback.onResult(null, new BraintreeException(
-                    "GooglePayActivity was " + "not found in the " + "Android " +
-                            "manifest, or did not have a theme of R.style.bt_transparent_activity"));
+            callback.onGooglePayPaymentAuthRequest(new GooglePayPaymentAuthRequest.Failure(new BraintreeException(
+                    "GooglePayActivity was not found in the Android " +
+                            "manifest, or did not have a theme of R.style.bt_transparent_activity")));
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
             return;
         }
 
         //noinspection ConstantConditions
         if (request == null) {
-            callback.onResult(null, new BraintreeException(
-                    "Cannot pass null " + "GooglePayRequest to " + "requestPayment"));
+            callback.onGooglePayPaymentAuthRequest(new GooglePayPaymentAuthRequest.Failure(new BraintreeException(
+                    "Cannot pass null GooglePayRequest to requestPayment")));
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
             return;
         }
 
         if (request.getTransactionInfo() == null) {
-            callback.onResult(null, new BraintreeException(
-                    "Cannot pass null " + "TransactionInfo to" + " requestPayment"));
+            callback.onGooglePayPaymentAuthRequest(new GooglePayPaymentAuthRequest.Failure(new BraintreeException(
+                    "Cannot pass null TransactionInfo to requestPayment")));
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
             return;
         }
 
         braintreeClient.getConfiguration((configuration, configError) -> {
-            if (configuration == null) {
-                callback.onResult(null, configError);
+            if (configuration == null && configError != null) {
+                callback.onGooglePayPaymentAuthRequest(new GooglePayPaymentAuthRequest.Failure(configError));
                 return;
             }
 
             if (!configuration.isGooglePayEnabled()) {
-                callback.onResult(null, new BraintreeException(
-                        "Google Pay " +
-                                "is not enabled for your Braintree account," +
-                                " or Google Play Services are not configured correctly."));
+                callback.onGooglePayPaymentAuthRequest(new GooglePayPaymentAuthRequest.Failure(new BraintreeException(
+                        "Google Pay is not enabled for your Braintree account, or Google Play Services are not configured correctly.")));
                 return;
             }
 
@@ -223,10 +220,10 @@ public class GooglePayClient {
             PaymentDataRequest paymentDataRequest =
                     PaymentDataRequest.fromJson(request.toJson());
 
-            GooglePayPaymentAuthRequest intent =
-                    new GooglePayPaymentAuthRequest(getGooglePayEnvironment(configuration),
+            GooglePayPaymentAuthRequestParams params =
+                    new GooglePayPaymentAuthRequestParams(getGooglePayEnvironment(configuration),
                             paymentDataRequest);
-            callback.onResult(intent, null);
+            callback.onGooglePayPaymentAuthRequest(new GooglePayPaymentAuthRequest.ReadyToLaunch(params));
 
         });
 
@@ -235,7 +232,7 @@ public class GooglePayClient {
     void tokenize(PaymentData paymentData, GooglePayTokenizeCallback callback) {
         try {
             JSONObject result = new JSONObject(paymentData.toJson());
-            callback.onResult(GooglePayCardNonce.fromJSON(result), null);
+            callback.onGooglePayResult(new GooglePayResult.Success(GooglePayCardNonce.fromJSON(result)));
             braintreeClient.sendAnalyticsEvent("google-payment.nonce-received");
         } catch (JSONException | NullPointerException e) {
             braintreeClient.sendAnalyticsEvent("google-payment.failed");
@@ -244,9 +241,9 @@ public class GooglePayClient {
                 String token =
                         new JSONObject(paymentData.toJson()).getJSONObject("paymentMethodData")
                                 .getJSONObject("tokenizationData").getString("token");
-                callback.onResult(null, ErrorWithResponse.fromJson(token));
+                callback.onGooglePayResult(new GooglePayResult.Failure(ErrorWithResponse.fromJson(token)));
             } catch (JSONException | NullPointerException e1) {
-                callback.onResult(null, e1);
+                callback.onGooglePayResult(new GooglePayResult.Failure(e1));
             }
         }
     }
@@ -258,7 +255,7 @@ public class GooglePayClient {
      * method should be invoked to tokenize the payment method to retrieve a
      * {@link PaymentMethodNonce}
      *
-     * @param paymentAuthResult the result of {@link GooglePayLauncher#launch(GooglePayPaymentAuthRequest)}
+     * @param paymentAuthResult the result of {@link GooglePayLauncher#launch(GooglePayPaymentAuthRequestParams)}
      * @param callback        {@link GooglePayTokenizeCallback}
      */
     public void tokenize(GooglePayPaymentAuthResult paymentAuthResult,
@@ -269,10 +266,11 @@ public class GooglePayClient {
         } else if (paymentAuthResult.getError() != null) {
             if (paymentAuthResult.getError() instanceof UserCanceledException) {
                 braintreeClient.sendAnalyticsEvent("google-payment.canceled");
-            } else {
-                braintreeClient.sendAnalyticsEvent("google-payment.failed");
+                callback.onGooglePayResult(GooglePayResult.Cancel.INSTANCE);
+                return;
             }
-            callback.onResult(null, paymentAuthResult.getError());
+            braintreeClient.sendAnalyticsEvent("google-payment.failed");
+            callback.onGooglePayResult(new GooglePayResult.Failure(paymentAuthResult.getError()));
         }
     }
 

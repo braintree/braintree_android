@@ -14,8 +14,12 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.GooglePayClient;
 import com.braintreepayments.api.GooglePayLauncher;
+import com.braintreepayments.api.GooglePayPaymentAuthRequest;
+import com.braintreepayments.api.GooglePayReadinessResult;
 import com.braintreepayments.api.GooglePayRequest;
+import com.braintreepayments.api.GooglePayResult;
 import com.braintreepayments.api.PaymentMethodNonce;
+import com.braintreepayments.api.UserCanceledException;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
@@ -38,11 +42,13 @@ public class GooglePayFragment extends BaseFragment {
         googlePayClient = new GooglePayClient(requireContext(), super.getAuthStringArg());
         googlePayLauncher = new GooglePayLauncher(this,
                 paymentAuthResult -> googlePayClient.tokenize(paymentAuthResult,
-                        (paymentMethodNonce, error) -> {
-                            if (error != null) {
-                                handleError(error);
-                            } else {
-                                handleGooglePayActivityResult(paymentMethodNonce);
+                        (googlePayResult) -> {
+                            if (googlePayResult instanceof GooglePayResult.Failure) {
+                                handleError(((GooglePayResult.Failure) googlePayResult).getError());
+                            } else if (googlePayResult instanceof GooglePayResult.Success){
+                                handleGooglePayActivityResult(((GooglePayResult.Success) googlePayResult).getNonce());
+                            } else if (googlePayResult instanceof GooglePayResult.Cancel) {
+                                handleError(new UserCanceledException("User canceled Google Pay"));
                             }
                         }));
 
@@ -53,8 +59,8 @@ public class GooglePayFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
 
-        googlePayClient.isReadyToPay(requireActivity(), (isReadyToPay, e) -> {
-            if (isReadyToPay) {
+        googlePayClient.isReadyToPay(requireActivity(), (googlePayReadinessResult) -> {
+            if (googlePayReadinessResult instanceof GooglePayReadinessResult.ReadyToPay) {
                 googlePayButton.setVisibility(View.VISIBLE);
             } else {
                 showDialog(
@@ -99,8 +105,14 @@ public class GooglePayFragment extends BaseFragment {
                 .addAllowedCountryCodes(Settings.getGooglePayAllowedCountriesForShipping(activity))
                 .build());
 
-        googlePayClient.createPaymentAuthRequest(googlePayRequest,
-                (paymentAuthRequest, error) -> googlePayLauncher.launch(paymentAuthRequest));
+        googlePayClient.createPaymentAuthRequest(googlePayRequest, (paymentAuthRequest) -> {
+            if (paymentAuthRequest instanceof GooglePayPaymentAuthRequest.ReadyToLaunch) {
+                googlePayLauncher.launch(
+                        ((GooglePayPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams());
+            } else if (paymentAuthRequest instanceof GooglePayPaymentAuthRequest.Failure) {
+                handleError(((GooglePayPaymentAuthRequest.Failure) paymentAuthRequest).getError());
+            }
+        });
     }
 
     private void handleGooglePayActivityResult(PaymentMethodNonce paymentMethodNonce) {

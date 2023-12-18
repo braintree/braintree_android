@@ -176,10 +176,21 @@ class MyActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
+
+-       googlePayClient.isReadyToPay(this) { isReadyToPay, error ->
++       googlePayClient.isReadyToPay(this) { readinessResult ->
++           if (readinessResult is GooglePayReadinessResult.ReadyToPay) {
++                // show Google Pay button 
++           }
++        }
+        
 +       googlePayLauncher = GooglePayLauncher(this) { paymentAuthResult ->
-+            googlePayClient.tokenize(paymentAuthResult) { paymentMethodNonce, error ->
-+                error?.let { /* handle error */ }
-+                paymentMethodNonce?.let { /* handle nonce */ }
++            googlePayClient.tokenize(paymentAuthResult) { googlePayResult ->
++               when (googlePayResult) {
++                   is GooglePayResult.Failure -> { /* handle error */ }
++                   is GooglePayResult.Cancel -> { /* handle cancel */ }
++                   is GooglePayResult.Success -> { /* handle nonce */ }
++               }
 +            }
 +       }
     }
@@ -193,9 +204,12 @@ class MyActivity : FragmentActivity() {
     
     fun onGooglePayButtonClick() {
 -       googlePayClient.requestPayment(activity, request)
-+       googlePayClient.createPaymentAuthRequest(this, request) { paymentAuthRequest, error ->
-+            error?.let { /* handle error */ }
-+            paymentAuthRequest?.let { googlePayLauncher.launch(it) }
++       googlePayClient.createPaymentAuthRequest(this, request) { paymentAuthRequest ->
++           when (paymentAuthRequest) {
++            is GooglePayPaymentAuthRequest.Failure -> { /* handle error */ }
++            is GooglePayPaymentAuthRequest.ReadyToLaunch -> { 
++               googlePayLauncher.launch(paymentAuthRequest.params) 
++            }
 +       }
     }
     

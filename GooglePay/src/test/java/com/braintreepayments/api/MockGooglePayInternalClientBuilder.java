@@ -29,17 +29,14 @@ class MockGooglePayInternalClientBuilder {
     GooglePayInternalClient build() {
         GooglePayInternalClient googlePayInternalClient = mock(GooglePayInternalClient.class);
 
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                GooglePayIsReadyToPayCallback callback = (GooglePayIsReadyToPayCallback) invocation.getArguments()[3];
-                if (isReadyToPayError != null) {
-                    callback.onResult(false, isReadyToPayError);
-                } else {
-                    callback.onResult(isReadyToPay, null);
-                }
-                return null;
+        doAnswer((Answer<Void>) invocation -> {
+            GooglePayIsReadyToPayCallback callback = (GooglePayIsReadyToPayCallback) invocation.getArguments()[3];
+            if (isReadyToPayError != null) {
+                callback.onGooglePayReadinessResult(new GooglePayReadinessResult.NotReadyToPay(isReadyToPayError));
+            } else {
+                callback.onGooglePayReadinessResult(GooglePayReadinessResult.ReadyToPay.INSTANCE);
             }
+            return null;
         }).when(googlePayInternalClient).isReadyToPay(any(FragmentActivity.class), any(Configuration.class), any(IsReadyToPayRequest.class), any(GooglePayIsReadyToPayCallback.class));
 
         return googlePayInternalClient;
