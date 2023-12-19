@@ -1,8 +1,8 @@
 package com.braintreepayments.api
 
-internal enum class AmericanExpressAnalytics(@JvmField val event: String) {
+internal object AmericanExpressAnalytics {
 
-    REWARDS_BALANCE_STARTED("amex:rewards-balance:started"),
-    REWARDS_BALANCE_FAILED("amex:rewards-balance:failed"),
-    REWARDS_BALANCE_SUCCEEDED("amex:rewards-balance:succeeded")
+    const val REWARDS_BALANCE_STARTED = "amex:rewards-balance:started"
+    const val REWARDS_BALANCE_FAILED = "amex:rewards-balance:failed"
+    const val REWARDS_BALANCE_SUCCEEDED = "amex:rewards-balance:succeeded"
 }
