@@ -176,7 +176,7 @@ public class GooglePayClient {
      */
     public void createPaymentAuthRequest(@NonNull final GooglePayRequest request,
                                          @NonNull final GooglePayPaymentAuthRequestCallback callback) {
-        braintreeClient.sendAnalyticsEvent("google-payment.selected");
+        braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_REQUEST_STARTED);
 
         if (!validateManifest()) {
             callback.onGooglePayPaymentAuthRequest(new GooglePayPaymentAuthRequest.Failure(new BraintreeException(
@@ -516,5 +516,34 @@ public class GooglePayClient {
                 braintreeClient.getManifestActivityInfo(GooglePayActivity.class);
         return activityInfo != null &&
                 activityInfo.getThemeResource() == R.style.bt_transparent_activity;
+    }
+
+    private void callbackPaymentRequestSuccess(GooglePayPaymentAuthRequest.ReadyToLaunch request,
+                                               GooglePayPaymentAuthRequestCallback callback) {
+        callback.onGooglePayPaymentAuthRequest(request);
+        braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_REQUEST_SUCCEEDED);
+    }
+
+    private void callbackPaymentRequestFailure(GooglePayPaymentAuthRequest.Failure request,
+                                               GooglePayPaymentAuthRequestCallback callback) {
+        callback.onGooglePayPaymentAuthRequest(request);
+        braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_REQUEST_FAILED);
+    }
+
+    private void callbackTokenizeSuccess(GooglePayResult.Success result,
+                                         GooglePayTokenizeCallback callback) {
+        callback.onGooglePayResult(result);
+        braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.TOKENIZE_SUCCEEDED);
+    }
+
+    private void callbackTokenizeCancel(GooglePayTokenizeCallback callback) {
+        callback.onGooglePayResult(GooglePayResult.Cancel.INSTANCE);
+        braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_SHEET_CANCELED);
+    }
+
+    private void callbackTokenizeFailure(GooglePayResult.Failure result,
+                                         GooglePayTokenizeCallback callback) {
+        callback.onGooglePayResult(result);
+        braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.TOKENIZE_FAILED);
     }
 }
