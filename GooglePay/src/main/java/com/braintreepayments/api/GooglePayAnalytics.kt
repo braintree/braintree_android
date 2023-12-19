@@ -14,6 +14,5 @@ internal object GooglePayAnalytics {
     const val TOKENIZE_FAILED = "google-pay:tokenize:failed"
     const val TOKENIZE_SUCCEEDED = "google-pay:tokenize:succeeded"
 
-
     const val PAYMENT_SHEET_CANCELED = "google-pay:payment-sheet:canceled"
 }
