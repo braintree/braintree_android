@@ -1,7 +1,8 @@
 package com.braintreepayments.api
 
 import android.app.Activity
-import androidx.fragment.app.FragmentActivity
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.tasks.*
@@ -18,7 +19,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executor
 
 @RunWith(RobolectricTestRunner::class)
@@ -65,7 +65,7 @@ class GooglePayInternalClientUnitTest {
         }
     }
 
-    private lateinit var activity: FragmentActivity
+    private lateinit var context: Context
     private lateinit var isReadyToPayCallback: GooglePayIsReadyToPayCallback
     private lateinit var paymentsClient: PaymentsClient
     private lateinit var isReadyToPayRequest: IsReadyToPayRequest
@@ -73,7 +73,7 @@ class GooglePayInternalClientUnitTest {
     @Before
     fun beforeEach() {
         mockkStatic(Wallet::class)
-        activity = mockk(relaxed = true)
+        context = ApplicationProvider.getApplicationContext()
         isReadyToPayCallback = mockk(relaxed = true)
         paymentsClient = mockk()
         isReadyToPayRequest = IsReadyToPayRequest.fromJson("{}")
@@ -85,10 +85,11 @@ class GooglePayInternalClientUnitTest {
         every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns Tasks.forResult(true)
 
         val walletOptionsSlot = slot<Wallet.WalletOptions>()
-        every { Wallet.getPaymentsClient(any(), capture(walletOptionsSlot)) } returns paymentsClient
+        every { Wallet.getPaymentsClient(any(Context::class), capture(walletOptionsSlot)) } returns
+                paymentsClient
 
         val sut = GooglePayInternalClient()
-        sut.isReadyToPay(activity, configuration, isReadyToPayRequest, isReadyToPayCallback)
+        sut.isReadyToPay(context, configuration, isReadyToPayRequest, isReadyToPayCallback)
 
         assertEquals(WalletConstants.ENVIRONMENT_TEST, walletOptionsSlot.captured.environment)
     }
@@ -100,47 +101,42 @@ class GooglePayInternalClientUnitTest {
         every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns Tasks.forResult(true)
 
         val walletOptionsSlot = slot<Wallet.WalletOptions>()
-        every { Wallet.getPaymentsClient(any(), capture(walletOptionsSlot)) } returns paymentsClient
+        every { Wallet.getPaymentsClient(any(Context::class), capture(walletOptionsSlot)) } returns
+                paymentsClient
 
         val sut = GooglePayInternalClient()
-        sut.isReadyToPay(activity, configuration, isReadyToPayRequest, isReadyToPayCallback)
+        sut.isReadyToPay(context, configuration, isReadyToPayRequest, isReadyToPayCallback)
 
         assertEquals(WalletConstants.ENVIRONMENT_PRODUCTION, walletOptionsSlot.captured.environment)
     }
 
     @Test
     fun `isReadyToPay forwards success result to callback`() {
-        val countDownLatch = CountDownLatch(1)
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY)
-        every { Wallet.getPaymentsClient(any(), any()) } returns paymentsClient
+        every { Wallet.getPaymentsClient(any(Context::class), any()) } returns paymentsClient
 
         every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns SuccessfulBooleanTask(true)
 
         val sut = GooglePayInternalClient()
-        sut.isReadyToPay(activity, configuration, isReadyToPayRequest) { readyToPayResult ->
+        sut.isReadyToPay(context, configuration, isReadyToPayRequest) { readyToPayResult ->
             assertTrue(readyToPayResult is GooglePayReadinessResult.ReadyToPay)
-            countDownLatch.countDown()
         }
-        countDownLatch.await()
     }
 
     @Test
     fun `isReadyToPay forwards failure result to callback`() {
-        val countDownLatch = CountDownLatch(1)
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY)
-        every { Wallet.getPaymentsClient(any(), any()) } returns paymentsClient
+        every { Wallet.getPaymentsClient(any(Context::class), any()) } returns paymentsClient
 
         val expectedError = ApiException(Status.RESULT_INTERNAL_ERROR)
         val failedTask: Task<Boolean> = FailingBooleanTask(expectedError)
         every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns failedTask
 
         val sut = GooglePayInternalClient()
-        sut.isReadyToPay(activity, configuration, isReadyToPayRequest) { readyToPayResult ->
+        sut.isReadyToPay(context, configuration, isReadyToPayRequest) { readyToPayResult ->
             assertTrue(readyToPayResult is GooglePayReadinessResult.NotReadyToPay)
             assertSame(expectedError, (readyToPayResult as GooglePayReadinessResult.NotReadyToPay)
                 .error)
-            countDownLatch.countDown()
         }
-        countDownLatch.await()
     }
 }

@@ -46,7 +46,7 @@
     * Remove overload constructors, `setListener, and `onActivityResult` from `GooglePayClient`
     * Change `GooglePayClient#requestPayment` parameters and rename to 
       `GooglePayClient#createPaymentAuthRequest`
-    * Change `GooglePayIsReadyToPayCallback` parameters
+    * Change `GooglePayClient#isReadyToPay` and `GooglePayIsReadyToPayCallback` parameters
     * Add `GooglePayClient#tokenize` 
     * Remove `merchantId` from `GooglePayRequest`
     * Change `GooglePayGetTokenizationParametersCallback` parameters

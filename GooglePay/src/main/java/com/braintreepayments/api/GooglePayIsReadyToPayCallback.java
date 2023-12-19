@@ -1,11 +1,9 @@
 package com.braintreepayments.api;
 
-import androidx.fragment.app.FragmentActivity;
-
 /**
  * Callback for receiving result of
- * {@link GooglePayClient#isReadyToPay(FragmentActivity, GooglePayIsReadyToPayCallback)} and
- * {@link GooglePayClient#isReadyToPay(FragmentActivity, ReadyForGooglePayRequest, GooglePayIsReadyToPayCallback)}.
+ * {@link GooglePayClient#isReadyToPay(android.content.Context, GooglePayIsReadyToPayCallback)} and
+ * {@link GooglePayClient#isReadyToPay(android.content.Context, ReadyForGooglePayRequest, GooglePayIsReadyToPayCallback)}.
  */
 public interface GooglePayIsReadyToPayCallback {
 

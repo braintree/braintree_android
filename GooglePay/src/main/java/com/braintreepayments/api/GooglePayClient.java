@@ -7,9 +7,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.api.googlepay.R;
 import com.google.android.gms.wallet.CardRequirements;
 import com.google.android.gms.wallet.IsReadyToPayRequest;
 import com.google.android.gms.wallet.PaymentData;
@@ -17,6 +15,7 @@ import com.google.android.gms.wallet.PaymentDataRequest;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.PaymentsClient;
 import com.google.android.gms.wallet.WalletConstants;
+import com.braintreepayments.api.googlepay.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -74,12 +73,12 @@ public class GooglePayClient {
      * supported and set up on the device. When the callback is called with {@code true}, show the
      * Google Pay button. When it is called with {@code false}, display other checkout options.
      *
-     * @param activity Android FragmentActivity
+     * @param context  Android Context
      * @param callback {@link GooglePayIsReadyToPayCallback}
      */
-    public void isReadyToPay(@NonNull final FragmentActivity activity,
+    public void isReadyToPay(@NonNull final Context context,
                              @NonNull final GooglePayIsReadyToPayCallback callback) {
-        isReadyToPay(activity, null, callback);
+        isReadyToPay(context, null, callback);
     }
 
     /**
@@ -87,11 +86,11 @@ public class GooglePayClient {
      * supported and set up on the device. When the callback is called with {@code true}, show the
      * Google Pay button. When it is called with {@code false}, display other checkout options.
      *
-     * @param activity Android FragmentActivity
+     * @param context  Android Context
      * @param request  {@link ReadyForGooglePayRequest}
      * @param callback {@link GooglePayIsReadyToPayCallback}
      */
-    public void isReadyToPay(@NonNull final FragmentActivity activity,
+    public void isReadyToPay(@NonNull final Context context,
                              @Nullable final ReadyForGooglePayRequest request,
                              @NonNull final GooglePayIsReadyToPayCallback callback) {
         try {
@@ -113,7 +112,7 @@ public class GooglePayClient {
             }
 
             //noinspection ConstantConditions
-            if (activity == null) {
+            if (context == null) {
                 callback.onGooglePayReadinessResult(new GooglePayReadinessResult.NotReadyToPay(new IllegalArgumentException("Activity cannot be null.")));
                 return;
             }
@@ -136,7 +135,7 @@ public class GooglePayClient {
             } catch (JSONException ignored) {
             }
             IsReadyToPayRequest request1 = IsReadyToPayRequest.fromJson(json.toString());
-            internalGooglePayClient.isReadyToPay(activity, configuration, request1, callback);
+            internalGooglePayClient.isReadyToPay(context, configuration, request1, callback);
         });
     }
 
