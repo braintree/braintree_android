@@ -49,22 +49,29 @@ public class AmericanExpressClient {
                 .build()
                 .toString();
 
-        braintreeClient.sendAnalyticsEvent("amex.rewards-balance.start");
+        braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED);
         braintreeClient.sendGET(getRewardsBalanceUrl, (responseBody, httpError) -> {
             if (responseBody != null) {
-                braintreeClient.sendAnalyticsEvent("amex.rewards-balance.success");
                 try {
                     AmericanExpressRewardsBalance rewardsBalance =
                             AmericanExpressRewardsBalance.fromJson(responseBody);
-                    callback.onAmericanExpressResult(new AmericanExpressResult.Success(rewardsBalance));
+                    callbackSuccess(new AmericanExpressResult.Success(rewardsBalance), callback);
                 } catch (JSONException e) {
-                    braintreeClient.sendAnalyticsEvent("amex.rewards-balance.parse.failed");
-                    callback.onAmericanExpressResult(new AmericanExpressResult.Failure(e));
+                    callbackFailure(new AmericanExpressResult.Failure(e), callback);
                 }
             } else if (httpError != null) {
-                callback.onAmericanExpressResult(new AmericanExpressResult.Failure(httpError));
-                braintreeClient.sendAnalyticsEvent("amex.rewards-balance.error");
+                callbackFailure(new AmericanExpressResult.Failure(httpError), callback);
             }
         });
+    }
+
+    private void callbackSuccess(AmericanExpressResult.Success result, AmericanExpressGetRewardsBalanceCallback callback) {
+        callback.onAmericanExpressResult(result);
+        braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_SUCCEEDED);
+    }
+
+    private void callbackFailure(AmericanExpressResult.Failure result, AmericanExpressGetRewardsBalanceCallback callback) {
+        callback.onAmericanExpressResult(result);
+        braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED);
     }
 }
