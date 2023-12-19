@@ -37,6 +37,7 @@
       `VenmoClient#tokenize`
     * Change parameters of `VenmoIsReadyToPayCallback` and add `VenmoReadinessResult`
     * Add `VenmoClient#createPaymentAuthRequest`
+    * Move `showVenmoInGooglePlayStore` to `VenmoLauncher`
   * GooglePay
     * Remove `GooglePayListener` and `GooglePayRequestPaymentCallback`
     * Add `GooglePayLauncher`, `GooglePayPaymentAuthRequest`, 
