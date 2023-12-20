@@ -11,7 +11,8 @@ import androidx.annotation.VisibleForTesting
  * Note: **This feature is in beta. It's public API may change in future releases.**
  */
 class ShopperInsightsClient @VisibleForTesting internal constructor(
-    private val paymentReadyAPI: PaymentReadyApi
+    private val paymentReadyAPI: PaymentReadyApi,
+    private val braintreeClient: BraintreeClient
 ) {
     /**
      * Retrieves recommended payment methods based on the provided shopper insights request.
@@ -46,5 +47,37 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                 )
             )
         )
+    }
+
+    /**
+     * Call this method when the PayPal button has been successfully displayed to the buyer.
+     * This method sends analytics to help improve the Shopper Insights feature experience.
+     */
+    fun sendPayPalPresentedEvent() {
+        braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.PayPalPresented.event)
+    }
+
+    /**
+     * Call this method when the PayPal button has been selected/tapped by the buyer.
+     * This method sends analytics to help improve the Shopper Insights feature experience.
+     */
+    fun sendPayPalSelectedEvent() {
+        braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.PayPalSelected.event)
+    }
+
+    /**
+     * Call this method when the Venmo button has been successfully displayed to the buyer.
+     * This method sends analytics to help improve the Shopper Insights feature experience.
+     */
+    fun sendVenmoPresentedEvent() {
+        braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.VenmoPresented.event)
+    }
+
+    /**
+     * Call this method when the Venmo button has been selected/tapped by the buyer.
+     * This method sends analytics to help improve the Shopper Insights feature experience.
+     */
+    fun sendVenmoSelectedEvent() {
+        braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.VenmoSelected.event)
     }
 }

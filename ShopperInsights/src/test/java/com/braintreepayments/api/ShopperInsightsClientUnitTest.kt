@@ -18,11 +18,13 @@ class ShopperInsightsClientUnitTest {
 
     private lateinit var sut: ShopperInsightsClient
     private lateinit var paymentApi: PaymentReadyApi
+    private lateinit var braintreeClient: BraintreeClient
 
     @Before
     fun beforeEach() {
         paymentApi = mockk(relaxed = true)
-        sut = ShopperInsightsClient(paymentApi)
+        braintreeClient = mockk(relaxed = true)
+        sut = ShopperInsightsClient(paymentApi, braintreeClient)
     }
 
     /**
@@ -53,5 +55,11 @@ class ShopperInsightsClientUnitTest {
                 iae.message
             )
         }
+    }
+
+    @Test
+    fun `test paypal presented analytics event`() {
+        sut.sendPayPalPresentedEvent()
+        braintreeClient.
     }
 }
