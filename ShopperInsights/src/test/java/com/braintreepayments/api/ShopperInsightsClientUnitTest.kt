@@ -1,6 +1,7 @@
 package com.braintreepayments.api
 
 import io.mockk.mockk
+import io.mockk.verify
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import org.junit.Assert.assertNotNull
@@ -60,6 +61,24 @@ class ShopperInsightsClientUnitTest {
     @Test
     fun `test paypal presented analytics event`() {
         sut.sendPayPalPresentedEvent()
-        braintreeClient.
+        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:paypal-presented") }
+    }
+
+    @Test
+    fun `test paypal selected analytics event`() {
+        sut.sendPayPalSelectedEvent()
+        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:paypal-selected") }
+    }
+
+    @Test
+    fun `test venmo presented analytics event`() {
+        sut.sendVenmoPresentedEvent()
+        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:venmo-presented") }
+    }
+
+    @Test
+    fun `test venmo selected analytics event`() {
+        sut.sendVenmoSelectedEvent()
+        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:venmo-selected") }
     }
 }
