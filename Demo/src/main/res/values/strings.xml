@@ -18,6 +18,7 @@
     <string name="local_payment_button">Local Payment</string>
     <string name="sepa_direct_debit_button">SEPA Direct Debit</string>
     <string name="cards">Credit or Debit Cards</string>
+    <string name="shopping_insights_button">Shopping Insights</string>
     <string name="paypal_native_checkout">PayPal Native Checkout</string>
     <string name="samsung_pay">Samsung Pay</string>
     <string name="create_transaction">Create a Transaction</string>
@@ -124,4 +125,11 @@
     <!-- LocalPayment -->
     <string name="bt_local_payment_description">This feature uses a hard-coded sandbox tokenization key that is enabled for this local payment.</string>
 
+    <!-- Shopping Insights -->
+    <string name="insights_text_input_email">Email</string>
+    <string name="insights_text_input_country_code">Country Code</string>
+    <string name="insights_text_input_national_number">National Number</string>
+    <string name="insights_action_button">Submit</string>
+    <string name="insights_response_label">Response:</string>
+    <string name="insights_null_switch">Null </string>
 </resources>
