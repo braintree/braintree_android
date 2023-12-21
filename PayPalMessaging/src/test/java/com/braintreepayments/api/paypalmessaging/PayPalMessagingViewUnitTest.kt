@@ -1,4 +1,4 @@
 package com.braintreepayments.api.paypalmessaging
-class PayPalMessagingClientUnitTest {
+class PayPalMessagingViewUnitTest {
     // TODO: Add unit tests in a future PR
 }
