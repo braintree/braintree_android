@@ -1,6 +1,10 @@
 package com.braintreepayments.api
 
 import androidx.annotation.VisibleForTesting
+import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_PRESENTED
+import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_SELECTED
+import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_PRESENTED
+import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_SELECTED
 
 /**
  * Use [ShopperInsightsClient] to optimize your checkout experience
@@ -54,7 +58,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
      * This method sends analytics to help improve the Shopper Insights feature experience.
      */
     fun sendPayPalPresentedEvent() {
-        braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.PayPalPresented.event)
+        braintreeClient.sendAnalyticsEvent(PAYPAL_PRESENTED)
     }
 
     /**
@@ -62,7 +66,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
      * This method sends analytics to help improve the Shopper Insights feature experience.
      */
     fun sendPayPalSelectedEvent() {
-        braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.PayPalSelected.event)
+        braintreeClient.sendAnalyticsEvent(PAYPAL_SELECTED)
     }
 
     /**
@@ -70,7 +74,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
      * This method sends analytics to help improve the Shopper Insights feature experience.
      */
     fun sendVenmoPresentedEvent() {
-        braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.VenmoPresented.event)
+        braintreeClient.sendAnalyticsEvent(VENMO_PRESENTED)
     }
 
     /**
@@ -78,6 +82,6 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
      * This method sends analytics to help improve the Shopper Insights feature experience.
      */
     fun sendVenmoSelectedEvent() {
-        braintreeClient.sendAnalyticsEvent(ShopperInsightsAnalytics.VenmoSelected.event)
+        braintreeClient.sendAnalyticsEvent(VENMO_SELECTED)
     }
 }

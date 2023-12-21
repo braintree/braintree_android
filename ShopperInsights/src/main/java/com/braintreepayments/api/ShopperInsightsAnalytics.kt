@@ -1,8 +1,8 @@
 package com.braintreepayments.api
 
-sealed class ShopperInsightsAnalytics(val event: String) {
-    object PayPalPresented : ShopperInsightsAnalytics("shopper-insights:paypal-presented")
-    object PayPalSelected : ShopperInsightsAnalytics("shopper-insights:paypal-selected")
-    object VenmoPresented : ShopperInsightsAnalytics("shopper-insights:venmo-presented")
-    object VenmoSelected : ShopperInsightsAnalytics("shopper-insights:venmo-selected")
+internal object ShopperInsightsAnalytics {
+    const val PAYPAL_PRESENTED = "shopper-insights:paypal-presented"
+    const val PAYPAL_SELECTED = "shopper-insights:paypal-selected"
+    const val VENMO_PRESENTED = "shopper-insights:venmo-presented"
+    const val VENMO_SELECTED = "shopper-insights:venmo-selected"
 }
