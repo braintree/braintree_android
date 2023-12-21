@@ -1,6 +1,7 @@
 package com.braintreepayments.api
 
 import io.mockk.mockk
+import io.mockk.verify
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import org.junit.Assert.assertNotNull
@@ -18,11 +19,13 @@ class ShopperInsightsClientUnitTest {
 
     private lateinit var sut: ShopperInsightsClient
     private lateinit var paymentApi: PaymentReadyApi
+    private lateinit var braintreeClient: BraintreeClient
 
     @Before
     fun beforeEach() {
         paymentApi = mockk(relaxed = true)
-        sut = ShopperInsightsClient(paymentApi)
+        braintreeClient = mockk(relaxed = true)
+        sut = ShopperInsightsClient(paymentApi, braintreeClient)
     }
 
     /**
@@ -53,5 +56,29 @@ class ShopperInsightsClientUnitTest {
                 iae.message
             )
         }
+    }
+
+    @Test
+    fun `test paypal presented analytics event`() {
+        sut.sendPayPalPresentedEvent()
+        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:paypal-presented") }
+    }
+
+    @Test
+    fun `test paypal selected analytics event`() {
+        sut.sendPayPalSelectedEvent()
+        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:paypal-selected") }
+    }
+
+    @Test
+    fun `test venmo presented analytics event`() {
+        sut.sendVenmoPresentedEvent()
+        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:venmo-presented") }
+    }
+
+    @Test
+    fun `test venmo selected analytics event`() {
+        sut.sendVenmoSelectedEvent()
+        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:venmo-selected") }
     }
 }
