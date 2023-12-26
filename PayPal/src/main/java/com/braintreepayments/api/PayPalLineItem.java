@@ -29,6 +29,22 @@ public class PayPalLineItem implements Parcelable {
     public static final String KIND_CREDIT = "credit";
     public static final String KIND_DEBIT = "debit";
 
+    /**
+     * The upc type of PayPal line item.
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({PayPalLineItem.UPC_TYPE_A, PayPalLineItem.UPC_TYPE_B, PayPalLineItem.UPC_TYPE_C, PayPalLineItem.UPC_TYPE_D, PayPalLineItem.UPC_TYPE_E, PayPalLineItem.UPC_TYPE_2, PayPalLineItem.UPC_TYPE_5})
+    @interface PayPalLineItemUpcType {
+    }
+
+    public static final String UPC_TYPE_A = "UPC-A";
+    public static final String UPC_TYPE_B = "UPC-B";
+    public static final String UPC_TYPE_C = "UPC-C";
+    public static final String UPC_TYPE_D = "UPC-D";
+    public static final String UPC_TYPE_E = "UPC-E";
+    public static final String UPC_TYPE_2 = "UPC-2";
+    public static final String UPC_TYPE_5 = "UPC-5";
+
     private static final String DESCRIPTION_KEY = "description";
     private static final String KIND_KEY = "kind";
     private static final String NAME_KEY = "name";
@@ -37,6 +53,9 @@ public class PayPalLineItem implements Parcelable {
     private static final String UNIT_AMOUNT_KEY = "unit_amount";
     private static final String UNIT_TAX_AMOUNT_KEY = "unit_tax_amount";
     private static final String URL_KEY = "url";
+    private static final String IMAGE_URL_KEY = "image_url";
+    private static final String UPC_CODE_KEY = "upc_code";
+    private static final String UPC_TYPE_KEY = "upc_type";
 
     private String description;
     private String kind;
@@ -46,6 +65,9 @@ public class PayPalLineItem implements Parcelable {
     private String unitAmount;
     private String unitTaxAmount;
     private String url;
+    private String imageUrl;
+    private String upcCode;
+    private String upcType;
 
     /**
      * Constructs a line item for PayPal checkout flows. All parameters are required.
@@ -137,6 +159,33 @@ public class PayPalLineItem implements Parcelable {
         this.url = url;
     }
 
+    /**
+     * The image URL to product information.
+     *
+     * @param imageURL The image URL with additional information.
+     */
+    public void setImageUrl(@NonNull String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    /**
+     * UPC code of the item.
+     *
+     * @param upcCode The UPC code.
+     */
+    public void setUpcCode(@NonNull String upcCode) {
+        this.upcCode = upcCode;
+    }
+
+    /**
+     * UPC type of the item.
+     *
+     * @param upcType The UPC type.
+     */
+    public void setUpcType(@NonNull String upcType) {
+        this.upcType = upcType;
+    }
+
     @Nullable
     public String getDescription() {
         return description;
@@ -178,6 +227,21 @@ public class PayPalLineItem implements Parcelable {
         return url;
     }
 
+    @Nullable
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    @Nullable
+    public String getUpcCode() {
+        return upcCode;
+    }
+
+    @Nullable
+    public String getUpcType() {
+        return upcType;
+    }
+
     public JSONObject toJson() {
         try {
             return new JSONObject()
@@ -188,7 +252,10 @@ public class PayPalLineItem implements Parcelable {
                     .putOpt(QUANTITY_KEY, quantity)
                     .putOpt(UNIT_AMOUNT_KEY, unitAmount)
                     .putOpt(UNIT_TAX_AMOUNT_KEY, unitTaxAmount)
-                    .putOpt(URL_KEY, url);
+                    .putOpt(URL_KEY, url)
+                    .putOpt(IMAGE_UTL_KRY, imageUrl)
+                    .putOpt(UPC_CODE_KEY, upcCode)
+                    .putOpt(UPC_TYPE_KRY, upcType);
         } catch (JSONException ignored) {
         }
 
@@ -204,6 +271,9 @@ public class PayPalLineItem implements Parcelable {
         unitAmount = in.readString();
         unitTaxAmount = in.readString();
         url = in.readString();
+        imageUrl = in.readString();
+        upcCode = in.readString();
+        upcType = in.readString();
     }
 
     public static final Creator<PayPalLineItem> CREATOR = new Creator<PayPalLineItem>() {
@@ -233,6 +303,9 @@ public class PayPalLineItem implements Parcelable {
         parcel.writeString(unitAmount);
         parcel.writeString(unitTaxAmount);
         parcel.writeString(url);
+        parcel.writeString(imageUrl);
+        parcel.writeString(upcCode);
+        parcel.writeSting(upcType);
     }
 
 }
