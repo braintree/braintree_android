@@ -18,6 +18,9 @@ public class PayPalLineItemUnitTest {
         item.setProductCode("abc-123");
         item.setUnitTaxAmount("1.50");
         item.setUrl("http://example.com");
+        item.setImageUrl("http://example.com/image.jpg");
+        item.setUpcType(PayPalLineItem.UPC_TYPE_2);
+        item.setUpcCode("upc-code");
 
         JSONObject json = item.toJson();
 
@@ -29,6 +32,10 @@ public class PayPalLineItemUnitTest {
         assertEquals("abc-123", json.getString("product_code"));
         assertEquals("1.50", json.getString("unit_tax_amount"));
         assertEquals("http://example.com", json.getString("url"));
+        assertEquals("http://example.com/image.jpg", json.getString("image_url"));
+        assertEquals("UPC-2", json.getString("upc_type"));
+        assertEquals("upc-code", json.getString("upc_code"));
     }
+
 }
 
