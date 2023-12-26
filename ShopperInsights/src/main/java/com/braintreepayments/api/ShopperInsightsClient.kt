@@ -32,7 +32,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         request: ShopperInsightsRequest,
         callback: ShopperInsightsCallback
     ) {
-        if(checkForInstalledApps(context, callback)) {
+        if (checkForInstalledApps(context, callback)) {
             return
         }
 
@@ -68,7 +68,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         val isVenmoAppInstalled = deviceInspector.isVenmoInstalled(applicationContext)
         val isPayPalAppInstalled = deviceInspector.isPayPalInstalled(applicationContext)
 
-        if(isVenmoAppInstalled || isPayPalAppInstalled) {
+        if (isVenmoAppInstalled || isPayPalAppInstalled) {
             callback.onResult(
                 ShopperInsightsResult.Success(
                     ShopperInsightsInfo(
