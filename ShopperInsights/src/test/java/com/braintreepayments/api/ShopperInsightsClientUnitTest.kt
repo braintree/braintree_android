@@ -7,7 +7,6 @@ import io.mockk.verify
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
@@ -49,34 +48,6 @@ class ShopperInsightsClientUnitTest {
             val successResult = assertIs<ShopperInsightsResult.Success>(result)
             assertNotNull(successResult.response.isPayPalRecommended)
             assertNotNull(successResult.response.isVenmoRecommended)
-        }
-    }
-
-    @Test
-    fun testGetRecommendedPaymentMethods_hasVenmoAppInstalled_returnsSuccessResult() {
-        every { deviceInspector.isVenmoInstalled(applicationContext) } returns true
-        every { deviceInspector.isPayPalInstalled(applicationContext) } returns false
-
-        val request = ShopperInsightsRequest(null, null)
-        sut.getRecommendedPaymentMethods(context, request) { result ->
-            assertNotNull(result)
-            val successResult = assertIs<ShopperInsightsResult.Success>(result)
-            assertFalse(successResult.response.isPayPalRecommended)
-            assertTrue(successResult.response.isVenmoRecommended)
-        }
-    }
-
-    @Test
-    fun testGetRecommendedPaymentMethods_hasPayPalAppInstalled_returnsSuccessResult() {
-        every { deviceInspector.isVenmoInstalled(applicationContext) } returns false
-        every { deviceInspector.isPayPalInstalled(applicationContext) } returns true
-
-        val request = ShopperInsightsRequest(null, null)
-        sut.getRecommendedPaymentMethods(context, request) { result ->
-            assertNotNull(result)
-            val successResult = assertIs<ShopperInsightsResult.Success>(result)
-            assertFalse(successResult.response.isVenmoRecommended)
-            assertTrue(successResult.response.isPayPalRecommended)
         }
     }
 

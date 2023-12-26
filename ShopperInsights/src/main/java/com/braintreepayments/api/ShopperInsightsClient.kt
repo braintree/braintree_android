@@ -68,12 +68,12 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         val isVenmoAppInstalled = deviceInspector.isVenmoInstalled(applicationContext)
         val isPayPalAppInstalled = deviceInspector.isPayPalInstalled(applicationContext)
 
-        if (isVenmoAppInstalled || isPayPalAppInstalled) {
+        if (isVenmoAppInstalled && isPayPalAppInstalled) {
             callback.onResult(
                 ShopperInsightsResult.Success(
                     ShopperInsightsInfo(
-                        isPayPalRecommended = isPayPalAppInstalled,
-                        isVenmoRecommended = isVenmoAppInstalled
+                        isPayPalRecommended = true,
+                        isVenmoRecommended = true
                     )
                 )
             )
