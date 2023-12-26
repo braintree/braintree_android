@@ -1,5 +1,6 @@
 package com.braintreepayments.api
 
+import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_PRESENTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_SELECTED
@@ -16,18 +17,25 @@ import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_SELECTED
  */
 class ShopperInsightsClient @VisibleForTesting internal constructor(
     private val paymentReadyAPI: PaymentReadyApi,
-    private val braintreeClient: BraintreeClient
+    private val braintreeClient: BraintreeClient,
+    private val deviceInspector: DeviceInspector
 ) {
     /**
      * Retrieves recommended payment methods based on the provided shopper insights request.
      *
+     * @param context Android context
      * @param request The [ShopperInsightsRequest] containing information about the shopper.
      * @return A [ShopperInsightsResult] object indicating the recommended payment methods.
      */
     fun getRecommendedPaymentMethods(
+        context: Context,
         request: ShopperInsightsRequest,
         callback: ShopperInsightsCallback
     ) {
+        if(checkForInstalledApps(context, callback)) {
+            return
+        }
+
         if (request.email == null && request.phone == null) {
             callback.onResult(
                 ShopperInsightsResult.Failure(
@@ -40,7 +48,6 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
             return
         }
 
-        // TODO: - Add isAppInstalled checks for PP & Venmo. DTBTSDK-3176
         paymentReadyAPI.processRequest(request)
         // Hardcoded result
         callback.onResult(
@@ -51,6 +58,28 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                 )
             )
         )
+    }
+
+    private fun checkForInstalledApps(
+        context: Context,
+        callback: ShopperInsightsCallback
+    ): Boolean {
+        val applicationContext = context.applicationContext
+        val isVenmoAppInstalled = deviceInspector.isVenmoInstalled(applicationContext)
+        val isPayPalAppInstalled = deviceInspector.isPayPalInstalled(applicationContext)
+
+        if(isVenmoAppInstalled || isPayPalAppInstalled) {
+            callback.onResult(
+                ShopperInsightsResult.Success(
+                    ShopperInsightsInfo(
+                        isPayPalRecommended = isPayPalAppInstalled,
+                        isVenmoRecommended = isVenmoAppInstalled
+                    )
+                )
+            )
+            return true
+        }
+        return false
     }
 
     /**
