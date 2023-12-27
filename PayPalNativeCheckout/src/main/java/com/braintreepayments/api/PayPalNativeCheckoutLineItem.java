@@ -33,7 +33,7 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
      * The upc type of PayPal line item.
      */
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({PayPalLineItem.UPC_TYPE_A, PayPalLineItem.UPC_TYPE_B, PayPalLineItem.UPC_TYPE_C, PayPalLineItem.UPC_TYPE_D, PayPalLineItem.UPC_TYPE_E, PayPalLineItem.UPC_TYPE_2, PayPalLineItem.UPC_TYPE_5})
+    @StringDef({PayPalNativeCheckoutLineItem.UPC_TYPE_A, PayPalNativeCheckoutLineItem.UPC_TYPE_B, PayPalNativeCheckoutLineItem.UPC_TYPE_C, PayPalNativeCheckoutLineItem.UPC_TYPE_D, PayPalNativeCheckoutLineItem.UPC_TYPE_E, PayPalNativeCheckoutLineItem.UPC_TYPE_2, PayPalNativeCheckoutLineItem.UPC_TYPE_5})
     @interface PayPalLineItemUpcType {
     }
 
@@ -162,7 +162,7 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
     /**
      * The image URL to product information.
      *
-     * @param imageURL The image URL with additional information.
+     * @param imageUrl The image URL with additional information.
      */
     public void setImageUrl(@NonNull String imageUrl) {
         this.imageUrl = imageUrl;
@@ -253,9 +253,9 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
                     .putOpt(UNIT_AMOUNT_KEY, unitAmount)
                     .putOpt(UNIT_TAX_AMOUNT_KEY, unitTaxAmount)
                     .putOpt(URL_KEY, url)
-                    .putOpt(IMAGE_UTL_KRY, imageUrl)
+                    .putOpt(IMAGE_URL_KEY, imageUrl)
                     .putOpt(UPC_CODE_KEY, upcCode)
-                    .putOpt(UPC_TYPE_KRY, upcType);
+                    .putOpt(UPC_TYPE_KEY, upcType);
         } catch (JSONException ignored) {
         }
 
@@ -305,7 +305,7 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
         parcel.writeString(url);
         parcel.writeString(imageUrl);
         parcel.writeString(upcCode);
-        parcel.writeSting(upcType);
+        parcel.writeString(upcType);
     }
 
 }

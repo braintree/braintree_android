@@ -253,9 +253,9 @@ public class PayPalLineItem implements Parcelable {
                     .putOpt(UNIT_AMOUNT_KEY, unitAmount)
                     .putOpt(UNIT_TAX_AMOUNT_KEY, unitTaxAmount)
                     .putOpt(URL_KEY, url)
-                    .putOpt(IMAGE_UTL_KRY, imageUrl)
+                    .putOpt(IMAGE_URL_KEY, imageUrl)
                     .putOpt(UPC_CODE_KEY, upcCode)
-                    .putOpt(UPC_TYPE_KRY, upcType);
+                    .putOpt(UPC_TYPE_KEY, upcType);
         } catch (JSONException ignored) {
         }
 
@@ -305,7 +305,7 @@ public class PayPalLineItem implements Parcelable {
         parcel.writeString(url);
         parcel.writeString(imageUrl);
         parcel.writeString(upcCode);
-        parcel.writeSting(upcType);
+        parcel.writeString(upcType);
     }
 
 }
