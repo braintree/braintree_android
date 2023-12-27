@@ -19,7 +19,7 @@ public class PayPalLineItemUnitTest {
         item.setUnitTaxAmount("1.50");
         item.setUrl("http://example.com");
         item.setImageUrl("http://example.com/image.jpg");
-        item.setUpcType(PayPalLineItem.UPC_TYPE_2);
+        item.setUpcType(PayPalNativeCheckoutLineItem.UPC_TYPE_2);
         item.setUpcCode("upc-code");
 
         JSONObject json = item.toJson();
