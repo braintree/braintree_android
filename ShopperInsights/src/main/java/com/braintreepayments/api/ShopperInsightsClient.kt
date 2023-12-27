@@ -32,7 +32,19 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         request: ShopperInsightsRequest,
         callback: ShopperInsightsCallback
     ) {
-        if (checkForInstalledApps(context, callback)) {
+        val applicationContext = context.applicationContext
+        val isVenmoAppInstalled = deviceInspector.isVenmoInstalled(applicationContext)
+        val isPayPalAppInstalled = deviceInspector.isPayPalInstalled(applicationContext)
+
+        if (isVenmoAppInstalled && isPayPalAppInstalled) {
+            callback.onResult(
+                ShopperInsightsResult.Success(
+                    ShopperInsightsInfo(
+                        isPayPalRecommended = true,
+                        isVenmoRecommended = true
+                    )
+                )
+            )
             return
         }
 
@@ -58,28 +70,6 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                 )
             )
         )
-    }
-
-    private fun checkForInstalledApps(
-        context: Context,
-        callback: ShopperInsightsCallback
-    ): Boolean {
-        val applicationContext = context.applicationContext
-        val isVenmoAppInstalled = deviceInspector.isVenmoInstalled(applicationContext)
-        val isPayPalAppInstalled = deviceInspector.isPayPalInstalled(applicationContext)
-
-        if (isVenmoAppInstalled && isPayPalAppInstalled) {
-            callback.onResult(
-                ShopperInsightsResult.Success(
-                    ShopperInsightsInfo(
-                        isPayPalRecommended = true,
-                        isVenmoRecommended = true
-                    )
-                )
-            )
-            return true
-        }
-        return false
     }
 
     /**
