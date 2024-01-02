@@ -184,7 +184,7 @@
     </fragment>
     <fragment
         android:id="@+id/shoppingInsightsFragment"
-        android:name="com.braintreepayments.demo.ShoppingInsightsFragment"
+        android:name="com.braintreepayments.demo.ShopperInsightsFragment"
         tools:layout="@layout/fragment_shopping_insights">
     </fragment>
 </navigation>

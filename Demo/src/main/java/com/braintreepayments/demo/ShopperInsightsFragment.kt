@@ -16,7 +16,7 @@ import com.google.android.material.textfield.TextInputLayout
 /**
  * Fragment for handling shopping insights.
  */
-class ShoppingInsightsFragment : BaseFragment() {
+class ShopperInsightsFragment : BaseFragment() {
 
     private lateinit var responseTextView: TextView
     private lateinit var actionButton: Button
