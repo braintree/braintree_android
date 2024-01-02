@@ -9,7 +9,7 @@ import com.braintreepayments.api.ShopperInsightsResult
 /**
  * ViewModel for handling shopping insights.
  */
-class ShoppingInsightViewModel : ViewModel() {
+class ShoppingInsightsViewModel : ViewModel() {
 
     private val shopperInsightsLiveData = MutableLiveData<ShopperInsightsResult>()
 

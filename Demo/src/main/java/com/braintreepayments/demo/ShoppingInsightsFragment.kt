@@ -24,8 +24,8 @@ class ShoppingInsightsFragment : Fragment() {
     private lateinit var emailNullSwitch: SwitchMaterial
     private lateinit var phoneNullSwitch: SwitchMaterial
 
-    private val viewModel: ShoppingInsightViewModel by lazy {
-        ViewModelProvider(this)[ShoppingInsightViewModel::class.java]
+    private val viewModel: ShoppingInsightsViewModel by lazy {
+        ViewModelProvider(this)[ShoppingInsightsViewModel::class.java]
     }
 
     override fun onCreateView(
