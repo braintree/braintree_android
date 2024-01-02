@@ -20,6 +20,12 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
     private val braintreeClient: BraintreeClient,
     private val deviceInspector: DeviceInspector
 ) {
+    constructor(braintreeClient: BraintreeClient) : this(
+        PaymentReadyApi(),
+        braintreeClient,
+        DeviceInspector()
+    )
+
     /**
      * Retrieves recommended payment methods based on the provided shopper insights request.
      *

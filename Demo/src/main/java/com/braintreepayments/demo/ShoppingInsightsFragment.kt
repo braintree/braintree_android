@@ -6,15 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import com.braintreepayments.api.BraintreeClient
+import com.braintreepayments.api.BuyerPhone
+import com.braintreepayments.api.ShopperInsightsClient
+import com.braintreepayments.api.ShopperInsightsRequest
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
 
 /**
  * Fragment for handling shopping insights.
  */
-class ShoppingInsightsFragment : Fragment() {
+class ShoppingInsightsFragment : BaseFragment() {
 
     private lateinit var responseTextView: TextView
     private lateinit var actionButton: Button
@@ -23,16 +25,16 @@ class ShoppingInsightsFragment : Fragment() {
     private lateinit var nationalNumberInput: TextInputLayout
     private lateinit var emailNullSwitch: SwitchMaterial
     private lateinit var phoneNullSwitch: SwitchMaterial
-
-    private val viewModel: ShoppingInsightsViewModel by lazy {
-        ViewModelProvider(this)[ShoppingInsightsViewModel::class.java]
-    }
+    private lateinit var braintreeClient: BraintreeClient
+    private lateinit var shopperInsightsClient: ShopperInsightsClient
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        braintreeClient = getBraintreeClient()
+        shopperInsightsClient = ShopperInsightsClient(braintreeClient)
         return inflater.inflate(R.layout.fragment_shopping_insights, container, false)
     }
 
@@ -54,12 +56,23 @@ class ShoppingInsightsFragment : Fragment() {
 
     private fun setupActionButton() {
         actionButton.setOnClickListener {
-            val email = if (emailNullSwitch.isChecked) null else emailInput.editText?.text.toString()
-            val countryCode = if (phoneNullSwitch.isChecked) null else countryCodeInput.editText?.text.toString()
-            val nationalNumber = if (phoneNullSwitch.isChecked) null else nationalNumberInput.editText?.text.toString()
-            viewModel.getRecommendedPaymentMethods(email, countryCode, nationalNumber)
-                .observe(viewLifecycleOwner) {
-                responseTextView.text = it.toString()
+            val email =
+                if (emailNullSwitch.isChecked) null else emailInput.editText?.text.toString()
+            val countryCode =
+                if (phoneNullSwitch.isChecked) null else countryCodeInput.editText?.text.toString()
+            val nationalNumber =
+                if (phoneNullSwitch.isChecked) null else nationalNumberInput.editText?.text.toString()
+
+            val request = if (countryCode != null && nationalNumber != null) {
+                ShopperInsightsRequest(email, BuyerPhone(countryCode, nationalNumber))
+            } else {
+                ShopperInsightsRequest(email, null)
+            }
+            shopperInsightsClient.getRecommendedPaymentMethods(
+                requireContext(),
+                request
+            ) { result ->
+                responseTextView.text = result.toString()
             }
         }
     }
