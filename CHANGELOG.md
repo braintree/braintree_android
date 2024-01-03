@@ -1,5 +1,13 @@
 # Braintree Android SDK Release Notes
 
+# unreleased
+
+* BraintreePayPal
+  * Add following properties to PayPalLineItem
+    * imageUrl
+    * upcCode
+    * upcType
+
 ## 4.40.1 (2023-12-13)
 
 * BraintreeCore

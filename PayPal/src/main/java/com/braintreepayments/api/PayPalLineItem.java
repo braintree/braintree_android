@@ -162,7 +162,7 @@ public class PayPalLineItem implements Parcelable {
     /**
      * The image URL to product information.
      *
-     * @param imageURL The image URL with additional information.
+     * @param imageUrl The image URL with additional information.
      */
     public void setImageUrl(@NonNull String imageUrl) {
         this.imageUrl = imageUrl;
