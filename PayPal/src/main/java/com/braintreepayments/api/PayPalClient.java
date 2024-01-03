@@ -47,23 +47,10 @@ public class PayPalClient {
         return (configuration == null || !configuration.isPayPalEnabled());
     }
 
-    private void assertCanPerformBrowserSwitch(FragmentActivity activity)
-            throws BrowserSwitchException {
-        braintreeClient.assertCanPerformBrowserSwitch(activity, BraintreeRequestCodes.PAYPAL);
-    }
-
     private static Exception createPayPalError() {
         return new BraintreeException("PayPal is not enabled. " +
                 "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
                 "for more information.");
-    }
-
-    private static Exception createBrowserSwitchError(BrowserSwitchException exception) {
-        return new BraintreeException(
-                "AndroidManifest.xml is incorrectly configured or another app " +
-                        "defines the same browser switch url as this app. See " +
-                        "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
-                        "for the correct configuration: " + exception.getMessage());
     }
 
     /**
@@ -105,15 +92,7 @@ public class PayPalClient {
                 return;
             }
 
-            try {
-                assertCanPerformBrowserSwitch(activity);
-            } catch (BrowserSwitchException browserSwitchException) {
-                braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
-                Exception manifestInvalidError =
-                        createBrowserSwitchError(browserSwitchException);
-                callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(manifestInvalidError));
-                return;
-            }
+
             sendPayPalRequest(activity, payPalCheckoutRequest, callback);
         });
 
