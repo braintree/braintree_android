@@ -23,6 +23,15 @@
             android:text="@string/cards"
             android:textSize="12sp" />
 
+        <Button
+            android:id="@+id/local_payment"
+            style="?android:attr/buttonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/local_payment_button"
+            android:textSize="12sp" />
+
     </TableRow>
 
     <TableRow
@@ -68,30 +77,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/paypal_native_checkout"
-            android:textSize="12sp" />
-
-    </TableRow>
-
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <Button
-            android:id="@+id/local_payment"
-            style="?android:attr/buttonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/local_payment_button"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/samsung_pay"
-            style="?android:attr/buttonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/samsung_pay"
             android:textSize="12sp" />
 
     </TableRow>
