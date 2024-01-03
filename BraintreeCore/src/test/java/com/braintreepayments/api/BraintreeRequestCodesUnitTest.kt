@@ -34,11 +34,6 @@ class BraintreeRequestCodesUnitTest {
     }
 
     @Test
-    fun samsungPay() {
-        assertEquals(13595, BraintreeRequestCodes.SAMSUNG_PAY)
-    }
-
-    @Test
     fun localPayment() {
         assertEquals(13596, BraintreeRequestCodes.LOCAL_PAYMENT)
     }

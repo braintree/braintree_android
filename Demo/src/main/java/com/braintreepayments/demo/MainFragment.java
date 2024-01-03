@@ -32,7 +32,6 @@ public class MainFragment extends BaseFragment {
         Button venmoButton = view.findViewById(R.id.venmo);
         Button visaCheckoutButton = view.findViewById(R.id.visa_checkout);
         Button localPaymentsButton = view.findViewById(R.id.local_payment);
-        Button samsungButton = view.findViewById(R.id.samsung_pay);
         Button sepaDirectDebitButton = view.findViewById(R.id.sepa_debit);
         Button payPalNativeCheckoutButton = view.findViewById(R.id.paypal_native_checkout);
 
@@ -42,7 +41,6 @@ public class MainFragment extends BaseFragment {
         googlePayButton.setOnClickListener(this::launchGooglePay);
         visaCheckoutButton.setOnClickListener(this::launchVisaCheckout);
         venmoButton.setOnClickListener(this::launchVenmo);
-        samsungButton.setOnClickListener(this::launchSamsungPay);
         payPalNativeCheckoutButton.setOnClickListener(this::launchPayPalNativeCheckout);
         sepaDirectDebitButton.setOnClickListener(this::launchSEPADirectDebit);
 
@@ -121,15 +119,6 @@ public class MainFragment extends BaseFragment {
         fetchAuthorization(authString -> {
             NavDirections action =
                     MainFragmentDirections.actionMainFragmentToLocalPaymentFragment()
-                            .setAuthString(authString);
-            Navigation.findNavController(v).navigate(action);
-        });
-    }
-
-    public void launchSamsungPay(View v) {
-        fetchAuthorization(authString -> {
-            NavDirections action =
-                    MainFragmentDirections.actionMainFragmentToSamsungPayFragment()
                             .setAuthString(authString);
             Navigation.findNavController(v).navigate(action);
         });

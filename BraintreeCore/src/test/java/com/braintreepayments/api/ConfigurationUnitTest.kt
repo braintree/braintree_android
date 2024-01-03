@@ -337,44 +337,6 @@ class ConfigurationUnitTest {
     }
 
     @Test
-    @Throws(JSONException::class)
-    fun isSamsungPayEnabled_returnsTrueWhenSamsungPayEnabledInConfiguration() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_SAMSUNGPAY)
-        assertTrue(sut.isSamsungPayEnabled)
-    }
-
-    @Test
-    fun samsungPayMerchantDisplayName_forwardsValueFromConfiguration() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_SAMSUNGPAY)
-        assertEquals("some example merchant", sut.samsungPayMerchantDisplayName)
-    }
-
-    @Test
-    fun samsungPayServiceId_forwardsValueFromConfiguration() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_SAMSUNGPAY)
-        assertEquals("some-service-id", sut.samsungPayServiceId)
-    }
-
-    @Test
-    fun samsungPaySupportedCardBrands_forwardsValuesFromConfiguration() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_SAMSUNGPAY)
-        val expected = listOf("american_express", "discover", "jcb", "mastercard", "visa")
-        assertEquals(expected, sut.samsungPaySupportedCardBrands)
-    }
-
-    @Test
-    fun samsungPayAuthorization_forwardsValueFromConfiguration() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_SAMSUNGPAY)
-        assertEquals("example-samsung-authorization", sut.samsungPayAuthorization)
-    }
-
-    @Test
-    fun samsungPayEnvironment_forwardsValueFromConfiguration() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_SAMSUNGPAY)
-        assertEquals("SANDBOX", sut.samsungPayEnvironment)
-    }
-
-    @Test
     fun isBraintreeApiEnabled_returnsTrueWhenAccessTokenPresent() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN)
         assertTrue(sut.isBraintreeApiEnabled)
