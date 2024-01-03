@@ -41,7 +41,24 @@ class ShopperInsightsClientUnitTest {
      * when providing a shopping insight request.
      */
     @Test
-    fun testGetRecommendedPaymentMethods_returnsDefaultRecommendations() {
+    fun testGetRecommendedPaymentMethods_noInstalledApps_returnsDefaultRecommendations() {
+        every { deviceInspector.isVenmoInstalled(applicationContext) } returns false
+        every { deviceInspector.isPayPalInstalled(applicationContext) } returns false
+
+        val request = ShopperInsightsRequest("fake-email", null)
+        sut.getRecommendedPaymentMethods(context, request) { result ->
+            assertNotNull(result)
+            val successResult = assertIs<ShopperInsightsResult.Success>(result)
+            assertNotNull(successResult.response.isPayPalRecommended)
+            assertNotNull(successResult.response.isVenmoRecommended)
+        }
+    }
+
+    @Test
+    fun testGetRecommendedPaymentMethods_oneInstalledApp_returnsDefaultRecommendations() {
+        every { deviceInspector.isVenmoInstalled(applicationContext) } returns true
+        every { deviceInspector.isPayPalInstalled(applicationContext) } returns false
+
         val request = ShopperInsightsRequest("fake-email", null)
         sut.getRecommendedPaymentMethods(context, request) { result ->
             assertNotNull(result)
@@ -67,6 +84,9 @@ class ShopperInsightsClientUnitTest {
 
     @Test
     fun `testGetRecommendedPaymentMethods - request object has null properties`() {
+        every { deviceInspector.isVenmoInstalled(applicationContext) } returns false
+        every { deviceInspector.isPayPalInstalled(applicationContext) } returns true
+
         val request = ShopperInsightsRequest(null, null)
         sut.getRecommendedPaymentMethods(context, request) { result ->
             assertNotNull(result)
