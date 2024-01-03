@@ -116,6 +116,8 @@
   * American Express
     * Change parameters of `AmericanExpressGetRewardsBalanceCallback`
     * Add `AmericanExpressResult`
+  * Samsung Pay
+    * Remove entire Samsung Pay module
     
 ## 4.40.1 (2023-12-13)
 
