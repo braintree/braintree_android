@@ -12,7 +12,6 @@ import androidx.annotation.IntDef
     BraintreeRequestCodes.PAYPAL,
     BraintreeRequestCodes.VISA_CHECKOUT,
     BraintreeRequestCodes.GOOGLE_PAY,
-    BraintreeRequestCodes.SAMSUNG_PAY,
     BraintreeRequestCodes.LOCAL_PAYMENT,
     BraintreeRequestCodes.SEPA_DEBIT
 )
@@ -23,7 +22,6 @@ annotation class BraintreeRequestCodes {
         const val PAYPAL = 13591
         const val VISA_CHECKOUT = 13592
         const val GOOGLE_PAY = 13593
-        const val SAMSUNG_PAY = 13595
         const val LOCAL_PAYMENT = 13596
         const val SEPA_DEBIT = 13597
     }

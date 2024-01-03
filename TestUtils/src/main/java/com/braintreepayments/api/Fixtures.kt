@@ -873,38 +873,6 @@ object Fixtures {
     """
 
     // language=JSON
-    const val CONFIGURATION_WITH_SAMSUNGPAY = """
-        {
-          "clientApiUrl": "client_api_url",
-          "environment": "test",
-          "merchantId": "integration_merchant_id",
-          "merchantAccountId": "integration_merchant_account_id",
-          "creditCards": {
-            "supportedCardTypes": [
-              "American Express",
-              "Discover",
-              "JCB",
-              "MasterCard",
-              "Visa"
-            ]
-          },
-          "samsungPay" : {
-            "displayName": "some example merchant",
-            "serviceId": "some-service-id",
-            "supportedCardBrands": [
-              "american_express",
-              "discover",
-              "jcb",
-              "mastercard",
-              "visa"
-            ],
-            "samsungAuthorization": "example-samsung-authorization",
-            "environment": "SANDBOX"
-          }
-        }
-    """
-
-    // language=JSON
     const val CONFIGURATION_WITH_SUPPORTED_CARD_TYPES = """
         {
           "clientApiUrl": "client_api_url",
@@ -2502,47 +2470,6 @@ object Fixtures {
         }
     """
     //endregion
-
-    // language=JSON
-    const val SAMSUNG_PAY_RESPONSE_V2 = """
-        {
-          "data": "{\n  \"data\": {\n    \"tokenizeSamsungPayCard\": {\n      \"paymentMethod\": {\n        \"id\": \"tokensam_bf_v8s9hv_2htw4m_nh4f45_y3hsft_wty\",\n        \"details\": {\n          \"brand\": \"Mastercard\",\n          \"brandCode\": \"MASTERCARD\",\n          \"last4\": \"1798\",\n          \"expirationYear\": \"2020\",\n          \"expirationMonth\": \"12\",\n          \"binData\": {\n            \"commercial\": \"UNKNOWN\",\n            \"countryOfIssuance\": \"US\",\n            \"debit\": \"NO\",\n            \"durbinRegulated\": \"UNKNOWN\",\n            \"healthcare\": \"YES\",\n            \"issuingBank\": null,\n            \"payroll\": \"UNKNOWN\",\n            \"prepaid\": \"UNKNOWN\",\n            \"productId\": \"123\"\n          },\n          \"origin\": {\n            \"type\": \"SAMSUNG_PAY\",\n            \"details\": {\n              \"bin\": \"411111\"\n            }\n          }\n        }\n      }\n    }\n  },\n  \"extensions\": {\n    \"requestId\": \"9eaf90d9-4e8a-4883-96c4-01c02bb0a4e5\"\n  }\n}",
-          "reference":"tokensam_bf_v8s9hv_2htw4m_nh4f45_y3hsft_wty",
-          "status":"AUTHORIZED",
-          "payment_last4_dpan":"1798",
-          "payment_last4_fpan":"1470",
-          "payment_card_brand":"MC",
-          "payment_currency_type":"USD",
-          "payment_shipping_address":{
-            "shipping":{
-
-            },
-            "email":""
-          },
-          "payment_shipping_method":""
-        }
-    """
-
-    // NOTE: SamsungPay response sometimes has `singleUseToken` as an alias for the top level `paymentMethod` field
-    // language=JSON
-    const val SAMSUNG_PAY_RESPONSE_V1 = """
-        {
-          "data": "{\n  \"data\": {\n    \"tokenizeSamsungPayCard\": {\n      \"singleUseToken\": {\n        \"id\": \"tokensam_bf_v8s9hv_2htw4m_nh4f45_y3hsft_wty\",\n        \"details\": {\n          \"brand\": \"Mastercard\",\n          \"brandCode\": \"MASTERCARD\",\n          \"sourceCardLast4\": \"1798\",\n          \"expirationYear\": \"2020\",\n          \"expirationMonth\": \"12\",\n          \"binData\": {\n            \"commercial\": \"UNKNOWN\",\n            \"countryOfIssuance\": \"US\",\n            \"debit\": \"NO\",\n            \"durbinRegulated\": \"UNKNOWN\",\n            \"healthcare\": \"YES\",\n            \"issuingBank\": null,\n            \"payroll\": \"UNKNOWN\",\n            \"prepaid\": \"UNKNOWN\",\n            \"productId\": \"123\"\n          },\n          \"origin\": {\n            \"type\": \"SAMSUNG_PAY\",\n            \"details\": {\n              \"bin\": \"411111\"\n            }\n          }\n        }\n      }\n    }\n  },\n  \"extensions\": {\n    \"requestId\": \"9eaf90d9-4e8a-4883-96c4-01c02bb0a4e5\"\n  }\n}",
-          "reference":"tokensam_bf_v8s9hv_2htw4m_nh4f45_y3hsft_wty",
-          "status":"AUTHORIZED",
-          "payment_last4_dpan":"1798",
-          "payment_last4_fpan":"1470",
-          "payment_card_brand":"MC",
-          "payment_currency_type":"USD",
-          "payment_shipping_address":{
-            "shipping":{
-
-            },
-            "email":""
-          },
-          "payment_shipping_method":""
-        }
-    """
 
     //region SEPA Debit
 

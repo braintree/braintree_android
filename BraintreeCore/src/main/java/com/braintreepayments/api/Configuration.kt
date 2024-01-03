@@ -21,7 +21,6 @@ import org.json.JSONObject
  * `false` otherwise.
  * @property isPostalCodeChallengePresent `true` if postal code is required for card transactions,
  * `false` otherwise.
- * @property isSamsungPayEnabled `true` if Samsung Pay is enabled; `false` otherwise.
  * @property isThreeDSecureEnabled `true` if 3D Secure is enabled and supported for the current
  * merchant account, * `false` otherwise.
  * @property isVenmoEnabled `true` if Venmo is enabled for the merchant account; `false` otherwise.
@@ -54,7 +53,6 @@ class Configuration internal constructor(configurationString: String) {
         private const val PAYPAL_ENABLED_KEY = "paypalEnabled"
         private const val PAYPAL_KEY = "paypal"
         private const val PAY_WITH_VENMO_KEY = "payWithVenmo"
-        private const val SAMSUNG_PAY_KEY = "samsungPay"
         private const val THREE_D_SECURE_ENABLED_KEY = "threeDSecureEnabled"
         private const val VISA_CHECKOUT_KEY = "visaCheckout"
 
@@ -76,7 +74,6 @@ class Configuration internal constructor(configurationString: String) {
     val isLocalPaymentEnabled: Boolean
     val isPayPalEnabled: Boolean
     val isPostalCodeChallengePresent: Boolean
-    val isSamsungPayEnabled: Boolean
     val isThreeDSecureEnabled: Boolean
     val isVenmoEnabled: Boolean
     val isVisaCheckoutEnabled: Boolean
@@ -188,36 +185,6 @@ class Configuration internal constructor(configurationString: String) {
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val payPalEnvironment: String?
 
     /**
-     * @return the authorization to use with Samsung Pay.
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val samsungPayAuthorization: String
-
-    /**
-     * @return the Braintree environment Samsung Pay should interact with.
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val samsungPayEnvironment: String
-
-    /**
-     * @return the merchant display name for Samsung Pay.
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val samsungPayMerchantDisplayName: String
-
-    /**
-     * @return the Samsung Pay service id associated with the merchant.
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val samsungPayServiceId: String
-
-    /**
-     * @return a list of card brands supported by Samsung Pay.
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val samsungPaySupportedCardBrands: List<String>
-
-    /**
      * @return the Access Token used by the Venmo app to tokenize on behalf of the merchant.
      * @suppress
      */
@@ -266,7 +233,6 @@ class Configuration internal constructor(configurationString: String) {
     private val googlePayConfiguration: GooglePayConfiguration
     private val graphQLConfiguration: GraphQLConfiguration
     private val payPalConfiguration: PayPalConfiguration
-    private val samsungPayConfiguration: SamsungPayConfiguration
     private val venmoConfiguration: VenmoConfiguration
     private val visaCheckoutConfiguration: VisaCheckoutConfiguration
     // endregion
@@ -296,7 +262,6 @@ class Configuration internal constructor(configurationString: String) {
         merchantAccountId = Json.optString(json, MERCHANT_ACCOUNT_ID_KEY, null)
         merchantId = json.getString(MERCHANT_ID_KEY)
         payPalConfiguration = PayPalConfiguration(json.optJSONObject(PAYPAL_KEY))
-        samsungPayConfiguration = SamsungPayConfiguration(json.optJSONObject(SAMSUNG_PAY_KEY))
         venmoConfiguration = VenmoConfiguration(json.optJSONObject(PAY_WITH_VENMO_KEY))
         visaCheckoutConfiguration = VisaCheckoutConfiguration(json.optJSONObject(VISA_CHECKOUT_KEY))
 
@@ -304,7 +269,6 @@ class Configuration internal constructor(configurationString: String) {
         isGooglePayEnabled = googlePayConfiguration.isEnabled
         isLocalPaymentEnabled = isPayPalEnabled // Local Payments are enabled when PayPal is enabled
         isPostalCodeChallengePresent = challenges.contains("postal_code")
-        isSamsungPayEnabled = samsungPayConfiguration.isEnabled
         isVenmoEnabled = venmoConfiguration.isAccessTokenValid
         isVisaCheckoutEnabled = visaCheckoutConfiguration.isEnabled
         payPalDirectBaseUrl = payPalConfiguration.directBaseUrl
@@ -327,11 +291,6 @@ class Configuration internal constructor(configurationString: String) {
         payPalCurrencyIsoCode = payPalConfiguration.currencyIsoCode
         payPalDisplayName = payPalConfiguration.displayName
         payPalEnvironment = payPalConfiguration.environment
-        samsungPayAuthorization = samsungPayConfiguration.samsungAuthorization
-        samsungPayEnvironment = samsungPayConfiguration.environment
-        samsungPayMerchantDisplayName = samsungPayConfiguration.merchantDisplayName
-        samsungPayServiceId = samsungPayConfiguration.serviceId
-        samsungPaySupportedCardBrands = samsungPayConfiguration.supportedCardBrands.toList()
         supportedCardTypes = cardConfiguration.supportedCardTypes
         venmoAccessToken = venmoConfiguration.accessToken
         venmoEnvironment = venmoConfiguration.environment
