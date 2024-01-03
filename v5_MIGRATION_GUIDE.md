@@ -561,4 +561,4 @@ class MyActivity : FragmentActivity() {
 
 ## Samsung Pay
 
-The Samsung Pay integration has been removed. Please remove it from your app.
+The Samsung Pay integration is no longer supported. Please remove it from your app.
