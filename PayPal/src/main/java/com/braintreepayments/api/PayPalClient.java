@@ -92,7 +92,6 @@ public class PayPalClient {
                 return;
             }
 
-
             sendPayPalRequest(context, payPalCheckoutRequest, callback);
         });
 
