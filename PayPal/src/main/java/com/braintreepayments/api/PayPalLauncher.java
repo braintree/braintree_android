@@ -41,8 +41,7 @@ public class PayPalLauncher {
      *
      * @param activity       an Android {@link FragmentActivity}
      * @param paymentAuthRequest a request to launch the PayPal web flow created in
-     *                       {@link PayPalClient#createPaymentAuthRequest(FragmentActivity,
-     *                       PayPalRequest, PayPalPaymentAuthCallback)}
+     *                       {@link PayPalClient#createPaymentAuthRequest(Context, PayPalRequest, PayPalPaymentAuthCallback)}
      */
     public void launch(@NonNull FragmentActivity activity,
                        @NonNull PayPalPaymentAuthRequestParams paymentAuthRequest) {

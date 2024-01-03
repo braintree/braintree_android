@@ -54,25 +54,25 @@ public class PayPalClient {
     }
 
     /**
-     * Starts the PayPal payment flow by creating a {@link PayPalPaymentAuthRequestParams} to be used to
-     * launch the PayPal web authentication flow in
+     * Starts the PayPal payment flow by creating a {@link PayPalPaymentAuthRequestParams} to be
+     * used to launch the PayPal web authentication flow in
      * {@link PayPalLauncher#launch(FragmentActivity, PayPalPaymentAuthRequestParams)}.
      *
-     * @param activity      Android FragmentActivity
+     * @param context       Android Context
      * @param payPalRequest a {@link PayPalRequest} used to customize the request.
      * @param callback      {@link PayPalPaymentAuthCallback}
      */
-    public void createPaymentAuthRequest(@NonNull final FragmentActivity activity,
+    public void createPaymentAuthRequest(@NonNull final Context context,
                                          @NonNull final PayPalRequest payPalRequest,
                                          @NonNull final PayPalPaymentAuthCallback callback) {
         if (payPalRequest instanceof PayPalCheckoutRequest) {
-            sendCheckoutRequest(activity, (PayPalCheckoutRequest) payPalRequest, callback);
+            sendCheckoutRequest(context, (PayPalCheckoutRequest) payPalRequest, callback);
         } else if (payPalRequest instanceof PayPalVaultRequest) {
-            sendVaultRequest(activity, (PayPalVaultRequest) payPalRequest, callback);
+            sendVaultRequest(context, (PayPalVaultRequest) payPalRequest, callback);
         }
     }
 
-    private void sendCheckoutRequest(final FragmentActivity activity,
+    private void sendCheckoutRequest(final Context context,
                                      final PayPalCheckoutRequest payPalCheckoutRequest,
                                      final PayPalPaymentAuthCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
@@ -93,12 +93,12 @@ public class PayPalClient {
             }
 
 
-            sendPayPalRequest(activity, payPalCheckoutRequest, callback);
+            sendPayPalRequest(context, payPalCheckoutRequest, callback);
         });
 
     }
 
-    private void sendVaultRequest(final FragmentActivity activity,
+    private void sendVaultRequest(final Context context,
                                   final PayPalVaultRequest payPalVaultRequest,
                                   final PayPalPaymentAuthCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
@@ -118,23 +118,14 @@ public class PayPalClient {
                 return;
             }
 
-            try {
-                assertCanPerformBrowserSwitch(activity);
-            } catch (BrowserSwitchException browserSwitchException) {
-                braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
-                Exception manifestInvalidError =
-                        createBrowserSwitchError(browserSwitchException);
-                callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(manifestInvalidError));
-                return;
-            }
-            sendPayPalRequest(activity, payPalVaultRequest, callback);
+            sendPayPalRequest(context, payPalVaultRequest, callback);
         });
     }
 
-    private void sendPayPalRequest(final FragmentActivity activity,
+    private void sendPayPalRequest(final Context context,
                                    final PayPalRequest payPalRequest,
                                    final PayPalPaymentAuthCallback callback) {
-        internalPayPalClient.sendRequest(activity, payPalRequest,
+        internalPayPalClient.sendRequest(context, payPalRequest,
                 (payPalResponse, error) -> {
                     if (payPalResponse != null) {
                         String analyticsPrefix = getAnalyticsEventPrefix(payPalRequest);
