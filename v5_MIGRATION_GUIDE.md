@@ -18,6 +18,7 @@ basics for updating your Braintree integration from v4 to v5.
 1. [Local Payment](#local-payment)
 1. [SEPA Direct Debit](#sepa-direct-debit)
 1. [Visa Checkout](#visa-checkout)
+1. [Samsung Pay](#samsung-pay)
 
 ## Android API
 
@@ -557,3 +558,7 @@ class MyActivity : FragmentActivity() {
     }
 }
 ```
+
+## Samsung Pay
+
+The Samsung Pay integration has been removed. Please remove it from your app.
