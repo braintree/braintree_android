@@ -1,6 +1,8 @@
 package com.braintreepayments.api;
 
 import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.eq;
@@ -69,6 +71,29 @@ public class PayPalLauncherUnitTest {
     }
 
     @Test
+    public void launch_whenDeviceCantPerformBrowserSwitch_returnsError()
+            throws BrowserSwitchException {
+        PayPalPaymentAuthRequestParams paymentAuthRequest = mock(PayPalPaymentAuthRequestParams.class);
+        BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
+        when(paymentAuthRequest.getBrowserSwitchOptions()).thenReturn(options);
+        BrowserSwitchException exception = new BrowserSwitchException("browser switch error");
+        doThrow(exception).when(browserSwitchClient).assertCanPerformBrowserSwitch(same(activity), same(options));
+        PayPalLauncher sut = new PayPalLauncher(browserSwitchClient, payPalLauncherCallback);
+
+        sut.launch(activity, paymentAuthRequest);
+
+        ArgumentCaptor<PayPalPaymentAuthResult> captor =
+                ArgumentCaptor.forClass(PayPalPaymentAuthResult.class);
+        verify(payPalLauncherCallback).onResult(captor.capture());
+        PayPalPaymentAuthResult result = captor.getValue();
+        assertEquals("AndroidManifest.xml is incorrectly configured or another app " +
+                        "defines the same browser switch url as this app. See " +
+                        "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
+                        "for the correct configuration: browser switch error",
+                result.getError().getMessage());
+    }
+
+    @Test
     public void deliverResult_deliversResultToLauncherCallback() {
         BrowserSwitchResult result = mock(BrowserSwitchResult.class);
         when(browserSwitchClient.parseResult(eq(activity), eq(PAYPAL), eq(intent))).thenReturn(
@@ -95,4 +120,6 @@ public class PayPalLauncherUnitTest {
 
         verify(browserSwitchClient).clearActiveRequests(same(activity));
     }
+
+
 }
