@@ -1,5 +1,8 @@
 package com.braintreepayments.api;
 
+import android.app.Activity;
+
+import androidx.activity.ComponentActivity;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.annotation.NonNull;
@@ -24,7 +27,7 @@ public class GooglePayLauncher {
                 callback);
     }
 
-    public GooglePayLauncher(@NonNull FragmentActivity activity,
+    public GooglePayLauncher(@NonNull ComponentActivity activity,
                              @NonNull GooglePayLauncherCallback callback) {
         this(activity.getActivityResultRegistry(), activity, callback);
     }
