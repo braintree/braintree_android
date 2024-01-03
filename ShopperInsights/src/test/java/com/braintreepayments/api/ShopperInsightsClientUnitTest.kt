@@ -5,6 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import org.junit.Assert.assertNotNull
@@ -49,8 +50,8 @@ class ShopperInsightsClientUnitTest {
         sut.getRecommendedPaymentMethods(context, request) { result ->
             assertNotNull(result)
             val successResult = assertIs<ShopperInsightsResult.Success>(result)
-            assertNotNull(successResult.response.isPayPalRecommended)
-            assertNotNull(successResult.response.isVenmoRecommended)
+            assertFalse(successResult.response.isPayPalRecommended)
+            assertFalse(successResult.response.isVenmoRecommended)
         }
     }
 
@@ -63,8 +64,8 @@ class ShopperInsightsClientUnitTest {
         sut.getRecommendedPaymentMethods(context, request) { result ->
             assertNotNull(result)
             val successResult = assertIs<ShopperInsightsResult.Success>(result)
-            assertNotNull(successResult.response.isPayPalRecommended)
-            assertNotNull(successResult.response.isVenmoRecommended)
+            assertFalse(successResult.response.isPayPalRecommended)
+            assertFalse(successResult.response.isVenmoRecommended)
         }
     }
 
