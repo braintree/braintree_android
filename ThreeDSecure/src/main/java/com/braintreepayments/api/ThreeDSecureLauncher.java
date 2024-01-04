@@ -3,12 +3,12 @@ package com.braintreepayments.api;
 import android.content.Context;
 import android.os.TransactionTooLargeException;
 
+import androidx.activity.ComponentActivity;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LifecycleOwner;
 
 /**
@@ -24,7 +24,7 @@ public class ThreeDSecureLauncher {
 
     /**
      * Used to launch the 3DS authentication flow to tokenize a 3DS card. This class must be
-     * instantiated in the onCreateView method of your Fragment
+     * instantiated before your Fragment is created.
      *
      * @param fragment an Android Fragment from which you will launch the 3DS flow
      * @param callback a {@link ThreeDSecureLauncherCallback} to received the result of the 3DS
@@ -38,13 +38,13 @@ public class ThreeDSecureLauncher {
 
     /**
      * Used to launch the 3DS authentication flow to tokenize a 3DS card. This class must be
-     * instantiated in the onCreate method of your FragmentActivity
+     * instantiated before your Activity is created.
      *
      * @param activity an Android Activity from which you will launch the 3DS flow
      * @param callback a {@link ThreeDSecureLauncherCallback} to received the result of the 3DS
      *                 authentication flow
      */
-    public ThreeDSecureLauncher(@NonNull FragmentActivity activity,
+    public ThreeDSecureLauncher(@NonNull ComponentActivity activity,
                                 @NonNull ThreeDSecureLauncherCallback callback) {
         this(activity.getActivityResultRegistry(), activity, callback);
     }
@@ -61,15 +61,14 @@ public class ThreeDSecureLauncher {
 
     /**
      * Launches the 3DS flow by switching to an authentication Activity. Call this method in the
-     * callback of
-     * {@link ThreeDSecureClient#createPaymentAuthRequest(Context, ThreeDSecureRequest,
+     * callback of {@link ThreeDSecureClient#createPaymentAuthRequest(Context, ThreeDSecureRequest,
      * ThreeDSecurePaymentAuthRequestCallback)} if user authentication is required
-     * {@link ThreeDSecureLookup#requiresUserAuthentication()}
+     * {@link ThreeDSecureLookup#requiresUserAuthentication()}. This method cannot be called until
+     * the lifecycle of the Fragment or Activity used to instantiate your {@link ThreeDSecureLauncher}
+     * has reached the CREATED state.
      *
      * @param paymentAuthRequest the result of
-     *                           {@link
-     *                           ThreeDSecureClient#continuePerformVerification(ThreeDSecureParams,
-     *                           ThreeDSecureResultCallback)}
+     *                           {@link ThreeDSecureClient#createPaymentAuthRequest(Context, ThreeDSecureRequest, ThreeDSecurePaymentAuthRequestCallback)}
      */
     public void launch(ThreeDSecurePaymentAuthRequest.ReadyToLaunch paymentAuthRequest) {
         try {
