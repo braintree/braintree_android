@@ -65,7 +65,7 @@ public class ThreeDSecureLauncher {
      * ThreeDSecurePaymentAuthRequestCallback)} if user authentication is required
      * {@link ThreeDSecureLookup#requiresUserAuthentication()}. This method cannot be called until
      * the lifecycle of the Fragment or Activity used to instantiate your {@link ThreeDSecureLauncher}
-     * has reached CREATED.
+     * has reached the CREATED state.
      *
      * @param paymentAuthRequest the result of
      *                           {@link ThreeDSecureClient#createPaymentAuthRequest(Context, ThreeDSecureRequest, ThreeDSecurePaymentAuthRequestCallback)}
