@@ -1,10 +1,8 @@
 package com.braintreepayments.api;
 
-import androidx.fragment.app.FragmentActivity;
-
 /**
  * Callback for receiving result of
- * {@link PayPalClient#createPaymentAuthRequest(FragmentActivity, PayPalRequest, PayPalPaymentAuthCallback)}.
+ * {@link PayPalClient#createPaymentAuthRequest(android.content.Context, PayPalRequest, PayPalPaymentAuthCallback)}.
  */
 public interface PayPalPaymentAuthCallback {
 

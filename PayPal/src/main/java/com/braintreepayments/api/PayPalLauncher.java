@@ -41,11 +41,18 @@ public class PayPalLauncher {
      *
      * @param activity       an Android {@link FragmentActivity}
      * @param paymentAuthRequest a request to launch the PayPal web flow created in
-     *                       {@link PayPalClient#createPaymentAuthRequest(FragmentActivity,
-     *                       PayPalRequest, PayPalPaymentAuthCallback)}
+     *                       {@link PayPalClient#createPaymentAuthRequest(Context, PayPalRequest, PayPalPaymentAuthCallback)}
      */
     public void launch(@NonNull FragmentActivity activity,
                        @NonNull PayPalPaymentAuthRequestParams paymentAuthRequest) {
+        try {
+            assertCanPerformBrowserSwitch(activity, paymentAuthRequest);
+        } catch (BrowserSwitchException browserSwitchException) {
+            Exception manifestInvalidError =
+                    createBrowserSwitchError(browserSwitchException);
+            callback.onResult(new PayPalPaymentAuthResult(manifestInvalidError));
+            return;
+        }
         try {
             browserSwitchClient.start(activity, paymentAuthRequest.getBrowserSwitchOptions());
         } catch (BrowserSwitchException e) {
@@ -78,5 +85,18 @@ public class PayPalLauncher {
            callback.onResult(new PayPalPaymentAuthResult(result));
            browserSwitchClient.clearActiveRequests(context);
         }
+    }
+
+    private void assertCanPerformBrowserSwitch(FragmentActivity activity, PayPalPaymentAuthRequestParams params)
+            throws BrowserSwitchException {
+        browserSwitchClient.assertCanPerformBrowserSwitch(activity, params.getBrowserSwitchOptions());
+    }
+
+    private static Exception createBrowserSwitchError(BrowserSwitchException exception) {
+        return new BraintreeException(
+                "AndroidManifest.xml is incorrectly configured or another app " +
+                        "defines the same browser switch url as this app. See " +
+                        "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
+                        "for the correct configuration: " + exception.getMessage());
     }
 }

@@ -99,7 +99,7 @@ public class PayPalFragment extends BaseFragment {
         } else {
             payPalRequest = createPayPalCheckoutRequest(activity, amount);
         }
-        payPalClient.createPaymentAuthRequest(activity, payPalRequest,
+        payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest,
                 (paymentAuthRequest) -> {
                     if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.Failure) {
                         handleError(((PayPalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
