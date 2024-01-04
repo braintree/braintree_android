@@ -125,7 +125,6 @@ detekt {
             "LocalPayment/src",
             "PayPal/src",
             "DataCollector/src",
-            "PayPalNativeCheckout/src",
             "SEPADirectDebit/src",
             "SharedUtils/src",
             "TestUtils/src",

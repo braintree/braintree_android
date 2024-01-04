@@ -31,9 +31,6 @@
         <action
             android:id="@+id/action_mainFragment_to_sepaDirectDebitFragment"
             app:destination="@id/SEPADirectDebitFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_payPalNativeCheckoutFragment"
-            app:destination="@id/payPalNativeCheckoutFragment" />
     </fragment>
     <fragment
         android:id="@+id/cardFragment"
@@ -165,21 +162,6 @@
             app:argType="string" />
         <action
             android:id="@+id/action_venmoFragment_to_displayNonceFragment"
-            app:destination="@id/displayNonceFragment"
-            app:popUpTo="@id/mainFragment"
-            app:popUpToInclusive="false" />
-    </fragment>
-    <fragment
-        android:id="@+id/payPalNativeCheckoutFragment"
-        android:name="com.braintreepayments.demo.PayPalNativeCheckoutFragment"
-        android:label="fragment_paypal_native_checkout"
-        tools:layout="@layout/fragment_paypal_native_checkout">
-        <argument
-            android:name="authString"
-            android:defaultValue=""
-            app:argType="string" />
-        <action
-            android:id="@+id/action_payPalNativeCheckoutFragment_to_displayNonceFragment"
             app:destination="@id/displayNonceFragment"
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="false" />
