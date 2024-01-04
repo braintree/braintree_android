@@ -54,7 +54,8 @@ public class GooglePayLauncher {
 
     /**
      * Launches the Google Pay payment sheet. This method cannot be called until the lifecycle of
-     * the Fragment or Activity used to instantiate your {@link GooglePayLauncher} has reached CREATED.
+     * the Fragment or Activity used to instantiate your {@link GooglePayLauncher} has reached the
+     * CREATED state.
      *
      * @param googlePayPaymentAuthRequestParams the {@link GooglePayPaymentAuthRequestParams}
      *                                          received from invoking
