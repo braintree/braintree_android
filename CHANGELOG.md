@@ -118,6 +118,8 @@
     * Add `AmericanExpressResult`
   * Samsung Pay
     * Remove entire Samsung Pay module
+  * PayPal Native Checkout
+    * Remove entire PayPal Native Checkout module
     
 ## 4.40.1 (2023-12-13)
 

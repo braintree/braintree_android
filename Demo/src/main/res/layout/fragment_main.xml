@@ -17,19 +17,10 @@
         <Button
             android:id="@+id/card"
             style="?android:attr/buttonStyle"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/cards"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/local_payment"
-            style="?android:attr/buttonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/local_payment_button"
             android:textSize="12sp" />
 
     </TableRow>
@@ -41,7 +32,7 @@
         <Button
             android:id="@+id/google_pay"
             style="?android:attr/buttonStyle"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/google_pay"
@@ -50,7 +41,7 @@
         <Button
             android:id="@+id/venmo"
             style="?android:attr/buttonStyle"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/venmo"
@@ -62,21 +53,21 @@
         android:layout_height="match_parent">
 
         <Button
-            android:id="@+id/paypal"
+            android:id="@+id/local_payment"
             style="?android:attr/buttonStyle"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/paypal_button"
+            android:text="@string/local_payment_button"
             android:textSize="12sp" />
 
         <Button
-            android:id="@+id/paypal_native_checkout"
+            android:id="@+id/paypal"
             style="?android:attr/buttonStyle"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/paypal_native_checkout"
+            android:text="@string/paypal_button"
             android:textSize="12sp" />
 
     </TableRow>
@@ -88,7 +79,7 @@
         <Button
             android:id="@+id/sepa_debit"
             style="?android:attr/buttonStyle"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/sepa_direct_debit_button"
@@ -97,7 +88,7 @@
         <Button
             android:id="@+id/visa_checkout"
             style="?android:attr/buttonStyle"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/visa_checkout_button"

@@ -19,6 +19,7 @@ basics for updating your Braintree integration from v4 to v5.
 1. [SEPA Direct Debit](#sepa-direct-debit)
 1. [Visa Checkout](#visa-checkout)
 1. [Samsung Pay](#samsung-pay)
+1. [PayPal Native Checkout](#paypal-native-checkout)
 
 ## Android API
 
@@ -562,3 +563,8 @@ class MyActivity : FragmentActivity() {
 ## Samsung Pay
 
 The Samsung Pay integration is no longer supported. Please remove it from your app.
+
+## PayPal Native Checkout
+
+The PayPal Native Checkout integration is no longer supported. Please remove it from your app and 
+use the PayPal (web) integration.
