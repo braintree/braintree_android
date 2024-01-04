@@ -38,6 +38,18 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         request: ShopperInsightsRequest,
         callback: ShopperInsightsCallback
     ) {
+        if (request.email == null && request.phone == null) {
+            callback.onResult(
+                ShopperInsightsResult.Failure(
+                    IllegalArgumentException(
+                        "One of ShopperInsightsRequest.email or " +
+                            "ShopperInsightsRequest.phone must be non-null."
+                    )
+                )
+            )
+            return
+        }
+
         val applicationContext = context.applicationContext
         val isVenmoAppInstalled = deviceInspector.isVenmoInstalled(applicationContext)
         val isPayPalAppInstalled = deviceInspector.isPayPalInstalled(applicationContext)
@@ -48,18 +60,6 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                     ShopperInsightsInfo(
                         isPayPalRecommended = true,
                         isVenmoRecommended = true
-                    )
-                )
-            )
-            return
-        }
-
-        if (request.email == null && request.phone == null) {
-            callback.onResult(
-                ShopperInsightsResult.Failure(
-                    IllegalArgumentException(
-                        "One of ShopperInsightsRequest.email or " +
-                            "ShopperInsightsRequest.phone must be non-null."
                     )
                 )
             )

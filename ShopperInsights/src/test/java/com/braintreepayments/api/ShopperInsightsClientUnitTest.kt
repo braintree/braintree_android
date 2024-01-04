@@ -74,7 +74,7 @@ class ShopperInsightsClientUnitTest {
         every { deviceInspector.isVenmoInstalled(applicationContext) } returns true
         every { deviceInspector.isPayPalInstalled(applicationContext) } returns true
 
-        val request = ShopperInsightsRequest(null, null)
+        val request = ShopperInsightsRequest("some-email", null)
         sut.getRecommendedPaymentMethods(context, request) { result ->
             assertNotNull(result)
             val successResult = assertIs<ShopperInsightsResult.Success>(result)
