@@ -1,9 +1,13 @@
 package com.braintreepayments.api
 
+import android.content.Context
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
@@ -17,15 +21,20 @@ import org.junit.Test
  */
 class ShopperInsightsClientUnitTest {
 
+    private val context: Context = mockk(relaxed = true)
+    private val applicationContext: Context = mockk(relaxed = true)
     private lateinit var sut: ShopperInsightsClient
     private lateinit var paymentApi: PaymentReadyApi
     private lateinit var braintreeClient: BraintreeClient
+    private lateinit var deviceInspector: DeviceInspector
 
     @Before
     fun beforeEach() {
         paymentApi = mockk(relaxed = true)
         braintreeClient = mockk(relaxed = true)
-        sut = ShopperInsightsClient(paymentApi, braintreeClient)
+        deviceInspector = mockk(relaxed = true)
+        every { context.applicationContext } returns applicationContext
+        sut = ShopperInsightsClient(paymentApi, braintreeClient, deviceInspector)
     }
 
     /**
@@ -33,20 +42,54 @@ class ShopperInsightsClientUnitTest {
      * when providing a shopping insight request.
      */
     @Test
-    fun testGetRecommendedPaymentMethods_returnsDefaultRecommendations() {
+    fun testGetRecommendedPaymentMethods_noInstalledApps_returnsDefaultRecommendations() {
+        every { deviceInspector.isVenmoInstalled(applicationContext) } returns false
+        every { deviceInspector.isPayPalInstalled(applicationContext) } returns false
+
         val request = ShopperInsightsRequest("fake-email", null)
-        sut.getRecommendedPaymentMethods(request) { result ->
+        sut.getRecommendedPaymentMethods(context, request) { result ->
             assertNotNull(result)
             val successResult = assertIs<ShopperInsightsResult.Success>(result)
-            assertNotNull(successResult.response.isPayPalRecommended)
-            assertNotNull(successResult.response.isVenmoRecommended)
+            assertFalse(successResult.response.isPayPalRecommended)
+            assertFalse(successResult.response.isVenmoRecommended)
+        }
+    }
+
+    @Test
+    fun testGetRecommendedPaymentMethods_oneInstalledApp_returnsDefaultRecommendations() {
+        every { deviceInspector.isVenmoInstalled(applicationContext) } returns true
+        every { deviceInspector.isPayPalInstalled(applicationContext) } returns false
+
+        val request = ShopperInsightsRequest("fake-email", null)
+        sut.getRecommendedPaymentMethods(context, request) { result ->
+            assertNotNull(result)
+            val successResult = assertIs<ShopperInsightsResult.Success>(result)
+            assertFalse(successResult.response.isPayPalRecommended)
+            assertFalse(successResult.response.isVenmoRecommended)
+        }
+    }
+
+    @Test
+    fun testGetRecommendedPaymentMethods_hasBothAppsInstalled_returnsSuccessResult() {
+        every { deviceInspector.isVenmoInstalled(applicationContext) } returns true
+        every { deviceInspector.isPayPalInstalled(applicationContext) } returns true
+
+        val request = ShopperInsightsRequest("some-email", null)
+        sut.getRecommendedPaymentMethods(context, request) { result ->
+            assertNotNull(result)
+            val successResult = assertIs<ShopperInsightsResult.Success>(result)
+            assertTrue(successResult.response.isPayPalRecommended)
+            assertTrue(successResult.response.isVenmoRecommended)
         }
     }
 
     @Test
     fun `testGetRecommendedPaymentMethods - request object has null properties`() {
+        every { deviceInspector.isVenmoInstalled(applicationContext) } returns false
+        every { deviceInspector.isPayPalInstalled(applicationContext) } returns true
+
         val request = ShopperInsightsRequest(null, null)
-        sut.getRecommendedPaymentMethods(request) { result ->
+        sut.getRecommendedPaymentMethods(context, request) { result ->
             assertNotNull(result)
             val error = assertIs<ShopperInsightsResult.Failure>(result)
             val iae = assertIs<IllegalArgumentException>(error.error)
