@@ -191,6 +191,11 @@ public class PayPalLineItem implements Parcelable {
         return description;
     }
 
+    @Nullable
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
     @PayPalLineItemKind
     @Nullable
     public String getKind() {
@@ -223,16 +228,6 @@ public class PayPalLineItem implements Parcelable {
     }
 
     @Nullable
-    public String getUrl() {
-        return url;
-    }
-
-    @Nullable
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    @Nullable
     public String getUpcCode() {
         return upcCode;
     }
@@ -241,6 +236,11 @@ public class PayPalLineItem implements Parcelable {
     @Nullable
     public String getUpcType() {
         return upcType;
+    }
+
+    @Nullable
+    public String getUrl() {
+        return url;
     }
 
     public JSONObject toJson() {
