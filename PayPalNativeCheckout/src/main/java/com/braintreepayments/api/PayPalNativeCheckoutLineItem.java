@@ -46,28 +46,28 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
     public static final String UPC_TYPE_5 = "UPC-5";
 
     private static final String DESCRIPTION_KEY = "description";
+    private static final String IMAGE_URL_KEY = "image_url";
     private static final String KIND_KEY = "kind";
     private static final String NAME_KEY = "name";
     private static final String PRODUCT_CODE_KEY = "product_code";
     private static final String QUANTITY_KEY = "quantity";
     private static final String UNIT_AMOUNT_KEY = "unit_amount";
     private static final String UNIT_TAX_AMOUNT_KEY = "unit_tax_amount";
-    private static final String URL_KEY = "url";
-    private static final String IMAGE_URL_KEY = "image_url";
     private static final String UPC_CODE_KEY = "upc_code";
     private static final String UPC_TYPE_KEY = "upc_type";
+    private static final String URL_KEY = "url";
 
     private String description;
+    private String imageUrl;
     private String kind;
     private String name;
     private String productCode;
     private String quantity;
     private String unitAmount;
     private String unitTaxAmount;
-    private String url;
-    private String imageUrl;
     private String upcCode;
     private String upcType;
+    private String url;
 
     /**
      * Constructs a line item for PayPal checkout flows. All parameters are required.
@@ -94,6 +94,15 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
      */
     public void setDescription(@NonNull String description) {
         this.description = description;
+    }
+
+    /**
+     * The image URL to product information.
+     *
+     * @param imageUrl The image URL with additional information.
+     */
+    public void setImageUrl(@Nullable String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     /**
@@ -151,29 +160,11 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
     }
 
     /**
-     * The URL to product information.
-     *
-     * @param url The URL with additional information.
-     */
-    public void setUrl(@NonNull String url) {
-        this.url = url;
-    }
-
-    /**
-     * The image URL to product information.
-     *
-     * @param imageUrl The image URL with additional information.
-     */
-    public void setImageUrl(@NonNull String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    /**
      * UPC code of the item.
      *
      * @param upcCode The UPC code.
      */
-    public void setUpcCode(@NonNull String upcCode) {
+    public void setUpcCode(@Nullable String upcCode) {
         this.upcCode = upcCode;
     }
 
@@ -182,13 +173,27 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
      *
      * @param upcType The UPC type.
      */
-    public void setUpcType(@NonNull String upcType) {
+    public void setUpcType(@Nullable @PayPalLineItemUpcType String upcType) {
         this.upcType = upcType;
+    }
+
+    /**
+     * The URL to product information.
+     *
+     * @param url The URL with additional information.
+     */
+    public void setUrl(@NonNull String url) {
+        this.url = url;
     }
 
     @Nullable
     public String getDescription() {
         return description;
+    }
+
+    @Nullable
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     @PayPalLineItemKind
@@ -223,39 +228,35 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
     }
 
     @Nullable
-    public String getUrl() {
-        return url;
-    }
-
-    @Nullable
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    @Nullable
     public String getUpcCode() {
         return upcCode;
     }
 
+    @PayPalLineItemUpcType
     @Nullable
     public String getUpcType() {
         return upcType;
+    }
+
+    @Nullable
+    public String getUrl() {
+        return url;
     }
 
     public JSONObject toJson() {
         try {
             return new JSONObject()
                     .putOpt(DESCRIPTION_KEY, description)
+                    .putOpt(IMAGE_URL_KEY, imageUrl)
                     .putOpt(KIND_KEY, kind)
                     .putOpt(NAME_KEY, name)
                     .putOpt(PRODUCT_CODE_KEY, productCode)
                     .putOpt(QUANTITY_KEY, quantity)
                     .putOpt(UNIT_AMOUNT_KEY, unitAmount)
                     .putOpt(UNIT_TAX_AMOUNT_KEY, unitTaxAmount)
-                    .putOpt(URL_KEY, url)
-                    .putOpt(IMAGE_URL_KEY, imageUrl)
                     .putOpt(UPC_CODE_KEY, upcCode)
-                    .putOpt(UPC_TYPE_KEY, upcType);
+                    .putOpt(UPC_TYPE_KEY, upcType)
+                    .putOpt(URL_KEY, url);
         } catch (JSONException ignored) {
         }
 
@@ -264,16 +265,16 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
 
     PayPalNativeCheckoutLineItem(Parcel in) {
         description = in.readString();
+        imageUrl = in.readString();
         kind = in.readString();
         name = in.readString();
         productCode = in.readString();
         quantity = in.readString();
         unitAmount = in.readString();
         unitTaxAmount = in.readString();
-        url = in.readString();
-        imageUrl = in.readString();
         upcCode = in.readString();
         upcType = in.readString();
+        url = in.readString();
     }
 
     public static final Creator<PayPalNativeCheckoutLineItem> CREATOR = new Creator<PayPalNativeCheckoutLineItem>() {
@@ -296,16 +297,16 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(description);
+        parcel.writeString(imageUrl);
         parcel.writeString(kind);
         parcel.writeString(name);
         parcel.writeString(productCode);
         parcel.writeString(quantity);
         parcel.writeString(unitAmount);
         parcel.writeString(unitTaxAmount);
-        parcel.writeString(url);
-        parcel.writeString(imageUrl);
         parcel.writeString(upcCode);
         parcel.writeString(upcType);
+        parcel.writeString(url);
     }
 
 }

@@ -3,10 +3,7 @@
 # unreleased
 
 * BraintreePayPal
-  * Add following properties to PayPalLineItem
-    * imageUrl
-    * upcCode
-    * upcType
+  * Add imageUrl, upcCode, and upcType to PayPalLineItem
 
 ## 4.40.1 (2023-12-13)
 
