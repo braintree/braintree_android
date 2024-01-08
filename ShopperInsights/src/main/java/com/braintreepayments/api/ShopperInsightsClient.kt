@@ -71,6 +71,8 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
 
         //TODO: get correct merchant ID from SDK
         val merchantId = "MXSJ4F5BADVNS"
+
+        // Default values for country code and currency code. For Venmo recommendations.
         val countryCode = "US"
         val currencyCode = "USD"
 

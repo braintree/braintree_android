@@ -37,7 +37,7 @@ dependencies {
     implementation deps.coreKtx
 
     api project(':BraintreeCore')
-
+    implementation 'com.google.code.gson:gson:2.8.9'
     testImplementation deps.jsonAssert
     testImplementation deps.kotlinTest
     testImplementation deps.mockk
