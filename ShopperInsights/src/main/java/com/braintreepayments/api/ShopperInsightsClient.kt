@@ -1,5 +1,8 @@
 package com.braintreepayments.api
 
+import PaymentMethodDetails
+import PaymentMethods
+import ShopperInsightApiResult
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_PRESENTED
@@ -71,7 +74,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         val countryCode = "US"
         val currencyCode = "USD"
 
-        paymentReadyAPI.processRequest(
+        val result = paymentReadyAPI.processRequest(
             ShopperInsightsApiRequest(
                 request,
                 merchantId = merchantId,
@@ -83,11 +86,15 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         callback.onResult(
             ShopperInsightsResult.Success(
                 ShopperInsightsInfo(
-                    isPayPalRecommended = false,
-                    isVenmoRecommended = false
+                    isPayPalRecommended = isPaymentRecommended(result.eligible_methods.paypal),
+                    isVenmoRecommended = isPaymentRecommended(result.eligible_methods.venmo)
                 )
             )
         )
+    }
+
+    private fun isPaymentRecommended(paymentDetail : PaymentMethodDetails) : Boolean {
+        return paymentDetail.eligible_in_paypal_network == true && paymentDetail.recommended == true
     }
 
     /**

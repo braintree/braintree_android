@@ -1,10 +1,37 @@
 package com.braintreepayments.api
 
+import PaymentMethodDetails
+import PaymentMethods
+import ShopperInsightApiResult
 import org.json.JSONObject
 
 // TODO: Implementation, documentation and interface.
 internal class PaymentReadyApi {
-    fun processRequest(request: ShopperInsightsApiRequest): String = request.toJson()
+    fun processRequest(request: ShopperInsightsApiRequest): ShopperInsightApiResult {
+
+        request.toJson()
+
+        // TODO: Network call
+
+        // Hardcoded result
+        return ShopperInsightApiResult(
+            eligible_methods = PaymentMethods(
+                paypal = PaymentMethodDetails(
+                    can_be_vaulted = true,
+                    eligible_in_paypal_network = true,
+                    recommended = true,
+                    recommended_priority = 1
+                ),
+                venmo = PaymentMethodDetails(
+                    can_be_vaulted = true,
+                    eligible_in_paypal_network = true,
+                    recommended = true,
+                    recommended_priority = 1
+                )
+            )
+        )
+
+    }
 
     private fun ShopperInsightsApiRequest.toJson(): String {
         return JSONObject().apply {
