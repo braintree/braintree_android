@@ -10,7 +10,6 @@ import androidx.activity.result.ActivityResultRegistry;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LifecycleOwner;
 
 /**
@@ -25,7 +24,7 @@ public class VenmoLauncher {
 
     /**
      * Used to launch the Venmo authentication flow to tokenize a Venmo account. This class must be
-     * instantiated in the OnCreate method of your Fragment.
+     * instantiated before the Fragment is created.
      *
      * @param fragment an Android Fragment from which you will launch the Venmo app
      * @param callback a {@link VenmoLauncherCallback} to receive the result of the Venmo
@@ -39,13 +38,13 @@ public class VenmoLauncher {
 
     /**
      * Used to launch the Venmo authentication flow to tokenize a Venmo account. This class must be
-     * instantiated in the OnCreate method of your Activity.
+     * instantiated before the Activity is created.
      *
      * @param activity an Android Activity from which you will launch the Venmo app
      * @param callback a {@link VenmoLauncherCallback} to receive the result of the Venmo
      *                 app switch authentication flow
      */
-    public VenmoLauncher(@NonNull FragmentActivity activity,
+    public VenmoLauncher(@NonNull ComponentActivity activity,
                          @NonNull VenmoLauncherCallback callback) {
         this(activity.getActivityResultRegistry(), activity, callback);
     }
@@ -58,7 +57,9 @@ public class VenmoLauncher {
     }
 
     /**
-     * Launches the Venmo authentication flow by switching to the Venmo app.
+     * Launches the Venmo authentication flow by switching to the Venmo app. This method cannot be
+     * called until the lifecycle of the Fragment or Activity used to instantiate your
+     * {@link VenmoLauncher} has reached the CREATED state.
      *
      * @param venmoPaymentAuthRequest the result of
      *                                {@link VenmoClient#createPaymentAuthRequest(android.content.Context, VenmoRequest, VenmoPaymentAuthRequestCallback)}
