@@ -66,7 +66,19 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
             return
         }
 
-        paymentReadyAPI.processRequest(request)
+        //TODO: get correct merchant ID from SDK
+        val merchantId = "MXSJ4F5BADVNS"
+        val countryCode = "US"
+        val currencyCode = "USD"
+
+        paymentReadyAPI.processRequest(
+            ShopperInsightsApiRequest(
+                request,
+                merchantId = merchantId,
+                currencyCode = currencyCode,
+                countryCode = countryCode
+            )
+        )
         // Hardcoded result
         callback.onResult(
             ShopperInsightsResult.Success(
