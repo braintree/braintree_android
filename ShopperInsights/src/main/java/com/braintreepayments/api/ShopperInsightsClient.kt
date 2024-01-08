@@ -88,15 +88,15 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         callback.onResult(
             ShopperInsightsResult.Success(
                 ShopperInsightsInfo(
-                    isPayPalRecommended = isPaymentRecommended(result.eligible_methods.paypal),
-                    isVenmoRecommended = isPaymentRecommended(result.eligible_methods.venmo)
+                    isPayPalRecommended = isPaymentRecommended(result.eligibleMethods.paypal),
+                    isVenmoRecommended = isPaymentRecommended(result.eligibleMethods.venmo)
                 )
             )
         )
     }
 
     private fun isPaymentRecommended(paymentDetail : PaymentMethodDetails) : Boolean {
-        return paymentDetail.eligible_in_paypal_network == true && paymentDetail.recommended == true
+        return paymentDetail.eligibleInPaypalNetwork == true && paymentDetail.recommended == true
     }
 
     /**

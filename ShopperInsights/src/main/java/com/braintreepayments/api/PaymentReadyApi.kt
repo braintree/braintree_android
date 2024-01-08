@@ -15,18 +15,18 @@ internal class PaymentReadyApi {
 
         // Hardcoded result
         return ShopperInsightApiResult(
-            eligible_methods = PaymentMethods(
+            eligibleMethods = PaymentMethods(
                 paypal = PaymentMethodDetails(
-                    can_be_vaulted = true,
-                    eligible_in_paypal_network = true,
+                    canBeVaulted = true,
+                    eligibleInPaypalNetwork = true,
                     recommended = true,
-                    recommended_priority = 1
+                    recommendedPriority = 1
                 ),
                 venmo = PaymentMethodDetails(
-                    can_be_vaulted = true,
-                    eligible_in_paypal_network = true,
+                    canBeVaulted = true,
+                    eligibleInPaypalNetwork = true,
                     recommended = true,
-                    recommended_priority = 1
+                    recommendedPriority = 1
                 )
             )
         )
