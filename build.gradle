@@ -18,7 +18,7 @@ buildscript {
 
     // The 'CI' build variable will evaluate to 'true' when build script is executed via GitHub Actions
     // Ref: https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
-    def roomVersion = System.getenv('CI') ? java7SafeRoomVersion : m1MacSafeRoomVersion
+    def roomVersion =  m1MacSafeRoomVersion
 
     ext.versions = [
             "kotlin"         : "1.7.10",
