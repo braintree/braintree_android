@@ -31,8 +31,15 @@ class PayPalInternalClient {
         this.payPalDataCollector = payPalDataCollector;
         this.apiClient = apiClient;
 
-        this.cancelUrl = String.format("%s://onetouch/v1/cancel", braintreeClient.getReturnUrlScheme());
-        this.successUrl = String.format("%s://onetouch/v1/success", braintreeClient.getReturnUrlScheme());
+        String returnUrl = Uri.parse(braintreeClient.getReturnUrlScheme()).getHost().toString();
+//        this.cancelUrl = String.format("%s://onetouch/v1/cancel", braintreeClient.getReturnUrlScheme());
+//        this.successUrl = String.format("%s://onetouch/v1/success", braintreeClient.getReturnUrlScheme());
+//        this.cancelUrl = String.format("%s/onetouch/v1/cancel", braintreeClient.getReturnUrlScheme());
+//        this.successUrl = String.format("%s/onetouch/v1/success", braintreeClient.getReturnUrlScheme());
+        this.cancelUrl = String.format(braintreeClient.getReturnUrlScheme());
+        this.successUrl = String.format(braintreeClient.getReturnUrlScheme());
+//        this.cancelUrl = String.format("%s://onetouch/v1/cancel", returnUrl);
+//        this.successUrl = String.format("%s://onetouch/v1/success", returnUrl);
     }
 
     void sendRequest(final Context context, final PayPalRequest payPalRequest, final PayPalInternalClientCallback callback) {

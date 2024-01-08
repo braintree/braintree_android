@@ -122,7 +122,7 @@ public class PayPalClient {
     }
 
     private void assertCanPerformBrowserSwitch(FragmentActivity activity) throws BrowserSwitchException {
-        braintreeClient.assertCanPerformBrowserSwitch(activity, BraintreeRequestCodes.PAYPAL);
+//        braintreeClient.assertCanPerformBrowserSwitch(activity, BraintreeRequestCodes.PAYPAL);
     }
 
     private static Exception createPayPalError() {

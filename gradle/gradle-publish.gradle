@@ -15,7 +15,7 @@ afterEvaluate {
                 artifactId project.ext.name
                 from components.release
                 artifact androidSourcesJar
-                artifact javadocsJar
+//                artifact javadocsJar
 
                 pom {
                     name = project.ext.pom_name ?: ''
@@ -46,10 +46,10 @@ afterEvaluate {
         }
     }
 
-    signing {
-        sign publishing.publications
-        sign configurations.archives
-    }
+//    signing {
+//        sign publishing.publications
+//        sign configurations.archives
+//    }
 }
 
 task javadocs(type: Javadoc) {
