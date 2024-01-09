@@ -2,6 +2,9 @@ package com.braintreepayments.api
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
+import com.braintreepayments.api.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_FAILED
+import com.braintreepayments.api.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_STARTED
+import com.braintreepayments.api.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_SUCCEEDED
 import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_PRESENTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_SELECTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_PRESENTED
@@ -38,6 +41,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         request: ShopperInsightsRequest,
         callback: ShopperInsightsCallback
     ) {
+        braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_STARTED)
         if (request.email == null && request.phone == null) {
             callback.onResult(
                 ShopperInsightsResult.Failure(
@@ -47,6 +51,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                     )
                 )
             )
+            braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_FAILED)
             return
         }
 
@@ -63,6 +68,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                     )
                 )
             )
+            braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_SUCCEEDED)
             return
         }
 
@@ -76,6 +82,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                 )
             )
         )
+        braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_SUCCEEDED)
     }
 
     /**
