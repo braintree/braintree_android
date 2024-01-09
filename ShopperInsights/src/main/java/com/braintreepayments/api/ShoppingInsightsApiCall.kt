@@ -7,7 +7,7 @@ import ShopperInsightApiResult
 internal class ShoppingInsightsApiCall(
     private val shoppingInsightsCreateBody: ShoppingInsightsCreateBody
 ) {
-    fun execute(request : ShopperInsightsApiRequest) : ShopperInsightApiResult {
+    fun execute(request: ShopperInsightsApiRequest): ShopperInsightApiResult {
         shoppingInsightsCreateBody.execute(request)
         // TODO: Network call
 

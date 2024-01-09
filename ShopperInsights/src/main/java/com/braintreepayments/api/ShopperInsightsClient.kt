@@ -69,7 +69,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
             return
         }
 
-        //TODO: get correct merchant ID from SDK
+        // TODO: get correct merchant ID from SDK
         val merchantId = "MXSJ4F5BADVNS"
 
         // Default values
@@ -103,7 +103,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         )
     }
 
-    private fun isPaymentRecommended(paymentDetail : PaymentMethodDetails) : Boolean {
+    private fun isPaymentRecommended(paymentDetail: PaymentMethodDetails): Boolean {
         return paymentDetail.eligibleInPaypalNetwork == true && paymentDetail.recommended == true
     }
 

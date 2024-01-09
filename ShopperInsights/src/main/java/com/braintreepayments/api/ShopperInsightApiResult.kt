@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
  *
  * @property eligibleMethods Contains the payment methods available to the shopper.
  */
-data class ShopperInsightApiResult (
+data class ShopperInsightApiResult(
     @SerializedName("eligible_methods")
     val eligibleMethods: PaymentMethods
 )
