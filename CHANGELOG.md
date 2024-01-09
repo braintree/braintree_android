@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPalNativeCheckout
+  * Bump native-checkout version to release `1.2.1`
+
 ## 4.40.1 (2023-12-13)
 
 * BraintreeCore
