@@ -7,6 +7,10 @@ package com.braintreepayments.api
  * @property merchantId The merchant's ID
  * @property currencyCode The currency code
  * @property countryCode The country code
+ * @property accountDetails Include account details
+ * @property vaultTokens Include vault tokens
+ * @property constraintType The constraint type
+ * @property paymentSources Payment sources, ie. PAYPAL VENMO
  *
  * [merchantId] [currencyCode] [countryCode] are needed for Venmo recommended results
  *
@@ -15,5 +19,9 @@ data class ShopperInsightsApiRequest(
     var request: ShopperInsightsRequest,
     var merchantId: String,
     var currencyCode: String,
-    var countryCode: String
+    var countryCode: String,
+    var accountDetails: Boolean,
+    var vaultTokens: Boolean,
+    var constraintType: String,
+    var paymentSources: List<String>
 )

@@ -1,39 +1,21 @@
 package com.braintreepayments.api
 
-import PaymentMethodDetails
-import PaymentMethods
-import ShopperInsightApiResult
+import org.json.JSONArray
 import org.json.JSONObject
 
 // TODO: Implementation, documentation and interface.
-internal class PaymentReadyApi {
-    fun processRequest(request: ShopperInsightsApiRequest): ShopperInsightApiResult {
+internal class ShoppingInsightsCreateBody {
+    fun execute(request: ShopperInsightsApiRequest): String {
 
-        request.toJson()
-
-        // TODO: Network call
-
-        // Hardcoded result
-        return ShopperInsightApiResult(
-            eligibleMethods = PaymentMethods(
-                paypal = PaymentMethodDetails(
-                    canBeVaulted = true,
-                    eligibleInPaypalNetwork = true,
-                    recommended = true,
-                    recommendedPriority = 1
-                ),
-                venmo = PaymentMethodDetails(
-                    canBeVaulted = true,
-                    eligibleInPaypalNetwork = true,
-                    recommended = true,
-                    recommendedPriority = 1
-                )
-            )
-        )
+        return request.toJson()
 
     }
 
     private fun ShopperInsightsApiRequest.toJson(): String {
+        val jsonPaymentSources = JSONArray()
+        for (source in paymentSources) {
+            jsonPaymentSources.put(source)
+        }
         return JSONObject().apply {
             put(KEY_CUSTOMER, JSONObject().apply {
                 putOpt(KEY_EMAIL, request.email)
@@ -53,6 +35,14 @@ internal class PaymentReadyApi {
                     put(KEY_CURRENCY_CODE, currencyCode)
                 })
             })
+            put(KEY_PREFERENCES, JSONObject().apply {
+                put(KEY_INCLUDE_ACCOUNT_DETAILS, accountDetails)
+                put(KEY_INCLUDE_VAULT_TOKENS, vaultTokens)
+                put(KEY_PAYMENT_SOURCE_CONSTRAINT, JSONObject().apply {
+                    put(KEY_CONSTRAINT_TYPE, constraintType)
+                    put(KEY_PAYMENT_SOURCES, jsonPaymentSources)
+                })
+            })
         }.toString()
     }
 
@@ -67,5 +57,11 @@ internal class PaymentReadyApi {
         internal const val KEY_AMOUNT = "amount"
         internal const val KEY_MERCHANT_ID = "merchant_id"
         internal const val KEY_CURRENCY_CODE = "currency_code"
+        internal const val KEY_PREFERENCES = "preferences"
+        internal const val KEY_INCLUDE_ACCOUNT_DETAILS = "include_account_details"
+        internal const val KEY_INCLUDE_VAULT_TOKENS = "include_vault_tokens"
+        internal const val KEY_PAYMENT_SOURCE_CONSTRAINT = "payment_source_constraint"
+        internal const val KEY_CONSTRAINT_TYPE = "constraint_type"
+        internal const val KEY_PAYMENT_SOURCES = "payment_sources"
     }
 }

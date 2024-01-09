@@ -1,8 +1,6 @@
 package com.braintreepayments.api
 
 import PaymentMethodDetails
-import PaymentMethods
-import ShopperInsightApiResult
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_PRESENTED
@@ -19,12 +17,14 @@ import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_SELECTED
  * Note: **This feature is in beta. It's public API may change in future releases.**
  */
 class ShopperInsightsClient @VisibleForTesting internal constructor(
-    private val paymentReadyAPI: PaymentReadyApi,
+    private val shoppingInsightsCreateBody: ShoppingInsightsApiCall,
     private val braintreeClient: BraintreeClient,
     private val deviceInspector: DeviceInspector
 ) {
     constructor(braintreeClient: BraintreeClient) : this(
-        PaymentReadyApi(),
+        ShoppingInsightsApiCall(
+            ShoppingInsightsCreateBody()
+        ),
         braintreeClient,
         DeviceInspector()
     )
@@ -72,16 +72,24 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         //TODO: get correct merchant ID from SDK
         val merchantId = "MXSJ4F5BADVNS"
 
-        // Default values for country code and currency code. For Venmo recommendations.
+        // Default values
         val countryCode = "US"
         val currencyCode = "USD"
+        val constraintType = "INCLUDE"
+        val paymentSources = listOf("PAYPAL", "VENMO")
+        val includeVaultTokens = true
+        val includeAccountDetails = true
 
-        val result = paymentReadyAPI.processRequest(
+        val result = shoppingInsightsCreateBody.execute(
             ShopperInsightsApiRequest(
                 request,
                 merchantId = merchantId,
                 currencyCode = currencyCode,
-                countryCode = countryCode
+                countryCode = countryCode,
+                accountDetails = includeAccountDetails,
+                vaultTokens = includeVaultTokens,
+                constraintType = constraintType,
+                paymentSources = paymentSources
             )
         )
         // Hardcoded result
