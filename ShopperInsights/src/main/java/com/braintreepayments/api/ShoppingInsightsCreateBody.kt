@@ -3,12 +3,9 @@ package com.braintreepayments.api
 import org.json.JSONArray
 import org.json.JSONObject
 
-// TODO: Implementation, documentation and interface.
 internal class ShoppingInsightsCreateBody {
     fun execute(request: ShopperInsightsApiRequest): String {
-
         return request.toJson()
-
     }
 
     private fun ShopperInsightsApiRequest.toJson(): String {
@@ -27,12 +24,14 @@ internal class ShoppingInsightsCreateBody {
                     })
                 }
             })
-            put(KEY_PURCHASE_UNITS, JSONObject().apply {
-                put(KEY_PAYEE, JSONObject().apply {
-                    put(KEY_MERCHANT_ID, merchantId)
-                })
-                put(KEY_AMOUNT, JSONObject().apply {
-                    put(KEY_CURRENCY_CODE, currencyCode)
+            put(KEY_PURCHASE_UNITS, JSONArray().apply {
+                put(JSONObject().apply {
+                    put(KEY_PAYEE, JSONObject().apply {
+                        put(KEY_MERCHANT_ID, merchantId)
+                    })
+                    put(KEY_AMOUNT, JSONObject().apply {
+                        put(KEY_CURRENCY_CODE, currencyCode)
+                    })
                 })
             })
             put(KEY_PREFERENCES, JSONObject().apply {

@@ -8,7 +8,7 @@ class ShoppingInsightsCreateBodyTest {
     private val shoppingInsightsCreateBody = ShoppingInsightsCreateBody()
 
     @Test
-    fun `test email and phone to json string conversion`() {
+    fun `test json string conversion`() {
         val email = "fake-email@email-provider.com"
         val testCountryCode = "1"
         val testNationalNumber = "123456789"
@@ -49,7 +49,6 @@ class ShoppingInsightsCreateBodyTest {
                             "currency_code": "USD"
                         }
                     }
-            
                 ],
                 "preferences": {
                     "include_account_details": true,
