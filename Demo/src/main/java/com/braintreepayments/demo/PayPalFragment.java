@@ -71,6 +71,10 @@ public class PayPalFragment extends BaseFragment {
         }
     }
 
+    private void storePendingRequest(PayPalPendingRequest.Success request) {
+        // TODO: Store in local storage to be resilient to process kills
+        pendingRequest = request;
+    }
     private PayPalPendingRequest.Success getPendingRequest() {
         return pendingRequest;
     }
@@ -121,10 +125,6 @@ public class PayPalFragment extends BaseFragment {
                         }
                     }
                 });
-    }
-
-    private void storePendingRequest(PayPalPendingRequest.Success request) {
-        pendingRequest = request;
     }
 
     private void completePayPalFlow(PayPalPaymentAuthResult paymentAuthResult) {
