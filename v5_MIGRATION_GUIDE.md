@@ -339,12 +339,11 @@ class MyActivity : FragmentActivity() {
     
     fun handleReturnToAppFromBrowser(intent: Intent) {
        // fetch stored PayPalPendingRequest.Success 
-       val pendingRequest = fetchPendingRequest()
-       pendingRequest?.let {
-          val paymentAuthResult = payPalLauncher.handleReturnToAppFromBrowser(it, intent)
-          if (paymentAuthResult != null) {
+       fetchPendingRequest()?.let {
+          payPalLauncher.handleReturnToAppFromBrowser(it, intent)?.let { paymentAuthResult ->
              completePayPalFlow(paymentAuthResult)
-          } else {
+             // clear stored PayPalPendingRequest.Success
+          } ?: run {
              // user returned to app without completing PayPal flow, handle accordingly
           }
        }   
