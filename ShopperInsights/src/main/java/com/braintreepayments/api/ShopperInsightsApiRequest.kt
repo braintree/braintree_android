@@ -15,7 +15,7 @@ package com.braintreepayments.api
  * [merchantId] [currencyCode] [countryCode] are needed for Venmo recommended results
  *
  */
-data class ShopperInsightsApiRequest(
+internal data class ShopperInsightsApiRequest(
     var request: ShopperInsightsRequest,
     var merchantId: String,
     var currencyCode: String,

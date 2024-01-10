@@ -5,7 +5,7 @@ import org.json.JSONObject
  *
  * @property eligibleMethods Contains the payment methods available to the shopper.
  */
-data class ShopperInsightApiResult(
+internal data class ShopperInsightApiResult(
     val eligibleMethods: PaymentMethods
 ) {
     companion object {
@@ -23,7 +23,7 @@ data class ShopperInsightApiResult(
  * @property paypal Details about the PayPal payment method.
  * @property venmo Details about the Venmo payment method.
  */
-data class PaymentMethods(
+internal data class PaymentMethods(
     val paypal: PaymentMethodDetails,
     val venmo: PaymentMethodDetails
 ) {
@@ -44,7 +44,7 @@ data class PaymentMethods(
  * @property recommended Indicates if this payment method is recommended for the shopper.
  * @property recommendedPriority The priority ranking of this payment method if recommended; null if not applicable.
  */
-data class PaymentMethodDetails(
+internal data class PaymentMethodDetails(
     val canBeVaulted: Boolean?,
     val eligibleInPaypalNetwork: Boolean?,
     val recommended: Boolean?,
