@@ -1,4 +1,4 @@
-import com.google.gson.annotations.SerializedName
+import org.json.JSONObject
 
 /**
  * Represents the result from the Shopper Insight API.
@@ -6,9 +6,16 @@ import com.google.gson.annotations.SerializedName
  * @property eligibleMethods Contains the payment methods available to the shopper.
  */
 data class ShopperInsightApiResult(
-    @SerializedName("eligible_methods")
     val eligibleMethods: PaymentMethods
-)
+) {
+    companion object {
+        fun fromJson(jsonString: String): ShopperInsightApiResult {
+            val jsonObject = JSONObject(jsonString)
+            val eligibleMethodsJson = jsonObject.getJSONObject("eligible_methods")
+            return ShopperInsightApiResult(PaymentMethods.fromJson(eligibleMethodsJson))
+        }
+    }
+}
 
 /**
  * Contains details about the available payment methods.
@@ -17,12 +24,17 @@ data class ShopperInsightApiResult(
  * @property venmo Details about the Venmo payment method.
  */
 data class PaymentMethods(
-    @SerializedName("paypal")
     val paypal: PaymentMethodDetails,
-
-    @SerializedName("venmo")
     val venmo: PaymentMethodDetails
-)
+) {
+    companion object {
+        fun fromJson(jsonObject: JSONObject): PaymentMethods {
+            val paypal = PaymentMethodDetails.fromJson(jsonObject.getJSONObject("paypal"))
+            val venmo = PaymentMethodDetails.fromJson(jsonObject.getJSONObject("venmo"))
+            return PaymentMethods(paypal, venmo)
+        }
+    }
+}
 
 /**
  * Details of a specific payment method.
@@ -33,15 +45,19 @@ data class PaymentMethods(
  * @property recommendedPriority The priority ranking of this payment method if recommended; null if not applicable.
  */
 data class PaymentMethodDetails(
-    @SerializedName("can_be_vaulted")
     val canBeVaulted: Boolean?,
-
-    @SerializedName("eligible_in_paypal_network")
     val eligibleInPaypalNetwork: Boolean?,
-
-    @SerializedName("recommended")
     val recommended: Boolean?,
-
-    @SerializedName("recommended_priority")
     val recommendedPriority: Int? = null
-)
+) {
+    companion object {
+        fun fromJson(jsonObject: JSONObject): PaymentMethodDetails {
+            return PaymentMethodDetails(
+                canBeVaulted = jsonObject.optBoolean("can_be_vaulted"),
+                eligibleInPaypalNetwork = jsonObject.optBoolean("eligible_in_paypal_network"),
+                recommended = jsonObject.optBoolean("recommended"),
+                recommendedPriority = jsonObject.optInt("recommended_priority")
+            )
+        }
+    }
+}
