@@ -2,7 +2,7 @@ package com.braintreepayments.api
 
 import ShopperInsightApiResult
 
-internal class ShoppingInsightsApiCall(
+internal class ShoppingInsightsApi(
     private val shoppingInsightsCreateBody: ShoppingInsightsCreateBody
 ) {
     fun execute(request: ShopperInsightsApiRequest): ShopperInsightApiResult {

@@ -16,12 +16,12 @@ import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_SELECTED
  * Note: **This feature is in beta. It's public API may change in future releases.**
  */
 class ShopperInsightsClient @VisibleForTesting internal constructor(
-    private val shoppingInsightsCreateBody: ShoppingInsightsApiCall,
+    private val shoppingInsightsCreateBody: ShoppingInsightsApi,
     private val braintreeClient: BraintreeClient,
     private val deviceInspector: DeviceInspector
 ) {
     constructor(braintreeClient: BraintreeClient) : this(
-        ShoppingInsightsApiCall(
+        ShoppingInsightsApi(
             ShoppingInsightsCreateBody()
         ),
         braintreeClient,

@@ -24,7 +24,7 @@ class ShopperInsightsClientUnitTest {
     private val context: Context = mockk(relaxed = true)
     private val applicationContext: Context = mockk(relaxed = true)
     private lateinit var sut: ShopperInsightsClient
-    private lateinit var shoppingInsightsApi: ShoppingInsightsApiCall
+    private lateinit var shoppingInsightsApi: ShoppingInsightsApi
     private lateinit var braintreeClient: BraintreeClient
     private lateinit var deviceInspector: DeviceInspector
 
