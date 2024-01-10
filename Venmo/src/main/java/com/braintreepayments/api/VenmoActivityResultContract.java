@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -41,6 +42,7 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
             venmoIntent.putExtra(EXTRA_RESOURCE_ID, input.getPaymentContextId());
         }
 
+        Uri encodedVenmoURL = Uri.parse("www.paypal.com");
         try {
             JSONObject braintreeData = new JSONObject();
 
@@ -52,11 +54,28 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
 
             braintreeData.put(META_KEY, meta);
             venmoIntent.putExtra(EXTRA_BRAINTREE_DATA, braintreeData.toString());
+
+            // TODO: update return URL, switch between base URLs
+            Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout");
+            encodedVenmoURL = venmoBaseURL.buildUpon()
+                    .appendQueryParameter("x-success", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/success")
+                    .appendQueryParameter("x-error", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/error")
+                    .appendQueryParameter("x-cancel", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/cancel")
+                    .appendQueryParameter("x-source", "Demo")
+                    .appendQueryParameter("braintree_merchant_id", input.getProfileId())
+                    .appendQueryParameter("braintree_access_token", input.getConfiguration().getVenmoAccessToken())
+                    .appendQueryParameter("braintree_environment", input.getConfiguration().getVenmoEnvironment())
+                    .appendQueryParameter("resource_id", input.getPaymentContextId())
+                    .appendQueryParameter("braintree_sdk_data", braintreeData.toString())
+                    .appendQueryParameter("customerClient", "MOBILE_APP")
+                    .build();
         } catch (JSONException ignored) {
             /* do nothing */
         }
 
-        return venmoIntent;
+        // TODO: update this logic
+//        return venmoIntent;
+        return new Intent(Intent.ACTION_VIEW, encodedVenmoURL);
     }
 
     @Override
