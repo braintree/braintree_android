@@ -45,7 +45,7 @@ public class PayPalLauncherUnitTest {
         PayPalPaymentAuthRequestParams paymentAuthRequest = mock(PayPalPaymentAuthRequestParams.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
         when(paymentAuthRequest.getBrowserSwitchOptions()).thenReturn(options);
-        PayPalLauncher sut = new PayPalLauncher(browserSwitchClient, payPalLauncherCallback);
+        PayPalLauncher sut = new PayPalLauncher(browserSwitchClient);
 
         sut.launch(activity, paymentAuthRequest);
 
@@ -59,7 +59,7 @@ public class PayPalLauncherUnitTest {
         when(paymentAuthRequest.getBrowserSwitchOptions()).thenReturn(options);
         BrowserSwitchException exception = new BrowserSwitchException("error");
         doThrow(exception).when(browserSwitchClient).start(same(activity), same(options));
-        PayPalLauncher sut = new PayPalLauncher(browserSwitchClient, payPalLauncherCallback);
+        PayPalLauncher sut = new PayPalLauncher(browserSwitchClient);
 
         sut.launch(activity, paymentAuthRequest);
 
@@ -78,7 +78,7 @@ public class PayPalLauncherUnitTest {
         when(paymentAuthRequest.getBrowserSwitchOptions()).thenReturn(options);
         BrowserSwitchException exception = new BrowserSwitchException("browser switch error");
         doThrow(exception).when(browserSwitchClient).assertCanPerformBrowserSwitch(same(activity), same(options));
-        PayPalLauncher sut = new PayPalLauncher(browserSwitchClient, payPalLauncherCallback);
+        PayPalLauncher sut = new PayPalLauncher(browserSwitchClient);
 
         sut.launch(activity, paymentAuthRequest);
 
@@ -98,7 +98,7 @@ public class PayPalLauncherUnitTest {
         BrowserSwitchResult result = mock(BrowserSwitchResult.class);
         when(browserSwitchClient.parseResult(eq(activity), eq(PAYPAL), eq(intent))).thenReturn(
                 result);
-        PayPalLauncher sut = new PayPalLauncher(browserSwitchClient, payPalLauncherCallback);
+        PayPalLauncher sut = new PayPalLauncher(browserSwitchClient);
 
         sut.handleReturnToAppFromBrowser(activity, intent);
 
@@ -114,7 +114,7 @@ public class PayPalLauncherUnitTest {
         BrowserSwitchResult result = mock(BrowserSwitchResult.class);
         when(browserSwitchClient.parseResult(eq(activity), eq(PAYPAL), eq(intent))).thenReturn(
                 result);
-        PayPalLauncher sut = new PayPalLauncher(browserSwitchClient, payPalLauncherCallback);
+        PayPalLauncher sut = new PayPalLauncher(browserSwitchClient);
 
         sut.handleReturnToAppFromBrowser(activity, intent);
 

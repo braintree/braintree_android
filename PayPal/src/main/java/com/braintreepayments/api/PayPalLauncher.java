@@ -5,6 +5,7 @@ import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
@@ -15,48 +16,42 @@ import androidx.fragment.app.FragmentActivity;
 public class PayPalLauncher {
 
     private final BrowserSwitchClient browserSwitchClient;
-    private final PayPalLauncherCallback callback;
 
     /**
      * Used to launch the PayPal flow in a web browser and deliver results to your Activity
-     *
-     * @param callback a {@link PayPalLauncherCallback} to handle the result of
-     * {@link PayPalLauncher#launch(FragmentActivity, PayPalPaymentAuthRequestParams)}
      */
-    public PayPalLauncher(@NonNull PayPalLauncherCallback callback) {
-        this(new BrowserSwitchClient(), callback);
+    public PayPalLauncher() {
+        this(new BrowserSwitchClient());
     }
 
     @VisibleForTesting
-    PayPalLauncher(@NonNull BrowserSwitchClient browserSwitchClient,
-                   PayPalLauncherCallback callback) {
+    PayPalLauncher(@NonNull BrowserSwitchClient browserSwitchClient) {
         this.browserSwitchClient = browserSwitchClient;
-        this.callback = callback;
     }
 
     /**
      * Launches the PayPal flow by switching to a web browser for user authentication and
      * delivers results to the {@link PayPalLauncherCallback} passed into
-     * {@link PayPalLauncher#PayPalLauncher(PayPalLauncherCallback)}
+     * {@link PayPalLauncher#PayPalLauncher()}
      *
      * @param activity       an Android {@link FragmentActivity}
      * @param paymentAuthRequest a request to launch the PayPal web flow created in
      *                       {@link PayPalClient#createPaymentAuthRequest(Context, PayPalRequest, PayPalPaymentAuthCallback)}
      */
-    public void launch(@NonNull FragmentActivity activity,
+    public PayPalPendingRequest launch(@NonNull ComponentActivity activity,
                        @NonNull PayPalPaymentAuthRequestParams paymentAuthRequest) {
         try {
             assertCanPerformBrowserSwitch(activity, paymentAuthRequest);
         } catch (BrowserSwitchException browserSwitchException) {
             Exception manifestInvalidError =
                     createBrowserSwitchError(browserSwitchException);
-            callback.onResult(new PayPalPaymentAuthResult(manifestInvalidError));
-            return;
+            return new PayPalPendingRequest.Failure(manifestInvalidError);
         }
         try {
-            browserSwitchClient.start(activity, paymentAuthRequest.getBrowserSwitchOptions());
+            BrowserSwitchRequest request = browserSwitchClient.start(activity, paymentAuthRequest.getBrowserSwitchOptions());
+            return new PayPalPendingRequest.Success(new PayPalBrowserSwitchRequest(request));
         } catch (BrowserSwitchException e) {
-            callback.onResult(new PayPalPaymentAuthResult(e));
+            return new PayPalPendingRequest.Failure(e);
         }
     }
 
@@ -64,7 +59,8 @@ public class PayPalLauncher {
      * Captures and delivers the result of a the browser-based PayPal authentication flow.
      * <p>
      * For most integrations, this method should be invoked in the onResume method of the Activity
-     * used to invoke {@link PayPalLauncher#launch(FragmentActivity, PayPalPaymentAuthRequestParams)}.
+     * used to invoke
+     * {@link PayPalLauncher#launch(FragmentActivity, PayPalPaymentAuthRequestParams)}.
      * <p>
      * If the Activity used to launch the PayPal flow has is configured with
      * android:launchMode="singleTop", this method should be invoked in the onNewIntent method of
@@ -75,19 +71,21 @@ public class PayPalLauncher {
      * {@link PayPalPaymentAuthResult} should be passed to
      * {@link PayPalClient#tokenize(PayPalPaymentAuthResult, PayPalTokenizeCallback)}
      *
-     * @param context the context used to check for pending results
-     * @param intent  the intent to return to your application containing a deep link result from
-     *                the PayPal browser flow
+     * @param pendingRequest the context used to check for pending results
+     * @param intent         the intent to return to your application containing a deep link result
+     *                       from the PayPal browser flow
      */
-    public void handleReturnToAppFromBrowser(@NonNull Context context, @NonNull Intent intent) {
-        BrowserSwitchResult result = browserSwitchClient.parseResult(context, PAYPAL, intent);
+    public PayPalPaymentAuthResult handleReturnToAppFromBrowser(
+            @NonNull PayPalPendingRequest.Success pendingRequest, @NonNull Intent intent) {
+        BrowserSwitchResult result = browserSwitchClient.parseResult(pendingRequest.getRequest().getBrowserSwitchRequest(), intent);
+        PayPalPaymentAuthResult paymentAuthResult = null;
         if (result != null) {
-           callback.onResult(new PayPalPaymentAuthResult(result));
-           browserSwitchClient.clearActiveRequests(context);
+           paymentAuthResult = new PayPalPaymentAuthResult(result);
         }
+        return paymentAuthResult;
     }
 
-    private void assertCanPerformBrowserSwitch(FragmentActivity activity, PayPalPaymentAuthRequestParams params)
+    private void assertCanPerformBrowserSwitch(ComponentActivity activity, PayPalPaymentAuthRequestParams params)
             throws BrowserSwitchException {
         browserSwitchClient.assertCanPerformBrowserSwitch(activity, params.getBrowserSwitchOptions());
     }
