@@ -324,26 +324,30 @@ class MyActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
-+       payPalLauncher = PayPalLauncher() { paymentAuthResult ->
-+           payPalClient.tokenize(paymentAuthResult) { result ->
-+               when(result) {
-+                   is PayPalResult.Success -> { /* handle result.nonce */ }
-+                   is PayPalResult.Failure -> { /* handle result.error */ }
-+                   is PayPalResult.Cancel -> { /* handle user canceled */ }
-+               }          
-+           }
-+       }
++       payPalLauncher = PayPalLauncher() 
     }
     
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
     override fun onNewIntent(intent: Intent) {
-        setIntent(intent)
-+       payPalLauncher.handleReturnToAppFromBrowser(requireContext(), intent)
++       handleReturnToAppFromBrowser(intent)
     }
     
     // ALL OTHER ACTIVITY LAUNCH MODES 
     override fun onResume() {
-+       payPalLauncher.handleReturnToAppFromBrowser(requireContext(), requireActivity().intent)
++       handleReturnToAppFromBrowser(requireActivity().intent)
+    }
+    
+    fun handleReturnToAppFromBrowser(intent: Intent) {
+       // fetch stored PayPalPendingRequest.Success 
+       val pendingRequest = fetchPendingRequest()
+       pendingRequest?.let {
+          val paymentAuthResult = payPalLauncher.handleReturnToAppFromBrowser(it, intent)
+          if (paymentAuthResult != null) {
+             completePayPalFlow(paymentAuthResult)
+          } else {
+             // user returned to app without completing PayPal flow, handle accordingly
+          }
+       }   
     }
     
     
@@ -359,10 +363,24 @@ class MyActivity : FragmentActivity() {
 +       payPalClient.createPaymentAuthRequest(this, request) { paymentAuthRequest ->
 +           when(paymentAuthRequest) {
 +               is PayPalPaymentAuthRequest.ReadyToLaunch -> {
-+                   payPalLauncher.launch(this@MyActivity, paymentAuthRequet)
++                   val pendingRequest = payPalLauncher.launch(this@MyActivity, paymentAuthRequet)
++                   when(pendingRequest) {
++                       is (PayPalPendingRequest.Success) { /* store pending request */ }
++                       is (PayPalPendingRequest.Failure) { /* handle error */ }
++                   }
 +               }
 +               is PayPalPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error */ }
 +           }
++       }
+    }
+    
+    fun completePayPalFlow(paymentAuthResult: PayPalPaymentAuthResult) {
++       payPalClient.tokenize(paymentAuthResult) { result ->
++           when(result) {
++               is PayPalResult.Success -> { /* handle result.nonce */ }
++               is PayPalResult.Failure -> { /* handle result.error */ }
++               is PayPalResult.Cancel -> { /* handle user canceled */ }
++           }          
 +       }
     }
     
