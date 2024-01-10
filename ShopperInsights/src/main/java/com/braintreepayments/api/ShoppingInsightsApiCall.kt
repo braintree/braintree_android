@@ -1,7 +1,5 @@
 package com.braintreepayments.api
 
-import PaymentMethodDetails
-import PaymentMethods
 import ShopperInsightApiResult
 
 internal class ShoppingInsightsApiCall(
@@ -13,14 +11,14 @@ internal class ShoppingInsightsApiCall(
 
         // Hardcoded result
         return ShopperInsightApiResult(
-            eligibleMethods = PaymentMethods(
-                paypal = PaymentMethodDetails(
+            eligibleMethods = ShopperInsightsPaymentMethods(
+                paypal = ShopperInsightsPaymentMethodDetails(
                     canBeVaulted = true,
                     eligibleInPaypalNetwork = true,
                     recommended = true,
                     recommendedPriority = 1
                 ),
-                venmo = PaymentMethodDetails(
+                venmo = ShopperInsightsPaymentMethodDetails(
                     canBeVaulted = true,
                     eligibleInPaypalNetwork = true,
                     recommended = true,

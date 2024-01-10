@@ -1,6 +1,5 @@
 package com.braintreepayments.api
 
-import PaymentMethodDetails
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_PRESENTED
@@ -103,7 +102,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         )
     }
 
-    private fun isPaymentRecommended(paymentDetail: PaymentMethodDetails): Boolean {
+    private fun isPaymentRecommended(paymentDetail: ShopperInsightsPaymentMethodDetails): Boolean {
         return paymentDetail.eligibleInPaypalNetwork == true && paymentDetail.recommended == true
     }
 
