@@ -9,31 +9,31 @@ class LocalPaymentAnalyticsUnitTest {
     fun testAnalyticsEvents_sendsExpectedEventNames() {
         assertEquals(
             "local-payment:start-payment:started",
-            LocalPaymentAnalytics.PAYMENT_STARTED.event
+            LocalPaymentAnalytics.PAYMENT_STARTED
         )
         assertEquals(
             "local-payment:start-payment:succeeded",
-            LocalPaymentAnalytics.PAYMENT_SUCCEEDED.event
+            LocalPaymentAnalytics.PAYMENT_SUCCEEDED
         )
         assertEquals(
             "local-payment:start-payment:failed",
-            LocalPaymentAnalytics.PAYMENT_FAILED.event
+            LocalPaymentAnalytics.PAYMENT_FAILED
         )
         assertEquals(
             "local-payment:start-payment:browser-login:canceled",
-            LocalPaymentAnalytics.PAYMENT_CANCELED.event
+            LocalPaymentAnalytics.PAYMENT_CANCELED
         )
         assertEquals(
             "local-payment:start-payment:browser-presentation:succeeded",
-            LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED.event
+            LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED
         )
         assertEquals(
             "local-payment:start-payment:browser-presentation:failed",
-            LocalPaymentAnalytics.BROWSER_SWITCH_FAILED.event
+            LocalPaymentAnalytics.BROWSER_SWITCH_FAILED
         )
         assertEquals(
             "local-payment:start-payment:browser-login:failed",
-            LocalPaymentAnalytics.BROWSER_LOGIN_FAILED.event
+            LocalPaymentAnalytics.BROWSER_LOGIN_FAILED
         )
     }
 }

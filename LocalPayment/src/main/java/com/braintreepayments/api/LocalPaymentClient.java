@@ -58,6 +58,8 @@ public class LocalPaymentClient {
      */
     public void createPaymentAuthRequest(@NonNull final LocalPaymentRequest request,
                                          @NonNull final LocalPaymentAuthCallback callback) {
+        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED);
+
         Exception exception = null;
 
         //noinspection ConstantConditions
@@ -74,34 +76,33 @@ public class LocalPaymentClient {
         }
 
         if (exception != null) {
-            callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.Failure(exception));
+            authRequestFailure(exception, callback);
         } else {
             braintreeClient.getConfiguration((configuration, error) -> {
                 if (configuration != null) {
                     if (!configuration.isPayPalEnabled()) {
-                        callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.Failure(new ConfigurationException(
-                                "Local payments are not enabled for this merchant.")));
+                        authRequestFailure(
+                            new ConfigurationException("Local payments are not enabled for this " +
+                                "merchant."),
+                            callback
+                        );
                         return;
                     }
-
-                    sendAnalyticsEvent(request.getPaymentType(),
-                            "local-payment.start-payment.selected");
 
                     localPaymentApi.createPaymentMethod(request,
                             (localPaymentResult, createPaymentMethodError) -> {
                                 if (localPaymentResult != null) {
                                     buildBrowserSwitchOptions(localPaymentResult, callback);
-                                    sendAnalyticsEvent(request.getPaymentType(),
-                                            "local-payment.create.succeeded");
                                 } else if (createPaymentMethodError != null) {
-                                    callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.Failure(new BraintreeException("An error " +
-                                            "occurred creating the local payment method.")));
-                                    sendAnalyticsEvent(request.getPaymentType(),
-                                            "local-payment.webswitch.initiate.failed");
+                                    authRequestFailure(
+                                        new BraintreeException("An error occurred creating the " +
+                                            "local payment method."),
+                                        callback
+                                    );
                                 }
                             });
                 } else {
-                    callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.Failure(error));
+                    authRequestFailure(error, callback);
                 }
             });
         }
@@ -116,20 +117,27 @@ public class LocalPaymentClient {
                 .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
                 .url(Uri.parse(localPaymentAuthRequestParams.getApprovalUrl()));
 
-        String paymentType = localPaymentAuthRequestParams.getRequest().getPaymentType();
-
         try {
             browserSwitchOptions.metadata(new JSONObject()
                     .put("merchant-account-id",
                             localPaymentAuthRequestParams.getRequest().getMerchantAccountId())
                     .put("payment-type", localPaymentAuthRequestParams.getRequest().getPaymentType()));
         } catch (JSONException e) {
-            callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.Failure(new BraintreeException("Error parsing local payment request")));
+            authRequestFailure(
+                new BraintreeException("Error parsing local payment request"),
+                callback
+            );
+            // Should we return here? or move the lines following the try/catch into the try block?
         }
 
         localPaymentAuthRequestParams.setBrowserSwitchOptions(browserSwitchOptions);
         callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.ReadyToLaunch(localPaymentAuthRequestParams));
-        sendAnalyticsEvent(paymentType, "local-payment.webswitch.initiate.succeeded");
+        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED);
+    }
+
+    private void authRequestFailure(Exception error, LocalPaymentAuthCallback callback) {
+        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_FAILED);
+        callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.Failure(error));
     }
 
     /**
@@ -148,43 +156,42 @@ public class LocalPaymentClient {
                          @NonNull final LocalPaymentTokenizeCallback callback) {
         //noinspection ConstantConditions
         if (localPaymentAuthResult == null) {
-            callback.onLocalPaymentResult(new LocalPaymentResult.Failure(new BraintreeException("LocalPaymentAuthResult " +
-                    "cannot be null")));
+            callbackFailure(
+                new BraintreeException("LocalPaymentAuthResult cannot be null"),
+                callback
+            );
             return;
         }
 
-        BrowserSwitchResult browserSwitchResult =
-                localPaymentAuthResult.getBrowserSwitchResult();
+        BrowserSwitchResult browserSwitchResult = localPaymentAuthResult.getBrowserSwitchResult();
         if (browserSwitchResult == null && localPaymentAuthResult.getError() != null) {
-            callback.onLocalPaymentResult(new LocalPaymentResult.Failure(localPaymentAuthResult.getError()));
+            callbackFailure(localPaymentAuthResult.getError(), callback);
             return;
         }
 
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
-
-        final String paymentType = Json.optString(metadata, "payment-type", null);
         final String merchantAccountId = Json.optString(metadata, "merchant-account-id", null);
 
         int result = browserSwitchResult.getStatus();
         switch (result) {
             case BrowserSwitchStatus.CANCELED:
-                sendAnalyticsEvent(paymentType, "local-payment.webswitch.canceled");
-                callback.onLocalPaymentResult(LocalPaymentResult.Cancel.INSTANCE);
+                callbackCancel(callback);
                 return;
             case BrowserSwitchStatus.SUCCESS:
                 Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
                 if (deepLinkUri == null) {
-                    sendAnalyticsEvent(paymentType, "local-payment.webswitch-response.invalid");
-                    callback.onLocalPaymentResult(new LocalPaymentResult.Failure(
-                            new BraintreeException("LocalPayment encountered an error, " +
-                                    "return URL is invalid.")));
+                    braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_LOGIN_FAILED);
+                    callbackFailure(
+                        new BraintreeException("LocalPayment encountered an error, return URL is " +
+                            "invalid."),
+                        callback
+                    );
                     return;
                 }
 
                 final String responseString = deepLinkUri.toString();
                 if (responseString.toLowerCase().contains(LOCAL_PAYMENT_CANCEL.toLowerCase())) {
-                    sendAnalyticsEvent(paymentType, "local-payment.webswitch.canceled");
-                    callback.onLocalPaymentResult(LocalPaymentResult.Cancel.INSTANCE);
+                    callbackCancel(callback);
                     return;
                 }
                 braintreeClient.getConfiguration((configuration, error) -> {
@@ -193,24 +200,27 @@ public class LocalPaymentClient {
                                 dataCollector.getClientMetadataId(context, configuration),
                                 (localPaymentNonce, localPaymentError) -> {
                                     if (localPaymentNonce != null) {
-                                        sendAnalyticsEvent(paymentType,
-                                                "local-payment.tokenize.succeeded");
+                                        braintreeClient.sendAnalyticsEvent(
+                                            LocalPaymentAnalytics.PAYMENT_SUCCEEDED
+                                        );
                                         callback.onLocalPaymentResult(new LocalPaymentResult.Success(localPaymentNonce));
                                     } else if (localPaymentError != null) {
-                                        sendAnalyticsEvent(paymentType,
-                                                "local-payment.tokenize.failed");
-                                        callback.onLocalPaymentResult(new LocalPaymentResult.Failure(localPaymentError));
+                                        callbackFailure(localPaymentError, callback);
                                     }
                                 });
                     } else if (error != null) {
-                        callback.onLocalPaymentResult(new LocalPaymentResult.Failure(error));
+                        callbackFailure(error, callback);
                     }
                 });
         }
     }
 
-    private void sendAnalyticsEvent(String paymentType, String eventSuffix) {
-        String eventPrefix = (paymentType == null) ? "unknown" : paymentType;
-        braintreeClient.sendAnalyticsEvent(String.format("%s.%s", eventPrefix, eventSuffix));
+    private void callbackCancel(LocalPaymentTokenizeCallback callback){
+        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_CANCELED);
+        callback.onLocalPaymentResult(LocalPaymentResult.Cancel.INSTANCE);
+    }
+    private void callbackFailure(Exception error, LocalPaymentTokenizeCallback callback) {
+        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED);
+        callback.onLocalPaymentResult(new LocalPaymentResult.Failure(error));
     }
 }
