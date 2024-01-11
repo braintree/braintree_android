@@ -9,13 +9,17 @@ import org.json.JSONObject
  * @property venmo Details about the Venmo payment method.
  */
 internal data class ShopperInsightsPaymentMethods(
-    val paypal: ShopperInsightsPaymentMethodDetails,
-    val venmo: ShopperInsightsPaymentMethodDetails
+    val paypal: ShopperInsightsPaymentMethodDetails?,
+    val venmo: ShopperInsightsPaymentMethodDetails?
 ) {
     companion object {
         fun fromJson(jsonObject: JSONObject): ShopperInsightsPaymentMethods {
-            val paypal = ShopperInsightsPaymentMethodDetails.fromJson(jsonObject.getJSONObject("paypal"))
-            val venmo = ShopperInsightsPaymentMethodDetails.fromJson(jsonObject.getJSONObject("venmo"))
+            val paypal = jsonObject.optJSONObject("paypal")?.let {
+                ShopperInsightsPaymentMethodDetails.fromJson(it)
+            }
+            val venmo = jsonObject.optJSONObject("venmo")?.let {
+                ShopperInsightsPaymentMethodDetails.fromJson(it)
+            }
             return ShopperInsightsPaymentMethods(paypal, venmo)
         }
     }
