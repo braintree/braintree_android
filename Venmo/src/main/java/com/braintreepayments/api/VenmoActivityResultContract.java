@@ -82,8 +82,8 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
     }
 
     private Intent createUniversalLinkIntent(Intent intent, VenmoIntentData input, Context context, JSONObject braintreeData) {
-        Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout");
-        venmoBaseURL.buildUpon()
+        Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout")
+                .buildUpon()
                 .appendQueryParameter("x-success", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/success")
                 .appendQueryParameter("x-error", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/error")
                 .appendQueryParameter("x-cancel", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/cancel")
