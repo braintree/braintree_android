@@ -14,13 +14,13 @@ internal class ShopperInsightsApi(
             eligibleMethods = ShopperInsightsPaymentMethods(
                 paypal = ShopperInsightsPaymentMethodDetails(
                     canBeVaulted = true,
-                    eligibleInPaypalNetwork = true,
+                    eligibleInPayPalNetwork = true,
                     recommended = true,
                     recommendedPriority = 1
                 ),
                 venmo = ShopperInsightsPaymentMethodDetails(
                     canBeVaulted = true,
-                    eligibleInPaypalNetwork = true,
+                    eligibleInPayPalNetwork = true,
                     recommended = true,
                     recommendedPriority = 1
                 )

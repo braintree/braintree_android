@@ -32,16 +32,16 @@ class ShopperInsightApiResultTest {
 
         // Assertions for PayPal
         val paypal = result.eligibleMethods.paypal
-        assertTrue(paypal.canBeVaulted == true)
-        assertFalse(paypal.eligibleInPaypalNetwork == true)
-        assertTrue(paypal.recommended == true)
+        assertTrue(paypal.canBeVaulted)
+        assertFalse(paypal.eligibleInPayPalNetwork)
+        assertTrue(paypal.recommended)
         assertEquals(1, paypal.recommendedPriority)
 
         // Assertions for Venmo
         val venmo = result.eligibleMethods.venmo
-        assertFalse(venmo.canBeVaulted == true)
-        assertTrue(venmo.eligibleInPaypalNetwork == true)
-        assertFalse(venmo.recommended == true)
+        assertFalse(venmo.canBeVaulted)
+        assertTrue(venmo.eligibleInPayPalNetwork)
+        assertFalse(venmo.recommended)
         assertEquals(0, venmo.recommendedPriority)
     }
 }

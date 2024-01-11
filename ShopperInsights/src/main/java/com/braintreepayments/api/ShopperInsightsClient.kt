@@ -101,7 +101,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
     }
 
     private fun isPaymentRecommended(paymentDetail: ShopperInsightsPaymentMethodDetails): Boolean {
-        return paymentDetail.eligibleInPaypalNetwork && paymentDetail.recommended
+        return paymentDetail.eligibleInPayPalNetwork && paymentDetail.recommended
     }
 
     /**
