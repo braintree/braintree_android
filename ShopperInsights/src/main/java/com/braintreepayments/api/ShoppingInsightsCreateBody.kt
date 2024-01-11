@@ -36,7 +36,6 @@ internal class ShoppingInsightsCreateBody {
             })
             put(KEY_PREFERENCES, JSONObject().apply {
                 put(KEY_INCLUDE_ACCOUNT_DETAILS, accountDetails)
-                put(KEY_INCLUDE_VAULT_TOKENS, vaultTokens)
                 put(KEY_PAYMENT_SOURCE_CONSTRAINT, JSONObject().apply {
                     put(KEY_CONSTRAINT_TYPE, constraintType)
                     put(KEY_PAYMENT_SOURCES, jsonPaymentSources)
@@ -58,7 +57,6 @@ internal class ShoppingInsightsCreateBody {
         internal const val KEY_CURRENCY_CODE = "currency_code"
         internal const val KEY_PREFERENCES = "preferences"
         internal const val KEY_INCLUDE_ACCOUNT_DETAILS = "include_account_details"
-        internal const val KEY_INCLUDE_VAULT_TOKENS = "include_vault_tokens"
         internal const val KEY_PAYMENT_SOURCE_CONSTRAINT = "payment_source_constraint"
         internal const val KEY_CONSTRAINT_TYPE = "constraint_type"
         internal const val KEY_PAYMENT_SOURCES = "payment_sources"

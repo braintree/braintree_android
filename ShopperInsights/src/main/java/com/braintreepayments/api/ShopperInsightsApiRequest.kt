@@ -8,7 +8,6 @@ package com.braintreepayments.api
  * @property currencyCode The currency code
  * @property countryCode The country code
  * @property accountDetails Include account details
- * @property vaultTokens Include vault tokens
  * @property constraintType The constraint type
  * @property paymentSources Payment sources, ie. PAYPAL VENMO
  *
@@ -21,7 +20,6 @@ internal data class ShopperInsightsApiRequest(
     var currencyCode: String,
     var countryCode: String,
     var accountDetails: Boolean,
-    var vaultTokens: Boolean,
     var constraintType: String,
     var paymentSources: List<String>
 )

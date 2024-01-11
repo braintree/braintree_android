@@ -76,7 +76,6 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         val currencyCode = "USD"
         val constraintType = "INCLUDE"
         val paymentSources = listOf("PAYPAL", "VENMO")
-        val includeVaultTokens = true
         val includeAccountDetails = true
 
         val result = shoppingInsightsCreateBody.execute(
@@ -86,7 +85,6 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                 currencyCode = currencyCode,
                 countryCode = countryCode,
                 accountDetails = includeAccountDetails,
-                vaultTokens = includeVaultTokens,
                 constraintType = constraintType,
                 paymentSources = paymentSources
             )

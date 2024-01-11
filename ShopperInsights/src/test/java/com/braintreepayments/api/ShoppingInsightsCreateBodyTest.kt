@@ -52,7 +52,6 @@ class ShoppingInsightsCreateBodyTest {
                 ],
                 "preferences": {
                     "include_account_details": true,
-                    "include_vault_tokens": true,
                     "payment_source_constraint": {
                         "constraint_type": "INCLUDE",
                         "payment_sources": [
