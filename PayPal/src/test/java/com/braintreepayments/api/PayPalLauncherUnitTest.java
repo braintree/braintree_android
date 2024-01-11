@@ -37,12 +37,13 @@ public class PayPalLauncherUnitTest {
     }
 
     @Test
-    public void launch_startsBrowserSwitch_returnsPendingRequest() throws BrowserSwitchException {
+    public void launch_startsBrowserSwitch_returnsPendingRequest() {
         PayPalPaymentAuthRequestParams paymentAuthRequestParams = mock(PayPalPaymentAuthRequestParams.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
         when(paymentAuthRequestParams.getBrowserSwitchOptions()).thenReturn(options);
         BrowserSwitchRequest browserSwitchRequest = mock(BrowserSwitchRequest.class);
-        when(browserSwitchClient.start(activity, options)).thenReturn(browserSwitchRequest);
+        BrowserSwitchPendingRequest.Started startedPendingRequest = new BrowserSwitchPendingRequest.Started(browserSwitchRequest);
+        when(browserSwitchClient.start(activity, options)).thenReturn(startedPendingRequest);
         PayPalLauncher sut = new PayPalLauncher(browserSwitchClient);
 
         PayPalPendingRequest pendingRequest = sut.launch(activity, new PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams));
@@ -53,12 +54,12 @@ public class PayPalLauncherUnitTest {
     }
 
     @Test
-    public void launch_onError_returnsPendingRequestFailure() throws BrowserSwitchException {
+    public void launch_onError_returnsPendingRequestFailure() {
         PayPalPaymentAuthRequestParams paymentAuthRequestParams = mock(PayPalPaymentAuthRequestParams.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
         when(paymentAuthRequestParams.getBrowserSwitchOptions()).thenReturn(options);
         BrowserSwitchException exception = new BrowserSwitchException("error");
-        doThrow(exception).when(browserSwitchClient).start(same(activity), same(options));
+        when(browserSwitchClient.start(same(activity), same(options))).thenReturn(new BrowserSwitchPendingRequest.Failure(exception));
         PayPalLauncher sut = new PayPalLauncher(browserSwitchClient);
 
         PayPalPendingRequest pendingRequest = sut.launch(activity, new PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams));
