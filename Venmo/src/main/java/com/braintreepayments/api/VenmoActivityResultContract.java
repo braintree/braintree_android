@@ -55,7 +55,7 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
             braintreeData.put(META_KEY, meta);
             venmoIntent.putExtra(EXTRA_BRAINTREE_DATA, braintreeData.toString());
 
-            // TODO: update return URL, switch between base URLs
+            // TODO: update return URL, switch between base URLs, update success/cancel/error URLs
             Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout");
             encodedVenmoURL = venmoBaseURL.buildUpon()
                     .appendQueryParameter("x-success", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/success")
@@ -73,9 +73,10 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
             /* do nothing */
         }
 
-        // TODO: update this logic
+        // TODO: update this logic conditionally
 //        return venmoIntent;
-        return new Intent(Intent.ACTION_VIEW, encodedVenmoURL);
+        return venmoIntent.setData(encodedVenmoURL);
+//        return new Intent(Intent.ACTION_VIEW, encodedVenmoURL);
     }
 
     @Override
