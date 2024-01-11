@@ -66,10 +66,6 @@ public class PayPalLauncher {
      * If the Activity used to launch the PayPal flow has is configured with
      * android:launchMode="singleTop", this method should be invoked in the onNewIntent method of
      * the Activity.
-     * <p>
-     * This method will deliver a {@link PayPalPaymentAuthResult} to the
-     * {@link PayPalLauncherCallback} used to instantiate this class. The
-     * {@link PayPalPaymentAuthResult} should be passed to {@link PayPalClient#tokenize(PayPalPaymentAuthResult, PayPalTokenizeCallback)}
      *
      * @param pendingRequest the {@link PayPalPendingRequest.Started} stored after successfully
      *                       invoking {@link PayPalLauncher#launch(ComponentActivity, PayPalPaymentAuthRequest.ReadyToLaunch)}
