@@ -53,6 +53,8 @@ class ShopperInsightsClientUnitTest {
             assertFalse(successResult.response.isPayPalRecommended)
             assertFalse(successResult.response.isVenmoRecommended)
         }
+        verifyStartedAnalyticsEvent()
+        verifySuccessAnalyticsEvent()
     }
 
     @Test
@@ -67,6 +69,8 @@ class ShopperInsightsClientUnitTest {
             assertFalse(successResult.response.isPayPalRecommended)
             assertFalse(successResult.response.isVenmoRecommended)
         }
+        verifyStartedAnalyticsEvent()
+        verifySuccessAnalyticsEvent()
     }
 
     @Test
@@ -81,6 +85,8 @@ class ShopperInsightsClientUnitTest {
             assertTrue(successResult.response.isPayPalRecommended)
             assertTrue(successResult.response.isVenmoRecommended)
         }
+        verifyStartedAnalyticsEvent()
+        verifySuccessAnalyticsEvent()
     }
 
     @Test
@@ -99,6 +105,8 @@ class ShopperInsightsClientUnitTest {
                 iae.message
             )
         }
+        verifyStartedAnalyticsEvent()
+        verifyFailedAnalyticsEvent()
     }
 
     @Test
@@ -123,5 +131,26 @@ class ShopperInsightsClientUnitTest {
     fun `test venmo selected analytics event`() {
         sut.sendVenmoSelectedEvent()
         verify { braintreeClient.sendAnalyticsEvent("shopper-insights:venmo-selected") }
+    }
+
+    private fun verifyStartedAnalyticsEvent() {
+        verify {
+            braintreeClient
+                .sendAnalyticsEvent("shopper-insights:get-recommended-payments:started")
+        }
+    }
+
+    private fun verifySuccessAnalyticsEvent() {
+        verify {
+            braintreeClient
+                .sendAnalyticsEvent("shopper-insights:get-recommended-payments:succeeded")
+        }
+    }
+
+    private fun verifyFailedAnalyticsEvent() {
+        verify {
+            braintreeClient
+                .sendAnalyticsEvent("shopper-insights:get-recommended-payments:failed")
+        }
     }
 }
