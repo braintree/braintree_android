@@ -8,13 +8,13 @@ import org.json.JSONObject
  * @property canBeVaulted Indicates if the payment method can be saved for future transactions.
  * @property eligibleInPaypalNetwork Indicates if the payment method is eligible in the PayPal network.
  * @property recommended Indicates if this payment method is recommended for the shopper.
- * @property recommendedPriority The priority ranking of this payment method if recommended; null if not applicable.
+ * @property recommendedPriority The priority ranking of this payment method if recommended.
  */
 internal data class ShopperInsightsPaymentMethodDetails(
-    val canBeVaulted: Boolean?,
-    val eligibleInPaypalNetwork: Boolean?,
-    val recommended: Boolean?,
-    val recommendedPriority: Int? = null
+    val canBeVaulted: Boolean,
+    val eligibleInPaypalNetwork: Boolean,
+    val recommended: Boolean,
+    val recommendedPriority: Int
 ) {
     companion object {
         fun fromJson(jsonObject: JSONObject): ShopperInsightsPaymentMethodDetails {
