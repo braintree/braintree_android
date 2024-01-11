@@ -3,7 +3,7 @@ package com.braintreepayments.api
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 
-class ShoppingInsightsCreateBodyTest {
+class ShoppingInsightsCreateBodyUnitTest {
 
     private val shoppingInsightsCreateBody = ShoppingInsightsCreateBody()
 
