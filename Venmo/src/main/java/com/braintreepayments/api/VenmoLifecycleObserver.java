@@ -12,6 +12,8 @@ import androidx.lifecycle.LifecycleOwner;
 // NEXT_MAJOR_VERSION: Update to implement DefaultLifeCycleObserver when Java 7 support is explicitly dropped.
 class VenmoLifecycleObserver implements LifecycleEventObserver {
 
+    VenmoActivityResultContract venmoActivityResultContract = new VenmoActivityResultContract();
+
     private static final String VENMO_SECURE_RESULT = "com.braintreepayments.api.Venmo.RESULT";
 
     @VisibleForTesting
@@ -31,13 +33,17 @@ class VenmoLifecycleObserver implements LifecycleEventObserver {
     @Override
     public void onStateChanged(@NonNull LifecycleOwner lifecycleOwner, @NonNull Lifecycle.Event event) {
         if (event == Lifecycle.Event.ON_CREATE) {
-            activityLauncher = activityResultRegistry.register(VENMO_SECURE_RESULT, lifecycleOwner, new VenmoActivityResultContract(), new ActivityResultCallback<VenmoResult>() {
+            activityLauncher = activityResultRegistry.register(VENMO_SECURE_RESULT, lifecycleOwner, venmoActivityResultContract, new ActivityResultCallback<VenmoResult>() {
                 @Override
                 public void onActivityResult(VenmoResult venmoResult) {
                     venmoClient.onVenmoResult(venmoResult);
                 }
             });
         }
+    }
+
+    public void setFallbackToWeb(boolean fallbackToWeb) {
+        venmoActivityResultContract.fallbackToWeb = fallbackToWeb;
     }
 
     void launch(VenmoIntentData venmoIntentData) {

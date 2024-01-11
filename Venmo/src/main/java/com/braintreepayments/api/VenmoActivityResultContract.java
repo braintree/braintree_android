@@ -27,7 +27,7 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
     static final String EXTRA_USERNAME = "com.braintreepayments.api.EXTRA_USER_NAME";
     static final String EXTRA_RESOURCE_ID = "com.braintreepayments.api.EXTRA_RESOURCE_ID";
 
-    boolean fallbackToWeb = true;
+    boolean fallbackToWeb;
 
     @VisibleForTesting
     boolean shouldVault;
@@ -58,7 +58,6 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
             /* do nothing */
         }
 
-        // TODO: update this bool conditionally from request
         if (fallbackToWeb) {
             return createUniversalLinkIntent(venmoIntent, input, context, braintreeData);
         } else {

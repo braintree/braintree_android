@@ -229,6 +229,7 @@ public class VenmoClient {
         boolean shouldVault = request.getShouldVault() && isClientTokenAuth;
         sharedPrefsWriter.persistVenmoVaultOption(activity, shouldVault);
         if (observer != null) {
+            observer.setFallbackToWeb(request.getFallbackToWeb());
             VenmoIntentData intentData = new VenmoIntentData(configuration, venmoProfileId, paymentContextId, braintreeClient.getSessionId(), braintreeClient.getIntegrationType());
             observer.launch(intentData);
         } else {
