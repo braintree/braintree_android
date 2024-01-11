@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* PayPal
+  * Add imageUrl, upcCode, and upcType to PayPalLineItem
 * PayPalNativeCheckout
   * Bump native-checkout version to release `1.2.1`
   * Upgraded the data-collector SDK to version 3.21.0 which made updates to Device Data collection related to Google Play's User Data Policy. For more info read the [release notes](https://github.com/paypal/android-checkout-sdk/releases/tag/v1.2.1)
