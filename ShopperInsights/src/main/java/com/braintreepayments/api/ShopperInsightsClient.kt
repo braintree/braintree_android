@@ -16,7 +16,7 @@ import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_SELECTED
  * Note: **This feature is in beta. It's public API may change in future releases.**
  */
 class ShopperInsightsClient @VisibleForTesting internal constructor(
-    private val shoppingInsightsCreateBody: ShopperInsightsApi,
+    private val shoppingInsightsApi: ShopperInsightsApi,
     private val braintreeClient: BraintreeClient,
     private val deviceInspector: DeviceInspector
 ) {
@@ -78,7 +78,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         val paymentSources = listOf("PAYPAL", "VENMO")
         val includeAccountDetails = true
 
-        val result = shoppingInsightsCreateBody.execute(
+        val result = shoppingInsightsApi.execute(
             ShopperInsightsApiRequest(
                 request,
                 merchantId = merchantId,
