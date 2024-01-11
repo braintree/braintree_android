@@ -73,6 +73,8 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
                 lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_CREDIT, "Some Item", 1, "2"));
                 lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
                 venmoRequest.setLineItems(lineItems);
+
+                // TODO: toggle for this being true/false?
                 venmoRequest.setFallbackToWeb(true);
 
                 venmoClient.tokenizeVenmoAccount(activity, venmoRequest);

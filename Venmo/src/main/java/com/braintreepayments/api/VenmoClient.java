@@ -1,9 +1,5 @@
 package com.braintreepayments.api;
 
-import static androidx.core.content.ContextCompat.createDeviceProtectedStorageContext;
-import static androidx.core.content.ContextCompat.startActivity;
-
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -167,12 +163,13 @@ public class VenmoClient {
                 }
 
                 String exceptionMessage = null;
-                // TODO: conditionally update this logic
-//                if (!configuration.isVenmoEnabled()) {
-//                    exceptionMessage = "Venmo is not enabled";
-//                } else if (!deviceInspector.isVenmoAppSwitchAvailable(activity)) {
-//                    exceptionMessage = "Venmo is not installed";
-//                }
+                if (request.getFallbackToWeb() == false) {
+                    if (!configuration.isVenmoEnabled()) {
+                        exceptionMessage = "Venmo is not enabled";
+                    } else if (!deviceInspector.isVenmoAppSwitchAvailable(activity)) {
+                        exceptionMessage = "Venmo is not installed";
+                    }
+                }
 
                 if (exceptionMessage != null) {
                     callback.onResult(new AppSwitchNotAvailableException(exceptionMessage));
