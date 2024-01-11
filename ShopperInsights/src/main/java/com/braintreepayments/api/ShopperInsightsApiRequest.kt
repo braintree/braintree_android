@@ -15,11 +15,11 @@ package com.braintreepayments.api
  *
  */
 internal data class ShopperInsightsApiRequest(
-    var request: ShopperInsightsRequest,
-    var merchantId: String,
-    var currencyCode: String,
-    var countryCode: String,
-    var accountDetails: Boolean,
-    var constraintType: String,
-    var paymentSources: List<String>
+    val request: ShopperInsightsRequest,
+    val merchantId: String,
+    val currencyCode: String,
+    val countryCode: String,
+    val accountDetails: Boolean,
+    val constraintType: String,
+    val paymentSources: List<String>
 )
