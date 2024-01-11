@@ -8,7 +8,6 @@ import android.text.TextUtils;
 import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.FragmentActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;

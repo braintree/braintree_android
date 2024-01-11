@@ -1,11 +1,10 @@
 package com.braintreepayments.api;
 
-import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -14,112 +13,103 @@ import static org.mockito.Mockito.when;
 
 import android.content.Intent;
 
-import androidx.fragment.app.FragmentActivity;
+import androidx.activity.ComponentActivity;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
 public class PayPalLauncherUnitTest {
 
     private BrowserSwitchClient browserSwitchClient;
-    private FragmentActivity activity;
+    private ComponentActivity activity;
     private Intent intent;
 
-    private PayPalLauncherCallback payPalLauncherCallback;
 
     @Before
     public void beforeEach() {
         browserSwitchClient = mock(BrowserSwitchClient.class);
-        activity = mock(FragmentActivity.class);
+        activity = mock(ComponentActivity.class);
         intent = new Intent();
-        payPalLauncherCallback = mock(PayPalLauncherCallback.class);
 
     }
 
     @Test
-    public void launch_startsBrowserSwitch() throws BrowserSwitchException {
-        PayPalPaymentAuthRequestParams paymentAuthRequest = mock(PayPalPaymentAuthRequestParams.class);
+    public void launch_startsBrowserSwitch_returnsPendingRequest() throws BrowserSwitchException {
+        PayPalPaymentAuthRequestParams paymentAuthRequestParams = mock(PayPalPaymentAuthRequestParams.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
-        when(paymentAuthRequest.getBrowserSwitchOptions()).thenReturn(options);
+        when(paymentAuthRequestParams.getBrowserSwitchOptions()).thenReturn(options);
+        BrowserSwitchRequest browserSwitchRequest = mock(BrowserSwitchRequest.class);
+        when(browserSwitchClient.start(activity, options)).thenReturn(browserSwitchRequest);
         PayPalLauncher sut = new PayPalLauncher(browserSwitchClient);
 
-        sut.launch(activity, paymentAuthRequest);
+        PayPalPendingRequest pendingRequest = sut.launch(activity, new PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams));
 
+        assertTrue(pendingRequest instanceof PayPalPendingRequest.Started);
+        assertEquals(browserSwitchRequest, ((PayPalPendingRequest.Started) pendingRequest).getRequest().getBrowserSwitchRequest());
         verify(browserSwitchClient).start(same(activity), same(options));
     }
 
     @Test
-    public void launch_onError_callsBackError() throws BrowserSwitchException {
-        PayPalPaymentAuthRequestParams paymentAuthRequest = mock(PayPalPaymentAuthRequestParams.class);
+    public void launch_onError_returnsPendingRequestFailure() throws BrowserSwitchException {
+        PayPalPaymentAuthRequestParams paymentAuthRequestParams = mock(PayPalPaymentAuthRequestParams.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
-        when(paymentAuthRequest.getBrowserSwitchOptions()).thenReturn(options);
+        when(paymentAuthRequestParams.getBrowserSwitchOptions()).thenReturn(options);
         BrowserSwitchException exception = new BrowserSwitchException("error");
         doThrow(exception).when(browserSwitchClient).start(same(activity), same(options));
         PayPalLauncher sut = new PayPalLauncher(browserSwitchClient);
 
-        sut.launch(activity, paymentAuthRequest);
+        PayPalPendingRequest pendingRequest = sut.launch(activity, new PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams));
 
-        ArgumentCaptor<PayPalPaymentAuthResult> captor =
-                ArgumentCaptor.forClass(PayPalPaymentAuthResult.class);
-        verify(payPalLauncherCallback).onResult(captor.capture());
-        assertSame(exception, captor.getValue().getError());
-        assertNull(captor.getValue().getBrowserSwitchResult());
+        assertTrue(pendingRequest instanceof PayPalPendingRequest.Failure);
+        assertSame(exception, ((PayPalPendingRequest.Failure) pendingRequest).getError());
     }
 
     @Test
-    public void launch_whenDeviceCantPerformBrowserSwitch_returnsError()
+    public void launch_whenDeviceCantPerformBrowserSwitch_returnsPendingRequestFailure()
             throws BrowserSwitchException {
-        PayPalPaymentAuthRequestParams paymentAuthRequest = mock(PayPalPaymentAuthRequestParams.class);
+        PayPalPaymentAuthRequestParams paymentAuthRequestParams = mock(PayPalPaymentAuthRequestParams.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
-        when(paymentAuthRequest.getBrowserSwitchOptions()).thenReturn(options);
+        when(paymentAuthRequestParams.getBrowserSwitchOptions()).thenReturn(options);
         BrowserSwitchException exception = new BrowserSwitchException("browser switch error");
         doThrow(exception).when(browserSwitchClient).assertCanPerformBrowserSwitch(same(activity), same(options));
         PayPalLauncher sut = new PayPalLauncher(browserSwitchClient);
 
-        sut.launch(activity, paymentAuthRequest);
+        PayPalPendingRequest pendingRequest = sut.launch(activity, new PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams));
 
-        ArgumentCaptor<PayPalPaymentAuthResult> captor =
-                ArgumentCaptor.forClass(PayPalPaymentAuthResult.class);
-        verify(payPalLauncherCallback).onResult(captor.capture());
-        PayPalPaymentAuthResult result = captor.getValue();
+        assertTrue(pendingRequest instanceof PayPalPendingRequest.Failure);
         assertEquals("AndroidManifest.xml is incorrectly configured or another app " +
                         "defines the same browser switch url as this app. See " +
                         "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
                         "for the correct configuration: browser switch error",
-                result.getError().getMessage());
+               ((PayPalPendingRequest.Failure) pendingRequest).getError().getMessage());
     }
 
     @Test
-    public void deliverResult_deliversResultToLauncherCallback() {
+    public void handleReturnToAppFromBrowser_whenResultExist_returnsResult() {
         BrowserSwitchResult result = mock(BrowserSwitchResult.class);
-        when(browserSwitchClient.parseResult(eq(activity), eq(PAYPAL), eq(intent))).thenReturn(
-                result);
+        BrowserSwitchRequest browserSwitchRequest = mock(BrowserSwitchRequest.class);
+        PayPalBrowserSwitchRequest payPalBrowserSwitchRequest = new PayPalBrowserSwitchRequest(browserSwitchRequest);
+        when(browserSwitchClient.parseResult(browserSwitchRequest, intent)).thenReturn(result);
         PayPalLauncher sut = new PayPalLauncher(browserSwitchClient);
 
-        sut.handleReturnToAppFromBrowser(activity, intent);
+        PayPalPaymentAuthResult paymentAuthResult = sut.handleReturnToAppFromBrowser(new PayPalPendingRequest.Started(payPalBrowserSwitchRequest), intent);
 
-        ArgumentCaptor<PayPalPaymentAuthResult> captor =
-                ArgumentCaptor.forClass(PayPalPaymentAuthResult.class);
-        verify(payPalLauncherCallback).onResult(captor.capture());
-        assertSame(result, captor.getValue().getBrowserSwitchResult());
-        assertNull(captor.getValue().getError());
+        assertNotNull(paymentAuthResult);
+        assertSame(result, paymentAuthResult.getBrowserSwitchResult());
     }
 
     @Test
-    public void handleReturnToAppFromBrowser_clearsActiveBrowserSwitchRequests() {
-        BrowserSwitchResult result = mock(BrowserSwitchResult.class);
-        when(browserSwitchClient.parseResult(eq(activity), eq(PAYPAL), eq(intent))).thenReturn(
-                result);
+    public void handleReturnToAppFromBrowser_whenResultDoesNotExist_returnsNull() {
+        BrowserSwitchRequest browserSwitchRequest = mock(BrowserSwitchRequest.class);
+        PayPalBrowserSwitchRequest payPalBrowserSwitchRequest = new PayPalBrowserSwitchRequest(browserSwitchRequest);
+        when(browserSwitchClient.parseResult(browserSwitchRequest, intent)).thenReturn(null);
         PayPalLauncher sut = new PayPalLauncher(browserSwitchClient);
 
-        sut.handleReturnToAppFromBrowser(activity, intent);
+        PayPalPaymentAuthResult paymentAuthResult = sut.handleReturnToAppFromBrowser(new PayPalPendingRequest.Started(payPalBrowserSwitchRequest), intent);
 
-        verify(browserSwitchClient).clearActiveRequests(same(activity));
+        assertNull(paymentAuthResult);
     }
-
-
 }
