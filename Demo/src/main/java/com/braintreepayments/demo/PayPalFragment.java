@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.BraintreeException;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.DataCollectorResult;
 import com.braintreepayments.api.PayPalClient;
@@ -24,7 +23,6 @@ import com.braintreepayments.api.PayPalPaymentAuthResult;
 import com.braintreepayments.api.PayPalPendingRequest;
 import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PayPalResult;
-import com.braintreepayments.api.PayPalTokenizeCallback;
 import com.braintreepayments.api.PaymentMethodNonce;
 
 public class PayPalFragment extends BaseFragment {
@@ -37,7 +35,7 @@ public class PayPalFragment extends BaseFragment {
 
     private DataCollector dataCollector;
 
-    private PayPalPendingRequest.Success pendingRequest;
+    private PayPalPendingRequest.Started pendingRequest;
 
     @Nullable
     @Override
@@ -60,7 +58,7 @@ public class PayPalFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        PayPalPendingRequest.Success pendingRequest = getPendingRequest();
+        PayPalPendingRequest.Started pendingRequest = getPendingRequest();
         if (pendingRequest != null) {
             PayPalPaymentAuthResult paymentAuthResult = payPalLauncher.handleReturnToAppFromBrowser(pendingRequest, requireActivity().getIntent());
             if (paymentAuthResult != null) {
@@ -71,11 +69,11 @@ public class PayPalFragment extends BaseFragment {
         }
     }
 
-    private void storePendingRequest(PayPalPendingRequest.Success request) {
+    private void storePendingRequest(PayPalPendingRequest.Started request) {
         // TODO: Store in local storage to be resilient to process kills
         pendingRequest = request;
     }
-    private PayPalPendingRequest.Success getPendingRequest() {
+    private PayPalPendingRequest.Started getPendingRequest() {
         return pendingRequest;
     }
 
@@ -120,8 +118,8 @@ public class PayPalFragment extends BaseFragment {
                     } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch){
                         PayPalPendingRequest request = payPalLauncher.launch(requireActivity(),
                                 ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
-                        if (request instanceof PayPalPendingRequest.Success) {
-                            storePendingRequest((PayPalPendingRequest.Success) request);
+                        if (request instanceof PayPalPendingRequest.Started) {
+                            storePendingRequest((PayPalPendingRequest.Started) request);
                         } else if (request instanceof PayPalPendingRequest.Failure) {
                             handleError(((PayPalPendingRequest.Failure) request).getError());
                         }

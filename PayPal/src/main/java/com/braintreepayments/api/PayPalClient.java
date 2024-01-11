@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
@@ -56,7 +57,7 @@ public class PayPalClient {
     /**
      * Starts the PayPal payment flow by creating a {@link PayPalPaymentAuthRequestParams} to be
      * used to launch the PayPal web authentication flow in
-     * {@link PayPalLauncher#launch(FragmentActivity, PayPalPaymentAuthRequestParams)}.
+     * {@link PayPalLauncher#launch(ComponentActivity, PayPalPaymentAuthRequest.ReadyToLaunch)}.
      *
      * @param context       Android Context
      * @param payPalRequest a {@link PayPalRequest} used to customize the request.
@@ -176,7 +177,7 @@ public class PayPalClient {
 
     /**
      * After receiving a result from the PayPal web authentication flow via
-     * {@link PayPalLauncher#handleReturnToAppFromBrowser(PayPalPendingRequest.Success, Intent)}, pass the
+     * {@link PayPalLauncher#handleReturnToAppFromBrowser(PayPalPendingRequest.Started, Intent)}, pass the
      * {@link PayPalPaymentAuthResult} returned to this method to tokenize the PayPal account and
      * receive a {@link PayPalAccountNonce} on success.
      *
