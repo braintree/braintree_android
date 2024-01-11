@@ -27,7 +27,7 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
     static final String EXTRA_USERNAME = "com.braintreepayments.api.EXTRA_USER_NAME";
     static final String EXTRA_RESOURCE_ID = "com.braintreepayments.api.EXTRA_RESOURCE_ID";
 
-    boolean fallbackToWeb = false;
+    boolean fallbackToWeb = true;
 
     @VisibleForTesting
     boolean shouldVault;
@@ -60,7 +60,7 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
 
         // TODO: update this bool conditionally from request
         if (fallbackToWeb) {
-            return createUniversalLinkIntent(venmoIntent, input, braintreeData);
+            return createUniversalLinkIntent(venmoIntent, input, context, braintreeData);
         } else {
             return venmoIntent;
         }
@@ -82,13 +82,13 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
         return null;
     }
 
-    private Intent createUniversalLinkIntent(Intent intent, VenmoIntentData input, JSONObject braintreeData) {
+    private Intent createUniversalLinkIntent(Intent intent, VenmoIntentData input, Context context, JSONObject braintreeData) {
         // TODO: update success/cancel/error URLs
         Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout");
         venmoBaseURL.buildUpon()
-                .appendQueryParameter("x-success", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/success")
-                .appendQueryParameter("x-error", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/error")
-                .appendQueryParameter("x-cancel", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/cancel")
+                .appendQueryParameter("x-success", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/success")
+                .appendQueryParameter("x-error", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/error")
+                .appendQueryParameter("x-cancel", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/cancel")
                 .appendQueryParameter("x-source", "Demo")
                 .appendQueryParameter("braintree_merchant_id", input.getProfileId())
                 .appendQueryParameter("braintree_access_token", input.getConfiguration().getVenmoAccessToken())
