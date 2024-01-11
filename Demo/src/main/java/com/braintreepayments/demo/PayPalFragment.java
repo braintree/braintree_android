@@ -119,9 +119,11 @@ public class PayPalFragment extends BaseFragment {
                         handleError(((PayPalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
                     } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch){
                         PayPalPendingRequest request = payPalLauncher.launch(requireActivity(),
-                                ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams());
+                                ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
                         if (request instanceof PayPalPendingRequest.Success) {
                             storePendingRequest((PayPalPendingRequest.Success) request);
+                        } else if (request instanceof PayPalPendingRequest.Failure) {
+                            handleError(((PayPalPendingRequest.Failure) request).getError());
                         }
                     }
                 });
