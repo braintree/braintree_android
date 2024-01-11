@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-# unreleased
+## unreleased
 
 * PayPal
   * Add imageUrl, upcCode, and upcType to PayPalLineItem
