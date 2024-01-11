@@ -27,6 +27,8 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
     static final String EXTRA_USERNAME = "com.braintreepayments.api.EXTRA_USER_NAME";
     static final String EXTRA_RESOURCE_ID = "com.braintreepayments.api.EXTRA_RESOURCE_ID";
 
+    boolean fallbackToWeb = false;
+
     @VisibleForTesting
     boolean shouldVault;
 
@@ -42,10 +44,8 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
             venmoIntent.putExtra(EXTRA_RESOURCE_ID, input.getPaymentContextId());
         }
 
-        Uri encodedVenmoURL = Uri.parse("www.paypal.com");
+        JSONObject braintreeData = new JSONObject();
         try {
-            JSONObject braintreeData = new JSONObject();
-
             JSONObject meta = new MetadataBuilder()
                     .sessionId(input.getSessionId())
                     .integration(input.getIntegrationType())
@@ -55,28 +55,16 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
             braintreeData.put(META_KEY, meta);
             venmoIntent.putExtra(EXTRA_BRAINTREE_DATA, braintreeData.toString());
 
-            // TODO: update return URL, switch between base URLs, update success/cancel/error URLs
-            Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout");
-            encodedVenmoURL = venmoBaseURL.buildUpon()
-                    .appendQueryParameter("x-success", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/success")
-                    .appendQueryParameter("x-error", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/error")
-                    .appendQueryParameter("x-cancel", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/cancel")
-                    .appendQueryParameter("x-source", "Demo")
-                    .appendQueryParameter("braintree_merchant_id", input.getProfileId())
-                    .appendQueryParameter("braintree_access_token", input.getConfiguration().getVenmoAccessToken())
-                    .appendQueryParameter("braintree_environment", input.getConfiguration().getVenmoEnvironment())
-                    .appendQueryParameter("resource_id", input.getPaymentContextId())
-                    .appendQueryParameter("braintree_sdk_data", braintreeData.toString())
-                    .appendQueryParameter("customerClient", "MOBILE_APP")
-                    .build();
         } catch (JSONException ignored) {
             /* do nothing */
         }
 
-        // TODO: update this logic conditionally
-//        return venmoIntent;
-        return venmoIntent.setData(encodedVenmoURL);
-//        return new Intent(Intent.ACTION_VIEW, encodedVenmoURL);
+        // TODO: update this bool conditionally from request
+        if (fallbackToWeb) {
+            return createUniversalLinkIntent(venmoIntent, input, braintreeData);
+        } else {
+            return venmoIntent;
+        }
     }
 
     @Override
@@ -93,6 +81,25 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
             return new VenmoResult(null, null, null, new UserCanceledException("User canceled Venmo."));
         }
         return null;
+    }
+
+    private Intent createUniversalLinkIntent(Intent intent, VenmoIntentData input, JSONObject braintreeData) {
+        // TODO: update return URL, switch between base URLs, update success/cancel/error URLs
+        Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout");
+        venmoBaseURL.buildUpon()
+                .appendQueryParameter("x-success", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/success")
+                .appendQueryParameter("x-error", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/error")
+                .appendQueryParameter("x-cancel", "com.braintreepayments.demo://x-callback-url/vzero/auth/venmo/cancel")
+                .appendQueryParameter("x-source", "Demo")
+                .appendQueryParameter("braintree_merchant_id", input.getProfileId())
+                .appendQueryParameter("braintree_access_token", input.getConfiguration().getVenmoAccessToken())
+                .appendQueryParameter("braintree_environment", input.getConfiguration().getVenmoEnvironment())
+                .appendQueryParameter("resource_id", input.getPaymentContextId())
+                .appendQueryParameter("braintree_sdk_data", braintreeData.toString())
+                .appendQueryParameter("customerClient", "MOBILE_APP")
+                .build();
+
+        return intent.setData(venmoBaseURL);
     }
 
     private static Intent getVenmoIntent() {
