@@ -35,8 +35,6 @@ public class PayPalFragment extends BaseFragment {
 
     private DataCollector dataCollector;
 
-    private PayPalPendingRequest.Started pendingRequest;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -61,6 +59,7 @@ public class PayPalFragment extends BaseFragment {
         PayPalPendingRequest.Started pendingRequest = getPendingRequest();
         if (pendingRequest != null) {
             PayPalPaymentAuthResult paymentAuthResult = payPalLauncher.handleReturnToAppFromBrowser(pendingRequest, requireActivity().getIntent());
+            clearPendingRequest();
             if (paymentAuthResult != null) {
                 completePayPalFlow(paymentAuthResult);
             } else {
@@ -70,11 +69,14 @@ public class PayPalFragment extends BaseFragment {
     }
 
     private void storePendingRequest(PayPalPendingRequest.Started request) {
-        // TODO: Store in local storage to be resilient to process kills
-        pendingRequest = request;
+        PendingRequestStore.putPayPalPendingRequest(requireContext(), request);
     }
     private PayPalPendingRequest.Started getPendingRequest() {
-        return pendingRequest;
+        return PendingRequestStore.getPayPalPendingRequest(requireContext());
+    }
+
+    private void clearPendingRequest() {
+        PendingRequestStore.clearPayPalPendingRequest(requireContext());
     }
 
     public void launchSinglePayment(View v) {
