@@ -2,10 +2,8 @@ package com.braintreepayments.api
 
 import android.content.Context
 import android.content.pm.ActivityInfo
-import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
-import androidx.fragment.app.FragmentActivity
 import com.braintreepayments.api.IntegrationType.Integration
 
 /**
@@ -226,25 +224,6 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         } else {
             returnUrlScheme
         }
-    }
-
-    /**
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    @Throws(BrowserSwitchException::class)
-    fun assertCanPerformBrowserSwitch(
-        activity: FragmentActivity?,
-        @BraintreeRequestCodes requestCode: Int
-    ) {
-        // url used to see if the application is able to open an https url e.g. web browser
-        val url = Uri.parse("https://braintreepayments.com")
-        val returnUrlScheme = getReturnUrlScheme()
-        val browserSwitchOptions = BrowserSwitchOptions()
-            .url(url)
-            .returnUrlScheme(returnUrlScheme)
-            .requestCode(requestCode)
-        browserSwitchClient.assertCanPerformBrowserSwitch(activity, browserSwitchOptions)
     }
 
     /**

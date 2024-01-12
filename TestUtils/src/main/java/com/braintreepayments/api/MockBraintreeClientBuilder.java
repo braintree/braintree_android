@@ -1,18 +1,13 @@
 package com.braintreepayments.api;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.pm.ActivityInfo;
 
-import androidx.fragment.app.FragmentActivity;
-
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 public class MockBraintreeClientBuilder {
@@ -30,14 +25,11 @@ public class MockBraintreeClientBuilder {
     private Exception configurationError;
 
     private Authorization authorization;
-    private Exception authorizationError;
 
     private String sessionId;
     private String integration;
     private String returnUrlScheme;
 
-    private BrowserSwitchResult browserSwitchResult;
-    private BrowserSwitchException browserSwitchAssertionError;
 
     private ActivityInfo activityInfo;
     private boolean launchesBrowserSwitchAsNewTask;
@@ -117,20 +109,8 @@ public class MockBraintreeClientBuilder {
         BraintreeClient braintreeClient = mock(BraintreeClient.class);
         when(braintreeClient.getSessionId()).thenReturn(sessionId);
         when(braintreeClient.getIntegrationType()).thenReturn(integration);
-
         when(braintreeClient.getAuthorization()).thenReturn(authorization);
-
         when(braintreeClient.getReturnUrlScheme()).thenReturn(returnUrlScheme);
-
-        if (browserSwitchAssertionError != null) {
-            try {
-                doThrow(browserSwitchAssertionError)
-                        .when(braintreeClient)
-                        .assertCanPerformBrowserSwitch(any(FragmentActivity.class), anyInt());
-            } catch (BrowserSwitchException ignored) {
-            }
-        }
-
         when(braintreeClient.getManifestActivityInfo(any())).thenReturn(activityInfo);
         when(braintreeClient.launchesBrowserSwitchAsNewTask()).thenReturn(
                 launchesBrowserSwitchAsNewTask);

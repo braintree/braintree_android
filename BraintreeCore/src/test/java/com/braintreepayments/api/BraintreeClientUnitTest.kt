@@ -2,7 +2,6 @@ package com.braintreepayments.api
 
 import android.content.Context
 import android.content.pm.ActivityInfo
-import android.net.Uri
 import androidx.fragment.app.FragmentActivity
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.testing.WorkManagerTestInitHelper
@@ -295,64 +294,6 @@ class BraintreeClientUnitTest {
         sut.sendAnalyticsEvent("event.started")
 
         verify { analyticsClient wasNot Called }
-    }
-
-    @Test
-    @Throws(BrowserSwitchException::class)
-    fun assertCanPerformBrowserSwitch_assertsBrowserSwitchIsPossible() {
-        val params = createDefaultParams(configurationLoader)
-        val activity = mockk<FragmentActivity>(relaxed = true)
-
-        val sut = BraintreeClient(params)
-        sut.assertCanPerformBrowserSwitch(activity, 123)
-
-        val browserSwitchOptionsSlot = slot<BrowserSwitchOptions>()
-        verify {
-            browserSwitchClient.assertCanPerformBrowserSwitch(
-                activity,
-                capture(browserSwitchOptionsSlot)
-            )
-        }
-
-        val browserSwitchOptions = browserSwitchOptionsSlot.captured
-        assertEquals(123, browserSwitchOptions.requestCode.toLong())
-        assertEquals(Uri.parse("https://braintreepayments.com"), browserSwitchOptions.url)
-    }
-
-    @Test
-    @Throws(BrowserSwitchException::class)
-    @Suppress("SwallowedException")
-    fun assertCanPerformBrowserSwitch_onSuccess_doesNotThrow() {
-        val activity = mockk<FragmentActivity>(relaxed = true)
-        every { browserSwitchClient.assertCanPerformBrowserSwitch(activity, any()) } returns Unit
-
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
-        try {
-            sut.assertCanPerformBrowserSwitch(activity, 123)
-        } catch (e: BrowserSwitchException) {
-            fail("shouldn't get here")
-        }
-    }
-
-    @Test
-    @Throws(BrowserSwitchException::class)
-    fun assertCanPerformBrowserSwitch_onError_throws() {
-        val activity = mockk<FragmentActivity>(relaxed = true)
-        val browserSwitchException = BrowserSwitchException("error")
-
-        every {
-            browserSwitchClient.assertCanPerformBrowserSwitch(activity, any())
-        } throws browserSwitchException
-
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
-        try {
-            sut.assertCanPerformBrowserSwitch(activity, 123)
-            fail("shouldn't get here")
-        } catch (e: BrowserSwitchException) {
-            assertSame(browserSwitchException, e)
-        }
     }
 
     @Test
