@@ -57,12 +57,6 @@ public class MockBraintreeClientBuilder {
         return this;
     }
 
-    public MockBraintreeClientBuilder deliverBrowserSwitchResult(
-            BrowserSwitchResult browserSwitchResult) {
-        this.browserSwitchResult = browserSwitchResult;
-        return this;
-    }
-
     public MockBraintreeClientBuilder activityInfo(ActivityInfo activityInfo) {
         this.activityInfo = activityInfo;
         return this;
@@ -113,12 +107,6 @@ public class MockBraintreeClientBuilder {
         return this;
     }
 
-    public MockBraintreeClientBuilder browserSwitchAssertionError(
-            BrowserSwitchException browserSwitchAssertionError) {
-        this.browserSwitchAssertionError = browserSwitchAssertionError;
-        return this;
-    }
-
     public MockBraintreeClientBuilder launchesBrowserSwitchAsNewTask(
             boolean launchesBrowserSwitchAsNewTask) {
         this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask;
@@ -144,8 +132,6 @@ public class MockBraintreeClientBuilder {
         }
 
         when(braintreeClient.getManifestActivityInfo(any())).thenReturn(activityInfo);
-        when(braintreeClient.deliverBrowserSwitchResult(any(FragmentActivity.class))).thenReturn(
-                browserSwitchResult);
         when(braintreeClient.launchesBrowserSwitchAsNewTask()).thenReturn(
                 launchesBrowserSwitchAsNewTask);
 
