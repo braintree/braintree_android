@@ -1,7 +1,6 @@
 package com.braintreepayments.api
 
 import android.content.Context
-import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import androidx.fragment.app.FragmentActivity
@@ -9,12 +8,10 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.work.testing.WorkManagerTestInitHelper
 import io.mockk.*
 import org.json.JSONException
-import org.json.JSONObject
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.mock
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -482,16 +479,4 @@ class BraintreeClientUnitTest {
             configurationLoader = configurationLoader,
             integrationType = IntegrationType.CUSTOM
         )
-
-    companion object {
-        private fun createSuccessfulBrowserSwitchResult(): BrowserSwitchResult {
-            val requestCode = 123
-            val url = Uri.parse("www.example.com")
-            val returnUrlScheme = "sample-scheme"
-            val browserSwitchRequest = BrowserSwitchRequest(
-                requestCode, url, JSONObject(), returnUrlScheme, true
-            )
-            return BrowserSwitchResult(BrowserSwitchStatus.SUCCESS, browserSwitchRequest)
-        }
-    }
 }
