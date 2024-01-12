@@ -15,25 +15,24 @@ sealed class PayPalPendingRequest {
      * stored and passed to [PayPalLauncher.handleReturnToAppFromBrowser]
      */
     class Started(val request: PayPalBrowserSwitchRequest) : PayPalPendingRequest() {
+
+        /**
+         * Convenience constructor to create a [PayPalPendingRequest.Started] from your stored
+         * [String] from [PayPalPendingRequest.Started.toJsonString]
+         */
+        constructor(jsonString: String) : this(PayPalBrowserSwitchRequest(BrowserSwitchRequest.fromJson(
+            JSONObject(jsonString).getString(
+                "browserSwitchRequest"
+            ))))
+
+        /**
+         * Convenience method to return [PayPalPendingRequest.Started] in [String] format to be
+         * persisted in storage
+         */
         fun toJsonString(): String {
             val json = JSONObject()
             json.put("browserSwitchRequest", request.browserSwitchRequest.toJson())
             return json.toString()
-        }
-
-        companion object {
-            fun fromJsonString(jsonString: String): Started {
-                val json = JSONObject(jsonString)
-                return Started(
-                    PayPalBrowserSwitchRequest(
-                        BrowserSwitchRequest.fromJson(
-                            json.getString(
-                                "browserSwitchRequest"
-                            )
-                        )
-                    )
-                )
-            }
         }
     }
 

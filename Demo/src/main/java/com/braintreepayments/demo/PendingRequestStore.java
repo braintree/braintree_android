@@ -19,7 +19,7 @@ public class PendingRequestStore {
     public static PayPalPendingRequest.Started getPayPalPendingRequest(Context context) {
         String requestString = get(PAYPAL_PENDING_REQUEST_KEY, context);
         if (requestString != null) {
-            return PayPalPendingRequest.Started.Companion.fromJsonString(requestString);
+            return new PayPalPendingRequest.Started(requestString);
         }
         return null;
     }
