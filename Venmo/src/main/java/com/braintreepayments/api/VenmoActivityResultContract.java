@@ -27,8 +27,8 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
     static final String EXTRA_USERNAME = "com.braintreepayments.api.EXTRA_USER_NAME";
     static final String EXTRA_RESOURCE_ID = "com.braintreepayments.api.EXTRA_RESOURCE_ID";
 
-    boolean fallbackToWeb;
-    boolean venmoAppInstalled;
+    static boolean fallbackToWeb;
+    static boolean venmoAppInstalled;
 
     @VisibleForTesting
     boolean shouldVault;
@@ -105,6 +105,10 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
     }
 
     private static Intent getVenmoIntent() {
-        return new Intent().setComponent(new ComponentName(VENMO_PACKAGE_NAME, VENMO_PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
+        if (!venmoAppInstalled && fallbackToWeb) {
+            return new Intent(Intent.ACTION_VIEW);
+        } else {
+            return new Intent().setComponent(new ComponentName(VENMO_PACKAGE_NAME, VENMO_PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
+        }
     }
 }
