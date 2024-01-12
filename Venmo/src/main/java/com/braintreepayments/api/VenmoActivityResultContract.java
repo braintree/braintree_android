@@ -84,7 +84,7 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
 
     private Intent createUniversalLinkIntent(Intent intent, VenmoIntentData input, Context context, JSONObject braintreeData) {
         if (!venmoAppInstalled) {
-            intent.setAction(Intent.ACTION_VIEW); // TODO: needed for CCT but not app installed
+            intent.setAction(Intent.ACTION_VIEW);
         }
 
         Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout")
