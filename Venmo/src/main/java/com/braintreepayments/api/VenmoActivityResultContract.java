@@ -28,6 +28,7 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
     static final String EXTRA_RESOURCE_ID = "com.braintreepayments.api.EXTRA_RESOURCE_ID";
 
     boolean fallbackToWeb;
+    boolean venmoAppInstalled;
 
     @VisibleForTesting
     boolean shouldVault;
@@ -82,6 +83,10 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
     }
 
     private Intent createUniversalLinkIntent(Intent intent, VenmoIntentData input, Context context, JSONObject braintreeData) {
+        if (!venmoAppInstalled) {
+            intent.setAction(Intent.ACTION_VIEW); // TODO: needed for CCT but not app installed
+        }
+
         Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout")
                 .buildUpon()
                 .appendQueryParameter("x-success", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/success")

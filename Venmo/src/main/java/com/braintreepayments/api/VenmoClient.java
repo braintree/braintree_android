@@ -163,7 +163,7 @@ public class VenmoClient {
                 }
 
                 String exceptionMessage = null;
-                if (request.getFallbackToWeb() == false) {
+                if (!request.getFallbackToWeb()) {
                     if (!configuration.isVenmoEnabled()) {
                         exceptionMessage = "Venmo is not enabled";
                     } else if (!deviceInspector.isVenmoAppSwitchAvailable(activity)) {
@@ -226,6 +226,7 @@ public class VenmoClient {
         boolean shouldVault = request.getShouldVault() && isClientTokenAuth;
         sharedPrefsWriter.persistVenmoVaultOption(activity, shouldVault);
         if (observer != null) {
+            observer.setVenmoAppInstalled(isVenmoAppSwitchAvailable(braintreeClient.getApplicationContext()));
             observer.setFallbackToWeb(request.getFallbackToWeb());
             VenmoIntentData intentData = new VenmoIntentData(configuration, venmoProfileId, paymentContextId, braintreeClient.getSessionId(), braintreeClient.getIntegrationType());
             observer.launch(intentData);
@@ -438,9 +439,7 @@ public class VenmoClient {
      * @return true if the Venmo app is installed, false otherwise
      */
     public boolean isVenmoAppSwitchAvailable(@NonNull Context context) {
-        // TODO: update this logic with flag in request
-        return true;
-//        return deviceInspector.isVenmoAppSwitchAvailable(context);
+        return deviceInspector.isVenmoAppSwitchAvailable(context);
     }
 
     /**

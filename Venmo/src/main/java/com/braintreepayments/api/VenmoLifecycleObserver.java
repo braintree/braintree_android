@@ -42,8 +42,12 @@ class VenmoLifecycleObserver implements LifecycleEventObserver {
         }
     }
 
-    public void setFallbackToWeb(boolean fallbackToWeb) {
+    void setFallbackToWeb(boolean fallbackToWeb) {
         venmoActivityResultContract.fallbackToWeb = fallbackToWeb;
+    }
+
+    void setVenmoAppInstalled(boolean venmoAppInstalled) {
+        venmoActivityResultContract.venmoAppInstalled = venmoAppInstalled;
     }
 
     void launch(VenmoIntentData venmoIntentData) {
