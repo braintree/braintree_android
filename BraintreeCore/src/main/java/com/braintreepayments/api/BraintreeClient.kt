@@ -1,12 +1,9 @@
 package com.braintreepayments.api
 
 import android.content.Context
-import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
-import androidx.fragment.app.FragmentActivity
 import com.braintreepayments.api.IntegrationType.Integration
 
 /**
@@ -221,97 +218,12 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    @Throws(BrowserSwitchException::class)
-    fun startBrowserSwitch(
-        activity: FragmentActivity?,
-        browserSwitchOptions: BrowserSwitchOptions?
-    ) {
-        if (activity != null && browserSwitchOptions != null) {
-            browserSwitchClient.start(activity, browserSwitchOptions)
-        }
-    }
-
-    /**
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun getBrowserSwitchResult(activity: FragmentActivity): BrowserSwitchResult? =
-        browserSwitchClient.getResult(activity)
-
-    /**
-     * Deliver a browser switch result from an Activity's pending deep link intent url.
-     * If [BraintreeClient.launchesBrowserSwitchAsNewTask] is set to true,
-     * use [BraintreeClient.deliverBrowserSwitchResultFromNewTask] instead.
-     *
-     * @param activity
-     * @return [BrowserSwitchResult]
-     */
-    open fun deliverBrowserSwitchResult(activity: FragmentActivity): BrowserSwitchResult? {
-        return browserSwitchClient.deliverResult(activity)
-    }
-
-    /**
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun getBrowserSwitchResultFromNewTask(context: Context): BrowserSwitchResult? {
-        return browserSwitchClient.getResultFromCache(context)
-    }
-
-    /**
-     * Deliver pending browser switch result received by [BraintreeDeepLinkActivity] when
-     * [BraintreeClient.launchesBrowserSwitchAsNewTask] is set to true.
-     *
-     * @param context
-     * @return [BrowserSwitchResult]
-     */
-    open fun deliverBrowserSwitchResultFromNewTask(context: Context): BrowserSwitchResult? {
-        return browserSwitchClient.deliverResultFromCache(context)
-    }
-
-    /**
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun parseBrowserSwitchResult(context: Context, requestCode: Int, intent: Intent?) =
-        browserSwitchClient.parseResult(context, requestCode, intent)
-
-    /**
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun clearActiveBrowserSwitchRequests(context: Context) =
-        browserSwitchClient.clearActiveRequests(context)
-
-    /**
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun getReturnUrlScheme(): String {
         return if (launchesBrowserSwitchAsNewTask) {
             braintreeDeepLinkReturnUrlScheme
         } else {
             returnUrlScheme
         }
-    }
-
-    /**
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    @Throws(BrowserSwitchException::class)
-    fun assertCanPerformBrowserSwitch(
-        activity: FragmentActivity?,
-        @BraintreeRequestCodes requestCode: Int
-    ) {
-        // url used to see if the application is able to open an https url e.g. web browser
-        val url = Uri.parse("https://braintreepayments.com")
-        val returnUrlScheme = getReturnUrlScheme()
-        val browserSwitchOptions = BrowserSwitchOptions()
-            .url(url)
-            .returnUrlScheme(returnUrlScheme)
-            .requestCode(requestCode)
-        browserSwitchClient.assertCanPerformBrowserSwitch(activity, browserSwitchOptions)
     }
 
     /**

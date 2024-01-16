@@ -11,6 +11,7 @@
     * Upgrade to Android Gradle Plugin 8
   * BraintreeCore
     * Remove `BraintreeClient` public constructors
+    * Remove `deliverBrowserSwitchResult` and `deliverBrowserSwitchResultFromNewTask` from `BraintreeClient`
     * Remove `ClientTokenProvider`
     * Update payment method constructor parameters from `braintreeClient` to `context` and
       `authorization`
