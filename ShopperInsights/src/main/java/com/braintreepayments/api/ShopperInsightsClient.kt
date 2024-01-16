@@ -19,12 +19,12 @@ import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_SELECTED
  * Note: **This feature is in beta. It's public API may change in future releases.**
  */
 class ShopperInsightsClient @VisibleForTesting internal constructor(
-    private val paymentReadyAPI: PaymentReadyApi,
+    private val api: ShopperInsightsApi,
     private val braintreeClient: BraintreeClient,
     private val deviceInspector: DeviceInspector
 ) {
     constructor(braintreeClient: BraintreeClient) : this(
-        PaymentReadyApi(),
+        ShopperInsightsApi(EligiblePaymentsApi()),
         braintreeClient,
         DeviceInspector()
     )
@@ -72,17 +72,41 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
             return
         }
 
-        paymentReadyAPI.processRequest(request)
+        // TODO: get correct merchant ID from SDK
+        val merchantId = "MXSJ4F5BADVNS"
+
+        // Default values
+        val countryCode = "US"
+        val currencyCode = "USD"
+        val constraintType = "INCLUDE"
+        val paymentSources = listOf("PAYPAL", "VENMO")
+        val includeAccountDetails = true
+
+        val result = api.findEligiblePayments(
+            EligiblePaymentsApiRequest(
+                request,
+                merchantId = merchantId,
+                currencyCode = currencyCode,
+                countryCode = countryCode,
+                accountDetails = includeAccountDetails,
+                constraintType = constraintType,
+                paymentSources = paymentSources
+            )
+        )
         // Hardcoded result
         callback.onResult(
             ShopperInsightsResult.Success(
                 ShopperInsightsInfo(
-                    isPayPalRecommended = false,
-                    isVenmoRecommended = false
+                    isPayPalRecommended = isPaymentRecommended(result.eligibleMethods.paypal),
+                    isVenmoRecommended = isPaymentRecommended(result.eligibleMethods.venmo)
                 )
             )
         )
         braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_SUCCEEDED)
+    }
+
+    private fun isPaymentRecommended(paymentDetail: EligiblePaymentMethodDetails?): Boolean {
+        return paymentDetail?.eligibleInPayPalNetwork == true && paymentDetail.recommended
     }
 
     /**

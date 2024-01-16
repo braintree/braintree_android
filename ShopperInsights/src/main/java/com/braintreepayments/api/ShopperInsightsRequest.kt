@@ -12,5 +12,5 @@ package com.braintreepayments.api
  */
 data class ShopperInsightsRequest(
     var email: String?,
-    var phone: BuyerPhone?
+    var phone: ShopperInsightsBuyerPhone?
 )

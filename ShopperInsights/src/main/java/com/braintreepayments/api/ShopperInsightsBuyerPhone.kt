@@ -8,7 +8,7 @@ package com.braintreepayments.api
  * (excluding the country code).
  */
 
-data class BuyerPhone(
+data class ShopperInsightsBuyerPhone(
     var countryCode: String,
     var nationalNumber: String
 )
