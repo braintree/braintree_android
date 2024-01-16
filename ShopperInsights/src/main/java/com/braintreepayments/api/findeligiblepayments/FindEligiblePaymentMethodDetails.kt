@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.findeligiblepayments
 
 import org.json.JSONObject
 
@@ -10,15 +10,15 @@ import org.json.JSONObject
  * @property recommended Indicates if this payment method is recommended for the shopper.
  * @property recommendedPriority The priority ranking of this payment method if recommended.
  */
-internal data class ShopperInsightsPaymentMethodDetails(
+internal data class FindEligiblePaymentMethodDetails(
     val canBeVaulted: Boolean,
     val eligibleInPayPalNetwork: Boolean,
     val recommended: Boolean,
     val recommendedPriority: Int
 ) {
     companion object {
-        fun fromJson(jsonObject: JSONObject): ShopperInsightsPaymentMethodDetails {
-            return ShopperInsightsPaymentMethodDetails(
+        fun fromJson(jsonObject: JSONObject): FindEligiblePaymentMethodDetails {
+            return FindEligiblePaymentMethodDetails(
                 canBeVaulted = jsonObject.optBoolean("can_be_vaulted"),
                 eligibleInPayPalNetwork = jsonObject.optBoolean("eligible_in_paypal_network"),
                 recommended = jsonObject.optBoolean("recommended"),

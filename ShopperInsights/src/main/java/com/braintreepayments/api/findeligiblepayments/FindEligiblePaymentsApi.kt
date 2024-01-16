@@ -1,23 +1,22 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.findeligiblepayments
 
-import ShopperInsightApiResult
-import com.braintreepayments.api.ShopperInsightsApiRequest.Companion.toJson
+import com.braintreepayments.api.findeligiblepayments.FindEligiblePaymentsApiRequest.Companion.toJson
 
 internal class FindEligiblePaymentsApi {
-    fun execute(request: ShopperInsightsApiRequest): ShopperInsightApiResult {
+    fun execute(request: FindEligiblePaymentsApiRequest): FindEligiblePaymentsApiResult {
         request.toJson()
         // TODO: Network call
 
         // Hardcoded result
-        return ShopperInsightApiResult(
-            eligibleMethods = ShopperInsightsPaymentMethods(
-                paypal = ShopperInsightsPaymentMethodDetails(
+        return FindEligiblePaymentsApiResult(
+            eligibleMethods = FindEligiblePaymentMethods(
+                paypal = FindEligiblePaymentMethodDetails(
                     canBeVaulted = true,
                     eligibleInPayPalNetwork = true,
                     recommended = true,
                     recommendedPriority = 1
                 ),
-                venmo = ShopperInsightsPaymentMethodDetails(
+                venmo = FindEligiblePaymentMethodDetails(
                     canBeVaulted = true,
                     eligibleInPayPalNetwork = true,
                     recommended = true,

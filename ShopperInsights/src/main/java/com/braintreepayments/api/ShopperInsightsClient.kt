@@ -6,6 +6,9 @@ import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_PRESENTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_SELECTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_PRESENTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_SELECTED
+import com.braintreepayments.api.findeligiblepayments.FindEligiblePaymentMethodDetails
+import com.braintreepayments.api.findeligiblepayments.FindEligiblePaymentsApi
+import com.braintreepayments.api.findeligiblepayments.FindEligiblePaymentsApiRequest
 
 /**
  * Use [ShopperInsightsClient] to optimize your checkout experience
@@ -77,7 +80,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         val includeAccountDetails = true
 
         val result = api.findEligiblePayments(
-            ShopperInsightsApiRequest(
+            FindEligiblePaymentsApiRequest(
                 request,
                 merchantId = merchantId,
                 currencyCode = currencyCode,
@@ -98,7 +101,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         )
     }
 
-    private fun isPaymentRecommended(paymentDetail: ShopperInsightsPaymentMethodDetails?): Boolean {
+    private fun isPaymentRecommended(paymentDetail: FindEligiblePaymentMethodDetails?): Boolean {
         return paymentDetail?.eligibleInPayPalNetwork == true && paymentDetail.recommended
     }
 

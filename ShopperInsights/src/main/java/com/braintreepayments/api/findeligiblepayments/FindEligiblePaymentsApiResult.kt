@@ -1,4 +1,5 @@
-import com.braintreepayments.api.ShopperInsightsPaymentMethods
+package com.braintreepayments.api.findeligiblepayments
+
 import org.json.JSONObject
 
 /**
@@ -6,14 +7,14 @@ import org.json.JSONObject
  *
  * @property eligibleMethods Contains the payment methods available to the shopper.
  */
-internal data class ShopperInsightApiResult(
-    val eligibleMethods: ShopperInsightsPaymentMethods
+internal data class FindEligiblePaymentsApiResult(
+    val eligibleMethods: FindEligiblePaymentMethods
 ) {
     companion object {
-        fun fromJson(jsonString: String): ShopperInsightApiResult {
+        fun fromJson(jsonString: String): FindEligiblePaymentsApiResult {
             val jsonObject = JSONObject(jsonString)
             val eligibleMethodsJson = jsonObject.getJSONObject("eligible_methods")
-            return ShopperInsightApiResult(ShopperInsightsPaymentMethods.fromJson(eligibleMethodsJson))
+            return FindEligiblePaymentsApiResult(FindEligiblePaymentMethods.fromJson(eligibleMethodsJson))
         }
     }
 }

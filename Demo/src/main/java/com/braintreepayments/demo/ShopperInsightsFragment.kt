@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import com.braintreepayments.api.BraintreeClient
-import com.braintreepayments.api.BuyerPhone
+import com.braintreepayments.api.ShopperInsightsBuyerPhone
 import com.braintreepayments.api.ShopperInsightsClient
 import com.braintreepayments.api.ShopperInsightsRequest
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -64,7 +64,7 @@ class ShopperInsightsFragment : BaseFragment() {
                 if (phoneNullSwitch.isChecked) null else nationalNumberInput.editText?.text.toString()
 
             val request = if (countryCode != null && nationalNumber != null) {
-                ShopperInsightsRequest(email, BuyerPhone(countryCode, nationalNumber))
+                ShopperInsightsRequest(email, ShopperInsightsBuyerPhone(countryCode, nationalNumber))
             } else {
                 ShopperInsightsRequest(email, null)
             }

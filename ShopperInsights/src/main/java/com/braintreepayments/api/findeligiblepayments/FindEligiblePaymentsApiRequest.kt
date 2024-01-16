@@ -1,5 +1,6 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.findeligiblepayments
 
+import com.braintreepayments.api.ShopperInsightsRequest
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -17,7 +18,7 @@ import org.json.JSONObject
  * [merchantId] [currencyCode] [countryCode] are needed for Venmo recommended results
  *
  */
-internal data class ShopperInsightsApiRequest(
+internal data class FindEligiblePaymentsApiRequest(
     val request: ShopperInsightsRequest,
     val merchantId: String,
     val currencyCode: String,
@@ -27,7 +28,7 @@ internal data class ShopperInsightsApiRequest(
     val paymentSources: List<String>
 ) {
     companion object {
-        fun ShopperInsightsApiRequest.toJson(): String {
+        fun FindEligiblePaymentsApiRequest.toJson(): String {
             val jsonPaymentSources = JSONArray()
             for (source in paymentSources) {
                 jsonPaymentSources.put(source)
