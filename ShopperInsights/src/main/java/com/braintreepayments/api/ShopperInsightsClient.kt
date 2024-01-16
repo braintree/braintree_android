@@ -21,9 +21,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
     private val deviceInspector: DeviceInspector
 ) {
     constructor(braintreeClient: BraintreeClient) : this(
-        ShopperInsightsApi(
-            ShoppingInsightsCreateBody()
-        ),
+        ShopperInsightsApi(),
         braintreeClient,
         DeviceInspector()
     )

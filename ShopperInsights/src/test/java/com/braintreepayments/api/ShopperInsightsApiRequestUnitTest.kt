@@ -1,11 +1,10 @@
 package com.braintreepayments.api
 
+import com.braintreepayments.api.ShopperInsightsApiRequest.Companion.toJson
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 
-class ShoppingInsightsCreateBodyUnitTest {
-
-    private val shoppingInsightsCreateBody = ShoppingInsightsCreateBody()
+class ShopperInsightsApiRequestUnitTest {
 
     @Test
     fun `test json string conversion`() {
@@ -28,7 +27,7 @@ class ShoppingInsightsCreateBodyUnitTest {
             paymentSources = listOf("PAYPAL", "VENMO")
         )
 
-        val observedJsonString = shoppingInsightsCreateBody.execute(request)
+        val observedJsonString = request.toJson()
         val expectedJsonString = """
             {
                 "customer": {

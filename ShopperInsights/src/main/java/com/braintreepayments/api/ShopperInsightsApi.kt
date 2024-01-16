@@ -1,12 +1,11 @@
 package com.braintreepayments.api
 
 import ShopperInsightApiResult
+import com.braintreepayments.api.ShopperInsightsApiRequest.Companion.toJson
 
-internal class ShopperInsightsApi(
-    private val shoppingInsightsCreateBody: ShoppingInsightsCreateBody
-) {
+internal class ShopperInsightsApi {
     fun execute(request: ShopperInsightsApiRequest): ShopperInsightApiResult {
-        shoppingInsightsCreateBody.execute(request)
+        request.toJson()
         // TODO: Network call
 
         // Hardcoded result
