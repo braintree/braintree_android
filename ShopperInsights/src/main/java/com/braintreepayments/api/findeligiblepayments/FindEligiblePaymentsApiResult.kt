@@ -3,7 +3,7 @@ package com.braintreepayments.api.findeligiblepayments
 import org.json.JSONObject
 
 /**
- * Represents the result from the Shopper Insight API.
+ * Represents the result from the find eligible payments api.
  *
  * @property eligibleMethods Contains the payment methods available to the shopper.
  */

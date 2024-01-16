@@ -5,7 +5,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /**
- * Data class representing a request for shopper insights api.
+ * Data class representing a request for find eligible payments api.
  *
  * @property request The request given to us by the merchant
  * @property merchantId The merchant's ID
