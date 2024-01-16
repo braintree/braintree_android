@@ -5,13 +5,13 @@ package com.braintreepayments.api;
  */
 public class PayPalBrowserSwitchRequest {
 
-    BrowserSwitchRequest browserSwitchRequest;
+    BrowserSwitchPendingRequest.Started browserSwitchPendingRequest;
 
-    PayPalBrowserSwitchRequest(BrowserSwitchRequest browserSwitchRequest) {
-        this.browserSwitchRequest = browserSwitchRequest;
+    PayPalBrowserSwitchRequest(BrowserSwitchPendingRequest.Started browserSwitchPendingRequest) {
+        this.browserSwitchPendingRequest = browserSwitchPendingRequest;
     }
 
-    BrowserSwitchRequest getBrowserSwitchRequest() {
-        return browserSwitchRequest;
+    BrowserSwitchPendingRequest.Started getBrowserSwitchRequest() {
+        return browserSwitchPendingRequest;
     }
 }

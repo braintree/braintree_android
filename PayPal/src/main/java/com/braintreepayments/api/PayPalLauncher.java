@@ -50,9 +50,10 @@ public class PayPalLauncher {
         }
         BrowserSwitchPendingRequest request = browserSwitchClient.start(activity, paymentAuthRequest.getRequestParams().getBrowserSwitchOptions());
         if (request instanceof BrowserSwitchPendingRequest.Failure) {
-            return new PayPalPendingRequest.Failure(((BrowserSwitchPendingRequest.Failure) request).getError());
+            return new PayPalPendingRequest.Failure(((BrowserSwitchPendingRequest.Failure) request).getCause());
         } else if (request instanceof BrowserSwitchPendingRequest.Started) {
-            return new PayPalPendingRequest.Started(new PayPalBrowserSwitchRequest(((BrowserSwitchPendingRequest.Started) request).getBrowserSwitchRequest()));
+            return new PayPalPendingRequest.Started(new PayPalBrowserSwitchRequest(
+                    (BrowserSwitchPendingRequest.Started) request));
         }
         return new PayPalPendingRequest.Failure(new BraintreeException("An unexpected error occurred"));
     }
