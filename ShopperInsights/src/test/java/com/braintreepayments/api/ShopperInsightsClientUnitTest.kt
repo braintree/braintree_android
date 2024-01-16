@@ -24,17 +24,17 @@ class ShopperInsightsClientUnitTest {
     private val context: Context = mockk(relaxed = true)
     private val applicationContext: Context = mockk(relaxed = true)
     private lateinit var sut: ShopperInsightsClient
-    private lateinit var shopperInsightsApi: ShopperInsightsApi
+    private lateinit var api: ShopperInsightsApi
     private lateinit var braintreeClient: BraintreeClient
     private lateinit var deviceInspector: DeviceInspector
 
     @Before
     fun beforeEach() {
-        shopperInsightsApi = mockk(relaxed = true)
+        api = mockk(relaxed = true)
         braintreeClient = mockk(relaxed = true)
         deviceInspector = mockk(relaxed = true)
         every { context.applicationContext } returns applicationContext
-        sut = ShopperInsightsClient(shopperInsightsApi, braintreeClient, deviceInspector)
+        sut = ShopperInsightsClient(api, braintreeClient, deviceInspector)
     }
 
     /**

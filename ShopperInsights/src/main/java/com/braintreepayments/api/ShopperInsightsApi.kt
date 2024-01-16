@@ -1,29 +1,16 @@
 package com.braintreepayments.api
 
 import ShopperInsightApiResult
-import com.braintreepayments.api.ShopperInsightsApiRequest.Companion.toJson
 
-internal class ShopperInsightsApi {
-    fun execute(request: ShopperInsightsApiRequest): ShopperInsightApiResult {
-        request.toJson()
-        // TODO: Network call
+/**
+ * [ShopperInsightsApi] is a wrapper class for all api related classes that
+ * [ShopperInsightsClient] depends on.
+ */
+internal class ShopperInsightsApi(
+    private val paymentsApi: FindEligiblePaymentsApi
+) {
 
-        // Hardcoded result
-        return ShopperInsightApiResult(
-            eligibleMethods = ShopperInsightsPaymentMethods(
-                paypal = ShopperInsightsPaymentMethodDetails(
-                    canBeVaulted = true,
-                    eligibleInPayPalNetwork = true,
-                    recommended = true,
-                    recommendedPriority = 1
-                ),
-                venmo = ShopperInsightsPaymentMethodDetails(
-                    canBeVaulted = true,
-                    eligibleInPayPalNetwork = true,
-                    recommended = true,
-                    recommendedPriority = 1
-                )
-            )
-        )
+    fun findEligiblePayments(request: ShopperInsightsApiRequest): ShopperInsightApiResult {
+        return paymentsApi.execute(request)
     }
 }
