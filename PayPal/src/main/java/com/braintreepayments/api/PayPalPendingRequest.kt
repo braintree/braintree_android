@@ -20,7 +20,8 @@ sealed class PayPalPendingRequest {
          * Convenience constructor to create a [PayPalPendingRequest.Started] from your stored
          * [String] from [PayPalPendingRequest.Started.toJsonString]
          */
-        constructor(jsonString: String) : this(PayPalBrowserSwitchRequest(BrowserSwitchPendingRequest.Started(BrowserSwitchRequest.fromJson(
+        constructor(jsonString: String) : this(PayPalBrowserSwitchRequest(
+            BrowserSwitchPendingRequest.Started(BrowserSwitchRequest.fromJson(
             JSONObject(jsonString).getString(
                 "browserSwitchRequest"
             )))))
@@ -31,7 +32,8 @@ sealed class PayPalPendingRequest {
          */
         fun toJsonString(): String {
             val json = JSONObject()
-            json.put("browserSwitchRequest", request.browserSwitchPendingRequest.browserSwitchRequest.toJson())
+            json.put("browserSwitchRequest",
+                request.browserSwitchPendingRequest.browserSwitchRequest.toJson())
             return json.toString()
         }
     }

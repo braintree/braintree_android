@@ -11,7 +11,7 @@ public class PayPalBrowserSwitchRequest {
         this.browserSwitchPendingRequest = browserSwitchPendingRequest;
     }
 
-    BrowserSwitchPendingRequest.Started getBrowserSwitchRequest() {
+    BrowserSwitchPendingRequest.Started getBrowserSwitchPendingRequest() {
         return browserSwitchPendingRequest;
     }
 }

@@ -49,7 +49,7 @@ public class PayPalLauncherUnitTest {
         PayPalPendingRequest pendingRequest = sut.launch(activity, new PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams));
 
         assertTrue(pendingRequest instanceof PayPalPendingRequest.Started);
-        assertEquals(browserSwitchRequest, ((PayPalPendingRequest.Started) pendingRequest).getRequest().getBrowserSwitchRequest());
+        assertEquals(browserSwitchRequest, ((PayPalPendingRequest.Started) pendingRequest).getRequest().getBrowserSwitchPendingRequest().getBrowserSwitchRequest());
         verify(browserSwitchClient).start(same(activity), same(options));
     }
 

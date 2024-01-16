@@ -81,7 +81,7 @@ public class PayPalLauncher {
     @Nullable
     public PayPalPaymentAuthResult handleReturnToAppFromBrowser(
             @NonNull PayPalPendingRequest.Started pendingRequest, @NonNull Intent intent) {
-        BrowserSwitchResult result = browserSwitchClient.parseResult(pendingRequest.getRequest().getBrowserSwitchRequest(), intent);
+        BrowserSwitchResult result = browserSwitchClient.parseResult(pendingRequest.getRequest().getBrowserSwitchPendingRequest(), intent);
         PayPalPaymentAuthResult paymentAuthResult = null;
         if (result != null) {
            paymentAuthResult = new PayPalPaymentAuthResult(result);
