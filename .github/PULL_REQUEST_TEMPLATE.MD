@@ -18,6 +18,6 @@ Thank you for your contribution to Braintree.
  > If you're an engineer for PayPal or Braintree, complete this section. For PRs from the community, please ignore!
 
 **When do these changes need to be released?** 
-[ ] ASAP (let's discuss outside this PR)
-[ ] Soon, here's our target release date: <DD/MM/YYYY>
-[ ] Whenever, no rush
+ - [ ] ASAP (let's discuss outside this PR)
+ - [ ] Soon, here's our target release date: <DD/MM/YYYY>
+ - [ ] Whenever, no rush
