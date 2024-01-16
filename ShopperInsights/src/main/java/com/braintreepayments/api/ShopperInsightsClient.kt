@@ -21,7 +21,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
     private val deviceInspector: DeviceInspector
 ) {
     constructor(braintreeClient: BraintreeClient) : this(
-        ShopperInsightsApi(FindEligiblePaymentsApi()),
+        ShopperInsightsApi(EligiblePaymentsApi()),
         braintreeClient,
         DeviceInspector()
     )
@@ -77,7 +77,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         val includeAccountDetails = true
 
         val result = api.findEligiblePayments(
-            FindEligiblePaymentsApiRequest(
+            EligiblePaymentsApiRequest(
                 request,
                 merchantId = merchantId,
                 currencyCode = currencyCode,
@@ -98,7 +98,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         )
     }
 
-    private fun isPaymentRecommended(paymentDetail: FindEligiblePaymentMethodDetails?): Boolean {
+    private fun isPaymentRecommended(paymentDetail: EligiblePaymentMethodDetails?): Boolean {
         return paymentDetail?.eligibleInPayPalNetwork == true && paymentDetail.recommended
     }
 

@@ -17,7 +17,7 @@ import org.json.JSONObject
  * [merchantId] [currencyCode] [countryCode] are needed for Venmo recommended results
  *
  */
-internal data class FindEligiblePaymentsApiRequest(
+internal data class EligiblePaymentsApiRequest(
     val request: ShopperInsightsRequest,
     val merchantId: String,
     val currencyCode: String,
@@ -27,7 +27,7 @@ internal data class FindEligiblePaymentsApiRequest(
     val paymentSources: List<String>
 ) {
     companion object {
-        fun FindEligiblePaymentsApiRequest.toJson(): String {
+        fun EligiblePaymentsApiRequest.toJson(): String {
             val jsonPaymentSources = JSONArray()
             for (source in paymentSources) {
                 jsonPaymentSources.put(source)

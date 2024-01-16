@@ -7,14 +7,14 @@ import org.json.JSONObject
  *
  * @property eligibleMethods Contains the payment methods available to the shopper.
  */
-internal data class FindEligiblePaymentsApiResult(
-    val eligibleMethods: FindEligiblePaymentMethods
+internal data class EligiblePaymentsApiResult(
+    val eligibleMethods: EligiblePaymentMethods
 ) {
     companion object {
-        fun fromJson(jsonString: String): FindEligiblePaymentsApiResult {
+        fun fromJson(jsonString: String): EligiblePaymentsApiResult {
             val jsonObject = JSONObject(jsonString)
             val eligibleMethodsJson = jsonObject.getJSONObject("eligible_methods")
-            return FindEligiblePaymentsApiResult(FindEligiblePaymentMethods.fromJson(eligibleMethodsJson))
+            return EligiblePaymentsApiResult(EligiblePaymentMethods.fromJson(eligibleMethodsJson))
         }
     }
 }

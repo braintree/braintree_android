@@ -5,10 +5,10 @@ package com.braintreepayments.api
  * [ShopperInsightsClient] depends on.
  */
 internal class ShopperInsightsApi(
-    private val paymentsApi: FindEligiblePaymentsApi
+    private val paymentsApi: EligiblePaymentsApi
 ) {
 
-    fun findEligiblePayments(request: FindEligiblePaymentsApiRequest): FindEligiblePaymentsApiResult {
+    fun findEligiblePayments(request: EligiblePaymentsApiRequest): EligiblePaymentsApiResult {
         return paymentsApi.execute(request)
     }
 }

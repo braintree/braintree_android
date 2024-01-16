@@ -1,17 +1,17 @@
 package com.braintreepayments.api
 
-import com.braintreepayments.api.FindEligiblePaymentsApiRequest.Companion.toJson
+import com.braintreepayments.api.EligiblePaymentsApiRequest.Companion.toJson
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 
-class FindEligiblePaymentsApiRequestUnitTest {
+class EligiblePaymentsApiRequestUnitTest {
 
     @Test
     fun `test json string conversion`() {
         val email = "fake-email@email-provider.com"
         val testCountryCode = "1"
         val testNationalNumber = "123456789"
-        val request = FindEligiblePaymentsApiRequest(
+        val request = EligiblePaymentsApiRequest(
             request = ShopperInsightsRequest(
                 email,
                 ShopperInsightsBuyerPhone(

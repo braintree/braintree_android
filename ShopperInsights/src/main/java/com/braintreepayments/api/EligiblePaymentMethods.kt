@@ -8,19 +8,19 @@ import org.json.JSONObject
  * @property paypal Details about the PayPal payment method.
  * @property venmo Details about the Venmo payment method.
  */
-internal data class FindEligiblePaymentMethods(
-    val paypal: FindEligiblePaymentMethodDetails?,
-    val venmo: FindEligiblePaymentMethodDetails?
+internal data class EligiblePaymentMethods(
+    val paypal: EligiblePaymentMethodDetails?,
+    val venmo: EligiblePaymentMethodDetails?
 ) {
     companion object {
-        fun fromJson(jsonObject: JSONObject): FindEligiblePaymentMethods {
+        fun fromJson(jsonObject: JSONObject): EligiblePaymentMethods {
             val paypal = jsonObject.optJSONObject("paypal")?.let {
-                FindEligiblePaymentMethodDetails.fromJson(it)
+                EligiblePaymentMethodDetails.fromJson(it)
             }
             val venmo = jsonObject.optJSONObject("venmo")?.let {
-                FindEligiblePaymentMethodDetails.fromJson(it)
+                EligiblePaymentMethodDetails.fromJson(it)
             }
-            return FindEligiblePaymentMethods(paypal, venmo)
+            return EligiblePaymentMethods(paypal, venmo)
         }
     }
 }

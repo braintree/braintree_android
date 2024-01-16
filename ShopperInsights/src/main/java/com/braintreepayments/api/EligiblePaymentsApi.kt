@@ -1,22 +1,22 @@
 package com.braintreepayments.api
 
-import com.braintreepayments.api.FindEligiblePaymentsApiRequest.Companion.toJson
+import com.braintreepayments.api.EligiblePaymentsApiRequest.Companion.toJson
 
-internal class FindEligiblePaymentsApi {
-    fun execute(request: FindEligiblePaymentsApiRequest): FindEligiblePaymentsApiResult {
+internal class EligiblePaymentsApi {
+    fun execute(request: EligiblePaymentsApiRequest): EligiblePaymentsApiResult {
         request.toJson()
         // TODO: Network call
 
         // Hardcoded result
-        return FindEligiblePaymentsApiResult(
-            eligibleMethods = FindEligiblePaymentMethods(
-                paypal = FindEligiblePaymentMethodDetails(
+        return EligiblePaymentsApiResult(
+            eligibleMethods = EligiblePaymentMethods(
+                paypal = EligiblePaymentMethodDetails(
                     canBeVaulted = true,
                     eligibleInPayPalNetwork = true,
                     recommended = true,
                     recommendedPriority = 1
                 ),
-                venmo = FindEligiblePaymentMethodDetails(
+                venmo = EligiblePaymentMethodDetails(
                     canBeVaulted = true,
                     eligibleInPayPalNetwork = true,
                     recommended = true,

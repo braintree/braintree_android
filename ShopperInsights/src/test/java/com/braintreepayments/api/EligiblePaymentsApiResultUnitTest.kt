@@ -3,7 +3,7 @@ package com.braintreepayments.api
 import org.junit.Assert.*
 import org.junit.Test
 
-class FindEligiblePaymentsApiResultUnitTest {
+class EligiblePaymentsApiResultUnitTest {
 
     @Test
     fun testVenmoFromJson() {
@@ -21,7 +21,7 @@ class FindEligiblePaymentsApiResultUnitTest {
         """.trimIndent()
 
         // Convert JSON string to ShopperInsightApiResult object
-        val result = FindEligiblePaymentsApiResult.fromJson(jsonString)
+        val result = EligiblePaymentsApiResult.fromJson(jsonString)
 
         // Assertions for Venmo
         val venmo = result.eligibleMethods.venmo
@@ -49,7 +49,7 @@ class FindEligiblePaymentsApiResultUnitTest {
         """.trimIndent()
 
         // Convert JSON string to ShopperInsightApiResult object
-        val result = FindEligiblePaymentsApiResult.fromJson(jsonString)
+        val result = EligiblePaymentsApiResult.fromJson(jsonString)
 
         // Assertions for PayPal
         val paypal = result.eligibleMethods.paypal
