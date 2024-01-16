@@ -46,6 +46,7 @@ dependencies {
     testImplementation deps.junitTest
 }
 
+// TODO: remove importing snapshot repositories before feature is merged
 allprojects {
     repositories {
         maven {
