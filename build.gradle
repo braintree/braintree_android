@@ -102,6 +102,7 @@ group 'com.braintreepayments'
 ext {
     compileSdkVersion = 34
     minSdkVersion = 21
+    minSdkVersionPayPalMessaging = 23
     versionCode = 185
     targetSdkVersion = 34
     versionName = version

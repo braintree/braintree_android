@@ -7,7 +7,8 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion rootProject.minSdkVersion
+        // required to be out of sync with other modules due to messaging SDK min version
+        minSdkVersion rootProject.minSdkVersionPayPalMessaging
         targetSdkVersion rootProject.targetSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -40,8 +41,18 @@ dependencies {
     implementation deps.coreKtx
     implementation deps.kotlinStdLib
     implementation deps.appCompat
+    implementation('com.paypal.messages:paypal-messages:1.0.0-alpha.00-SNAPSHOT')
 
     testImplementation deps.junitTest
+}
+
+// TODO: remove importing snapshot repositories before feature is merged
+allprojects {
+    repositories {
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
+    }
 }
 
 // region signing and publishing
