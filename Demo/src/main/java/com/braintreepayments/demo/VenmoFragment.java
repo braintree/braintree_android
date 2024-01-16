@@ -58,9 +58,12 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
         boolean shouldVault =
                 Settings.vaultVenmo(activity) && !TextUtils.isEmpty(Settings.getCustomerId(activity));
 
+        int venmoPaymentMethodUsage = shouldVault ?
+            VenmoPaymentMethodUsage.MULTI_USE : VenmoPaymentMethodUsage.SINGLE_USE;
+
         braintreeClient.getConfiguration((configuration, error) -> {
             if (venmoClient.isVenmoAppSwitchAvailable(activity)) {
-                VenmoRequest venmoRequest = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
+                VenmoRequest venmoRequest = new VenmoRequest(venmoPaymentMethodUsage);
                 venmoRequest.setProfileId(null);
                 venmoRequest.setShouldVault(shouldVault);
                 venmoRequest.setCollectCustomerBillingAddress(true);
