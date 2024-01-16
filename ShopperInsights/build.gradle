@@ -37,6 +37,7 @@ dependencies {
     implementation deps.coreKtx
 
     api project(':BraintreeCore')
+
     testImplementation deps.jsonAssert
     testImplementation deps.kotlinTest
     testImplementation deps.mockk
