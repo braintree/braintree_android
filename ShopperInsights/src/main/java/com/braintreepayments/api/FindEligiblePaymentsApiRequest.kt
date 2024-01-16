@@ -1,6 +1,5 @@
-package com.braintreepayments.api.findeligiblepayments
+package com.braintreepayments.api
 
-import com.braintreepayments.api.ShopperInsightsRequest
 import org.json.JSONArray
 import org.json.JSONObject
 

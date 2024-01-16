@@ -6,9 +6,6 @@ import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_PRESENTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_SELECTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_PRESENTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_SELECTED
-import com.braintreepayments.api.findeligiblepayments.FindEligiblePaymentMethodDetails
-import com.braintreepayments.api.findeligiblepayments.FindEligiblePaymentsApi
-import com.braintreepayments.api.findeligiblepayments.FindEligiblePaymentsApiRequest
 
 /**
  * Use [ShopperInsightsClient] to optimize your checkout experience

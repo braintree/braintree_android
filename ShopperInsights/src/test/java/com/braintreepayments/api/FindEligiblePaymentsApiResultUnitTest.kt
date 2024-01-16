@@ -1,4 +1,4 @@
-package com.braintreepayments.api.findeligiblepayments
+package com.braintreepayments.api
 
 import org.junit.Assert.*
 import org.junit.Test
