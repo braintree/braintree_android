@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -83,5 +84,45 @@ public class VenmoLifecycleObserverUnitTest {
 
         sut.launch(venmoIntentData);
         verify(activityResultLauncher).launch(venmoIntentData);
+    }
+
+    @Test
+    public void setFallbackToWeb_whenFallbackToWebIsTrue_setsTrueOnActivityResultContract() {
+        ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
+        VenmoClient venmoClient = mock(VenmoClient.class);
+        VenmoLifecycleObserver sut = new VenmoLifecycleObserver(activityResultRegistry, venmoClient);
+
+        sut.setFallbackToWeb(true);
+        assertEquals(true, sut.venmoActivityResultContract.fallbackToWeb);
+    }
+
+    @Test
+    public void setFallbackToWeb_whenFallbackToWebIsFalse_setsFalseOnActivityResultContract() {
+        ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
+        VenmoClient venmoClient = mock(VenmoClient.class);
+        VenmoLifecycleObserver sut = new VenmoLifecycleObserver(activityResultRegistry, venmoClient);
+
+        sut.setFallbackToWeb(false);
+        assertEquals(false, sut.venmoActivityResultContract.fallbackToWeb);
+    }
+
+    @Test
+    public void setVenmoAppInstalled_whenFallbackToWebIsTrue_setsTrueOnActivityResultContract() {
+        ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
+        VenmoClient venmoClient = mock(VenmoClient.class);
+        VenmoLifecycleObserver sut = new VenmoLifecycleObserver(activityResultRegistry, venmoClient);
+
+        sut.setVenmoAppInstalled(true);
+        assertEquals(true, sut.venmoActivityResultContract.venmoAppInstalled);
+    }
+
+    @Test
+    public void setVenmoAppInstalled_whenFallbackToWebIsFalse_setsFalseOnActivityResultContract() {
+        ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
+        VenmoClient venmoClient = mock(VenmoClient.class);
+        VenmoLifecycleObserver sut = new VenmoLifecycleObserver(activityResultRegistry, venmoClient);
+
+        sut.setVenmoAppInstalled(false);
+        assertEquals(false, sut.venmoActivityResultContract.venmoAppInstalled);
     }
 }
