@@ -339,14 +339,14 @@ class MyActivity : FragmentActivity() {
     
     fun handleReturnToAppFromBrowser(intent: Intent) {
        // fetch stored PayPalPendingRequest.Success 
-       fetchPendingRequest()?.let {
-          payPalLauncher.handleReturnToAppFromBrowser(it, intent)?.let { paymentAuthResult ->
-             completePayPalFlow(paymentAuthResult)
-             // clear stored PayPalPendingRequest.Success
-          } ?: run {
-             // user returned to app without completing PayPal flow, handle accordingly
-          }
-       }   
++       fetchPendingRequest()?.let {
++          payPalLauncher.handleReturnToAppFromBrowser(it, intent)?.let { paymentAuthResult ->
++             completePayPalFlow(paymentAuthResult)
++             // clear stored PayPalPendingRequest.Success
++          } ?: run {
++             // user returned to app without completing PayPal flow, handle accordingly
++          }
++       }   
     }
     
     
