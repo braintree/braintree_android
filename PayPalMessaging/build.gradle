@@ -40,6 +40,7 @@ dependencies {
     implementation deps.coreKtx
     implementation deps.kotlinStdLib
     implementation deps.appCompat
+    implementation('com.paypal.messages:paypal-messages:1.0.0-alpha.0-SNAPSHOT')
 
     testImplementation deps.junitTest
 }
