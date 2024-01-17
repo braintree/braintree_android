@@ -87,12 +87,17 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
             intent.setAction(Intent.ACTION_VIEW);
         }
 
+        String applicationName = "ApplicationNameUnknown";
+        if (context.getPackageManager().getApplicationLabel(context.getApplicationInfo()).toString()  != null) {
+            applicationName = context.getPackageManager().getApplicationLabel(context.getApplicationInfo()).toString();
+        }
+
         Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout")
                 .buildUpon()
                 .appendQueryParameter("x-success", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/success")
                 .appendQueryParameter("x-error", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/error")
                 .appendQueryParameter("x-cancel", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/cancel")
-                .appendQueryParameter("x-source", context.getPackageName()) // TODO: figure out what venmo team wants/expects here
+                .appendQueryParameter("x-source", applicationName)
                 .appendQueryParameter("braintree_merchant_id", input.getProfileId())
                 .appendQueryParameter("braintree_access_token", input.getConfiguration().getVenmoAccessToken())
                 .appendQueryParameter("braintree_environment", input.getConfiguration().getVenmoEnvironment())
