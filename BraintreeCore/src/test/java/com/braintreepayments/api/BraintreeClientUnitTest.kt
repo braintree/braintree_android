@@ -1,20 +1,16 @@
 package com.braintreepayments.api
 
 import android.content.Context
-import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.net.Uri
 import androidx.fragment.app.FragmentActivity
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.testing.WorkManagerTestInitHelper
 import io.mockk.*
 import org.json.JSONException
-import org.json.JSONObject
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.mock
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -301,135 +297,6 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    @Throws(BrowserSwitchException::class)
-    fun startBrowserSwitch_forwardsInvocationToBrowserSwitchClient() {
-        val activity = mockk<FragmentActivity>(relaxed = true)
-        val browserSwitchOptions = BrowserSwitchOptions()
-
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
-
-        sut.startBrowserSwitch(activity, browserSwitchOptions)
-        verify { browserSwitchClient.start(activity, browserSwitchOptions) }
-    }
-
-    @Test
-    fun browserSwitchResult_forwardsInvocationToBrowserSwitchClient() {
-        val activity = mockk<FragmentActivity>(relaxed = true)
-        val browserSwitchResult = createSuccessfulBrowserSwitchResult()
-        every { browserSwitchClient.getResult(activity) } returns browserSwitchResult
-
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
-        assertSame(browserSwitchResult, sut.getBrowserSwitchResult(activity))
-    }
-
-    @Test
-    fun deliverBrowserSwitchResult_forwardsInvocationToBrowserSwitchClient() {
-        val activity = mockk<FragmentActivity>(relaxed = true)
-        val params = createDefaultParams(configurationLoader)
-
-        val sut = BraintreeClient(params)
-        sut.deliverBrowserSwitchResult(activity)
-
-        verify { browserSwitchClient.deliverResult(activity) }
-    }
-
-    @Test
-    fun deliverBrowserSwitchResultFromNewTask_forwardsInvocationToBrowserSwitchClient() {
-        val context = mockk<Context>(relaxed = true)
-        val params = createDefaultParams(configurationLoader)
-
-        val sut = BraintreeClient(params)
-        sut.deliverBrowserSwitchResultFromNewTask(context)
-
-        verify { browserSwitchClient.deliverResultFromCache(context) }
-    }
-
-    @Test
-    fun parseBrowserSwitchResult_forwardsInvocationToBrowserSwitchClient() {
-        val context = mockk<Context>(relaxed = true)
-        val params = createDefaultParams(configurationLoader)
-
-        val expected = mock<BrowserSwitchResult>()
-        val intent = Intent()
-        every { browserSwitchClient.parseResult(context, 123, intent) } returns expected
-
-        val sut = BraintreeClient(params)
-        val actual = sut.parseBrowserSwitchResult(context, 123, intent)
-        assertSame(expected, actual)
-    }
-
-    @Test
-    fun clearActiveBrowserSwitchRequests_forwardsInvocationToBrowserSwitchClient() {
-        val context = mockk<Context>(relaxed = true)
-        val params = createDefaultParams(configurationLoader)
-
-        val sut = BraintreeClient(params)
-        sut.clearActiveBrowserSwitchRequests(context)
-
-        verify { browserSwitchClient.clearActiveRequests(context) }
-    }
-
-    @Test
-    @Throws(BrowserSwitchException::class)
-    fun assertCanPerformBrowserSwitch_assertsBrowserSwitchIsPossible() {
-        val params = createDefaultParams(configurationLoader)
-        val activity = mockk<FragmentActivity>(relaxed = true)
-
-        val sut = BraintreeClient(params)
-        sut.assertCanPerformBrowserSwitch(activity, 123)
-
-        val browserSwitchOptionsSlot = slot<BrowserSwitchOptions>()
-        verify {
-            browserSwitchClient.assertCanPerformBrowserSwitch(
-                activity,
-                capture(browserSwitchOptionsSlot)
-            )
-        }
-
-        val browserSwitchOptions = browserSwitchOptionsSlot.captured
-        assertEquals(123, browserSwitchOptions.requestCode.toLong())
-        assertEquals(Uri.parse("https://braintreepayments.com"), browserSwitchOptions.url)
-    }
-
-    @Test
-    @Throws(BrowserSwitchException::class)
-    @Suppress("SwallowedException")
-    fun assertCanPerformBrowserSwitch_onSuccess_doesNotThrow() {
-        val activity = mockk<FragmentActivity>(relaxed = true)
-        every { browserSwitchClient.assertCanPerformBrowserSwitch(activity, any()) } returns Unit
-
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
-        try {
-            sut.assertCanPerformBrowserSwitch(activity, 123)
-        } catch (e: BrowserSwitchException) {
-            fail("shouldn't get here")
-        }
-    }
-
-    @Test
-    @Throws(BrowserSwitchException::class)
-    fun assertCanPerformBrowserSwitch_onError_throws() {
-        val activity = mockk<FragmentActivity>(relaxed = true)
-        val browserSwitchException = BrowserSwitchException("error")
-
-        every {
-            browserSwitchClient.assertCanPerformBrowserSwitch(activity, any())
-        } throws browserSwitchException
-
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
-        try {
-            sut.assertCanPerformBrowserSwitch(activity, 123)
-            fail("shouldn't get here")
-        } catch (e: BrowserSwitchException) {
-            assertSame(browserSwitchException, e)
-        }
-    }
-
-    @Test
     fun isUrlSchemeDeclaredInAndroidManifest_forwardsInvocationToManifestValidator() {
         every {
             manifestValidator.isUrlSchemeDeclaredInAndroidManifest(
@@ -553,16 +420,4 @@ class BraintreeClientUnitTest {
             configurationLoader = configurationLoader,
             integrationType = IntegrationType.CUSTOM
         )
-
-    companion object {
-        private fun createSuccessfulBrowserSwitchResult(): BrowserSwitchResult {
-            val requestCode = 123
-            val url = Uri.parse("www.example.com")
-            val returnUrlScheme = "sample-scheme"
-            val browserSwitchRequest = BrowserSwitchRequest(
-                requestCode, url, JSONObject(), returnUrlScheme, true
-            )
-            return BrowserSwitchResult(BrowserSwitchStatus.SUCCESS, browserSwitchRequest)
-        }
-    }
 }

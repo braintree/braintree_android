@@ -171,8 +171,6 @@ public class SEPADirectDebitClientUnitTest {
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
         sut.createPaymentAuthRequest(sepaDirectDebitRequest, paymentAuthRequestCallback);
-        verify(braintreeClient, never()).startBrowserSwitch(any(FragmentActivity.class),
-                any(BrowserSwitchOptions.class));
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.success");
         verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.requested");
         verify(sepaDirectDebitApi).tokenize(eq("1234"), eq("fake-customer-id"),
@@ -251,7 +249,6 @@ public class SEPADirectDebitClientUnitTest {
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
         when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchStatus.CANCELED);
         braintreeClient = new MockBraintreeClientBuilder()
-                .deliverBrowserSwitchResult(browserSwitchResult)
                 .build();
 
         SEPADirectDebitClient sut =
@@ -288,7 +285,6 @@ public class SEPADirectDebitClientUnitTest {
         when(browserSwitchResult.getRequestMetadata()).thenReturn(metadata);
 
         braintreeClient = new MockBraintreeClientBuilder()
-                .deliverBrowserSwitchResult(browserSwitchResult)
                 .build();
 
         SEPADirectDebitClient sut =
@@ -328,7 +324,6 @@ public class SEPADirectDebitClientUnitTest {
         when(browserSwitchResult.getRequestMetadata()).thenReturn(metadata);
 
         braintreeClient = new MockBraintreeClientBuilder()
-                .deliverBrowserSwitchResult(browserSwitchResult)
                 .build();
 
         SEPADirectDebitClient sut =
@@ -369,7 +364,6 @@ public class SEPADirectDebitClientUnitTest {
         when(browserSwitchResult.getRequestMetadata()).thenReturn(metadata);
 
         braintreeClient = new MockBraintreeClientBuilder()
-                .deliverBrowserSwitchResult(browserSwitchResult)
                 .build();
 
         SEPADirectDebitClient sut =
@@ -414,7 +408,6 @@ public class SEPADirectDebitClientUnitTest {
         when(browserSwitchResult.getRequestMetadata()).thenReturn(metadata);
 
         braintreeClient = new MockBraintreeClientBuilder()
-                .deliverBrowserSwitchResult(browserSwitchResult)
                 .build();
 
         SEPADirectDebitClient sut =
@@ -443,7 +436,6 @@ public class SEPADirectDebitClientUnitTest {
                 "com.braintreepayments.demo.braintree://sepa/cancel?error_code=internal_error"));
 
         braintreeClient = new MockBraintreeClientBuilder()
-                .deliverBrowserSwitchResult(browserSwitchResult)
                 .build();
 
         SEPADirectDebitClient sut =
@@ -473,7 +465,6 @@ public class SEPADirectDebitClientUnitTest {
         when(browserSwitchResult.getDeepLinkUrl()).thenReturn(null);
 
         braintreeClient = new MockBraintreeClientBuilder()
-                .deliverBrowserSwitchResult(browserSwitchResult)
                 .build();
 
         SEPADirectDebitClient sut =
