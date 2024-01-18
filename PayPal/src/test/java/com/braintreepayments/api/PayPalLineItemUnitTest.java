@@ -15,8 +15,11 @@ public class PayPalLineItemUnitTest {
     public void toJson_setsKeysAndValues() throws JSONException {
         PayPalLineItem item = new PayPalLineItem(PayPalLineItem.KIND_DEBIT, "An Item", "1", "2");
         item.setDescription("A new item");
+        item.setImageUrl("http://example.com/image.jpg");
         item.setProductCode("abc-123");
         item.setUnitTaxAmount("1.50");
+        item.setUpcType(PayPalLineItem.UPC_TYPE_2);
+        item.setUpcCode("upc-code");
         item.setUrl("http://example.com");
 
         JSONObject json = item.toJson();
@@ -29,6 +32,9 @@ public class PayPalLineItemUnitTest {
         assertEquals("abc-123", json.getString("product_code"));
         assertEquals("1.50", json.getString("unit_tax_amount"));
         assertEquals("http://example.com", json.getString("url"));
+        assertEquals("http://example.com/image.jpg", json.getString("image_url"));
+        assertEquals("UPC-2", json.getString("upc_type"));
+        assertEquals("upc-code", json.getString("upc_code"));
     }
 }
 
