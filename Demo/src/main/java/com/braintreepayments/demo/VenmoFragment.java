@@ -73,6 +73,9 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
         lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
         venmoRequest.setLineItems(lineItems);
 
+        int venmoPaymentMethodUsage = shouldVault ?
+            VenmoPaymentMethodUsage.MULTI_USE : VenmoPaymentMethodUsage.SINGLE_USE;
+
         braintreeClient.getConfiguration((configuration, error) -> {
             if (fallbackToWeb) {
                 venmoRequest.setFallbackToWeb(true);
