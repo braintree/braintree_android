@@ -72,8 +72,10 @@ public class VenmoFragment extends BaseFragment {
         boolean shouldVault =
                 Settings.vaultVenmo(activity) && !TextUtils.isEmpty(Settings.getCustomerId(activity));
 
+        int venmoPaymentMethodUsage = shouldVault ?
+                VenmoPaymentMethodUsage.MULTI_USE : VenmoPaymentMethodUsage.SINGLE_USE;
         if (venmoClient.isVenmoAppSwitchAvailable(activity)) {
-            VenmoRequest venmoRequest = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
+            VenmoRequest venmoRequest = new VenmoRequest(venmoPaymentMethodUsage);
             venmoRequest.setProfileId(null);
             venmoRequest.setShouldVault(shouldVault);
             venmoRequest.setCollectCustomerBillingAddress(true);
@@ -85,7 +87,6 @@ public class VenmoFragment extends BaseFragment {
             ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
             lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_CREDIT, "Some Item", 1, "2"));
             lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
-            venmoRequest.setLineItems(lineItems);
 
             venmoClient.createPaymentAuthRequest(requireActivity(), venmoRequest, (paymentAuthRequest) -> {
                 if (paymentAuthRequest instanceof VenmoPaymentAuthRequest.Failure) {
