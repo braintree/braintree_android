@@ -1,6 +1,6 @@
 package com.braintreepayments.api
 
-import org.json.JSONObject
+import org.json.JSONException
 
 /**
  * A pending request for the PayPal web-based authentication flow created by invoking
@@ -18,8 +18,10 @@ sealed class PayPalPendingRequest {
 
         /**
          * Convenience constructor to create a [PayPalPendingRequest.Started] from your stored
-         * [String] from [PayPalPendingRequest.Started.toJsonString]
+         * [String] obtained from [PayPalPendingRequest.Started.toJsonString]
+         * @throws [JSONException] if the [jsonString] is invalid
          */
+        @Throws(JSONException::class)
         constructor(jsonString: String) : this(PayPalBrowserSwitchRequest(
             BrowserSwitchPendingRequest.Started(jsonString)))
 
