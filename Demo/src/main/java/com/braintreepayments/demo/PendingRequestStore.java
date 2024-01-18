@@ -12,6 +12,12 @@ public class PendingRequestStore {
 
     static final String PAYPAL_PENDING_REQUEST_KEY = "PAYPAL_PENDING_REQUEST";
 
+    private static final PendingRequestStore INSTANCE = new PendingRequestStore();
+
+    static PendingRequestStore getInstance() {
+        return INSTANCE;
+    }
+
     public static void putPayPalPendingRequest(Context context, PayPalPendingRequest.Started pendingRequest) {
         put(PAYPAL_PENDING_REQUEST_KEY, pendingRequest.toJsonString(), context);
     }

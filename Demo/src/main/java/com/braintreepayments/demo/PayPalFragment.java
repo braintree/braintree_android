@@ -69,14 +69,14 @@ public class PayPalFragment extends BaseFragment {
     }
 
     private void storePendingRequest(PayPalPendingRequest.Started request) {
-        PendingRequestStore.putPayPalPendingRequest(requireContext(), request);
+        PendingRequestStore.getInstance().putPayPalPendingRequest(requireContext(), request);
     }
     private PayPalPendingRequest.Started getPendingRequest() {
-        return PendingRequestStore.getPayPalPendingRequest(requireContext());
+        return PendingRequestStore.getInstance().getPayPalPendingRequest(requireContext());
     }
 
     private void clearPendingRequest() {
-        PendingRequestStore.clearPayPalPendingRequest(requireContext());
+        PendingRequestStore.getInstance().clearPayPalPendingRequest(requireContext());
     }
 
     public void launchSinglePayment(View v) {
