@@ -59,12 +59,12 @@ public class PayPalFragment extends BaseFragment {
         PayPalPendingRequest.Started pendingRequest = getPendingRequest();
         if (pendingRequest != null) {
             PayPalPaymentAuthResult paymentAuthResult = payPalLauncher.handleReturnToAppFromBrowser(pendingRequest, requireActivity().getIntent());
-            clearPendingRequest();
             if (paymentAuthResult != null) {
                 completePayPalFlow(paymentAuthResult);
             } else {
                 handleError(new Exception("User did not complete payment flow"));
             }
+            clearPendingRequest();
         }
     }
 
