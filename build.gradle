@@ -97,7 +97,7 @@ allprojects {
     }
 }
 
-version '4.40.2-SNAPSHOT'
+version '4.41.0'
 group 'com.braintreepayments'
 ext {
     compileSdkVersion = 34
