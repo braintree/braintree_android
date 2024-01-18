@@ -1,0 +1,35 @@
+package com.braintreepayments.api
+
+/**
+ * Logo type option for a PayPal Message
+ * Note: **This module is in beta. It's public API may change or be removed in future releases.**
+ */
+enum class PayPalMessagingLogoType {
+    /**
+     * Primary logo including both the PayPal monogram and logo
+     */
+    PRIMARY,
+
+    /**
+     * Alternative logo including just the PayPal monogram
+     */
+    ALTERNATIVE,
+
+    /**
+     * PayPal logo positioned inline within the message
+     */
+    INLINE,
+
+    /**
+     * "PayPal" as bold text inline with the message
+     */
+    SIMPLE;
+
+    internal val logoTypeRawValue: PayPalMessageLogoType
+        get() = when (this) {
+            PRIMARY -> PayPalMessageLogoType.PRIMARY
+            ALTERNATIVE -> PayPalMessageLogoType.ALTERNATIVE
+            INLINE -> PayPalMessageLogoType.INLINE
+            SIMPLE -> PayPalMessageLogoType.NONE
+        }
+}
