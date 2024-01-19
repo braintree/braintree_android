@@ -1,7 +1,7 @@
 package com.braintreepayments.api;
 
-import static com.braintreepayments.api.BraintreeRequestCodes.SEPA_DEBIT;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
@@ -37,51 +37,79 @@ public class SEPADirectDebitLauncherUnitTest {
 
     @Test
     public void launch_onSuccess_startsBrowserSwitch_returnsPendingRequest() {
-        SEPADirectDebitPaymentAuthRequestParams
-                sepaResponse = mock(SEPADirectDebitPaymentAuthRequestParams.class);
+        SEPADirectDebitPaymentAuthRequestParams sepaResponse =
+                mock(SEPADirectDebitPaymentAuthRequestParams.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
         when(sepaResponse.getBrowserSwitchOptions()).thenReturn(options);
-        BrowserSwitchPendingRequest browserSwitchPendingRequest = new BrowserSwitchPendingRequest.Started(browserSwitchRequest);
+        BrowserSwitchPendingRequest browserSwitchPendingRequest =
+                new BrowserSwitchPendingRequest.Started(browserSwitchRequest);
         when(browserSwitchClient.start(activity, options)).thenReturn(browserSwitchPendingRequest);
         SEPADirectDebitLauncher sut = new SEPADirectDebitLauncher(browserSwitchClient);
 
-        SEPADirectDebitPendingRequest pendingRequest = sut.launch(activity, new SEPADirectDebitPaymentAuthRequest.ReadyToLaunch(sepaResponse));
+        SEPADirectDebitPendingRequest pendingRequest = sut.launch(activity,
+                new SEPADirectDebitPaymentAuthRequest.ReadyToLaunch(sepaResponse));
 
         verify(browserSwitchClient).start(same(activity), same(options));
         assertTrue(pendingRequest instanceof SEPADirectDebitPendingRequest.Started);
-        assertSame(browserSwitchPendingRequest, ((SEPADirectDebitPendingRequest.Started) pendingRequest).getRequest().getBrowserSwitchPendingRequest());
+        assertSame(browserSwitchPendingRequest,
+                ((SEPADirectDebitPendingRequest.Started) pendingRequest).getRequest()
+                        .getBrowserSwitchPendingRequest());
     }
 
     @Test
     public void launch_onError_returnsFailure() {
-        SEPADirectDebitPaymentAuthRequestParams
-                sepaResponse = mock(SEPADirectDebitPaymentAuthRequestParams.class);
+        SEPADirectDebitPaymentAuthRequestParams sepaResponse =
+                mock(SEPADirectDebitPaymentAuthRequestParams.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
         when(sepaResponse.getBrowserSwitchOptions()).thenReturn(options);
         BrowserSwitchException exception = new BrowserSwitchException("error");
-        BrowserSwitchPendingRequest browserSwitchPendingRequest = new BrowserSwitchPendingRequest.Failure(exception);
+        BrowserSwitchPendingRequest browserSwitchPendingRequest =
+                new BrowserSwitchPendingRequest.Failure(exception);
         when(browserSwitchClient.start(activity, options)).thenReturn(browserSwitchPendingRequest);
         SEPADirectDebitLauncher sut = new SEPADirectDebitLauncher(browserSwitchClient);
 
-        SEPADirectDebitPendingRequest pendingRequest = sut.launch(activity, new SEPADirectDebitPaymentAuthRequest.ReadyToLaunch(sepaResponse));
+        SEPADirectDebitPendingRequest pendingRequest = sut.launch(activity,
+                new SEPADirectDebitPaymentAuthRequest.ReadyToLaunch(sepaResponse));
 
         assertTrue(pendingRequest instanceof SEPADirectDebitPendingRequest.Failure);
         assertSame(exception, ((SEPADirectDebitPendingRequest.Failure) pendingRequest).getError());
     }
 
     @Test
-    public void handleReturnToAppFromBrowser_deliversResultToLauncherCallback() {
+    public void handleReturnToAppFromBrowser_onBrowserSwitchResult_returnsResult() {
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
-        BrowserSwitchPendingRequest.Started browserSwitchPendingRequest = new BrowserSwitchPendingRequest.Started(browserSwitchRequest);
-        SEPADirectDebitPendingRequest.Started pendingRequest = new SEPADirectDebitPendingRequest.Started(new SEPADirectDebitBrowserSwitchRequest(browserSwitchPendingRequest));
-        when(browserSwitchClient.parseResult(eq(browserSwitchPendingRequest), eq(intent))).thenReturn(
-                browserSwitchResult);
+        BrowserSwitchPendingRequest.Started browserSwitchPendingRequest =
+                new BrowserSwitchPendingRequest.Started(browserSwitchRequest);
+        SEPADirectDebitPendingRequest.Started pendingRequest =
+                new SEPADirectDebitPendingRequest.Started(
+                        new SEPADirectDebitBrowserSwitchRequest(browserSwitchPendingRequest));
+        when(browserSwitchClient.parseResult(eq(browserSwitchPendingRequest),
+                eq(intent))).thenReturn(browserSwitchResult);
 
         SEPADirectDebitLauncher sut = new SEPADirectDebitLauncher(browserSwitchClient);
 
-        SEPADirectDebitPaymentAuthResult paymentAuthResult = sut.handleReturnToAppFromBrowser(pendingRequest, intent);
+        SEPADirectDebitPaymentAuthResult paymentAuthResult =
+                sut.handleReturnToAppFromBrowser(pendingRequest, intent);
 
         assertNotNull(paymentAuthResult);
         assertSame(paymentAuthResult.getBrowserSwitchResult(), browserSwitchResult);
+    }
+
+    @Test
+    public void handleReturnToAppFromBrowser_whenNoBrowserSwitchResult_returnsNull() {
+        BrowserSwitchPendingRequest.Started browserSwitchPendingRequest =
+                new BrowserSwitchPendingRequest.Started(browserSwitchRequest);
+        SEPADirectDebitPendingRequest.Started pendingRequest =
+                new SEPADirectDebitPendingRequest.Started(
+                        new SEPADirectDebitBrowserSwitchRequest(browserSwitchPendingRequest));
+        when(browserSwitchClient.parseResult(eq(browserSwitchPendingRequest),
+                eq(intent))).thenReturn(null);
+
+        SEPADirectDebitLauncher sut = new SEPADirectDebitLauncher(browserSwitchClient);
+
+        SEPADirectDebitPaymentAuthResult paymentAuthResult =
+                sut.handleReturnToAppFromBrowser(pendingRequest, intent);
+
+        assertNull(paymentAuthResult);
     }
 }
