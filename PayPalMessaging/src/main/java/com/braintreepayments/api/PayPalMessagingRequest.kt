@@ -18,7 +18,7 @@ data class PayPalMessagingRequest(
     var amount: Double? = null,
     var placement: PayPalMessagingPlacement? = null,
     var offerType: PayPalMessagingOfferType? = null,
-    var buyerCountry: String?,
+    var buyerCountry: String? = null,
     var logoType: PayPalMessagingLogoType? = PayPalMessagingLogoType.INLINE,
     var textAlignment: PayPalMessagingTextAlignment? = PayPalMessagingTextAlignment.RIGHT,
     var color: PayPalMessagingColor? = PayPalMessagingColor.BLACK
