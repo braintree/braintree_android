@@ -2,6 +2,7 @@ package com.braintreepayments.api
 
 /**
  * Callback used to communicate [PayPalMessagingView] events
+ * Note: **This module is in beta. It's public API may change or be removed in future releases.**
  */
 interface PayPalMessagingListener {
 
