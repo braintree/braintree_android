@@ -1,5 +1,6 @@
 package com.braintreepayments.api
 
+import org.json.JSONException
 import java.lang.Exception
 
 /**
@@ -14,7 +15,25 @@ sealed class SEPADirectDebitPendingRequest {
      * A pending request was successfully started. This [SEPADirectDebitPendingRequest.Started] should be
      * stored and passed to [SEPADirectDebitLauncher.handleReturnToAppFromBrowser]
      */
-    class Started(val request: SEPADirectDebitBrowserSwitchRequest) : SEPADirectDebitPendingRequest()
+    class Started(val request: SEPADirectDebitBrowserSwitchRequest) : SEPADirectDebitPendingRequest() {
+
+        /**
+         * Convenience constructor to create a [SEPADirectDebitPendingRequest.Started] from your stored
+         * [String] obtained from [SEPADirectDebitPendingRequest.Started.toJsonString]
+         * @throws [JSONException] if the [jsonString] is invalid
+         */
+        @Throws(JSONException::class)
+        constructor(jsonString: String) : this(SEPADirectDebitBrowserSwitchRequest(
+            BrowserSwitchPendingRequest.Started(jsonString)))
+
+        /**
+         * Convenience method to return [SEPADirectDebitPendingRequest.Started] in [String] format to be
+         * persisted in storage
+         */
+        fun toJsonString(): String {
+            return request.getBrowserSwitchPendingRequest().toJsonString()
+        }
+    }
 
     /**
      * An error occurred launching the SEPA Direct Debit browser flow. See [error] for details.
