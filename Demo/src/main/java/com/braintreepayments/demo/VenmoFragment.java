@@ -59,7 +59,9 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
                 Settings.vaultVenmo(activity) && !TextUtils.isEmpty(Settings.getCustomerId(activity));
         boolean fallbackToWeb = Settings.venmoFallbackToWeb(activity);
 
-        VenmoRequest venmoRequest = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
+        int venmoPaymentMethodUsage = shouldVault ?
+                VenmoPaymentMethodUsage.MULTI_USE : VenmoPaymentMethodUsage.SINGLE_USE;
+        VenmoRequest venmoRequest = new VenmoRequest(venmoPaymentMethodUsage);
         venmoRequest.setProfileId(null);
         venmoRequest.setShouldVault(shouldVault);
         venmoRequest.setCollectCustomerBillingAddress(true);
@@ -72,9 +74,6 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
         lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_CREDIT, "Some Item", 1, "2"));
         lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
         venmoRequest.setLineItems(lineItems);
-
-        int venmoPaymentMethodUsage = shouldVault ?
-            VenmoPaymentMethodUsage.MULTI_USE : VenmoPaymentMethodUsage.SINGLE_USE;
 
         braintreeClient.getConfiguration((configuration, error) -> {
             if (fallbackToWeb) {
