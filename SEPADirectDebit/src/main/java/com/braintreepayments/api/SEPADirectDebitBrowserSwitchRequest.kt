@@ -5,7 +5,9 @@ import androidx.annotation.RestrictTo
 /**
  * Request parameters associated with a [SEPADirectDebitPendingRequest.Started]
  */
-class SEPADirectDebitBrowserSwitchRequest internal constructor(browserSwitchPendingRequest: BrowserSwitchPendingRequest.Started) {
+class SEPADirectDebitBrowserSwitchRequest internal constructor(
+    browserSwitchPendingRequest: BrowserSwitchPendingRequest.Started
+) {
 
     private var browserSwitchPendingRequest: BrowserSwitchPendingRequest.Started
 
