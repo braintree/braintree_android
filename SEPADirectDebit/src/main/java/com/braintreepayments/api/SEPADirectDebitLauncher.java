@@ -72,8 +72,9 @@ public class SEPADirectDebitLauncher {
      *                the SEPA mandate flow
      */
     @Nullable
-    public SEPADirectDebitPaymentAuthResult handleReturnToAppFromBrowser(@NonNull Context context, @NonNull Intent intent) {
-        BrowserSwitchResult result = browserSwitchClient.parseResult(context, SEPA_DEBIT, intent);
+    public SEPADirectDebitPaymentAuthResult handleReturnToAppFromBrowser(@NonNull SEPADirectDebitPendingRequest.Started pendingRequest, @NonNull Intent intent) {
+        BrowserSwitchResult result = browserSwitchClient.parseResult(pendingRequest.getRequest()
+                .getBrowserSwitchPendingRequest(), intent);
         if (result != null) {
             return new SEPADirectDebitPaymentAuthResult(result);
         }
