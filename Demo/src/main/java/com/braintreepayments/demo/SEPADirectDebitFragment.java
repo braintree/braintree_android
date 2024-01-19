@@ -16,8 +16,6 @@ import com.braintreepayments.api.SEPADirectDebitMandateType;
 import com.braintreepayments.api.SEPADirectDebitNonce;
 import com.braintreepayments.api.SEPADirectDebitPaymentAuthRequest;
 import com.braintreepayments.api.SEPADirectDebitRequest;
-import com.braintreepayments.api.SEPADirectDebitResult;
-import com.braintreepayments.api.UserCanceledException;
 
 import java.util.UUID;
 
@@ -34,17 +32,7 @@ public class SEPADirectDebitFragment extends BaseFragment {
 
         sepaDirectDebitClient = new SEPADirectDebitClient(requireContext(), super.getAuthStringArg());
 
-        sepaDirectDebitLauncher = new SEPADirectDebitLauncher(sepaDirectDebitBrowserSwitchResult ->
-            sepaDirectDebitClient.tokenize(sepaDirectDebitBrowserSwitchResult, (result) -> {
-                if (result instanceof SEPADirectDebitResult.Failure) {
-                    handleError(((SEPADirectDebitResult.Failure) result).getError());
-                } else if (result instanceof SEPADirectDebitResult.Cancel) {
-                    handleError(new UserCanceledException("User canceled SEPA Direct Debit"));
-                } else if (result instanceof SEPADirectDebitResult.Success) {
-                    handleSEPANonce(((SEPADirectDebitResult.Success) result).getNonce());
-                }
-            })
-        );
+        sepaDirectDebitLauncher = new SEPADirectDebitLauncher();
 
         return view;
     }

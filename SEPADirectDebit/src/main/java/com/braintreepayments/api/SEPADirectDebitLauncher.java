@@ -5,7 +5,9 @@ import static com.braintreepayments.api.BraintreeRequestCodes.SEPA_DEBIT;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
@@ -15,42 +17,39 @@ import androidx.fragment.app.FragmentActivity;
 public class SEPADirectDebitLauncher {
 
     private final BrowserSwitchClient browserSwitchClient;
-    private final SEPADirectDebitLauncherCallback callback;
 
     /**
      * Used to launch the SEPA mandate in a web browser and deliver results to your Activity
-     *
-     * @param callback a {@link SEPADirectDebitLauncherCallback} to handle the result of
-     * {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequest.ReadyToLaunch)}
      */
-    public SEPADirectDebitLauncher(@NonNull SEPADirectDebitLauncherCallback callback) {
-        this(new BrowserSwitchClient(), callback);
+    public SEPADirectDebitLauncher() {
+        this(new BrowserSwitchClient());
     }
 
     @VisibleForTesting
-    SEPADirectDebitLauncher(@NonNull BrowserSwitchClient browserSwitchClient,
-                            SEPADirectDebitLauncherCallback callback) {
+    SEPADirectDebitLauncher(@NonNull BrowserSwitchClient browserSwitchClient) {
         this.browserSwitchClient = browserSwitchClient;
-        this.callback = callback;
     }
 
     /**
      * Launches the SEPA mandate by switching to a web browser for user authentication and
      * delivers results to the {@link SEPADirectDebitLauncherCallback} passed into
-     * {@link SEPADirectDebitLauncher#SEPADirectDebitLauncher(SEPADirectDebitLauncherCallback)}
+     * {@link SEPADirectDebitLauncher#SEPADirectDebitLauncher()}
      *
      * @param activity       an Android {@link FragmentActivity}
      * @param paymentAuthRequest the result of the SEPA mandate received from invoking
      *                       {@link SEPADirectDebitClient#createPaymentAuthRequest(SEPADirectDebitRequest, SEPADirectDebitPaymentAuthRequestCallback)}
      */
-    public void launch(@NonNull FragmentActivity activity, @NonNull
+    @NonNull
+    public SEPADirectDebitPendingRequest launch(@NonNull ComponentActivity activity, @NonNull
     SEPADirectDebitPaymentAuthRequest.ReadyToLaunch paymentAuthRequest) {
-        try {
-            SEPADirectDebitPaymentAuthRequestParams params = paymentAuthRequest.getRequestParams();
-            browserSwitchClient.start(activity, params.getBrowserSwitchOptions());
-        } catch (BrowserSwitchException e) {
-            callback.onResult(new SEPADirectDebitPaymentAuthResult(e));
+        SEPADirectDebitPaymentAuthRequestParams params = paymentAuthRequest.getRequestParams();
+        BrowserSwitchPendingRequest browserSwitchPendingRequest = browserSwitchClient.start(activity, params.getBrowserSwitchOptions());
+        if (browserSwitchPendingRequest instanceof BrowserSwitchPendingRequest.Started) {
+            return new SEPADirectDebitPendingRequest.Started(new SEPADirectDebitBrowserSwitchRequest(((BrowserSwitchPendingRequest.Started) browserSwitchPendingRequest)));
+        } else if (browserSwitchPendingRequest instanceof BrowserSwitchPendingRequest.Failure) {
+            return new SEPADirectDebitPendingRequest.Failure(((BrowserSwitchPendingRequest.Failure) browserSwitchPendingRequest).getCause());
         }
+        return new SEPADirectDebitPendingRequest.Failure(new BraintreeException("An unexpected error occurred"));
     }
 
     /**
@@ -72,11 +71,12 @@ public class SEPADirectDebitLauncher {
      * @param intent  the intent to return to your application containing a deep link result from
      *                the SEPA mandate flow
      */
-    public void handleReturnToAppFromBrowser(@NonNull Context context, @NonNull Intent intent) {
+    @Nullable
+    public SEPADirectDebitPaymentAuthResult handleReturnToAppFromBrowser(@NonNull Context context, @NonNull Intent intent) {
         BrowserSwitchResult result = browserSwitchClient.parseResult(context, SEPA_DEBIT, intent);
         if (result != null) {
-            callback.onResult(new SEPADirectDebitPaymentAuthResult(result));
-            browserSwitchClient.clearActiveRequests(context);
+            return new SEPADirectDebitPaymentAuthResult(result);
         }
+        return null;
     }
 }
