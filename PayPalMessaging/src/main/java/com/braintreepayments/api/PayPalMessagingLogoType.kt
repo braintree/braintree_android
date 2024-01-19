@@ -1,5 +1,7 @@
 package com.braintreepayments.api
 
+import com.paypal.messages.config.message.style.PayPalMessageLogoType
+
 /**
  * Logo type option for a PayPal Message
  * Note: **This module is in beta. It's public API may change or be removed in future releases.**
