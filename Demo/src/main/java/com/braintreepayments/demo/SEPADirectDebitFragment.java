@@ -15,6 +15,8 @@ import com.braintreepayments.api.SEPADirectDebitLauncher;
 import com.braintreepayments.api.SEPADirectDebitMandateType;
 import com.braintreepayments.api.SEPADirectDebitNonce;
 import com.braintreepayments.api.SEPADirectDebitPaymentAuthRequest;
+import com.braintreepayments.api.SEPADirectDebitPaymentAuthResult;
+import com.braintreepayments.api.SEPADirectDebitPendingRequest;
 import com.braintreepayments.api.SEPADirectDebitRequest;
 import com.braintreepayments.api.SEPADirectDebitResult;
 import com.braintreepayments.api.UserCanceledException;
@@ -24,7 +26,10 @@ import java.util.UUID;
 public class SEPADirectDebitFragment extends BaseFragment {
 
     private SEPADirectDebitClient sepaDirectDebitClient;
-    private SEPADirectDebitLauncher sepaDirectDebitLauncher;
+    private final SEPADirectDebitLauncher sepaDirectDebitLauncher = new SEPADirectDebitLauncher();
+
+    private SEPADirectDebitPendingRequest.Started pendingRequest;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -32,19 +37,8 @@ public class SEPADirectDebitFragment extends BaseFragment {
         Button button = view.findViewById(R.id.sepa_direct_debit_button);
         button.setOnClickListener(this::launchSEPADirectDebit);
 
-        sepaDirectDebitClient = new SEPADirectDebitClient(requireContext(), super.getAuthStringArg());
-
-        sepaDirectDebitLauncher = new SEPADirectDebitLauncher(sepaDirectDebitBrowserSwitchResult ->
-            sepaDirectDebitClient.tokenize(sepaDirectDebitBrowserSwitchResult, (result) -> {
-                if (result instanceof SEPADirectDebitResult.Failure) {
-                    handleError(((SEPADirectDebitResult.Failure) result).getError());
-                } else if (result instanceof SEPADirectDebitResult.Cancel) {
-                    handleError(new UserCanceledException("User canceled SEPA Direct Debit"));
-                } else if (result instanceof SEPADirectDebitResult.Success) {
-                    handleSEPANonce(((SEPADirectDebitResult.Success) result).getNonce());
-                }
-            })
-        );
+        sepaDirectDebitClient =
+                new SEPADirectDebitClient(requireContext(), super.getAuthStringArg());
 
         return view;
     }
@@ -52,7 +46,17 @@ public class SEPADirectDebitFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        sepaDirectDebitLauncher.handleReturnToAppFromBrowser(requireContext(), requireActivity().getIntent());
+
+        if (pendingRequest != null) {
+            SEPADirectDebitPaymentAuthResult paymentAuthResult =
+                    sepaDirectDebitLauncher.handleReturnToAppFromBrowser(pendingRequest,
+                            requireActivity().getIntent());
+            if (paymentAuthResult != null) {
+                completeSEPAFlow(paymentAuthResult);
+            } else {
+                handleError(new Exception("User did not complete payment flow"));
+            }
+        }
     }
 
     public void launchSEPADirectDebit(View view) {
@@ -74,24 +78,48 @@ public class SEPADirectDebitFragment extends BaseFragment {
 
         sepaDirectDebitClient.createPaymentAuthRequest(request, (paymentAuthRequest) -> {
             if (paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.Failure) {
-                handleError(((SEPADirectDebitPaymentAuthRequest.Failure) paymentAuthRequest).getError());
+                handleError(
+                        ((SEPADirectDebitPaymentAuthRequest.Failure) paymentAuthRequest).getError());
             } else if (paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.LaunchNotRequired) {
-                handleSEPANonce(((SEPADirectDebitPaymentAuthRequest.LaunchNotRequired) paymentAuthRequest).getNonce());
+                handleSEPANonce(
+                        ((SEPADirectDebitPaymentAuthRequest.LaunchNotRequired) paymentAuthRequest).getNonce());
             } else if (paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.ReadyToLaunch) {
-                sepaDirectDebitLauncher.launch(requireActivity(), (SEPADirectDebitPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
+                SEPADirectDebitPendingRequest pendingRequest =
+                        sepaDirectDebitLauncher.launch(requireActivity(),
+                                (SEPADirectDebitPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
+                if (pendingRequest instanceof SEPADirectDebitPendingRequest.Started) {
+                    this.pendingRequest = (SEPADirectDebitPendingRequest.Started) pendingRequest;
+                } else {
+                    handleError(
+                            ((SEPADirectDebitPendingRequest.Failure) pendingRequest).getError());
+                }
+            }
+        });
+    }
+
+    private void completeSEPAFlow(SEPADirectDebitPaymentAuthResult paymentAuthResult) {
+        sepaDirectDebitClient.tokenize(paymentAuthResult, (result) -> {
+            if (result instanceof SEPADirectDebitResult.Failure) {
+                handleError(((SEPADirectDebitResult.Failure) result).getError());
+            } else if (result instanceof SEPADirectDebitResult.Cancel) {
+                handleError(new UserCanceledException("User canceled SEPA Direct Debit"));
+            } else if (result instanceof SEPADirectDebitResult.Success) {
+                handleSEPANonce(((SEPADirectDebitResult.Success) result).getNonce());
             }
         });
     }
 
     private String generateRandomCustomerId() {
-        return UUID.randomUUID().toString().substring(0,20);
+        return UUID.randomUUID().toString().substring(0, 20);
     }
 
     private void handleSEPANonce(@NonNull SEPADirectDebitNonce sepaDirectDebitNonce) {
         super.onPaymentMethodNonceCreated(sepaDirectDebitNonce);
 
-        SEPADirectDebitFragmentDirections.ActionSepaDirectDebitFragmentToDisplayNonceFragment action =
-                SEPADirectDebitFragmentDirections.actionSepaDirectDebitFragmentToDisplayNonceFragment(sepaDirectDebitNonce);
+        SEPADirectDebitFragmentDirections.ActionSepaDirectDebitFragmentToDisplayNonceFragment
+                action =
+                SEPADirectDebitFragmentDirections.actionSepaDirectDebitFragmentToDisplayNonceFragment(
+                        sepaDirectDebitNonce);
         NavHostFragment.findNavController(this).navigate(action);
     }
 }

@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.webkit.URLUtil;
 
+import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.FragmentActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,7 +49,7 @@ public class SEPADirectDebitClient {
     /**
      * Starts the SEPA tokenization process by creating a {@link SEPADirectDebitPaymentAuthRequestParams} to be used
      * to launch the SEPA mandate flow in
-     * {@link SEPADirectDebitLauncher#launch(FragmentActivity, SEPADirectDebitPaymentAuthRequest.ReadyToLaunch)}
+     * {@link SEPADirectDebitLauncher#launch(ComponentActivity, SEPADirectDebitPaymentAuthRequest.ReadyToLaunch)}
      *
      * @param sepaDirectDebitRequest {@link SEPADirectDebitRequest}
      * @param callback {@link SEPADirectDebitPaymentAuthRequestCallback}
@@ -110,7 +110,7 @@ public class SEPADirectDebitClient {
     // TODO: - The wording in this docstring is confusing to me. Let's improve & align across all clients.
     /**
      * After receiving a result from the SEPA mandate web flow via
-     * {@link SEPADirectDebitLauncher#handleReturnToAppFromBrowser(Context, Intent)}, pass the
+     * {@link SEPADirectDebitLauncher#handleReturnToAppFromBrowser(SEPADirectDebitPendingRequest.Started, Intent)} , pass the
      * {@link SEPADirectDebitPaymentAuthResult} returned to this method to tokenize the SEPA
      * account and receive a {@link SEPADirectDebitNonce} on success.
      *
