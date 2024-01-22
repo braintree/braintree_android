@@ -27,9 +27,6 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
     static final String EXTRA_USERNAME = "com.braintreepayments.api.EXTRA_USER_NAME";
     static final String EXTRA_RESOURCE_ID = "com.braintreepayments.api.EXTRA_RESOURCE_ID";
 
-    boolean fallbackToWeb;
-    boolean venmoAppInstalled;
-
     @VisibleForTesting
     boolean shouldVault;
 
@@ -59,11 +56,7 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
             /* do nothing */
         }
 
-        if (fallbackToWeb) {
-            return createUniversalLinkIntent(venmoIntent, input, context, braintreeData);
-        } else {
-            return venmoIntent;
-        }
+        return venmoIntent;
     }
 
     @Override
@@ -82,38 +75,7 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
         return null;
     }
 
-    private Intent createUniversalLinkIntent(Intent intent, VenmoIntentData input, Context context, JSONObject braintreeData) {
-        if (!venmoAppInstalled) {
-            intent.setAction(Intent.ACTION_VIEW);
-        }
-
-        String applicationName = "ApplicationNameUnknown";
-        if (context.getPackageManager().getApplicationLabel(context.getApplicationInfo()).toString()  != null) {
-            applicationName = context.getPackageManager().getApplicationLabel(context.getApplicationInfo()).toString();
-        }
-
-        Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout")
-                .buildUpon()
-                .appendQueryParameter("x-success", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/success")
-                .appendQueryParameter("x-error", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/error")
-                .appendQueryParameter("x-cancel", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/cancel")
-                .appendQueryParameter("x-source", applicationName)
-                .appendQueryParameter("braintree_merchant_id", input.getProfileId())
-                .appendQueryParameter("braintree_access_token", input.getConfiguration().getVenmoAccessToken())
-                .appendQueryParameter("braintree_environment", input.getConfiguration().getVenmoEnvironment())
-                .appendQueryParameter("resource_id", input.getPaymentContextId())
-                .appendQueryParameter("braintree_sdk_data", braintreeData.toString())
-                .appendQueryParameter("customerClient", "MOBILE_APP")
-                .build();
-
-        return intent.setData(venmoBaseURL);
-    }
-
     private Intent getVenmoIntent() {
-        if (!venmoAppInstalled && fallbackToWeb) {
-            return new Intent(Intent.ACTION_VIEW);
-        } else {
-            return new Intent().setComponent(new ComponentName(VENMO_PACKAGE_NAME, VENMO_PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
-        }
+        return new Intent().setComponent(new ComponentName(VENMO_PACKAGE_NAME, VENMO_PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
     }
 }

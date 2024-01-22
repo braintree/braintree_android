@@ -226,10 +226,17 @@ public class VenmoClient {
         boolean shouldVault = request.getShouldVault() && isClientTokenAuth;
         sharedPrefsWriter.persistVenmoVaultOption(activity, shouldVault);
         if (observer != null) {
-            observer.setVenmoAppInstalled(isVenmoAppSwitchAvailable(braintreeClient.getApplicationContext()));
-            observer.setFallbackToWeb(request.getFallbackToWeb());
             VenmoIntentData intentData = new VenmoIntentData(configuration, venmoProfileId, paymentContextId, braintreeClient.getSessionId(), braintreeClient.getIntegrationType());
-            observer.launch(intentData);
+            if (!isVenmoAppSwitchAvailable(braintreeClient.getApplicationContext()) && request.getFallbackToWeb()) {
+                try {
+                    startBrowserSwitch(activity, intentData, braintreeClient.getApplicationContext());
+                } catch (JSONException | BrowserSwitchException exception) {
+                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.failure");
+                    deliverVenmoFailure(exception);
+                }
+            } else {
+                observer.launch(intentData);
+            }
         } else {
             Intent launchIntent = getLaunchIntent(configuration, venmoProfileId, paymentContextId);
             activity.startActivityForResult(launchIntent, BraintreeRequestCodes.VENMO);
@@ -430,6 +437,46 @@ public class VenmoClient {
         }
 
         return venmoIntent;
+    }
+
+    BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
+        return braintreeClient.getBrowserSwitchResult(activity);
+    }
+
+    private void startBrowserSwitch(FragmentActivity activity, VenmoIntentData input, Context context) throws JSONException, BrowserSwitchException {
+        JSONObject braintreeData = new MetadataBuilder()
+                .sessionId(input.getSessionId())
+                .integration(input.getIntegrationType())
+                .version()
+                .build();
+
+        String applicationName = "ApplicationNameUnknown";
+        if (context.getPackageManager().getApplicationLabel(context.getApplicationInfo()).toString()  != null) {
+            applicationName = context.getPackageManager().getApplicationLabel(context.getApplicationInfo()).toString();
+        }
+
+        Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout")
+                .buildUpon()
+                .appendQueryParameter("x-success", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/success")
+                .appendQueryParameter("x-error", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/error")
+                .appendQueryParameter("x-cancel", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/cancel")
+                .appendQueryParameter("x-source", applicationName)
+                .appendQueryParameter("braintree_merchant_id", input.getProfileId())
+                .appendQueryParameter("braintree_access_token", input.getConfiguration().getVenmoAccessToken())
+                .appendQueryParameter("braintree_environment", input.getConfiguration().getVenmoEnvironment())
+                .appendQueryParameter("resource_id", input.getPaymentContextId())
+                .appendQueryParameter("braintree_sdk_data", braintreeData.toString())
+                .appendQueryParameter("customerClient", "MOBILE_APP")
+                .build();
+
+        BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
+                .requestCode(BraintreeRequestCodes.VENMO)
+                .url(venmoBaseURL)
+                .metadata(braintreeData)
+                .returnUrlScheme(braintreeClient.getReturnUrlScheme());
+
+        braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
+        braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.started");
     }
 
     /**
