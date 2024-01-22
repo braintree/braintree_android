@@ -7,7 +7,7 @@ import com.paypal.messages.config.PayPalEnvironment
 /**
  *  Use [PayPalMessagingView] to display PayPal messages to promote offers such as Pay Later and PayPal Credit to customers.
  * Note: **This module is in beta. It's public API may change or be removed in future releases.**
- * @property apiClient The Braintree API client
+ * @property braintreeClient a {@link BraintreeClient}
  */
 class PayPalMessagingView(
     private val braintreeClient: BraintreeClient,
@@ -23,13 +23,13 @@ class PayPalMessagingView(
     fun start(request: PayPalMessagingRequest = PayPalMessagingRequest()) {
         braintreeClient.getConfiguration { configuration, configError ->
             if (configError != null) {
-                payPalMessagingListener.onFailure(configError)
+                payPalMessagingListener?.onFailure(configError)
             } else if (configuration != null) {
                 val clientId = configuration.payPalClientId
                 if (clientId == null) {
                     // TODO: return null client ID error here
                 } else {
-                    val messageView = constructMessageView(clientId, request)
+                    val messageView = constructMessageView(clientId, configuration, request)
                 }
             } else {
                 // TODO: return unknown error
@@ -37,7 +37,11 @@ class PayPalMessagingView(
         }
     }
 
-    fun constructMessageView(clientId: String, request: PayPalMessagingRequest): PayPalMessageView {
+    private fun constructMessageView(
+        clientId: String,
+        configuration: Configuration,
+        request: PayPalMessagingRequest
+    ): PayPalMessageView {
         val environment = if (configuration.environment == "production") {
             PayPalEnvironment.LIVE
         } else {
@@ -60,22 +64,22 @@ class PayPalMessagingView(
 
         val viewStateCallbacks = PayPalMessageViewStateCallbacks(
             onLoading = {
-                payPalMessagingListener.onLoading()
+                payPalMessagingListener?.onLoading()
             },
             onError = { error ->
-                payPalMessagingListener.onFailure(error)
+                payPalMessagingListener?.onFailure(error)
             },
             onSuccess = {
-                payPalMessagingListener.onSuccess()
+                payPalMessagingListener?.onSuccess()
             }
         )
 
         val eventsCallbacks = PayPalMessageEventsCallbacks(
             onClick = {
-                payPalMessagingListener.onClick()
+                payPalMessagingListener?.onClick()
             },
             onApply = {
-                payPalMessagingListener.onApply()
+                payPalMessagingListener?.onApply()
             }
         )
 
