@@ -24,7 +24,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
     private val deviceInspector: DeviceInspector
 ) {
     constructor(braintreeClient: BraintreeClient) : this(
-        ShopperInsightsApi(EligiblePaymentsApi()),
+        ShopperInsightsApi(EligiblePaymentsApi(braintreeClient)),
         braintreeClient,
         DeviceInspector()
     )
@@ -82,7 +82,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         val paymentSources = listOf("PAYPAL", "VENMO")
         val includeAccountDetails = true
 
-        val result = api.findEligiblePayments(
+        api.findEligiblePayments(
             EligiblePaymentsApiRequest(
                 request,
                 merchantId = merchantId,
@@ -91,16 +91,25 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                 accountDetails = includeAccountDetails,
                 constraintType = constraintType,
                 paymentSources = paymentSources
-            )
-        )
-        // Hardcoded result
-        callback.onResult(
-            ShopperInsightsResult.Success(
-                ShopperInsightsInfo(
-                    isPayPalRecommended = isPaymentRecommended(result.eligibleMethods.paypal),
-                    isVenmoRecommended = isPaymentRecommended(result.eligibleMethods.venmo)
-                )
-            )
+            ),
+            callback = { result, error ->
+                if (error == null) {
+                    callback.onResult(
+                        ShopperInsightsResult.Success(
+                            ShopperInsightsInfo(
+                                isPayPalRecommended = isPaymentRecommended(result?.eligibleMethods?.paypal),
+                                isVenmoRecommended = isPaymentRecommended(result?.eligibleMethods?.venmo)
+                            )
+                        )
+                    )
+                } else {
+                    callback.onResult(
+                        ShopperInsightsResult.Failure(
+                            error
+                        )
+                    )
+                }
+            }
         )
         braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_SUCCEEDED)
     }
