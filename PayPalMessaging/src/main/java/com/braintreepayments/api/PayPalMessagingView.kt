@@ -1,8 +1,13 @@
 package com.braintreepayments.api
 
 import android.content.Context
+import com.paypal.messages.PayPalMessageView
 import com.paypal.messages.config.message.PayPalMessageData
 import com.paypal.messages.config.PayPalEnvironment
+import com.paypal.messages.config.message.PayPalMessageConfig
+import com.paypal.messages.config.message.PayPalMessageEventsCallbacks
+import com.paypal.messages.config.message.PayPalMessageStyle
+import com.paypal.messages.config.message.PayPalMessageViewStateCallbacks
 
 /**
  *  Use [PayPalMessagingView] to display PayPal messages to promote offers such as Pay Later and PayPal Credit to customers.
@@ -51,15 +56,15 @@ class PayPalMessagingView(
             clientID = clientId,
             amount = request.amount,
             buyerCountry = request.buyerCountry,
-            offerType = request.offerType,
-            placement = request.placement,
+            offerType = request.offerType.offerTypeRawValue,
+            placement = request.placement.placementRawValue,
             environment = environment
         )
 
         val messageStyle = PayPalMessageStyle(
-            color = request.color,
-            logoType = request.logoType,
-            textAlign = request.textAlignment
+            color = request.color.messageColorRawValue,
+            logoType = request.logoType.logoTypeRawValue,
+            textAlign = request.textAlignment.textAlignmentRawValue
         )
 
         val viewStateCallbacks = PayPalMessageViewStateCallbacks(

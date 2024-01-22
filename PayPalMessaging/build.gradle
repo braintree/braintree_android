@@ -41,18 +41,9 @@ dependencies {
     implementation deps.coreKtx
     implementation deps.kotlinStdLib
     implementation deps.appCompat
-    implementation('com.paypal.messages:paypal-messages:1.0.0-alpha.00-SNAPSHOT')
+    implementation('com.paypal.messages:paypal-messages:1.0.0-alpha.00')
 
     testImplementation deps.junitTest
-}
-
-// TODO: remove importing snapshot repositories before feature is merged
-allprojects {
-    repositories {
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots/'
-        }
-    }
 }
 
 // region signing and publishing
