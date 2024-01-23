@@ -1,9 +1,9 @@
 package com.braintreepayments.api
 
 /**
- * Used to initialize a `BTPayPalMessagingView`
+ * Used to initialize a [PayPalMessagingView]
  * This feature is currently only supported for buyers located in the US. For merchants domiciled
- * outside of the US please set the `buyerCountry` to display messaging to US based buyers.
+ * outside of the US please set the [buyerCountry] to display messaging to US based buyers.
  * Note: **This module is in beta. It's public API may change or be removed in future releases.**
  *
  * @property amount Price expressed in cents amount based on the current context
