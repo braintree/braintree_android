@@ -453,7 +453,7 @@ public class VenmoClient {
                 Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
                 if (deepLinkUri != null) {
                     if (deepLinkUri.getPath().contains("success")) {
-                        braintreeClient.sendAnalyticsEvent("pay-with-venmot.browser-switch.success");
+                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.success");
                         braintreeClient.getAuthorization(new AuthorizationCallback() {
                             @Override
                             public void onAuthorizationResult(@Nullable Authorization authorization, @Nullable Exception authError) {
@@ -545,9 +545,9 @@ public class VenmoClient {
 
         Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout")
                 .buildUpon()
-                .appendQueryParameter("x-success", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/success")
-                .appendQueryParameter("x-error", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/error")
-                .appendQueryParameter("x-cancel", context.getPackageName() + "://x-callback-url/vzero/auth/venmo/cancel")
+                .appendQueryParameter("x-success", braintreeClient.getReturnUrlScheme() + "://x-callback-url/vzero/auth/venmo/success")
+                .appendQueryParameter("x-error", braintreeClient.getReturnUrlScheme() + "://x-callback-url/vzero/auth/venmo/error")
+                .appendQueryParameter("x-cancel", braintreeClient.getReturnUrlScheme() + "://x-callback-url/vzero/auth/venmo/cancel")
                 .appendQueryParameter("x-source", applicationName)
                 .appendQueryParameter("braintree_merchant_id", input.getProfileId())
                 .appendQueryParameter("braintree_access_token", input.getConfiguration().getVenmoAccessToken())
