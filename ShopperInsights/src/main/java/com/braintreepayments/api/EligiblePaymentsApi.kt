@@ -17,23 +17,10 @@ internal class EligiblePaymentsApi(
                 override fun onResult(responseBody: String?, httpError: Exception?) {
                     if (responseBody != null) {
                         try {
-                            val responseJson = JSONObject(responseBody)
-                            callback.onResult(EligiblePaymentsApiResult(
-                                eligibleMethods = EligiblePaymentMethods(
-                                    paypal = EligiblePaymentMethodDetails(
-                                        canBeVaulted = true,
-                                        eligibleInPayPalNetwork = true,
-                                        recommended = true,
-                                        recommendedPriority = 1
-                                    ),
-                                    venmo = EligiblePaymentMethodDetails(
-                                        canBeVaulted = true,
-                                        eligibleInPayPalNetwork = true,
-                                        recommended = true,
-                                        recommendedPriority = 1
-                                    )
-                                )
-                            ), null)
+                            callback.onResult(
+                                EligiblePaymentsApiResult.fromJson(responseBody),
+                                null
+                            )
                         } catch (e: JSONException) {
                             callback.onResult(null, e)
                         }

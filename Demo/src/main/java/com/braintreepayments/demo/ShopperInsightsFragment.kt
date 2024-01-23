@@ -10,6 +10,7 @@ import com.braintreepayments.api.BraintreeClient
 import com.braintreepayments.api.ShopperInsightsBuyerPhone
 import com.braintreepayments.api.ShopperInsightsClient
 import com.braintreepayments.api.ShopperInsightsRequest
+import com.braintreepayments.api.ShopperInsightsResult
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
 
@@ -72,7 +73,12 @@ class ShopperInsightsFragment : BaseFragment() {
                 requireContext(),
                 request
             ) { result ->
-                responseTextView.text = result.toString()
+                responseTextView.text = when (result) {
+                    is ShopperInsightsResult.Success -> {
+                        "PayPal Recommended ${result.response.isPayPalRecommended} \n Venmo Recommended ${result.response.isVenmoRecommended}"
+                    }
+                    is ShopperInsightsResult.Failure -> result.error.toString()
+                }
             }
         }
     }
