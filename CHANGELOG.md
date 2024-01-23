@@ -5,7 +5,7 @@
 * PayPalMessaging (BETA)
   * Add `PayPalMessagingRequest`, `PayPalMessagingColor`, `PayPalMessagingLogoType`, `PayPalMessagingOfferType`, `PayPalMessagingPlacement`, `PayPalMessagingTextAlignment`, and `PayPalMessagingListener`
   * Add `PayPalMessagingView` to display PayPal messages to promote offers such as Pay Later and PayPal Credit to customers.
-    * To get started call `PayPalMessagingView#start()` with an optional `PayPalMessagingRequest`
+    * To get started call `PayPalMessagingView#start(Context)` with an optional `PayPalMessagingRequest`
 
 ## 4.41.0 (2024-01-18)
 

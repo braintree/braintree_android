@@ -16,18 +16,16 @@ import com.paypal.messages.config.message.PayPalMessageViewStateCallbacks
  * Note: **This module is in beta. It's public API may change or be removed in future releases.**
  * @property braintreeClient a {@link BraintreeClient}
  */
-class PayPalMessagingView(
-    private val braintreeClient: BraintreeClient,
-    private val context: Context
-) {
+class PayPalMessagingView(private val braintreeClient: BraintreeClient) {
     var payPalMessagingListener: PayPalMessagingListener? = null
 
     /**
      * Creates a view to be displayed to promote offers such as Pay Later and PayPal Credit to customers.
+     * @property context the Android Context
      * @property request An optional [PayPalMessagingRequest]
      * Note: **This module is in beta. It's public API may change or be removed in future releases.**
      */
-    fun start(request: PayPalMessagingRequest = PayPalMessagingRequest()) {
+    fun start(context: Context, request: PayPalMessagingRequest = PayPalMessagingRequest()) {
         braintreeClient.getConfiguration { configuration, configError ->
             if (configError != null) {
                 payPalMessagingListener?.onFailure(configError)
@@ -39,12 +37,11 @@ class PayPalMessagingView(
                     )
                     payPalMessagingListener?.onFailure(exception)
                 } else {
-                    val payPalMessageView = constructPayPalMessageView(clientId, configuration, request)
+                    val payPalMessageView = constructPayPalMessageView(context, clientId, configuration, request)
                     payPalMessageView.layoutParams = ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
-                    payPalMessageView
                 }
             } else {
                 val exception = BraintreeException(
@@ -56,6 +53,7 @@ class PayPalMessagingView(
     }
 
     private fun constructPayPalMessageView(
+        context: Context,
         clientId: String,
         configuration: Configuration,
         request: PayPalMessagingRequest
