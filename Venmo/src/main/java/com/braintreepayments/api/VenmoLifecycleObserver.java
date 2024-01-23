@@ -41,7 +41,7 @@ class VenmoLifecycleObserver implements LifecycleEventObserver {
 
     @Override
     public void onStateChanged(@NonNull LifecycleOwner lifecycleOwner, @NonNull Lifecycle.Event event) {
-        if (event == Lifecycle.Event.ON_CREATE) {
+        if (event == Lifecycle.Event.ON_CREATE && !venmoClient.shouldFallback) {
             activityLauncher = activityResultRegistry.register(VENMO_SECURE_RESULT, lifecycleOwner, venmoActivityResultContract, new ActivityResultCallback<VenmoResult>() {
                 @Override
                 public void onActivityResult(VenmoResult venmoResult) {
@@ -59,47 +59,16 @@ class VenmoLifecycleObserver implements LifecycleEventObserver {
             }
 
             if (activity != null) {
-
-                /*
-                 * WORKAROUND: Android 9 onResume() / onNewIntent() are called in an unpredictable way.
-                 *
-                 * We instruct merchants to call `setIntent(intent)` in onNewIntent so the SDK can
-                 * process deep links to activities that are already running e.g. "singleTop" launch
-                 * mode activities.
-                 *
-                 * On Android 9, onResume() can be called multiple times – once before and once after
-                 * onNewIntent(). The SDK parses the deep link URI to determine if a browser-based
-                 * payment flow is successful.
-                 *
-                 * In order to make sure the deep link intent is available to the SDK when the activity
-                 * is RESUMED, we run browser switching logic on the next loop of the main thread.
-                 * This prevents false negatives from occurring, where the SDK thinks the user has
-                 * returned to the app without completing the flow, when in fact the deep link intent
-                 * has not yet been delivered via onNewIntent.
-                 */
                 final FragmentActivity finalActivity = activity;
-//                new Handler(Looper.getMainLooper()).post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        BrowserSwitchResult resultToDeliver = null;
-//
-//                        BrowserSwitchResult pendingResult = venmoClient.getBrowserSwitchResult(finalActivity);
-//                        if (pendingResult != null && pendingResult.getRequestCode() == PAYPAL) {
-//                            resultToDeliver = venmoClient.deliverBrowserSwitchResult(finalActivity);
-//                        }
-//
-//                        BrowserSwitchResult pendingResultFromCache =
-//                                venmoClient.getBrowserSwitchResultFromNewTask(finalActivity);
-//                        if (pendingResultFromCache != null && pendingResultFromCache.getRequestCode() == PAYPAL) {
-//                            resultToDeliver =
-//                                    venmoClient.deliverBrowserSwitchResultFromNewTask(finalActivity);
-//                        }
-//
-//                        if (resultToDeliver != null) {
-//                            venmoClient.onBrowserSwitchResult(resultToDeliver);
-//                        }
-//                    }
-//                });
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        BrowserSwitchResult pendingResult = venmoClient.getBrowserSwitchResult(finalActivity);
+                        if (pendingResult != null && pendingResult.getRequestCode() == BraintreeRequestCodes.VENMO) {
+                            venmoClient.onBrowserSwitchResult(finalActivity, pendingResult);
+                        }
+                    }
+                });
             }
         }
     }
