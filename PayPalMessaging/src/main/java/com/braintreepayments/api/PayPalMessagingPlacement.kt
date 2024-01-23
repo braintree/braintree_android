@@ -32,7 +32,7 @@ enum class PayPalMessagingPlacement {
     PAYMENT;
 
     internal val placementRawValue: String
-        get() = when(this) {
+        get() = when (this) {
             HOME -> "HOME"
             CATEGORY -> "CATEGORY"
             PRODUCT -> "PRODUCT"

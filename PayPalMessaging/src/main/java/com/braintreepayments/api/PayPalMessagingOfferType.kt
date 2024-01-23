@@ -29,7 +29,7 @@ enum class PayPalMessagingOfferType {
     PAYPAL_CREDIT_NO_INTEREST;
 
     internal val offerTypeRawValue: PayPalMessageOfferType
-        get() = when(this) {
+        get() = when (this) {
             PAY_LATER_SHORT_TERM -> PayPalMessageOfferType.PAY_LATER_SHORT_TERM
             PAY_LATER_LONG_TERM -> PayPalMessageOfferType.PAY_LATER_LONG_TERM
             PAY_LATER_PAY_IN_ONE -> PayPalMessageOfferType.PAY_LATER_PAY_IN_1
