@@ -8,7 +8,7 @@ internal class EligiblePaymentsApi(
 ) {
     fun execute(request: EligiblePaymentsApiRequest, callback: EligiblePaymentsCallback) {
         val jsonBody = request.toJson()
-        //TODO: Move url to PaypalHttpClient class when it is created
+        // TODO: Move url to PaypalHttpClient class when it is created
         val url = "https://api.sandbox.paypal.com/v2/payments/find-eligible-methods"
         braintreeClient.sendPOST(
             url,
