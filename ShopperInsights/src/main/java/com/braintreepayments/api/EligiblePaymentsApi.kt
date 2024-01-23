@@ -2,7 +2,6 @@ package com.braintreepayments.api
 
 import com.braintreepayments.api.EligiblePaymentsApiRequest.Companion.toJson
 import org.json.JSONException
-import org.json.JSONObject
 
 internal class EligiblePaymentsApi(
     private val braintreeClient: BraintreeClient

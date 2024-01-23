@@ -36,6 +36,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
      * @param request The [ShopperInsightsRequest] containing information about the shopper.
      * @return A [ShopperInsightsResult] object indicating the recommended payment methods.
      */
+    @Suppress("LongMethod")
     fun getRecommendedPaymentMethods(
         context: Context,
         request: ShopperInsightsRequest,
@@ -74,13 +75,6 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
 
         // TODO: get correct merchant ID from SDK
         val merchantId = "MXSJ4F5BADVNS"
-
-        // Default values
-        val countryCode = "US"
-        val currencyCode = "USD"
-        val constraintType = "INCLUDE"
-        val paymentSources = listOf("PAYPAL", "VENMO")
-        val includeAccountDetails = true
 
         api.findEligiblePayments(
             EligiblePaymentsApiRequest(
@@ -148,5 +142,14 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
      */
     fun sendVenmoSelectedEvent() {
         braintreeClient.sendAnalyticsEvent(VENMO_SELECTED)
+    }
+
+    companion object {
+        // Default values
+        private const val countryCode = "US"
+        private const val currencyCode = "USD"
+        private const val constraintType = "INCLUDE"
+        private val paymentSources = listOf("PAYPAL", "VENMO")
+        private const val includeAccountDetails = true
     }
 }

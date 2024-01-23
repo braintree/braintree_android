@@ -75,7 +75,8 @@ class ShopperInsightsFragment : BaseFragment() {
             ) { result ->
                 responseTextView.text = when (result) {
                     is ShopperInsightsResult.Success -> {
-                        "PayPal Recommended ${result.response.isPayPalRecommended} \n Venmo Recommended ${result.response.isVenmoRecommended}"
+                        "PayPal Recommended ${result.response.isPayPalRecommended} " +
+                                "\n Venmo Recommended ${result.response.isVenmoRecommended}"
                     }
                     is ShopperInsightsResult.Failure -> result.error.toString()
                 }
