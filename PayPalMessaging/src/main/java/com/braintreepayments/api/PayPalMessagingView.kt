@@ -1,6 +1,7 @@
 package com.braintreepayments.api
 
 import android.content.Context
+import android.view.ViewGroup
 import com.paypal.messages.PayPalMessageView
 import com.paypal.messages.config.message.PayPalMessageData
 import com.paypal.messages.config.PayPalEnvironment
@@ -32,17 +33,22 @@ class PayPalMessagingView(
             } else if (configuration != null) {
                 val clientId = configuration.payPalClientId
                 if (clientId == null) {
-                    // TODO: return null client ID error here
+                    payPalMessagingListener?.onFailure(BraintreeException("Could not find PayPal client ID in Braintree configuration."))
                 } else {
-                    val messageView = constructMessageView(clientId, configuration, request)
+                    val payPalMessageView = constructPayPalMessageView(clientId, configuration, request)
+                    payPalMessageView.layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                    payPalMessageView
                 }
             } else {
-                // TODO: return unknown error
+                payPalMessagingListener?.onFailure(BraintreeException("Fetching Braintree configuration resulted in no error or configuration returned."))
             }
         }
     }
 
-    private fun constructMessageView(
+    private fun constructPayPalMessageView(
         clientId: String,
         configuration: Configuration,
         request: PayPalMessagingRequest
