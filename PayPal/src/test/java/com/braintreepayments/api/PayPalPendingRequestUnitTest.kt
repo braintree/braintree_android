@@ -25,7 +25,7 @@ class PayPalPendingRequestUnitTest {
     private val payPalBrowserSwitchRequest = PayPalBrowserSwitchRequest(browserSwitchPendingRequest)
 
     @Test
-    fun startedConstructor_fromString_createsBrowserSwitchRequest() {
+    fun `started constructor with string parameter creates BrowserSwitchRequest`() {
         val pendingRequest = PayPalPendingRequest.Started(payPalBrowserSwitchRequest)
         val storedRequest = pendingRequest.toJsonString()
 
@@ -50,12 +50,12 @@ class PayPalPendingRequestUnitTest {
     }
 
     @Test(expected = JSONException::class)
-    fun startedConstructor_fromString_whenInvalidString_throwsJSONException() {
+    fun `started constructor with invalid input string throws JSONException`() {
         val sut = PayPalPendingRequest.Started("{}")
     }
 
     @Test
-    fun toJsonString_returnsJsonBrowserSwitchRequest() {
+    fun `toJsonString returns BrowserSwitchRequest in JSON string format`() {
         val sut = PayPalPendingRequest.Started(payPalBrowserSwitchRequest)
         val jsonString = sut.toJsonString()
 
