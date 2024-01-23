@@ -73,7 +73,7 @@
     * Make empty `ThreeDSecureLookup` constructor package-private
   * PayPal
     * Remove `PayPalListener`
-    * Add `PayPalLauncher`, `PayPalPaymentAuthRequest`, `PayPalPaymentAuthResult`, 
+    * Add `PayPalLauncher`, `PayPalPaymentAuthRequest`, `PayPalPendingRequest`, `PayPalPaymentAuthResult`, 
       `PayPalPaymentAuthCallback`, `PayPalTokenizeCallback`, and `PayPalResult`
     * Remove`PayPalFlowStartedCallback`
     * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
