@@ -60,7 +60,7 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
         boolean fallbackToWeb = Settings.venmoFallbackToWeb(activity);
 
         int venmoPaymentMethodUsage = shouldVault ?
-                VenmoPaymentMethodUsage.MULTI_USE : VenmoPaymentMethodUsage.SINGLE_USE;
+            VenmoPaymentMethodUsage.MULTI_USE : VenmoPaymentMethodUsage.SINGLE_USE;
         VenmoRequest venmoRequest = new VenmoRequest(venmoPaymentMethodUsage);
         venmoRequest.setProfileId(null);
         venmoRequest.setShouldVault(shouldVault);

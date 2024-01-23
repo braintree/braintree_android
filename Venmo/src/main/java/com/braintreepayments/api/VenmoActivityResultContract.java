@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
@@ -42,8 +41,9 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
             venmoIntent.putExtra(EXTRA_RESOURCE_ID, input.getPaymentContextId());
         }
 
-        JSONObject braintreeData = new JSONObject();
         try {
+            JSONObject braintreeData = new JSONObject();
+
             JSONObject meta = new MetadataBuilder()
                     .sessionId(input.getSessionId())
                     .integration(input.getIntegrationType())
@@ -75,7 +75,7 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
         return null;
     }
 
-    private Intent getVenmoIntent() {
+    private static Intent getVenmoIntent() {
         return new Intent().setComponent(new ComponentName(VENMO_PACKAGE_NAME, VENMO_PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
     }
 }

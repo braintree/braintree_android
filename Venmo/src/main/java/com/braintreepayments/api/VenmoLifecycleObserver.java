@@ -41,8 +41,8 @@ class VenmoLifecycleObserver implements LifecycleEventObserver {
 
     @Override
     public void onStateChanged(@NonNull LifecycleOwner lifecycleOwner, @NonNull Lifecycle.Event event) {
-        if (event == Lifecycle.Event.ON_CREATE && !venmoClient.shouldFallback) {
-            activityLauncher = activityResultRegistry.register(VENMO_SECURE_RESULT, lifecycleOwner, venmoActivityResultContract, new ActivityResultCallback<VenmoResult>() {
+        if (event == Lifecycle.Event.ON_CREATE) {
+            activityLauncher = activityResultRegistry.register(VENMO_SECURE_RESULT, lifecycleOwner, new VenmoActivityResultContract(), new ActivityResultCallback<VenmoResult>() {
                 @Override
                 public void onActivityResult(VenmoResult venmoResult) {
                     venmoClient.onVenmoResult(venmoResult);

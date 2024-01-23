@@ -40,8 +40,6 @@ public class VenmoClient {
     private final DeviceInspector deviceInspector;
     private VenmoListener listener;
 
-    boolean shouldFallback;
-
     @VisibleForTesting
     VenmoLifecycleObserver observer;
 
@@ -131,7 +129,6 @@ public class VenmoClient {
      * @param request  {@link VenmoRequest}
      */
     public void tokenizeVenmoAccount(@NonNull final FragmentActivity activity, @NonNull final VenmoRequest request) {
-        shouldFallback = request.getFallbackToWeb();
         tokenizeVenmoAccount(activity, request, new VenmoTokenizeAccountCallback() {
             @Override
             public void onResult(@Nullable Exception error) {
