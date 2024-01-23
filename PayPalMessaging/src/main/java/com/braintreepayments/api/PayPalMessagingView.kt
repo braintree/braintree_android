@@ -11,7 +11,8 @@ import com.paypal.messages.config.message.PayPalMessageStyle
 import com.paypal.messages.config.message.PayPalMessageViewStateCallbacks
 
 /**
- *  Use [PayPalMessagingView] to display PayPal messages to promote offers such as Pay Later and PayPal Credit to customers.
+ *  Use [PayPalMessagingView] to display PayPal messages to promote offers such as Pay Later
+ *  and PayPal Credit to customers.
  * Note: **This module is in beta. It's public API may change or be removed in future releases.**
  * @property braintreeClient a {@link BraintreeClient}
  */
@@ -33,7 +34,10 @@ class PayPalMessagingView(
             } else if (configuration != null) {
                 val clientId = configuration.payPalClientId
                 if (clientId == null) {
-                    payPalMessagingListener?.onFailure(BraintreeException("Could not find PayPal client ID in Braintree configuration."))
+                    val exception = BraintreeException(
+                        "Could not find PayPal client ID in Braintree configuration."
+                    )
+                    payPalMessagingListener?.onFailure(exception)
                 } else {
                     val payPalMessageView = constructPayPalMessageView(clientId, configuration, request)
                     payPalMessageView.layoutParams = ViewGroup.LayoutParams(
@@ -43,7 +47,10 @@ class PayPalMessagingView(
                     payPalMessageView
                 }
             } else {
-                payPalMessagingListener?.onFailure(BraintreeException("Fetching Braintree configuration resulted in no error or configuration returned."))
+                val exception = BraintreeException(
+                    "Fetching Braintree configuration resulted in no error or configuration returned."
+                )
+                payPalMessagingListener?.onFailure(exception)
             }
         }
     }

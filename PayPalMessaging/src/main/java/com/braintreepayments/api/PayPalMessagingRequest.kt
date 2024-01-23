@@ -6,7 +6,8 @@ package com.braintreepayments.api
  * outside of the US please set the `buyerCountry` to display messaging to US based buyers.
  * Note: **This module is in beta. It's public API may change or be removed in future releases.**
  *
- * @property amount Price expressed in cents amount based on the current context (i.e. individual product price vs total cart price)
+ * @property amount Price expressed in cents amount based on the current context
+ * (i.e. individual product price vs total cart price)
  * @property placement Message screen location (e.g. product, cart, home)
  * @property offerType Preferred message offer to display
  * @property buyerCountry Consumer's country (Integrations must be approved by PayPal to use this option)
