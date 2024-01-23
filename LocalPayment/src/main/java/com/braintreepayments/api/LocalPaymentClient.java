@@ -134,7 +134,7 @@ public class LocalPaymentClient {
 
     /**
      * After receiving a result from the web authentication flow via
-     * {@link LocalPaymentLauncher#handleReturnToAppFromBrowser(Context, Intent)}, pass the
+     * {@link LocalPaymentLauncher#handleReturnToAppFromBrowser(LocalPaymentPendingRequest.Started, Intent)}, pass the
      * {@link LocalPaymentAuthResult} returned to this method to tokenize the local
      * payment method and receive a {@link LocalPaymentNonce} on success.
      *

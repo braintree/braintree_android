@@ -45,7 +45,7 @@ public class LocalPaymentLauncherUnitTest {
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
         when(localPaymentAuthRequestParams.getBrowserSwitchOptions()).thenReturn(options);
         LocalPaymentLauncher sut =
-                new LocalPaymentLauncher(browserSwitchClient, localPaymentLauncherCallback);
+                new LocalPaymentLauncher(browserSwitchClient);
 
         sut.launch(activity, new LocalPaymentAuthRequest.ReadyToLaunch(localPaymentAuthRequestParams));
 
@@ -61,7 +61,7 @@ public class LocalPaymentLauncherUnitTest {
         doThrow(exception).when(browserSwitchClient).start(same(activity), same(options));
         when(localPaymentAuthRequestParams.getBrowserSwitchOptions()).thenReturn(options);
         LocalPaymentLauncher sut =
-                new LocalPaymentLauncher(browserSwitchClient, localPaymentLauncherCallback);
+                new LocalPaymentLauncher(browserSwitchClient);
 
         sut.launch(activity, new LocalPaymentAuthRequest.ReadyToLaunch(localPaymentAuthRequestParams));
 
@@ -79,9 +79,9 @@ public class LocalPaymentLauncherUnitTest {
                 eq(intent))).thenReturn(
                 result);
         LocalPaymentLauncher sut =
-                new LocalPaymentLauncher(browserSwitchClient, localPaymentLauncherCallback);
+                new LocalPaymentLauncher(browserSwitchClient);
 
-        sut.handleReturnToAppFromBrowser(activity, intent);
+        sut.handleReturnToAppFromBrowser(, activity, intent);
 
         ArgumentCaptor<LocalPaymentAuthResult> captor =
                 ArgumentCaptor.forClass(LocalPaymentAuthResult.class);
@@ -97,9 +97,9 @@ public class LocalPaymentLauncherUnitTest {
                 eq(intent))).thenReturn(
                 result);
         LocalPaymentLauncher sut =
-                new LocalPaymentLauncher(browserSwitchClient, localPaymentLauncherCallback);
+                new LocalPaymentLauncher(browserSwitchClient);
 
-        sut.handleReturnToAppFromBrowser(activity, intent);
+        sut.handleReturnToAppFromBrowser(, activity, intent);
 
         verify(browserSwitchClient).clearActiveRequests(same(activity));
     }
