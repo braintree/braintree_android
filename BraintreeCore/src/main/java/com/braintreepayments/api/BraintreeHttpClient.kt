@@ -124,9 +124,7 @@ internal class BraintreeHttpClient(
         if (authorization is TokenizationKey) {
             request.addHeader(CLIENT_KEY_HEADER, authorization.bearer)
         }
-        if (authorization is ClientToken) {
-            request.addHeader("Authorization", "Bearer " + authorization.authorizationFingerprint)
-        }
+        request.addHeader("Authorization", "Bearer " + authorization?.bearer)
         httpClient.sendRequest(request, callback)
     }
 
