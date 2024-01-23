@@ -189,7 +189,7 @@ class AnalyticsClientUnitTest {
         val analyticsJSONSlot = slot<String>()
         every {
             httpClient.post(
-                "https://api-m.paypal.com/v1/tracking/batch/events",
+                "https://api.paypal.com/v1/tracking/batch/events",
                 capture(analyticsJSONSlot),
                 any(),
                 any()
@@ -381,7 +381,7 @@ class AnalyticsClientUnitTest {
         val analyticsJSONSlot = slot<String>()
         every {
             httpClient.post(
-                "https://api-m.paypal.com/v1/tracking/batch/events",
+                "https://api.paypal.com/v1/tracking/batch/events",
                 capture(analyticsJSONSlot),
                 any(),
                 authorization,
