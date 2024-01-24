@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.braintreepayments.api.LocalPaymentPendingRequest;
 import com.braintreepayments.api.PayPalPendingRequest;
+import com.braintreepayments.api.SEPADirectDebitPendingRequest;
 
 import org.json.JSONException;
 
@@ -14,6 +15,7 @@ public class PendingRequestStore {
 
     static final String PAYPAL_PENDING_REQUEST_KEY = "PAYPAL_PENDING_REQUEST";
     static final String LOCAL_PAYMENT_PENDING_REQUEST_KEY = "LOCAL_PAYMENT_PENDING_REQUEST";
+    static final String SEPA_DIRECT_DEBIT_PENDING_REQUEST_KEY = "SEPA_DIRECT_DEBIT_PENDING_REQUEST";
 
     private static final PendingRequestStore INSTANCE = new PendingRequestStore();
 
@@ -61,6 +63,27 @@ public class PendingRequestStore {
 
     public  void clearLocalPaymentPendingRequest(Context context) {
         remove(LOCAL_PAYMENT_PENDING_REQUEST_KEY, context);
+    }
+
+    public void putSEPADirectDebitPendingRequest(Context context,
+                                              SEPADirectDebitPendingRequest.Started pendingRequest) {
+        put(SEPA_DIRECT_DEBIT_PENDING_REQUEST_KEY, pendingRequest.toJsonString(), context);
+    }
+
+    public SEPADirectDebitPendingRequest.Started getSEPADirectDebitPendingRequest(Context context) {
+        String requestString = get(SEPA_DIRECT_DEBIT_PENDING_REQUEST_KEY, context);
+        if (requestString != null) {
+            try {
+                return new SEPADirectDebitPendingRequest.Started(requestString);
+            } catch (JSONException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    public  void clearSEPADirectDebitPendingRequest(Context context) {
+        remove(SEPA_DIRECT_DEBIT_PENDING_REQUEST_KEY, context);
     }
 
     static void put(String key, String value, Context context) {

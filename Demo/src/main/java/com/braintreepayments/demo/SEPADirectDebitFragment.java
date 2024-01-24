@@ -9,6 +9,7 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.LocalPaymentPendingRequest;
 import com.braintreepayments.api.PostalAddress;
 import com.braintreepayments.api.SEPADirectDebitClient;
 import com.braintreepayments.api.SEPADirectDebitLauncher;
@@ -28,7 +29,6 @@ public class SEPADirectDebitFragment extends BaseFragment {
     private SEPADirectDebitClient sepaDirectDebitClient;
     private final SEPADirectDebitLauncher sepaDirectDebitLauncher = new SEPADirectDebitLauncher();
 
-    private SEPADirectDebitPendingRequest.Started pendingRequest;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,6 +47,7 @@ public class SEPADirectDebitFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
 
+        SEPADirectDebitPendingRequest.Started pendingRequest = getPendingRequest();
         if (pendingRequest != null) {
             SEPADirectDebitPaymentAuthResult paymentAuthResult =
                     sepaDirectDebitLauncher.handleReturnToAppFromBrowser(pendingRequest,
@@ -56,6 +57,7 @@ public class SEPADirectDebitFragment extends BaseFragment {
             } else {
                 handleError(new Exception("User did not complete payment flow"));
             }
+            clearPendingRequest();
         }
     }
 
@@ -88,7 +90,7 @@ public class SEPADirectDebitFragment extends BaseFragment {
                         sepaDirectDebitLauncher.launch(requireActivity(),
                                 (SEPADirectDebitPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
                 if (pendingRequest instanceof SEPADirectDebitPendingRequest.Started) {
-                    this.pendingRequest = (SEPADirectDebitPendingRequest.Started) pendingRequest;
+                    storePendingRequest((SEPADirectDebitPendingRequest.Started) pendingRequest);
                 } else {
                     handleError(
                             ((SEPADirectDebitPendingRequest.Failure) pendingRequest).getError());
@@ -121,5 +123,16 @@ public class SEPADirectDebitFragment extends BaseFragment {
                 SEPADirectDebitFragmentDirections.actionSepaDirectDebitFragmentToDisplayNonceFragment(
                         sepaDirectDebitNonce);
         NavHostFragment.findNavController(this).navigate(action);
+    }
+
+    private void storePendingRequest(SEPADirectDebitPendingRequest.Started request) {
+        PendingRequestStore.getInstance().putSEPADirectDebitPendingRequest(requireContext(), request);
+    }
+    private SEPADirectDebitPendingRequest.Started getPendingRequest() {
+        return PendingRequestStore.getInstance().getSEPADirectDebitPendingRequest(requireContext());
+    }
+
+    private void clearPendingRequest() {
+        PendingRequestStore.getInstance().clearSEPADirectDebitPendingRequest(requireContext());
     }
 }
