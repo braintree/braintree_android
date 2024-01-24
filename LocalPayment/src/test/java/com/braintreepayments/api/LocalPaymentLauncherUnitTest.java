@@ -1,12 +1,11 @@
 package com.braintreepayments.api;
 
-import static com.braintreepayments.api.BraintreeRequestCodes.LOCAL_PAYMENT;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,7 +62,7 @@ public class LocalPaymentLauncherUnitTest {
                 localPaymentAuthRequestParams = mock(LocalPaymentAuthRequestParams.class);
         BrowserSwitchOptions options = mock(BrowserSwitchOptions.class);
         BrowserSwitchException exception = new BrowserSwitchException("error");
-        doThrow(exception).when(browserSwitchClient).start(same(activity), same(options));
+        when((browserSwitchClient).start(same(activity), same(options))).thenReturn(new BrowserSwitchPendingRequest.Failure(exception));
         when(localPaymentAuthRequestParams.getBrowserSwitchOptions()).thenReturn(options);
         LocalPaymentLauncher sut =
                 new LocalPaymentLauncher(browserSwitchClient);
@@ -76,30 +75,36 @@ public class LocalPaymentLauncherUnitTest {
 
     @Test
     public void handleReturnToAppFromBrowser_onBrowserSwitchResult_returnsResult() {
-        BrowserSwitchResult result = mock(BrowserSwitchResult.class);
-        when(browserSwitchClient.parseResult(eq(activity), eq(LOCAL_PAYMENT),
-                eq(intent))).thenReturn(
-                result);
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        BrowserSwitchPendingRequest.Started browserSwitchPendingRequest =
+                new BrowserSwitchPendingRequest.Started(browserSwitchRequest);
+        LocalPaymentPendingRequest.Started pendingRequest =
+                new LocalPaymentPendingRequest.Started(
+                        new LocalPaymentBrowserSwitchRequest(browserSwitchPendingRequest));
+        when(browserSwitchClient.parseResult(eq(browserSwitchPendingRequest),
+                eq(intent))).thenReturn(browserSwitchResult);
         LocalPaymentLauncher sut =
                 new LocalPaymentLauncher(browserSwitchClient);
 
-        sut.handleReturnToAppFromBrowser(, activity, intent);
+        LocalPaymentAuthResult paymentAuthResult = sut.handleReturnToAppFromBrowser(pendingRequest, intent);
 
-        assertSame(result, captor.getValue().getBrowserSwitchResult());
-        assertNull(captor.getValue().getError());
+        assertNotNull(paymentAuthResult);
+        assertSame(paymentAuthResult.getBrowserSwitchResult(), browserSwitchResult);
     }
 
     @Test
-    public void handleReturnToAppFromBrowser_clearsActiveBrowserSwitchRequests() {
-        BrowserSwitchResult result = mock(BrowserSwitchResult.class);
-        when(browserSwitchClient.parseResult(eq(activity), eq(LOCAL_PAYMENT),
-                eq(intent))).thenReturn(
-                result);
+    public void handleReturnToAppFromBrowser_whenNoBrowserSwitchResult_returnsNull() {
+        BrowserSwitchPendingRequest.Started browserSwitchPendingRequest =
+                new BrowserSwitchPendingRequest.Started(browserSwitchRequest);
+        LocalPaymentPendingRequest.Started pendingRequest =
+                new LocalPaymentPendingRequest.Started(
+                        new LocalPaymentBrowserSwitchRequest(browserSwitchPendingRequest));
+        when(browserSwitchClient.parseResult(eq(browserSwitchPendingRequest),
+                eq(intent))).thenReturn(null);
         LocalPaymentLauncher sut =
                 new LocalPaymentLauncher(browserSwitchClient);
 
-        sut.handleReturnToAppFromBrowser(, activity, intent);
+        LocalPaymentAuthResult paymentAuthResult = sut.handleReturnToAppFromBrowser(pendingRequest, intent);
 
-        verify(browserSwitchClient).clearActiveRequests(same(activity));
-    }
+        assertNull(paymentAuthResult);    }
 }
