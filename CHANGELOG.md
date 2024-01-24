@@ -84,7 +84,7 @@
     * Rename `PayPalClient#onBrowserSwitchResult` to `PayPalCient#tokenize` and change parameters
   * LocalPayment
     * Remove `LocalPaymentListener`
-    * Add `LocalPaymentLauncher`, `LocalPaymentLauncherCallback`, `LocalPaymentTokenizeCallback`,
+    * Add `LocalPaymentLauncher`, `LocalPaymentPendingRequest`, `LocalPaymentTokenizeCallback`,
       `LocalPaymentAuthRequest`, `LocalPaymentAuthRequestCallback` and `LocalPaymentAuthResult`
     * Change `LocalPaymentResult` type 
     * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,

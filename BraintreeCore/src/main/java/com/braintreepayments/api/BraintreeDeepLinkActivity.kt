@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
  */
 // NEXT_MAJOR_VERSION : remove this class
 class BraintreeDeepLinkActivity : AppCompatActivity() {
-    private val browserSwitchClient = BrowserSwitchClient()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         finish()
