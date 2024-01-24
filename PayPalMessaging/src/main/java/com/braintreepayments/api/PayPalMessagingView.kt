@@ -68,7 +68,7 @@ class PayPalMessagingView(private val braintreeClient: BraintreeClient) {
             amount = request.amount,
             buyerCountry = request.buyerCountry,
             offerType = request.offerType?.offerTypeRawValue,
-            placement = request.placement?.placementRawValue,
+            placement = request.placement?.rawValue,
             environment = environment
         )
 

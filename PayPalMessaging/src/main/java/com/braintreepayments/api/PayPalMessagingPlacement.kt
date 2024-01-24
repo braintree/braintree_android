@@ -31,7 +31,7 @@ enum class PayPalMessagingPlacement {
      */
     PAYMENT;
 
-    internal val placementRawValue: String
+    internal val rawValue: String
         get() = when (this) {
             HOME -> "HOME"
             CATEGORY -> "CATEGORY"
