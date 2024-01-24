@@ -79,6 +79,5 @@ public class LocalPaymentLauncher {
             return new LocalPaymentAuthResult(result);
         }
         return null;
-
     }
 }
