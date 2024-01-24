@@ -36,6 +36,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 
+import junit.framework.Assert;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -1518,5 +1520,38 @@ public class VenmoClientUnitTest {
 
         verify(listener).onVenmoFailure(error);
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.failed"));
+    }
+
+    @Test
+    public void onBrowserSwitchResult_whenBrowserSwitchStatusCanceled_returnsExceptionToCallback() throws BraintreeException {
+        BrowserSwitchResult browserSwitchResult =
+                new BrowserSwitchResult(BrowserSwitchStatus.CANCELED, null, null);
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+
+        VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.setListener(listener);
+        sut.onBrowserSwitchResult(activity, browserSwitchResult);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(listener).onVenmoFailure(captor.capture());
+        verify(listener, never()).onVenmoSuccess(any(VenmoAccountNonce.class));
+
+        Exception exception = captor.getValue();
+        Assert.assertTrue(exception instanceof UserCanceledException);
+        assertEquals("User canceled Venmo.", exception.getMessage());
+        org.junit.Assert.assertFalse(((UserCanceledException) exception).isExplicitCancelation());
+    }
+
+    @Test
+    public void onBrowserSwitchResult_whenListenerNull_setsPendingBrowserSwitchResult_andDoesNotDeliver() throws BraintreeException {
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+
+        VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.onBrowserSwitchResult(activity, browserSwitchResult);
+
+        verify(listener, never()).onVenmoFailure(any(Exception.class));
+        verify(listener, never()).onVenmoSuccess(any(VenmoAccountNonce.class));
     }
 }
