@@ -25,7 +25,7 @@ import com.braintreepayments.api.UserCanceledException;
 public class LocalPaymentFragment extends BaseFragment {
 
     private LocalPaymentClient localPaymentClient;
-    private LocalPaymentLauncher localPaymentLauncher;
+    private final LocalPaymentLauncher localPaymentLauncher = new LocalPaymentLauncher();
 
 
     @Nullable
@@ -37,7 +37,6 @@ public class LocalPaymentFragment extends BaseFragment {
         mIdealButton.setOnClickListener(this::launchIdeal);
 
         localPaymentClient = new LocalPaymentClient(requireContext(), super.getAuthStringArg());
-        localPaymentLauncher = new LocalPaymentLauncher();
         return view;
     }
 
