@@ -103,6 +103,7 @@ ext {
     compileSdkVersion = 34
     minSdkVersion = 21
     minSdkVersionPayPalMessaging = 23
+    versionCode = 186
     targetSdkVersion = 34
     versionName = version
 }
