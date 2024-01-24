@@ -28,14 +28,14 @@ class PayPalMessagingView(private val braintreeClient: BraintreeClient) {
     fun start(context: Context, request: PayPalMessagingRequest = PayPalMessagingRequest()) {
         braintreeClient.getConfiguration { configuration, configError ->
             if (configError != null) {
-                payPalMessagingListener?.onFailure(configError)
+                payPalMessagingListener?.onPayPalMessagingFailure(configError)
             } else if (configuration != null) {
                 val clientId = configuration.payPalClientId
                 if (clientId == null) {
                     val exception = BraintreeException(
                         "Could not find PayPal client ID in Braintree configuration."
                     )
-                    payPalMessagingListener?.onFailure(exception)
+                    payPalMessagingListener?.onPayPalMessagingFailure(exception)
                 } else {
                     val payPalMessageView = constructPayPalMessageView(context, clientId, configuration, request)
                     payPalMessageView.layoutParams = ViewGroup.LayoutParams(
@@ -47,7 +47,7 @@ class PayPalMessagingView(private val braintreeClient: BraintreeClient) {
                 val exception = BraintreeException(
                     "Fetching Braintree configuration resulted in no error or configuration returned."
                 )
-                payPalMessagingListener?.onFailure(exception)
+                payPalMessagingListener?.onPayPalMessagingFailure(exception)
             }
         }
     }
@@ -80,22 +80,22 @@ class PayPalMessagingView(private val braintreeClient: BraintreeClient) {
 
         val viewStateCallbacks = PayPalMessageViewStateCallbacks(
             onLoading = {
-                payPalMessagingListener?.onLoading()
+                payPalMessagingListener?.onPayPalMessagingLoading()
             },
             onError = { error ->
-                payPalMessagingListener?.onFailure(error)
+                payPalMessagingListener?.onPayPalMessagingFailure(error)
             },
             onSuccess = {
-                payPalMessagingListener?.onSuccess()
+                payPalMessagingListener?.onPayPalMessagingSuccess()
             }
         )
 
         val eventsCallbacks = PayPalMessageEventsCallbacks(
             onClick = {
-                payPalMessagingListener?.onClick()
+                payPalMessagingListener?.onPayPalMessagingClick()
             },
             onApply = {
-                payPalMessagingListener?.onApply()
+                payPalMessagingListener?.onPayPalMessagingApply()
             }
         )
 
