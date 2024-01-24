@@ -100,7 +100,7 @@ public class LocalPaymentClient {
                                             "local-payment.webswitch.initiate.failed");
                                 }
                             });
-                } else {
+                } else if (error != null) {
                     callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.Failure(error));
                 }
             });
@@ -139,8 +139,8 @@ public class LocalPaymentClient {
      * payment method and receive a {@link LocalPaymentNonce} on success.
      *
      * @param context                         Android Context
-     * @param localPaymentAuthResult a {@link LocalPaymentAuthResult} received
-     *                                        in the callback of {@link LocalPaymentLauncher}
+     * @param localPaymentAuthResult a {@link LocalPaymentAuthResult} received from
+     *                              {@link LocalPaymentLauncher#handleReturnToAppFromBrowser(LocalPaymentPendingRequest.Started, Intent)}
      * @param callback                        {@link LocalPaymentInternalTokenizeCallback}
      */
     public void tokenize(@NonNull final Context context,
