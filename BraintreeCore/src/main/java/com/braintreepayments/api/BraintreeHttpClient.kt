@@ -83,6 +83,7 @@ internal class BraintreeHttpClient(
      * @param authorization
      * @param callback [HttpResponseCallback]
      */
+    @Suppress("CyclomaticComplexMethod")
     fun post(
         path: String,
         data: String,
