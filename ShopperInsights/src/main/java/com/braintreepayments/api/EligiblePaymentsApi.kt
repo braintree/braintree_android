@@ -15,7 +15,9 @@ internal class EligiblePaymentsApi(
             jsonBody,
             object : HttpResponseCallback {
                 override fun onResult(responseBody: String?, httpError: Exception?) {
-                    if (responseBody != null) {
+                    if (httpError != null) {
+                        callback.onResult(null, httpError)
+                    } else if (responseBody != null) {
                         try {
                             callback.onResult(
                                 EligiblePaymentsApiResult.fromJson(responseBody),
