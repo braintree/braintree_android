@@ -339,7 +339,7 @@ class MyActivity : FragmentActivity() {
     
     fun handleReturnToAppFromBrowser(intent: Intent) {
        // fetch stored PayPalPendingRequest.Success 
-+       fetchPendingRequest()?.let {
++       fetchPendingRequestFromPersistantStore()?.let {
 +          payPalLauncher.handleReturnToAppFromBrowser(it, intent)?.let { paymentAuthResult ->
 +             completePayPalFlow(paymentAuthResult)
 +             // clear stored PayPalPendingRequest.Success
@@ -430,7 +430,7 @@ class MyActivity : FragmentActivity() {
     
     fun handleReturnToAppFromBrowser(intent: Intent) {
        // fetch stored LocalPaymentPendingRequest.Success 
-+       fetchPendingRequest()?.let {
++       fetchPendingRequestFromPersistantStore()?.let {
 +          locaPaymentLauncher.handleReturnToAppFromBrowser(it, intent)?.let { paymentAuthResult ->
 +             completeLocalPaymentFlow(paymentAuthResult)
 +             // clear stored LocalPaymentPendingRequest.Success
@@ -516,7 +516,7 @@ class MyActivity : FragmentActivity() {
     
     fun handleReturnToAppFromBrowser(intent: Intent) {
        // fetch stored SEPADirectDebitPendingRequest.Success 
-+       fetchPendingRequest()?.let {
++       fetchPendingRequestFromPersistantStore()?.let {
 +          sepaDirectDebitLauncher.handleReturnToAppFromBrowser(it, intent)?.let { paymentAuthResult ->
 +             completeSEPAFlow(paymentAuthResult)
 +             // clear stored SEPADirectDebitPendingRequest.Success
