@@ -61,7 +61,7 @@ public class PendingRequestStore {
         return null;
     }
 
-    public  void clearLocalPaymentPendingRequest(Context context) {
+    public void clearLocalPaymentPendingRequest(Context context) {
         remove(LOCAL_PAYMENT_PENDING_REQUEST_KEY, context);
     }
 
