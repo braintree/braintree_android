@@ -49,7 +49,7 @@ public class PayPalLauncherUnitTest {
         PayPalPendingRequest pendingRequest = sut.launch(activity, new PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams));
 
         assertTrue(pendingRequest instanceof PayPalPendingRequest.Started);
-        assertEquals(browserSwitchRequest, ((PayPalPendingRequest.Started) pendingRequest).getRequest().getBrowserSwitchPendingRequest().getBrowserSwitchRequest());
+        assertEquals(browserSwitchRequest, ((PayPalPendingRequest.Started) pendingRequest).getRequest$PayPal_debug().getBrowserSwitchRequest());
         verify(browserSwitchClient).start(same(activity), same(options));
     }
 
@@ -93,11 +93,10 @@ public class PayPalLauncherUnitTest {
         BrowserSwitchResult result = mock(BrowserSwitchResult.class);
         BrowserSwitchRequest browserSwitchRequest = mock(BrowserSwitchRequest.class);
         BrowserSwitchPendingRequest.Started browserSwitchPendingRequest = new BrowserSwitchPendingRequest.Started(browserSwitchRequest);
-        PayPalBrowserSwitchRequest payPalBrowserSwitchRequest = new PayPalBrowserSwitchRequest(browserSwitchPendingRequest);
         when(browserSwitchClient.parseResult(browserSwitchPendingRequest, intent)).thenReturn(result);
         PayPalLauncher sut = new PayPalLauncher(browserSwitchClient);
 
-        PayPalPaymentAuthResult paymentAuthResult = sut.handleReturnToAppFromBrowser(new PayPalPendingRequest.Started(payPalBrowserSwitchRequest), intent);
+        PayPalPaymentAuthResult paymentAuthResult = sut.handleReturnToAppFromBrowser(new PayPalPendingRequest.Started(browserSwitchRequest), intent);
 
         assertNotNull(paymentAuthResult);
         assertSame(result, paymentAuthResult.getBrowserSwitchResult());
@@ -107,11 +106,10 @@ public class PayPalLauncherUnitTest {
     public void handleReturnToAppFromBrowser_whenResultDoesNotExist_returnsNull() {
         BrowserSwitchRequest browserSwitchRequest = mock(BrowserSwitchRequest.class);
         BrowserSwitchPendingRequest.Started browserSwitchPendingRequest = new BrowserSwitchPendingRequest.Started(browserSwitchRequest);
-        PayPalBrowserSwitchRequest payPalBrowserSwitchRequest = new PayPalBrowserSwitchRequest(browserSwitchPendingRequest);
         when(browserSwitchClient.parseResult(browserSwitchPendingRequest, intent)).thenReturn(null);
         PayPalLauncher sut = new PayPalLauncher(browserSwitchClient);
 
-        PayPalPaymentAuthResult paymentAuthResult = sut.handleReturnToAppFromBrowser(new PayPalPendingRequest.Started(payPalBrowserSwitchRequest), intent);
+        PayPalPaymentAuthResult paymentAuthResult = sut.handleReturnToAppFromBrowser(new PayPalPendingRequest.Started(browserSwitchRequest), intent);
 
         assertNull(paymentAuthResult);
     }

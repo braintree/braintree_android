@@ -14,7 +14,7 @@ sealed class PayPalPendingRequest {
      * A pending request was successfully started. This [PayPalPendingRequest.Started] should be
      * stored and passed to [PayPalLauncher.handleReturnToAppFromBrowser]
      */
-    class Started(val request: PayPalBrowserSwitchRequest) : PayPalPendingRequest() {
+    class Started internal constructor(val request: BrowserSwitchPendingRequest.Started) : PayPalPendingRequest() {
 
         /**
          * Convenience constructor to create a [PayPalPendingRequest.Started] from your stored
@@ -22,15 +22,14 @@ sealed class PayPalPendingRequest {
          * @throws [JSONException] if the [jsonString] is invalid
          */
         @Throws(JSONException::class)
-        constructor(jsonString: String) : this(PayPalBrowserSwitchRequest(
-            BrowserSwitchPendingRequest.Started(jsonString)))
+        constructor(jsonString: String) : this(BrowserSwitchPendingRequest.Started(jsonString))
 
         /**
          * Convenience method to return [PayPalPendingRequest.Started] in [String] format to be
          * persisted in storage
          */
         fun toJsonString(): String {
-            return request.browserSwitchPendingRequest.toJsonString()
+            return request.toJsonString()
         }
     }
 
