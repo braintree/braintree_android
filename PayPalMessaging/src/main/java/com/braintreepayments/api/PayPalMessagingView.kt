@@ -9,6 +9,7 @@ import com.paypal.messages.config.message.PayPalMessageConfig
 import com.paypal.messages.config.message.PayPalMessageEventsCallbacks
 import com.paypal.messages.config.message.PayPalMessageStyle
 import com.paypal.messages.config.message.PayPalMessageViewStateCallbacks
+import com.paypal.messages.utils.PayPalErrors
 
 /**
  *  Use [PayPalMessagingView] to display PayPal messages to promote offers such as Pay Later
@@ -26,16 +27,18 @@ class PayPalMessagingView(private val braintreeClient: BraintreeClient) {
      * Note: **This module is in beta. It's public API may change or be removed in future releases.**
      */
     fun start(context: Context, request: PayPalMessagingRequest = PayPalMessagingRequest()) {
+        braintreeClient.sendAnalyticsEvent(PayPalMessagingAnalytics.STARTED.value)
+
         braintreeClient.getConfiguration { configuration, configError ->
             if (configError != null) {
-                payPalMessagingListener?.onPayPalMessagingFailure(configError)
+                notifyFailure(error = configError)
             } else if (configuration != null) {
                 val clientId = configuration.payPalClientId
                 if (clientId == null) {
-                    val exception = BraintreeException(
+                    val clientIdError = BraintreeException(
                         "Could not find PayPal client ID in Braintree configuration."
                     )
-                    payPalMessagingListener?.onPayPalMessagingFailure(exception)
+                    notifyFailure(error = clientIdError)
                 } else {
                     val payPalMessageView = constructPayPalMessageView(context, clientId, configuration, request)
                     payPalMessageView.layoutParams = ViewGroup.LayoutParams(
@@ -44,10 +47,10 @@ class PayPalMessagingView(private val braintreeClient: BraintreeClient) {
                     )
                 }
             } else {
-                val exception = BraintreeException(
+                val unknownError = BraintreeException(
                     "Fetching Braintree configuration resulted in no error or configuration returned."
                 )
-                payPalMessagingListener?.onPayPalMessagingFailure(exception)
+                notifyFailure(error = unknownError)
             }
         }
     }
@@ -83,9 +86,10 @@ class PayPalMessagingView(private val braintreeClient: BraintreeClient) {
                 payPalMessagingListener?.onPayPalMessagingLoading()
             },
             onError = { error ->
-                payPalMessagingListener?.onPayPalMessagingFailure(error)
+                notifyFailure(error)
             },
             onSuccess = {
+                braintreeClient.sendAnalyticsEvent(PayPalMessagingAnalytics.SUCCEEDED.value)
                 payPalMessagingListener?.onPayPalMessagingSuccess()
             }
         )
@@ -107,5 +111,10 @@ class PayPalMessagingView(private val braintreeClient: BraintreeClient) {
         )
 
         return PayPalMessageView(context = context, config = messageConfig)
+    }
+
+    private fun notifyFailure(error: Exception) {
+        braintreeClient.sendAnalyticsEvent(PayPalMessagingAnalytics.FAILED.value)
+        payPalMessagingListener?.onPayPalMessagingFailure(error)
     }
 }
