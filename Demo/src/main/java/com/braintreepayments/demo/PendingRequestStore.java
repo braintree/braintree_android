@@ -82,7 +82,7 @@ public class PendingRequestStore {
         return null;
     }
 
-    public  void clearSEPADirectDebitPendingRequest(Context context) {
+    public void clearSEPADirectDebitPendingRequest(Context context) {
         remove(SEPA_DIRECT_DEBIT_PENDING_REQUEST_KEY, context);
     }
 
