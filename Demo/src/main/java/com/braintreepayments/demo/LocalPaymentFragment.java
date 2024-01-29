@@ -10,11 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.BraintreeException;
 import com.braintreepayments.api.LocalPaymentAuthRequest;
 import com.braintreepayments.api.LocalPaymentAuthResult;
 import com.braintreepayments.api.LocalPaymentClient;
 import com.braintreepayments.api.LocalPaymentLauncher;
 import com.braintreepayments.api.LocalPaymentNonce;
+import com.braintreepayments.api.LocalPaymentPendingRequest;
 import com.braintreepayments.api.LocalPaymentRequest;
 import com.braintreepayments.api.LocalPaymentResult;
 import com.braintreepayments.api.PostalAddress;
@@ -23,7 +25,7 @@ import com.braintreepayments.api.UserCanceledException;
 public class LocalPaymentFragment extends BaseFragment {
 
     private LocalPaymentClient localPaymentClient;
-    private LocalPaymentLauncher localPaymentLauncher;
+    private final LocalPaymentLauncher localPaymentLauncher = new LocalPaymentLauncher();
 
 
     @Nullable
@@ -35,18 +37,25 @@ public class LocalPaymentFragment extends BaseFragment {
         mIdealButton.setOnClickListener(this::launchIdeal);
 
         localPaymentClient = new LocalPaymentClient(requireContext(), super.getAuthStringArg());
-        localPaymentLauncher = new LocalPaymentLauncher(
-                localPaymentResult -> localPaymentClient.tokenize(requireContext(),
-                        localPaymentResult,
-                        this::handleLocalPaymentResult));
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        localPaymentLauncher.handleReturnToAppFromBrowser(requireContext(),
-                requireActivity().getIntent());
+        LocalPaymentPendingRequest.Started pendingRequest = getPendingRequest();
+        if (getPendingRequest() != null) {
+            LocalPaymentAuthResult paymentAuthResult =
+                    localPaymentLauncher.handleReturnToAppFromBrowser(pendingRequest,
+                            requireActivity().getIntent());
+            if (paymentAuthResult != null) {
+                localPaymentClient.tokenize(requireContext(), paymentAuthResult,
+                        this::handleLocalPaymentResult);
+            } else {
+                handleError(new BraintreeException("User did not complete local payment flow"));
+            }
+            clearPendingRequest();
+        }
     }
 
     public void launchIdeal(View v) {
@@ -75,8 +84,13 @@ public class LocalPaymentFragment extends BaseFragment {
 
         localPaymentClient.createPaymentAuthRequest(request, (paymentAuthRequest) -> {
             if (paymentAuthRequest instanceof LocalPaymentAuthRequest.ReadyToLaunch) {
-                localPaymentLauncher.launch(requireActivity(),
+                LocalPaymentPendingRequest pendingRequest = localPaymentLauncher.launch(requireActivity(),
                         (LocalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
+                if (pendingRequest instanceof LocalPaymentPendingRequest.Started) {
+                    storePendingRequest((LocalPaymentPendingRequest.Started) pendingRequest);
+                } else if (pendingRequest instanceof LocalPaymentPendingRequest.Failure) {
+                    handleError(((LocalPaymentPendingRequest.Failure) pendingRequest).getError());
+                }
             } else if (paymentAuthRequest instanceof LocalPaymentAuthRequest.Failure) {
                 handleError(((LocalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
             }
@@ -100,5 +114,16 @@ public class LocalPaymentFragment extends BaseFragment {
                 LocalPaymentFragmentDirections.actionLocalPaymentFragmentToDisplayNonceFragment(
                         localPaymentNonce);
         NavHostFragment.findNavController(this).navigate(action);
+    }
+
+    private void storePendingRequest(LocalPaymentPendingRequest.Started request) {
+        PendingRequestStore.getInstance().putLocalPaymentPendingRequest(requireContext(), request);
+    }
+    private LocalPaymentPendingRequest.Started getPendingRequest() {
+        return PendingRequestStore.getInstance().getLocalPaymentPendingRequest(requireContext());
+    }
+
+    private void clearPendingRequest() {
+        PendingRequestStore.getInstance().clearLocalPaymentPendingRequest(requireContext());
     }
 }

@@ -339,7 +339,7 @@ class MyActivity : FragmentActivity() {
     
     fun handleReturnToAppFromBrowser(intent: Intent) {
        // fetch stored PayPalPendingRequest.Success 
-+       fetchPendingRequest()?.let {
++       fetchPendingRequestFromPersistantStore()?.let {
 +          payPalLauncher.handleReturnToAppFromBrowser(it, intent)?.let { paymentAuthResult ->
 +             completePayPalFlow(paymentAuthResult)
 +             // clear stored PayPalPendingRequest.Success
@@ -409,35 +409,36 @@ do not need to be instantiated in `OnCreate`.
 ```diff
 class MyActivity : FragmentActivity() {
 
-+   private lateinit var localPaymentLauncher: localPaymentLauncher
++   private val localPaymentLauncher = localPaymentLauncher()
 -   private lateinit var braintreeClient: BraintreeClient
     private lateinit var localPaymentClient: LocalPaymentClient
 
     @override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
-+       localPaymentLauncher = LocalPaymentLauncher() { paymentAuthResult ->
-+           localPaymentClient.tokenize(paymentAuthResult) { result -> 
-+                when(result) {
-+                   is LocalPaymentResult.Success -> { /* handle result.nonce */ }
-+                   is LocalPaymentResult.Failure -> { /* handle result.error */ }
-+                   is LocalPaymentResult.Cancel -> { /* handle user canceled */ }
-+               }        
-+           }
-+       }
     }
 
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
     override fun onNewIntent(intent: Intent) {
-+       localPaymentLauncher.handleReturnToAppFromBrowser(requireContext(), intent)
++       handleReturnToAppFromBrowser(intent)
     }
-
+    
     // ALL OTHER ACTIVITY LAUNCH MODES 
     override fun onResume() {
-+       localPaymentLauncher.handleReturnToAppFromBrowser(requireContext(), requireActivity().
-+           intent)
++       handleReturnToAppFromBrowser(requireActivity().intent)
     }
-
+    
+    fun handleReturnToAppFromBrowser(intent: Intent) {
+       // fetch stored LocalPaymentPendingRequest.Success 
++       fetchPendingRequestFromPersistantStore()?.let {
++          locaPaymentLauncher.handleReturnToAppFromBrowser(it, intent)?.let { paymentAuthResult ->
++             completeLocalPaymentFlow(paymentAuthResult)
++             // clear stored LocalPaymentPendingRequest.Success
++          } ?: run {
++             // user returned to app without completing local payment flow, handle accordingly
++          }
++       }   
+    }
 
     fun initializeClients() {
 -       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
@@ -455,6 +456,16 @@ class MyActivity : FragmentActivity() {
 +               }
 +               is LocalPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error */ }
 +           }
++       }
+    }
+    
+    fun completeLocalPaymentFlow(paymentAuthResult: PayPalPaymentAuthResult) {
++       localPaymentClient.tokenize(paymentAuthResult) { result ->
++            when(result) {
++                is LocalPaymentResult.Success -> { /* handle result.nonce */ }
++                is LocalPaymentResult.Failure -> { /* handle result.error */ }
++                is LocalPaymentResult.Cancel -> { /* handle user canceled */ }
++            }        
 +       }
     }
 
@@ -505,7 +516,7 @@ class MyActivity : FragmentActivity() {
     
     fun handleReturnToAppFromBrowser(intent: Intent) {
        // fetch stored SEPADirectDebitPendingRequest.Success 
-+       fetchPendingRequest()?.let {
++       fetchPendingRequestFromPersistantStore()?.let {
 +          sepaDirectDebitLauncher.handleReturnToAppFromBrowser(it, intent)?.let { paymentAuthResult ->
 +             completeSEPAFlow(paymentAuthResult)
 +             // clear stored SEPADirectDebitPendingRequest.Success
