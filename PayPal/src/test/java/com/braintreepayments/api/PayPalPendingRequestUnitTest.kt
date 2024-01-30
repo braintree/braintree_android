@@ -22,7 +22,6 @@ class PayPalPendingRequestUnitTest {
     private val browserSwitchPendingRequest =
         BrowserSwitchPendingRequest.Started(browserSwitchRequest)
 
-
     @Test
     fun `started constructor with string parameter creates BrowserSwitchRequest`() {
         val pendingRequest = PayPalPendingRequest.Started(browserSwitchPendingRequest)

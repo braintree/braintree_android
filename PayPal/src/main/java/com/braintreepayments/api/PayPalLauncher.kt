@@ -48,11 +48,9 @@ class PayPalLauncher @VisibleForTesting internal constructor(private val browser
     /**
      * Captures and delivers the result of a the browser-based PayPal authentication flow.
      *
-     *
      * For most integrations, this method should be invoked in the onResume method of the Activity
      * used to invoke
      * [PayPalLauncher.launch].
-     *
      *
      * If the Activity used to launch the PayPal flow has is configured with
      * android:launchMode="singleTop", this method should be invoked in the onNewIntent method of
@@ -70,12 +68,10 @@ class PayPalLauncher @VisibleForTesting internal constructor(private val browser
     fun handleReturnToAppFromBrowser(
         pendingRequest: PayPalPendingRequest.Started, intent: Intent
     ): PayPalPaymentAuthResult? {
-        val result = browserSwitchClient.parseResult(pendingRequest.request, intent)
-        var paymentAuthResult: PayPalPaymentAuthResult? = null
-        if (result != null) {
-            paymentAuthResult = PayPalPaymentAuthResult(result)
+        browserSwitchClient.parseResult(pendingRequest.request, intent)?.let {
+           return PayPalPaymentAuthResult(it)
         }
-        return paymentAuthResult
+        return null
     }
 
     @Throws(BrowserSwitchException::class)
@@ -89,9 +85,9 @@ class PayPalLauncher @VisibleForTesting internal constructor(private val browser
     companion object {
         private fun createBrowserSwitchError(exception: BrowserSwitchException): Exception {
             return BraintreeException(
-                "AndroidManifest.xml is incorrectly configured or another app " +
-                        "defines the same browser switch url as this app. See " +
-                        "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
+                "AndroidManifest.xml is incorrectly configured or another app defines the same " +
+                        "browser switch url as this app. See https://developer.paypal.com/" +
+                        "braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
                         "for the correct configuration: " + exception.message
             )
         }
