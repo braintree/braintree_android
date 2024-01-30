@@ -2,12 +2,11 @@ package com.braintreepayments.api
 
 import android.content.Intent
 import androidx.activity.ComponentActivity
-import androidx.annotation.VisibleForTesting
 
 /**
  * Responsible for launching PayPal user authentication in a web browser
  */
-class PayPalLauncher @VisibleForTesting internal constructor(private val browserSwitchClient: BrowserSwitchClient) {
+class PayPalLauncher internal constructor(private val browserSwitchClient: BrowserSwitchClient) {
     /**
      * Used to launch the PayPal flow in a web browser and deliver results to your Activity
      */
