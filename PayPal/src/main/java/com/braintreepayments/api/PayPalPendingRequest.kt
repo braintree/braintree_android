@@ -14,7 +14,7 @@ sealed class PayPalPendingRequest {
      * A pending request was successfully started. This [PayPalPendingRequest.Started] should be
      * stored and passed to [PayPalLauncher.handleReturnToAppFromBrowser]
      */
-    class Started internal constructor(val request: BrowserSwitchPendingRequest.Started) : PayPalPendingRequest() {
+    class Started(internal val request: BrowserSwitchPendingRequest.Started) : PayPalPendingRequest() {
 
         /**
          * Convenience constructor to create a [PayPalPendingRequest.Started] from your stored
