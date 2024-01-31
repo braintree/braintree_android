@@ -65,7 +65,8 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
      * flow, or returned to the app without completing the PayPal authentication flow.
      */
     fun handleReturnToAppFromBrowser(
-        pendingRequest: PayPalPendingRequest.Started, intent: Intent
+        pendingRequest: PayPalPendingRequest.Started,
+        intent: Intent
     ): PayPalPaymentAuthResult? {
         browserSwitchClient.parseResult(pendingRequest.request, intent)?.let {
            return PayPalPaymentAuthResult(it)
