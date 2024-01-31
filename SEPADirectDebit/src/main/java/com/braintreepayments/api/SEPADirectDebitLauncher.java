@@ -45,7 +45,7 @@ public class SEPADirectDebitLauncher {
         SEPADirectDebitPaymentAuthRequestParams params = paymentAuthRequest.getRequestParams();
         BrowserSwitchPendingRequest browserSwitchPendingRequest = browserSwitchClient.start(activity, params.getBrowserSwitchOptions());
         if (browserSwitchPendingRequest instanceof BrowserSwitchPendingRequest.Started) {
-            return new SEPADirectDebitPendingRequest.Started(new SEPADirectDebitBrowserSwitchRequest(((BrowserSwitchPendingRequest.Started) browserSwitchPendingRequest)));
+            return new SEPADirectDebitPendingRequest.Started(((BrowserSwitchPendingRequest.Started) browserSwitchPendingRequest));
         } else if (browserSwitchPendingRequest instanceof BrowserSwitchPendingRequest.Failure) {
             return new SEPADirectDebitPendingRequest.Failure(((BrowserSwitchPendingRequest.Failure) browserSwitchPendingRequest).getCause());
         }
@@ -72,8 +72,7 @@ public class SEPADirectDebitLauncher {
      */
     @Nullable
     public SEPADirectDebitPaymentAuthResult handleReturnToAppFromBrowser(@NonNull SEPADirectDebitPendingRequest.Started pendingRequest, @NonNull Intent intent) {
-        BrowserSwitchResult result = browserSwitchClient.parseResult(pendingRequest.getRequest()
-                .getBrowserSwitchPendingRequest(), intent);
+        BrowserSwitchResult result = browserSwitchClient.parseResult(pendingRequest.getRequest$SEPADirectDebit_debug(), intent);
         if (result != null) {
             return new SEPADirectDebitPaymentAuthResult(result);
         }
