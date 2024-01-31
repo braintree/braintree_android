@@ -52,7 +52,7 @@ public class LocalPaymentLauncherUnitTest {
         LocalPaymentPendingRequest pendingRequest = sut.launch(activity, new LocalPaymentAuthRequest.ReadyToLaunch(localPaymentAuthRequestParams));
 
         assertTrue(pendingRequest instanceof LocalPaymentPendingRequest.Started);
-        assertSame(browserSwitchPendingRequest, ((LocalPaymentPendingRequest.Started) pendingRequest).getRequest().getBrowserSwitchPendingRequest());
+        assertSame(browserSwitchPendingRequest, ((LocalPaymentPendingRequest.Started) pendingRequest).getRequest$LocalPayment_debug());
         verify(browserSwitchClient).start(same(activity), same(options));
     }
 
@@ -79,8 +79,7 @@ public class LocalPaymentLauncherUnitTest {
         BrowserSwitchPendingRequest.Started browserSwitchPendingRequest =
                 new BrowserSwitchPendingRequest.Started(browserSwitchRequest);
         LocalPaymentPendingRequest.Started pendingRequest =
-                new LocalPaymentPendingRequest.Started(
-                        new LocalPaymentBrowserSwitchRequest(browserSwitchPendingRequest));
+                new LocalPaymentPendingRequest.Started(browserSwitchPendingRequest);
         when(browserSwitchClient.parseResult(eq(browserSwitchPendingRequest),
                 eq(intent))).thenReturn(browserSwitchResult);
         LocalPaymentLauncher sut =
@@ -97,8 +96,7 @@ public class LocalPaymentLauncherUnitTest {
         BrowserSwitchPendingRequest.Started browserSwitchPendingRequest =
                 new BrowserSwitchPendingRequest.Started(browserSwitchRequest);
         LocalPaymentPendingRequest.Started pendingRequest =
-                new LocalPaymentPendingRequest.Started(
-                        new LocalPaymentBrowserSwitchRequest(browserSwitchPendingRequest));
+                new LocalPaymentPendingRequest.Started(browserSwitchPendingRequest);
         when(browserSwitchClient.parseResult(eq(browserSwitchPendingRequest),
                 eq(intent))).thenReturn(null);
         LocalPaymentLauncher sut =

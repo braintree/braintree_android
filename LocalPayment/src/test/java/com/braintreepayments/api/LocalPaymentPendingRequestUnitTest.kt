@@ -22,30 +22,28 @@ class LocalPaymentPendingRequestUnitTest {
     private val browserSwitchPendingRequest =
         BrowserSwitchPendingRequest.Started(browserSwitchRequest)
 
-    private val payPalBrowserSwitchRequest = LocalPaymentBrowserSwitchRequest(browserSwitchPendingRequest)
-
     @Test
     fun `started constructor with string parameter creates BrowserSwitchRequest`() {
-        val pendingRequest = LocalPaymentPendingRequest.Started(payPalBrowserSwitchRequest)
+        val pendingRequest = LocalPaymentPendingRequest.Started(browserSwitchPendingRequest)
         val storedRequest = pendingRequest.toJsonString()
 
         val sut = LocalPaymentPendingRequest.Started(storedRequest)
-        assertEquals(1, sut.request.getBrowserSwitchPendingRequest().browserSwitchRequest.requestCode)
+        assertEquals(1, sut.request.browserSwitchRequest.requestCode)
         assertEquals(
             "test_value",
-            sut.request.getBrowserSwitchPendingRequest().browserSwitchRequest.metadata.getString("test_key")
+            sut.request.browserSwitchRequest.metadata.getString("test_key")
         )
         assertEquals(
             Uri.parse("http://"),
-            sut.request.getBrowserSwitchPendingRequest().browserSwitchRequest.url
+            sut.request.browserSwitchRequest.url
         )
         assertEquals(
             false,
-            sut.request.getBrowserSwitchPendingRequest().browserSwitchRequest.shouldNotifyCancellation
+            sut.request.browserSwitchRequest.shouldNotifyCancellation
         )
         assertEquals(
             "return-url-scheme",
-            sut.request.getBrowserSwitchPendingRequest().browserSwitchRequest.returnUrlScheme
+            sut.request.browserSwitchRequest.returnUrlScheme
         )
     }
 
@@ -56,7 +54,7 @@ class LocalPaymentPendingRequestUnitTest {
 
     @Test
     fun `toJsonString returns BrowserSwitchRequest in JSON string format`() {
-        val sut = LocalPaymentPendingRequest.Started(payPalBrowserSwitchRequest)
+        val sut = LocalPaymentPendingRequest.Started(browserSwitchPendingRequest)
         val jsonString = sut.toJsonString()
 
         assertEquals(browserSwitchPendingRequest.toJsonString(), jsonString)
