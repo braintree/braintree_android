@@ -24,6 +24,7 @@ class LocalPaymentLauncherUnitTest {
     private val options: BrowserSwitchOptions = mockk(relaxed = true)
     private val localPaymentAuthRequestParams: LocalPaymentAuthRequestParams = mockk(relaxed = true)
     private lateinit var sut: LocalPaymentLauncher
+
     @Before
     fun beforeEach() {
         every { localPaymentAuthRequestParams.browserSwitchOptions } returns options
@@ -31,7 +32,7 @@ class LocalPaymentLauncherUnitTest {
     }
 
     @Test
-    fun launch_startsBrowserSwitch_returnsPendingRequest() {
+    fun `launch starts browser switch and returns pending request`() {
         val browserSwitchPendingRequest: BrowserSwitchPendingRequest =
             BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         every {
@@ -49,7 +50,7 @@ class LocalPaymentLauncherUnitTest {
     }
 
     @Test
-    fun launch_onError_returnsFailure() {
+    fun `launch on error returns failure`() {
         val exception = BrowserSwitchException("error")
         every {
             browserSwitchClient.start(eq(activity), eq(options))
@@ -65,7 +66,7 @@ class LocalPaymentLauncherUnitTest {
     }
 
     @Test
-    fun handleReturnToAppFromBrowser_onBrowserSwitchResult_returnsResult() {
+    fun `handleReturnToAppFromBrowser on BrowserSwitchResult returns result`() {
         val browserSwitchResult = Mockito.mock(
             BrowserSwitchResult::class.java
         )
@@ -83,7 +84,7 @@ class LocalPaymentLauncherUnitTest {
     }
 
     @Test
-    fun handleReturnToAppFromBrowser_whenNoBrowserSwitchResult_returnsNull() {
+    fun `handleReturnToAppFromBrowser when no BrowserSwitchResult returns null`() {
         val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         val pendingRequest: LocalPaymentPendingRequest.Started =
             LocalPaymentPendingRequest.Started(browserSwitchPendingRequest)
