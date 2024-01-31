@@ -40,7 +40,7 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun launch_startsBrowserSwitch_returnsPendingRequest() {
+    fun `launch starts browser switch and returns pending request`() {
         val startedPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
 
@@ -55,7 +55,7 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun launch_onError_returnsPendingRequestFailure() {
+    fun `launch on error returns pending request failure`() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         val exception = BrowserSwitchException("error")
         every { browserSwitchClient.start(eq(activity), eq(options)) } returns
@@ -70,7 +70,7 @@ class PayPalLauncherUnitTest {
 
     @Test
     @Throws(BrowserSwitchException::class)
-    fun launch_whenDeviceCantPerformBrowserSwitch_returnsPendingRequestFailure() {
+    fun `launch when device cant perform browser switch returns pending request failure`() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         val exception = BrowserSwitchException("browser switch error")
         every { browserSwitchClient.assertCanPerformBrowserSwitch(
@@ -93,7 +93,7 @@ class PayPalLauncherUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun handleReturnToAppFromBrowser_whenResultExist_returnsResult() {
+    fun `handleReturnToAppFromBrowser when result exists returns result`() {
         val result: BrowserSwitchResult = mockk(relaxed = true)
         val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         every { browserSwitchClient.parseResult(browserSwitchPendingRequest, intent) } returns result
@@ -108,7 +108,7 @@ class PayPalLauncherUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun handleReturnToAppFromBrowser_whenResultDoesNotExist_returnsNull() {
+    fun `handleReturnToAppFromBrowser when result does not exist returns null`() {
         val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         every { browserSwitchClient.parseResult(browserSwitchPendingRequest, intent) } returns null
 
