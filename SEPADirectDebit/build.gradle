@@ -48,6 +48,7 @@ dependencies {
     testImplementation deps.robolectric
     testImplementation deps.junitTest
     testImplementation deps.mockitoCore
+    testImplementation deps.mockk
     testImplementation project(':TestUtils')
 
     androidTestImplementation project(':TestUtils')
