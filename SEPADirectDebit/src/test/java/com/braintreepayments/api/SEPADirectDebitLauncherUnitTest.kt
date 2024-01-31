@@ -30,7 +30,7 @@ class SEPADirectDebitLauncherUnitTest {
     }
 
     @Test
-    fun `launch on success starts browser switch returns pending request` () {
+    fun `launch on success starts browser switch returns pending request`() {
         val browserSwitchPendingRequest: BrowserSwitchPendingRequest =
             BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         every { browserSwitchClient.start(activity, options) } returns browserSwitchPendingRequest

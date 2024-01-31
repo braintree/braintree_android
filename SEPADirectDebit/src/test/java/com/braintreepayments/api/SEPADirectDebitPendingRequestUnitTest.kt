@@ -22,7 +22,6 @@ class SEPADirectDebitPendingRequestUnitTest {
     private val browserSwitchPendingRequest =
         BrowserSwitchPendingRequest.Started(browserSwitchRequest)
 
-
     @Test
     fun startedConstructor_fromString_createsBrowserSwitchRequest() {
         val pendingRequest = SEPADirectDebitPendingRequest.Started(browserSwitchPendingRequest)
