@@ -23,7 +23,27 @@ class EligiblePaymentsApiUnitTest {
     }
 
     @Test
-    fun test_sendPOST_Error() {
+    fun `when environment is production, braintreeClient sendPOST is called with the correct url`() {
+        val expectedUrl = "https://api.paypal.com/v2/payments/find-eligible-methods"
+        every { configuration.environment } returns "production"
+
+        sut.execute(createEmptyRequest(), callback)
+
+        verify { braintreeClient.sendPOST(expectedUrl, any(), any()) }
+    }
+
+    @Test
+    fun `when environment is sandbox, braintreeClient sendPOST is called with the correct url`() {
+        val expectedUrl = "https://api.sandbox.paypal.com/v2/payments/find-eligible-methods"
+        every { configuration.environment } returns "sandbox"
+
+        sut.execute(createEmptyRequest(), callback)
+
+        verify { braintreeClient.sendPOST(expectedUrl, any(), any()) }
+    }
+
+    @Test
+    fun `when sendPost is called and an error occurs, callback onResult is invoked with the error`() {
         val error = Exception("error")
 
         mockBraintreeClientToSendPOSTWithError(error)
@@ -36,7 +56,7 @@ class EligiblePaymentsApiUnitTest {
     }
 
     @Test
-    fun test_sendPOST_Success() {
+    fun `when sendPost is called, callback onResult is invoked with a result`() {
 
         val responseBody = """
             {
@@ -107,7 +127,7 @@ class EligiblePaymentsApiUnitTest {
     }
 
     private fun createEmptyRequest(): EligiblePaymentsApiRequest {
-       return EligiblePaymentsApiRequest(
+        return EligiblePaymentsApiRequest(
             ShopperInsightsRequest(
                 "",
                 ShopperInsightsBuyerPhone("", "")

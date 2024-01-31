@@ -9,6 +9,7 @@ import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_PRESENTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_SELECTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_PRESENTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_SELECTED
+import java.lang.Exception
 
 /**
  * Use [ShopperInsightsClient] to optimize your checkout experience
@@ -36,7 +37,6 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
      * @param request The [ShopperInsightsRequest] containing information about the shopper.
      * @return A [ShopperInsightsResult] object indicating the recommended payment methods.
      */
-    @Suppress("LongMethod")
     fun getRecommendedPaymentMethods(
         context: Context,
         request: ShopperInsightsRequest,
@@ -48,7 +48,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                 ShopperInsightsResult.Failure(
                     IllegalArgumentException(
                         "One of ShopperInsightsRequest.email or " +
-                            "ShopperInsightsRequest.phone must be non-null."
+                                "ShopperInsightsRequest.phone must be non-null."
                     )
                 )
             )
@@ -87,25 +87,46 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                 paymentSources = paymentSources
             ),
             callback = { result, error ->
-                if (error == null) {
-                    callback.onResult(
-                        ShopperInsightsResult.Success(
-                            ShopperInsightsInfo(
-                                isPayPalRecommended = isPaymentRecommended(result?.eligibleMethods?.paypal),
-                                isVenmoRecommended = isPaymentRecommended(result?.eligibleMethods?.venmo)
-                            )
-                        )
-                    )
-                } else {
-                    callback.onResult(
-                        ShopperInsightsResult.Failure(
-                            error
-                        )
-                    )
-                }
+                handleFindEligiblePaymentsResult(
+                    result,
+                    error,
+                    callback
+                )
             }
         )
         braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_SUCCEEDED)
+    }
+
+    private fun handleFindEligiblePaymentsResult(
+        result: EligiblePaymentsApiResult?,
+        error: Exception?,
+        callback: ShopperInsightsCallback
+    ) {
+        when {
+            error != null -> callback.onResult(ShopperInsightsResult.Failure(error))
+            result?.eligibleMethods?.paypal == null &&
+                    result?.eligibleMethods?.venmo == null -> {
+                callback.onResult(
+                    ShopperInsightsResult.Failure(
+                        NullPointerException("Missing data in API response")
+                    )
+                )
+            }
+            else -> {
+                callback.onResult(
+                    ShopperInsightsResult.Success(
+                        ShopperInsightsInfo(
+                            isPayPalRecommended = isPaymentRecommended(
+                                result.eligibleMethods.paypal
+                            ),
+                            isVenmoRecommended = isPaymentRecommended(
+                                result.eligibleMethods.venmo
+                            )
+                        )
+                    )
+                )
+            }
+        }
     }
 
     private fun isPaymentRecommended(paymentDetail: EligiblePaymentMethodDetails?): Boolean {
