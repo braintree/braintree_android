@@ -31,10 +31,12 @@ class PayPalLauncherUnitTest {
         "return-url-scheme",
         false
     )
+    private lateinit var sut: PayPalLauncher
 
     @Before
     fun setup() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
+        sut = PayPalLauncher(browserSwitchClient)
     }
 
     @Test
@@ -42,7 +44,6 @@ class PayPalLauncherUnitTest {
         val startedPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
 
-        val sut = PayPalLauncher(browserSwitchClient)
         val pendingRequest =
             sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
 
@@ -60,7 +61,6 @@ class PayPalLauncherUnitTest {
         every { browserSwitchClient.start(eq(activity), eq(options)) } returns
                 BrowserSwitchPendingRequest.Failure(exception)
 
-        val sut = PayPalLauncher(browserSwitchClient)
         val pendingRequest =
             sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
 
@@ -77,7 +77,6 @@ class PayPalLauncherUnitTest {
             eq(activity),
             eq(options)) } throws exception
 
-        val sut = PayPalLauncher(browserSwitchClient)
         val pendingRequest =
             sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
 
@@ -99,7 +98,6 @@ class PayPalLauncherUnitTest {
         val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         every { browserSwitchClient.parseResult(browserSwitchPendingRequest, intent) } returns result
 
-        val sut = PayPalLauncher(browserSwitchClient)
         val paymentAuthResult = sut.handleReturnToAppFromBrowser(
             PayPalPendingRequest.Started(browserSwitchPendingRequest), intent
         )
@@ -114,7 +112,6 @@ class PayPalLauncherUnitTest {
         val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         every { browserSwitchClient.parseResult(browserSwitchPendingRequest, intent) } returns null
 
-        val sut = PayPalLauncher(browserSwitchClient)
         val paymentAuthResult = sut.handleReturnToAppFromBrowser(
             PayPalPendingRequest.Started(browserSwitchPendingRequest), intent
         )
