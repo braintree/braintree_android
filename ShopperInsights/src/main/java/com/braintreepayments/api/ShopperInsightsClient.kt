@@ -108,7 +108,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                     result?.eligibleMethods?.venmo == null -> {
                 callback.onResult(
                     ShopperInsightsResult.Failure(
-                        NullPointerException("Missing data in API response")
+                        BraintreeException("Required fields missing from API response body")
                     )
                 )
             }

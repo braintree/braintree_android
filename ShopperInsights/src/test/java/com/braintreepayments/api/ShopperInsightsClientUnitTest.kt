@@ -14,7 +14,6 @@ import kotlin.test.assertTrue
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
-import java.lang.NullPointerException
 
 /**
  * Unit tests for BraintreeShopperInsightsClient.
@@ -177,10 +176,10 @@ class ShopperInsightsClientUnitTest {
                 withArg { result ->
                     assertTrue { result is ShopperInsightsResult.Failure }
                     assertTrue {
-                        (result as ShopperInsightsResult.Failure).error is NullPointerException
+                        (result as ShopperInsightsResult.Failure).error is BraintreeException
                     }
                     assertEquals(
-                        "Missing data in API response",
+                        "Required fields missing from API response body",
                         (result as ShopperInsightsResult.Failure).error.message
                     )
                 }
@@ -203,10 +202,10 @@ class ShopperInsightsClientUnitTest {
                 withArg { result ->
                     assertTrue { result is ShopperInsightsResult.Failure }
                     assertTrue {
-                        (result as ShopperInsightsResult.Failure).error is NullPointerException
+                        (result as ShopperInsightsResult.Failure).error is BraintreeException
                     }
                     assertEquals(
-                        "Missing data in API response",
+                        "Required fields missing from API response body",
                         (result as ShopperInsightsResult.Failure).error.message
                     )
                 }
