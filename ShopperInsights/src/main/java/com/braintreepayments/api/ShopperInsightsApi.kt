@@ -8,7 +8,7 @@ internal class ShopperInsightsApi(
     private val eligiblePaymentsApi: EligiblePaymentsApi
 ) {
 
-    fun findEligiblePayments(request: EligiblePaymentsApiRequest): EligiblePaymentsApiResult {
-        return eligiblePaymentsApi.execute(request)
+    fun findEligiblePayments(request: EligiblePaymentsApiRequest, callback: EligiblePaymentsCallback) {
+        eligiblePaymentsApi.execute(request, callback)
     }
 }

@@ -83,6 +83,7 @@ internal class BraintreeHttpClient(
      * @param authorization
      * @param callback [HttpResponseCallback]
      */
+    @Suppress("CyclomaticComplexMethod")
     fun post(
         path: String,
         data: String,
@@ -124,6 +125,7 @@ internal class BraintreeHttpClient(
         if (authorization is TokenizationKey) {
             request.addHeader(CLIENT_KEY_HEADER, authorization.bearer)
         }
+        authorization?.bearer?.let { token -> request.addHeader("Authorization", "Bearer $token") }
         httpClient.sendRequest(request, callback)
     }
 

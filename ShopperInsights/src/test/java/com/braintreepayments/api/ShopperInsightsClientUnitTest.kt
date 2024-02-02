@@ -2,7 +2,10 @@ package com.braintreepayments.api
 
 import android.content.Context
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
+import io.mockk.slot
 import io.mockk.verify
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -101,12 +104,208 @@ class ShopperInsightsClientUnitTest {
             val iae = assertIs<IllegalArgumentException>(error.error)
             assertEquals(
                 "One of ShopperInsightsRequest.email or " +
-                    "ShopperInsightsRequest.phone must be non-null.",
+                        "ShopperInsightsRequest.phone must be non-null.",
                 iae.message
             )
         }
         verifyStartedAnalyticsEvent()
         verifyFailedAnalyticsEvent()
+    }
+
+    @Test
+    fun `testGetRecommendedPaymentMethods - findEligiblePayments is called with request`() {
+        val callback = mockk<ShopperInsightsCallback>(relaxed = true)
+        val request = ShopperInsightsRequest("some-email", null)
+
+        executeTestForFindEligiblePaymentsApi(
+            request = request,
+            result = null,
+            error = null,
+            callback = callback
+        )
+
+        verify {
+            api.findEligiblePayments(
+                request = EligiblePaymentsApiRequest(
+                    request,
+                    merchantId = "MXSJ4F5BADVNS",
+                    currencyCode = "USD",
+                    countryCode = "US",
+                    accountDetails = true,
+                    constraintType = "INCLUDE",
+                    paymentSources = listOf("PAYPAL", "VENMO")
+                ),
+                callback = any()
+            )
+        }
+    }
+
+    @Test
+    fun `testGetRecommendedPaymentMethods - findEligiblePayments returns an error`() {
+        val callback = mockk<ShopperInsightsCallback>(relaxed = true)
+        val expectedError = Exception("Expected Exception")
+
+        executeTestForFindEligiblePaymentsApi(
+            result = null,
+            error = expectedError,
+            callback = callback
+        )
+
+        verify {
+            callback.onResult(
+                withArg { result ->
+                    assertTrue { result is ShopperInsightsResult.Failure }
+                    assertEquals((result as ShopperInsightsResult.Failure).error, expectedError)
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `testGetRecommendedPaymentMethods - result is null`() {
+        val callback = mockk<ShopperInsightsCallback>(relaxed = true)
+
+        executeTestForFindEligiblePaymentsApi(
+            result = null,
+            error = null,
+            callback = callback
+        )
+
+        verify {
+            callback.onResult(
+                withArg { result ->
+                    assertTrue { result is ShopperInsightsResult.Failure }
+                    assertTrue {
+                        (result as ShopperInsightsResult.Failure).error is BraintreeException
+                    }
+                    assertEquals(
+                        "Required fields missing from API response body",
+                        (result as ShopperInsightsResult.Failure).error.message
+                    )
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `testGetRecommendedPaymentMethods - all methods are null`() {
+        val callback = mockk<ShopperInsightsCallback>(relaxed = true)
+
+        executeTestForFindEligiblePaymentsApi(
+            result = EligiblePaymentsApiResult(EligiblePaymentMethods(paypal = null, venmo = null)),
+            error = null,
+            callback = callback
+        )
+
+        verify {
+            callback.onResult(
+                withArg { result ->
+                    assertTrue { result is ShopperInsightsResult.Failure }
+                    assertTrue {
+                        (result as ShopperInsightsResult.Failure).error is BraintreeException
+                    }
+                    assertEquals(
+                        "Required fields missing from API response body",
+                        (result as ShopperInsightsResult.Failure).error.message
+                    )
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `testGetRecommendedPaymentMethods - both paypal and venmo recommended`() {
+        val callback = mockk<ShopperInsightsCallback>(relaxed = true)
+        val eligiblePaymentMethodDetails = EligiblePaymentMethodDetails(
+            canBeVaulted = true,
+            eligibleInPayPalNetwork = true,
+            recommended = true,
+            recommendedPriority = 1
+        )
+
+        executeTestForFindEligiblePaymentsApi(
+            result = EligiblePaymentsApiResult(
+                EligiblePaymentMethods(
+                    paypal = eligiblePaymentMethodDetails,
+                    venmo = eligiblePaymentMethodDetails
+                )
+            ),
+            error = null,
+            callback = callback
+        )
+
+        verify {
+            callback.onResult(
+                withArg { result ->
+                    assertTrue { result is ShopperInsightsResult.Success }
+                    val success = result as ShopperInsightsResult.Success
+                    assertEquals(true, success.response.isPayPalRecommended)
+                    assertEquals(true, success.response.isVenmoRecommended)
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `testGetRecommendedPaymentMethods - paymentDetail null`() {
+        val callback = mockk<ShopperInsightsCallback>(relaxed = true)
+
+        executeTestForFindEligiblePaymentsApi(
+            result = EligiblePaymentsApiResult(
+                EligiblePaymentMethods(
+                    paypal = null,
+                    venmo = EligiblePaymentMethodDetails(
+                        canBeVaulted = true,
+                        eligibleInPayPalNetwork = true,
+                        recommended = true,
+                        recommendedPriority = 1
+                    )
+                )
+            ),
+            error = null,
+            callback = callback
+        )
+
+        verify {
+            callback.onResult(
+                withArg { result ->
+                    assertTrue { result is ShopperInsightsResult.Success }
+                    val success = result as ShopperInsightsResult.Success
+                    assertEquals(false, success.response.isPayPalRecommended)
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `testGetRecommendedPaymentMethods - recommended is false`() {
+        val callback = mockk<ShopperInsightsCallback>(relaxed = true)
+
+        executeTestForFindEligiblePaymentsApi(
+            result = EligiblePaymentsApiResult(
+                EligiblePaymentMethods(
+                    paypal = EligiblePaymentMethodDetails(
+                        canBeVaulted = true,
+                        eligibleInPayPalNetwork = true,
+                        recommended = false,
+                        recommendedPriority = 1
+                    ),
+                    venmo = null
+                )
+            ),
+            error = null,
+            callback = callback
+        )
+
+        verify {
+            callback.onResult(
+                withArg { result ->
+                    assertTrue { result is ShopperInsightsResult.Success }
+                    val success = result as ShopperInsightsResult.Success
+                    assertEquals(false, success.response.isPayPalRecommended)
+                }
+            )
+        }
     }
 
     @Test
@@ -131,6 +330,23 @@ class ShopperInsightsClientUnitTest {
     fun `test venmo selected analytics event`() {
         sut.sendVenmoSelectedEvent()
         verify { braintreeClient.sendAnalyticsEvent("shopper-insights:venmo-selected") }
+    }
+
+    private fun executeTestForFindEligiblePaymentsApi(
+        callback: ShopperInsightsCallback,
+        request: ShopperInsightsRequest = ShopperInsightsRequest("some-email", null),
+        result: EligiblePaymentsApiResult?,
+        error: Exception?
+    ) {
+        every { deviceInspector.isVenmoInstalled(applicationContext) } returns false
+        every { deviceInspector.isPayPalInstalled(applicationContext) } returns false
+
+        val apiCallbackSlot = slot<EligiblePaymentsCallback>()
+        every { api.findEligiblePayments(any(), capture(apiCallbackSlot)) } just runs
+
+        sut.getRecommendedPaymentMethods(context, request, callback)
+
+        apiCallbackSlot.captured.onResult(result = result, error = error)
     }
 
     private fun verifyStartedAnalyticsEvent() {

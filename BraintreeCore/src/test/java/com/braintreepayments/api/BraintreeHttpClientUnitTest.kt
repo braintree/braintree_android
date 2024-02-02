@@ -1,7 +1,9 @@
 package com.braintreepayments.api
 
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import io.mockk.slot
 import org.json.JSONException
 import org.junit.Assert.*
@@ -14,6 +16,7 @@ import java.net.URISyntaxException
 import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.Locale
+import java.util.UUID
 
 @RunWith(RobolectricTestRunner::class)
 class BraintreeHttpClientUnitTest {
@@ -366,5 +369,48 @@ class BraintreeHttpClientUnitTest {
 
         val exception = exceptionSlot.captured
         assertEquals("token invalid", exception.message)
+    }
+
+    @Test
+    fun `when post is called with authorization bearer, Authorization header is added to the request`() {
+        val token: String = UUID.randomUUID().toString()
+        val tokenizationKey = mockk<Authorization>()
+        every { tokenizationKey.bearer } returns token
+
+        val httpRequestSlot = slot<HttpRequest>()
+        every { httpClient.sendRequest(capture(httpRequestSlot), any()) } just runs
+
+        val sut = BraintreeHttpClient(httpClient)
+        sut.post(
+            path = "sample/path",
+            data = "{}",
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = tokenizationKey,
+            callback = mockk<HttpResponseCallback>()
+        )
+
+        val headers = httpRequestSlot.captured.headers
+        assertEquals(headers["Authorization"], "Bearer $token")
+    }
+
+    @Test
+    fun `when post is called with null bearer, Authorization header is not added to the request`() {
+        val tokenizationKey = mockk<Authorization>()
+        every { tokenizationKey.bearer } returns null
+
+        val httpRequestSlot = slot<HttpRequest>()
+        every { httpClient.sendRequest(capture(httpRequestSlot), any()) } just runs
+
+        val sut = BraintreeHttpClient(httpClient)
+        sut.post(
+            path = "sample/path",
+            data = "{}",
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = tokenizationKey,
+            callback = mockk<HttpResponseCallback>()
+        )
+
+        val headers = httpRequestSlot.captured.headers
+        assertNull(headers["Authorization"])
     }
 }

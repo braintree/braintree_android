@@ -9,6 +9,7 @@ import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_PRESENTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_SELECTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_PRESENTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_SELECTED
+import java.lang.Exception
 
 /**
  * Use [ShopperInsightsClient] to optimize your checkout experience
@@ -24,7 +25,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
     private val deviceInspector: DeviceInspector
 ) {
     constructor(braintreeClient: BraintreeClient) : this(
-        ShopperInsightsApi(EligiblePaymentsApi()),
+        ShopperInsightsApi(EligiblePaymentsApi(braintreeClient)),
         braintreeClient,
         DeviceInspector()
     )
@@ -47,7 +48,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                 ShopperInsightsResult.Failure(
                     IllegalArgumentException(
                         "One of ShopperInsightsRequest.email or " +
-                            "ShopperInsightsRequest.phone must be non-null."
+                                "ShopperInsightsRequest.phone must be non-null."
                     )
                 )
             )
@@ -75,14 +76,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         // TODO: get correct merchant ID from SDK
         val merchantId = "MXSJ4F5BADVNS"
 
-        // Default values
-        val countryCode = "US"
-        val currencyCode = "USD"
-        val constraintType = "INCLUDE"
-        val paymentSources = listOf("PAYPAL", "VENMO")
-        val includeAccountDetails = true
-
-        val result = api.findEligiblePayments(
+        api.findEligiblePayments(
             EligiblePaymentsApiRequest(
                 request,
                 merchantId = merchantId,
@@ -91,18 +85,48 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                 accountDetails = includeAccountDetails,
                 constraintType = constraintType,
                 paymentSources = paymentSources
-            )
-        )
-        // Hardcoded result
-        callback.onResult(
-            ShopperInsightsResult.Success(
-                ShopperInsightsInfo(
-                    isPayPalRecommended = isPaymentRecommended(result.eligibleMethods.paypal),
-                    isVenmoRecommended = isPaymentRecommended(result.eligibleMethods.venmo)
+            ),
+            callback = { result, error ->
+                handleFindEligiblePaymentsResult(
+                    result,
+                    error,
+                    callback
                 )
-            )
+            }
         )
         braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_SUCCEEDED)
+    }
+
+    private fun handleFindEligiblePaymentsResult(
+        result: EligiblePaymentsApiResult?,
+        error: Exception?,
+        callback: ShopperInsightsCallback
+    ) {
+        when {
+            error != null -> callback.onResult(ShopperInsightsResult.Failure(error))
+            result?.eligibleMethods?.paypal == null &&
+                    result?.eligibleMethods?.venmo == null -> {
+                callback.onResult(
+                    ShopperInsightsResult.Failure(
+                        BraintreeException("Required fields missing from API response body")
+                    )
+                )
+            }
+            else -> {
+                callback.onResult(
+                    ShopperInsightsResult.Success(
+                        ShopperInsightsInfo(
+                            isPayPalRecommended = isPaymentRecommended(
+                                result.eligibleMethods.paypal
+                            ),
+                            isVenmoRecommended = isPaymentRecommended(
+                                result.eligibleMethods.venmo
+                            )
+                        )
+                    )
+                )
+            }
+        }
     }
 
     private fun isPaymentRecommended(paymentDetail: EligiblePaymentMethodDetails?): Boolean {
@@ -139,5 +163,14 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
      */
     fun sendVenmoSelectedEvent() {
         braintreeClient.sendAnalyticsEvent(VENMO_SELECTED)
+    }
+
+    companion object {
+        // Default values
+        private const val countryCode = "US"
+        private const val currencyCode = "USD"
+        private const val constraintType = "INCLUDE"
+        private val paymentSources = listOf("PAYPAL", "VENMO")
+        private const val includeAccountDetails = true
     }
 }
