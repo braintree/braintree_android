@@ -39,6 +39,7 @@ public class VenmoClient {
     private final VenmoSharedPrefsWriter sharedPrefsWriter;
     private final DeviceInspector deviceInspector;
     private VenmoListener listener;
+    private static String applicationVariant = "com.venmo.fifa";
 
     @VisibleForTesting
     VenmoLifecycleObserver observer;
@@ -169,11 +170,12 @@ public class VenmoClient {
                     exceptionMessage = "Venmo is not installed";
                 }
 
-                if (exceptionMessage != null) {
+                // Disabling App check
+                /*if (exceptionMessage != null) {
                     callback.onResult(new AppSwitchNotAvailableException(exceptionMessage));
                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
                     return;
-                }
+                }*/
 
                 // Merchants are not allowed to collect user addresses unless ECD (Enriched Customer Data) is enabled on the BT Control Panel.
                 if ((request.getCollectCustomerShippingAddress() || request.getCollectCustomerBillingAddress()) && !configuration.getVenmoEnrichedCustomerDataEnabled()) {
@@ -397,8 +399,12 @@ public class VenmoClient {
         });
     }
 
-    private static Intent getVenmoIntent() {
-        return new Intent().setComponent(new ComponentName(VENMO_PACKAGE_NAME, VENMO_PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
+    public void setApplicationVariant(@NonNull final String variant) {
+        applicationVariant = variant;
+    }
+
+    static Intent getVenmoIntent() {
+        return new Intent().setComponent(new ComponentName(applicationVariant, VENMO_PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
     }
 
     private Intent getLaunchIntent(Configuration configuration, String profileId, String paymentContextId) {

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="Application Variant">
+
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="variant"
+            android:persistent="true"
+            android:summary="Only enable when testing with app from Play Store"
+            android:title="Production Release" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Environment">
+
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="environment"
+            android:persistent="true"
+            android:summary="Enable for Production testing, otherwise Sandbox will be used"
+            android:title="Production" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Merchant Information">
+
+        <EditTextPreference
+            android:key="merchant_id"
+            android:persistent="true"
+            android:title="Merchant Profile ID" />
+
+        <ListPreference
+            android:key="merchants"
+            android:title="Stored Merchants" />
+
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="payment_intent"
+            android:persistent="true"
+            android:summary="Enable for Multi-Use (Recurring) payments, otherwise Single-Use will be used"
+            android:title="Recurring Payments" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/amount"
+            android:entryValues="@array/amount_values"
+            android:key="amount"
+            android:persistent="true"
+            android:title="Show amount" />
+
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="shipping"
+            android:persistent="true"
+            android:summary="Enable for collecting shipping address"
+            android:title="Collect Shipping Address" />
+
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="billing"
+            android:persistent="true"
+            android:summary="Enable for collecting shipping address"
+            android:title="Collect Billing Address" />
+
+    </PreferenceCategory>
+
+    <Preference
+        android:key="launch"
+        android:layout="@layout/custom_button" />
+
+</PreferenceScreen>

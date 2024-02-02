@@ -1,0 +1,138 @@
+<resources>
+    <string name="app_name">Venmo Testing</string>
+    <string name="generating">Generating Payment\nContext ID</string>
+    <string name="merchant_profile_id">Merchant Profile ID</string>
+    <string name="introduce_merchant_profile_id_here">Introduce merchant profile ID here</string>
+    <string name="payment_intent">Payment Intent</string>
+    <string name="single_use">Single Use</string>
+    <string name="multi_use">Multi Use</string>
+    <string name="result_of_app_switch">Result of App Switch:</string>
+    <string name="waiting_for_laucn">Click Venmo button when ready...</string>
+    <string name="waiting_for_result">Waiting for result...</string>
+    <string name="application_variant">Application Variant</string>
+    <string name="debug">Debug</string>
+    <string name="production">Production</string>
+    <string name="sandbox">Sandbox</string>
+    <string name="environment">Environment</string>
+    <string name="release">Release</string>
+    <string name="venmo_debug_not_installed">Venmo Debug App not installed</string>
+    <string name="venmo_release_not_installed">Venmo Release App not installed</string>
+    <string name="show_amount">Show amount</string>
+    <string name="no_amount">No Amount</string>
+    <string name="amount">Only Amount</string>
+    <string name="amount_line_items">Amount with Line Items</string>
+    <string name="collect_adddreses">Collect Addresses</string>
+    <string name="shipping_required">Shipping Required</string>
+    <string name="billing_required">Billing Required</string>
+
+    <string-array name="sandbox_merchants">
+        <item>Test - Games Of Skill,3852011293570551922</item>
+        <item>Enter merchant id manually,0</item>
+    </string-array>
+
+    <string-array name="production_merchants">
+        <item>Evan Hahn Test,3261262028278334200</item>
+        <item>PayFast Channel Partner,3293238619023605788</item>
+        <item>Games of Skill,3354167557845155911</item>
+        <item>Manual Suppression Rules,3388864877245235799</item>
+        <item>crypto,3480256125731193444</item>
+        <item>bill pay fee account - backbook,3504209329476601002</item>
+        <item>bill pay biller - backbook,3504210567031968781</item>
+        <item>bill pay biller - frontbook,3505488087429019398</item>
+        <item>GoS,3509300948933152115</item>
+        <item>RMG - test,3514344374947130837</item>
+        <item>Braintree,2339505684439105989</item>
+        <item>Real Money Gaming,3296870637330498112</item>
+        <item>PayFast Channel Partner,3296872214925672560</item>
+        <item>Profile with MCC set,3322841128687894830</item>
+        <item>test,3379391559727317224</item>
+        <item>Created with PayPal API Gem,3438767122569797008</item>
+        <item>bill pay parent - frontbook,3504871516226916608</item>
+        <item>Test Gos merchant type,3519954678083023112</item>
+        <item>Test Gos,3520694831063507253</item>
+        <item>Amazon WorldPay Testing,3603359061486907955</item>
+        <item>Games of Skill,3361967345240113509</item>
+        <item>Amazon Testing - Parent,3430823734084974340</item>
+        <item>Amazon Testing - Child,3430824083730427201</item>
+        <item>bill pay parent - backbook,3504208845379316489</item>
+        <item>bill pay fee account - frontbook,3505487465003064501</item>
+        <item>Enter merchant id manually,0</item>
+    </string-array>
+
+    <string-array name="sandbox_merchants_entries">
+        <item>Test - Games Of Skill</item>
+    </string-array>
+
+    <string-array name="sandbox_merchants_values">
+        <item>3852011293570551922</item>
+    </string-array>
+
+    <string-array name="production_merchants_entries">
+        <item>Evan Hahn Test</item>
+        <item>PayFast Channel Partner</item>
+        <item>Games of Skill</item>
+        <item>Manual Suppression Rules</item>
+        <item>crypto,3480256125731193444</item>
+        <item>bill pay fee account - backbook</item>
+        <item>bill pay biller - backbook</item>
+        <item>bill pay biller - frontbook</item>
+        <item>GoS</item>
+        <item>RMG - test</item>
+        <item>Braintree</item>
+        <item>Real Money Gaming</item>
+        <item>PayFast Channel Partner</item>
+        <item>Profile with MCC set</item>
+        <item>test</item>
+        <item>Created with PayPal API Gem</item>
+        <item>bill pay parent - frontbook</item>
+        <item>Test Gos merchant type</item>
+        <item>Test Gos</item>
+        <item>Amazon WorldPay Testing</item>
+        <item>Games of Skill</item>
+        <item>Amazon Testing - Parent</item>
+        <item>Amazon Testing - Child</item>
+        <item>bill pay parent - backbook</item>
+        <item>bill pay fee account - frontbook</item>
+    </string-array>
+
+    <string-array name="production_merchants_values">
+        <item>3261262028278334200</item>
+        <item>3293238619023605788</item>
+        <item>3354167557845155911</item>
+        <item>3388864877245235799</item>
+        <item>3480256125731193444</item>
+        <item>3504209329476601002</item>
+        <item>3504210567031968781</item>
+        <item>3505488087429019398</item>
+        <item>3509300948933152115</item>
+        <item>3514344374947130837</item>
+        <item>2339505684439105989</item>
+        <item>3296870637330498112</item>
+        <item>3296872214925672560</item>
+        <item>3322841128687894830</item>
+        <item>3379391559727317224</item>
+        <item>3438767122569797008</item>
+        <item>3504871516226916608</item>
+        <item>3519954678083023112</item>
+        <item>3520694831063507253</item>
+        <item>3603359061486907955</item>
+        <item>3361967345240113509</item>
+        <item>3430823734084974340</item>
+        <item>3430824083730427201</item>
+        <item>3504208845379316489</item>
+        <item>3505487465003064501</item>
+    </string-array>
+
+    <string-array name="amount">
+        <item>No Amount</item>
+        <item>Only Amount</item>
+        <item>Amount + Line Items</item>
+    </string-array>
+
+    <string-array name="amount_values">
+        <item>no_amount</item>
+        <item>only_amount</item>
+        <item>amount_line_items</item>
+    </string-array>
+
+</resources>

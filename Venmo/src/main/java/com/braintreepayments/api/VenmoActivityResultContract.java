@@ -32,7 +32,7 @@ class VenmoActivityResultContract extends ActivityResultContract<VenmoIntentData
     @NonNull
     @Override
     public Intent createIntent(@NonNull Context context, VenmoIntentData input) {
-        Intent venmoIntent = getVenmoIntent()
+        Intent venmoIntent = VenmoClient.getVenmoIntent()
                 .putExtra(EXTRA_MERCHANT_ID, input.getProfileId())
                 .putExtra(EXTRA_ACCESS_TOKEN, input.getConfiguration().getVenmoAccessToken())
                 .putExtra(EXTRA_ENVIRONMENT, input.getConfiguration().getVenmoEnvironment());
