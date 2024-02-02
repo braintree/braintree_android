@@ -39,6 +39,8 @@ public class VenmoClient {
     private final VenmoSharedPrefsWriter sharedPrefsWriter;
     private final DeviceInspector deviceInspector;
     private VenmoListener listener;
+    private static String applicationVariant = "com.venmo.fifa";
+    private static String fallbackWebURL = "https://venmo.com/go/checkout";
 
     @VisibleForTesting
     VenmoLifecycleObserver observer;
@@ -179,11 +181,12 @@ public class VenmoClient {
                     exceptionMessage = "Venmo is not enabled";
                 }
 
-                if (exceptionMessage != null) {
+                // Disabling App check
+                /*if (exceptionMessage != null) {
                     callback.onResult(new AppSwitchNotAvailableException(exceptionMessage));
                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
                     return;
-                }
+                }*/
 
                 // Merchants are not allowed to collect user addresses unless ECD (Enriched Customer Data) is enabled on the BT Control Panel.
                 if ((request.getCollectCustomerShippingAddress() || request.getCollectCustomerBillingAddress()) && !configuration.getVenmoEnrichedCustomerDataEnabled()) {
@@ -416,8 +419,16 @@ public class VenmoClient {
         });
     }
 
-    private static Intent getVenmoIntent() {
-        return new Intent().setComponent(new ComponentName(VENMO_PACKAGE_NAME, VENMO_PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
+    public void setApplicationVariant(@NonNull final String variant) {
+        applicationVariant = variant;
+    }
+
+    public void setFallbackWebURL(@NonNull final String url) {
+        fallbackWebURL = url;
+    }
+
+    static Intent getVenmoIntent() {
+        return new Intent().setComponent(new ComponentName(applicationVariant, VENMO_PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
     }
 
     private Intent getLaunchIntent(Configuration configuration, String profileId, String paymentContextId) {
@@ -637,7 +648,7 @@ public class VenmoClient {
             }
         }
 
-        Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout")
+        Uri venmoBaseURL = Uri.parse(fallbackWebURL)
                 .buildUpon()
                 .appendQueryParameter("x-success", braintreeClient.getReturnUrlScheme() + "://x-callback-url/vzero/auth/venmo/success")
                 .appendQueryParameter("x-error", braintreeClient.getReturnUrlScheme() + "://x-callback-url/vzero/auth/venmo/error")

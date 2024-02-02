@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="VenmoButtonStyle">
+        <item name="android:textStyle">bold|italic</item>
+        <item name="android:text">VENMO</item>
+        <item name="android:color">#FFFFFF</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+</resources>
