@@ -103,7 +103,7 @@
         app:layout_constraintTop_toBottomOf="@+id/countryCodeInput" />
 
     <Button
-        android:id="@+id/paypalVaultButton"
+        android:id="@+id/payPalVaultButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -126,7 +126,7 @@
         android:enabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/paypalVaultButton" />
+        app:layout_constraintTop_toBottomOf="@+id/payPalVaultButton" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/emailNullSwitch"
