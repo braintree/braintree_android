@@ -22,30 +22,28 @@ class PayPalPendingRequestUnitTest {
     private val browserSwitchPendingRequest =
         BrowserSwitchPendingRequest.Started(browserSwitchRequest)
 
-    private val payPalBrowserSwitchRequest = PayPalBrowserSwitchRequest(browserSwitchPendingRequest)
-
     @Test
     fun `started constructor with string parameter creates BrowserSwitchRequest`() {
-        val pendingRequest = PayPalPendingRequest.Started(payPalBrowserSwitchRequest)
+        val pendingRequest = PayPalPendingRequest.Started(browserSwitchPendingRequest)
         val storedRequest = pendingRequest.toJsonString()
 
         val sut = PayPalPendingRequest.Started(storedRequest)
-        assertEquals(1, sut.request.browserSwitchPendingRequest.browserSwitchRequest.requestCode)
+        assertEquals(1, sut.request.browserSwitchRequest.requestCode)
         assertEquals(
             "test_value",
-            sut.request.browserSwitchPendingRequest.browserSwitchRequest.metadata.getString("test_key")
+            sut.request.browserSwitchRequest.metadata.getString("test_key")
         )
         assertEquals(
             Uri.parse("http://"),
-            sut.request.browserSwitchPendingRequest.browserSwitchRequest.url
+            sut.request.browserSwitchRequest.url
         )
         assertEquals(
             false,
-            sut.request.browserSwitchPendingRequest.browserSwitchRequest.shouldNotifyCancellation
+            sut.request.browserSwitchRequest.shouldNotifyCancellation
         )
         assertEquals(
             "return-url-scheme",
-            sut.request.browserSwitchPendingRequest.browserSwitchRequest.returnUrlScheme
+            sut.request.browserSwitchRequest.returnUrlScheme
         )
     }
 
@@ -56,7 +54,7 @@ class PayPalPendingRequestUnitTest {
 
     @Test
     fun `toJsonString returns BrowserSwitchRequest in JSON string format`() {
-        val sut = PayPalPendingRequest.Started(payPalBrowserSwitchRequest)
+        val sut = PayPalPendingRequest.Started(browserSwitchPendingRequest)
         val jsonString = sut.toJsonString()
 
         assertEquals(browserSwitchPendingRequest.toJsonString(), jsonString)
