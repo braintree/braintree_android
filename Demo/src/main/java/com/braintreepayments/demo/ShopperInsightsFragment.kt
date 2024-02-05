@@ -6,13 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.NavHostFragment
 import com.braintreepayments.api.BraintreeClient
+import com.braintreepayments.api.PayPalAccountNonce
 import com.braintreepayments.api.PayPalClient
+import com.braintreepayments.api.PayPalListener
 import com.braintreepayments.api.ShopperInsightsBuyerPhone
 import com.braintreepayments.api.ShopperInsightsClient
 import com.braintreepayments.api.ShopperInsightsRequest
 import com.braintreepayments.api.ShopperInsightsResult
+import com.braintreepayments.api.VenmoAccountNonce
 import com.braintreepayments.api.VenmoClient
+import com.braintreepayments.api.VenmoListener
 import com.braintreepayments.api.VenmoPaymentMethodUsage
 import com.braintreepayments.api.VenmoRequest
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -21,7 +27,7 @@ import com.google.android.material.textfield.TextInputLayout
 /**
  * Fragment for handling shopping insights.
  */
-class ShopperInsightsFragment : BaseFragment() {
+class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
 
     private lateinit var responseTextView: TextView
     private lateinit var actionButton: Button
@@ -47,6 +53,9 @@ class ShopperInsightsFragment : BaseFragment() {
         shopperInsightsClient = ShopperInsightsClient(braintreeClient)
         payPalClient = PayPalClient(braintreeClient)
         venmoClient = VenmoClient(this, braintreeClient)
+
+        payPalClient.setListener(this)
+
         return inflater.inflate(R.layout.fragment_shopping_insights, container, false)
     }
 
@@ -121,4 +130,27 @@ class ShopperInsightsFragment : BaseFragment() {
         venmoClient.tokenizeVenmoAccount(requireActivity(), venmoRequest)
     }
 
+    override fun onPayPalSuccess(payPalAccountNonce: PayPalAccountNonce) {
+        super.onPaymentMethodNonceCreated(payPalAccountNonce)
+        val action = PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(
+            payPalAccountNonce
+        )
+        NavHostFragment.findNavController(this).navigate(action)
+    }
+
+    override fun onPayPalFailure(error: Exception) {
+        handleError(error)
+    }
+
+    override fun onVenmoSuccess(venmoAccountNonce: VenmoAccountNonce) {
+        super.onPaymentMethodNonceCreated(venmoAccountNonce)
+
+        val action: NavDirections =
+            VenmoFragmentDirections.actionVenmoFragmentToDisplayNonceFragment(venmoAccountNonce)
+        NavHostFragment.findNavController(this).navigate(action)
+    }
+
+    override fun onVenmoFailure(error: Exception) {
+        handleError(error)
+    }
 }
