@@ -136,7 +136,7 @@ public class LocalPaymentClient {
     }
 
     private void authRequestFailure(Exception error, LocalPaymentAuthCallback callback) {
-        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_FAILED);
+        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED);
         callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.Failure(error));
     }
 
@@ -156,7 +156,7 @@ public class LocalPaymentClient {
                          @NonNull final LocalPaymentTokenizeCallback callback) {
         //noinspection ConstantConditions
         if (localPaymentAuthResult == null) {
-            callbackFailure(
+            tokenizeFailure(
                 new BraintreeException("LocalPaymentAuthResult cannot be null"),
                 callback
             );
@@ -165,7 +165,7 @@ public class LocalPaymentClient {
 
         BrowserSwitchResult browserSwitchResult = localPaymentAuthResult.getBrowserSwitchResult();
         if (browserSwitchResult == null && localPaymentAuthResult.getError() != null) {
-            callbackFailure(localPaymentAuthResult.getError(), callback);
+            tokenizeFailure(localPaymentAuthResult.getError(), callback);
             return;
         }
 
@@ -180,8 +180,7 @@ public class LocalPaymentClient {
             case BrowserSwitchStatus.SUCCESS:
                 Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
                 if (deepLinkUri == null) {
-                    braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_LOGIN_FAILED);
-                    callbackFailure(
+                    tokenizeFailure(
                         new BraintreeException("LocalPayment encountered an error, return URL is " +
                             "invalid."),
                         callback
@@ -205,11 +204,11 @@ public class LocalPaymentClient {
                                         );
                                         callback.onLocalPaymentResult(new LocalPaymentResult.Success(localPaymentNonce));
                                     } else if (localPaymentError != null) {
-                                        callbackFailure(localPaymentError, callback);
+                                        tokenizeFailure(localPaymentError, callback);
                                     }
                                 });
                     } else if (error != null) {
-                        callbackFailure(error, callback);
+                        tokenizeFailure(error, callback);
                     }
                 });
         }
@@ -219,7 +218,7 @@ public class LocalPaymentClient {
         braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_CANCELED);
         callback.onLocalPaymentResult(LocalPaymentResult.Cancel.INSTANCE);
     }
-    private void callbackFailure(Exception error, LocalPaymentTokenizeCallback callback) {
+    private void tokenizeFailure(Exception error, LocalPaymentTokenizeCallback callback) {
         braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED);
         callback.onLocalPaymentResult(new LocalPaymentResult.Failure(error));
     }

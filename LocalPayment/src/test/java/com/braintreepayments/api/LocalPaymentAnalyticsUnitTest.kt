@@ -27,13 +27,5 @@ class LocalPaymentAnalyticsUnitTest {
             "local-payment:start-payment:browser-presentation:succeeded",
             LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED
         )
-        assertEquals(
-            "local-payment:start-payment:browser-presentation:failed",
-            LocalPaymentAnalytics.BROWSER_SWITCH_FAILED
-        )
-        assertEquals(
-            "local-payment:start-payment:browser-login:failed",
-            LocalPaymentAnalytics.BROWSER_LOGIN_FAILED
-        )
     }
 }

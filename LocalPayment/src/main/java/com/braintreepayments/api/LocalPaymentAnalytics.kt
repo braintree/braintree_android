@@ -11,8 +11,4 @@ internal object LocalPaymentAnalytics {
     // Browser Presentation Events
     const val BROWSER_SWITCH_SUCCEEDED =
         "local-payment:start-payment:browser-presentation:succeeded"
-    const val BROWSER_SWITCH_FAILED = "local-payment:start-payment:browser-presentation:failed"
-
-    // Browser Login Events
-    const val BROWSER_LOGIN_FAILED = "local-payment:start-payment:browser-login:failed"
 }
