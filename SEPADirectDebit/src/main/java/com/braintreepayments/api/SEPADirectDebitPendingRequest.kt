@@ -15,7 +15,7 @@ sealed class SEPADirectDebitPendingRequest {
      * A pending request was successfully started. This [SEPADirectDebitPendingRequest.Started] should be
      * stored and passed to [SEPADirectDebitLauncher.handleReturnToAppFromBrowser]
      */
-    class Started(val request: SEPADirectDebitBrowserSwitchRequest) : SEPADirectDebitPendingRequest() {
+    class Started(internal val request: BrowserSwitchPendingRequest.Started) : SEPADirectDebitPendingRequest() {
 
         /**
          * Convenience constructor to create a [SEPADirectDebitPendingRequest.Started] from your stored
@@ -23,15 +23,14 @@ sealed class SEPADirectDebitPendingRequest {
          * @throws [JSONException] if the [jsonString] is invalid
          */
         @Throws(JSONException::class)
-        constructor(jsonString: String) : this(SEPADirectDebitBrowserSwitchRequest(
-            BrowserSwitchPendingRequest.Started(jsonString)))
+        constructor(jsonString: String) : this(BrowserSwitchPendingRequest.Started(jsonString))
 
         /**
          * Convenience method to return [SEPADirectDebitPendingRequest.Started] in [String] format to be
          * persisted in storage
          */
         fun toJsonString(): String {
-            return request.getBrowserSwitchPendingRequest().toJsonString()
+            return request.toJsonString()
         }
     }
 
