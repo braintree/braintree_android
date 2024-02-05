@@ -210,7 +210,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     }
 
     companion object {
-        private const val FPTI_ANALYTICS_URL = "https://api-m.paypal.com/v1/tracking/batch/events"
+        private const val FPTI_ANALYTICS_URL = "https://api.paypal.com/v1/tracking/batch/events"
 
         private const val EVENTS_CONTAINER_KEY = "events"
         private const val BATCH_PARAMS_KEY = "batch_params"

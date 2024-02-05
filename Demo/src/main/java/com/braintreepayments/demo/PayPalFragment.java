@@ -19,6 +19,8 @@ import com.braintreepayments.api.DataCollectorResult;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalLauncher;
 import com.braintreepayments.api.PayPalPaymentAuthRequest;
+import com.braintreepayments.api.PayPalPaymentAuthResult;
+import com.braintreepayments.api.PayPalPendingRequest;
 import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PayPalResult;
 import com.braintreepayments.api.PaymentMethodNonce;
@@ -45,15 +47,7 @@ public class PayPalFragment extends BaseFragment {
         singlePaymentButton.setOnClickListener(this::launchSinglePayment);
 
         payPalClient = new PayPalClient(requireContext(), super.getAuthStringArg());
-        payPalLauncher = new PayPalLauncher(
-                paymentAuthResult -> payPalClient.tokenize(
-                        paymentAuthResult, (payPalResult) -> {
-                            if (payPalResult instanceof PayPalResult.Failure) {
-                                handleError(((PayPalResult.Failure) payPalResult).getError());
-                            } else if (payPalResult instanceof PayPalResult.Success) {
-                                handlePayPalResult(((PayPalResult.Success) payPalResult).getNonce());
-                            }
-                        }));
+        payPalLauncher = new PayPalLauncher();
 
         amount = RandomDollarAmount.getNext();
         return view;
@@ -62,7 +56,27 @@ public class PayPalFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        payPalLauncher.handleReturnToAppFromBrowser(requireContext(), requireActivity().getIntent());
+        PayPalPendingRequest.Started pendingRequest = getPendingRequest();
+        if (pendingRequest != null) {
+            PayPalPaymentAuthResult paymentAuthResult = payPalLauncher.handleReturnToAppFromBrowser(pendingRequest, requireActivity().getIntent());
+            if (paymentAuthResult != null) {
+                completePayPalFlow(paymentAuthResult);
+            } else {
+                handleError(new Exception("User did not complete payment flow"));
+            }
+            clearPendingRequest();
+        }
+    }
+
+    private void storePendingRequest(PayPalPendingRequest.Started request) {
+        PendingRequestStore.getInstance().putPayPalPendingRequest(requireContext(), request);
+    }
+    private PayPalPendingRequest.Started getPendingRequest() {
+        return PendingRequestStore.getInstance().getPayPalPendingRequest(requireContext());
+    }
+
+    private void clearPendingRequest() {
+        PendingRequestStore.getInstance().clearPayPalPendingRequest(requireContext());
     }
 
     public void launchSinglePayment(View v) {
@@ -104,10 +118,25 @@ public class PayPalFragment extends BaseFragment {
                     if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.Failure) {
                         handleError(((PayPalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
                     } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch){
-                        payPalLauncher.launch(requireActivity(),
-                                ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams());
+                        PayPalPendingRequest request = payPalLauncher.launch(requireActivity(),
+                                ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
+                        if (request instanceof PayPalPendingRequest.Started) {
+                            storePendingRequest((PayPalPendingRequest.Started) request);
+                        } else if (request instanceof PayPalPendingRequest.Failure) {
+                            handleError(((PayPalPendingRequest.Failure) request).getError());
+                        }
                     }
                 });
+    }
+
+    private void completePayPalFlow(PayPalPaymentAuthResult paymentAuthResult) {
+        payPalClient.tokenize(paymentAuthResult, payPalResult -> {
+            if (payPalResult instanceof PayPalResult.Failure) {
+                handleError(((PayPalResult.Failure) payPalResult).getError());
+            } else if (payPalResult instanceof PayPalResult.Success) {
+                handlePayPalResult(((PayPalResult.Success) payPalResult).getNonce());
+            }
+        });
     }
 
     private void handlePayPalResult(PaymentMethodNonce paymentMethodNonce) {

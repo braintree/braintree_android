@@ -11,6 +11,7 @@
     * Upgrade to Android Gradle Plugin 8
   * BraintreeCore
     * Remove `BraintreeClient` public constructors
+    * Remove `deliverBrowserSwitchResult` and `deliverBrowserSwitchResultFromNewTask` from `BraintreeClient`
     * Remove `ClientTokenProvider`
     * Update payment method constructor parameters from `braintreeClient` to `context` and
       `authorization`
@@ -72,7 +73,7 @@
     * Make empty `ThreeDSecureLookup` constructor package-private
   * PayPal
     * Remove `PayPalListener`
-    * Add `PayPalLauncher`, `PayPalPaymentAuthRequest`, `PayPalPaymentAuthResult`, 
+    * Add `PayPalLauncher`, `PayPalPaymentAuthRequest`, `PayPalPendingRequest`, `PayPalPaymentAuthResult`, 
       `PayPalPaymentAuthCallback`, `PayPalTokenizeCallback`, and `PayPalResult`
     * Remove`PayPalFlowStartedCallback`
     * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
@@ -83,7 +84,7 @@
     * Rename `PayPalClient#onBrowserSwitchResult` to `PayPalCient#tokenize` and change parameters
   * LocalPayment
     * Remove `LocalPaymentListener`
-    * Add `LocalPaymentLauncher`, `LocalPaymentLauncherCallback`, `LocalPaymentTokenizeCallback`,
+    * Add `LocalPaymentLauncher`, `LocalPaymentPendingRequest`, `LocalPaymentTokenizeCallback`,
       `LocalPaymentAuthRequest`, `LocalPaymentAuthRequestCallback` and `LocalPaymentAuthResult`
     * Change `LocalPaymentResult` type 
     * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
@@ -100,7 +101,7 @@
     * Change `CardTokenizeCallback` parameters
   * SEPA Direct Debit
     * Remove `SEPADirectDebitLifecycleObserver` and `SEPADirectDebitListener`
-    * Add `SEPADirectDebitLauncher`, `SEPADirectDebitLauncherCallback`, 
+    * Add `SEPADirectDebitLauncher`, `SEPADirectDebitPendingRequest`, 
       `SEPADirectDebitPaymentAuthRequestCallback`, `SEPADirectDebitPaymentAuthRequest`, 
       `SEPADirectDebitResult`, `SEPADirectDebitPaymentAuthRequestParams` and 
       `SEPADirectDebitTokenizeCallback`
@@ -121,6 +122,14 @@
   * PayPal Native Checkout
     * Remove entire PayPal Native Checkout module
     
+## 4.41.0 (2024-01-18)
+
+* PayPal
+  * Add imageUrl, upcCode, and upcType to PayPalLineItem
+* PayPalNativeCheckout
+  * Bump native-checkout version to release `1.2.1`
+  * Upgraded the data-collector SDK to version 3.21.0 which made updates to Device Data collection related to Google Play's User Data Policy. For more info read the [release notes](https://github.com/paypal/android-checkout-sdk/releases/tag/v1.2.1)
+
 ## 4.40.1 (2023-12-13)
 
 * BraintreeCore

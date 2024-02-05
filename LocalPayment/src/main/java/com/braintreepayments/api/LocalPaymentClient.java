@@ -101,7 +101,7 @@ public class LocalPaymentClient {
                                     );
                                 }
                             });
-                } else {
+                } else if (error != null) {
                     authRequestFailure(error, callback);
                 }
             });
@@ -142,13 +142,13 @@ public class LocalPaymentClient {
 
     /**
      * After receiving a result from the web authentication flow via
-     * {@link LocalPaymentLauncher#handleReturnToAppFromBrowser(Context, Intent)}, pass the
+     * {@link LocalPaymentLauncher#handleReturnToAppFromBrowser(LocalPaymentPendingRequest.Started, Intent)}, pass the
      * {@link LocalPaymentAuthResult} returned to this method to tokenize the local
      * payment method and receive a {@link LocalPaymentNonce} on success.
      *
      * @param context                         Android Context
-     * @param localPaymentAuthResult a {@link LocalPaymentAuthResult} received
-     *                                        in the callback of {@link LocalPaymentLauncher}
+     * @param localPaymentAuthResult a {@link LocalPaymentAuthResult} received from
+     *                              {@link LocalPaymentLauncher#handleReturnToAppFromBrowser(LocalPaymentPendingRequest.Started, Intent)}
      * @param callback                        {@link LocalPaymentInternalTokenizeCallback}
      */
     public void tokenize(@NonNull final Context context,
