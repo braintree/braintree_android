@@ -14,7 +14,7 @@ sealed class LocalPaymentPendingRequest {
      * A pending request was successfully started. This [LocalPaymentPendingRequest.Started] should be
      * stored and passed to [LocalPaymentLauncher.handleReturnToAppFromBrowser]
      */
-    class Started(val request: LocalPaymentBrowserSwitchRequest) : LocalPaymentPendingRequest() {
+    class Started(internal val request: BrowserSwitchPendingRequest.Started) : LocalPaymentPendingRequest() {
 
         /**
          * Convenience constructor to create a [LocalPaymentPendingRequest.Started] from your stored
@@ -22,15 +22,14 @@ sealed class LocalPaymentPendingRequest {
          * @throws [JSONException] if the [jsonString] is invalid
          */
         @Throws(JSONException::class)
-        constructor(jsonString: String) : this(LocalPaymentBrowserSwitchRequest(
-            BrowserSwitchPendingRequest.Started(jsonString)))
+        constructor(jsonString: String) : this(BrowserSwitchPendingRequest.Started(jsonString))
 
         /**
          * Convenience method to return [LocalPaymentPendingRequest.Started] in [String] format to be
          * persisted in storage
          */
         fun toJsonString(): String {
-            return request.getBrowserSwitchPendingRequest().toJsonString()
+            return request.toJsonString()
         }
     }
 
