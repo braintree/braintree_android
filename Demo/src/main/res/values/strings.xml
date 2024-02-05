@@ -18,6 +18,7 @@
     <string name="local_payment_button">Local Payment</string>
     <string name="sepa_direct_debit_button">SEPA Direct Debit</string>
     <string name="cards">Credit or Debit Cards</string>
+    <string name="paypal_messaging_button">PayPal Messaging</string>
     <string name="paypal_native_checkout">PayPal Native Checkout</string>
     <string name="samsung_pay">Samsung Pay</string>
     <string name="create_transaction">Create a Transaction</string>

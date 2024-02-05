@@ -1,0 +1,58 @@
+package com.braintreepayments.demo
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import com.braintreepayments.api.PayPalMessagingListener
+import com.braintreepayments.api.PayPalMessagingLogoType
+import com.braintreepayments.api.PayPalMessagingOfferType
+import com.braintreepayments.api.PayPalMessagingRequest
+import com.braintreepayments.api.PayPalMessagingTextAlignment
+import com.braintreepayments.api.PayPalMessagingView
+
+class PayPalMessagingFragment: BaseFragment(), PayPalMessagingListener {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_paypal_messaging, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val payPalMessagingRequest = PayPalMessagingRequest(
+            2.0,
+            null,
+            PayPalMessagingOfferType.PAY_LATER_LONG_TERM,
+            "US",
+            PayPalMessagingLogoType.PRIMARY,
+            PayPalMessagingTextAlignment.CENTER,
+            null
+        )
+
+        var payPalMessagingView = PayPalMessagingView(braintreeClient)
+        payPalMessagingView.payPalMessagingListener = this
+        payPalMessagingView.start(requireActivity(), payPalMessagingRequest)
+    }
+    override fun onPayPalMessagingClick() {
+        print("User clicked on the PayPalMessagingView")
+    }
+
+    override fun onPayPalMessagingApply() {
+        print("User is attempting to apply for PayPal Credit")
+    }
+
+    override fun onPayPalMessagingLoading() {
+        print("Loading PayPalMessagingView")
+    }
+
+    override fun onPayPalMessagingSuccess() {
+        print("PayPalMessagingView displayed to user")
+    }
+
+    override fun onPayPalMessagingFailure(error: Exception) {
+        print("PayPalMessagingView returned the error:" + error.message)
+    }
+}

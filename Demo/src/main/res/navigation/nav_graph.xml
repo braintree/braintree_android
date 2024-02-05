@@ -37,6 +37,9 @@
         <action
             android:id="@+id/action_mainFragment_to_payPalNativeCheckoutFragment"
             app:destination="@id/payPalNativeCheckoutFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_payPalMessagingFragment"
+            app:destination="@id/payPalMessagingFragment" />
     </fragment>
     <fragment
         android:id="@+id/cardFragment"
@@ -178,6 +181,11 @@
             app:destination="@id/displayNonceFragment"
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/payPalMessagingFragment"
+        android:name="com.braintreepayments.demo.PayPalMessagingFragment"
+        tools:layout="fragment_paypal_messaging">
     </fragment>
 
 </navigation>
