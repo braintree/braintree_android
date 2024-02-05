@@ -21,6 +21,8 @@ class ShopperInsightsFragment : BaseFragment() {
 
     private lateinit var responseTextView: TextView
     private lateinit var actionButton: Button
+    private lateinit var paypalVaultButton: Button
+    private lateinit var venmoButton: Button
     private lateinit var emailInput: TextInputLayout
     private lateinit var countryCodeInput: TextInputLayout
     private lateinit var nationalNumberInput: TextInputLayout
@@ -53,6 +55,10 @@ class ShopperInsightsFragment : BaseFragment() {
         nationalNumberInput = view.findViewById(R.id.nationalNumberInput)
         emailNullSwitch = view.findViewById(R.id.emailNullSwitch)
         phoneNullSwitch = view.findViewById(R.id.phoneNullSwitch)
+
+        emailInput.editText?.setText("PR1_merchantname@personal.example.com")
+        nationalNumberInput.editText?.setText("408-232-1001")
+        countryCodeInput.editText?.setText("1")
     }
 
     private fun setupActionButton() {
@@ -73,12 +79,16 @@ class ShopperInsightsFragment : BaseFragment() {
                 requireContext(),
                 request
             ) { result ->
-                responseTextView.text = when (result) {
+                when (result) {
                     is ShopperInsightsResult.Success -> {
-                        "PayPal Recommended ${result.response.isPayPalRecommended} " +
-                                "\n Venmo Recommended ${result.response.isVenmoRecommended}"
+                        paypalVaultButton.isEnabled = result.response.isPayPalRecommended
+                        paypalVaultButton.isEnabled = result.response.isVenmoRecommended
+
+                        responseTextView.text = "PayPal Recommended ${result.response.isPayPalRecommended} " + "\n Venmo Recommended ${result.response.isVenmoRecommended}"
                     }
-                    is ShopperInsightsResult.Failure -> result.error.toString()
+                    is ShopperInsightsResult.Failure -> {
+                        responseTextView.text = result.error.toString()
+                    }
                 }
             }
         }
