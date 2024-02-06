@@ -90,18 +90,10 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
             }
 
             else -> {
-                braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_SUCCEEDED)
-                callback.onResult(
-                    ShopperInsightsResult.Success(
-                        ShopperInsightsInfo(
-                            isPayPalRecommended = isPaymentRecommended(
-                                result.eligibleMethods.paypal
-                            ),
-                            isVenmoRecommended = isPaymentRecommended(
-                                result.eligibleMethods.venmo
-                            )
-                        )
-                    )
+                callbackSuccess(
+                    callback = callback,
+                    isPayPalRecommended = isPaymentRecommended(result.eligibleMethods.paypal),
+                    isVenmoRecommended = isPaymentRecommended(result.eligibleMethods.venmo)
                 )
             }
         }
@@ -113,6 +105,19 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
     ) {
         braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_FAILED)
         callback.onResult(ShopperInsightsResult.Failure(error))
+    }
+
+    private fun callbackSuccess(
+        callback: ShopperInsightsCallback,
+        isPayPalRecommended: Boolean,
+        isVenmoRecommended: Boolean,
+    ) {
+        braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_SUCCEEDED)
+        callback.onResult(
+            ShopperInsightsResult.Success(
+                ShopperInsightsInfo(isPayPalRecommended, isVenmoRecommended)
+            )
+        )
     }
 
     private fun isPaymentRecommended(paymentDetail: EligiblePaymentMethodDetails?): Boolean {
