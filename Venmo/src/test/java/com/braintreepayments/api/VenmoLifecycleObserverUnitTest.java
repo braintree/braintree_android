@@ -1,6 +1,9 @@
 package com.braintreepayments.api;
 
 import static android.os.Looper.getMainLooper;
+import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
+import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
+import static com.braintreepayments.api.BraintreeRequestCodes.VENMO;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -98,40 +101,100 @@ public class VenmoLifecycleObserverUnitTest {
         when(fragment.getActivity()).thenReturn(activity);
 
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
-        when(browserSwitchResult.getRequestCode()).thenReturn(BraintreeRequestCodes.VENMO);
+        when(browserSwitchResult.getRequestCode()).thenReturn(VENMO);
 
         VenmoClient venmoClient = mock(VenmoClient.class);
         when(venmoClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(venmoClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         VenmoLifecycleObserver sut = new VenmoLifecycleObserver(activityResultRegistry, venmoClient);
-
         sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
 
+        // Ref: https://robolectric.org/blog/2019/06/04/paused-looper/
         shadowOf(getMainLooper()).idle();
-        verify(venmoClient).onBrowserSwitchResult(same(activity), same(browserSwitchResult));
+        verify(venmoClient).onBrowserSwitchResult(same(browserSwitchResult));
     }
 
     @Test
     public void onResume_whenLifeCycleObserverIsActivity_venmoClientDeliversResultWithSameActivity() {
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
-        FragmentActivity activity = new FragmentActivity();
+        FragmentActivity activity = mock(FragmentActivity.class);
 
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
-        when(browserSwitchResult.getRequestCode()).thenReturn(BraintreeRequestCodes.VENMO);
+        when(browserSwitchResult.getRequestCode()).thenReturn(VENMO);
 
         VenmoClient venmoClient = mock(VenmoClient.class);
         when(venmoClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(venmoClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
 
         VenmoLifecycleObserver sut = new VenmoLifecycleObserver(activityResultRegistry, venmoClient);
-
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
         shadowOf(getMainLooper()).idle();
-        verify(venmoClient).onBrowserSwitchResult(same(activity), same(browserSwitchResult));
+        verify(venmoClient).onBrowserSwitchResult(same(browserSwitchResult));
+    }
+
+    @Test
+    public void onResume_whenLifeCycleObserverIsFragment_venmoClientDeliversResultFromCacheWithFragmentActivity() {
+        ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
+        Fragment fragment = mock(Fragment.class);
+        FragmentActivity activity = mock(FragmentActivity.class);
+        when(fragment.getActivity()).thenReturn(activity);
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(VENMO);
+
+        VenmoClient venmoClient = mock(VenmoClient.class);
+        when(venmoClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
+        when(venmoClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
+
+        VenmoLifecycleObserver sut = new VenmoLifecycleObserver(activityResultRegistry, venmoClient);
+        sut.onStateChanged(fragment, Lifecycle.Event.ON_RESUME);
+
+        shadowOf(getMainLooper()).idle();
+        verify(venmoClient).onBrowserSwitchResult(same(browserSwitchResult));
+    }
+
+    @Test
+    public void onResume_whenLifeCycleObserverIsActivity_venmoClientDeliversResultFromCacheWithSameActivity() {
+        ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
+        FragmentActivity activity = mock(FragmentActivity.class);
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(VENMO);
+
+        VenmoClient venmoClient = mock(VenmoClient.class);
+        when(venmoClient.getBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
+        when(venmoClient.deliverBrowserSwitchResultFromNewTask(activity)).thenReturn(browserSwitchResult);
+
+        VenmoLifecycleObserver sut = new VenmoLifecycleObserver(activityResultRegistry, venmoClient);
+        sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
+
+        shadowOf(getMainLooper()).idle();
+        verify(venmoClient).onBrowserSwitchResult(same(browserSwitchResult));
     }
 
     @Test
     public void onResume_whenPendingBrowserSwitchResultExists_andRequestCodeNotVenmo_doesNothing() {
+        ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
+        FragmentActivity activity = mock(FragmentActivity.class);
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getRequestCode()).thenReturn(THREE_D_SECURE);
+
+        VenmoClient venmoClient = mock(VenmoClient.class);
+        when(venmoClient.getBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+        when(venmoClient.deliverBrowserSwitchResult(activity)).thenReturn(browserSwitchResult);
+
+        VenmoLifecycleObserver sut = new VenmoLifecycleObserver(activityResultRegistry, venmoClient);
+        sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
+
+        shadowOf(getMainLooper()).idle();
+        verify(venmoClient, never()).onBrowserSwitchResult(any(BrowserSwitchResult.class));
+    }
+
+    @Test
+    public void onResume_whenCachedBrowserSwitchResultExists_andRequestCodeNotVenmo_doesNothing() {
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
         FragmentActivity activity = mock(FragmentActivity.class);
 
@@ -145,6 +208,6 @@ public class VenmoLifecycleObserverUnitTest {
 
         sut.onStateChanged(activity, Lifecycle.Event.ON_RESUME);
 
-        verify(venmoClient, never()).onBrowserSwitchResult(activity, browserSwitchResult);
+        verify(venmoClient, never()).onBrowserSwitchResult(browserSwitchResult);
     }
 }
