@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import static androidx.lifecycle.Lifecycle.Event.ON_RESUME;
 import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
+import static com.braintreepayments.api.BraintreeRequestCodes.VENMO;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -63,9 +64,22 @@ class VenmoLifecycleObserver implements LifecycleEventObserver {
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
+                        BrowserSwitchResult resultToDeliver = null;
+
                         BrowserSwitchResult pendingResult = venmoClient.getBrowserSwitchResult(finalActivity);
-                        if (pendingResult != null && pendingResult.getRequestCode() == BraintreeRequestCodes.VENMO) {
-                            venmoClient.onBrowserSwitchResult(finalActivity, pendingResult);
+                        if (pendingResult != null && pendingResult.getRequestCode() == VENMO) {
+                            resultToDeliver = venmoClient.deliverBrowserSwitchResult(finalActivity);
+                        }
+
+                        BrowserSwitchResult pendingResultFromCache =
+                                venmoClient.getBrowserSwitchResultFromNewTask(finalActivity);
+                        if (pendingResultFromCache != null && pendingResultFromCache.getRequestCode() == VENMO) {
+                            resultToDeliver =
+                                    venmoClient.deliverBrowserSwitchResultFromNewTask(finalActivity);
+                        }
+
+                        if (resultToDeliver != null) {
+                            venmoClient.onBrowserSwitchResult(resultToDeliver);
                         }
                     }
                 });

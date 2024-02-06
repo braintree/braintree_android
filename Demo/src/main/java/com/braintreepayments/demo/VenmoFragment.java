@@ -1,5 +1,6 @@
 package com.braintreepayments.demo;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.VenmoClient;
 import com.braintreepayments.api.VenmoLineItem;
@@ -28,6 +30,8 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
     private VenmoClient venmoClient;
     private BraintreeClient braintreeClient;
 
+    private boolean useManualBrowserSwitch;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -35,19 +39,25 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
         venmoButton = view.findViewById(R.id.venmo_button);
         venmoButton.setOnClickListener(this::launchVenmo);
 
+        useManualBrowserSwitch = Settings.isManualBrowserSwitchingEnabled(requireActivity());
         braintreeClient = getBraintreeClient();
         venmoClient = new VenmoClient(this, braintreeClient);
-        venmoClient.setListener(this);
+
+        if (!useManualBrowserSwitch) {
+            venmoClient.setListener(this);
+        }
 
         return view;
     }
 
     private void handleVenmoResult(VenmoAccountNonce venmoAccountNonce) {
-        super.onPaymentMethodNonceCreated(venmoAccountNonce);
+        if (venmoAccountNonce != null) {
+            super.onPaymentMethodNonceCreated(venmoAccountNonce);
 
-        NavDirections action =
-                VenmoFragmentDirections.actionVenmoFragmentToDisplayNonceFragment(venmoAccountNonce);
-        NavHostFragment.findNavController(this).navigate(action);
+            NavDirections action =
+                    VenmoFragmentDirections.actionVenmoFragmentToDisplayNonceFragment(venmoAccountNonce);
+            NavHostFragment.findNavController(this).navigate(action);
+        }
     }
 
     public void launchVenmo(View v) {
@@ -89,6 +99,30 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
                 }
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (useManualBrowserSwitch) {
+            Activity activity = requireActivity();
+            BrowserSwitchResult browserSwitchResult =
+                    venmoClient.parseBrowserSwitchResult(activity, activity.getIntent());
+            if (browserSwitchResult != null) {
+                handleBrowserSwitchResult(browserSwitchResult);
+            }
+        }
+    }
+
+    private void handleBrowserSwitchResult(BrowserSwitchResult browserSwitchResult) {
+        venmoClient.onBrowserSwitchResult(browserSwitchResult, ((venmoAccountNonce, error) -> {
+            if (venmoAccountNonce != null) {
+                handleVenmoResult(venmoAccountNonce);
+            } else if (error != null) {
+                handleError(error);
+            }
+        }));
+        venmoClient.clearActiveBrowserSwitchRequests(requireContext());
     }
 
     @Override
