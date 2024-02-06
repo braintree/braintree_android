@@ -9,7 +9,6 @@ import com.paypal.messages.config.message.PayPalMessageConfig
 import com.paypal.messages.config.message.PayPalMessageEventsCallbacks
 import com.paypal.messages.config.message.PayPalMessageStyle
 import com.paypal.messages.config.message.PayPalMessageViewStateCallbacks
-import com.paypal.messages.utils.PayPalErrors
 
 /**
  *  Use [PayPalMessagingView] to display PayPal messages to promote offers such as Pay Later
