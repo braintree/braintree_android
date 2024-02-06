@@ -258,10 +258,10 @@ public class VenmoRequest implements Parcelable {
     }
 
     /**
-     * @return Whether or not the purchase amount is the final amount.
+     * @return Whether or not the purchase amount is the final amount as a string value.
      */
-    public boolean getFinalAmount() {
-        return finalAmount;
+    String getFinalAmountAsString() {
+        return String.valueOf(this.finalAmount);
     }
 
 
