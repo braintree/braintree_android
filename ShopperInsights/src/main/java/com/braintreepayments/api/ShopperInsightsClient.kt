@@ -1,6 +1,5 @@
 package com.braintreepayments.api
 
-import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_FAILED
 import com.braintreepayments.api.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_STARTED
@@ -21,13 +20,11 @@ import java.lang.Exception
  */
 class ShopperInsightsClient @VisibleForTesting internal constructor(
     private val api: ShopperInsightsApi,
-    private val braintreeClient: BraintreeClient,
-    private val deviceInspector: DeviceInspector
+    private val braintreeClient: BraintreeClient
 ) {
     constructor(braintreeClient: BraintreeClient) : this(
         ShopperInsightsApi(EligiblePaymentsApi(braintreeClient)),
         braintreeClient,
-        DeviceInspector()
     )
 
     /**
@@ -38,38 +35,19 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
      * @return A [ShopperInsightsResult] object indicating the recommended payment methods.
      */
     fun getRecommendedPaymentMethods(
-        context: Context,
         request: ShopperInsightsRequest,
         callback: ShopperInsightsCallback
     ) {
         braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_STARTED)
+
         if (request.email == null && request.phone == null) {
-            callback.onResult(
-                ShopperInsightsResult.Failure(
-                    IllegalArgumentException(
-                        "One of ShopperInsightsRequest.email or " +
-                                "ShopperInsightsRequest.phone must be non-null."
-                    )
+            callbackFailure(
+                callback = callback,
+                error = IllegalArgumentException(
+                    "One of ShopperInsightsRequest.email or ShopperInsightsRequest.phone must be " +
+                            "non-null."
                 )
             )
-            braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_FAILED)
-            return
-        }
-
-        val applicationContext = context.applicationContext
-        val isVenmoAppInstalled = deviceInspector.isVenmoInstalled(applicationContext)
-        val isPayPalAppInstalled = deviceInspector.isPayPalInstalled(applicationContext)
-
-        if (isVenmoAppInstalled && isPayPalAppInstalled) {
-            callback.onResult(
-                ShopperInsightsResult.Success(
-                    ShopperInsightsInfo(
-                        isPayPalRecommended = true,
-                        isVenmoRecommended = true
-                    )
-                )
-            )
-            braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_SUCCEEDED)
             return
         }
 
@@ -94,7 +72,6 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                 )
             }
         )
-        braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_SUCCEEDED)
     }
 
     private fun handleFindEligiblePaymentsResult(
@@ -103,30 +80,44 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         callback: ShopperInsightsCallback
     ) {
         when {
-            error != null -> callback.onResult(ShopperInsightsResult.Failure(error))
-            result?.eligibleMethods?.paypal == null &&
-                    result?.eligibleMethods?.venmo == null -> {
-                callback.onResult(
-                    ShopperInsightsResult.Failure(
-                        BraintreeException("Required fields missing from API response body")
-                    )
+            error != null -> callbackFailure(callback, error)
+
+            result?.eligibleMethods?.paypal == null && result?.eligibleMethods?.venmo == null -> {
+                callbackFailure(
+                    callback = callback,
+                    error = BraintreeException("Required fields missing from API response body")
                 )
             }
+
             else -> {
-                callback.onResult(
-                    ShopperInsightsResult.Success(
-                        ShopperInsightsInfo(
-                            isPayPalRecommended = isPaymentRecommended(
-                                result.eligibleMethods.paypal
-                            ),
-                            isVenmoRecommended = isPaymentRecommended(
-                                result.eligibleMethods.venmo
-                            )
-                        )
-                    )
+                callbackSuccess(
+                    callback = callback,
+                    isPayPalRecommended = isPaymentRecommended(result.eligibleMethods.paypal),
+                    isVenmoRecommended = isPaymentRecommended(result.eligibleMethods.venmo)
                 )
             }
         }
+    }
+
+    private fun callbackFailure(
+        callback: ShopperInsightsCallback,
+        error: Exception
+    ) {
+        braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_FAILED)
+        callback.onResult(ShopperInsightsResult.Failure(error))
+    }
+
+    private fun callbackSuccess(
+        callback: ShopperInsightsCallback,
+        isPayPalRecommended: Boolean,
+        isVenmoRecommended: Boolean,
+    ) {
+        braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_SUCCEEDED)
+        callback.onResult(
+            ShopperInsightsResult.Success(
+                ShopperInsightsInfo(isPayPalRecommended, isVenmoRecommended)
+            )
+        )
     }
 
     private fun isPaymentRecommended(paymentDetail: EligiblePaymentMethodDetails?): Boolean {

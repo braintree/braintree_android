@@ -69,10 +69,7 @@ class ShopperInsightsFragment : BaseFragment() {
             } else {
                 ShopperInsightsRequest(email, null)
             }
-            shopperInsightsClient.getRecommendedPaymentMethods(
-                requireContext(),
-                request
-            ) { result ->
+            shopperInsightsClient.getRecommendedPaymentMethods(request) { result ->
                 responseTextView.text = when (result) {
                     is ShopperInsightsResult.Success -> {
                         "PayPal Recommended ${result.response.isPayPalRecommended} " +
