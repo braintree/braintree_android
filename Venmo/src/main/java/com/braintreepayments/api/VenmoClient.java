@@ -400,39 +400,6 @@ public class VenmoClient {
         }
     }
 
-    /**
-     * After calling {@link VenmoClient#tokenizeVenmoAccount(FragmentActivity, VenmoRequest)},
-     * call this method in your Activity or Fragment's onResume() method to see if a response
-     * was provided through deep linking.
-     *
-     * If a BrowserSwitchResult exists, call {@link VenmoClient#onBrowserSwitchResult(BrowserSwitchResult)}
-     * to allow the SDK to continue tokenization of the VenmoAccount.
-     *
-     * Make sure to call {@link VenmoClient#clearActiveBrowserSwitchRequests(Context)} after
-     * successfully parsing a BrowserSwitchResult to guard against multiple invocations of browser
-     * switch event handling.
-     *
-     * @param context The context used to check for pending browser switch requests
-     * @param intent The intent containing a potential deep link response. May be null.
-     * @return {@link BrowserSwitchResult} when a result has been parsed successfully from a deep link; null when an input Intent is null
-     */
-    @Nullable
-    public BrowserSwitchResult parseBrowserSwitchResult(@NonNull Context context, @Nullable Intent intent) {
-        int requestCode = BraintreeRequestCodes.VENMO;
-        return braintreeClient.parseBrowserSwitchResult(context, requestCode, intent);
-    }
-
-    /**
-     * Make sure to call this method after {@link VenmoClient#parseBrowserSwitchResult(Context, Intent)}
-     * parses a {@link BrowserSwitchResult} successfully to prevent multiple invocations of browser
-     * switch event handling logic.
-     *
-     * @param context The context used to clear pending browser switch requests
-     */
-    public void clearActiveBrowserSwitchRequests(@NonNull Context context) {
-        braintreeClient.clearActiveBrowserSwitchRequests(context);
-    }
-
     private void vaultVenmoAccountNonce(String nonce, final VenmoOnActivityResultCallback callback) {
         venmoApi.vaultVenmoAccountNonce(nonce, new VenmoOnActivityResultCallback() {
             @Override
@@ -478,48 +445,6 @@ public class VenmoClient {
         return venmoIntent;
     }
 
-    void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult) {
-        this.pendingBrowserSwitchResult = browserSwitchResult;
-        if (listener != null) {
-            // NEXT_MAJOR_VERSION: determine if browser switch logic can be further decoupled
-            // from the client to allow more flexibility to merchants who rely heavily on view model.
-            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
-        }
-    }
-
-    private void deliverBrowserSwitchResultToListener(final BrowserSwitchResult browserSwitchResult) {
-        onBrowserSwitchResult(browserSwitchResult, new VenmoOnActivityResultCallback() {
-            @Override
-            public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
-                if (venmoAccountNonce != null) {
-                    listener.onVenmoSuccess(venmoAccountNonce);
-                } else if (error != null) {
-                    listener.onVenmoFailure(error);
-                }
-            }
-        });
-
-        this.pendingBrowserSwitchResult = null;
-    }
-
-    // NEXT_MAJOR_VERSION: duplication here could be a sign that we need to decouple browser switching
-    // logic into another component that also gives merchants more flexibility when using view models
-    BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
-        return braintreeClient.getBrowserSwitchResult(activity);
-    }
-
-    BrowserSwitchResult deliverBrowserSwitchResult(FragmentActivity activity) {
-        return braintreeClient.deliverBrowserSwitchResult(activity);
-    }
-
-    BrowserSwitchResult getBrowserSwitchResultFromNewTask(FragmentActivity activity) {
-        return braintreeClient.getBrowserSwitchResultFromNewTask(activity);
-    }
-
-    BrowserSwitchResult deliverBrowserSwitchResultFromNewTask(FragmentActivity activity) {
-        return braintreeClient.deliverBrowserSwitchResultFromNewTask(activity);
-    }
-
     /**
      * Use this method with the manual browser switch integration pattern.
      *
@@ -559,15 +484,90 @@ public class VenmoClient {
                             callback.onResult(venmoAccountNonce, null);
                         }
                     } else if (deepLinkUri.getPath().contains("cancel")) {
-                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.canceled");
+                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.canceled");
                         callback.onResult(null, new UserCanceledException("User canceled Venmo."));
+                    }
+                } else {
+                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.failure");
+                    callback.onResult(null, new UserCanceledException("Unknown error"));
                 }
-        } else {
-            braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.failure");
-            callback.onResult(null, new UserCanceledException("Unknown error"));
-                }
-            break;
+                break;
         }
+    }
+
+    /**
+     * After calling {@link VenmoClient#tokenizeVenmoAccount(FragmentActivity, VenmoRequest)},
+     * call this method in your Activity or Fragment's onResume() method to see if a response
+     * was provided through deep linking.
+     *
+     * If a BrowserSwitchResult exists, call {@link VenmoClient#onBrowserSwitchResult(BrowserSwitchResult)}
+     * to allow the SDK to continue tokenization of the VenmoAccount.
+     *
+     * Make sure to call {@link VenmoClient#clearActiveBrowserSwitchRequests(Context)} after
+     * successfully parsing a BrowserSwitchResult to guard against multiple invocations of browser
+     * switch event handling.
+     *
+     * @param context The context used to check for pending browser switch requests
+     * @param intent The intent containing a potential deep link response. May be null.
+     * @return {@link BrowserSwitchResult} when a result has been parsed successfully from a deep link; null when an input Intent is null
+     */
+    @Nullable
+    public BrowserSwitchResult parseBrowserSwitchResult(@NonNull Context context, @Nullable Intent intent) {
+        int requestCode = BraintreeRequestCodes.VENMO;
+        return braintreeClient.parseBrowserSwitchResult(context, requestCode, intent);
+    }
+
+    /**
+     * Make sure to call this method after {@link VenmoClient#parseBrowserSwitchResult(Context, Intent)}
+     * parses a {@link BrowserSwitchResult} successfully to prevent multiple invocations of browser
+     * switch event handling logic.
+     *
+     * @param context The context used to clear pending browser switch requests
+     */
+    public void clearActiveBrowserSwitchRequests(@NonNull Context context) {
+        braintreeClient.clearActiveBrowserSwitchRequests(context);
+    }
+
+    void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult) {
+        this.pendingBrowserSwitchResult = browserSwitchResult;
+        if (listener != null) {
+            // NEXT_MAJOR_VERSION: determine if browser switch logic can be further decoupled
+            // from the client to allow more flexibility to merchants who rely heavily on view model.
+            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
+        }
+    }
+
+    // NEXT_MAJOR_VERSION: duplication here could be a sign that we need to decouple browser switching
+    // logic into another component that also gives merchants more flexibility when using view models
+    BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
+        return braintreeClient.getBrowserSwitchResult(activity);
+    }
+
+    BrowserSwitchResult deliverBrowserSwitchResult(FragmentActivity activity) {
+        return braintreeClient.deliverBrowserSwitchResult(activity);
+    }
+
+    BrowserSwitchResult getBrowserSwitchResultFromNewTask(FragmentActivity activity) {
+        return braintreeClient.getBrowserSwitchResultFromNewTask(activity);
+    }
+
+    BrowserSwitchResult deliverBrowserSwitchResultFromNewTask(FragmentActivity activity) {
+        return braintreeClient.deliverBrowserSwitchResultFromNewTask(activity);
+    }
+
+    private void deliverBrowserSwitchResultToListener(final BrowserSwitchResult browserSwitchResult) {
+        onBrowserSwitchResult(browserSwitchResult, new VenmoOnActivityResultCallback() {
+            @Override
+            public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
+                if (venmoAccountNonce != null) {
+                    listener.onVenmoSuccess(venmoAccountNonce);
+                } else if (error != null) {
+                    listener.onVenmoFailure(error);
+                }
+            }
+        });
+
+        this.pendingBrowserSwitchResult = null;
     }
 
     private void startBrowserSwitch(FragmentActivity activity, VenmoIntentData input, Context context) throws JSONException, BrowserSwitchException {

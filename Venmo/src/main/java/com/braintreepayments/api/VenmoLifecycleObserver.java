@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import static androidx.lifecycle.Lifecycle.Event.ON_RESUME;
-import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
 import static com.braintreepayments.api.BraintreeRequestCodes.VENMO;
 
 import android.os.Handler;
