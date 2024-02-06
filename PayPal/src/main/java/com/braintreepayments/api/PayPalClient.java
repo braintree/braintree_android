@@ -24,7 +24,7 @@ public class PayPalClient {
     /**
      * Initializes a new {@link PayPalClient} instance
      *
-     * @param context an Android Context
+     * @param context       an Android Context
      * @param authorization a Tokenization Key or Client Token used to authenticate
      */
     public PayPalClient(@NonNull Context context, @NonNull String authorization) {
@@ -37,8 +37,7 @@ public class PayPalClient {
     }
 
     @VisibleForTesting
-    PayPalClient(BraintreeClient braintreeClient,
-                 PayPalInternalClient internalPayPalClient) {
+    PayPalClient(BraintreeClient braintreeClient, PayPalInternalClient internalPayPalClient) {
         this.braintreeClient = braintreeClient;
         this.internalPayPalClient = internalPayPalClient;
     }
@@ -65,6 +64,7 @@ public class PayPalClient {
     public void createPaymentAuthRequest(@NonNull final Context context,
                                          @NonNull final PayPalRequest payPalRequest,
                                          @NonNull final PayPalPaymentAuthCallback callback) {
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED);
         if (payPalRequest instanceof PayPalCheckoutRequest) {
             sendCheckoutRequest(context, (PayPalCheckoutRequest) payPalRequest, callback);
         } else if (payPalRequest instanceof PayPalVaultRequest) {
@@ -75,20 +75,17 @@ public class PayPalClient {
     private void sendCheckoutRequest(final Context context,
                                      final PayPalCheckoutRequest payPalCheckoutRequest,
                                      final PayPalPaymentAuthCallback callback) {
-        braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
-        if (payPalCheckoutRequest.getShouldOfferPayLater()) {
-            braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
-        }
-
         braintreeClient.getConfiguration((configuration, error) -> {
             if (error != null) {
-                callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(error));
+                callbackCreatePaymentAuthFailure(callback,
+                        new PayPalPaymentAuthRequest.Failure(error));
                 return;
             }
 
             if (payPalConfigInvalid(configuration)) {
                 Exception configInvalidError = createPayPalError();
-                callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(configInvalidError));
+                callbackCreatePaymentAuthFailure(callback,
+                        new PayPalPaymentAuthRequest.Failure(configInvalidError));
                 return;
             }
 
@@ -100,20 +97,17 @@ public class PayPalClient {
     private void sendVaultRequest(final Context context,
                                   final PayPalVaultRequest payPalVaultRequest,
                                   final PayPalPaymentAuthCallback callback) {
-        braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
-        if (payPalVaultRequest.getShouldOfferCredit()) {
-            braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
-        }
-
         braintreeClient.getConfiguration((configuration, error) -> {
             if (error != null) {
-                callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(error));
+                callbackCreatePaymentAuthFailure(callback,
+                        new PayPalPaymentAuthRequest.Failure(error));
                 return;
             }
 
             if (payPalConfigInvalid(configuration)) {
                 Exception configInvalidError = createPayPalError();
-                callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(configInvalidError));
+                callbackCreatePaymentAuthFailure(callback,
+                        new PayPalPaymentAuthRequest.Failure(configInvalidError));
                 return;
             }
 
@@ -121,39 +115,34 @@ public class PayPalClient {
         });
     }
 
-    private void sendPayPalRequest(final Context context,
-                                   final PayPalRequest payPalRequest,
+    private void sendPayPalRequest(final Context context, final PayPalRequest payPalRequest,
                                    final PayPalPaymentAuthCallback callback) {
-        internalPayPalClient.sendRequest(context, payPalRequest,
-                (payPalResponse, error) -> {
-                    if (payPalResponse != null) {
-                        String analyticsPrefix = getAnalyticsEventPrefix(payPalRequest);
-                        braintreeClient.sendAnalyticsEvent(
-                                String.format("%s.browser-switch.started", analyticsPrefix));
-
-                        try {
-                            BrowserSwitchOptions options =
-                                    buildBrowserSwitchOptions(payPalResponse);
-                            payPalResponse.setBrowserSwitchOptions(options);
-                            callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.ReadyToLaunch(payPalResponse));
-                        } catch (JSONException exception) {
-                            callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(exception));
-                        }
-                    } else {
-                        callback.onPayPalPaymentAuthRequest(new PayPalPaymentAuthRequest.Failure(error));
-                    }
-                });
+        internalPayPalClient.sendRequest(context, payPalRequest, (payPalResponse, error) -> {
+            if (payPalResponse != null) {
+                try {
+                    BrowserSwitchOptions options = buildBrowserSwitchOptions(payPalResponse);
+                    payPalResponse.setBrowserSwitchOptions(options);
+                    callback.onPayPalPaymentAuthRequest(
+                            new PayPalPaymentAuthRequest.ReadyToLaunch(payPalResponse));
+                } catch (JSONException exception) {
+                    callbackCreatePaymentAuthFailure(callback,
+                            new PayPalPaymentAuthRequest.Failure(exception));
+                }
+            } else {
+                callbackCreatePaymentAuthFailure(callback,
+                        new PayPalPaymentAuthRequest.Failure(error));
+            }
+        });
     }
 
     private BrowserSwitchOptions buildBrowserSwitchOptions(
-            PayPalPaymentAuthRequestParams paymentAuthRequest)
-            throws JSONException {
+            PayPalPaymentAuthRequestParams paymentAuthRequest) throws JSONException {
         JSONObject metadata = new JSONObject();
         metadata.put("approval-url", paymentAuthRequest.getApprovalUrl());
         metadata.put("success-url", paymentAuthRequest.getSuccessUrl());
 
-        String paymentType = paymentAuthRequest.isBillingAgreement()
-                ? "billing-agreement" : "single-payment";
+        String paymentType =
+                paymentAuthRequest.isBillingAgreement() ? "billing-agreement" : "single-payment";
 
         metadata.put("payment-type", paymentType);
         metadata.put("client-metadata-id", paymentAuthRequest.getClientMetadataId());
@@ -161,45 +150,40 @@ public class PayPalClient {
         metadata.put("source", "paypal-browser");
         metadata.put("intent", paymentAuthRequest.getIntent());
 
-        return new BrowserSwitchOptions()
-                .requestCode(BraintreeRequestCodes.PAYPAL)
+        return new BrowserSwitchOptions().requestCode(BraintreeRequestCodes.PAYPAL)
                 .url(Uri.parse(paymentAuthRequest.getApprovalUrl()))
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                 .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
                 .metadata(metadata);
     }
 
-    private static String getAnalyticsEventPrefix(PayPalRequest request) {
-        return request instanceof PayPalVaultRequest ? "paypal.billing-agreement" :
-                "paypal.single-payment";
-    }
-
     /**
      * After receiving a result from the PayPal web authentication flow via
-     * {@link PayPalLauncher#handleReturnToAppFromBrowser(PayPalPendingRequest.Started, Intent)}, pass the
-     * {@link PayPalPaymentAuthResult} returned to this method to tokenize the PayPal account and
-     * receive a {@link PayPalAccountNonce} on success.
+     * {@link PayPalLauncher#handleReturnToAppFromBrowser(PayPalPendingRequest.Started, Intent)},
+     * pass the {@link PayPalPaymentAuthResult} returned to this method to tokenize the PayPal
+     * account and receive a {@link PayPalAccountNonce} on success.
      *
-     * @param paymentAuthResult a {@link PayPalPaymentAuthResult} received in the callback
-     *                                  of {@link PayPalLauncher#PayPalLauncher()}
-     * @param callback                  {@link PayPalTokenizeCallback}
+     * @param paymentAuthResult a {@link PayPalPaymentAuthResult} received in the callback of
+     *                          {@link PayPalLauncher#PayPalLauncher()}
+     * @param callback          {@link PayPalTokenizeCallback}
      */
     public void tokenize(@NonNull PayPalPaymentAuthResult paymentAuthResult,
                          @NonNull final PayPalTokenizeCallback callback) {
         //noinspection ConstantConditions
         if (paymentAuthResult == null) {
-            callback.onPayPalResult(new PayPalResult.Failure(
+            callbackTokenizeFailure(callback, new PayPalResult.Failure(
                     new BraintreeException("PayPalBrowserSwitchResult cannot be null")));
             return;
         }
-        BrowserSwitchResult browserSwitchResult =
-                paymentAuthResult.getBrowserSwitchResult();
+        BrowserSwitchResult browserSwitchResult = paymentAuthResult.getBrowserSwitchResult();
         if (browserSwitchResult == null && paymentAuthResult.getError() != null) {
-            callback.onPayPalResult(new PayPalResult.Failure(paymentAuthResult.getError()));
+            callbackTokenizeFailure(callback,
+                    new PayPalResult.Failure(paymentAuthResult.getError()));
             return;
         }
         if (browserSwitchResult == null) {
-            callback.onPayPalResult(new PayPalResult.Failure(new BraintreeException("An unexpected error occurred")));
+            callbackTokenizeFailure(callback, new PayPalResult.Failure(
+                    new BraintreeException("An unexpected error occurred")));
             return;
         }
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
@@ -212,15 +196,11 @@ public class PayPalClient {
 
         boolean isBillingAgreement = paymentType.equalsIgnoreCase("billing-agreement");
         String tokenKey = isBillingAgreement ? "ba_token" : "token";
-        String analyticsPrefix =
-                isBillingAgreement ? "paypal.billing-agreement" : "paypal.single-payment";
 
         int result = browserSwitchResult.getStatus();
         switch (result) {
             case BrowserSwitchStatus.CANCELED:
-                callback.onPayPalResult(PayPalResult.Cancel.INSTANCE);
-                braintreeClient.sendAnalyticsEvent(
-                        String.format("%s.browser-switch.canceled", analyticsPrefix));
+                callbackBrowserSwitchCancel(callback, PayPalResult.Cancel.INSTANCE);
                 break;
             case BrowserSwitchStatus.SUCCESS:
                 try {
@@ -246,31 +226,22 @@ public class PayPalClient {
 
                         internalPayPalClient.tokenize(payPalAccount,
                                 (payPalAccountNonce, error) -> {
-                                    if (payPalAccountNonce != null &&
-                                            payPalAccountNonce.getCreditFinancing() != null) {
-                                        braintreeClient.sendAnalyticsEvent(
-                                                "paypal.credit.accepted");
-                                    }
                                     if (payPalAccountNonce != null) {
-                                        callback.onPayPalResult(new PayPalResult.Success(payPalAccountNonce));
+                                        callbackTokenizeSuccess(callback,
+                                                new PayPalResult.Success(payPalAccountNonce));
                                     } else if (error != null) {
-                                        callback.onPayPalResult(new PayPalResult.Failure(error));
+                                        callbackTokenizeFailure(callback,
+                                                new PayPalResult.Failure(error));
                                     }
                                 });
-
-                        braintreeClient.sendAnalyticsEvent(
-                                String.format("%s.browser-switch.succeeded", analyticsPrefix));
                     } else {
-                        callback.onPayPalResult(new PayPalResult.Failure(new BraintreeException("Unknown error")));
+                        callbackTokenizeFailure(callback,
+                                new PayPalResult.Failure(new BraintreeException("Unknown error")));
                     }
                 } catch (UserCanceledException e) {
-                    callback.onPayPalResult(PayPalResult.Cancel.INSTANCE);
-                    braintreeClient.sendAnalyticsEvent(
-                            String.format("%s.browser-switch.canceled", analyticsPrefix));
+                    callbackBrowserSwitchCancel(callback, PayPalResult.Cancel.INSTANCE);
                 } catch (JSONException | PayPalBrowserSwitchException e) {
-                    callback.onPayPalResult(new PayPalResult.Failure(e));
-                    braintreeClient.sendAnalyticsEvent(
-                            String.format("%s.browser-switch.failed", analyticsPrefix));
+                    callbackTokenizeFailure(callback, new PayPalResult.Failure(e));
                 }
                 break;
         }
@@ -304,5 +275,30 @@ public class PayPalClient {
         } else {
             throw new PayPalBrowserSwitchException("The response contained inconsistent data.");
         }
+    }
+
+    private void callbackCreatePaymentAuthFailure(PayPalPaymentAuthCallback callback,
+                                                  PayPalPaymentAuthRequest.Failure failure) {
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED);
+        callback.onPayPalPaymentAuthRequest(failure);
+
+    }
+
+    private void callbackBrowserSwitchCancel(PayPalTokenizeCallback callback,
+                                             PayPalResult.Cancel cancel) {
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED);
+        callback.onPayPalResult(cancel);
+    }
+
+    private void callbackTokenizeFailure(PayPalTokenizeCallback callback,
+                                         PayPalResult.Failure failure) {
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED);
+        callback.onPayPalResult(failure);
+    }
+
+    private void callbackTokenizeSuccess(PayPalTokenizeCallback callback,
+                                         PayPalResult.Success success) {
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED);
+        callback.onPayPalResult(success);
     }
 }
