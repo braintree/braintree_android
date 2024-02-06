@@ -25,6 +25,7 @@ public class VenmoRequest implements Parcelable {
     private String taxAmount;
     private String shippingAmount;
     private ArrayList<VenmoLineItem> lineItems;
+    private boolean finalAmount;
 
     private final @VenmoPaymentMethodUsage int paymentMethodUsage;
 
@@ -248,6 +249,22 @@ public class VenmoRequest implements Parcelable {
         return lineItems;
     }
 
+    /**
+     * @param finalAmount Optional - Indicates whether the purchase amount is the final amount.
+     *                    Defaults to false.
+     */
+    public void setFinalAmount(boolean finalAmount) {
+        this.finalAmount = finalAmount;
+    }
+
+    /**
+     * @return Whether or not the purchase amount is the final amount.
+     */
+    public boolean getFinalAmount() {
+        return finalAmount;
+    }
+
+
     protected VenmoRequest(Parcel in) {
         shouldVault = in.readByte() != 0;
         collectCustomerBillingAddress = in.readByte() != 0;
@@ -261,6 +278,7 @@ public class VenmoRequest implements Parcelable {
         taxAmount = in.readString();
         totalAmount = in.readString();
         lineItems = in.createTypedArrayList(VenmoLineItem.CREATOR);
+        finalAmount = in.readByte() != 0;
     }
 
     public static final Creator<VenmoRequest> CREATOR = new Creator<VenmoRequest>() {
@@ -294,5 +312,6 @@ public class VenmoRequest implements Parcelable {
         parcel.writeString(taxAmount);
         parcel.writeString(totalAmount);
         parcel.writeTypedList(lineItems);
+        parcel.writeByte((byte) (finalAmount ? 1 : 0));
     }
 }
