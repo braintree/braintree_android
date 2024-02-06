@@ -127,7 +127,7 @@ public class LocalPaymentClient {
                 new BraintreeException("Error parsing local payment request"),
                 callback
             );
-            // Should we return here? or move the lines following the try/catch into the try block?
+            return;
         }
 
         localPaymentAuthRequestParams.setBrowserSwitchOptions(browserSwitchOptions);
