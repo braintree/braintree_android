@@ -240,7 +240,6 @@ public class PayPalClientUnitTest {
         assertTrue(result instanceof PayPalResult.Failure);
         assertEquals("PayPalBrowserSwitchResult cannot be null",
                 ((PayPalResult.Failure) result).getError().getMessage());
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.BROWSER_SWITCH_FAILED);
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED);
     }
 
@@ -262,7 +261,6 @@ public class PayPalClientUnitTest {
         PayPalResult result = captor.getValue();
         assertTrue(result instanceof PayPalResult.Failure);
         assertSame(expectedError, ((PayPalResult.Failure) result).getError());
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.BROWSER_SWITCH_FAILED);
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED);
     }
 
@@ -284,12 +282,11 @@ public class PayPalClientUnitTest {
         assertTrue(result instanceof PayPalResult.Failure);
         assertEquals("An unexpected error occurred",
                 ((PayPalResult.Failure) result).getError().getMessage());
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.BROWSER_SWITCH_FAILED);
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED);
     }
 
     @Test
-    public void tokenize_withBillingAgreement_tokenizesResponseOnSuccess_sendsAnalyticsEvent() throws JSONException {
+    public void tokenize_withBillingAgreement_tokenizesResponseOnSuccess() throws JSONException {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         String approvalUrl =
@@ -331,11 +328,10 @@ public class PayPalClientUnitTest {
                         .put("intent", "authorize").put("response_type", "web");
 
         JSONAssert.assertEquals(expectedPayPalTokenizePayload, payPalTokenizePayload, true);
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.BROWSER_SWITCH_SUCCEEDED);
     }
 
     @Test
-    public void tokenize_withOneTimePayment_tokenizesResponseOnSuccess_sendsAnalyticsEvent() throws JSONException {
+    public void tokenize_withOneTimePayment_tokenizesResponseOnSuccess() throws JSONException {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         String approvalUrl =
@@ -378,7 +374,6 @@ public class PayPalClientUnitTest {
                         .put("options", new JSONObject().put("validate", false));
 
         JSONAssert.assertEquals(expectedPayPalTokenizePayload, payPalTokenizePayload, true);
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.BROWSER_SWITCH_SUCCEEDED);
     }
 
     @Test
@@ -476,7 +471,6 @@ public class PayPalClientUnitTest {
         PayPalResult result = captor.getValue();
         assertTrue(result instanceof PayPalResult.Success);
         assertEquals(payPalAccountNonce, ((PayPalResult.Success) result).getNonce());
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.BROWSER_SWITCH_SUCCEEDED);
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED);
     }
 }

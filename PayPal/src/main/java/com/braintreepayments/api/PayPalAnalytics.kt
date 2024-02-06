@@ -7,8 +7,4 @@ internal object PayPalAnalytics {
     const val TOKENIZATION_FAILED = "paypal:tokenize:failed"
     const val TOKENIZATION_SUCCEEDED = "paypal:tokenize:succeeded"
     const val BROWSER_LOGIN_CANCELED = "paypal:tokenize:browser-login:canceled"
-
-    // Browser Presentation Events
-    const val BROWSER_SWITCH_SUCCEEDED = "paypal:tokenize:browser-presentation:succeeded"
-    const val BROWSER_SWITCH_FAILED = "paypal:tokenize:browser-presentation:failed"
 }

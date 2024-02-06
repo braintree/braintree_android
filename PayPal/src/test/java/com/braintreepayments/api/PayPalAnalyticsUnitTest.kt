@@ -11,14 +11,6 @@ class PayPalAnalyticsUnitTest {
         assertEquals("paypal:tokenize:failed", PayPalAnalytics.TOKENIZATION_FAILED)
         assertEquals("paypal:tokenize:succeeded", PayPalAnalytics.TOKENIZATION_SUCCEEDED)
         assertEquals(
-            "paypal:tokenize:browser-presentation:succeeded",
-            PayPalAnalytics.BROWSER_SWITCH_SUCCEEDED
-        )
-        assertEquals(
-            "paypal:tokenize:browser-presentation:failed",
-            PayPalAnalytics.BROWSER_SWITCH_FAILED
-        )
-        assertEquals(
             "paypal:tokenize:browser-login:canceled",
             PayPalAnalytics.BROWSER_LOGIN_CANCELED
         )

@@ -171,18 +171,18 @@ public class PayPalClient {
                          @NonNull final PayPalTokenizeCallback callback) {
         //noinspection ConstantConditions
         if (paymentAuthResult == null) {
-            callbackBrowserSwitchFailure(callback, new PayPalResult.Failure(
+            callbackTokenizeFailure(callback, new PayPalResult.Failure(
                     new BraintreeException("PayPalBrowserSwitchResult cannot be null")));
             return;
         }
         BrowserSwitchResult browserSwitchResult = paymentAuthResult.getBrowserSwitchResult();
         if (browserSwitchResult == null && paymentAuthResult.getError() != null) {
-            callbackBrowserSwitchFailure(callback,
+            callbackTokenizeFailure(callback,
                     new PayPalResult.Failure(paymentAuthResult.getError()));
             return;
         }
         if (browserSwitchResult == null) {
-            callbackBrowserSwitchFailure(callback, new PayPalResult.Failure(
+            callbackTokenizeFailure(callback, new PayPalResult.Failure(
                     new BraintreeException("An unexpected error occurred")));
             return;
         }
@@ -223,8 +223,6 @@ public class PayPalClient {
                         if (payPalIntent != null) {
                             payPalAccount.setIntent(payPalIntent);
                         }
-                        braintreeClient.sendAnalyticsEvent(
-                                PayPalAnalytics.BROWSER_SWITCH_SUCCEEDED);
 
                         internalPayPalClient.tokenize(payPalAccount,
                                 (payPalAccountNonce, error) -> {
@@ -243,7 +241,7 @@ public class PayPalClient {
                 } catch (UserCanceledException e) {
                     callbackBrowserSwitchCancel(callback, PayPalResult.Cancel.INSTANCE);
                 } catch (JSONException | PayPalBrowserSwitchException e) {
-                    callbackBrowserSwitchFailure(callback, new PayPalResult.Failure(e));
+                    callbackTokenizeFailure(callback, new PayPalResult.Failure(e));
                 }
                 break;
         }
@@ -283,14 +281,6 @@ public class PayPalClient {
                                                   PayPalPaymentAuthRequest.Failure failure) {
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED);
         callback.onPayPalPaymentAuthRequest(failure);
-
-    }
-
-    private void callbackBrowserSwitchFailure(PayPalTokenizeCallback callback,
-                                              PayPalResult.Failure failure) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_SWITCH_FAILED);
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED);
-        callback.onPayPalResult(failure);
 
     }
 
