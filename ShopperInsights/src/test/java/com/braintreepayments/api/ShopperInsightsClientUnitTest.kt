@@ -39,7 +39,7 @@ class ShopperInsightsClientUnitTest {
     }
 
     @Test
-    fun `when getRecommendedPaymentMethods is called, succeeded event is sent`() {
+    fun `when getRecommendedPaymentMethods is called, failed event is sent`() {
         val request = ShopperInsightsRequest(null, null)
 
         sut.getRecommendedPaymentMethods(request, mockk(relaxed = true))
@@ -244,7 +244,7 @@ class ShopperInsightsClientUnitTest {
     }
 
     @Test
-    fun `when getRecommendedPaymentMethods is called with null request, failed event is sent`() {
+    fun `when getRecommendedPaymentMethods is called with null request, succeeded event is sent`() {
         val result = EligiblePaymentsApiResult(
             EligiblePaymentMethods(
                 paypal = EligiblePaymentMethodDetails(
