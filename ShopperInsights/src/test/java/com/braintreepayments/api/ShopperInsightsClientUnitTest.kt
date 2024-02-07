@@ -1,19 +1,15 @@
 package com.braintreepayments.api
 
-import android.content.Context
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.slot
 import io.mockk.verify
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertTrue
-import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
  * Unit tests for BraintreeShopperInsightsClient.
@@ -24,91 +20,30 @@ import org.junit.Test
  */
 class ShopperInsightsClientUnitTest {
 
-    private val context: Context = mockk(relaxed = true)
-    private val applicationContext: Context = mockk(relaxed = true)
     private lateinit var sut: ShopperInsightsClient
     private lateinit var api: ShopperInsightsApi
     private lateinit var braintreeClient: BraintreeClient
-    private lateinit var deviceInspector: DeviceInspector
 
     @Before
     fun beforeEach() {
         api = mockk(relaxed = true)
         braintreeClient = mockk(relaxed = true)
-        deviceInspector = mockk(relaxed = true)
-        every { context.applicationContext } returns applicationContext
-        sut = ShopperInsightsClient(api, braintreeClient, deviceInspector)
+        sut = ShopperInsightsClient(api, braintreeClient)
     }
 
-    /**
-     * Tests if the getRecommendedPaymentMethods method returns paypal and venmo recommendations
-     * when providing a shopping insight request.
-     */
     @Test
-    fun testGetRecommendedPaymentMethods_noInstalledApps_returnsDefaultRecommendations() {
-        every { deviceInspector.isVenmoInstalled(applicationContext) } returns false
-        every { deviceInspector.isPayPalInstalled(applicationContext) } returns false
+    fun `when getRecommendedPaymentMethods is called, started event is sent`() {
+        sut.getRecommendedPaymentMethods(mockk(relaxed = true), mockk(relaxed = true))
 
-        val request = ShopperInsightsRequest("fake-email", null)
-        sut.getRecommendedPaymentMethods(context, request) { result ->
-            assertNotNull(result)
-            val successResult = assertIs<ShopperInsightsResult.Success>(result)
-            assertFalse(successResult.response.isPayPalRecommended)
-            assertFalse(successResult.response.isVenmoRecommended)
-        }
         verifyStartedAnalyticsEvent()
-        verifySuccessAnalyticsEvent()
     }
 
     @Test
-    fun testGetRecommendedPaymentMethods_oneInstalledApp_returnsDefaultRecommendations() {
-        every { deviceInspector.isVenmoInstalled(applicationContext) } returns true
-        every { deviceInspector.isPayPalInstalled(applicationContext) } returns false
-
-        val request = ShopperInsightsRequest("fake-email", null)
-        sut.getRecommendedPaymentMethods(context, request) { result ->
-            assertNotNull(result)
-            val successResult = assertIs<ShopperInsightsResult.Success>(result)
-            assertFalse(successResult.response.isPayPalRecommended)
-            assertFalse(successResult.response.isVenmoRecommended)
-        }
-        verifyStartedAnalyticsEvent()
-        verifySuccessAnalyticsEvent()
-    }
-
-    @Test
-    fun testGetRecommendedPaymentMethods_hasBothAppsInstalled_returnsSuccessResult() {
-        every { deviceInspector.isVenmoInstalled(applicationContext) } returns true
-        every { deviceInspector.isPayPalInstalled(applicationContext) } returns true
-
-        val request = ShopperInsightsRequest("some-email", null)
-        sut.getRecommendedPaymentMethods(context, request) { result ->
-            assertNotNull(result)
-            val successResult = assertIs<ShopperInsightsResult.Success>(result)
-            assertTrue(successResult.response.isPayPalRecommended)
-            assertTrue(successResult.response.isVenmoRecommended)
-        }
-        verifyStartedAnalyticsEvent()
-        verifySuccessAnalyticsEvent()
-    }
-
-    @Test
-    fun `testGetRecommendedPaymentMethods - request object has null properties`() {
-        every { deviceInspector.isVenmoInstalled(applicationContext) } returns false
-        every { deviceInspector.isPayPalInstalled(applicationContext) } returns true
-
+    fun `when getRecommendedPaymentMethods is called, failed event is sent`() {
         val request = ShopperInsightsRequest(null, null)
-        sut.getRecommendedPaymentMethods(context, request) { result ->
-            assertNotNull(result)
-            val error = assertIs<ShopperInsightsResult.Failure>(result)
-            val iae = assertIs<IllegalArgumentException>(error.error)
-            assertEquals(
-                "One of ShopperInsightsRequest.email or " +
-                        "ShopperInsightsRequest.phone must be non-null.",
-                iae.message
-            )
-        }
-        verifyStartedAnalyticsEvent()
+
+        sut.getRecommendedPaymentMethods(request, mockk(relaxed = true))
+
         verifyFailedAnalyticsEvent()
     }
 
@@ -309,6 +244,29 @@ class ShopperInsightsClientUnitTest {
     }
 
     @Test
+    fun `when getRecommendedPaymentMethods is called with null request, succeeded event is sent`() {
+        val result = EligiblePaymentsApiResult(
+            EligiblePaymentMethods(
+                paypal = EligiblePaymentMethodDetails(
+                    canBeVaulted = true,
+                    eligibleInPayPalNetwork = true,
+                    recommended = false,
+                    recommendedPriority = 1
+                ),
+                venmo = null
+            )
+        )
+
+        executeTestForFindEligiblePaymentsApi(
+            callback = mockk<ShopperInsightsCallback>(relaxed = true),
+            result = result,
+            error = null
+        )
+
+        verifySuccessAnalyticsEvent()
+    }
+
+    @Test
     fun `test paypal presented analytics event`() {
         sut.sendPayPalPresentedEvent()
         verify { braintreeClient.sendAnalyticsEvent("shopper-insights:paypal-presented") }
@@ -338,13 +296,10 @@ class ShopperInsightsClientUnitTest {
         result: EligiblePaymentsApiResult?,
         error: Exception?
     ) {
-        every { deviceInspector.isVenmoInstalled(applicationContext) } returns false
-        every { deviceInspector.isPayPalInstalled(applicationContext) } returns false
-
         val apiCallbackSlot = slot<EligiblePaymentsCallback>()
         every { api.findEligiblePayments(any(), capture(apiCallbackSlot)) } just runs
 
-        sut.getRecommendedPaymentMethods(context, request, callback)
+        sut.getRecommendedPaymentMethods(request, callback)
 
         apiCallbackSlot.captured.onResult(result = result, error = error)
     }

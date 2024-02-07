@@ -104,7 +104,6 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
             ShopperInsightsRequest(email, null)
         }
         shopperInsightsClient.getRecommendedPaymentMethods(
-            requireContext(),
             request
         ) { result ->
             when (result) {
