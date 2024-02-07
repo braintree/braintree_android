@@ -54,7 +54,13 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
         payPalClient = PayPalClient(braintreeClient)
         venmoClient = VenmoClient(this, braintreeClient)
 
-        payPalClient.setListener(this)
+        val useManualBrowserSwitch = Settings.isManualBrowserSwitchingEnabled(requireActivity())
+        if (useManualBrowserSwitch) {
+            payPalClient = PayPalClient(braintreeClient)
+        } else {
+            payPalClient = PayPalClient(this, braintreeClient)
+            payPalClient.setListener(this)
+        }
 
         return inflater.inflate(R.layout.fragment_shopping_insights, container, false)
     }
@@ -80,7 +86,7 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
         phoneNullSwitch = view.findViewById(R.id.phoneNullSwitch)
 
         emailInput.editText?.setText("PR1_merchantname@personal.example.com")
-        nationalNumberInput.editText?.setText("408-232-1001")
+        nationalNumberInput.editText?.setText("4082321001")
         countryCodeInput.editText?.setText("1")
     }
 
@@ -132,7 +138,7 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
 
     override fun onPayPalSuccess(payPalAccountNonce: PayPalAccountNonce) {
         super.onPaymentMethodNonceCreated(payPalAccountNonce)
-        val action = PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(
+        val action = ShopperInsightsFragmentDirections.actionShopperInsightsFragmentToDisplayNonceFragment(
             payPalAccountNonce
         )
         NavHostFragment.findNavController(this).navigate(action)
@@ -145,8 +151,9 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
     override fun onVenmoSuccess(venmoAccountNonce: VenmoAccountNonce) {
         super.onPaymentMethodNonceCreated(venmoAccountNonce)
 
-        val action: NavDirections =
-            VenmoFragmentDirections.actionVenmoFragmentToDisplayNonceFragment(venmoAccountNonce)
+        val action = ShopperInsightsFragmentDirections.actionShopperInsightsFragmentToDisplayNonceFragment(
+            venmoAccountNonce
+        )
         NavHostFragment.findNavController(this).navigate(action)
     }
 
