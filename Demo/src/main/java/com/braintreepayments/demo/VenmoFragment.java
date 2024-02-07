@@ -48,13 +48,11 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
     }
 
     private void handleVenmoResult(VenmoAccountNonce venmoAccountNonce) {
-        if (venmoAccountNonce != null) {
-            super.onPaymentMethodNonceCreated(venmoAccountNonce);
+        super.onPaymentMethodNonceCreated(venmoAccountNonce);
 
-            NavDirections action =
+        NavDirections action =
                     VenmoFragmentDirections.actionVenmoFragmentToDisplayNonceFragment(venmoAccountNonce);
-            NavHostFragment.findNavController(this).navigate(action);
-        }
+        NavHostFragment.findNavController(this).navigate(action);
     }
 
     public void launchVenmo(View v) {
