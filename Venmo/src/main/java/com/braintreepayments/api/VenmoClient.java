@@ -563,14 +563,12 @@ public class VenmoClient {
     void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult) {
         this.pendingBrowserSwitchResult = browserSwitchResult;
         if (listener != null) {
-            // NEXT_MAJOR_VERSION: determine if browser switch logic can be further decoupled
-            // from the client to allow more flexibility to merchants who rely heavily on view model.
+            // NEXT_MAJOR_VERSION: remove all manual browser switching methods
             deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
         }
     }
 
-    // NEXT_MAJOR_VERSION: duplication here could be a sign that we need to decouple browser switching
-    // logic into another component that also gives merchants more flexibility when using view models
+    // NEXT_MAJOR_VERSION: remove all manual browser switching methods
     BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
         return braintreeClient.getBrowserSwitchResult(activity);
     }
