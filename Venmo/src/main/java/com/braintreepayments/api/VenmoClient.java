@@ -237,7 +237,7 @@ public class VenmoClient {
             VenmoIntentData intentData = new VenmoIntentData(configuration, venmoProfileId, paymentContextId, braintreeClient.getSessionId(), braintreeClient.getIntegrationType());
             if (request.getFallbackToWeb()) {
                 try {
-                    startUniversalLinkFlow(activity, intentData);
+                    startAppLinkFlow(activity, intentData);
                 } catch (JSONException | BrowserSwitchException exception) {
                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.failure");
                     deliverVenmoFailure(exception);
@@ -480,7 +480,7 @@ public class VenmoClient {
                         }
 
                         if (resourceIdFromBrowserSwitch != null || resourceIdFromAppSwitch != null) {
-                            String resourceId = "";
+                            String resourceId;
                             if (resourceIdFromBrowserSwitch != null) {
                                 resourceId = resourceIdFromBrowserSwitch;
                             } else {
@@ -498,14 +498,14 @@ public class VenmoClient {
                                 }
                             });
                         } else if ((paymentMethodNonceFromBrowserSwitch != null && usernameFromBrowserSwitch != null) || (paymentMethodNonceFromAppSwitch != null && usernameFromAppSwitch != null)) {
-                            String paymentMethodNonce = null;
+                            String paymentMethodNonce;
                             if (paymentMethodNonceFromBrowserSwitch != null) {
                                 paymentMethodNonce = paymentMethodNonceFromBrowserSwitch;
                             } else {
                                 paymentMethodNonce = paymentMethodNonceFromAppSwitch;
                             }
 
-                            String username = null;
+                            String username;
                             if (usernameFromBrowserSwitch != null) {
                                 username = usernameFromBrowserSwitch;
                             } else {
@@ -519,9 +519,9 @@ public class VenmoClient {
                         braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.canceled");
                         callback.onResult(null, new UserCanceledException("User canceled Venmo."));
                     }
-                } else {
+                } else if (deepLinkUri.getPath().contains("error")) {
                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.failure");
-                    callback.onResult(null, new UserCanceledException("Unknown error"));
+                    callback.onResult(null, new Exception("Unknown error"));
                 }
                 break;
         }
@@ -589,10 +589,12 @@ public class VenmoClient {
         onBrowserSwitchResult(browserSwitchResult, new VenmoOnActivityResultCallback() {
             @Override
             public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
-                if (venmoAccountNonce != null) {
-                    listener.onVenmoSuccess(venmoAccountNonce);
-                } else if (error != null) {
-                    listener.onVenmoFailure(error);
+                if (listener != null) {
+                    if (venmoAccountNonce != null) {
+                        listener.onVenmoSuccess(venmoAccountNonce);
+                    } else if (error != null) {
+                        listener.onVenmoFailure(error);
+                    }
                 }
             }
         });
@@ -600,7 +602,7 @@ public class VenmoClient {
         this.pendingBrowserSwitchResult = null;
     }
 
-    private void startUniversalLinkFlow(FragmentActivity activity, VenmoIntentData input) throws JSONException, BrowserSwitchException {
+    private void startAppLinkFlow(FragmentActivity activity, VenmoIntentData input) throws JSONException, BrowserSwitchException {
         JSONObject braintreeData = new MetadataBuilder()
                 .sessionId(input.getSessionId())
                 .integration(input.getIntegrationType())
