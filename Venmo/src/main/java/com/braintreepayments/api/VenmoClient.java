@@ -169,14 +169,14 @@ public class VenmoClient {
                 }
 
                 String exceptionMessage = null;
-                if (!configuration.isVenmoEnabled()) {
-                    exceptionMessage = "Venmo is not enabled";
-                }
-
                 if (!request.getFallbackToWeb()) {
                      if (!deviceInspector.isVenmoAppSwitchAvailable(activity)) {
                         exceptionMessage = "Venmo is not installed";
                     }
+                }
+
+                if (!configuration.isVenmoEnabled()) {
+                    exceptionMessage = "Venmo is not enabled";
                 }
 
                 if (exceptionMessage != null) {
@@ -237,7 +237,7 @@ public class VenmoClient {
             VenmoIntentData intentData = new VenmoIntentData(configuration, venmoProfileId, paymentContextId, braintreeClient.getSessionId(), braintreeClient.getIntegrationType());
             if (request.getFallbackToWeb()) {
                 try {
-                    startUniversalLinkFlow(activity, intentData, braintreeClient.getApplicationContext());
+                    startUniversalLinkFlow(activity, intentData);
                 } catch (JSONException | BrowserSwitchException exception) {
                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.failure");
                     deliverVenmoFailure(exception);
@@ -602,7 +602,7 @@ public class VenmoClient {
         this.pendingBrowserSwitchResult = null;
     }
 
-    private void startUniversalLinkFlow(FragmentActivity activity, VenmoIntentData input, Context context) throws JSONException, BrowserSwitchException {
+    private void startUniversalLinkFlow(FragmentActivity activity, VenmoIntentData input) throws JSONException, BrowserSwitchException {
         JSONObject braintreeData = new MetadataBuilder()
                 .sessionId(input.getSessionId())
                 .integration(input.getIntegrationType())
@@ -610,6 +610,7 @@ public class VenmoClient {
                 .build();
 
         String applicationName = "ApplicationNameUnknown";
+        Context context = activity.getApplicationContext();
         if (context.getPackageManager().getApplicationLabel(context.getApplicationInfo()).toString()  != null) {
             applicationName = context.getPackageManager().getApplicationLabel(context.getApplicationInfo()).toString();
         }
