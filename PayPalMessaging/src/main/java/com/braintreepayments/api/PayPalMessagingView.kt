@@ -26,7 +26,7 @@ class PayPalMessagingView(private val braintreeClient: BraintreeClient) {
      * Note: **This module is in beta. It's public API may change or be removed in future releases.**
      */
     fun start(context: Context, request: PayPalMessagingRequest = PayPalMessagingRequest()) {
-        braintreeClient.sendAnalyticsEvent(PayPalMessagingAnalytics.STARTED.value)
+        braintreeClient.sendAnalyticsEvent(PayPalMessagingAnalytics.STARTED)
 
         braintreeClient.getConfiguration { configuration, configError ->
             if (configError != null) {
@@ -112,12 +112,12 @@ class PayPalMessagingView(private val braintreeClient: BraintreeClient) {
     }
 
     private fun notifySuccess() {
-        braintreeClient.sendAnalyticsEvent(PayPalMessagingAnalytics.SUCCEEDED.value)
+        braintreeClient.sendAnalyticsEvent(PayPalMessagingAnalytics.SUCCEEDED)
         payPalMessagingListener?.onPayPalMessagingSuccess()
     }
 
     private fun notifyFailure(error: Exception) {
-        braintreeClient.sendAnalyticsEvent(PayPalMessagingAnalytics.FAILED.value)
+        braintreeClient.sendAnalyticsEvent(PayPalMessagingAnalytics.FAILED)
         payPalMessagingListener?.onPayPalMessagingFailure(error)
     }
 }
