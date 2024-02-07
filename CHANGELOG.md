@@ -5,7 +5,7 @@
 * Venmo
   * Add `setFallbackToWeb()` to `VenmoRequest`
     * If set to `true` customers will fallback to a web based Venmo flow if the Venmo app is not installed
-    * This method uses App Links and is more secure than the Deep Link based flow
+    * This method uses App Links instead of Deep Links
   * Add `VenmoClient#parseBrowserSwitchResult(Context, Intent)` method
   * Add `VenmoClient#clearActiveBrowserSwitchRequests(Context)` method
   * Add `VenmoClient#onBrowserSwitchResult(BrowserSwitchResult, VenmoOnActivityResultCallback)` method
