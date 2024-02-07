@@ -89,6 +89,7 @@ internal class BraintreeHttpClient(
         data: String,
         configuration: Configuration?,
         authorization: Authorization?,
+        additionalHeaders: Map<String, String> = emptyMap(),
         callback: HttpResponseCallback
     ) {
         if (authorization is InvalidAuthorization) {
@@ -126,6 +127,7 @@ internal class BraintreeHttpClient(
             request.addHeader(CLIENT_KEY_HEADER, authorization.bearer)
         }
         authorization?.bearer?.let { token -> request.addHeader("Authorization", "Bearer $token") }
+        additionalHeaders.forEach { (name, value) -> request.addHeader(name, value) }
         httpClient.sendRequest(request, callback)
     }
 
