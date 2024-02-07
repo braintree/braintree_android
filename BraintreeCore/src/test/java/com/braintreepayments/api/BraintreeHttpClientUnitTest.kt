@@ -472,6 +472,5 @@ class BraintreeHttpClientUnitTest {
                 assertEquals(it.headers["name2"], "value2")
             }, callback)
         }
-
     }
 }
