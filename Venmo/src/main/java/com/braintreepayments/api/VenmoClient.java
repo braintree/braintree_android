@@ -498,14 +498,14 @@ public class VenmoClient {
                                 }
                             });
                         } else if ((paymentMethodNonceFromBrowserSwitch != null && usernameFromBrowserSwitch != null) || (paymentMethodNonceFromAppSwitch != null && usernameFromAppSwitch != null)) {
-                            String paymentMethodNonce = "";
+                            String paymentMethodNonce = null;
                             if (paymentMethodNonceFromBrowserSwitch != null) {
-                                paymentMethodNonce = resourceIdFromBrowserSwitch;
+                                paymentMethodNonce = paymentMethodNonceFromBrowserSwitch;
                             } else {
                                 paymentMethodNonce = paymentMethodNonceFromAppSwitch;
                             }
 
-                            String username = "";
+                            String username = null;
                             if (usernameFromBrowserSwitch != null) {
                                 username = usernameFromBrowserSwitch;
                             } else {

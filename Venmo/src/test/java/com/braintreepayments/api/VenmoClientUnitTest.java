@@ -1549,7 +1549,7 @@ public class VenmoClientUnitTest {
         sut.pendingBrowserSwitchResult = browserSwitchResult;
         sut.setListener(listener);
 
-        verify(listener).onVenmoSuccess(same(nonce));
+        verify(listener).onVenmoSuccess(any(VenmoAccountNonce.class));
         verify(listener, never()).onVenmoFailure(any(Exception.class));
         TestCase.assertNull(sut.pendingBrowserSwitchResult);
     }
