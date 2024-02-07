@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment
 import com.braintreepayments.api.BraintreeClient
 import com.braintreepayments.api.PayPalAccountNonce
@@ -51,8 +50,9 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
     ): View? {
         braintreeClient = getBraintreeClient()
         shopperInsightsClient = ShopperInsightsClient(braintreeClient)
-        payPalClient = PayPalClient(braintreeClient)
+
         venmoClient = VenmoClient(this, braintreeClient)
+        venmoClient.setListener(this)
 
         val useManualBrowserSwitch = Settings.isManualBrowserSwitchingEnabled(requireActivity())
         if (useManualBrowserSwitch) {
@@ -131,7 +131,12 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
 
     private fun launchVenmo() {
         val venmoRequest = VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE)
+        venmoRequest.profileId = null
+        venmoRequest.collectCustomerBillingAddress = true
+        venmoRequest.collectCustomerShippingAddress = true
         venmoRequest.totalAmount = "20"
+        venmoRequest.subTotalAmount = "18"
+        venmoRequest.taxAmount = "1"
 
         venmoClient.tokenizeVenmoAccount(requireActivity(), venmoRequest)
     }
