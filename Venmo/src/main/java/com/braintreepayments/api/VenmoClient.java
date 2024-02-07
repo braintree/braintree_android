@@ -469,9 +469,9 @@ public class VenmoClient {
                         String paymentMethodNonceFromBrowserSwitch = Uri.parse(String.valueOf(deepLinkUri)).getQueryParameter("payment_method_nonce");
                         String usernameFromBrowserSwitch = Uri.parse(String.valueOf(deepLinkUri)).getQueryParameter("username");
 
-                        String resourceIdFromAppSwitch = "";
-                        String paymentMethodNonceFromAppSwitch = "";
-                        String usernameFromAppSwitch = "";
+                        String resourceIdFromAppSwitch = null;
+                        String paymentMethodNonceFromAppSwitch = null;
+                        String usernameFromAppSwitch = null;
                         if (resourceIdFromBrowserSwitch == null && paymentMethodNonceFromBrowserSwitch == null && usernameFromBrowserSwitch == null) {
                             String cleanedAppSwitchUri = String.valueOf(deepLinkUri).replaceFirst("&","?");
                             resourceIdFromAppSwitch = Uri.parse(String.valueOf(cleanedAppSwitchUri)).getQueryParameter("resource_id");
