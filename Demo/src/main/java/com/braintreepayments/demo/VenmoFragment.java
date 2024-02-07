@@ -42,10 +42,7 @@ public class VenmoFragment extends BaseFragment implements VenmoListener {
         useManualBrowserSwitch = Settings.isManualBrowserSwitchingEnabled(requireActivity());
         braintreeClient = getBraintreeClient();
         venmoClient = new VenmoClient(this, braintreeClient);
-
-        if (!useManualBrowserSwitch) {
-            venmoClient.setListener(this);
-        }
+        venmoClient.setListener(this);
 
         return view;
     }
