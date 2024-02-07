@@ -291,7 +291,6 @@ public class ThreeDSecureClient {
                                     } else if (threeDSecureResult1.getThreeDSecureNonce() != null) {
                                         braintreeClient.sendAnalyticsEvent(
                                                 "three-d-secure.verification-flow.upgrade-payment-method.succeeded");
-                                        sendLiabilityShiftedAnalytics(threeDSecureResult1);
                                         callback.onThreeDSecureResult(new ThreeDSecureResult.Success(threeDSecureResult1.getThreeDSecureNonce()));
                                     }
                                 } else if (error != null) {
@@ -316,17 +315,5 @@ public class ThreeDSecureClient {
                     break;
             }
         }
-    }
-
-    private void sendLiabilityShiftedAnalytics(
-            ThreeDSecureParams threeDSecureParams) {
-        ThreeDSecureInfo info = threeDSecureParams.getThreeDSecureNonce().getThreeDSecureInfo();
-
-        braintreeClient.sendAnalyticsEvent(
-                String.format("three-d-secure.verification-flow.liability-shifted.%b",
-                        info.isLiabilityShifted()));
-        braintreeClient.sendAnalyticsEvent(
-                String.format("three-d-secure.verification-flow.liability-shift-possible.%b",
-                        info.isLiabilityShiftPossible()));
     }
 }

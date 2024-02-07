@@ -36,9 +36,6 @@ class ThreeDSecureAPI {
                                  final ThreeDSecureResultCallback callback) {
         final ThreeDSecureNonce lookupCardNonce = threeDSecureParams.getThreeDSecureNonce();
 
-        braintreeClient.sendAnalyticsEvent(
-                "three-d-secure.verification-flow.upgrade-payment-method.started");
-
         final String lookupNonce = lookupCardNonce.getString();
 
         JSONObject body = new JSONObject();
