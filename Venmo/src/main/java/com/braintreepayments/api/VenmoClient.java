@@ -518,8 +518,11 @@ public class VenmoClient {
                     } else if (deepLinkUri.getPath().contains("cancel")) {
                         braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.canceled");
                         callback.onResult(null, new UserCanceledException("User canceled Venmo."));
+                    } else if (deepLinkUri.getPath().contains("error")) {
+                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.failure");
+                        callback.onResult(null, new Exception("Error returned from Venmo."));
                     }
-                } else if (deepLinkUri.getPath().contains("error")) {
+                } else {
                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.failure");
                     callback.onResult(null, new Exception("Unknown error"));
                 }
@@ -602,7 +605,8 @@ public class VenmoClient {
         this.pendingBrowserSwitchResult = null;
     }
 
-    private void startAppLinkFlow(FragmentActivity activity, VenmoIntentData input) throws JSONException, BrowserSwitchException {
+    @VisibleForTesting
+    void startAppLinkFlow(FragmentActivity activity, VenmoIntentData input) throws JSONException, BrowserSwitchException {
         JSONObject braintreeData = new MetadataBuilder()
                 .sessionId(input.getSessionId())
                 .integration(input.getIntegrationType())
@@ -611,8 +615,10 @@ public class VenmoClient {
 
         String applicationName = "ApplicationNameUnknown";
         Context context = activity.getApplicationContext();
-        if (context.getPackageManager().getApplicationLabel(context.getApplicationInfo()).toString()  != null) {
-            applicationName = context.getPackageManager().getApplicationLabel(context.getApplicationInfo()).toString();
+        if (context != null) {
+            if (context.getPackageManager().getApplicationLabel(context.getApplicationInfo()).toString() != null) {
+                applicationName = context.getPackageManager().getApplicationLabel(context.getApplicationInfo()).toString();
+            }
         }
 
         Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout")
