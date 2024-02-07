@@ -35,7 +35,6 @@ class ApiClient(private val braintreeClient: BraintreeClient) {
             sendPOST(
                 url = url,
                 data = paymentMethod.buildJSON().toString(),
-                additionalHeaders = emptyMap(),
             ) { responseBody, httpError ->
                 parseResponseToJSON(responseBody)?.let { json ->
                     sendAnalyticsEvent("card.rest.tokenization.success")
