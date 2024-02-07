@@ -217,12 +217,6 @@ public class ThreeDSecureClient {
         boolean showChallenge = lookup.getAcsUrl() != null;
         String threeDSecureVersion = lookup.getThreeDSecureVersion();
 
-        braintreeClient.sendAnalyticsEvent(
-                String.format("three-d-secure.verification-flow.challenge-presented.%b",
-                        showChallenge));
-        braintreeClient.sendAnalyticsEvent(
-                String.format("three-d-secure.verification-flow.3ds-version.%s",
-                        threeDSecureVersion));
 
         if (!showChallenge) {
             ThreeDSecureNonce threeDSecureNonce = result.getThreeDSecureNonce();
@@ -239,16 +233,18 @@ public class ThreeDSecureClient {
             return;
         }
 
+        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.CHALLENGE_REQUIRED);
+
         if (!threeDSecureVersion.startsWith("2.")) {
             String threeDSecureV1UnsupportedMessage =
                     "3D Secure v1 is deprecated and no longer supported. See https://developer.paypal.com/braintree/docs/guides/3d-secure/client-side/android/v4 for more information.";
             BraintreeException threeDSecureV1UnsupportedError =
                     new BraintreeException(threeDSecureV1UnsupportedMessage);
-            callback.onThreeDSecurePaymentAuthRequest(new ThreeDSecurePaymentAuthRequest.Failure(threeDSecureV1UnsupportedError));
+            callbackCreatePaymentAuthFailure(callback, new ThreeDSecurePaymentAuthRequest.Failure(threeDSecureV1UnsupportedError));
             return;
         }
 
-        braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.started");
+        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED);
         callback.onThreeDSecurePaymentAuthRequest(new ThreeDSecurePaymentAuthRequest.ReadyToLaunch(result));
     }
 
@@ -281,23 +277,18 @@ public class ThreeDSecureClient {
                             (threeDSecureResult1, error) -> {
                                 if (threeDSecureResult1 != null) {
                                     if (threeDSecureResult1.hasError()) {
-                                        braintreeClient.sendAnalyticsEvent(
-                                                "three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
+                                        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED);
                                         callback.onThreeDSecureResult(new ThreeDSecureResult.Failure(new BraintreeException(threeDSecureResult1.getErrorMessage()), threeDSecureResult1.getThreeDSecureNonce()));
                                     } else if (threeDSecureResult1.getThreeDSecureNonce() != null) {
-                                        braintreeClient.sendAnalyticsEvent(
-                                                "three-d-secure.verification-flow.upgrade-payment-method.succeeded");
+                                        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_SUCCEEDED);
                                         callback.onThreeDSecureResult(new ThreeDSecureResult.Success(threeDSecureResult1.getThreeDSecureNonce()));
                                     }
                                 } else if (error != null) {
-                                    braintreeClient.sendAnalyticsEvent(
-                                            "three-d-secure.verification-flow.upgrade-payment-method.errored");
+                                    braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED);
                                     callback.onThreeDSecureResult(new ThreeDSecureResult.Failure(error, null));
                                 }
                             });
 
-                    braintreeClient.sendAnalyticsEvent(
-                            "three-d-secure.verification-flow.completed");
                     break;
                 case ERROR:
                 case TIMEOUT:
