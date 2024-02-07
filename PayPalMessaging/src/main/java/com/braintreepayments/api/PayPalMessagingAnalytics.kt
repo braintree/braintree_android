@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api
 
 internal object PayPalMessagingAnalytics {
     const val STARTED = "paypal-messaging:create-view:started"
