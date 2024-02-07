@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import static android.os.Looper.getMainLooper;
-import static com.braintreepayments.api.BraintreeRequestCodes.PAYPAL;
 import static com.braintreepayments.api.BraintreeRequestCodes.THREE_D_SECURE;
 import static com.braintreepayments.api.BraintreeRequestCodes.VENMO;
 import static org.mockito.ArgumentMatchers.any;
