@@ -1526,14 +1526,14 @@ public class VenmoClientUnitTest {
 
     @Test
     public void setListener_whenPendingBrowserSwitchResultExists_deliversResultToListener_andSetsPendingResultNull() throws JSONException {
+        VenmoAccountNonce nonce = mock(VenmoAccountNonce.class);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .build();
-
-        String successUrl = "sample-scheme://x-callback-url/vzero/auth/venmo/success?username=A-Username&payment_method_nonce=fake-venmo-account-nonce";
 
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
         when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchStatus.SUCCESS);
 
+        String successUrl = "sample-scheme://x-callback-url/vzero/auth/venmo/success?username=A-Username&payment_method_nonce=fake-venmo-account-nonce";
         when(browserSwitchResult.getRequestMetadata()).thenReturn(new JSONObject()
                 .put("deepLinkUrl", successUrl)
         );
@@ -1541,11 +1541,15 @@ public class VenmoClientUnitTest {
         Uri uri = Uri.parse(successUrl);
         when(browserSwitchResult.getDeepLinkUrl()).thenReturn(uri);
 
+        VenmoApi venmoApi = new MockVenmoApiBuilder()
+                .createNonceFromPaymentContextSuccess(nonce)
+                .build();
+
         VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
         sut.pendingBrowserSwitchResult = browserSwitchResult;
         sut.setListener(listener);
 
-        verify(listener).onVenmoSuccess(any(VenmoAccountNonce.class));
+        verify(listener).onVenmoSuccess(same(nonce));
         verify(listener, never()).onVenmoFailure(any(Exception.class));
         TestCase.assertNull(sut.pendingBrowserSwitchResult);
     }
