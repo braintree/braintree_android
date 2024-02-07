@@ -88,8 +88,7 @@ class PayPalMessagingView(private val braintreeClient: BraintreeClient) {
                 notifyFailure(error)
             },
             onSuccess = {
-                braintreeClient.sendAnalyticsEvent(PayPalMessagingAnalytics.SUCCEEDED.value)
-                payPalMessagingListener?.onPayPalMessagingSuccess()
+                notifySuccess()
             }
         )
 
@@ -110,6 +109,11 @@ class PayPalMessagingView(private val braintreeClient: BraintreeClient) {
         )
 
         return PayPalMessageView(context = context, config = messageConfig)
+    }
+
+    private fun notifySuccess() {
+        braintreeClient.sendAnalyticsEvent(PayPalMessagingAnalytics.SUCCEEDED.value)
+        payPalMessagingListener?.onPayPalMessagingSuccess()
     }
 
     private fun notifyFailure(error: Exception) {
