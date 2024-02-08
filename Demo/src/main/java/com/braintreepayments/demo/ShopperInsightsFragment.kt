@@ -103,6 +103,7 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
         } else {
             ShopperInsightsRequest(email, null)
         }
+
         shopperInsightsClient.getRecommendedPaymentMethods(
             request
         ) { result ->
@@ -124,6 +125,7 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
             }
         }
     }
+    
     private fun launchPayPalVault() {
         payPalClient.tokenizePayPalAccount(
             requireActivity(),
