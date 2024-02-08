@@ -6,6 +6,7 @@ import io.mockk.slot
 import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertEquals
 
 class EligiblePaymentsApiUnitTest {
 
@@ -29,7 +30,7 @@ class EligiblePaymentsApiUnitTest {
 
         sut.execute(createEmptyRequest(), callback)
 
-        verify { braintreeClient.sendPOST(expectedUrl, any(), any()) }
+        verify { braintreeClient.sendPOST(expectedUrl, any(), any(), any()) }
     }
 
     @Test
@@ -39,7 +40,21 @@ class EligiblePaymentsApiUnitTest {
 
         sut.execute(createEmptyRequest(), callback)
 
-        verify { braintreeClient.sendPOST(expectedUrl, any(), any()) }
+        verify { braintreeClient.sendPOST(expectedUrl, any(), any(), any()) }
+    }
+
+    @Test
+    fun `PAYPAL_CLIENT_METADATA_ID header is sent to the braintreeClient post call`() {
+        val sessionId = "session-id-value"
+        every { braintreeClient.sessionId } returns sessionId
+
+        sut.execute(mockk(relaxed = true), mockk())
+
+        verify {
+            braintreeClient.sendPOST(any(), any(), withArg { headers ->
+                assertEquals(headers["PayPal-Client-Metadata-Id"], sessionId)
+            }, any())
+        }
     }
 
     @Test
@@ -76,17 +91,19 @@ class EligiblePaymentsApiUnitTest {
         sut.execute(createEmptyRequest(), callback)
 
         verify {
-            callback.onResult(result = EligiblePaymentsApiResult(
-                EligiblePaymentMethods(
-                    paypal = EligiblePaymentMethodDetails(
-                        canBeVaulted = true,
-                        eligibleInPayPalNetwork = false,
-                        recommended = true,
-                        recommendedPriority = 1
-                    ),
-                    venmo = null
-                )
-            ), error = null)
+            callback.onResult(
+                result = EligiblePaymentsApiResult(
+                    EligiblePaymentMethods(
+                        paypal = EligiblePaymentMethodDetails(
+                            canBeVaulted = true,
+                            eligibleInPayPalNetwork = false,
+                            recommended = true,
+                            recommendedPriority = 1
+                        ),
+                        venmo = null
+                    )
+                ), error = null
+            )
         }
     }
 
@@ -109,7 +126,7 @@ class EligiblePaymentsApiUnitTest {
     private fun mockBraintreeClientToSendPOSTWithError(error: Exception) {
         val callbackSlot = slot<HttpResponseCallback>()
         every {
-            braintreeClient.sendPOST(any(), any(), capture(callbackSlot))
+            braintreeClient.sendPOST(any(), any(), any(), capture(callbackSlot))
         } answers {
             val callback = callbackSlot.captured
             callback.onResult(null, error)
@@ -119,7 +136,7 @@ class EligiblePaymentsApiUnitTest {
     private fun mockBraintreeClientToSendPOSTWithResponse(responseBody: String) {
         val callbackSlot = slot<HttpResponseCallback>()
         every {
-            braintreeClient.sendPOST(any(), any(), capture(callbackSlot))
+            braintreeClient.sendPOST(any(), any(), any(), capture(callbackSlot))
         } answers {
             val callback = callbackSlot.captured
             callback.onResult(responseBody, null)
