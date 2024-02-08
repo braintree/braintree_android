@@ -4,10 +4,7 @@ import android.content.Intent
 import androidx.activity.ComponentActivity
 import io.mockk.every
 import io.mockk.mockk
-import net.bytebuddy.asm.Advice.Local
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -81,7 +78,7 @@ class LocalPaymentLauncherUnitTest {
         val paymentAuthResult = sut.handleReturnToAppFromBrowser(pendingRequest, intent)
 
         assertTrue(paymentAuthResult is LocalPaymentAuthResult.Success)
-        assertSame((paymentAuthResult as LocalPaymentAuthResult.Success).paymentAuthInfo.browserSwitchResult, browserSwitchResultInfo)
+        assertSame((paymentAuthResult as LocalPaymentAuthResult.Success).paymentAuthInfo.browserSwitchResultInfo, browserSwitchResultInfo)
     }
 
     @Test

@@ -111,11 +111,11 @@ public class SEPADirectDebitClient {
     /**
      * After receiving a result from the SEPA mandate web flow via
      * {@link SEPADirectDebitLauncher#handleReturnToAppFromBrowser(SEPADirectDebitPendingRequest.Started, Intent)} , pass the
-     * {@link SEPADirectDebitPaymentAuthResultInfo} returned to this method to tokenize the SEPA
+     * {@link SEPADirectDebitPaymentAuthResult.Success} returned to this method to tokenize the SEPA
      * account and receive a {@link SEPADirectDebitNonce} on success.
      *
-     * @param paymentAuthResult a {@link SEPADirectDebitPaymentAuthResultInfo} received
-     *                                           in the callback of {@link SEPADirectDebitLauncher}
+     * @param paymentAuthResult a {@link SEPADirectDebitPaymentAuthResult.Success} received from
+     *                          {@link SEPADirectDebitLauncher#handleReturnToAppFromBrowser(SEPADirectDebitPendingRequest.Started, Intent)}
      * @param callback {@link SEPADirectDebitInternalTokenizeCallback}
      */
     public void tokenize(@NonNull SEPADirectDebitPaymentAuthResult.Success paymentAuthResult,

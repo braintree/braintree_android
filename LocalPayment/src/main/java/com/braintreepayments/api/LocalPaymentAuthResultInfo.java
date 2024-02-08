@@ -10,14 +10,13 @@ import android.content.Context;
  */
 public class LocalPaymentAuthResultInfo {
 
-    private BrowserSwitchResultInfo browserSwitchResultInfo;
+    private final BrowserSwitchResultInfo browserSwitchResultInfo;
 
     LocalPaymentAuthResultInfo(BrowserSwitchResultInfo browserSwitchResultInfo) {
         this.browserSwitchResultInfo = browserSwitchResultInfo;
     }
 
-    BrowserSwitchResultInfo getBrowserSwitchResult() {
+    BrowserSwitchResultInfo getBrowserSwitchResultInfo() {
         return browserSwitchResultInfo;
     }
-
 }

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
@@ -143,11 +142,11 @@ public class LocalPaymentClient {
     /**
      * After receiving a result from the web authentication flow via
      * {@link LocalPaymentLauncher#handleReturnToAppFromBrowser(LocalPaymentPendingRequest.Started, Intent)}, pass the
-     * {@link LocalPaymentAuthResultInfo} returned to this method to tokenize the local
+     * {@link LocalPaymentAuthResult.Success} returned to this method to tokenize the local
      * payment method and receive a {@link LocalPaymentNonce} on success.
      *
      * @param context                         Android Context
-     * @param localPaymentAuthResult a {@link LocalPaymentAuthResultInfo} received from
+     * @param localPaymentAuthResult a {@link LocalPaymentAuthResult.Success} received from
      *                              {@link LocalPaymentLauncher#handleReturnToAppFromBrowser(LocalPaymentPendingRequest.Started, Intent)}
      * @param callback                        {@link LocalPaymentInternalTokenizeCallback}
      */
@@ -155,7 +154,7 @@ public class LocalPaymentClient {
                          @NonNull LocalPaymentAuthResult.Success localPaymentAuthResult,
                          @NonNull final LocalPaymentTokenizeCallback callback) {
 
-        BrowserSwitchResultInfo browserSwitchResult = localPaymentAuthResult.getPaymentAuthInfo().getBrowserSwitchResult();
+        BrowserSwitchResultInfo browserSwitchResult = localPaymentAuthResult.getPaymentAuthInfo().getBrowserSwitchResultInfo();
 
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
         final String merchantAccountId = Json.optString(metadata, "merchant-account-id", null);

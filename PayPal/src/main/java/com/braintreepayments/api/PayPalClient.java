@@ -160,16 +160,15 @@ public class PayPalClient {
     /**
      * After receiving a result from the PayPal web authentication flow via
      * {@link PayPalLauncher#handleReturnToAppFromBrowser(PayPalPendingRequest.Started, Intent)},
-     * pass the {@link PayPalPaymentAuthResultInfo} returned to this method to tokenize the PayPal
+     * pass the {@link PayPalPaymentAuthResult.Success} returned to this method to tokenize the PayPal
      * account and receive a {@link PayPalAccountNonce} on success.
      *
-     * @param paymentAuthResult a {@link PayPalPaymentAuthResultInfo} received in the callback of
-     *                          {@link PayPalLauncher#PayPalLauncher()}
+     * @param paymentAuthResult a {@link PayPalPaymentAuthResult.Success} received in the callback
+     *                          from  {@link PayPalLauncher#handleReturnToAppFromBrowser(PayPalPendingRequest.Started, Intent)}
      * @param callback          {@link PayPalTokenizeCallback}
      */
     public void tokenize(@NonNull PayPalPaymentAuthResult.Success paymentAuthResult,
                          @NonNull final PayPalTokenizeCallback callback) {
-        //noinspection ConstantConditions
         BrowserSwitchResultInfo browserSwitchResult = paymentAuthResult.getPaymentAuthInfo().getBrowserSwitchResult();
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
         String clientMetadataId = Json.optString(metadata, "client-metadata-id", null);
