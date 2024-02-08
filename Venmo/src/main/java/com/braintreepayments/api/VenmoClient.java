@@ -464,54 +464,25 @@ public class VenmoClient {
                 Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
                 if (deepLinkUri != null) {
                     if (deepLinkUri.getPath().contains("success")) {
-                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.success");
-                        String resourceIdFromBrowserSwitch = Uri.parse(String.valueOf(deepLinkUri)).getQueryParameter("resource_id");
-                        String paymentMethodNonceFromBrowserSwitch = Uri.parse(String.valueOf(deepLinkUri)).getQueryParameter("payment_method_nonce");
-                        String usernameFromBrowserSwitch = Uri.parse(String.valueOf(deepLinkUri)).getQueryParameter("username");
+                        String resourceId = parseResourceId(String.valueOf(deepLinkUri));
+                        String paymentMethodNonce = parsePaymentMethodNonce(String.valueOf(deepLinkUri));
+                        String username = parseUsername(String.valueOf(deepLinkUri));
 
-                        String resourceIdFromAppSwitch = null;
-                        String paymentMethodNonceFromAppSwitch = null;
-                        String usernameFromAppSwitch = null;
-                        if (resourceIdFromBrowserSwitch == null && paymentMethodNonceFromBrowserSwitch == null && usernameFromBrowserSwitch == null) {
-                            String cleanedAppSwitchUri = String.valueOf(deepLinkUri).replaceFirst("&","?");
-                            resourceIdFromAppSwitch = Uri.parse(String.valueOf(cleanedAppSwitchUri)).getQueryParameter("resource_id");
-                            paymentMethodNonceFromAppSwitch = Uri.parse(String.valueOf(cleanedAppSwitchUri)).getQueryParameter("payment_method_nonce");
-                            usernameFromAppSwitch = Uri.parse(String.valueOf(cleanedAppSwitchUri)).getQueryParameter("username");
-                        }
-
-                        if (resourceIdFromBrowserSwitch != null || resourceIdFromAppSwitch != null) {
-                            String resourceId;
-                            if (resourceIdFromBrowserSwitch != null) {
-                                resourceId = resourceIdFromBrowserSwitch;
-                            } else {
-                                resourceId = resourceIdFromAppSwitch;
-                            }
+                        if (resourceId != null) {
                             venmoApi.createNonceFromPaymentContext(resourceId, new VenmoOnActivityResultCallback() {
 
                                 @Override
                                 public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
                                     if (venmoAccountNonce != null) {
+                                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.success");
                                         callback.onResult(venmoAccountNonce, null);
                                     } else {
                                         callback.onResult(null, error);
                                     }
                                 }
                             });
-                        } else if ((paymentMethodNonceFromBrowserSwitch != null && usernameFromBrowserSwitch != null) || (paymentMethodNonceFromAppSwitch != null && usernameFromAppSwitch != null)) {
-                            String paymentMethodNonce;
-                            if (paymentMethodNonceFromBrowserSwitch != null) {
-                                paymentMethodNonce = paymentMethodNonceFromBrowserSwitch;
-                            } else {
-                                paymentMethodNonce = paymentMethodNonceFromAppSwitch;
-                            }
-
-                            String username;
-                            if (usernameFromBrowserSwitch != null) {
-                                username = usernameFromBrowserSwitch;
-                            } else {
-                                username = usernameFromAppSwitch;
-                            }
-
+                        } else if (paymentMethodNonce != null && username != null) {
+                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.success");
                             VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(paymentMethodNonce, username, false);
                             callback.onResult(venmoAccountNonce, null);
                         }
@@ -588,6 +559,51 @@ public class VenmoClient {
         return braintreeClient.deliverBrowserSwitchResultFromNewTask(activity);
     }
 
+    private String parseResourceId(String deepLinkUri) {
+        String resourceIdFromBrowserSwitch = Uri.parse(String.valueOf(deepLinkUri)).getQueryParameter("resource_id");
+        if (resourceIdFromBrowserSwitch != null) {
+            return resourceIdFromBrowserSwitch;
+        } else {
+            String cleanedAppSwitchUri = String.valueOf(deepLinkUri).replaceFirst("&","?");
+            String resourceIdFromAppSwitch = Uri.parse(String.valueOf(cleanedAppSwitchUri)).getQueryParameter("resource_id");
+            if (resourceIdFromAppSwitch != null) {
+                return resourceIdFromAppSwitch;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    private String parsePaymentMethodNonce(String deepLinkUri) {
+        String paymentMethodNonceFromBrowserSwitch = Uri.parse(String.valueOf(deepLinkUri)).getQueryParameter("username");
+        if (paymentMethodNonceFromBrowserSwitch != null) {
+            return paymentMethodNonceFromBrowserSwitch;
+        } else {
+            String cleanedAppSwitchUri = String.valueOf(deepLinkUri).replaceFirst("&","?");
+            String paymentMethodNonceFromAppSwitch = Uri.parse(String.valueOf(cleanedAppSwitchUri)).getQueryParameter("payment_method_nonce");
+            if (paymentMethodNonceFromAppSwitch != null) {
+                return paymentMethodNonceFromAppSwitch;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    private String parseUsername(String deepLinkUri) {
+        String usernameFromBrowserSwitch = Uri.parse(String.valueOf(deepLinkUri)).getQueryParameter("username");
+        if (usernameFromBrowserSwitch != null) {
+            return usernameFromBrowserSwitch;
+        } else {
+            String cleanedAppSwitchUri = String.valueOf(deepLinkUri).replaceFirst("&","?");
+            String usernameFromAppSwitch = Uri.parse(String.valueOf(cleanedAppSwitchUri)).getQueryParameter("username");
+            if (usernameFromAppSwitch != null) {
+                return usernameFromAppSwitch;
+            } else {
+                return null;
+            }
+        }
+    }
+
     private void deliverBrowserSwitchResultToListener(final BrowserSwitchResult browserSwitchResult) {
         onBrowserSwitchResult(browserSwitchResult, new VenmoOnActivityResultCallback() {
             @Override
@@ -614,7 +630,7 @@ public class VenmoClient {
                 .build();
 
         String applicationName = "ApplicationNameUnknown";
-        Context context = activity.getApplicationContext();
+        Context context = braintreeClient.getApplicationContext();
         if (context != null) {
             if (context.getPackageManager().getApplicationLabel(context.getApplicationInfo()).toString() != null) {
                 applicationName = context.getPackageManager().getApplicationLabel(context.getApplicationInfo()).toString();
