@@ -143,75 +143,56 @@ public class LocalPaymentClient {
     /**
      * After receiving a result from the web authentication flow via
      * {@link LocalPaymentLauncher#handleReturnToAppFromBrowser(LocalPaymentPendingRequest.Started, Intent)}, pass the
-     * {@link LocalPaymentAuthResult} returned to this method to tokenize the local
+     * {@link LocalPaymentAuthResultInfo} returned to this method to tokenize the local
      * payment method and receive a {@link LocalPaymentNonce} on success.
      *
      * @param context                         Android Context
-     * @param localPaymentAuthResult a {@link LocalPaymentAuthResult} received from
+     * @param localPaymentAuthResult a {@link LocalPaymentAuthResultInfo} received from
      *                              {@link LocalPaymentLauncher#handleReturnToAppFromBrowser(LocalPaymentPendingRequest.Started, Intent)}
      * @param callback                        {@link LocalPaymentInternalTokenizeCallback}
      */
     public void tokenize(@NonNull final Context context,
-                         @Nullable LocalPaymentAuthResult localPaymentAuthResult,
+                         @NonNull LocalPaymentAuthResult.Success localPaymentAuthResult,
                          @NonNull final LocalPaymentTokenizeCallback callback) {
-        //noinspection ConstantConditions
-        if (localPaymentAuthResult == null) {
+
+        BrowserSwitchResultInfo browserSwitchResult = localPaymentAuthResult.getPaymentAuthInfo().getBrowserSwitchResult();
+
+        JSONObject metadata = browserSwitchResult.getRequestMetadata();
+        final String merchantAccountId = Json.optString(metadata, "merchant-account-id", null);
+
+        Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
+        if (deepLinkUri == null) {
             tokenizeFailure(
-                new BraintreeException("LocalPaymentAuthResult cannot be null"),
+                new BraintreeException("LocalPayment encountered an error, return URL is " +
+                    "invalid."),
                 callback
             );
             return;
         }
 
-        BrowserSwitchResult browserSwitchResult = localPaymentAuthResult.getBrowserSwitchResult();
-        if (browserSwitchResult == null && localPaymentAuthResult.getError() != null) {
-            tokenizeFailure(localPaymentAuthResult.getError(), callback);
+        final String responseString = deepLinkUri.toString();
+        if (responseString.toLowerCase().contains(LOCAL_PAYMENT_CANCEL.toLowerCase())) {
+            callbackCancel(callback);
             return;
         }
-
-        JSONObject metadata = browserSwitchResult.getRequestMetadata();
-        final String merchantAccountId = Json.optString(metadata, "merchant-account-id", null);
-
-        int result = browserSwitchResult.getStatus();
-        switch (result) {
-            case BrowserSwitchStatus.CANCELED:
-                callbackCancel(callback);
-                return;
-            case BrowserSwitchStatus.SUCCESS:
-                Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
-                if (deepLinkUri == null) {
-                    tokenizeFailure(
-                        new BraintreeException("LocalPayment encountered an error, return URL is " +
-                            "invalid."),
-                        callback
-                    );
-                    return;
-                }
-
-                final String responseString = deepLinkUri.toString();
-                if (responseString.toLowerCase().contains(LOCAL_PAYMENT_CANCEL.toLowerCase())) {
-                    callbackCancel(callback);
-                    return;
-                }
-                braintreeClient.getConfiguration((configuration, error) -> {
-                    if (configuration != null) {
-                        localPaymentApi.tokenize(merchantAccountId, responseString,
-                                dataCollector.getClientMetadataId(context, configuration),
-                                (localPaymentNonce, localPaymentError) -> {
-                                    if (localPaymentNonce != null) {
-                                        braintreeClient.sendAnalyticsEvent(
-                                            LocalPaymentAnalytics.PAYMENT_SUCCEEDED
-                                        );
-                                        callback.onLocalPaymentResult(new LocalPaymentResult.Success(localPaymentNonce));
-                                    } else if (localPaymentError != null) {
-                                        tokenizeFailure(localPaymentError, callback);
-                                    }
-                                });
-                    } else if (error != null) {
-                        tokenizeFailure(error, callback);
-                    }
-                });
-        }
+        braintreeClient.getConfiguration((configuration, error) -> {
+            if (configuration != null) {
+                localPaymentApi.tokenize(merchantAccountId, responseString,
+                        dataCollector.getClientMetadataId(context, configuration),
+                        (localPaymentNonce, localPaymentError) -> {
+                            if (localPaymentNonce != null) {
+                                braintreeClient.sendAnalyticsEvent(
+                                    LocalPaymentAnalytics.PAYMENT_SUCCEEDED
+                                );
+                                callback.onLocalPaymentResult(new LocalPaymentResult.Success(localPaymentNonce));
+                            } else if (localPaymentError != null) {
+                                tokenizeFailure(localPaymentError, callback);
+                            }
+                        });
+            } else if (error != null) {
+                tokenizeFailure(error, callback);
+            }
+        });
     }
 
     private void callbackCancel(LocalPaymentTokenizeCallback callback){
