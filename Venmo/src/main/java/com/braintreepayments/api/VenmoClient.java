@@ -560,11 +560,11 @@ public class VenmoClient {
     }
 
     private String parseResourceId(String deepLinkUri) {
-        String resourceIdFromBrowserSwitch = Uri.parse(String.valueOf(deepLinkUri)).getQueryParameter("resource_id");
+        String resourceIdFromBrowserSwitch = Uri.parse(deepLinkUri).getQueryParameter("resource_id");
         if (resourceIdFromBrowserSwitch != null) {
             return resourceIdFromBrowserSwitch;
         } else {
-            String cleanedAppSwitchUri = String.valueOf(deepLinkUri).replaceFirst("&","?");
+            String cleanedAppSwitchUri = deepLinkUri.replaceFirst("&","?");
             String resourceIdFromAppSwitch = Uri.parse(String.valueOf(cleanedAppSwitchUri)).getQueryParameter("resource_id");
             if (resourceIdFromAppSwitch != null) {
                 return resourceIdFromAppSwitch;
@@ -575,11 +575,11 @@ public class VenmoClient {
     }
 
     private String parsePaymentMethodNonce(String deepLinkUri) {
-        String paymentMethodNonceFromBrowserSwitch = Uri.parse(String.valueOf(deepLinkUri)).getQueryParameter("username");
+        String paymentMethodNonceFromBrowserSwitch = Uri.parse(deepLinkUri).getQueryParameter("username");
         if (paymentMethodNonceFromBrowserSwitch != null) {
             return paymentMethodNonceFromBrowserSwitch;
         } else {
-            String cleanedAppSwitchUri = String.valueOf(deepLinkUri).replaceFirst("&","?");
+            String cleanedAppSwitchUri = deepLinkUri.replaceFirst("&","?");
             String paymentMethodNonceFromAppSwitch = Uri.parse(String.valueOf(cleanedAppSwitchUri)).getQueryParameter("payment_method_nonce");
             if (paymentMethodNonceFromAppSwitch != null) {
                 return paymentMethodNonceFromAppSwitch;
@@ -590,11 +590,11 @@ public class VenmoClient {
     }
 
     private String parseUsername(String deepLinkUri) {
-        String usernameFromBrowserSwitch = Uri.parse(String.valueOf(deepLinkUri)).getQueryParameter("username");
+        String usernameFromBrowserSwitch = Uri.parse(deepLinkUri).getQueryParameter("username");
         if (usernameFromBrowserSwitch != null) {
             return usernameFromBrowserSwitch;
         } else {
-            String cleanedAppSwitchUri = String.valueOf(deepLinkUri).replaceFirst("&","?");
+            String cleanedAppSwitchUri = deepLinkUri.replaceFirst("&","?");
             String usernameFromAppSwitch = Uri.parse(String.valueOf(cleanedAppSwitchUri)).getQueryParameter("username");
             if (usernameFromAppSwitch != null) {
                 return usernameFromAppSwitch;
