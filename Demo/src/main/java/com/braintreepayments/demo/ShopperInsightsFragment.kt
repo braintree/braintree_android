@@ -125,7 +125,7 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
             }
         }
     }
-    
+
     private fun launchPayPalVault() {
         payPalClient.tokenizePayPalAccount(
             requireActivity(),
