@@ -71,7 +71,7 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
 
         actionButton.setOnClickListener { fetchShopperInsights() }
         venmoButton.setOnClickListener { launchVenmo() }
-        payPalVaultButton.setOnClickListener{ launchPayPalVault() }
+        payPalVaultButton.setOnClickListener { launchPayPalVault() }
     }
 
     private fun initializeViews(view: View) {
@@ -112,7 +112,10 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
                     venmoButton.isEnabled = result.response.isVenmoRecommended
 
                     responseTextView.text =
-                        "PayPal Recommended ${result.response.isPayPalRecommended} " + "\n Venmo Recommended ${result.response.isVenmoRecommended}"
+                        """
+                            PayPal Recommended: ${result.response.isPayPalRecommended}
+                            Venmo Recommended: ${result.response.isVenmoRecommended}
+                        """.trimIndent()
                 }
 
                 is ShopperInsightsResult.Failure -> {
