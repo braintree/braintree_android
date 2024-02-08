@@ -53,15 +53,19 @@ class SEPADirectDebitLauncher internal constructor(private val browserSwitchClie
      * invoking [SEPADirectDebitLauncher.launch]
      * @param intent  the intent to return to your application containing a deep link result from
      * the SEPA mandate flow
-     * @return a [SEPADirectDebitPaymentAuthResult] that should be passed to
+     * @return a [SEPADirectDebitPaymentAuthResultInfo] that should be passed to
      * [SEPADirectDebitClient.tokenize]
      * to complete the flow.
      */
     fun handleReturnToAppFromBrowser(
         pendingRequest: SEPADirectDebitPendingRequest.Started,
         intent: Intent
-    ): SEPADirectDebitPaymentAuthResult? {
-        val result = browserSwitchClient.parseResult(pendingRequest.request, intent)
-        return result?.let { SEPADirectDebitPaymentAuthResult(it) }
+    ): SEPADirectDebitPaymentAuthResult {
+        return when (val result = browserSwitchClient.parseResult(pendingRequest.request, intent)) {
+            is BrowserSwitchResult.Success -> SEPADirectDebitPaymentAuthResult.Success(
+                SEPADirectDebitPaymentAuthResultInfo(result.resultInfo)
+            )
+            is BrowserSwitchResult.NoResult -> SEPADirectDebitPaymentAuthResult.NoResult
+        }
     }
 }

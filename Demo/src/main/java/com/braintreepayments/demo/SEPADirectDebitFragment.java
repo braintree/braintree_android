@@ -9,7 +9,6 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.LocalPaymentPendingRequest;
 import com.braintreepayments.api.PostalAddress;
 import com.braintreepayments.api.SEPADirectDebitClient;
 import com.braintreepayments.api.SEPADirectDebitLauncher;
@@ -17,6 +16,7 @@ import com.braintreepayments.api.SEPADirectDebitMandateType;
 import com.braintreepayments.api.SEPADirectDebitNonce;
 import com.braintreepayments.api.SEPADirectDebitPaymentAuthRequest;
 import com.braintreepayments.api.SEPADirectDebitPaymentAuthResult;
+import com.braintreepayments.api.SEPADirectDebitPaymentAuthResultInfo;
 import com.braintreepayments.api.SEPADirectDebitPendingRequest;
 import com.braintreepayments.api.SEPADirectDebitRequest;
 import com.braintreepayments.api.SEPADirectDebitResult;
@@ -52,8 +52,8 @@ public class SEPADirectDebitFragment extends BaseFragment {
             SEPADirectDebitPaymentAuthResult paymentAuthResult =
                     sepaDirectDebitLauncher.handleReturnToAppFromBrowser(pendingRequest,
                             requireActivity().getIntent());
-            if (paymentAuthResult != null) {
-                completeSEPAFlow(paymentAuthResult);
+            if (paymentAuthResult instanceof SEPADirectDebitPaymentAuthResult.Success) {
+                completeSEPAFlow((SEPADirectDebitPaymentAuthResult.Success) paymentAuthResult);
             } else {
                 handleError(new Exception("User did not complete payment flow"));
             }
@@ -99,7 +99,7 @@ public class SEPADirectDebitFragment extends BaseFragment {
         });
     }
 
-    private void completeSEPAFlow(SEPADirectDebitPaymentAuthResult paymentAuthResult) {
+    private void completeSEPAFlow(SEPADirectDebitPaymentAuthResult.Success paymentAuthResult) {
         sepaDirectDebitClient.tokenize(paymentAuthResult, (result) -> {
             if (result instanceof SEPADirectDebitResult.Failure) {
                 handleError(((SEPADirectDebitResult.Failure) result).getError());
