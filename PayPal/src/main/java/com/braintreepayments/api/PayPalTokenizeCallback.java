@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 /**
  * Callback for receiving result of
- * {@link PayPalClient#tokenize(PayPalPaymentAuthResult, PayPalTokenizeCallback)}.
+ * {@link PayPalClient#tokenize(PayPalPaymentAuthResultInfo, PayPalTokenizeCallback)}.
  */
 public interface PayPalTokenizeCallback {
 
