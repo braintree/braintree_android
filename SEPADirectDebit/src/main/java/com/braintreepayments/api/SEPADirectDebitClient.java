@@ -153,6 +153,9 @@ public class SEPADirectDebitClient {
                 braintreeClient.sendAnalyticsEvent("sepa-direct-debit.browser-switch.failure");
                 callback.onSEPADirectDebitResult(new SEPADirectDebitResult.Failure(new BraintreeException("An unexpected error occurred.")));
             }
+        } else {
+            braintreeClient.sendAnalyticsEvent("sepa-direct-debit.browser-switch.failure");
+            callback.onSEPADirectDebitResult(new SEPADirectDebitResult.Failure(new BraintreeException("Unknown error")));
         }
     }
 
