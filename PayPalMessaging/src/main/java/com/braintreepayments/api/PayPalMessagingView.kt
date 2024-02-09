@@ -1,7 +1,6 @@
 package com.braintreepayments.api
 
 import android.content.Context
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.paypal.messages.PayPalMessageView
