@@ -68,7 +68,7 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
         pendingRequest: PayPalPendingRequest.Started,
         intent: Intent
     ): PayPalPaymentAuthResult {
-        return when(val browserSwitchResult = browserSwitchClient.parseResult(pendingRequest.request, intent)) {
+        return when (val browserSwitchResult = browserSwitchClient.parseResult(pendingRequest.request, intent)) {
             is BrowserSwitchResult.Success -> PayPalPaymentAuthResult.Success(
                 PayPalPaymentAuthResultInfo(browserSwitchResult.resultInfo)
             )

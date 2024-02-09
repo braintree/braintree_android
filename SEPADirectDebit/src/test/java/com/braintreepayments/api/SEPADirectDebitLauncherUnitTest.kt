@@ -4,8 +4,6 @@ import android.content.Intent
 import androidx.activity.ComponentActivity
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -23,6 +21,7 @@ class SEPADirectDebitLauncherUnitTest {
     private var options: BrowserSwitchOptions = mockk(relaxed = true)
     private val sepaResponse: SEPADirectDebitPaymentAuthRequestParams = mockk(relaxed = true)
     private lateinit var sut: SEPADirectDebitLauncher
+
     @Before
     fun beforeEach() {
         sut = SEPADirectDebitLauncher(browserSwitchClient)
@@ -83,7 +82,10 @@ class SEPADirectDebitLauncherUnitTest {
         val paymentAuthResult = sut.handleReturnToAppFromBrowser(pendingRequest, intent)
 
         assertTrue(paymentAuthResult is SEPADirectDebitPaymentAuthResult.Success)
-        assertSame((paymentAuthResult as SEPADirectDebitPaymentAuthResult.Success).paymentAuthInfo.browserSwitchResultInfo, browserSwitchResultInfo)
+        assertSame(
+            (paymentAuthResult as SEPADirectDebitPaymentAuthResult.Success).paymentAuthInfo.browserSwitchResultInfo,
+            browserSwitchResultInfo
+        )
     }
 
     @Test

@@ -78,7 +78,10 @@ class LocalPaymentLauncherUnitTest {
         val paymentAuthResult = sut.handleReturnToAppFromBrowser(pendingRequest, intent)
 
         assertTrue(paymentAuthResult is LocalPaymentAuthResult.Success)
-        assertSame((paymentAuthResult as LocalPaymentAuthResult.Success).paymentAuthInfo.browserSwitchResultInfo, browserSwitchResultInfo)
+        assertSame(
+            (paymentAuthResult as LocalPaymentAuthResult.Success).paymentAuthInfo.browserSwitchResultInfo,
+            browserSwitchResultInfo
+        )
     }
 
     @Test
