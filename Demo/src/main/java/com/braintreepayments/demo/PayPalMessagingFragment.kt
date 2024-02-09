@@ -26,13 +26,13 @@ class PayPalMessagingFragment: BaseFragment(), PayPalMessagingListener {
         super.onViewCreated(view, savedInstanceState)
 
         val payPalMessagingRequest = PayPalMessagingRequest(
-            2.0,
-            null,
-            PayPalMessagingOfferType.PAY_LATER_LONG_TERM,
-            "US",
-            PayPalMessagingLogoType.PRIMARY,
-            PayPalMessagingTextAlignment.CENTER,
-            null
+            amount = 2.0,
+            placement = null,
+            offerType = PayPalMessagingOfferType.PAY_LATER_LONG_TERM,
+            buyerCountry = "US",
+            logoType = PayPalMessagingLogoType.PRIMARY,
+            textAlignment = PayPalMessagingTextAlignment.CENTER,
+            color = null
         )
 
         var payPalMessagingView = PayPalMessagingView(braintreeClient, requireActivity())

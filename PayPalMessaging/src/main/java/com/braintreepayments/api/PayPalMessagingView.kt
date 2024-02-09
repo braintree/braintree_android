@@ -26,7 +26,6 @@ class PayPalMessagingView(
 
     /**
      * Creates a view to be displayed to promote offers such as Pay Later and PayPal Credit to customers.
-     * @property context the Android Context
      * @property request An optional [PayPalMessagingRequest]
      * Note: **This module is in beta. It's public API may change or be removed in future releases.**
      */
