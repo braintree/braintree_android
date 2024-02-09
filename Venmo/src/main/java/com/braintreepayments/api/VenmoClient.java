@@ -575,7 +575,7 @@ public class VenmoClient {
     }
 
     private String parsePaymentMethodNonce(String deepLinkUri) {
-        String paymentMethodNonceFromBrowserSwitch = Uri.parse(deepLinkUri).getQueryParameter("username");
+        String paymentMethodNonceFromBrowserSwitch = Uri.parse(deepLinkUri).getQueryParameter("payment_method_nonce");
         if (paymentMethodNonceFromBrowserSwitch != null) {
             return paymentMethodNonceFromBrowserSwitch;
         } else {
