@@ -518,7 +518,7 @@ class MyActivity : FragmentActivity() {
     fun handleReturnToAppFromBrowser(intent: Intent) {
        // fetch stored SEPADirectDebitPendingRequest.Success 
 +       fetchPendingRequestFromPersistantStore()?.let {
-+          when(val paymentAuthResult = sepaDirectDebitLauncher.handleReturnToAppFromBrowser(it, intent)) {
++          when (val paymentAuthResult = sepaDirectDebitLauncher.handleReturnToAppFromBrowser(it, intent)) {
 +               is SEPADirectDebitPaymentAuthResult.Success - > {
 +                   completSEPAFlow(paymentAuthResult)
 +                   // clear stored SEPADirectDebitPendingRequest.Success
