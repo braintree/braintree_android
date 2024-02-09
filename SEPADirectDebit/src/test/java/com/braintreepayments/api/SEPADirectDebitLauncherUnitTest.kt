@@ -67,9 +67,7 @@ class SEPADirectDebitLauncherUnitTest {
 
     @Test
     fun `handleReturnToAppFromBrowser on browser switch result returns success result`() {
-        val browserSwitchResultInfo = Mockito.mock(
-            BrowserSwitchResultInfo::class.java
-        )
+        val browserSwitchResultInfo : BrowserSwitchResultInfo = mockk(relaxed = true)
         val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         val pendingRequest: SEPADirectDebitPendingRequest.Started =
             SEPADirectDebitPendingRequest.Started(

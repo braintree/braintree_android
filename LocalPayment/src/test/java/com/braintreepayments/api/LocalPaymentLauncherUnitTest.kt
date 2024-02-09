@@ -65,9 +65,7 @@ class LocalPaymentLauncherUnitTest {
 
     @Test
     fun `handleReturnToAppFromBrowser on BrowserSwitchResult returns result`() {
-        val browserSwitchResultInfo = Mockito.mock(
-            BrowserSwitchResultInfo::class.java
-        )
+        val browserSwitchResultInfo : BrowserSwitchResultInfo = mockk(relaxed = true)
         val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         val pendingRequest: LocalPaymentPendingRequest.Started =
             LocalPaymentPendingRequest.Started(browserSwitchPendingRequest)
