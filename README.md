@@ -4,7 +4,7 @@
 
 Welcome to Braintree's Android SDK. This library will help you accept card and alternative payments in your Android app.
 
-:mega:&nbsp;&nbsp;A new major version of the SDK is now available. See the [v4.9.0+ migration guide](v4.9.0+_MIGRATION_GUIDE.md) for details.
+:mega:&nbsp;&nbsp;A new major version of the SDK is now available. See the [v5 migration guide](v5_MIGRATION_GUIDE.md) for details.
 
 **The Braintree SDK supports Android API 23 and above.**
 
@@ -13,13 +13,13 @@ The Braintree SDK requires Java 11 and uses Kotlin 1.7.
 ## Adding It To Your Project
 
 The features of the Braintree SDK are organized into modules that can be imported as dependencies in your `build.gradle` file.
-See the [Migration Guide](v4.9.0+_MIGRATION_GUIDE.md) for specific dependencies required for each module.
+See the [Migration Guide](v5_MIGRATION_GUIDE.md) for specific dependencies required for each module.
 
 For an integration offering card payments, add the following dependency in your `build.gradle`:
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:card:4.41.0'
+  implementation 'com.braintreepayments.api:card:5.0.0-beta1'
 }
 ```
 
@@ -27,7 +27,7 @@ To preview the latest work in progress builds, add the following SNAPSHOT depend
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:card:4.41.1-SNAPSHOT'
+  implementation 'com.braintreepayments.api:card:5.0.0-beta2-SNAPSHOT'
 }
 ```
 
@@ -54,12 +54,13 @@ Next, read the [**full documentation**](https://developer.paypal.com/braintree/d
 This SDK abides by our Client SDK Deprecation Policy. For more information on the potential statuses of an SDK check our [developer docs](https://developer.paypal.com/braintree/docs/guides/client-sdk/deprecation-policy).
 
 | Major version number | Status | Released | Deprecated | Unsupported |
-| -------------------- | ------ | -------- | ---------- | ----------- |
-| 4.x.x | Active | June 2021 | TBA | TBA |
-| 3.x.x | Unsupported | February 2019 | June 2022 | June 2023 |
-| 2.x.x | Unsupported | November 2015 | March 2020 | March 2021 |
+|----------------------| -- | -------- | ---------- | ----------- |
+| 5.x.x                | Beta | TBA | TBA | TBA |
+| 4.x.x                | Active | June 2021 | TBA | TBA |
+| 3.x.x                | Unsupported | February 2019 | June 2022 | June 2023 |
+| 2.x.x                | Unsupported | November 2015 | March 2020 | March 2021 |
 
-Versions 2.7.3 and below use outdated SSL certificates and are unsupported.
+Versions 3.x.x and below are unsupported.
 
 ## Help
 

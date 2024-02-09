@@ -6,6 +6,7 @@ basics for updating your Braintree integration from v4 to v5.
 ## Table of Contents
 
 1. [Android API](#android-api)
+1. [Gradle Dependencies](#gradle-dependencies)
 1. [Braintree Client](#braintree-client)
 1. [American Express](#american-express)
 1. [Data Collector](#data-collector)
@@ -24,6 +25,17 @@ basics for updating your Braintree integration from v4 to v5.
 ## Android API
 
 The minimum supported Android API level for v5 of this SDK has increased to 23.
+
+## Gradle Dependencies
+
+Version 4 of the SDK is not compatible with version 5 of the SDK, so all Braintree Android SDK 
+dependencies must be updated to version 5.x in order to upgrade. No other changes in dependencies 
+are required.
+
+```diff
+- implementation 'com.braintreepayments.api:card:4.x.x'
++ implementation 'com.braintreepayments.api:card:5.0.0-beta1'
+```
 
 ## Braintree Client
 

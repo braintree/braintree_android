@@ -172,20 +172,16 @@ task changeREADMEVersion {
     doLast {
 
         def readmeFile = new File('README.md')
-        def readmeFileText = readmeFile.text.replaceFirst(":card:\\d+\\.\\d+\\.\\d+'", ":card:" + versionParam + "'")
+        def readmeFileText = readmeFile.text.replaceFirst(":card:\\d+\\.\\d+\\.\\d+(-.*)?'", ":card:" + versionParam + "'")
         readmeFile.write(readmeFileText)
     }
 }
 
 task changeMigrationGuideVersion {
     doLast {
-        def migrationGuideFile = new File('v4_MIGRATION_GUIDE.md')
+        def migrationGuideFile = new File('v5_MIGRATION_GUIDE.md')
         def migrationGuideFileText = migrationGuideFile.text.replaceAll(":\\d+\\.\\d+\\.\\d+(-.*)?'", ":" + versionParam + "'")
         migrationGuideFile.write(migrationGuideFileText)
-
-        def newMigrationGuideFile = new File('v4.9.0+_MIGRATION_GUIDE.md')
-        def newMigrationGuideFileText = newMigrationGuideFile.text.replaceAll(":\\d+\\.\\d+\\.\\d+(-.*)?'", ":" + versionParam + "'")
-        newMigrationGuideFile.write(newMigrationGuideFileText)
     }
 }
 
@@ -201,8 +197,10 @@ task incrementSNAPSHOTVersion {
     doLast {
         def gradleFile = new File('build.gradle')
         def (major, minor, patch) = versionParam.tokenize('.')
-        def patchInteger = patch.toInteger()
-        def newVersion = "$major.$minor.${patchInteger + 1}-SNAPSHOT"
+        def patchInteger = patch[-1].toInteger()
+        patchInteger++
+        def newPatch = patch.substring(0,patch.length()-1) + patchInteger.toString()
+        def newVersion = "$major.$minor.$newPatch-SNAPSHOT"
         def gradleFileText = gradleFile.text.replaceFirst("\\nversion '\\d+\\.\\d+\\.\\d+(-.*)?'", "\nversion '" + newVersion + "'")
         gradleFile.write(gradleFileText)
 
