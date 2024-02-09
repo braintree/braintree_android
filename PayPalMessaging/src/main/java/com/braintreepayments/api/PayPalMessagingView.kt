@@ -2,6 +2,7 @@ package com.braintreepayments.api
 
 import android.content.Context
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import com.paypal.messages.PayPalMessageView
 import com.paypal.messages.config.message.PayPalMessageData
 import com.paypal.messages.config.PayPalEnvironment
@@ -15,17 +16,20 @@ import com.paypal.messages.config.message.PayPalMessageViewStateCallbacks
  *  and PayPal Credit to customers.
  * Note: **This module is in beta. It's public API may change or be removed in future releases.**
  * @property braintreeClient a {@link BraintreeClient}
+ * @param context Android Context
  */
-class PayPalMessagingView(private val braintreeClient: BraintreeClient) {
+class PayPalMessagingView(
+    private val braintreeClient: BraintreeClient,
+    context: Context
+) : FrameLayout(context) {
     var payPalMessagingListener: PayPalMessagingListener? = null
 
     /**
      * Creates a view to be displayed to promote offers such as Pay Later and PayPal Credit to customers.
-     * @property context the Android Context
      * @property request An optional [PayPalMessagingRequest]
      * Note: **This module is in beta. It's public API may change or be removed in future releases.**
      */
-    fun start(context: Context, request: PayPalMessagingRequest = PayPalMessagingRequest()) {
+    fun start(request: PayPalMessagingRequest = PayPalMessagingRequest()) {
         braintreeClient.getConfiguration { configuration, configError ->
             if (configError != null) {
                 payPalMessagingListener?.onPayPalMessagingFailure(configError)
@@ -42,6 +46,8 @@ class PayPalMessagingView(private val braintreeClient: BraintreeClient) {
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
+
+                    addView(payPalMessageView)
                 }
             } else {
                 val exception = BraintreeException(

@@ -23,6 +23,14 @@
             android:text="@string/cards"
             android:textSize="12sp" />
 
+        <Button
+            android:id="@+id/paypal_messaging"
+            style="?android:attr/buttonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/paypal_messaging_button"
+            android:textSize="12sp" />
     </TableRow>
 
     <TableRow
