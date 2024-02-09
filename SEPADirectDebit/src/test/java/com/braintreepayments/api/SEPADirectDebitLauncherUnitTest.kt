@@ -9,7 +9,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -67,7 +66,7 @@ class SEPADirectDebitLauncherUnitTest {
 
     @Test
     fun `handleReturnToAppFromBrowser on browser switch result returns success result`() {
-        val browserSwitchResultInfo : BrowserSwitchResultInfo = mockk(relaxed = true)
+        val browserSwitchResultInfo: BrowserSwitchResultInfo = mockk(relaxed = true)
         val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         val pendingRequest: SEPADirectDebitPendingRequest.Started =
             SEPADirectDebitPendingRequest.Started(

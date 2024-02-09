@@ -10,7 +10,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -65,7 +64,7 @@ class LocalPaymentLauncherUnitTest {
 
     @Test
     fun `handleReturnToAppFromBrowser on BrowserSwitchResult returns result`() {
-        val browserSwitchResultInfo : BrowserSwitchResultInfo = mockk(relaxed = true)
+        val browserSwitchResultInfo: BrowserSwitchResultInfo = mockk(relaxed = true)
         val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         val pendingRequest: LocalPaymentPendingRequest.Started =
             LocalPaymentPendingRequest.Started(browserSwitchPendingRequest)
