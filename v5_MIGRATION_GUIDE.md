@@ -431,7 +431,7 @@ class MyActivity : FragmentActivity() {
     fun handleReturnToAppFromBrowser(intent: Intent) {
        // fetch stored LocalPaymentPendingRequest.Success 
 +       fetchPendingRequestFromPersistantStore()?.let {
-+          when(val paymentAuthResult = localPaymentLauncher.handleReturnToAppFromBrowser(it, intent)) {
++          when (val paymentAuthResult = localPaymentLauncher.handleReturnToAppFromBrowser(it, intent)) {
 +               is LocalPaymentAuthResult.Success - > {
 +                   completeLocalPaymentFlow(paymentAuthResult)
 +                   // clear stored LocalPaymentPendingRequest.Success
