@@ -340,7 +340,7 @@ class MyActivity : FragmentActivity() {
     fun handleReturnToAppFromBrowser(intent: Intent) {
        // fetch stored PayPalPendingRequest.Success 
 +       fetchPendingRequestFromPersistantStore()?.let {
-+          when(val paymentAuthResult = payPalLauncher.handleReturnToAppFromBrowser(it, intent)) {
++          when (val paymentAuthResult = payPalLauncher.handleReturnToAppFromBrowser(it, intent)) {
 +               is PayPalPaymentAuthResult.Success - > {
 +                   completePayPalFlow(paymentAuthResult)
 +                   // clear stored PayPalPendingRequest.Success
