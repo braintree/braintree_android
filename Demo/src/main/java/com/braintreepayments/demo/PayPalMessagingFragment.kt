@@ -34,7 +34,7 @@ class PayPalMessagingFragment : BaseFragment(), PayPalMessagingListener {
             color = null
         )
 
-        var payPalMessagingView = PayPalMessagingView(braintreeClient, requireActivity())
+        val payPalMessagingView = PayPalMessagingView(braintreeClient, requireActivity())
         payPalMessagingView.payPalMessagingListener = this
         payPalMessagingView.start(payPalMessagingRequest)
         payPalMessagingView.layoutParams = ViewGroup.LayoutParams(
@@ -47,22 +47,22 @@ class PayPalMessagingFragment : BaseFragment(), PayPalMessagingListener {
     }
 
     override fun onPayPalMessagingClick() {
-        print("User clicked on the PayPalMessagingView")
+        println("User clicked on the PayPalMessagingView")
     }
 
     override fun onPayPalMessagingApply() {
-        print("User is attempting to apply for PayPal Credit")
+        println("User is attempting to apply for PayPal Credit")
     }
 
     override fun onPayPalMessagingLoading() {
-        print("Loading PayPalMessagingView")
+        println("Loading PayPalMessagingView")
     }
 
     override fun onPayPalMessagingSuccess() {
-        print("PayPalMessagingView displayed to user")
+        println("PayPalMessagingView displayed to user")
     }
 
     override fun onPayPalMessagingFailure(error: Exception) {
-        print("PayPalMessagingView returned the error:" + error.message)
+        println("PayPalMessagingView returned the error:" + error.message)
     }
 }

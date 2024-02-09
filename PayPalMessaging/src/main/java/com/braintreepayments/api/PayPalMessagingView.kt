@@ -16,6 +16,7 @@ import com.paypal.messages.config.message.PayPalMessageViewStateCallbacks
  *  and PayPal Credit to customers.
  * Note: **This module is in beta. It's public API may change or be removed in future releases.**
  * @property braintreeClient a {@link BraintreeClient}
+ * @param context Android Context
  */
 class PayPalMessagingView(
     private val braintreeClient: BraintreeClient,
