@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -253,6 +255,11 @@ public class VenmoRequest implements Parcelable {
      * @param fallbackToWeb Optional - Used to determine if the customer should fallback
      *                      to the web flow if Venmo app is not installed.
      *                      Defaults to false.
+     *                      
+     * If using the manual browser switch pattern, you must implement the following methods:
+     * {@link VenmoClient#parseBrowserSwitchResult(Context, Intent)}
+     * {@link VenmoClient#onBrowserSwitchResult(BrowserSwitchResult, VenmoOnActivityResultCallback)}
+     * {@link VenmoClient#clearActiveBrowserSwitchRequests(Context)}
      */
     public void setFallbackToWeb(boolean fallbackToWeb) {
         this.fallbackToWeb = fallbackToWeb;
