@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.core.view.isVisible
 import com.braintreepayments.api.PayPalMessagingListener
 import com.braintreepayments.api.PayPalMessagingLogoType
 import com.braintreepayments.api.PayPalMessagingOfferType
@@ -22,6 +24,7 @@ class PayPalMessagingFragment: BaseFragment(), PayPalMessagingListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val payPalMessagingRequest = PayPalMessagingRequest(
             2.0,
             null,
@@ -32,10 +35,18 @@ class PayPalMessagingFragment: BaseFragment(), PayPalMessagingListener {
             null
         )
 
-        var payPalMessagingView = PayPalMessagingView(braintreeClient)
+        var payPalMessagingView = PayPalMessagingView(braintreeClient, requireActivity())
         payPalMessagingView.payPalMessagingListener = this
-        payPalMessagingView.start(requireActivity(), payPalMessagingRequest)
+        payPalMessagingView.start(payPalMessagingRequest)
+        payPalMessagingView.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+
+        val messagingView: LinearLayout = view.findViewById(R.id.content)
+        messagingView.addView(payPalMessagingView)
     }
+
     override fun onPayPalMessagingClick() {
         print("User clicked on the PayPalMessagingView")
     }
