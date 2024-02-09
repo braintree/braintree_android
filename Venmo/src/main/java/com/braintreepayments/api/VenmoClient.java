@@ -239,7 +239,7 @@ public class VenmoClient {
                 try {
                     startAppLinkFlow(activity, intentData);
                 } catch (JSONException | BrowserSwitchException exception) {
-                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.failure");
+                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.failure");
                     deliverVenmoFailure(exception);
                 }
             } else {
@@ -457,7 +457,7 @@ public class VenmoClient {
         int result = browserSwitchResult.getStatus();
         switch (result) {
             case BrowserSwitchStatus.CANCELED:
-                braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.canceled");
+                braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.canceled");
                 callback.onResult(null, new UserCanceledException("User canceled Venmo."));
                 break;
             case BrowserSwitchStatus.SUCCESS:
@@ -474,7 +474,7 @@ public class VenmoClient {
                                 @Override
                                 public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
                                     if (venmoAccountNonce != null) {
-                                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.success");
+                                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.success");
                                         callback.onResult(venmoAccountNonce, null);
                                     } else {
                                         callback.onResult(null, error);
@@ -482,19 +482,19 @@ public class VenmoClient {
                                 }
                             });
                         } else if (paymentMethodNonce != null && username != null) {
-                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.success");
+                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.success");
                             VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(paymentMethodNonce, username, false);
                             callback.onResult(venmoAccountNonce, null);
                         }
                     } else if (deepLinkUri.getPath().contains("cancel")) {
-                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.canceled");
+                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.canceled");
                         callback.onResult(null, new UserCanceledException("User canceled Venmo."));
                     } else if (deepLinkUri.getPath().contains("error")) {
-                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.failure");
+                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.failure");
                         callback.onResult(null, new Exception("Error returned from Venmo."));
                     }
                 } else {
-                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.failure");
+                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.failure");
                     callback.onResult(null, new Exception("Unknown error"));
                 }
                 break;
@@ -657,7 +657,7 @@ public class VenmoClient {
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme());
 
         braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
-        braintreeClient.sendAnalyticsEvent("pay-with-venmo.browser-switch.started");
+        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.started");
     }
 
     /**
