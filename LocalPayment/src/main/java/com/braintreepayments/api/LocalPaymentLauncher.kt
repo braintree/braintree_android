@@ -56,15 +56,21 @@ class LocalPaymentLauncher internal constructor(private val browserSwitchClient:
      * invoking [LocalPaymentLauncher.launch]
      * @param intent         the intent to return to your application containing a deep link result
      * from the local payment browser flow
-     * @return a [LocalPaymentAuthResult] that should be passed to
-     * [LocalPaymentClient.tokenize]
-     * to complete the flow
+     * @return a [LocalPaymentAuthResult.Success] that should be passed to
+     * [LocalPaymentClient.tokenize] to complete the flow, or [LocalPaymentAuthResult.NoResult] if
+     * the user closed the browser to cancel the payment flow, or returned to the app without
+     * completing the authentication flow.
      */
     fun handleReturnToAppFromBrowser(
         pendingRequest: LocalPaymentPendingRequest.Started,
         intent: Intent
-    ): LocalPaymentAuthResult? {
-        val result = browserSwitchClient.parseResult(pendingRequest.request, intent)
-        return result?.let { LocalPaymentAuthResult(it) }
+    ): LocalPaymentAuthResult {
+        return when (val result = browserSwitchClient.parseResult(pendingRequest.request, intent)) {
+            is BrowserSwitchResult.Success -> LocalPaymentAuthResult.Success(
+                LocalPaymentAuthResultInfo(result.resultInfo)
+            )
+
+            is BrowserSwitchResult.NoResult -> LocalPaymentAuthResult.NoResult
+        }
     }
 }

@@ -5,14 +5,11 @@ import androidx.activity.ComponentActivity
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -67,20 +64,21 @@ class LocalPaymentLauncherUnitTest {
 
     @Test
     fun `handleReturnToAppFromBrowser on BrowserSwitchResult returns result`() {
-        val browserSwitchResult = Mockito.mock(
-            BrowserSwitchResult::class.java
-        )
+        val browserSwitchResultInfo: BrowserSwitchResultInfo = mockk(relaxed = true)
         val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         val pendingRequest: LocalPaymentPendingRequest.Started =
             LocalPaymentPendingRequest.Started(browserSwitchPendingRequest)
         every {
             browserSwitchClient.parseResult(eq(browserSwitchPendingRequest), eq(intent))
-        } returns browserSwitchResult
+        } returns BrowserSwitchResult.Success(browserSwitchResultInfo)
 
         val paymentAuthResult = sut.handleReturnToAppFromBrowser(pendingRequest, intent)
 
-        assertNotNull(paymentAuthResult)
-        assertSame(paymentAuthResult!!.browserSwitchResult, browserSwitchResult)
+        assertTrue(paymentAuthResult is LocalPaymentAuthResult.Success)
+        assertSame(
+            (paymentAuthResult as LocalPaymentAuthResult.Success).paymentAuthInfo.browserSwitchResultInfo,
+            browserSwitchResultInfo
+        )
     }
 
     @Test
@@ -90,9 +88,10 @@ class LocalPaymentLauncherUnitTest {
             LocalPaymentPendingRequest.Started(browserSwitchPendingRequest)
         every {
             browserSwitchClient.parseResult(eq(browserSwitchPendingRequest), eq(intent))
-        } returns null
+        } returns BrowserSwitchResult.NoResult
 
         val paymentAuthResult = sut.handleReturnToAppFromBrowser(pendingRequest, intent)
-        assertNull(paymentAuthResult)
+
+        assertTrue(paymentAuthResult is LocalPaymentAuthResult.NoResult)
     }
 }

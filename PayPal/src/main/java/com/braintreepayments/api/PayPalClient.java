@@ -160,32 +160,16 @@ public class PayPalClient {
     /**
      * After receiving a result from the PayPal web authentication flow via
      * {@link PayPalLauncher#handleReturnToAppFromBrowser(PayPalPendingRequest.Started, Intent)},
-     * pass the {@link PayPalPaymentAuthResult} returned to this method to tokenize the PayPal
+     * pass the {@link PayPalPaymentAuthResult.Success} returned to this method to tokenize the PayPal
      * account and receive a {@link PayPalAccountNonce} on success.
      *
-     * @param paymentAuthResult a {@link PayPalPaymentAuthResult} received in the callback of
-     *                          {@link PayPalLauncher#PayPalLauncher()}
+     * @param paymentAuthResult a {@link PayPalPaymentAuthResult.Success} received in the callback
+     *                          from  {@link PayPalLauncher#handleReturnToAppFromBrowser(PayPalPendingRequest.Started, Intent)}
      * @param callback          {@link PayPalTokenizeCallback}
      */
-    public void tokenize(@NonNull PayPalPaymentAuthResult paymentAuthResult,
+    public void tokenize(@NonNull PayPalPaymentAuthResult.Success paymentAuthResult,
                          @NonNull final PayPalTokenizeCallback callback) {
-        //noinspection ConstantConditions
-        if (paymentAuthResult == null) {
-            callbackTokenizeFailure(callback, new PayPalResult.Failure(
-                    new BraintreeException("PayPalBrowserSwitchResult cannot be null")));
-            return;
-        }
-        BrowserSwitchResult browserSwitchResult = paymentAuthResult.getBrowserSwitchResult();
-        if (browserSwitchResult == null && paymentAuthResult.getError() != null) {
-            callbackTokenizeFailure(callback,
-                    new PayPalResult.Failure(paymentAuthResult.getError()));
-            return;
-        }
-        if (browserSwitchResult == null) {
-            callbackTokenizeFailure(callback, new PayPalResult.Failure(
-                    new BraintreeException("An unexpected error occurred")));
-            return;
-        }
+        BrowserSwitchResultInfo browserSwitchResult = paymentAuthResult.getPaymentAuthInfo().getBrowserSwitchResult();
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
         String clientMetadataId = Json.optString(metadata, "client-metadata-id", null);
         String merchantAccountId = Json.optString(metadata, "merchant-account-id", null);
@@ -197,53 +181,45 @@ public class PayPalClient {
         boolean isBillingAgreement = paymentType.equalsIgnoreCase("billing-agreement");
         String tokenKey = isBillingAgreement ? "ba_token" : "token";
 
-        int result = browserSwitchResult.getStatus();
-        switch (result) {
-            case BrowserSwitchStatus.CANCELED:
-                callbackBrowserSwitchCancel(callback, PayPalResult.Cancel.INSTANCE);
-                break;
-            case BrowserSwitchStatus.SUCCESS:
-                try {
-                    Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
-                    if (deepLinkUri != null) {
-                        JSONObject urlResponseData =
-                                parseUrlResponseData(deepLinkUri, successUrl, approvalUrl,
-                                        tokenKey);
-                        PayPalAccount payPalAccount = new PayPalAccount();
-                        payPalAccount.setClientMetadataId(clientMetadataId);
-                        payPalAccount.setIntent(payPalIntent);
-                        payPalAccount.setSource("paypal-browser");
-                        payPalAccount.setUrlResponseData(urlResponseData);
-                        payPalAccount.setPaymentType(paymentType);
+        try {
+            Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
+            if (deepLinkUri != null) {
+                JSONObject urlResponseData =
+                        parseUrlResponseData(deepLinkUri, successUrl, approvalUrl,
+                                tokenKey);
+                PayPalAccount payPalAccount = new PayPalAccount();
+                payPalAccount.setClientMetadataId(clientMetadataId);
+                payPalAccount.setIntent(payPalIntent);
+                payPalAccount.setSource("paypal-browser");
+                payPalAccount.setUrlResponseData(urlResponseData);
+                payPalAccount.setPaymentType(paymentType);
 
-                        if (merchantAccountId != null) {
-                            payPalAccount.setMerchantAccountId(merchantAccountId);
-                        }
-
-                        if (payPalIntent != null) {
-                            payPalAccount.setIntent(payPalIntent);
-                        }
-
-                        internalPayPalClient.tokenize(payPalAccount,
-                                (payPalAccountNonce, error) -> {
-                                    if (payPalAccountNonce != null) {
-                                        callbackTokenizeSuccess(callback,
-                                                new PayPalResult.Success(payPalAccountNonce));
-                                    } else if (error != null) {
-                                        callbackTokenizeFailure(callback,
-                                                new PayPalResult.Failure(error));
-                                    }
-                                });
-                    } else {
-                        callbackTokenizeFailure(callback,
-                                new PayPalResult.Failure(new BraintreeException("Unknown error")));
-                    }
-                } catch (UserCanceledException e) {
-                    callbackBrowserSwitchCancel(callback, PayPalResult.Cancel.INSTANCE);
-                } catch (JSONException | PayPalBrowserSwitchException e) {
-                    callbackTokenizeFailure(callback, new PayPalResult.Failure(e));
+                if (merchantAccountId != null) {
+                    payPalAccount.setMerchantAccountId(merchantAccountId);
                 }
-                break;
+
+                if (payPalIntent != null) {
+                    payPalAccount.setIntent(payPalIntent);
+                }
+
+                internalPayPalClient.tokenize(payPalAccount,
+                        (payPalAccountNonce, error) -> {
+                            if (payPalAccountNonce != null) {
+                                callbackTokenizeSuccess(callback,
+                                        new PayPalResult.Success(payPalAccountNonce));
+                            } else if (error != null) {
+                                callbackTokenizeFailure(callback,
+                                        new PayPalResult.Failure(error));
+                            }
+                        });
+            } else {
+                callbackTokenizeFailure(callback,
+                        new PayPalResult.Failure(new BraintreeException("Unknown error")));
+            }
+        } catch (UserCanceledException e) {
+            callbackBrowserSwitchCancel(callback, PayPalResult.Cancel.INSTANCE);
+        } catch (JSONException | PayPalBrowserSwitchException e) {
+            callbackTokenizeFailure(callback, new PayPalResult.Failure(e));
         }
     }
 
@@ -281,7 +257,6 @@ public class PayPalClient {
                                                   PayPalPaymentAuthRequest.Failure failure) {
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED);
         callback.onPayPalPaymentAuthRequest(failure);
-
     }
 
     private void callbackBrowserSwitchCancel(PayPalTokenizeCallback callback,

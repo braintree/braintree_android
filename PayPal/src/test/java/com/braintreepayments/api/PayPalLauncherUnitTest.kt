@@ -8,8 +8,6 @@ import io.mockk.mockk
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -73,9 +71,12 @@ class PayPalLauncherUnitTest {
     fun `launch when device cant perform browser switch returns pending request failure`() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         val exception = BrowserSwitchException("browser switch error")
-        every { browserSwitchClient.assertCanPerformBrowserSwitch(
-            eq(activity),
-            eq(options)) } throws exception
+        every {
+            browserSwitchClient.assertCanPerformBrowserSwitch(
+                eq(activity),
+                eq(options)
+            )
+        } throws exception
 
         val pendingRequest =
             sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
@@ -94,28 +95,41 @@ class PayPalLauncherUnitTest {
     @Test
     @Throws(JSONException::class)
     fun `handleReturnToAppFromBrowser when result exists returns result`() {
-        val result: BrowserSwitchResult = mockk(relaxed = true)
+        val result: BrowserSwitchResultInfo = mockk(relaxed = true)
         val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
-        every { browserSwitchClient.parseResult(browserSwitchPendingRequest, intent) } returns result
+        every {
+            browserSwitchClient.parseResult(
+                browserSwitchPendingRequest,
+                intent
+            )
+        } returns BrowserSwitchResult.Success(result)
 
         val paymentAuthResult = sut.handleReturnToAppFromBrowser(
             PayPalPendingRequest.Started(browserSwitchPendingRequest), intent
         )
 
-        assertNotNull(paymentAuthResult)
-        assertSame(result, paymentAuthResult!!.browserSwitchResult)
+        assertTrue(paymentAuthResult is PayPalPaymentAuthResult.Success)
+        assertSame(
+            result,
+            (paymentAuthResult as PayPalPaymentAuthResult.Success).paymentAuthInfo.browserSwitchResult
+        )
     }
 
     @Test
     @Throws(JSONException::class)
     fun `handleReturnToAppFromBrowser when result does not exist returns null`() {
         val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
-        every { browserSwitchClient.parseResult(browserSwitchPendingRequest, intent) } returns null
+        every {
+            browserSwitchClient.parseResult(
+                browserSwitchPendingRequest,
+                intent
+            )
+        } returns BrowserSwitchResult.NoResult
 
         val paymentAuthResult = sut.handleReturnToAppFromBrowser(
             PayPalPendingRequest.Started(browserSwitchPendingRequest), intent
         )
 
-        assertNull(paymentAuthResult)
+        assertTrue(paymentAuthResult is PayPalPaymentAuthResult.NoResult)
     }
 }

@@ -6,6 +6,7 @@ basics for updating your Braintree integration from v4 to v5.
 ## Table of Contents
 
 1. [Android API](#android-api)
+1. [Gradle Dependencies](#gradle-dependencies)
 1. [Braintree Client](#braintree-client)
 1. [American Express](#american-express)
 1. [Data Collector](#data-collector)
@@ -24,6 +25,17 @@ basics for updating your Braintree integration from v4 to v5.
 ## Android API
 
 The minimum supported Android API level for v5 of this SDK has increased to 23.
+
+## Gradle Dependencies
+
+Version 4 of the SDK is not compatible with version 5 of the SDK, so all Braintree Android SDK 
+dependencies must be updated to version 5.x in order to upgrade. No other changes in dependencies 
+are required.
+
+```diff
+- implementation 'com.braintreepayments.api:card:4.x.x'
++ implementation 'com.braintreepayments.api:card:5.0.0-beta1'
+```
 
 ## Braintree Client
 
@@ -340,15 +352,15 @@ class MyActivity : FragmentActivity() {
     fun handleReturnToAppFromBrowser(intent: Intent) {
        // fetch stored PayPalPendingRequest.Success 
 +       fetchPendingRequestFromPersistantStore()?.let {
-+          payPalLauncher.handleReturnToAppFromBrowser(it, intent)?.let { paymentAuthResult ->
-+             completePayPalFlow(paymentAuthResult)
-+             // clear stored PayPalPendingRequest.Success
-+          } ?: run {
-+             // user returned to app without completing PayPal flow, handle accordingly
++          when (val paymentAuthResult = payPalLauncher.handleReturnToAppFromBrowser(it, intent)) {
++               is PayPalPaymentAuthResult.Success - > {
++                   completePayPalFlow(paymentAuthResult)
++                   // clear stored PayPalPendingRequest.Success
++               }
++               is PayPalPaymentAuthResult.NoResult -> // user returned to app without completing PayPal flow, handle accordingly
 +          }
 +       }   
     }
-    
     
     fun initializeClients() {
 -       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
@@ -431,11 +443,12 @@ class MyActivity : FragmentActivity() {
     fun handleReturnToAppFromBrowser(intent: Intent) {
        // fetch stored LocalPaymentPendingRequest.Success 
 +       fetchPendingRequestFromPersistantStore()?.let {
-+          locaPaymentLauncher.handleReturnToAppFromBrowser(it, intent)?.let { paymentAuthResult ->
-+             completeLocalPaymentFlow(paymentAuthResult)
-+             // clear stored LocalPaymentPendingRequest.Success
-+          } ?: run {
-+             // user returned to app without completing local payment flow, handle accordingly
++          when (val paymentAuthResult = localPaymentLauncher.handleReturnToAppFromBrowser(it, intent)) {
++               is LocalPaymentAuthResult.Success - > {
++                   completeLocalPaymentFlow(paymentAuthResult)
++                   // clear stored LocalPaymentPendingRequest.Success
++               }
++               is LocalPaymentAuthResult.NoResult -> // user returned to app without completing Local Payment flow, handle accordingly
 +          }
 +       }   
     }
@@ -517,11 +530,12 @@ class MyActivity : FragmentActivity() {
     fun handleReturnToAppFromBrowser(intent: Intent) {
        // fetch stored SEPADirectDebitPendingRequest.Success 
 +       fetchPendingRequestFromPersistantStore()?.let {
-+          sepaDirectDebitLauncher.handleReturnToAppFromBrowser(it, intent)?.let { paymentAuthResult ->
-+             completeSEPAFlow(paymentAuthResult)
-+             // clear stored SEPADirectDebitPendingRequest.Success
-+          } ?: run {
-+             // user returned to app without completing SEPA flow, handle accordingly
++          when (val paymentAuthResult = sepaDirectDebitLauncher.handleReturnToAppFromBrowser(it, intent)) {
++               is SEPADirectDebitPaymentAuthResult.Success - > {
++                   completSEPAFlow(paymentAuthResult)
++                   // clear stored SEPADirectDebitPendingRequest.Success
++               }
++               is SEPADirectDebitPaymentAuthResult.NoResult -> // user returned to app without completing flow, handle accordingly
 +          }
 +       }   
     }

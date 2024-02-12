@@ -20,6 +20,7 @@ import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalLauncher;
 import com.braintreepayments.api.PayPalPaymentAuthRequest;
 import com.braintreepayments.api.PayPalPaymentAuthResult;
+import com.braintreepayments.api.PayPalPaymentAuthResultInfo;
 import com.braintreepayments.api.PayPalPendingRequest;
 import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PayPalResult;
@@ -59,8 +60,8 @@ public class PayPalFragment extends BaseFragment {
         PayPalPendingRequest.Started pendingRequest = getPendingRequest();
         if (pendingRequest != null) {
             PayPalPaymentAuthResult paymentAuthResult = payPalLauncher.handleReturnToAppFromBrowser(pendingRequest, requireActivity().getIntent());
-            if (paymentAuthResult != null) {
-                completePayPalFlow(paymentAuthResult);
+            if (paymentAuthResult instanceof PayPalPaymentAuthResult.Success) {
+                completePayPalFlow((PayPalPaymentAuthResult.Success) paymentAuthResult);
             } else {
                 handleError(new Exception("User did not complete payment flow"));
             }
@@ -129,7 +130,7 @@ public class PayPalFragment extends BaseFragment {
                 });
     }
 
-    private void completePayPalFlow(PayPalPaymentAuthResult paymentAuthResult) {
+    private void completePayPalFlow(PayPalPaymentAuthResult.Success paymentAuthResult) {
         payPalClient.tokenize(paymentAuthResult, payPalResult -> {
             if (payPalResult instanceof PayPalResult.Failure) {
                 handleError(((PayPalResult.Failure) payPalResult).getError());
