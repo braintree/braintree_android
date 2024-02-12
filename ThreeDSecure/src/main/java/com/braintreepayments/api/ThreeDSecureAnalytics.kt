@@ -14,10 +14,6 @@ internal object ThreeDSecureAnalytics {
     const val LOOKUP_FAILED = "3ds:verify:lookup:failed"
     const val CHALLENGE_REQUIRED = "3ds:verify:lookup:challenge-required"
 
-    // Challenge Events
-    const val CHALLENGE_SUCCEEDED = "3ds:verify:challenge.succeeded"
-    const val CHALLENGE_FAILED = "3ds:verify:challenge.failed"
-
     // JWT Events
     const val JWT_AUTH_SUCCEEDED = "3ds:verify:authenticate-jwt:succeeded"
     const val JWT_AUTH_FAILED = "3ds:verify:authenticate-jwt:failed"

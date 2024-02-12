@@ -104,6 +104,7 @@ public class ThreeDSecureClient {
                     braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED);
                     sendAnalyticsAndCallbackResult(threeDSecureResult, callback);
                 } else {
+                    braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_FAILED);
                     callbackCreatePaymentAuthFailure(callback, new ThreeDSecurePaymentAuthRequest.Failure(performLookupError));
                 }
             };
@@ -141,6 +142,7 @@ public class ThreeDSecureClient {
                               @NonNull final ThreeDSecureRequest request,
                               @NonNull final ThreeDSecurePrepareLookupCallback callback) {
 
+        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_STARTED);
         final JSONObject lookupJSON = new JSONObject();
         try {
             lookupJSON
@@ -156,14 +158,14 @@ public class ThreeDSecureClient {
 
         braintreeClient.getConfiguration((configuration, configError) -> {
             if (configuration == null && configError != null) {
-                callback.onPrepareLookupResult(new ThreeDSecurePrepareLookupResult.Failure(configError));
+                callbackPrepareLookupFailure(callback, new ThreeDSecurePrepareLookupResult.Failure(configError));
                 return;
             }
             if (configuration.getCardinalAuthenticationJwt() == null) {
                 Exception authError1 = new BraintreeException(
                         "Merchant is not configured for 3DS 2.0. " +
                                 "Please contact Braintree Support for assistance.");
-                callback.onPrepareLookupResult(new ThreeDSecurePrepareLookupResult.Failure(authError1));
+                callbackPrepareLookupFailure(callback, new ThreeDSecurePrepareLookupResult.Failure(authError1));
                 return;
             }
 
@@ -176,6 +178,7 @@ public class ThreeDSecureClient {
                             } catch (JSONException ignored) {
                             }
                         }
+                        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED);
                         callback.onPrepareLookupResult(new ThreeDSecurePrepareLookupResult.Success(request, lookupJSON.toString()));
                     };
 
@@ -183,9 +186,7 @@ public class ThreeDSecureClient {
                 cardinalClient.initialize(context, configuration, request,
                         cardinalInitializeCallback);
             } catch (BraintreeException initializeException) {
-                braintreeClient.sendAnalyticsEvent(
-                        "three-d-secure.cardinal-sdk.init.failed");
-                callback.onPrepareLookupResult(new ThreeDSecurePrepareLookupResult.Failure(initializeException));
+                callbackPrepareLookupFailure(callback, new ThreeDSecurePrepareLookupResult.Failure(initializeException));
             }
         });
     }
@@ -205,13 +206,15 @@ public class ThreeDSecureClient {
                 result = ThreeDSecureParams.fromJson(lookupResponse);
                 sendAnalyticsAndCallbackResult(result, callback);
             } catch (JSONException e) {
-                callback.onThreeDSecurePaymentAuthRequest(new ThreeDSecurePaymentAuthRequest.Failure(e));
+                braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_FAILED);
+                callbackCreatePaymentAuthFailure(callback, new ThreeDSecurePaymentAuthRequest.Failure(e));
             }
         });
     }
 
     void sendAnalyticsAndCallbackResult(ThreeDSecureParams result,
                                         ThreeDSecurePaymentAuthRequestCallback callback) {
+        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED);
         ThreeDSecureLookup lookup = result.getLookup();
 
         boolean showChallenge = lookup.getAcsUrl() != null;
@@ -219,16 +222,6 @@ public class ThreeDSecureClient {
 
 
         if (!showChallenge) {
-            ThreeDSecureNonce threeDSecureNonce = result.getThreeDSecureNonce();
-            ThreeDSecureInfo info = threeDSecureNonce.getThreeDSecureInfo();
-
-            braintreeClient.sendAnalyticsEvent(
-                    String.format("three-d-secure.verification-flow.liability-shifted.%b",
-                            info.isLiabilityShifted()));
-            braintreeClient.sendAnalyticsEvent(
-                    String.format("three-d-secure.verification-flow.liability-shift-possible.%b",
-                            info.isLiabilityShiftPossible()));
-
             callback.onThreeDSecurePaymentAuthRequest(new ThreeDSecurePaymentAuthRequest.LaunchNotRequired(result.getThreeDSecureNonce(), result.getLookup()));
             return;
         }
@@ -301,6 +294,12 @@ public class ThreeDSecureClient {
     private void callbackCreatePaymentAuthFailure(ThreeDSecurePaymentAuthRequestCallback callback, ThreeDSecurePaymentAuthRequest.Failure failure) {
         braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED);
         callback.onThreeDSecurePaymentAuthRequest(failure);
+    }
+
+    private void callbackPrepareLookupFailure(ThreeDSecurePrepareLookupCallback callback, ThreeDSecurePrepareLookupResult.Failure result) {
+        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_FAILED);
+        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED);
+        callback.onPrepareLookupResult(result);
     }
 
     private void callbackTokenizeFailure(ThreeDSecureTokenizeCallback callback, ThreeDSecureResult.Failure result) {
