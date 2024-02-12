@@ -42,6 +42,10 @@ public class VenmoRequest implements Parcelable {
      * @param shouldVault Optional - Whether or not to automatically vault the Venmo Account.
      *                    Vaulting will only occur if a client token with a customer ID is being used.
      *                    Defaults to false.
+     *
+     *                    Also when shouldVault is true, {@link VenmoPaymentMethodUsage} on the
+     *                    {@link VenmoRequest} must be set to
+     *                    {@link VenmoPaymentMethodUsage.MULTI_USE}.
      */
     public void setShouldVault(boolean shouldVault) {
         this.shouldVault = shouldVault;

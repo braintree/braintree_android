@@ -18,7 +18,7 @@ buildscript {
 
     // The 'CI' build variable will evaluate to 'true' when build script is executed via GitHub Actions
     // Ref: https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
-    def roomVersion = System.getenv('CI') ? java7SafeRoomVersion : m1MacSafeRoomVersion
+    def roomVersion = System.getenv('CI') && !System.getenv('SECURITY_SCAN') ? java7SafeRoomVersion : m1MacSafeRoomVersion
 
     ext.versions = [
             "kotlin"         : "1.7.10",
@@ -97,12 +97,12 @@ allprojects {
     }
 }
 
-version '4.40.2-SNAPSHOT'
+version '4.41.1-SNAPSHOT'
 group 'com.braintreepayments'
 ext {
     compileSdkVersion = 34
     minSdkVersion = 21
-    versionCode = 185
+    versionCode = 186
     targetSdkVersion = 34
     versionName = version
 }
