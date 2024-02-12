@@ -259,15 +259,11 @@ public class ThreeDSecureClient {
                          ThreeDSecureTokenizeCallback callback) {
         Exception threeDSecureError = paymentAuthResult.getError();
         if (threeDSecureError != null) {
-            callback.onThreeDSecureResult(new ThreeDSecureResult.Failure(threeDSecureError, null));
+            callbackTokenizeFailure(callback, new ThreeDSecureResult.Failure(threeDSecureError, null));
         } else {
             ThreeDSecureParams threeDSecureParams = paymentAuthResult.getThreeSecureResult();
             ValidateResponse validateResponse = paymentAuthResult.getValidateResponse();
             String jwt = paymentAuthResult.getJWT();
-
-            braintreeClient.sendAnalyticsEvent(
-                    String.format("three-d-secure.verification-flow.cardinal-sdk.action-code.%s",
-                            validateResponse.getActionCode().name().toLowerCase()));
 
             switch (validateResponse.getActionCode()) {
                 case FAILURE:
@@ -278,27 +274,25 @@ public class ThreeDSecureClient {
                                 if (threeDSecureResult1 != null) {
                                     if (threeDSecureResult1.hasError()) {
                                         braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED);
-                                        callback.onThreeDSecureResult(new ThreeDSecureResult.Failure(new BraintreeException(threeDSecureResult1.getErrorMessage()), threeDSecureResult1.getThreeDSecureNonce()));
+                                        callbackTokenizeFailure(callback, new ThreeDSecureResult.Failure(new BraintreeException(threeDSecureResult1.getErrorMessage()), threeDSecureResult1.getThreeDSecureNonce()));
                                     } else if (threeDSecureResult1.getThreeDSecureNonce() != null) {
                                         braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_SUCCEEDED);
-                                        callback.onThreeDSecureResult(new ThreeDSecureResult.Success(threeDSecureResult1.getThreeDSecureNonce()));
+                                        callbackTokenizeSuccess(callback, new ThreeDSecureResult.Success(threeDSecureResult1.getThreeDSecureNonce()));
                                     }
                                 } else if (error != null) {
                                     braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED);
-                                    callback.onThreeDSecureResult(new ThreeDSecureResult.Failure(error, null));
+                                    callbackTokenizeFailure(callback, new ThreeDSecureResult.Failure(error, null));
                                 }
                             });
 
                     break;
                 case ERROR:
                 case TIMEOUT:
-                    callback.onThreeDSecureResult(new ThreeDSecureResult.Failure(
+                    callbackTokenizeFailure(callback, new ThreeDSecureResult.Failure(
                             new BraintreeException(validateResponse.getErrorDescription()), null));
-                    braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.failed");
                     break;
                 case CANCEL:
-                    callback.onThreeDSecureResult(ThreeDSecureResult.Cancel.INSTANCE);
-                    braintreeClient.sendAnalyticsEvent("three-d-secure.verification-flow.canceled");
+                    callbackCancel(callback);
                     break;
             }
         }
@@ -309,7 +303,18 @@ public class ThreeDSecureClient {
         callback.onThreeDSecurePaymentAuthRequest(failure);
     }
 
-    private void callbackTokenizeFailure(ThreeDSecureTokenizeCallback callback) {
+    private void callbackTokenizeFailure(ThreeDSecureTokenizeCallback callback, ThreeDSecureResult.Failure result) {
         braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED);
+        callback.onThreeDSecureResult(result);
+    }
+
+    private void callbackTokenizeSuccess(ThreeDSecureTokenizeCallback callback, ThreeDSecureResult.Success result) {
+        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_SUCCEEDED);
+        callback.onThreeDSecureResult(result);
+    }
+
+    private void callbackCancel(ThreeDSecureTokenizeCallback callback) {
+        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_CANCELED);
+        callback.onThreeDSecureResult(ThreeDSecureResult.Cancel.INSTANCE);
     }
 }
