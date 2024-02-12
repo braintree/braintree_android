@@ -28,6 +28,10 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
         this.shouldOfferCredit = shouldOfferCredit;
     }
 
+    public boolean getShouldOfferCredit() {
+        return shouldOfferCredit;
+    }
+
     /**
      * Optional: User email to initiate a quicker authentication flow in cases where the user has a
      * PayPal Account with the same email.
@@ -38,8 +42,8 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
         this.payerEmail = payerEmail;
     }
 
-    public boolean getShouldOfferCredit() {
-        return shouldOfferCredit;
+    public String getPayerEmail() {
+        return this.payerEmail;
     }
 
     String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException {
