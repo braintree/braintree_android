@@ -15,7 +15,7 @@ class SEPADirectDebitLauncher internal constructor(private val browserSwitchClie
     /**
      * Launches the SEPA mandate by switching to a web browser for user authentication
      *
-     * @param activity       an Android [FragmentActivity]
+     * @param activity       an Android [ComponentActivity]
      * @param paymentAuthRequest the result of the SEPA mandate received from invoking
      * [SEPADirectDebitClient.createPaymentAuthRequest]
      * @return [SEPADirectDebitPendingRequest] a [SEPADirectDebitPendingRequest.Started]
@@ -53,15 +53,20 @@ class SEPADirectDebitLauncher internal constructor(private val browserSwitchClie
      * invoking [SEPADirectDebitLauncher.launch]
      * @param intent  the intent to return to your application containing a deep link result from
      * the SEPA mandate flow
-     * @return a [SEPADirectDebitPaymentAuthResult] that should be passed to
-     * [SEPADirectDebitClient.tokenize]
-     * to complete the flow.
+     * @return a [SEPADirectDebitPaymentAuthResult.Success] that should be passed to
+     * [SEPADirectDebitClient.tokenize] to complete the flow. Returns
+     * [SEPADirectDebitPaymentAuthResult.NoResult] if the user closed the browser to cancel the
+     * payment flow, or returned to the app without completing the authentication flow.
      */
     fun handleReturnToAppFromBrowser(
         pendingRequest: SEPADirectDebitPendingRequest.Started,
         intent: Intent
-    ): SEPADirectDebitPaymentAuthResult? {
-        val result = browserSwitchClient.parseResult(pendingRequest.request, intent)
-        return result?.let { SEPADirectDebitPaymentAuthResult(it) }
+    ): SEPADirectDebitPaymentAuthResult {
+        return when (val result = browserSwitchClient.parseResult(pendingRequest.request, intent)) {
+            is BrowserSwitchResult.Success -> SEPADirectDebitPaymentAuthResult.Success(
+                SEPADirectDebitPaymentAuthResultInfo(result.resultInfo)
+            )
+            is BrowserSwitchResult.NoResult -> SEPADirectDebitPaymentAuthResult.NoResult
+        }
     }
 }

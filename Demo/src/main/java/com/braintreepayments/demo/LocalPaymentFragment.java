@@ -13,6 +13,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.braintreepayments.api.BraintreeException;
 import com.braintreepayments.api.LocalPaymentAuthRequest;
 import com.braintreepayments.api.LocalPaymentAuthResult;
+import com.braintreepayments.api.LocalPaymentAuthResultInfo;
 import com.braintreepayments.api.LocalPaymentClient;
 import com.braintreepayments.api.LocalPaymentLauncher;
 import com.braintreepayments.api.LocalPaymentNonce;
@@ -48,8 +49,9 @@ public class LocalPaymentFragment extends BaseFragment {
             LocalPaymentAuthResult paymentAuthResult =
                     localPaymentLauncher.handleReturnToAppFromBrowser(pendingRequest,
                             requireActivity().getIntent());
-            if (paymentAuthResult != null) {
-                localPaymentClient.tokenize(requireContext(), paymentAuthResult,
+            if (paymentAuthResult instanceof LocalPaymentAuthResult.Success) {
+                localPaymentClient.tokenize(requireContext(),
+                        (LocalPaymentAuthResult.Success) paymentAuthResult,
                         this::handleLocalPaymentResult);
             } else {
                 handleError(new BraintreeException("User did not complete local payment flow"));

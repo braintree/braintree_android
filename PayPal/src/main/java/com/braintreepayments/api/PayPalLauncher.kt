@@ -59,19 +59,22 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
      * invoking [PayPalLauncher.launch]
      * @param intent         the intent to return to your application containing a deep link result
      * from the PayPal browser flow
-     * @return a [PayPalPaymentAuthResult] that should be passed to
-     * [PayPalClient.tokenize] to complete
-     * the PayPal payment flow. Returns null if the user closed the browser to cancel the payment
-     * flow, or returned to the app without completing the PayPal authentication flow.
+     * @return a [PayPalPaymentAuthResult.Success] that should be passed to [PayPalClient.tokenize]
+     * to complete the PayPal payment flow. Returns [PayPalPaymentAuthResult.NoResult] if the user
+     * closed the browser to cancel the payment flow, or returned to the app without completing the
+     * PayPal authentication flow.
      */
     fun handleReturnToAppFromBrowser(
         pendingRequest: PayPalPendingRequest.Started,
         intent: Intent
-    ): PayPalPaymentAuthResult? {
-        browserSwitchClient.parseResult(pendingRequest.request, intent)?.let {
-           return PayPalPaymentAuthResult(it)
+    ): PayPalPaymentAuthResult {
+        return when (val browserSwitchResult = browserSwitchClient.parseResult(pendingRequest.request, intent)) {
+            is BrowserSwitchResult.Success -> PayPalPaymentAuthResult.Success(
+                PayPalPaymentAuthResultInfo(browserSwitchResult.resultInfo)
+            )
+
+            is BrowserSwitchResult.NoResult -> PayPalPaymentAuthResult.NoResult
         }
-        return null
     }
 
     @Throws(BrowserSwitchException::class)
