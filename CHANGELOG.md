@@ -1,5 +1,8 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+* Add optional property `PayPalVaultRequest.setPayerEmail()`
+
 ## 4.40.1 (2023-12-13)
 
 * BraintreeCore

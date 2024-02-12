@@ -14,6 +14,8 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
 
     private boolean shouldOfferCredit;
 
+    private String payerEmail;
+
     public PayPalVaultRequest() {
     }
 
@@ -24,6 +26,16 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
      */
     public void setShouldOfferCredit(boolean shouldOfferCredit) {
         this.shouldOfferCredit = shouldOfferCredit;
+    }
+
+    /**
+     * Optional: User email to initiate a quicker authentication flow in cases where the user has a
+     * PayPal Account with the same email.
+     *
+     * @param payerEmail - email address of the payer
+     */
+    public void setPayerEmail(String payerEmail) {
+        this.payerEmail = payerEmail;
     }
 
     public boolean getShouldOfferCredit() {
@@ -45,6 +57,10 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
         String billingAgreementDescription = getBillingAgreementDescription();
         if (!TextUtils.isEmpty(billingAgreementDescription)) {
             parameters.put(DESCRIPTION_KEY, billingAgreementDescription);
+        }
+
+        if (payerEmail != null) {
+            parameters.put(PAYER_EMAIL_KEY, payerEmail);
         }
 
         JSONObject experienceProfile = new JSONObject();
