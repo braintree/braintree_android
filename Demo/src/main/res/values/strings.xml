@@ -129,7 +129,9 @@
     <string name="insights_text_input_email">Email</string>
     <string name="insights_text_input_country_code">Country Code</string>
     <string name="insights_text_input_national_number">National Number</string>
-    <string name="insights_action_button">Submit</string>
+    <string name="insights_action_button">Fetch Shopper Insights</string>
+    <string name="insights_venmo_button">Venmo</string>
+    <string name="insights_paypal_vault_button">PayPal Vault</string>
     <string name="insights_response_label">Response:</string>
     <string name="insights_null_switch">Null </string>
 </resources>

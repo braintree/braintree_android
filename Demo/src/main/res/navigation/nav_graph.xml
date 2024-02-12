@@ -35,11 +35,14 @@
             android:id="@+id/action_mainFragment_to_sepaDirectDebitFragment"
             app:destination="@id/SEPADirectDebitFragment" />
         <action
+            android:id="@+id/action_mainFragment_to_shopperInsightsFragment"
+            app:destination="@id/shopperInsightsFragment" />
+        <action
             android:id="@+id/action_mainFragment_to_payPalNativeCheckoutFragment"
             app:destination="@id/payPalNativeCheckoutFragment" />
         <action
             android:id="@+id/action_mainFragment_to_shoppingInsightsFragment"
-            app:destination="@id/shoppingInsightsFragment" />
+            app:destination="@id/shopperInsightsFragment" />
     </fragment>
     <fragment
         android:id="@+id/cardFragment"
@@ -183,8 +186,13 @@
             app:popUpToInclusive="false" />
     </fragment>
     <fragment
-        android:id="@+id/shoppingInsightsFragment"
+        android:id="@+id/shopperInsightsFragment"
         android:name="com.braintreepayments.demo.ShopperInsightsFragment"
-        tools:layout="@layout/fragment_shopping_insights">
+        tools:layout="@layout/fragment_shopping_insights" >
+        <action
+            android:id="@+id/action_shopperInsightsFragment_to_displayNonceFragment"
+            app:destination="@id/displayNonceFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false" />
     </fragment>
 </navigation>
