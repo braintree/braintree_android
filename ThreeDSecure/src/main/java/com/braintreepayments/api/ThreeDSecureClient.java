@@ -124,7 +124,6 @@ public class ThreeDSecureClient {
                 cardinalClient.initialize(context, configuration, request,
                         cardinalInitializeCallback);
             } catch (BraintreeException initializeException) {
-                braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED);
                 callbackCreatePaymentAuthFailure(callback, new ThreeDSecurePaymentAuthRequest.Failure(initializeException));
             }
         });
@@ -237,7 +236,6 @@ public class ThreeDSecureClient {
             return;
         }
 
-        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED);
         callback.onThreeDSecurePaymentAuthRequest(new ThreeDSecurePaymentAuthRequest.ReadyToLaunch(result));
     }
 
