@@ -12,8 +12,6 @@ internal object SEPADirectDebitAnalytics {
     const val CREATE_MANDATE_CHALLENGE_REQUIRED = "sepa:tokenize:create-mandate:challenge-required"
     const val CREATE_MANDATE_SUCCEEDED = "sepa:tokenize:create-mandate:succeeded"
     const val CREATE_MANDATE_FAILED = "sepa:tokenize:create-mandate:failed"
-    const val CHALLENGE_PRESENTATION_SUCCEEDED = "sepa:tokenize:challenge-presentation:succeeded"
-    const val CHALLENGE_PRESENTATION_FAILED = "sepa:tokenize:challenge-presentation:failed"
     const val CHALLENGE_SUCCEEDED = "sepa:tokenize:challenge:succeeded"
     const val CHALLENGE_FAILED = "sepa:tokenize:challenge:failed"
 }
