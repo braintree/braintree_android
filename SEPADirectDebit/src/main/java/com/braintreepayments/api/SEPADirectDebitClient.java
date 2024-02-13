@@ -62,6 +62,7 @@ public class SEPADirectDebitClient {
                 (result, createMandateError) -> {
                     if (result != null) {
                         if (URLUtil.isValidUrl(result.getApprovalUrl())) {
+                            braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_CHALLENGE_REQUIRED);
                             try {
                                 SEPADirectDebitPaymentAuthRequestParams params =
                                         new SEPADirectDebitPaymentAuthRequestParams(buildBrowserSwitchOptions(result));
