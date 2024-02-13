@@ -99,11 +99,11 @@ public class PayPalVaultRequestUnitTest {
     }
 
     @Test
-    public void createRequestBody_sets_payerEmail_when_not_null() throws JSONException {
+    public void createRequestBody_sets_userAuthenticationEmail_when_not_null() throws JSONException {
         String payerEmail = "payer_email@example.com";
         PayPalVaultRequest request = new PayPalVaultRequest();
 
-        request.setPayerEmail(payerEmail);
+        request.setUserAuthenticationEmail(payerEmail);
         String requestBody = request.createRequestBody(
             mock(Configuration.class),
             mock(Authorization.class),

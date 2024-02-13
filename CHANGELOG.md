@@ -3,7 +3,7 @@
 ## unreleased
 
 * PayPal
-  * Add optional property `PayPalVaultRequest.setPayerEmail()`
+  * Add optional property `PayPalVaultRequest.setUserAuthenticationEmail()`
 
 ## 4.41.0 (2024-01-18)
 

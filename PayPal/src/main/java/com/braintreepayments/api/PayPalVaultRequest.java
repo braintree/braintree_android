@@ -14,7 +14,7 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
 
     private boolean shouldOfferCredit;
 
-    private String payerEmail;
+    private String userAuthenticationEmail;
 
     public PayPalVaultRequest() {
     }
@@ -36,14 +36,14 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
      * Optional: User email to initiate a quicker authentication flow in cases where the user has a
      * PayPal Account with the same email.
      *
-     * @param payerEmail - email address of the payer
+     * @param userAuthenticationEmail - email address of the payer
      */
-    public void setPayerEmail(String payerEmail) {
-        this.payerEmail = payerEmail;
+    public void setUserAuthenticationEmail(String userAuthenticationEmail) {
+        this.userAuthenticationEmail = userAuthenticationEmail;
     }
 
-    public String getPayerEmail() {
-        return this.payerEmail;
+    public String getUserAuthenticationEmail() {
+        return this.userAuthenticationEmail;
     }
 
     String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException {
@@ -63,8 +63,8 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
             parameters.put(DESCRIPTION_KEY, billingAgreementDescription);
         }
 
-        if (payerEmail != null) {
-            parameters.put(PAYER_EMAIL_KEY, payerEmail);
+        if (userAuthenticationEmail != null) {
+            parameters.put(PAYER_EMAIL_KEY, userAuthenticationEmail);
         }
 
         JSONObject experienceProfile = new JSONObject();
