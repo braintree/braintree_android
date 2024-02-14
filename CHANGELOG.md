@@ -3,7 +3,7 @@
 ## unreleased
 
 * Venmo
-  * Add `setFinalAmount()` to `VenmoRequest`
+  * Add `setIsFinalAmount()` to `VenmoRequest`
 
 ## 4.41.0 (2024-01-18)
 
