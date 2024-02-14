@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Venmo
+  * Add `setFinalAmount()` to `VenmoRequest`
+
 ## 4.41.0 (2024-01-18)
 
 * PayPal
