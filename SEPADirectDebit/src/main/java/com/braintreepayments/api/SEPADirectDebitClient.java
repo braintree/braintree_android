@@ -56,53 +56,43 @@ public class SEPADirectDebitClient {
      */
     public void createPaymentAuthRequest(@NonNull final SEPADirectDebitRequest sepaDirectDebitRequest,
                                          @NonNull final SEPADirectDebitPaymentAuthRequestCallback callback) {
-        braintreeClient.sendAnalyticsEvent("sepa-direct-debit.selected.started");
-        braintreeClient.sendAnalyticsEvent("sepa-direct-debit.create-mandate.requested");
+        braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_STARTED);
         sepaDirectDebitApi.createMandate(sepaDirectDebitRequest,
                 braintreeClient.getReturnUrlScheme(),
                 (result, createMandateError) -> {
                     if (result != null) {
                         if (URLUtil.isValidUrl(result.getApprovalUrl())) {
-                            braintreeClient.sendAnalyticsEvent(
-                                    "sepa-direct-debit.create-mandate.success");
+                            braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_CHALLENGE_REQUIRED);
                             try {
                                 SEPADirectDebitPaymentAuthRequestParams params =
                                         new SEPADirectDebitPaymentAuthRequestParams(buildBrowserSwitchOptions(result));
+                                braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_SUCCEEDED);
                                 callback.onResult(new SEPADirectDebitPaymentAuthRequest.ReadyToLaunch(params));
                             } catch (JSONException exception) {
-                                braintreeClient.sendAnalyticsEvent(
-                                        "sepa-direct-debit.browser-switch.failure");
-                                callback.onResult(new SEPADirectDebitPaymentAuthRequest.Failure(exception));
+                                braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_FAILED);
+                                callbackCreatePaymentAuthFailure(callback, new SEPADirectDebitPaymentAuthRequest.Failure(exception));
                             }
                         } else if (result.getApprovalUrl().equals("null")) {
-                            braintreeClient.sendAnalyticsEvent(
-                                    "sepa-direct-debit.create-mandate.success");
+                            braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_SUCCEEDED);
                             // Mandate has already been approved
-                            braintreeClient.sendAnalyticsEvent(
-                                    "sepa-direct-debit.tokenize.requested");
                             sepaDirectDebitApi.tokenize(result.getIbanLastFour(),
                                     result.getCustomerId(), result.getBankReferenceToken(),
                                     result.getMandateType().toString(),
                                     (sepaDirectDebitNonce, tokenizeError) -> {
                                         if (sepaDirectDebitNonce != null) {
-                                            braintreeClient.sendAnalyticsEvent(
-                                                    "sepa-direct-debit.tokenize.success");
-                                            callback.onResult(new SEPADirectDebitPaymentAuthRequest.LaunchNotRequired(sepaDirectDebitNonce));
+                                            callbackCreatePaymentAuthChallengeNotRequiredSuccess(callback, new SEPADirectDebitPaymentAuthRequest.LaunchNotRequired(sepaDirectDebitNonce));
                                         } else if (tokenizeError != null) {
-                                            braintreeClient.sendAnalyticsEvent(
-                                                    "sepa-direct-debit.tokenize.failure");
-                                            callback.onResult(new SEPADirectDebitPaymentAuthRequest.Failure(tokenizeError));
+                                            callbackCreatePaymentAuthFailure(callback, new SEPADirectDebitPaymentAuthRequest.Failure(tokenizeError));
                                         }
                                     });
                         } else {
-                            braintreeClient.sendAnalyticsEvent(
-                                    "sepa-direct-debit.create-mandate.failure");
-                            callback.onResult(new SEPADirectDebitPaymentAuthRequest.Failure(new BraintreeException("An unexpected error occurred.")));
+                            braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_FAILED);
+                            callbackCreatePaymentAuthFailure(callback, new SEPADirectDebitPaymentAuthRequest.Failure(new BraintreeException("An unexpected error occurred.")));
                         }
                     } else if (createMandateError != null) {
-                        braintreeClient.sendAnalyticsEvent(
-                                "sepa-direct-debit.create-mandate.failure");
-                        callback.onResult(new SEPADirectDebitPaymentAuthRequest.Failure(createMandateError));
+                        braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_FAILED);
+                        callbackCreatePaymentAuthFailure(callback,
+                                new SEPADirectDebitPaymentAuthRequest.Failure(createMandateError));
                     }
                 });
     }
@@ -127,36 +117,54 @@ public class SEPADirectDebitClient {
         if (deepLinkUri != null) {
             if (deepLinkUri.getPath().contains("success") &&
                     deepLinkUri.getQueryParameter("success").equals("true")) {
-                braintreeClient.sendAnalyticsEvent(
-                        "sepa-direct-debit.browser-switch.success");
+                braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CHALLENGE_SUCCEEDED);
                 JSONObject metadata = browserSwitchResult.getRequestMetadata();
                 String ibanLastFour = metadata.optString(IBAN_LAST_FOUR_KEY);
                 String customerId = metadata.optString(CUSTOMER_ID_KEY);
                 String bankReferenceToken = metadata.optString(BANK_REFERENCE_TOKEN_KEY);
                 String mandateType = metadata.optString(MANDATE_TYPE_KEY);
 
-                braintreeClient.sendAnalyticsEvent("sepa-direct-debit.tokenize.requested");
                 sepaDirectDebitApi.tokenize(ibanLastFour, customerId, bankReferenceToken,
                         mandateType,
                         (sepaDirectDebitNonce, error) -> {
                             if (sepaDirectDebitNonce != null) {
-                                braintreeClient.sendAnalyticsEvent(
-                                        "sepa-direct-debit.tokenize.success");
-                                callback.onSEPADirectDebitResult(new SEPADirectDebitResult.Success(sepaDirectDebitNonce));
+                                callbackTokenizeSuccess(callback, new SEPADirectDebitResult.Success(sepaDirectDebitNonce));
                             } else if (error != null) {
-                                braintreeClient.sendAnalyticsEvent(
-                                        "sepa-direct-debit.tokenize.failure");
-                                callback.onSEPADirectDebitResult(new SEPADirectDebitResult.Failure(error));
+                                callbackTokenizeFailure(callback, new SEPADirectDebitResult.Failure(error));
                             }
                         });
             } else if (deepLinkUri.getPath().contains("cancel")) {
-                braintreeClient.sendAnalyticsEvent("sepa-direct-debit.browser-switch.failure");
-                callback.onSEPADirectDebitResult(new SEPADirectDebitResult.Failure(new BraintreeException("An unexpected error occurred.")));
+                callbackTokenizeCancel(callback);
             }
         } else {
-            braintreeClient.sendAnalyticsEvent("sepa-direct-debit.browser-switch.failure");
-            callback.onSEPADirectDebitResult(new SEPADirectDebitResult.Failure(new BraintreeException("Unknown error")));
+            braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CHALLENGE_FAILED);
+            callbackTokenizeFailure(callback, new SEPADirectDebitResult.Failure(new BraintreeException("Unknown error")));
         }
+    }
+
+    private void callbackCreatePaymentAuthFailure(SEPADirectDebitPaymentAuthRequestCallback callback, SEPADirectDebitPaymentAuthRequest.Failure result) {
+        braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_FAILED);
+        callback.onResult(result);
+    }
+
+    private void callbackCreatePaymentAuthChallengeNotRequiredSuccess(SEPADirectDebitPaymentAuthRequestCallback callback, SEPADirectDebitPaymentAuthRequest.LaunchNotRequired result) {
+        braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_SUCCEEDED);
+        callback.onResult(result);
+    }
+
+    private void callbackTokenizeCancel(SEPADirectDebitTokenizeCallback callback) {
+        braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CHALLENGE_CANCELED);
+        callback.onSEPADirectDebitResult(SEPADirectDebitResult.Cancel.INSTANCE);
+    }
+
+    private void callbackTokenizeFailure(SEPADirectDebitTokenizeCallback callback, SEPADirectDebitResult.Failure result) {
+        braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_FAILED);
+        callback.onSEPADirectDebitResult(result);
+    }
+
+    private void callbackTokenizeSuccess(SEPADirectDebitTokenizeCallback callback, SEPADirectDebitResult.Success result) {
+        braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_SUCCEEDED);
+        callback.onSEPADirectDebitResult(result);
     }
 
     private BrowserSwitchOptions buildBrowserSwitchOptions(CreateMandateResult createMandateResult) throws JSONException {

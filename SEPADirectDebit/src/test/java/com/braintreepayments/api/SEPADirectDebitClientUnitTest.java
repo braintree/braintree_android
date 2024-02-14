@@ -61,7 +61,7 @@ public class SEPADirectDebitClientUnitTest {
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
         sut.createPaymentAuthRequest(sepaDirectDebitRequest, paymentAuthRequestCallback);
-        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.selected.started");
+        verify(braintreeClient).sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_STARTED);
 
         ArgumentCaptor<SEPADirectDebitPaymentAuthRequest> captor =
                 ArgumentCaptor.forClass(SEPADirectDebitPaymentAuthRequest.class);
@@ -71,8 +71,8 @@ public class SEPADirectDebitClientUnitTest {
         assertTrue(paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.ReadyToLaunch);
         SEPADirectDebitPaymentAuthRequestParams params = ((SEPADirectDebitPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams();
 
-        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.requested");
-        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.success");
+        verify(braintreeClient).sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_SUCCEEDED);
+        verify(braintreeClient).sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_CHALLENGE_REQUIRED);
 
         BrowserSwitchOptions browserSwitchOptions = params.getBrowserSwitchOptions();
         assertEquals(Uri.parse("http://www.example.com"), browserSwitchOptions.getUrl());
@@ -116,7 +116,7 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitPaymentAuthRequest paymentAuthRequest = captor.getValue();
         assertTrue(paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.LaunchNotRequired);
         assertEquals(((SEPADirectDebitPaymentAuthRequest.LaunchNotRequired) paymentAuthRequest).getNonce(), nonce);
-        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.success");
+        verify(braintreeClient).sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_SUCCEEDED);
     }
 
     @Test
@@ -146,7 +146,8 @@ public class SEPADirectDebitClientUnitTest {
         Exception error = ((SEPADirectDebitPaymentAuthRequest.Failure) paymentAuthRequest).getError();
         assertTrue(error instanceof BraintreeException);
         assertEquals("An unexpected error occurred.", error.getMessage());
-        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.failure");
+        verify(braintreeClient).sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_FAILED);
+        verify(braintreeClient).sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_FAILED);
     }
 
     @Test
@@ -167,8 +168,8 @@ public class SEPADirectDebitClientUnitTest {
                 new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
         sut.createPaymentAuthRequest(sepaDirectDebitRequest, paymentAuthRequestCallback);
-        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.success");
-        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.requested");
+        verify(braintreeClient).sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_STARTED);
+        verify(braintreeClient).sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_SUCCEEDED);
         verify(sepaDirectDebitApi).tokenize(eq("1234"), eq("fake-customer-id"),
                 eq("fake-bank-reference-token"), eq("ONE_OFF"),
                 any(SEPADirectDebitInternalTokenizeCallback.class));
@@ -192,7 +193,8 @@ public class SEPADirectDebitClientUnitTest {
         assertTrue(paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.Failure);
         Exception actualError = ((SEPADirectDebitPaymentAuthRequest.Failure) paymentAuthRequest).getError();
         assertEquals(error, actualError);
-        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.create-mandate.failure");
+        verify(braintreeClient).sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_FAILED);
+        verify(braintreeClient).sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_FAILED);
     }
 
 
@@ -223,11 +225,10 @@ public class SEPADirectDebitClientUnitTest {
 
         sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.browser-switch.success");
         verify(sepaDirectDebitApi).tokenize(eq("1234"), eq("customer-id"),
                 eq("bank-reference-token"), eq("ONE_OFF"),
                 any(SEPADirectDebitInternalTokenizeCallback.class));
-        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.requested");
+        verify(braintreeClient).sendAnalyticsEvent(SEPADirectDebitAnalytics.CHALLENGE_SUCCEEDED);
     }
 
     @Test
@@ -267,7 +268,7 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitResult result = captor.getValue();
         assertTrue(result instanceof SEPADirectDebitResult.Success);
         assertEquals(nonce, ((SEPADirectDebitResult.Success) result).getNonce());
-        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.success");
+        verify(braintreeClient).sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_SUCCEEDED);
     }
 
     @Test
@@ -306,7 +307,7 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitResult result = captor.getValue();
         assertTrue(result instanceof SEPADirectDebitResult.Failure);
         assertEquals(exception, ((SEPADirectDebitResult.Failure) result).getError());
-        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.tokenize.failure");
+        verify(braintreeClient).sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_FAILED);
         verify(sepaDirectDebitApi).tokenize(eq("1234"), eq("customer-id"),
                 eq("bank-reference-token"), eq("ONE_OFF"),
                 any(SEPADirectDebitInternalTokenizeCallback.class));
@@ -374,10 +375,8 @@ public class SEPADirectDebitClientUnitTest {
         verify(sepaTokenizeCallback).onSEPADirectDebitResult(captor.capture());
 
         SEPADirectDebitResult result = captor.getValue();
-        assertTrue(result instanceof SEPADirectDebitResult.Failure);
-        assertTrue(((SEPADirectDebitResult.Failure) result).getError() instanceof BraintreeException);
-        assertEquals("An unexpected error occurred.", ((SEPADirectDebitResult.Failure) result).getError().getMessage());
-        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.browser-switch.failure");
+        assertTrue(result instanceof SEPADirectDebitResult.Cancel);
+        verify(braintreeClient).sendAnalyticsEvent(SEPADirectDebitAnalytics.CHALLENGE_CANCELED);
     }
 
     @Test
@@ -406,6 +405,6 @@ public class SEPADirectDebitClientUnitTest {
         Exception exception = ((SEPADirectDebitResult.Failure) result).getError();
         assertTrue(exception instanceof BraintreeException);
         assertEquals("Unknown error", exception.getMessage());
-        verify(braintreeClient).sendAnalyticsEvent("sepa-direct-debit.browser-switch.failure");
+        verify(braintreeClient).sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_FAILED);
     }
 }
