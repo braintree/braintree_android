@@ -6,9 +6,6 @@ import com.braintreepayments.api.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMEN
 import com.braintreepayments.api.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_SUCCEEDED
 import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_PRESENTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_SELECTED
-import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_PRESENTED
-import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_SELECTED
-import java.lang.Exception
 
 /**
  * Use [ShopperInsightsClient] to optimize your checkout experience
@@ -82,7 +79,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         when {
             error != null -> callbackFailure(callback, error)
 
-            result?.eligibleMethods?.paypal == null && result?.eligibleMethods?.venmo == null -> {
+            result?.eligibleMethods?.paypal == null -> {
                 callbackFailure(
                     callback = callback,
                     error = BraintreeException("Required fields missing from API response body")
@@ -92,8 +89,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
             else -> {
                 callbackSuccess(
                     callback = callback,
-                    isPayPalRecommended = isPaymentRecommended(result.eligibleMethods.paypal),
-                    isVenmoRecommended = isPaymentRecommended(result.eligibleMethods.venmo)
+                    isPayPalRecommended = isPaymentRecommended(result.eligibleMethods.paypal)
                 )
             }
         }
@@ -109,13 +105,12 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
 
     private fun callbackSuccess(
         callback: ShopperInsightsCallback,
-        isPayPalRecommended: Boolean,
-        isVenmoRecommended: Boolean,
+        isPayPalRecommended: Boolean
     ) {
         braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_SUCCEEDED)
         callback.onResult(
             ShopperInsightsResult.Success(
-                ShopperInsightsInfo(isPayPalRecommended, isVenmoRecommended)
+                ShopperInsightsInfo(isPayPalRecommended)
             )
         )
     }
@@ -140,28 +135,12 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         braintreeClient.sendAnalyticsEvent(PAYPAL_SELECTED)
     }
 
-    /**
-     * Call this method when the Venmo button has been successfully displayed to the buyer.
-     * This method sends analytics to help improve the Shopper Insights feature experience.
-     */
-    fun sendVenmoPresentedEvent() {
-        braintreeClient.sendAnalyticsEvent(VENMO_PRESENTED)
-    }
-
-    /**
-     * Call this method when the Venmo button has been selected/tapped by the buyer.
-     * This method sends analytics to help improve the Shopper Insights feature experience.
-     */
-    fun sendVenmoSelectedEvent() {
-        braintreeClient.sendAnalyticsEvent(VENMO_SELECTED)
-    }
-
     companion object {
         // Default values
         private const val countryCode = "US"
         private const val currencyCode = "USD"
         private const val constraintType = "INCLUDE"
-        private val paymentSources = listOf("PAYPAL", "VENMO")
+        private val paymentSources = listOf("PAYPAL")
         private const val includeAccountDetails = true
     }
 }

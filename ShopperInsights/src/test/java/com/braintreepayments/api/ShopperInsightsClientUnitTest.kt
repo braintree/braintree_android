@@ -68,7 +68,7 @@ class ShopperInsightsClientUnitTest {
                     countryCode = "US",
                     accountDetails = true,
                     constraintType = "INCLUDE",
-                    paymentSources = listOf("PAYPAL", "VENMO")
+                    paymentSources = listOf("PAYPAL")
                 ),
                 callback = any()
             )
@@ -123,11 +123,11 @@ class ShopperInsightsClientUnitTest {
     }
 
     @Test
-    fun `testGetRecommendedPaymentMethods - all methods are null`() {
+    fun `testGetRecommendedPaymentMethods - methods is null`() {
         val callback = mockk<ShopperInsightsCallback>(relaxed = true)
 
         executeTestForFindEligiblePaymentsApi(
-            result = EligiblePaymentsApiResult(EligiblePaymentMethods(paypal = null, venmo = null)),
+            result = EligiblePaymentsApiResult(EligiblePaymentMethods(paypal = null)),
             error = null,
             callback = callback
         )
@@ -149,7 +149,7 @@ class ShopperInsightsClientUnitTest {
     }
 
     @Test
-    fun `testGetRecommendedPaymentMethods - both paypal and venmo recommended`() {
+    fun `testGetRecommendedPaymentMethods - paypal recommended`() {
         val callback = mockk<ShopperInsightsCallback>(relaxed = true)
         val eligiblePaymentMethodDetails = EligiblePaymentMethodDetails(
             canBeVaulted = true,
@@ -161,8 +161,7 @@ class ShopperInsightsClientUnitTest {
         executeTestForFindEligiblePaymentsApi(
             result = EligiblePaymentsApiResult(
                 EligiblePaymentMethods(
-                    paypal = eligiblePaymentMethodDetails,
-                    venmo = eligiblePaymentMethodDetails
+                    paypal = eligiblePaymentMethodDetails
                 )
             ),
             error = null,
@@ -175,38 +174,6 @@ class ShopperInsightsClientUnitTest {
                     assertTrue { result is ShopperInsightsResult.Success }
                     val success = result as ShopperInsightsResult.Success
                     assertEquals(true, success.response.isPayPalRecommended)
-                    assertEquals(true, success.response.isVenmoRecommended)
-                }
-            )
-        }
-    }
-
-    @Test
-    fun `testGetRecommendedPaymentMethods - paymentDetail null`() {
-        val callback = mockk<ShopperInsightsCallback>(relaxed = true)
-
-        executeTestForFindEligiblePaymentsApi(
-            result = EligiblePaymentsApiResult(
-                EligiblePaymentMethods(
-                    paypal = null,
-                    venmo = EligiblePaymentMethodDetails(
-                        canBeVaulted = true,
-                        eligibleInPayPalNetwork = true,
-                        recommended = true,
-                        recommendedPriority = 1
-                    )
-                )
-            ),
-            error = null,
-            callback = callback
-        )
-
-        verify {
-            callback.onResult(
-                withArg { result ->
-                    assertTrue { result is ShopperInsightsResult.Success }
-                    val success = result as ShopperInsightsResult.Success
-                    assertEquals(false, success.response.isPayPalRecommended)
                 }
             )
         }
@@ -224,8 +191,7 @@ class ShopperInsightsClientUnitTest {
                         eligibleInPayPalNetwork = true,
                         recommended = false,
                         recommendedPriority = 1
-                    ),
-                    venmo = null
+                    )
                 )
             ),
             error = null,
@@ -252,8 +218,7 @@ class ShopperInsightsClientUnitTest {
                     eligibleInPayPalNetwork = true,
                     recommended = false,
                     recommendedPriority = 1
-                ),
-                venmo = null
+                )
             )
         )
 
@@ -276,18 +241,6 @@ class ShopperInsightsClientUnitTest {
     fun `test paypal selected analytics event`() {
         sut.sendPayPalSelectedEvent()
         verify { braintreeClient.sendAnalyticsEvent("shopper-insights:paypal-selected") }
-    }
-
-    @Test
-    fun `test venmo presented analytics event`() {
-        sut.sendVenmoPresentedEvent()
-        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:venmo-presented") }
-    }
-
-    @Test
-    fun `test venmo selected analytics event`() {
-        sut.sendVenmoSelectedEvent()
-        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:venmo-selected") }
     }
 
     private fun executeTestForFindEligiblePaymentsApi(

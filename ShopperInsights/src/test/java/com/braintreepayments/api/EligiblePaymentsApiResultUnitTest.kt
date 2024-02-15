@@ -6,33 +6,6 @@ import org.junit.Test
 class EligiblePaymentsApiResultUnitTest {
 
     @Test
-    fun testVenmoFromJson() {
-        // Sample JSON string
-        val jsonString = """
-            {
-                "eligible_methods": {
-                    "venmo": {
-                        "can_be_vaulted": false,
-                        "eligible_in_paypal_network": true,
-                        "recommended": false
-                    }
-                }
-            }
-        """.trimIndent()
-
-        // Convert JSON string to ShopperInsightApiResult object
-        val result = EligiblePaymentsApiResult.fromJson(jsonString)
-
-        // Assertions for Venmo
-        val venmo = result.eligibleMethods.venmo
-        assertNotNull(venmo)
-        assertFalse(venmo!!.canBeVaulted)
-        assertTrue(venmo.eligibleInPayPalNetwork)
-        assertFalse(venmo.recommended)
-        assertEquals(0, venmo.recommendedPriority)
-    }
-
-    @Test
     fun testPayPalFromJson() {
         // Sample JSON string
         val jsonString = """

@@ -99,8 +99,7 @@ class EligiblePaymentsApiUnitTest {
                             eligibleInPayPalNetwork = false,
                             recommended = true,
                             recommendedPriority = 1
-                        ),
-                        venmo = null
+                        )
                     )
                 ), error = null
             )

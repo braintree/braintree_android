@@ -31,7 +31,6 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
     private lateinit var responseTextView: TextView
     private lateinit var actionButton: Button
     private lateinit var payPalVaultButton: Button
-    private lateinit var venmoButton: Button
     private lateinit var emailInput: TextInputLayout
     private lateinit var countryCodeInput: TextInputLayout
     private lateinit var nationalNumberInput: TextInputLayout
@@ -70,7 +69,6 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
         initializeViews(view)
 
         actionButton.setOnClickListener { fetchShopperInsights() }
-        venmoButton.setOnClickListener { launchVenmo() }
         payPalVaultButton.setOnClickListener { launchPayPalVault() }
     }
 
@@ -78,7 +76,6 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
         responseTextView = view.findViewById(R.id.responseTextView)
         actionButton = view.findViewById(R.id.actionButton)
         payPalVaultButton = view.findViewById(R.id.payPalVaultButton)
-        venmoButton = view.findViewById(R.id.venmoButton)
         emailInput = view.findViewById(R.id.emailInput)
         countryCodeInput = view.findViewById(R.id.countryCodeInput)
         nationalNumberInput = view.findViewById(R.id.nationalNumberInput)
@@ -110,12 +107,10 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
             when (result) {
                 is ShopperInsightsResult.Success -> {
                     payPalVaultButton.isEnabled = result.response.isPayPalRecommended
-                    venmoButton.isEnabled = result.response.isVenmoRecommended
 
                     responseTextView.text =
                         """
                             PayPal Recommended: ${result.response.isPayPalRecommended}
-                            Venmo Recommended: ${result.response.isVenmoRecommended}
                         """.trimIndent()
                 }
 
@@ -131,18 +126,6 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
             requireActivity(),
             PayPalRequestFactory.createPayPalVaultRequest(activity)
         )
-    }
-
-    private fun launchVenmo() {
-        val venmoRequest = VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE)
-        venmoRequest.profileId = null
-        venmoRequest.collectCustomerBillingAddress = true
-        venmoRequest.collectCustomerShippingAddress = true
-        venmoRequest.totalAmount = "20"
-        venmoRequest.subTotalAmount = "18"
-        venmoRequest.taxAmount = "1"
-
-        venmoClient.tokenizeVenmoAccount(requireActivity(), venmoRequest)
     }
 
     override fun onPayPalSuccess(payPalAccountNonce: PayPalAccountNonce) {
