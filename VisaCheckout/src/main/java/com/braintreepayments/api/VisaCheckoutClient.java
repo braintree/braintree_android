@@ -113,21 +113,30 @@ public class VisaCheckoutClient {
      */
     public void tokenize(@NonNull VisaPaymentSummary visaPaymentSummary,
                          @NonNull final VisaCheckoutTokenizeCallback callback) {
+        braintreeClient.sendAnalyticsEvent(VisaCheckoutAnalytics.TOKENIZE_STARTED);
         apiClient.tokenizeREST(new VisaCheckoutAccount(visaPaymentSummary),
                 (tokenizationResponse, exception) -> {
                     if (tokenizationResponse != null) {
                         try {
                             VisaCheckoutNonce visaCheckoutNonce =
                                     VisaCheckoutNonce.fromJSON(tokenizationResponse);
-                            callback.onVisaCheckoutResult(new VisaCheckoutResult.Success(visaCheckoutNonce));
-                            braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
+                            callbackTokenizeSuccess(callback, new VisaCheckoutResult.Success(visaCheckoutNonce));
                         } catch (JSONException e) {
-                            callback.onVisaCheckoutResult(new VisaCheckoutResult.Failure(e));
+                            callbackTokenizeFailure(callback, new VisaCheckoutResult.Failure(e));
                         }
                     } else if (exception != null) {
-                        callback.onVisaCheckoutResult(new VisaCheckoutResult.Failure(exception));
-                        braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.failed");
+                        callbackTokenizeFailure(callback, new VisaCheckoutResult.Failure(exception));
                     }
                 });
+    }
+
+    private void callbackTokenizeSuccess(VisaCheckoutTokenizeCallback callback, VisaCheckoutResult.Success result) {
+        braintreeClient.sendAnalyticsEvent(VisaCheckoutAnalytics.TOKENIZE_SUCCEEDED);
+        callback.onVisaCheckoutResult(result);
+    }
+
+    private void callbackTokenizeFailure(VisaCheckoutTokenizeCallback callback, VisaCheckoutResult.Failure result) {
+        braintreeClient.sendAnalyticsEvent(VisaCheckoutAnalytics.TOKENIZE_FAILED);
+        callback.onVisaCheckoutResult(result);
     }
 }
