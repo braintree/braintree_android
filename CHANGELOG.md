@@ -2,6 +2,8 @@
 
 ## 4.42.0 (2024-03-12)
 
+* PayPal
+  * Add optional property `PayPalVaultRequest.setUserAuthenticationEmail()`
 * Venmo
   * Add `setIsFinalAmount()` to `VenmoRequest`
   * Add `setFallbackToWeb()` to `VenmoRequest`
