@@ -1,5 +1,27 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Venmo
+  * Add `setIsFinalAmount()` to `VenmoRequest`
+
+## 4.41.0 (2024-01-18)
+
+* PayPal
+  * Add imageUrl, upcCode, and upcType to PayPalLineItem
+* PayPalNativeCheckout
+  * Bump native-checkout version to release `1.2.1`
+  * Upgraded the data-collector SDK to version 3.21.0 which made updates to Device Data collection related to Google Play's User Data Policy. For more info read the [release notes](https://github.com/paypal/android-checkout-sdk/releases/tag/v1.2.1)
+
+## 4.40.1 (2023-12-13)
+
+* BraintreeCore
+  * Bump `browser-switch` version to `2.6.1` (fixes #799)
+* PayPal
+  * Fix issue where inaccurate error message was being returned on authorization or configuration error (fixes #821)
+* Venmo
+  * Fix NPE when `VenmoListener` is null (fixes #832)
+
 ## 4.40.0 (2023-11-16)
 
 * PayPalNativeCheckout

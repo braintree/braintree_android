@@ -18,7 +18,7 @@ buildscript {
 
     // The 'CI' build variable will evaluate to 'true' when build script is executed via GitHub Actions
     // Ref: https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
-    def roomVersion = System.getenv('CI') ? java7SafeRoomVersion : m1MacSafeRoomVersion
+    def roomVersion = System.getenv('CI') && !System.getenv('SECURITY_SCAN') ? java7SafeRoomVersion : m1MacSafeRoomVersion
 
     ext.versions = [
             "kotlin"         : "1.7.10",
@@ -44,7 +44,7 @@ buildscript {
             // kotlin libraries. Make sure to keep this dependency in line with the kotlin version used.
             "kotlinCoroutinesCore"       : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2",
 
-            "browserSwitch"              : "com.braintreepayments.api:browser-switch:2.6.0",
+            "browserSwitch"              : "com.braintreepayments.api:browser-switch:2.6.1",
             "cardinal"                   : "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.7-5",
             "samsungPay"                 : "com.samsung.android.spay:sdk:2.5.01",
             "playServicesWallet"         : "com.google.android.gms:play-services-wallet:${versions.playServices}",
@@ -97,12 +97,12 @@ allprojects {
     }
 }
 
-version '4.40.1-SNAPSHOT'
+version '4.41.1-SNAPSHOT'
 group 'com.braintreepayments'
 ext {
     compileSdkVersion = 34
     minSdkVersion = 21
-    versionCode = 184
+    versionCode = 186
     targetSdkVersion = 34
     versionName = version
 }

@@ -21,7 +21,7 @@ For an integration offering card payments, add the following dependency in your 
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:card:4.40.0'
+  implementation 'com.braintreepayments.api:card:4.41.0'
 }
 ```
 
@@ -29,7 +29,7 @@ To preview the latest work in progress builds, add the following SNAPSHOT depend
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:card:4.40.1-SNAPSHOT'
+  implementation 'com.braintreepayments.api:card:4.41.1-SNAPSHOT'
 }
 ```
 
@@ -58,7 +58,7 @@ This SDK abides by our Client SDK Deprecation Policy. For more information on th
 | Major version number | Status | Released | Deprecated | Unsupported |
 | -------------------- | ------ | -------- | ---------- | ----------- |
 | 4.x.x | Active | June 2021 | TBA | TBA |
-| 3.x.x | Deprecated | February 2019 | June 2022 | June 2023 |
+| 3.x.x | Unsupported | February 2019 | June 2022 | June 2023 |
 | 2.x.x | Unsupported | November 2015 | March 2020 | March 2021 |
 
 Versions 2.7.3 and below use outdated SSL certificates and are unsupported.
