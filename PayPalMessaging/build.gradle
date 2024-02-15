@@ -46,6 +46,7 @@ dependencies {
     testImplementation deps.junitTest
     testImplementation deps.mockk
     testImplementation deps.mockitoCore
+    testImplementation project(':TestUtils')
 }
 
 // region signing and publishing
