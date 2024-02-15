@@ -44,6 +44,8 @@ dependencies {
     implementation('com.paypal.messages:paypal-messages:1.0.0-alpha.00')
 
     testImplementation deps.junitTest
+    testImplementation deps.mockk
+    testImplementation deps.mockitoCore
 }
 
 // region signing and publishing
