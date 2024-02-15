@@ -27,6 +27,7 @@ class VenmoApi {
             input.put("merchantProfileId", venmoProfileId);
             input.put("customerClient", "MOBILE_APP");
             input.put("intent", "CONTINUE");
+            input.put("isFinalAmount", request.getIsFinalAmountAsString());
             JSONObject paysheetDetails = new JSONObject();
             paysheetDetails.put("collectCustomerShippingAddress", request.getCollectCustomerShippingAddressAsString());
             paysheetDetails.put("collectCustomerBillingAddress", request.getCollectCustomerBillingAddressAsString());

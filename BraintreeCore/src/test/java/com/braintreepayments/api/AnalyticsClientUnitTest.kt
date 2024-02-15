@@ -351,11 +351,11 @@ class AnalyticsClientUnitTest {
         val analyticsJSONSlot = slot<String>()
         every {
             httpClient.post(
-                "analytics_url",
-                capture(analyticsJSONSlot),
-                isNull(),
-                authorization,
-                any()
+                path = "analytics_url",
+                data = capture(analyticsJSONSlot),
+                configuration = isNull(),
+                authorization = authorization,
+                callback = any()
             )
         } returns Unit
 
@@ -412,20 +412,20 @@ class AnalyticsClientUnitTest {
 
     companion object {
         private fun createSampleDeviceMetadata() = DeviceMetadata(
-                integration = "sample-integration",
-                sessionId = "sample-session-id",
-                platform = "platform",
-                sdkVersion = "sdk-version",
-                deviceManufacturer = "device-manufacturer",
-                deviceModel = "device-model",
-                platformVersion = "platform-version",
-                merchantAppName = "merchant-app-name",
-                devicePersistentUUID = "persistent-uuid",
-                merchantAppId = "merchant-app-name",
-                userOrientation = "user-orientation",
-                isPayPalInstalled = true,
-                isVenmoInstalled = true,
-                isSimulator = false
-            )
+            integration = "sample-integration",
+            sessionId = "sample-session-id",
+            platform = "platform",
+            sdkVersion = "sdk-version",
+            deviceManufacturer = "device-manufacturer",
+            deviceModel = "device-model",
+            platformVersion = "platform-version",
+            merchantAppName = "merchant-app-name",
+            devicePersistentUUID = "persistent-uuid",
+            merchantAppId = "merchant-app-name",
+            userOrientation = "user-orientation",
+            isPayPalInstalled = true,
+            isVenmoInstalled = true,
+            isSimulator = false
+        )
     }
 }

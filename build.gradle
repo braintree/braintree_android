@@ -147,6 +147,7 @@ detekt {
             "TestUtils/src",
             "ThreeDSecure/src",
             "Venmo/src",
+            "ShopperInsights/src"
     )
     autoCorrect = project.hasProperty('detektAutoCorrect')
     reports {
