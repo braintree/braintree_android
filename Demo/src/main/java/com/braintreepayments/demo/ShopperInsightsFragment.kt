@@ -18,8 +18,6 @@ import com.braintreepayments.api.ShopperInsightsResult
 import com.braintreepayments.api.VenmoAccountNonce
 import com.braintreepayments.api.VenmoClient
 import com.braintreepayments.api.VenmoListener
-import com.braintreepayments.api.VenmoPaymentMethodUsage
-import com.braintreepayments.api.VenmoRequest
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
 
