@@ -271,7 +271,6 @@ public class VenmoRequest implements Parcelable {
         return String.valueOf(this.isFinalAmount);
     }
 
-
     protected VenmoRequest(Parcel in) {
         shouldVault = in.readByte() != 0;
         collectCustomerBillingAddress = in.readByte() != 0;
