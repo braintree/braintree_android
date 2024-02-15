@@ -3,6 +3,7 @@
 ## unreleased
 
 * Venmo
+  * Add `setIsFinalAmount()` to `VenmoRequest`
   * Add `setFallbackToWeb()` to `VenmoRequest`
     * If set to `true` customers will fallback to a web based Venmo flow if the Venmo app is not installed
     * This method uses App Links instead of Deep Links

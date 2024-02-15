@@ -27,6 +27,7 @@ public class VenmoRequest implements Parcelable {
     private String taxAmount;
     private String shippingAmount;
     private ArrayList<VenmoLineItem> lineItems;
+    private boolean isFinalAmount;
     private boolean fallbackToWeb = false;
 
     private final @VenmoPaymentMethodUsage int paymentMethodUsage;
@@ -272,6 +273,28 @@ public class VenmoRequest implements Parcelable {
         return fallbackToWeb;
     }
 
+    /**
+     * @param isFinalAmount Optional - Indicates whether the purchase amount is the final amount.
+     *                    Defaults to false.
+     */
+    public void setIsFinalAmount(boolean isFinalAmount) {
+        this.isFinalAmount = isFinalAmount;
+    }
+
+    /**
+     * @return The boolean value of the flag that signifies whether the purchase amount is the final amount.
+     */
+    public boolean getIsFinalAmount() {
+        return isFinalAmount;
+    }
+
+    /**
+     * @return Whether or not the purchase amount is the final amount as a string value.
+     */
+    String getIsFinalAmountAsString() {
+        return String.valueOf(this.isFinalAmount);
+    }
+
     protected VenmoRequest(Parcel in) {
         shouldVault = in.readByte() != 0;
         collectCustomerBillingAddress = in.readByte() != 0;
@@ -285,6 +308,7 @@ public class VenmoRequest implements Parcelable {
         taxAmount = in.readString();
         totalAmount = in.readString();
         lineItems = in.createTypedArrayList(VenmoLineItem.CREATOR);
+        isFinalAmount = in.readByte() != 0;
         fallbackToWeb = in.readByte() != 0;
     }
 
@@ -319,6 +343,7 @@ public class VenmoRequest implements Parcelable {
         parcel.writeString(taxAmount);
         parcel.writeString(totalAmount);
         parcel.writeTypedList(lineItems);
+        parcel.writeByte((byte) (isFinalAmount ? 1 : 0));
         parcel.writeByte((byte) (fallbackToWeb ? 1 : 0));
     }
 }
