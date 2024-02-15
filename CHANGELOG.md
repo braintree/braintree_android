@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* PayPal
+  * Add optional property `PayPalVaultRequest.setUserAuthenticationEmail()`
 * Venmo
   * Add `setIsFinalAmount()` to `VenmoRequest`
 
