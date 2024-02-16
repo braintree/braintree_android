@@ -4,7 +4,7 @@ import androidx.annotation.Nullable;
 
 /**
  * Callback for receiving result of
- * {@link VenmoClient#tokenize(VenmoPaymentAuthResult, VenmoTokenizeCallback)}.
+ * {@link VenmoClient#tokenize(VenmoPaymentAuthResultInfo, VenmoTokenizeCallback)}.
  */
 interface VenmoInternalCallback {
 

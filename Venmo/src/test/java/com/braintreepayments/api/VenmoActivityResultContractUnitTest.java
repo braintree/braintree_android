@@ -76,23 +76,23 @@ public class VenmoActivityResultContractUnitTest {
         successIntent.putExtra(EXTRA_PAYMENT_METHOD_NONCE, "payment_method_nonce");
         successIntent.putExtra(EXTRA_USERNAME, "username");
 
-        VenmoPaymentAuthResult venmoPaymentAuthResult =
+        VenmoPaymentAuthResultInfo venmoPaymentAuthResultInfo =
                 sut.parseResult(Activity.RESULT_OK, successIntent);
-        assertNotNull(venmoPaymentAuthResult);
-        assertEquals("resource_id", venmoPaymentAuthResult.getPaymentContextId());
-        assertEquals("payment_method_nonce", venmoPaymentAuthResult.getVenmoAccountNonce());
-        assertEquals("username", venmoPaymentAuthResult.getVenmoUsername());
+        assertNotNull(venmoPaymentAuthResultInfo);
+        assertEquals("resource_id", venmoPaymentAuthResultInfo.getPaymentContextId());
+        assertEquals("payment_method_nonce", venmoPaymentAuthResultInfo.getVenmoAccountNonce());
+        assertEquals("username", venmoPaymentAuthResultInfo.getVenmoUsername());
     }
 
     @Test
     public void parseResult_whenResultIsCANCELED_returnsVenomResultWithError() {
         VenmoActivityResultContract sut = new VenmoActivityResultContract();
 
-        VenmoPaymentAuthResult venmoPaymentAuthResult =
+        VenmoPaymentAuthResultInfo venmoPaymentAuthResultInfo =
                 sut.parseResult(Activity.RESULT_CANCELED, null);
-        assertNotNull(venmoPaymentAuthResult);
+        assertNotNull(venmoPaymentAuthResultInfo);
 
-        UserCanceledException error = (UserCanceledException) venmoPaymentAuthResult.getError();
+        UserCanceledException error = (UserCanceledException) venmoPaymentAuthResultInfo.getError();
         assertNotNull("User canceled Venmo.", error.getMessage());
         assertFalse(error.isExplicitCancelation());
     }

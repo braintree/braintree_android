@@ -43,10 +43,11 @@ public class VenmoLauncherUnitTest {
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
         FragmentActivity lifecycleOwner = new FragmentActivity();
 
-        VenmoLauncher sut = new VenmoLauncher(activityResultRegistry, lifecycleOwner, callback);
+        VenmoLauncher sut = new VenmoLauncher(activityResultRegistry, lifecycleOwner, callback,
+                com.braintreepayments.api.BrowserSwitchClient());
 
         verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner),
-                Mockito.<ActivityResultContract<VenmoPaymentAuthRequestParams, VenmoPaymentAuthResult>>any(),
+                Mockito.<ActivityResultContract<VenmoPaymentAuthRequestParams, VenmoPaymentAuthResultInfo>>any(),
                 Mockito.any());
     }
 
@@ -58,7 +59,8 @@ public class VenmoLauncherUnitTest {
                         "profile-id", "payment-context-id", "session-id", "custom", null);
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
         FragmentActivity lifecycleOwner = new FragmentActivity();
-        VenmoLauncher sut = new VenmoLauncher(activityResultRegistry, lifecycleOwner, callback);
+        VenmoLauncher sut = new VenmoLauncher(activityResultRegistry, lifecycleOwner, callback,
+                com.braintreepayments.api.BrowserSwitchClient());
         sut.activityLauncher = activityResultLauncher;
 
         sut.launch(new VenmoPaymentAuthRequest.ReadyToLaunch(params));
@@ -70,7 +72,8 @@ public class VenmoLauncherUnitTest {
     public void showVenmoInGooglePlayStore_opensVenmoAppStoreURL() {
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
         ComponentActivity activity = mock(ComponentActivity.class);
-        VenmoLauncher sut = new VenmoLauncher(activityResultRegistry, activity, callback);
+        VenmoLauncher sut = new VenmoLauncher(activityResultRegistry, activity, callback,
+                com.braintreepayments.api.BrowserSwitchClient());
 
         sut.showVenmoInGooglePlayStore(activity);
 

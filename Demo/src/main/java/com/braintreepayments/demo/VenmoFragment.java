@@ -13,13 +13,18 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.PayPalPaymentAuthResult;
+import com.braintreepayments.api.PayPalPendingRequest;
+import com.braintreepayments.api.PayPalResult;
 import com.braintreepayments.api.UserCanceledException;
 import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.VenmoClient;
 import com.braintreepayments.api.VenmoLauncher;
 import com.braintreepayments.api.VenmoLineItem;
 import com.braintreepayments.api.VenmoPaymentAuthRequest;
+import com.braintreepayments.api.VenmoPaymentAuthResult;
 import com.braintreepayments.api.VenmoPaymentMethodUsage;
+import com.braintreepayments.api.VenmoPendingRequest;
 import com.braintreepayments.api.VenmoRequest;
 import com.braintreepayments.api.VenmoResult;
 
@@ -38,10 +43,24 @@ public class VenmoFragment extends BaseFragment {
         venmoButton = view.findViewById(R.id.venmo_button);
         venmoButton.setOnClickListener(this::launchVenmo);
 
-        venmoLauncher = new VenmoLauncher(this, venmoAuthChallengeResult ->
-                venmoClient.tokenize(venmoAuthChallengeResult, this::handleVenmoResult));
+        venmoLauncher = new VenmoLauncher();
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        VenmoPendingRequest.Started pendingRequest = getPendingRequest();
+        if (pendingRequest != null) {
+            VenmoPaymentAuthResult paymentAuthResult = venmoLauncher.handleReturnToAppFromBrowser(pendingRequest, requireActivity().getIntent());
+            if (paymentAuthResult instanceof VenmoPaymentAuthResult.Success) {
+                completeVenmoFlow((VenmoPaymentAuthResult.Success) paymentAuthResult);
+            } else {
+                handleError(new Exception("User did not complete payment flow"));
+            }
+            clearPendingRequest();
+        }
     }
 
     private void handleVenmoResult(VenmoResult result) {
@@ -106,9 +125,24 @@ public class VenmoFragment extends BaseFragment {
             if (paymentAuthRequest instanceof VenmoPaymentAuthRequest.Failure) {
                 handleError(((VenmoPaymentAuthRequest.Failure) paymentAuthRequest).getError());
             } else if (paymentAuthRequest instanceof VenmoPaymentAuthRequest.ReadyToLaunch) {
-                venmoLauncher.launch((VenmoPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
+                venmoLauncher.launch(requireActivity(), (VenmoPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
             }
         });
 
+    }
+
+    private void completeVenmoFlow(VenmoPaymentAuthResult.Success paymentAuthResult) {
+        venmoClient.tokenize(paymentAuthResult, this::handleVenmoResult);
+    }
+
+    private void storePendingRequest(VenmoPendingRequest.Started request) {
+        PendingRequestStore.getInstance().putVenmoPendingRequest(requireContext(), request);
+    }
+    private VenmoPendingRequest.Started getPendingRequest() {
+        return PendingRequestStore.getInstance().getVenmoPendingRequest(requireContext());
+    }
+
+    private void clearPendingRequest() {
+        PendingRequestStore.getInstance().clearVenmoPendingRequest(requireContext());
     }
 }

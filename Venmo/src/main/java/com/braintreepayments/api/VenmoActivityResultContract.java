@@ -14,7 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 class VenmoActivityResultContract
-        extends ActivityResultContract<VenmoPaymentAuthRequestParams, VenmoPaymentAuthResult> {
+        extends ActivityResultContract<VenmoPaymentAuthRequestParams, VenmoPaymentAuthResultInfo> {
 
     static final String VENMO_PACKAGE_NAME = "com.venmo";
     static final String APP_SWITCH_ACTIVITY = "controller.SetupMerchantActivity";
@@ -62,18 +62,18 @@ class VenmoActivityResultContract
     }
 
     @Override
-    public VenmoPaymentAuthResult parseResult(int resultCode, @Nullable Intent intent) {
+    public VenmoPaymentAuthResultInfo parseResult(int resultCode, @Nullable Intent intent) {
         if (resultCode == AppCompatActivity.RESULT_OK) {
             if (intent == null) {
-                return new VenmoPaymentAuthResult(null, null, null, new BraintreeException(
+                return new VenmoPaymentAuthResultInfo(null, null, null, new BraintreeException(
                         "An unknown Android error occurred with the activity result API."));
             }
             String paymentContextId = intent.getStringExtra(EXTRA_RESOURCE_ID);
             String nonce = intent.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
             String venmoUsername = intent.getStringExtra(EXTRA_USERNAME);
-            return new VenmoPaymentAuthResult(paymentContextId, nonce, venmoUsername, null);
+            return new VenmoPaymentAuthResultInfo(paymentContextId, nonce, venmoUsername, null);
         } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
-            return new VenmoPaymentAuthResult(null, null, null,
+            return new VenmoPaymentAuthResultInfo(null, null, null,
                     new UserCanceledException("User canceled Venmo."));
         }
         return null;

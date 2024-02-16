@@ -3,73 +3,51 @@ package com.braintreepayments.api
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.ActivityResultRegistry
-import androidx.annotation.VisibleForTesting
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleOwner
 
 /**
  * Responsible for launching the Venmo app to authenticate users
  */
-class VenmoLauncher @VisibleForTesting internal constructor(
-    registry: ActivityResultRegistry, lifecycleOwner: LifecycleOwner?,
-    callback: VenmoLauncherCallback
+class VenmoLauncher internal constructor(
+    private val browserSwitchClient: BrowserSwitchClient
 ) {
-    @JvmField
-    @VisibleForTesting
-    var activityLauncher: ActivityResultLauncher<VenmoPaymentAuthRequestParams>
-
-    /**
-     * Used to launch the Venmo authentication flow to tokenize a Venmo account. This class must be
-     * instantiated before the Fragment is created.
-     *
-     * @param fragment an Android Fragment from which you will launch the Venmo app
-     * @param callback a [VenmoLauncherCallback] to receive the result of the Venmo
-     * app switch authentication flow
-     */
-    constructor(
-        fragment: Fragment,
-        callback: VenmoLauncherCallback
-    ) : this(
-        fragment.requireActivity().activityResultRegistry, fragment.viewLifecycleOwner,
-        callback
-    )
-
-    /**
-     * Used to launch the Venmo authentication flow to tokenize a Venmo account. This class must be
-     * instantiated before the Activity is created.
-     *
-     * @param activity an Android Activity from which you will launch the Venmo app
-     * @param callback a [VenmoLauncherCallback] to receive the result of the Venmo
-     * app switch authentication flow
-     */
-    constructor(
-        activity: ComponentActivity,
-        callback: VenmoLauncherCallback
-    ) : this(activity.activityResultRegistry, activity, callback)
-
-    init {
-        activityLauncher = registry.register(
-            VENMO_SECURE_RESULT, lifecycleOwner!!,
-            VenmoActivityResultContract()
-        ) { venmoPaymentAuthResult: VenmoPaymentAuthResult? ->
-            callback.onVenmoPaymentAuthResult(
-                venmoPaymentAuthResult!!
-            )
-        }
-    }
+    constructor() : this(BrowserSwitchClient())
 
     /**
      * Launches the Venmo authentication flow by switching to the Venmo app. This method cannot be
      * called until the lifecycle of the Fragment or Activity used to instantiate your
      * [VenmoLauncher] has reached the CREATED state.
      *
-     * @param venmoPaymentAuthRequest the result of
+     * @param paymentAuthRequest the result of
      * [VenmoClient.createPaymentAuthRequest]
      */
-    fun launch(venmoPaymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch) {
-        activityLauncher.launch(venmoPaymentAuthRequest.requestParams)
+    fun launch(activity: ComponentActivity, paymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch) : VenmoPendingRequest {
+        try {
+            assertCanPerformBrowserSwitch(activity, paymentAuthRequest.requestParams)
+        } catch (browserSwitchException: BrowserSwitchException) {
+            val manifestInvalidError = createBrowserSwitchError(browserSwitchException)
+            return VenmoPendingRequest.Failure(manifestInvalidError)
+        }
+        val request = browserSwitchClient.start(
+            activity,
+            paymentAuthRequest.requestParams.browserSwitchOptions
+        )
+        return when (request) {
+            is BrowserSwitchPendingRequest.Failure -> VenmoPendingRequest.Failure(request.cause)
+            is BrowserSwitchPendingRequest.Started -> VenmoPendingRequest.Started(request)
+        }
+    }
+
+    fun handleReturnToAppFromBrowser(
+        pendingRequest: VenmoPendingRequest.Started,
+        intent: Intent
+    ): VenmoPaymentAuthResult {
+        return when (val browserSwitchResult = browserSwitchClient.parseResult(pendingRequest.request, intent)) {
+            is BrowserSwitchResult.Success -> VenmoPaymentAuthResult.Success(
+                VenmoPaymentAuthResultInfo(browserSwitchResult.resultInfo)
+            )
+
+            is BrowserSwitchResult.NoResult -> VenmoPaymentAuthResult.NoResult
+        }
     }
 
     /**
@@ -85,8 +63,24 @@ class VenmoLauncher @VisibleForTesting internal constructor(
         activity.startActivity(intent)
     }
 
+    @Throws(BrowserSwitchException::class)
+    private fun assertCanPerformBrowserSwitch(
+        activity: ComponentActivity,
+        params: VenmoPaymentAuthRequestParams
+    ) {
+        browserSwitchClient.assertCanPerformBrowserSwitch(activity, params.browserSwitchOptions)
+    }
+
     companion object {
         private const val VENMO_SECURE_RESULT = "com.braintreepayments.api.Venmo.RESULT"
         const val VENMO_PACKAGE_NAME = "com.venmo"
+        private fun createBrowserSwitchError(exception: BrowserSwitchException): Exception {
+            return BraintreeException(
+                "AndroidManifest.xml is incorrectly configured or another app defines the same " +
+                        "browser switch url as this app. See https://developer.paypal.com/" +
+                        "braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
+                        "for the correct configuration: " + exception.message
+            )
+        }
     }
 }
