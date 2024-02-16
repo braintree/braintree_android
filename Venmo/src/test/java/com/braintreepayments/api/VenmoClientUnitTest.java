@@ -1580,12 +1580,13 @@ public class VenmoClientUnitTest {
     @Test
     public void setListener_whenPendingBrowserSwitchResultExists_deliversResultToListener_andSetsPendingResultNull() throws JSONException {
         VenmoAccountNonce nonce = mock(VenmoAccountNonce.class);
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorizationSuccess(clientToken)
+                .build();
 
         VenmoApi venmoApi = new MockVenmoApiBuilder()
                 .createNonceFromPaymentContextSuccess(nonce)
                 .build();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
         BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
         when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchStatus.SUCCESS);
