@@ -467,25 +467,50 @@ public class VenmoClient {
                         String resourceId = parseResourceId(String.valueOf(deepLinkUri));
                         String paymentMethodNonce = parsePaymentMethodNonce(String.valueOf(deepLinkUri));
                         String username = parseUsername(String.valueOf(deepLinkUri));
+                        Context context = braintreeClient.getApplicationContext();
 
-                        if (resourceId != null) {
-                            venmoApi.createNonceFromPaymentContext(resourceId, new VenmoOnActivityResultCallback() {
+                        braintreeClient.getAuthorization(new AuthorizationCallback() {
+                            @Override
+                            public void onAuthorizationResult(@Nullable Authorization authorization, @Nullable Exception authError) {
+                            if (authorization != null) {
+                                final boolean isClientTokenAuth = (authorization instanceof ClientToken);
 
-                                @Override
-                                public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
-                                    if (venmoAccountNonce != null) {
+                                if (resourceId != null) {
+                                    venmoApi.createNonceFromPaymentContext(resourceId, new VenmoOnActivityResultCallback() {
+                                        @Override
+                                        public void onResult(@Nullable VenmoAccountNonce nonce, @Nullable Exception error) {
+                                            if (nonce != null) {
+                                                boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(context);
+                                                if (shouldVault && isClientTokenAuth) {
+                                                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.success");
+                                                    vaultVenmoAccountNonce(nonce.getString(), callback);
+                                                } else {
+                                                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.success");
+                                                    callback.onResult(nonce, null);
+                                                }
+                                            } else {
+                                                braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.failure");
+                                                callback.onResult(null, error);
+                                            }
+                                        }
+                                    });
+                                } else if (paymentMethodNonce != null && username != null) {
+                                    boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(context);
+                                    if (shouldVault && isClientTokenAuth) {
                                         braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.success");
-                                        callback.onResult(venmoAccountNonce, null);
+                                        vaultVenmoAccountNonce(paymentMethodNonce, callback);
                                     } else {
-                                        callback.onResult(null, error);
+                                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.success");
+                                        VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(paymentMethodNonce, username, false);
+                                        callback.onResult(venmoAccountNonce, null);
                                     }
                                 }
-                            });
-                        } else if (paymentMethodNonce != null && username != null) {
-                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.success");
-                            VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(paymentMethodNonce, username, false);
-                            callback.onResult(venmoAccountNonce, null);
+                            } else if (authError != null) {
+                                braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.failure");
+                                callback.onResult(null, authError);
+                            }
                         }
+                        });
                     } else if (deepLinkUri.getPath().contains("cancel")) {
                         braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.canceled");
                         callback.onResult(null, new UserCanceledException("User canceled Venmo."));
