@@ -125,7 +125,12 @@ public class VenmoFragment extends BaseFragment {
             if (paymentAuthRequest instanceof VenmoPaymentAuthRequest.Failure) {
                 handleError(((VenmoPaymentAuthRequest.Failure) paymentAuthRequest).getError());
             } else if (paymentAuthRequest instanceof VenmoPaymentAuthRequest.ReadyToLaunch) {
-                venmoLauncher.launch(requireActivity(), (VenmoPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
+                VenmoPendingRequest pendingRequest = venmoLauncher.launch(requireActivity(), (VenmoPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
+                if (pendingRequest instanceof VenmoPendingRequest.Started) {
+                    storePendingRequest((VenmoPendingRequest.Started) pendingRequest);
+                } else if (pendingRequest instanceof VenmoPendingRequest.Failure) {
+                    handleError(((VenmoPendingRequest.Failure) pendingRequest).getError());
+                }
             }
         });
 
