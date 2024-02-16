@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -9,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Objects;
@@ -57,10 +57,7 @@ public class VenmoClient {
     /**
      * Start the Pay With Venmo flow. This will return a {@link VenmoPaymentAuthRequestParams} that
      * will be used to authenticate the user by switching to the Venmo app in
-     * {@link VenmoLauncher#launch(VenmoPaymentAuthRequest.ReadyToLaunch)}
-     * <p>
-     * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to
-     * {@link VenmoPaymentAuthRequestCallback#onVenmoPaymentAuthRequest(VenmoPaymentAuthRequest)}
+     * {@link VenmoLauncher#launch(ComponentActivity, VenmoPaymentAuthRequest.ReadyToLaunch)}
      *
      * @param context  Android Context
      * @param request  {@link VenmoRequest}
@@ -79,12 +76,6 @@ public class VenmoClient {
             if (!configuration.isVenmoEnabled()) {
                 callbackPaymentAuthFailure(callback,
                         new VenmoPaymentAuthRequest.Failure(new AppSwitchNotAvailableException("Venmo is not enabled")));
-                return;
-            }
-            if (!request.getFallbackToWeb() && !deviceInspector.isVenmoAppSwitchAvailable(context)) {
-                braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_FAILED);
-                callbackPaymentAuthFailure(callback,
-                        new VenmoPaymentAuthRequest.Failure(new AppSwitchNotAvailableException("Venmo is not installed")));
                 return;
             }
 
@@ -170,7 +161,7 @@ public class VenmoClient {
      * this method should be invoked to tokenize the account to retrieve a
      * {@link VenmoAccountNonce}.
      * 
-     * @param paymentAuthResult the result of {@link VenmoLauncher#launch(VenmoPaymentAuthRequest.ReadyToLaunch)}
+     * @param paymentAuthResult the result of {@link VenmoLauncher#handleReturnToAppFromBrowser(VenmoPendingRequest.Started, Intent)}
      * @param callback a {@link VenmoInternalCallback} to receive a {@link VenmoAccountNonce} or
      *                 error from Venmo tokenization
      */
@@ -213,12 +204,10 @@ public class VenmoClient {
                     });
 
                 } else if (paymentMethodNonce != null && username != null) {
-                    String nonce = venmoPaymentAuthResultInfo.getVenmoAccountNonce();
-
                     boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(
                             braintreeClient.getApplicationContext());
                     if (shouldVault && isClientTokenAuth) {
-                        vaultVenmoAccountNonce(nonce, (venmoAccountNonce, error) -> {
+                        vaultVenmoAccountNonce(paymentMethodNonce, (venmoAccountNonce, error) -> {
                             if (venmoAccountNonce != null) {
                                 callbackSuccess(callback, new VenmoResult.Success(venmoAccountNonce));
                             } else if (error != null) {
@@ -226,9 +215,8 @@ public class VenmoClient {
                             }
                         });
                     } else {
-                        String venmoUsername = venmoPaymentAuthResultInfo.getVenmoUsername();
                         VenmoAccountNonce venmoAccountNonce =
-                                new VenmoAccountNonce(nonce, venmoUsername, false);
+                                new VenmoAccountNonce(paymentMethodNonce, username, false);
                         callbackSuccess(callback, new VenmoResult.Success(venmoAccountNonce));
                     }
                 }

@@ -13,9 +13,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.PayPalPaymentAuthResult;
-import com.braintreepayments.api.PayPalPendingRequest;
-import com.braintreepayments.api.PayPalResult;
 import com.braintreepayments.api.UserCanceledException;
 import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.VenmoClient;
@@ -108,16 +105,7 @@ public class VenmoFragment extends BaseFragment {
         lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
         venmoRequest.setLineItems(lineItems);
 
-        if (fallbackToWeb) {
-            venmoRequest.setFallbackToWeb(true);
-            startVenmoFlow(venmoRequest);
-        } else {
-            if (venmoClient.isVenmoAppSwitchAvailable(activity)) {
-                startVenmoFlow(venmoRequest);
-            } else {
-                showDialog("Please ensure that Venmo is enabled for the current merchant and the Venmo app is installed, or set VenmoRequest#fallbackToWeb true");
-            }
-        }
+        startVenmoFlow(venmoRequest);
     }
 
     private void startVenmoFlow(VenmoRequest venmoRequest) {

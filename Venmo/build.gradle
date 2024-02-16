@@ -52,6 +52,7 @@ dependencies {
     testImplementation deps.junitTest
     testImplementation deps.mockitoCore
     testImplementation deps.jsonAssert
+    testImplementation deps.mockk
     testImplementation project(':TestUtils')
 }
 
