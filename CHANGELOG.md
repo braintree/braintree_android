@@ -122,6 +122,10 @@
   * PayPal Native Checkout
     * Remove entire PayPal Native Checkout module
     
+## unreleased (v4)
+* Venmo
+  * Add `setIsFinalAmount()` to `VenmoRequest`
+
 ## 4.41.0 (2024-01-18)
 
 * PayPal
