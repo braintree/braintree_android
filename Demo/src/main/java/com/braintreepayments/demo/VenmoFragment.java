@@ -71,32 +71,44 @@ public class VenmoFragment extends BaseFragment {
 
         boolean shouldVault =
                 Settings.vaultVenmo(activity) && !TextUtils.isEmpty(Settings.getCustomerId(activity));
+        boolean fallbackToWeb = Settings.venmoFallbackToWeb(activity);
 
         int venmoPaymentMethodUsage = shouldVault ?
                 VenmoPaymentMethodUsage.MULTI_USE : VenmoPaymentMethodUsage.SINGLE_USE;
-        if (venmoClient.isVenmoAppSwitchAvailable(activity)) {
-            VenmoRequest venmoRequest = new VenmoRequest(venmoPaymentMethodUsage);
-            venmoRequest.setProfileId(null);
-            venmoRequest.setShouldVault(shouldVault);
-            venmoRequest.setCollectCustomerBillingAddress(true);
-            venmoRequest.setCollectCustomerShippingAddress(true);
-            venmoRequest.setTotalAmount("20");
-            venmoRequest.setSubTotalAmount("18");
-            venmoRequest.setTaxAmount("1");
-            venmoRequest.setShippingAmount("1");
-            ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
-            lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_CREDIT, "Some Item", 1, "2"));
-            lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
+        VenmoRequest venmoRequest = new VenmoRequest(venmoPaymentMethodUsage);
+        venmoRequest.setProfileId(null);
+        venmoRequest.setShouldVault(shouldVault);
+        venmoRequest.setCollectCustomerBillingAddress(true);
+        venmoRequest.setCollectCustomerShippingAddress(true);
+        venmoRequest.setTotalAmount("20");
+        venmoRequest.setSubTotalAmount("18");
+        venmoRequest.setTaxAmount("1");
+        venmoRequest.setShippingAmount("1");
+        ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
+        lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_CREDIT, "Some Item", 1, "2"));
+        lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
+        venmoRequest.setLineItems(lineItems);
 
-            venmoClient.createPaymentAuthRequest(requireActivity(), venmoRequest, (paymentAuthRequest) -> {
-                if (paymentAuthRequest instanceof VenmoPaymentAuthRequest.Failure) {
-                    handleError(((VenmoPaymentAuthRequest.Failure) paymentAuthRequest).getError());
-                } else if (paymentAuthRequest instanceof VenmoPaymentAuthRequest.ReadyToLaunch) {
-                    venmoLauncher.launch((VenmoPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
-                }
-            });
+        if (fallbackToWeb) {
+            venmoRequest.setFallbackToWeb(true);
+            startVenmoFlow(venmoRequest);
         } else {
-            showDialog("Please install the Venmo app first or confirm that Venmo is enabled for this merchant account");
+            if (venmoClient.isVenmoAppSwitchAvailable(activity)) {
+                startVenmoFlow(venmoRequest);
+            } else {
+                showDialog("Please ensure that Venmo is enabled for the current merchant and the Venmo app is installed, or set VenmoRequest#fallbackToWeb true");
+            }
         }
+    }
+
+    private void startVenmoFlow(VenmoRequest venmoRequest) {
+        venmoClient.createPaymentAuthRequest(requireActivity(), venmoRequest, (paymentAuthRequest) -> {
+            if (paymentAuthRequest instanceof VenmoPaymentAuthRequest.Failure) {
+                handleError(((VenmoPaymentAuthRequest.Failure) paymentAuthRequest).getError());
+            } else if (paymentAuthRequest instanceof VenmoPaymentAuthRequest.ReadyToLaunch) {
+                venmoLauncher.launch((VenmoPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
+            }
+        });
+
     }
 }

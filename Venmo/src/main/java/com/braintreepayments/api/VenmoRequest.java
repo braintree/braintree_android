@@ -28,6 +28,7 @@ public class VenmoRequest implements Parcelable {
     private boolean isFinalAmount;
 
     private final @VenmoPaymentMethodUsage int paymentMethodUsage;
+    private boolean fallbackToWeb = false;
 
     /**
      * Request to tokenize a Venmo account.
@@ -251,6 +252,24 @@ public class VenmoRequest implements Parcelable {
     public void setLineItems(@NonNull Collection<VenmoLineItem> lineItems) {
         this.lineItems.clear();
         this.lineItems.addAll(lineItems);
+    }
+
+    /**
+     * @param fallbackToWeb Optional - Used to determine if the customer should fallback
+     *                      to the web flow if Venmo app is not installed.
+     *                      Defaults to false.
+     *
+     * If using the manual browser switch pattern, you must implement {@link VenmoLauncher}
+     */
+    public void setFallbackToWeb(boolean fallbackToWeb) {
+        this.fallbackToWeb = fallbackToWeb;
+    }
+
+    /**
+     * @return Whether or not to fallback to the web flow if Venmo app is not installed.
+     */
+    public boolean getFallbackToWeb() {
+        return fallbackToWeb;
     }
 
     /**
