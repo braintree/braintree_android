@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import android.content.Context;
 import android.content.Intent;
 
 import androidx.activity.ComponentActivity;
@@ -56,7 +55,7 @@ public class VenmoLauncherUnitTest {
         VenmoPaymentAuthRequestParams params =
                 new VenmoPaymentAuthRequestParams(
                         Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO),
-                        "profile-id", "payment-context-id", "session-id", "custom");
+                        "profile-id", "payment-context-id", "session-id", "custom", null);
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
         FragmentActivity lifecycleOwner = new FragmentActivity();
         VenmoLauncher sut = new VenmoLauncher(activityResultRegistry, lifecycleOwner, callback);

@@ -316,6 +316,7 @@ public class VenmoRequest implements Parcelable {
         totalAmount = in.readString();
         lineItems = in.createTypedArrayList(VenmoLineItem.CREATOR);
         isFinalAmount = in.readByte() != 0;
+        fallbackToWeb = in.readByte() != 0;
     }
 
     public static final Creator<VenmoRequest> CREATOR = new Creator<VenmoRequest>() {
@@ -350,5 +351,6 @@ public class VenmoRequest implements Parcelable {
         parcel.writeString(totalAmount);
         parcel.writeTypedList(lineItems);
         parcel.writeByte((byte) (isFinalAmount ? 1 : 0));
+        parcel.writeByte((byte) (fallbackToWeb ? 1 : 0));
     }
 }

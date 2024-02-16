@@ -11,13 +11,18 @@ public class VenmoPaymentAuthRequestParams {
     private String sessionId;
     private String integrationType;
 
+
+    private BrowserSwitchOptions browserSwitchOptions;
+
     VenmoPaymentAuthRequestParams(Configuration configuration, String profileId, String paymentContextId,
-                                  String sessionId, String integrationType) {
+                                  String sessionId, String integrationType,
+                                  BrowserSwitchOptions browserSwitchOptions) {
         this.configuration = configuration;
         this.profileId = profileId;
         this.paymentContextId = paymentContextId;
         this.sessionId = sessionId;
         this.integrationType = integrationType;
+        this.browserSwitchOptions = browserSwitchOptions;
     }
 
     Configuration getConfiguration() {
@@ -38,5 +43,9 @@ public class VenmoPaymentAuthRequestParams {
 
     String getIntegrationType() {
         return integrationType;
+    }
+
+    BrowserSwitchOptions getBrowserSwitchOptions() {
+        return browserSwitchOptions;
     }
 }

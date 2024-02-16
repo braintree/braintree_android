@@ -43,7 +43,7 @@ public class VenmoActivityResultContractUnitTest {
                 Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO);
         VenmoPaymentAuthRequestParams
                 input = new VenmoPaymentAuthRequestParams(configuration, "sample-venmo-merchant",
-                "venmo-payment-context-id", "session-id", "custom");
+                "venmo-payment-context-id", "session-id", "custom", null);
         VenmoActivityResultContract sut = new VenmoActivityResultContract();
 
         Intent intent = sut.createIntent(context, input);

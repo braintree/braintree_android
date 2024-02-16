@@ -74,7 +74,7 @@ public class VenmoClient {
                         new VenmoPaymentAuthRequest.Failure(new AppSwitchNotAvailableException("Venmo is not enabled")));
                 return;
             }
-            if (!deviceInspector.isVenmoAppSwitchAvailable(context)) {
+            if (!request.getFallbackToWeb() && !deviceInspector.isVenmoAppSwitchAvailable(context)) {
                 braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_FAILED);
                 callbackPaymentAuthFailure(callback,
                         new VenmoPaymentAuthRequest.Failure(new AppSwitchNotAvailableException("Venmo is not installed")));
@@ -125,7 +125,7 @@ public class VenmoClient {
         sharedPrefsWriter.persistVenmoVaultOption(context, shouldVault);
         VenmoPaymentAuthRequestParams params =
                 new VenmoPaymentAuthRequestParams(configuration, venmoProfileId, paymentContextId,
-                        braintreeClient.getSessionId(), braintreeClient.getIntegrationType());
+                        braintreeClient.getSessionId(), braintreeClient.getIntegrationType(), null);
         callback.onVenmoPaymentAuthRequest(new VenmoPaymentAuthRequest.ReadyToLaunch(params));
     }
 
