@@ -47,9 +47,8 @@ class PayPalMessagingViewUnitTest {
 
     @Test
     fun testStart_withClientID_firesWillAppearAndSendsAnalytics() {
-        val payPalMissingClientIdConfig: Configuration = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
+
         val braintreeClient = MockBraintreeClientBuilder()
-            .configuration(payPalMissingClientIdConfig)
             .build()
 
         context = mockk(relaxed = true)
@@ -58,7 +57,7 @@ class PayPalMessagingViewUnitTest {
 
         payPalMessageView.payPalMessagingListener = listener
         payPalMessageView.start()
-        
+
         verify { braintreeClient.sendAnalyticsEvent("paypal-messaging:create-view:started") }
 
 //    XCTAssertTrue(mockDelegate.willAppear)
