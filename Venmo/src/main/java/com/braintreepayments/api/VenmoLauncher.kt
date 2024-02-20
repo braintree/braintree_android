@@ -13,14 +13,20 @@ class VenmoLauncher internal constructor(
     constructor() : this(BrowserSwitchClient())
 
     /**
-     * Launches the Venmo authentication flow by switching to the Venmo app. This method cannot be
-     * called until the lifecycle of the Fragment or Activity used to instantiate your
-     * [VenmoLauncher] has reached the CREATED state.
+     * Launches the Venmo authentication flow by switching to the Venmo app or a mobile browser, if
+     * the Venmo app is not installed on the device.
      *
-     * @param paymentAuthRequest the result of
-     * [VenmoClient.createPaymentAuthRequest]
+     * @param activity the ComponentActivity to launch the Venmo flow from
+     * @param paymentAuthRequest the result of [VenmoClient.createPaymentAuthRequest]
+     * @return [VenmoPendingRequest] a [VenmoPendingRequest.Started] should be stored
+     * to complete the flow upon return to app in [VenmoLauncher.handleReturnToApp],
+     * or a [VenmoPendingRequest.Failure] with an error if the Venmo flow was unable to be
+     * launched in the app or in a browser.
      */
-    fun launch(activity: ComponentActivity, paymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch) : VenmoPendingRequest {
+    fun launch(
+        activity: ComponentActivity,
+        paymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch
+    ): VenmoPendingRequest {
         try {
             assertCanPerformBrowserSwitch(activity, paymentAuthRequest.requestParams)
         } catch (browserSwitchException: BrowserSwitchException) {
@@ -37,11 +43,31 @@ class VenmoLauncher internal constructor(
         }
     }
 
-    fun handleReturnToAppFromBrowser(
+    /**
+     * Captures and delivers the result of a the Venmo authentication flow.
+     *
+     * For most integrations, this method should be invoked in the onResume method of the Activity
+     * used to invoke [VenmoLauncher.launch].
+     *
+     * If the Activity used to launch the Venmo flow has is configured with
+     * android:launchMode="singleTop", this method should be invoked in the onNewIntent method of
+     * the Activity.
+     *
+     * @param pendingRequest the [VenmoPendingRequest.Started] stored after successfully
+     * invoking [VenmoLauncher.launch]
+     * @param intent the intent to return to your application containing a deep link result
+     * from the Venmo flow
+     * @return a [VenmoPaymentAuthResult.Success] that should be passed to [VenmoClient.tokenize]
+     * to complete the Venmo payment flow. Returns [VenmoPaymentAuthResult.NoResult] if the user
+     * closed the browser to cancel the payment flow, or returned to the app without completing the
+     * Venmo authentication flow.
+     */
+    fun handleReturnToApp(
         pendingRequest: VenmoPendingRequest.Started,
         intent: Intent
     ): VenmoPaymentAuthResult {
-        return when (val browserSwitchResult = browserSwitchClient.parseResult(pendingRequest.request, intent)) {
+        return when (val browserSwitchResult =
+            browserSwitchClient.parseResult(pendingRequest.request, intent)) {
             is BrowserSwitchResult.Success -> VenmoPaymentAuthResult.Success(
                 VenmoPaymentAuthResultInfo(browserSwitchResult.resultInfo)
             )
@@ -72,7 +98,6 @@ class VenmoLauncher internal constructor(
     }
 
     companion object {
-        private const val VENMO_SECURE_RESULT = "com.braintreepayments.api.Venmo.RESULT"
         const val VENMO_PACKAGE_NAME = "com.venmo"
         private fun createBrowserSwitchError(exception: BrowserSwitchException): Exception {
             return BraintreeException(

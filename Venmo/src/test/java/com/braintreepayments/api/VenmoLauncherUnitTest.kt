@@ -107,7 +107,7 @@ class VenmoLauncherUnitTest {
             )
         } returns BrowserSwitchResult.Success(result)
 
-        val paymentAuthResult = sut.handleReturnToAppFromBrowser(
+        val paymentAuthResult = sut.handleReturnToApp(
             VenmoPendingRequest.Started(browserSwitchPendingRequest), intent
         )
 
@@ -129,7 +129,7 @@ class VenmoLauncherUnitTest {
             )
         } returns BrowserSwitchResult.NoResult
 
-        val paymentAuthResult = sut.handleReturnToAppFromBrowser(
+        val paymentAuthResult = sut.handleReturnToApp(
             VenmoPendingRequest.Started(browserSwitchPendingRequest), intent
         )
 

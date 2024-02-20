@@ -50,7 +50,7 @@ public class VenmoFragment extends BaseFragment {
         super.onResume();
         VenmoPendingRequest.Started pendingRequest = getPendingRequest();
         if (pendingRequest != null) {
-            VenmoPaymentAuthResult paymentAuthResult = venmoLauncher.handleReturnToAppFromBrowser(pendingRequest, requireActivity().getIntent());
+            VenmoPaymentAuthResult paymentAuthResult = venmoLauncher.handleReturnToApp(pendingRequest, requireActivity().getIntent());
             if (paymentAuthResult instanceof VenmoPaymentAuthResult.Success) {
                 completeVenmoFlow((VenmoPaymentAuthResult.Success) paymentAuthResult);
             } else {

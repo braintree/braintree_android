@@ -3,16 +3,16 @@ package com.braintreepayments.api
 import org.json.JSONException
 
 /**
- * A pending request for the PayPal web-based authentication flow created by invoking
+ * A pending request for the Venmo authentication flow created by invoking
  * [VenmoLauncher.launch]. This pending request should be stored locally within the app or
  * on-device and used to deliver a result of the browser flow in
- * [VenmoLauncher.handleReturnToAppFromBrowser]
+ * [VenmoLauncher.handleReturnToApp]
  */
 sealed class VenmoPendingRequest {
 
     /**
      * A pending request was successfully started. This [VenmoPendingRequest.Started] should be
-     * stored and passed to [VenmoLauncher.handleReturnToAppFromBrowser]
+     * stored and passed to [VenmoLauncher.handleReturnToApp]
      */
     class Started(internal val request: BrowserSwitchPendingRequest.Started) : VenmoPendingRequest() {
 
@@ -34,7 +34,7 @@ sealed class VenmoPendingRequest {
     }
 
     /**
-     * An error occurred launching the PayPal browser flow. See [error] for details.
+     * An error occurred launching the Venmo flow. See [error] for details.
      */
     class Failure(val error: Exception) : VenmoPendingRequest()
 }

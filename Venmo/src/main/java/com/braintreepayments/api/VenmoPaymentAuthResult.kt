@@ -1,7 +1,7 @@
 package com.braintreepayments.api
 
 /**
- * Result of the Venmo flow received from [VenmoLauncher.handleReturnToAppFromBrowser].
+ * Result of the Venmo flow received from [VenmoLauncher.handleReturnToApp].
  */
 sealed class VenmoPaymentAuthResult {
 
@@ -12,7 +12,7 @@ sealed class VenmoPaymentAuthResult {
 
     /**
      * If no matching result can be found for the [VenmoPendingRequest.Started] passed to
-     * [VenmoLauncher.handleReturnToAppFromBrowser]. This is expected if the user closed the
+     * [VenmoLauncher.handleReturnToApp]. This is expected if the user closed the
      * browser to cancel the payment flow, or returns to the app without completing the
      * authentication flow.
      */

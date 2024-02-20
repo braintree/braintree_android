@@ -3,7 +3,7 @@ package com.braintreepayments.api;
 import androidx.annotation.NonNull;
 
 /**
- * Used to receive the result of {@link VenmoClient#tokenize(VenmoPaymentAuthResultInfo, VenmoTokenizeCallback)}
+ * Used to receive the result of {@link VenmoClient#tokenize(VenmoPaymentAuthResult.Success, VenmoTokenizeCallback)} 
  */
 public interface VenmoTokenizeCallback {
 

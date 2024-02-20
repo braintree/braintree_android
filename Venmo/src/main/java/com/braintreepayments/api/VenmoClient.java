@@ -56,7 +56,7 @@ public class VenmoClient {
 
     /**
      * Start the Pay With Venmo flow. This will return a {@link VenmoPaymentAuthRequestParams} that
-     * will be used to authenticate the user by switching to the Venmo app in
+     * will be used to authenticate the user by switching to the Venmo app or mobile browser in
      * {@link VenmoLauncher#launch(ComponentActivity, VenmoPaymentAuthRequest.ReadyToLaunch)}
      *
      * @param context  Android Context
@@ -150,7 +150,8 @@ public class VenmoClient {
                 .requestCode(BraintreeRequestCodes.VENMO)
                 .url(venmoBaseURL)
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme());
-        VenmoPaymentAuthRequestParams params = new VenmoPaymentAuthRequestParams(null, null, null, null, null, browserSwitchOptions);
+        VenmoPaymentAuthRequestParams params = new VenmoPaymentAuthRequestParams(
+                browserSwitchOptions);
 
         callback.onVenmoPaymentAuthRequest(new VenmoPaymentAuthRequest.ReadyToLaunch(params));
     }
@@ -161,7 +162,7 @@ public class VenmoClient {
      * this method should be invoked to tokenize the account to retrieve a
      * {@link VenmoAccountNonce}.
      * 
-     * @param paymentAuthResult the result of {@link VenmoLauncher#handleReturnToAppFromBrowser(VenmoPendingRequest.Started, Intent)}
+     * @param paymentAuthResult the result of {@link VenmoLauncher#handleReturnToApp(VenmoPendingRequest.Started, Intent)}
      * @param callback a {@link VenmoInternalCallback} to receive a {@link VenmoAccountNonce} or
      *                 error from Venmo tokenization
      */
@@ -282,6 +283,7 @@ public class VenmoClient {
      * @param context  Android Context
      * @param callback {@link VenmoIsReadyToPayCallback}
      */
+    // TODO: How should this method behave with web fallback enabled?
     public void isReadyToPay(final Context context, final VenmoIsReadyToPayCallback callback) {
         braintreeClient.getConfiguration((configuration, configError) -> {
             if (configuration != null) {
