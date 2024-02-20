@@ -7,7 +7,6 @@ import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 
-
 class PayPalMessagingViewUnitTest {
     private lateinit var context: Context
 

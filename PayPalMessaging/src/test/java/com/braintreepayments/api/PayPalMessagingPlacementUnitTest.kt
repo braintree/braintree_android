@@ -9,21 +9,21 @@ class PayPalMessagingPlacementUnitTest {
 
     @Test
     fun testPlacement_withHome_returnsRawValueHome() {
-        assertEquals(PayPalMessagingPlacement.HOME.rawValue, "HOME")
+        assertEquals("HOME", PayPalMessagingPlacement.HOME.rawValue)
     }
 
     @Test
     fun testPlacement_withCategory_returnsRawValueCategory() {
-        assertEquals(PayPalMessagingPlacement.CART.rawValue, "CART")
+        assertEquals("CART", PayPalMessagingPlacement.CART.rawValue)
     }
 
     @Test
     fun testPlacement_withProduct_returnsRawValueProduct() {
-        assertEquals(PayPalMessagingPlacement.PRODUCT.rawValue, "PRODUCT")
+        assertEquals("PRODUCT", PayPalMessagingPlacement.PRODUCT.rawValue)
     }
 
     @Test
     fun testPlacement_withPayment_returnsRawValuePayment() {
-        assertEquals(PayPalMessagingPlacement.PAYMENT.rawValue, "PAYMENT")
+        assertEquals("PAYMENT", PayPalMessagingPlacement.PAYMENT.rawValue)
     }
 }

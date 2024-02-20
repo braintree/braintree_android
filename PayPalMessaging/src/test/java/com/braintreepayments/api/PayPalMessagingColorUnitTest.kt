@@ -8,21 +8,21 @@ class PayPalMessagingColorUnitTest {
 
     @Test
     fun testColor_withBlack_returnsRawValueBlack() {
-        assertEquals(PayPalMessagingColor.BLACK.messageColorRawValue, PayPalMessageColor.BLACK)
+        assertEquals(PayPalMessageColor.BLACK, PayPalMessagingColor.BLACK.messageColorRawValue)
     }
 
     @Test
     fun testColor_withWhite_returnsRawValueWhite() {
-        assertEquals(PayPalMessagingColor.WHITE.messageColorRawValue, PayPalMessageColor.WHITE)
+        assertEquals(PayPalMessageColor.WHITE, PayPalMessagingColor.WHITE.messageColorRawValue)
     }
 
     @Test
     fun testColor_withMonochrome_returnsRawValueMonochrome() {
-        assertEquals(PayPalMessagingColor.MONOCHROME.messageColorRawValue, PayPalMessageColor.MONOCHROME)
+        assertEquals(PayPalMessageColor.MONOCHROME, PayPalMessagingColor.MONOCHROME.messageColorRawValue)
     }
 
     @Test
     fun testColor_withGreyscale_returnsRawValueGreyscale() {
-        assertEquals(PayPalMessagingColor.GRAYSCALE.messageColorRawValue, PayPalMessageColor.GRAYSCALE)
+        assertEquals(PayPalMessageColor.GRAYSCALE, PayPalMessagingColor.GRAYSCALE.messageColorRawValue)
     }
 }

@@ -8,36 +8,36 @@ class PayPalMessagingRequestUnitTest {
 
     @Test
     fun testPayPalMessagingRequest_withEmptyInit_setsAllValuesToDefault() {
-        var request = PayPalMessagingRequest()
+        val request = PayPalMessagingRequest()
 
         assertNull(request.amount)
         assertNull(request.placement)
         assertNull(request.offerType)
         assertNull(request.buyerCountry)
-        assertEquals(request.logoType, PayPalMessagingLogoType.INLINE)
-        assertEquals(request.textAlignment, PayPalMessagingTextAlignment.RIGHT)
-        assertEquals(request.color, PayPalMessagingColor.BLACK)
+        assertEquals(PayPalMessagingLogoType.INLINE, request.logoType)
+        assertEquals(PayPalMessagingTextAlignment.RIGHT, request.textAlignment)
+        assertEquals(PayPalMessagingColor.BLACK, request.color)
     }
 
     @Test
     fun testPayPalMessagingRequest_withAllValuesInitialized_setsAllValues() {
-        var request = PayPalMessagingRequest(
+        val request = PayPalMessagingRequest(
             amount = 6.66,
             placement = PayPalMessagingPlacement.HOME,
-            PayPalMessagingOfferType.PAYPAL_CREDIT_NO_INTEREST,
-            "US",
-            PayPalMessagingLogoType.ALTERNATIVE,
-            PayPalMessagingTextAlignment.LEFT,
-            PayPalMessagingColor.WHITE
+            offerType = PayPalMessagingOfferType.PAYPAL_CREDIT_NO_INTEREST,
+            buyerCountry = "US",
+            logoType = PayPalMessagingLogoType.ALTERNATIVE,
+            textAlignment = PayPalMessagingTextAlignment.LEFT,
+            color = PayPalMessagingColor.WHITE
         )
 
-        assertEquals(request.amount, 6.66)
-        assertEquals(request.placement, PayPalMessagingPlacement.HOME,)
-        assertEquals(request.offerType, PayPalMessagingOfferType.PAYPAL_CREDIT_NO_INTEREST)
-        assertEquals(request.buyerCountry, "US")
-        assertEquals(request.logoType, PayPalMessagingLogoType.ALTERNATIVE)
-        assertEquals(request.textAlignment, PayPalMessagingTextAlignment.LEFT)
-        assertEquals(request.color, PayPalMessagingColor.WHITE)
+        assertEquals(6.66, request.amount)
+        assertEquals(PayPalMessagingPlacement.HOME, request.placement)
+        assertEquals(PayPalMessagingOfferType.PAYPAL_CREDIT_NO_INTEREST, request.offerType)
+        assertEquals("US", request.buyerCountry)
+        assertEquals(PayPalMessagingLogoType.ALTERNATIVE, request.logoType)
+        assertEquals(PayPalMessagingTextAlignment.LEFT, request.textAlignment)
+        assertEquals(PayPalMessagingColor.WHITE, request.color)
     }
 }
 
