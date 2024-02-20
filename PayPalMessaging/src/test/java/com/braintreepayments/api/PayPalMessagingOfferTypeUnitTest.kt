@@ -3,6 +3,7 @@ package com.braintreepayments.api
 import com.paypal.messages.config.PayPalMessageOfferType
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
+
 class PayPalMessagingOfferTypeUnitTest {
     @Test
     fun testOfferType_withPayLaterShortTerm_returnsRawValuePayLaterShortTerm() {

@@ -1,14 +1,25 @@
 package com.braintreepayments.api
 
 import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.Configuration.Companion.fromJson
-import io.mockk.mockk
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
+import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class PayPalMessagingViewUnitTest {
+
     private lateinit var context: Context
+
+    @Before
+    fun beforeEach() {
+        context = ApplicationProvider.getApplicationContext()
+    }
 
     @Test
     fun testStart_withConfigurationError_callsDelegateWithError() {
@@ -17,71 +28,70 @@ class PayPalMessagingViewUnitTest {
             .configurationError(configError)
             .build()
 
-        context = mockk(relaxed = true)
-        val payPalMessageView = PayPalMessagingView(braintreeClient, this.context)
-        val listener = PayPalMessagingMockListener()
+        val payPalMessageView = PayPalMessagingView(braintreeClient, context)
+        val listener = MockPayPalMessagingListener()
 
         payPalMessageView.payPalMessagingListener = listener
         payPalMessageView.start()
 
-        assertEquals(listener.error?.message, configError.message)
+        assertEquals(configError.message, listener.error?.message)
     }
 
     @Test
-    fun testStart_withNoClientID_callsDelegateWithError() {
+    fun testStart_withNoClientID_callsDelegateWithErrorAndSendsAnalytics() {
         val payPalMissingClientIdConfig: Configuration = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL_NO_CLIENT_ID)
-        val braintreeClient = MockBraintreeClientBuilder()
-            .configuration(payPalMissingClientIdConfig)
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(payPalMissingClientIdConfig)
             .build()
 
-        context = mockk(relaxed = true)
-        val payPalMessageView = PayPalMessagingView(braintreeClient, this.context)
-        val listener = PayPalMessagingMockListener()
+        val payPalMessageView = PayPalMessagingView(braintreeClient, context)
+        val listener = MockPayPalMessagingListener()
 
         payPalMessageView.payPalMessagingListener = listener
         payPalMessageView.start()
 
         assertEquals("Could not find PayPal client ID in Braintree configuration.", listener.error?.message)
+        verify { braintreeClient.sendAnalyticsEvent("paypal-messaging:create-view:started") }
+        verify { braintreeClient.sendAnalyticsEvent("paypal-messaging:create-view:failed") }
     }
 
     @Test
     fun testStart_withClientID_firesWillAppearAndSendsAnalytics() {
-
-        val braintreeClient = MockBraintreeClientBuilder()
+        val payPalConfiguration: Configuration = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(payPalConfiguration)
             .build()
 
-        context = mockk(relaxed = true)
-        val payPalMessageView = PayPalMessagingView(braintreeClient, this.context)
-        val listener = PayPalMessagingMockListener()
+        val payPalMessageView = PayPalMessagingView(braintreeClient, context)
+        val listener = MockPayPalMessagingListener()
 
         payPalMessageView.payPalMessagingListener = listener
         payPalMessageView.start()
 
+        assertTrue(listener.loading)
         verify { braintreeClient.sendAnalyticsEvent("paypal-messaging:create-view:started") }
-
-//    XCTAssertTrue(mockDelegate.willAppear)
-//    XCTAssertTrue(mockAPIClient.postedAnalyticsEvents.contains(BTPayPalMessagingAnalytics.started))
     }
 }
 
-class PayPalMessagingMockListener: PayPalMessagingListener {
+class MockPayPalMessagingListener: PayPalMessagingListener {
 
     var error: Exception? = null
+    var loading: Boolean = false
 
     override fun onPayPalMessagingClick() {
-        TODO("Not yet implemented")
+        // not unit testable
     }
 
     override fun onPayPalMessagingApply() {
-        TODO("Not yet implemented")
+        // not unit testable
     }
 
     override fun onPayPalMessagingLoading() {
-        TODO("Not yet implemented")
+        loading = true
     }
 
     override fun onPayPalMessagingSuccess() {
-        TODO("Not yet implemented")
+        // not unit testable
     }
 
     override fun onPayPalMessagingFailure(error: Exception) {

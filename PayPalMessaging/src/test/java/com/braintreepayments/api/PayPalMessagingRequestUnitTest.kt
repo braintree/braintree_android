@@ -40,4 +40,3 @@ class PayPalMessagingRequestUnitTest {
         assertEquals(PayPalMessagingColor.WHITE, request.color)
     }
 }
-

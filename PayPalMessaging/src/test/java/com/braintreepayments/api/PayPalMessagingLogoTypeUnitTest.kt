@@ -3,6 +3,7 @@ package com.braintreepayments.api
 import com.paypal.messages.config.message.style.PayPalMessageLogoType
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
+
 class PayPalMessagingLogoTypeUnitTest {
 
     @Test
