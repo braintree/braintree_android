@@ -7,7 +7,6 @@ import io.mockk.verify
 import io.mockk.mockk
 import io.mockk.slot
 import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
