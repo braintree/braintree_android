@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.Configuration.Companion.fromJson
 import io.mockk.verify
+import io.mockk.mockk
+import io.mockk.slot
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import org.junit.Before
@@ -15,10 +17,12 @@ import org.robolectric.RobolectricTestRunner
 class PayPalMessagingViewUnitTest {
 
     private lateinit var context: Context
+    private lateinit var listener: PayPalMessagingListener
 
     @Before
     fun beforeEach() {
         context = ApplicationProvider.getApplicationContext()
+        listener = mockk(relaxed = true)
     }
 
     @Test
@@ -29,12 +33,13 @@ class PayPalMessagingViewUnitTest {
             .build()
 
         val payPalMessageView = PayPalMessagingView(braintreeClient, context)
-        val listener = MockPayPalMessagingListener()
-
         payPalMessageView.payPalMessagingListener = listener
         payPalMessageView.start()
 
-        assertEquals(configError.message, listener.error?.message)
+        val exceptionSlot = slot<Exception>()
+        verify { listener.onPayPalMessagingFailure(capture(exceptionSlot)) }
+        val capturedException = exceptionSlot.captured
+        assertEquals("Configuration error.", capturedException.message)
     }
 
     @Test
@@ -45,12 +50,13 @@ class PayPalMessagingViewUnitTest {
             .build()
 
         val payPalMessageView = PayPalMessagingView(braintreeClient, context)
-        val listener = MockPayPalMessagingListener()
-
         payPalMessageView.payPalMessagingListener = listener
         payPalMessageView.start()
 
-        assertEquals("Could not find PayPal client ID in Braintree configuration.", listener.error?.message)
+        val exceptionSlot = slot<Exception>()
+        verify { listener.onPayPalMessagingFailure(capture(exceptionSlot)) }
+        val capturedException = exceptionSlot.captured
+        assertEquals("Could not find PayPal client ID in Braintree configuration.", capturedException.message)
         verify { braintreeClient.sendAnalyticsEvent("paypal-messaging:create-view:started") }
         verify { braintreeClient.sendAnalyticsEvent("paypal-messaging:create-view:failed") }
     }
@@ -63,38 +69,10 @@ class PayPalMessagingViewUnitTest {
             .build()
 
         val payPalMessageView = PayPalMessagingView(braintreeClient, context)
-        val listener = MockPayPalMessagingListener()
-
         payPalMessageView.payPalMessagingListener = listener
         payPalMessageView.start()
 
-        assertTrue(listener.loading)
+        verify { listener.onPayPalMessagingLoading() }
         verify { braintreeClient.sendAnalyticsEvent("paypal-messaging:create-view:started") }
-    }
-}
-
-class MockPayPalMessagingListener: PayPalMessagingListener {
-
-    var error: Exception? = null
-    var loading: Boolean = false
-
-    override fun onPayPalMessagingClick() {
-        // not unit testable
-    }
-
-    override fun onPayPalMessagingApply() {
-        // not unit testable
-    }
-
-    override fun onPayPalMessagingLoading() {
-        loading = true
-    }
-
-    override fun onPayPalMessagingSuccess() {
-        // not unit testable
-    }
-
-    override fun onPayPalMessagingFailure(error: Exception) {
-        this.error = error
     }
 }
