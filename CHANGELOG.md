@@ -10,6 +10,8 @@
   * Add `VenmoClient#parseBrowserSwitchResult(Context, Intent)` method
   * Add `VenmoClient#clearActiveBrowserSwitchRequests(Context)` method
   * Add `VenmoClient#onBrowserSwitchResult(BrowserSwitchResult, VenmoOnActivityResultCallback)` method
+* ThreeDSecure
+  * Call cleanup method to resolve `Cardinal.getInstance` memory leak
 
 ## 4.41.0 (2024-01-18)
 
