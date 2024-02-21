@@ -4,6 +4,8 @@
 
 * Venmo
   * Add `setIsFinalAmount()` to `VenmoRequest`
+* ThreeDSecure
+  * Call cleanup method to resolve `Cardinal.getInstance` memory leak
 
 ## 4.41.0 (2024-01-18)
 
