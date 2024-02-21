@@ -31,7 +31,7 @@ class PayPalMessagingView(
      */
      fun setListener(listener: PayPalMessagingListener) {
         this.listener = listener
-    }
+     }
 
     /**
      * Creates a view to be displayed to promote offers such as Pay Later and PayPal Credit to customers.
