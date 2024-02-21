@@ -28,7 +28,8 @@ class PayPalMessagingView(
      * Add a {@link PayPalMessagingListener} to your client to receive results or errors from the PayPal Messaging flow.
      *
      * @param listener a {@link PayPalMessagingListener}
-     */fun setListener(listener: PayPalMessagingListener) {
+     */
+     fun setListener(listener: PayPalMessagingListener) {
         this.listener = listener
     }
 
