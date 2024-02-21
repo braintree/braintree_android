@@ -51,7 +51,8 @@ class PayPalMessagingView(
                     )
                     notifyFailure(error = clientIdError)
                 } else {
-                    val payPalMessageView = constructPayPalMessageView(context, clientId, configuration, request)
+                    val payPalMessageView =
+                        constructPayPalMessageView(context, clientId, configuration, request)
                     payPalMessageView.layoutParams = ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
@@ -59,11 +60,6 @@ class PayPalMessagingView(
 
                     addView(payPalMessageView)
                 }
-            } else {
-                val unknownError = BraintreeException(
-                    "Fetching Braintree configuration resulted in no error or configuration returned."
-                )
-                notifyFailure(error = unknownError)
             }
         }
     }
