@@ -22,7 +22,15 @@ class PayPalMessagingView(
     private val braintreeClient: BraintreeClient,
     context: Context
 ) : FrameLayout(context) {
-    var payPalMessagingListener: PayPalMessagingListener? = null
+    private var listener: PayPalMessagingListener? = null
+
+    /**
+     * Add a {@link PayPalMessagingListener} to your client to receive results or errors from the PayPal Messaging flow.
+     *
+     * @param listener a {@link PayPalMessagingListener}
+     */fun setListener(listener: PayPalMessagingListener) {
+        this.listener = listener
+    }
 
     /**
      * Creates a view to be displayed to promote offers such as Pay Later and PayPal Credit to customers.
@@ -88,7 +96,7 @@ class PayPalMessagingView(
 
         val viewStateCallbacks = PayPalMessageViewStateCallbacks(
             onLoading = {
-                payPalMessagingListener?.onPayPalMessagingLoading()
+                listener?.onPayPalMessagingLoading()
             },
             onError = { error ->
                 notifyFailure(error)
@@ -100,10 +108,10 @@ class PayPalMessagingView(
 
         val eventsCallbacks = PayPalMessageEventsCallbacks(
             onClick = {
-                payPalMessagingListener?.onPayPalMessagingClick()
+                listener?.onPayPalMessagingClick()
             },
             onApply = {
-                payPalMessagingListener?.onPayPalMessagingApply()
+                listener?.onPayPalMessagingApply()
             }
         )
 
@@ -119,11 +127,11 @@ class PayPalMessagingView(
 
     private fun notifySuccess() {
         braintreeClient.sendAnalyticsEvent(PayPalMessagingAnalytics.SUCCEEDED)
-        payPalMessagingListener?.onPayPalMessagingSuccess()
+        listener?.onPayPalMessagingSuccess()
     }
 
     private fun notifyFailure(error: Exception) {
         braintreeClient.sendAnalyticsEvent(PayPalMessagingAnalytics.FAILED)
-        payPalMessagingListener?.onPayPalMessagingFailure(error)
+        listener?.onPayPalMessagingFailure(error)
     }
 }
