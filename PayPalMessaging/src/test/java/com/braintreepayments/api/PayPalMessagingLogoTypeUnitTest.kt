@@ -7,22 +7,22 @@ import org.junit.Test
 class PayPalMessagingLogoTypeUnitTest {
 
     @Test
-    fun testLogoType_withInline_returnsRawValueInline() {
+    fun `test inline logo returns raw value inline`() {
         assertEquals(PayPalMessageLogoType.INLINE, PayPalMessagingLogoType.INLINE.logoTypeRawValue)
     }
 
     @Test
-    fun testLogoType_withPrimary_returnsRawValuePrimary() {
+    fun `test primary logo returns raw value primary`() {
         assertEquals(PayPalMessageLogoType.PRIMARY, PayPalMessagingLogoType.PRIMARY.logoTypeRawValue)
     }
 
     @Test
-    fun testLogoType_withAlternative_returnsRawValueAlternative() {
+    fun `test alternative logo returns raw value alternative`() {
         assertEquals(PayPalMessageLogoType.ALTERNATIVE, PayPalMessagingLogoType.ALTERNATIVE.logoTypeRawValue)
     }
 
     @Test
-    fun testLogoType_withNone_returnsRawValueNone() {
+    fun `test simple logo returns raw value none`() {
         assertEquals(PayPalMessageLogoType.NONE, PayPalMessagingLogoType.SIMPLE.logoTypeRawValue)
     }
 }

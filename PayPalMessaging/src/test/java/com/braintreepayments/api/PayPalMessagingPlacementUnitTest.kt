@@ -6,22 +6,27 @@ import org.junit.Test
 class PayPalMessagingPlacementUnitTest {
 
     @Test
-    fun testPlacement_withHome_returnsRawValueHome() {
+    fun `test home placement returns string value home`() {
         assertEquals("HOME", PayPalMessagingPlacement.HOME.rawValue)
     }
 
     @Test
-    fun testPlacement_withCategory_returnsRawValueCategory() {
-        assertEquals("CART", PayPalMessagingPlacement.CART.rawValue)
+    fun `test category placement returns string value category`() {
+        assertEquals("CATEGORY", PayPalMessagingPlacement.CATEGORY.rawValue)
     }
 
     @Test
-    fun testPlacement_withProduct_returnsRawValueProduct() {
+    fun `test product placement returns string value product`() {
         assertEquals("PRODUCT", PayPalMessagingPlacement.PRODUCT.rawValue)
     }
 
     @Test
-    fun testPlacement_withPayment_returnsRawValuePayment() {
+    fun `test cart placement returns string value cart`() {
+        assertEquals("CART", PayPalMessagingPlacement.CART.rawValue)
+    }
+
+    @Test
+    fun `test payment placement returns string value payment`() {
         assertEquals("PAYMENT", PayPalMessagingPlacement.PAYMENT.rawValue)
     }
 }

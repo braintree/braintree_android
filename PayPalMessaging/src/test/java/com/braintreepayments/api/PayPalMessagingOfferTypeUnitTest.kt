@@ -6,7 +6,7 @@ import org.junit.Test
 
 class PayPalMessagingOfferTypeUnitTest {
     @Test
-    fun testOfferType_withPayLaterShortTerm_returnsRawValuePayLaterShortTerm() {
+    fun `test pay later short term offer type returns raw value pay later short term`() {
         assertEquals(
             PayPalMessageOfferType.PAY_LATER_SHORT_TERM,
             PayPalMessagingOfferType.PAY_LATER_SHORT_TERM.offerTypeRawValue
@@ -14,7 +14,7 @@ class PayPalMessagingOfferTypeUnitTest {
     }
 
     @Test
-    fun testOfferType_withPayLaterLongTerm_returnsRawValuePayLaterLongTerm() {
+    fun `test pay later long term offer type returns raw value pay later long term`() {
         assertEquals(
             PayPalMessageOfferType.PAY_LATER_LONG_TERM,
             PayPalMessagingOfferType.PAY_LATER_LONG_TERM.offerTypeRawValue
@@ -22,7 +22,7 @@ class PayPalMessagingOfferTypeUnitTest {
     }
 
     @Test
-    fun testOfferType_withPayLaterPayInOne_returnsRawValuePayLaterPayIn1() {
+    fun `test pay later pay in one offer type returns raw value pay later pay in 1`() {
         assertEquals(
             PayPalMessageOfferType.PAY_LATER_PAY_IN_1,
             PayPalMessagingOfferType.PAY_LATER_PAY_IN_ONE.offerTypeRawValue
@@ -30,7 +30,7 @@ class PayPalMessagingOfferTypeUnitTest {
     }
 
     @Test
-    fun testOfferType_withPayPalCreditNoInterest_returnsRawValuePayPalCreditNoInterest() {
+    fun `test PayPal credit no interest offer type returns raw value PayPal credit no interest`() {
         assertEquals(
             PayPalMessageOfferType.PAYPAL_CREDIT_NO_INTEREST,
             PayPalMessagingOfferType.PAYPAL_CREDIT_NO_INTEREST.offerTypeRawValue

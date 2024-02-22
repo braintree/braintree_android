@@ -7,22 +7,22 @@ import org.junit.Test
 class PayPalMessagingColorUnitTest {
 
     @Test
-    fun testColor_withBlack_returnsRawValueBlack() {
+    fun `test black color returns raw value black`() {
         assertEquals(PayPalMessageColor.BLACK, PayPalMessagingColor.BLACK.messageColorRawValue)
     }
 
     @Test
-    fun testColor_withWhite_returnsRawValueWhite() {
+    fun `test white color returns raw value white`() {
         assertEquals(PayPalMessageColor.WHITE, PayPalMessagingColor.WHITE.messageColorRawValue)
     }
 
     @Test
-    fun testColor_withMonochrome_returnsRawValueMonochrome() {
+    fun `test monochrome color returns raw value monochrome`() {
         assertEquals(PayPalMessageColor.MONOCHROME, PayPalMessagingColor.MONOCHROME.messageColorRawValue)
     }
 
     @Test
-    fun testColor_withGreyscale_returnsRawValueGreyscale() {
+    fun `test greyscale color returns raw value greyscale`() {
         assertEquals(PayPalMessageColor.GRAYSCALE, PayPalMessagingColor.GRAYSCALE.messageColorRawValue)
     }
 }

@@ -7,17 +7,17 @@ import org.junit.Test
 class PayPalMessagingTextAlignmentUnitTest {
 
     @Test
-    fun testTextAlignment_withLeft_returnsRawValueLeft() {
+    fun `test left text alignment returns raw value left align`() {
         assertEquals(PayPalMessageAlign.LEFT, PayPalMessagingTextAlignment.LEFT.textAlignmentRawValue)
     }
 
     @Test
-    fun testTextAlignment_withCenter_returnsRawValueCenter() {
+    fun `test right text alignment returns raw value right align`() {
         assertEquals(PayPalMessageAlign.RIGHT, PayPalMessagingTextAlignment.RIGHT.textAlignmentRawValue)
     }
 
     @Test
-    fun testTextAlignment_withRight_returnsRawValueRight() {
+    fun `test center text alignment returns raw value center align`() {
         assertEquals(PayPalMessageAlign.CENTER, PayPalMessagingTextAlignment.CENTER.textAlignmentRawValue)
     }
 }

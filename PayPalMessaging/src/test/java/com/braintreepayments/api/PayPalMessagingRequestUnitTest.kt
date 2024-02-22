@@ -7,7 +7,7 @@ import org.junit.Test
 class PayPalMessagingRequestUnitTest {
 
     @Test
-    fun testPayPalMessagingRequest_withEmptyInit_setsAllValuesToDefault() {
+    fun `test PayPalMessagingRequest with empty init sets all values to default`() {
         val request = PayPalMessagingRequest()
 
         assertNull(request.amount)
@@ -20,7 +20,7 @@ class PayPalMessagingRequestUnitTest {
     }
 
     @Test
-    fun testPayPalMessagingRequest_withAllValuesInitialized_setsAllValues() {
+    fun `test PayPalMessagingRequest with all values initialized sets all values`() {
         val request = PayPalMessagingRequest(
             amount = 6.66,
             placement = PayPalMessagingPlacement.HOME,

@@ -25,7 +25,7 @@ class PayPalMessagingViewUnitTest {
     }
 
     @Test
-    fun testStart_withConfigurationError_callsDelegateWithError() {
+    fun `test start with configuration error calls onPayPalMessagingFailure delegate with error`() {
         val configError = Exception("Configuration error.")
         val braintreeClient = MockBraintreeClientBuilder()
             .configurationError(configError)
@@ -42,7 +42,7 @@ class PayPalMessagingViewUnitTest {
     }
 
     @Test
-    fun testStart_withNoClientID_callsDelegateWithErrorAndSendsAnalytics() {
+    fun `test start with no client ID calls onPayPalMessagingFailure delegate with error and sends analytics`() {
         val payPalMissingClientIdConfig: Configuration = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL_NO_CLIENT_ID)
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalMissingClientIdConfig)
@@ -61,7 +61,7 @@ class PayPalMessagingViewUnitTest {
     }
 
     @Test
-    fun testStart_withClientID_firesWillAppearAndSendsAnalytics() {
+    fun `test start with valid configuration calls onPayPalMessagingLoading delegate and sends analytics`() {
         val payPalConfiguration: Configuration = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalConfiguration)
