@@ -32,7 +32,7 @@ class PayPalMessagingViewUnitTest {
             .build()
 
         val payPalMessageView = PayPalMessagingView(braintreeClient, context)
-        payPalMessageView.payPalMessagingListener = listener
+        payPalMessageView.setListener(listener)
         payPalMessageView.start()
 
         val exceptionSlot = slot<Exception>()
@@ -49,7 +49,7 @@ class PayPalMessagingViewUnitTest {
             .build()
 
         val payPalMessageView = PayPalMessagingView(braintreeClient, context)
-        payPalMessageView.payPalMessagingListener = listener
+        payPalMessageView.setListener(listener)
         payPalMessageView.start()
 
         val exceptionSlot = slot<Exception>()
@@ -68,7 +68,7 @@ class PayPalMessagingViewUnitTest {
             .build()
 
         val payPalMessageView = PayPalMessagingView(braintreeClient, context)
-        payPalMessageView.payPalMessagingListener = listener
+        payPalMessageView.setListener(listener)
         payPalMessageView.start()
 
         verify { listener.onPayPalMessagingLoading() }
