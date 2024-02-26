@@ -40,9 +40,6 @@ class EligiblePaymentsApiRequestUnitTest {
                 },
                 "purchase_units": [
                     {
-                        "payee": {
-                            "merchant_id": "MXSJ4F5BADVNS"
-                        },
                         "amount": {
                             "currency_code": "USD"
                         }
