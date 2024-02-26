@@ -45,9 +45,6 @@ internal data class EligiblePaymentsApiRequest(
                 })
                 put(KEY_PURCHASE_UNITS, JSONArray().apply {
                     put(JSONObject().apply {
-                        put(KEY_PAYEE, JSONObject().apply {
-                            put(KEY_MERCHANT_ID, merchantId)
-                        })
                         put(KEY_AMOUNT, JSONObject().apply {
                             put(KEY_CURRENCY_CODE, currencyCode)
                         })
@@ -69,9 +66,7 @@ internal data class EligiblePaymentsApiRequest(
         internal const val KEY_EMAIL = "email"
         internal const val KEY_PHONE = "phone"
         internal const val KEY_PURCHASE_UNITS = "purchase_units"
-        internal const val KEY_PAYEE = "payee"
         internal const val KEY_AMOUNT = "amount"
-        internal const val KEY_MERCHANT_ID = "merchant_id"
         internal const val KEY_CURRENCY_CODE = "currency_code"
         internal const val KEY_PREFERENCES = "preferences"
         internal const val KEY_INCLUDE_ACCOUNT_DETAILS = "include_account_details"
