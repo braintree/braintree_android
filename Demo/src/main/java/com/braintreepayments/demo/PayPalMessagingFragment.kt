@@ -35,7 +35,7 @@ class PayPalMessagingFragment : BaseFragment(), PayPalMessagingListener {
         )
 
         val payPalMessagingView = PayPalMessagingView(braintreeClient, requireActivity())
-        payPalMessagingView.payPalMessagingListener = this
+        payPalMessagingView.setListener(this)
         payPalMessagingView.start(payPalMessagingRequest)
         payPalMessagingView.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
