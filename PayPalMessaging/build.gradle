@@ -17,6 +17,7 @@ android {
     testOptions {
         unitTests {
             includeAndroidResources = true
+            returnDefaultValues true
             all {
                 jvmArgs '-noverify'
             }
@@ -43,7 +44,12 @@ dependencies {
     implementation deps.appCompat
     implementation('com.paypal.messages:paypal-messages:1.0.0-alpha.00')
 
+    testImplementation deps.robolectric
+    testImplementation deps.jsonAssert
     testImplementation deps.junitTest
+    testImplementation deps.mockk
+    testImplementation deps.mockitoCore
+    testImplementation project(':TestUtils')
 }
 
 // region signing and publishing
