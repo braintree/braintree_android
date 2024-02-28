@@ -109,8 +109,15 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
         ) { result ->
             when (result) {
                 is ShopperInsightsResult.Success -> {
-                    payPalVaultButton.isEnabled = result.response.isPayPalRecommended
-                    venmoButton.isEnabled = result.response.isVenmoRecommended
+                    if (result.response.isPayPalRecommended) {
+                        payPalVaultButton.isEnabled = true
+                        shopperInsightsClient.sendPayPalPresentedEvent()
+                    }
+
+                    if (result.response.isVenmoRecommended) {
+                        venmoButton.isEnabled = true
+                        shopperInsightsClient.sendVenmoPresentedEvent()
+                    }
 
                     responseTextView.text =
                         """
@@ -127,6 +134,7 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
     }
 
     private fun launchPayPalVault() {
+        shopperInsightsClient.sendPayPalSelectedEvent()
         payPalClient.tokenizePayPalAccount(
             requireActivity(),
             PayPalRequestFactory.createPayPalVaultRequest(activity)
@@ -134,6 +142,8 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
     }
 
     private fun launchVenmo() {
+        shopperInsightsClient.sendVenmoSelectedEvent()
+
         val venmoRequest = VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE)
         venmoRequest.profileId = null
         venmoRequest.collectCustomerBillingAddress = true
