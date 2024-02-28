@@ -33,6 +33,9 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
      * @param context Android context
      * @param request The [ShopperInsightsRequest] containing information about the shopper.
      * @return A [ShopperInsightsResult] object indicating the recommended payment methods.
+     * Note: This feature is in beta. Its public API may change or be removed in future releases
+     * PayPal recommendation is only available for US, AU, FR, DE, ITA, NED, ESP, Switzerland and
+     * UK merchants. Venmo recommendation is only available for US merchants.
      */
     fun getRecommendedPaymentMethods(
         request: ShopperInsightsRequest,
