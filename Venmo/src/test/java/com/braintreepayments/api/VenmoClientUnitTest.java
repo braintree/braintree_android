@@ -18,6 +18,9 @@ import android.content.Intent;
 import androidx.fragment.app.FragmentActivity;
 import androidx.test.core.app.ApplicationProvider;
 
+import junit.framework.Assert;
+import junit.framework.TestCase;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;

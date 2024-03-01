@@ -243,6 +243,8 @@ class CardinalClientUnitTest {
                 cardinalChallengeObserver
             )
         }
+
+        verify { cardinalInstance.cleanup() }
     }
 
     @Test
