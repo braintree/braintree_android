@@ -87,7 +87,6 @@ public class VenmoFragment extends BaseFragment {
 
         boolean shouldVault =
                 Settings.vaultVenmo(activity) && !TextUtils.isEmpty(Settings.getCustomerId(activity));
-        boolean fallbackToWeb = Settings.venmoFallbackToWeb(activity);
 
         int venmoPaymentMethodUsage = shouldVault ?
                 VenmoPaymentMethodUsage.MULTI_USE : VenmoPaymentMethodUsage.SINGLE_USE;
