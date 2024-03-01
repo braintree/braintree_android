@@ -35,10 +35,11 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         eventName: String?,
         sessionId: String?,
         integration: String?,
-        authorization: Authorization
+        authorization: Authorization,
+        payPalContextID: String?
     ) {
         val timestamp = System.currentTimeMillis()
-        sendEvent(configuration, eventName, sessionId, integration, timestamp, authorization)
+        sendEvent(configuration, eventName, sessionId, integration, timestamp, authorization, payPalContextID)
     }
 
     @VisibleForTesting
@@ -48,11 +49,12 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         sessionId: String?,
         integration: String?,
         timestamp: Long,
-        authorization: Authorization
+        authorization: Authorization,
+        payPalContextID: String?
     ): UUID {
         lastKnownAnalyticsUrl = configuration.analyticsUrl
         scheduleAnalyticsWrite("android.$eventName", timestamp, authorization)
-        return scheduleAnalyticsUpload(configuration, authorization, sessionId, integration)
+        return scheduleAnalyticsUpload(configuration, authorization, sessionId, integration, payPalContextID)
     }
 
     private fun scheduleAnalyticsWrite(
@@ -91,13 +93,15 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         configuration: Configuration,
         authorization: Authorization,
         sessionId: String?,
-        integration: String?
+        integration: String?,
+        payPalContextID: String?
     ): UUID {
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
             .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
             .putString(WORK_INPUT_KEY_INTEGRATION, integration)
+            .putString(WORK_INPUT_KEY_PAYPAL_CONTEXT_ID, payPalContextID)
             .build()
 
         val analyticsWorkRequest = OneTimeWorkRequest.Builder(AnalyticsUploadWorker::class.java)
@@ -217,6 +221,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         const val WORK_INPUT_KEY_INTEGRATION = "integration"
         const val WORK_INPUT_KEY_SESSION_ID = "sessionId"
         const val WORK_INPUT_KEY_TIMESTAMP = "timestamp"
+        const val WORK_INPUT_KEY_PAYPAL_CONTEXT_ID = "paypal_context_id"
         private const val DELAY_TIME_SECONDS = 30L
 
         private fun getAuthorizationFromData(inputData: Data?): Authorization? =

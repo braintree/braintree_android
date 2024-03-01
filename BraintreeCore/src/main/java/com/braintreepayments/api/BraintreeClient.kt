@@ -47,6 +47,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     private val crashReporter: CrashReporter
     private var launchesBrowserSwitchAsNewTask: Boolean = false
 
+    // Used for linking events from the client to server side request
+    // This value will be PayPal Order ID, Payment Token, EC token or Billing Agreement depending on the flow
+    var payPalContextID: String? = null
+
     // NOTE: this constructor is used to make dependency injection easy
     internal constructor(params: BraintreeClientParams) : this(
         applicationContext = params.applicationContext,
@@ -231,7 +235,8 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                 eventName,
                 sessionId,
                 integrationType,
-                authorization
+                authorization,
+                payPalContextID
             )
         }
     }
