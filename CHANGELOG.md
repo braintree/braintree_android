@@ -7,7 +7,7 @@
   * All Modules
     * Bump `minSdkVersion` to API 23
     * Bump target Java version to Java 11
-    * Ugrapde Kotlin version to 1.9.10
+    * Upgrade Kotlin version to 1.9.10
     * Upgrade to Android Gradle Plugin 8
   * BraintreeCore
     * Remove `BraintreeClient` public constructors
@@ -28,6 +28,7 @@
   * PayPalDataCollector
     * Remove `paypal-data-collector` module (use `data-collector`)
   * Venmo
+    * Remove `setFallbackToWeb()` from `VenmoRequest` - fallback to web is default behavior now
     * Remove `VenmoListener`, `VenmoTokenizeAccountCallback`, and `VenmoResultCallback`
     * Add `VenmoLauncher`, `VenmoPaymentAuthRequest`, `VenmoPaymentAuthRequestCallback`, 
       `VenmoPaymentAuthResult`, `VenmoResult`, `VenmoTokenizeCallback`, and 
@@ -125,6 +126,14 @@
 ## unreleased (v4)
 * Venmo
   * Add `setIsFinalAmount()` to `VenmoRequest`
+  * Add `setFallbackToWeb()` to `VenmoRequest`
+    * If set to `true` customers will fallback to a web based Venmo flow if the Venmo app is not installed
+    * This method uses App Links instead of Deep Links
+  * Add `VenmoClient#parseBrowserSwitchResult(Context, Intent)` method
+  * Add `VenmoClient#clearActiveBrowserSwitchRequests(Context)` method
+  * Add `VenmoClient#onBrowserSwitchResult(BrowserSwitchResult, VenmoOnActivityResultCallback)` method
+* ThreeDSecure
+  * Call cleanup method to resolve `Cardinal.getInstance` memory leak
 
 ## 4.41.0 (2024-01-18)
 

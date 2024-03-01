@@ -60,6 +60,8 @@ class CardinalClient {
         } catch (RuntimeException e) {
             throw new BraintreeException("Cardinal SDK cca_continue Error.", e);
         }
+
+        Cardinal.getInstance().cleanup();
     }
 
     private void configureCardinal(Context context, Configuration configuration,
