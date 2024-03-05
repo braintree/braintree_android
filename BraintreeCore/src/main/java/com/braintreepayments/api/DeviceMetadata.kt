@@ -20,7 +20,8 @@ internal class DeviceMetadata internal constructor(
     private var platformVersion: String? = null,
     private var sdkVersion: String? = null,
     private var sessionId: String? = null,
-    private var userOrientation: String? = null
+    private var userOrientation: String? = null,
+    private var payPalContextID: String? = null
 ) {
 
     @Throws(JSONException::class)
@@ -43,6 +44,7 @@ internal class DeviceMetadata internal constructor(
             .put(DEVICE_MODEL_KEY, deviceModel)
             .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY, devicePersistentUUID)
             .put(IS_SIMULATOR_KEY, isSimulator)
+            .put(PAYPAL_CONTEXT_ID, payPalContextID)
     }
 
     companion object {
@@ -64,5 +66,6 @@ internal class DeviceMetadata internal constructor(
         private const val DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY =
             "deviceAppGeneratedPersistentUuid"
         private const val IS_SIMULATOR_KEY = "isSimulator"
+        private const val PAYPAL_CONTEXT_ID = "paypal_context_id"
     }
 }

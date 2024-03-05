@@ -235,8 +235,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                 eventName,
                 sessionId,
                 integrationType,
-                authorization,
-                payPalContextID
+                authorization
             )
         }
     }
