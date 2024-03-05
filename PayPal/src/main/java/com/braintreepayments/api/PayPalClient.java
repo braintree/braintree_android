@@ -382,8 +382,10 @@ public class PayPalClient {
         String tokenKey = isBillingAgreement ? "ba_token" : "token";
         String analyticsPrefix = isBillingAgreement ? "paypal.billing-agreement" : "paypal.single-payment";
 
-        String pairingID = Uri.parse(approvalUrl).getQueryParameter(tokenKey);
-        braintreeClient.setPayPalContextID(pairingID);
+        if (approvalUrl != null) {
+            String pairingID = Uri.parse(approvalUrl).getQueryParameter(tokenKey);
+            braintreeClient.setPayPalContextID(pairingID);
+        }
 
         int result = browserSwitchResult.getStatus();
         switch (result) {
