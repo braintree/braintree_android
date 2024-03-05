@@ -384,7 +384,9 @@ public class PayPalClient {
 
         if (approvalUrl != null) {
             String pairingID = Uri.parse(approvalUrl).getQueryParameter(tokenKey);
-            braintreeClient.setPayPalContextID(pairingID);
+            if (!pairingID.isEmpty()) {
+                braintreeClient.setPayPalContextID(pairingID);
+            }
         }
 
         int result = browserSwitchResult.getStatus();

@@ -126,7 +126,10 @@ public class LocalPaymentClient {
                             @Override
                             public void onResult(@Nullable LocalPaymentResult localPaymentResult, @Nullable Exception error) {
                                 if (localPaymentResult != null) {
-                                    braintreeClient.setPayPalContextID(localPaymentResult.getPaymentId());
+                                    String pairingID = localPaymentResult.getPaymentId();
+                                    if (!pairingID.isEmpty()) {
+                                        braintreeClient.setPayPalContextID(pairingID);
+                                    }
                                     sendAnalyticsEvent(request.getPaymentType(), "local-payment.create.succeeded");
                                 } else if (error != null) {
                                     sendAnalyticsEvent(request.getPaymentType(), "local-payment.webswitch.initiate.failed");
