@@ -219,7 +219,6 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         const val WORK_INPUT_KEY_INTEGRATION = "integration"
         const val WORK_INPUT_KEY_SESSION_ID = "sessionId"
         const val WORK_INPUT_KEY_TIMESTAMP = "timestamp"
-        const val WORK_INPUT_KEY_PAYPAL_CONTEXT_ID = "paypal_context_id"
         private const val DELAY_TIME_SECONDS = 30L
 
         private fun getAuthorizationFromData(inputData: Data?): Authorization? =
