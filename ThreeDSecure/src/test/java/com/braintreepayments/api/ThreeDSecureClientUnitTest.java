@@ -681,7 +681,7 @@ public class ThreeDSecureClientUnitTest {
         doAnswer((Answer<Void>) invocation -> {
             ThreeDSecureResultCallback callback =
                     (ThreeDSecureResultCallback) invocation.getArguments()[2];
-            callback.onResult(threeDSecureParams, null);
+            callback.onThreeDSecureResult(threeDSecureParams, null);
             return null;
         }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecureParams.class), anyString(),
                 any(ThreeDSecureResultCallback.class));
@@ -718,7 +718,7 @@ public class ThreeDSecureClientUnitTest {
         doAnswer((Answer<Void>) invocation -> {
             ThreeDSecureResultCallback callback =
                     (ThreeDSecureResultCallback) invocation.getArguments()[2];
-            callback.onResult(threeDSecureParams, null);
+            callback.onThreeDSecureResult(threeDSecureParams, null);
             return null;
         }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecureParams.class), anyString(),
                 any(ThreeDSecureResultCallback.class));
@@ -755,7 +755,7 @@ public class ThreeDSecureClientUnitTest {
         doAnswer((Answer<Void>) invocation -> {
             ThreeDSecureResultCallback callback =
                     (ThreeDSecureResultCallback) invocation.getArguments()[2];
-            callback.onResult(null, exception);
+            callback.onThreeDSecureResult(null, exception);
             return null;
         }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecureParams.class), anyString(),
                 any(ThreeDSecureResultCallback.class));
