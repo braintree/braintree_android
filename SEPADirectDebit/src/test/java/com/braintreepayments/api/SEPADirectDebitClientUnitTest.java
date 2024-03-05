@@ -65,7 +65,7 @@ public class SEPADirectDebitClientUnitTest {
 
         ArgumentCaptor<SEPADirectDebitPaymentAuthRequest> captor =
                 ArgumentCaptor.forClass(SEPADirectDebitPaymentAuthRequest.class);
-        verify(paymentAuthRequestCallback).onResult(captor.capture());
+        verify(paymentAuthRequestCallback).onSEPADirectDebitPaymentAuthResult(captor.capture());
 
         SEPADirectDebitPaymentAuthRequest paymentAuthRequest = captor.getValue();
         assertTrue(paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.ReadyToLaunch);
@@ -111,7 +111,7 @@ public class SEPADirectDebitClientUnitTest {
 
         ArgumentCaptor<SEPADirectDebitPaymentAuthRequest> captor = ArgumentCaptor.forClass(
                 SEPADirectDebitPaymentAuthRequest.class);
-        verify(paymentAuthRequestCallback).onResult(captor.capture());
+        verify(paymentAuthRequestCallback).onSEPADirectDebitPaymentAuthResult(captor.capture());
 
         SEPADirectDebitPaymentAuthRequest paymentAuthRequest = captor.getValue();
         assertTrue(paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.LaunchNotRequired);
@@ -139,7 +139,7 @@ public class SEPADirectDebitClientUnitTest {
         sut.createPaymentAuthRequest(sepaDirectDebitRequest, paymentAuthRequestCallback);
 
         ArgumentCaptor<SEPADirectDebitPaymentAuthRequest> captor = ArgumentCaptor.forClass(SEPADirectDebitPaymentAuthRequest.class);
-        verify(paymentAuthRequestCallback).onResult(captor.capture());
+        verify(paymentAuthRequestCallback).onSEPADirectDebitPaymentAuthResult(captor.capture());
 
         SEPADirectDebitPaymentAuthRequest paymentAuthRequest = captor.getValue();
         assertTrue(paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.Failure);
@@ -187,7 +187,7 @@ public class SEPADirectDebitClientUnitTest {
 
         sut.createPaymentAuthRequest(sepaDirectDebitRequest, paymentAuthRequestCallback);
         ArgumentCaptor<SEPADirectDebitPaymentAuthRequest> captor = ArgumentCaptor.forClass(SEPADirectDebitPaymentAuthRequest.class);
-        verify(paymentAuthRequestCallback).onResult(captor.capture());
+        verify(paymentAuthRequestCallback).onSEPADirectDebitPaymentAuthResult(captor.capture());
 
         SEPADirectDebitPaymentAuthRequest paymentAuthRequest = captor.getValue();
         assertTrue(paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.Failure);
