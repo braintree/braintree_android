@@ -127,7 +127,7 @@ public class LocalPaymentClient {
                             public void onResult(@Nullable LocalPaymentResult localPaymentResult, @Nullable Exception error) {
                                 if (localPaymentResult != null) {
                                     String pairingID = localPaymentResult.getPaymentId();
-                                    if (!pairingID.isEmpty()) {
+                                    if (pairingID != null && !pairingID.isEmpty()) {
                                         braintreeClient.setPayPalContextID(pairingID);
                                     }
                                     sendAnalyticsEvent(request.getPaymentType(), "local-payment.create.succeeded");

@@ -150,7 +150,7 @@ public class PayPalNativeCheckoutClient {
         internalPayPalClient.sendRequest(activity, payPalRequest, (payPalResponse, error) -> {
             if (payPalResponse != null) {
                 String pairingID = payPalResponse.getPairingId();
-                if (!pairingID.isEmpty()) {
+                if (pairingID != null && !pairingID.isEmpty()) {
                     braintreeClient.setPayPalContextID(pairingID);
                 }
                 String analyticsPrefix = payPalRequest instanceof PayPalNativeCheckoutVaultRequest ? "billing-agreement" : "single-payment";
