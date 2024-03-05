@@ -14,7 +14,7 @@ buildscript {
     def java7SafeRoomVersion = "2.2.6"
 
     // On M1 Macs, switch room version to 2.4.0 to fix java.lang.ExceptionInInitializerError
-    def m1MacSafeRoomVersion = "2.4.0"
+    def m1MacSafeRoomVersion = "2.6.1"
 
     // The 'CI' build variable will evaluate to 'true' when build script is executed via GitHub Actions
     // Ref: https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
@@ -25,7 +25,7 @@ buildscript {
             "androidxTest"   : "1.4.0",
             // NEXT MAJOR VERSION: Use a single up-to-date room version once we remove Java 7 support in favor of Java 11
             "room"           : roomVersion,
-            "playServices"   : "19.2.1",
+            "playServices"   : "19.3.0",
             "javaSourceCompatibility": sdkTargetJavaVersion,
             "javaTargetCompatibility": sdkTargetJavaVersion,
     ]
@@ -75,13 +75,13 @@ buildscript {
         classpath 'de.marcphilipp.gradle:nexus-publish-plugin:0.4.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.4.1'
-        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.7.20'
-        classpath 'org.jetbrains.dokka:android-documentation-plugin:1.7.20'
+        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.9.10'
+        classpath 'org.jetbrains.dokka:android-documentation-plugin:1.9.10'
     }
 }
 
 plugins {
-    id 'org.jetbrains.dokka' version '1.7.10'
+    id 'org.jetbrains.dokka' version '1.9.10'
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
     id 'io.gitlab.arturbosch.detekt' version '1.22.0'
 }
