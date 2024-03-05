@@ -3,7 +3,7 @@ package com.braintreepayments.api
 /**
  * Callback for receiving result of [LocalPaymentClient.createPaymentAuthRequest].
  */
-fun interface LocalPaymentInternalAuthRequestCallback {
+internal fun interface LocalPaymentInternalAuthRequestCallback {
 
     /**
      * @param localPaymentAuthRequestParams [LocalPaymentAuthRequestParams]
