@@ -32,12 +32,12 @@ class LocalPaymentApi {
 
                             LocalPaymentAuthRequestParams transaction =
                                     new LocalPaymentAuthRequestParams(request, redirectUrl, paymentToken);
-                            callback.onResult(transaction, null);
+                            callback.onLocalPaymentInternalAuthResult(transaction, null);
                         } catch (JSONException e) {
-                            callback.onResult(null, e);
+                            callback.onLocalPaymentInternalAuthResult(null, e);
                         }
                     } else {
-                        callback.onResult(null, httpError);
+                        callback.onLocalPaymentInternalAuthResult(null, httpError);
                     }
                 });
     }

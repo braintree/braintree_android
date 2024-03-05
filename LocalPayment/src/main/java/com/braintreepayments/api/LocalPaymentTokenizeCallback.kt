@@ -1,8 +1,7 @@
 package com.braintreepayments.api
 
 /**
- * Callback for receiving result of
- * [LocalPaymentClient.tokenize].
+ * Callback for receiving result of [LocalPaymentClient.tokenize].
  */
 fun interface LocalPaymentTokenizeCallback {
     /**
