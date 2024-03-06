@@ -51,6 +51,8 @@
     * Add `GooglePayClient#tokenize` 
     * Remove `merchantId` from `GooglePayRequest`
     * Change `GooglePayGetTokenizationParametersCallback` parameters
+    * Rename `GooglePayLauncherCallback#onResult` to 
+      `GooglePayLauncherCallback#onGooglePayLauncherResult`
   * ThreeDSecure
     * Remove `ThreeDSecureListener`
     * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`, 
@@ -110,6 +112,8 @@
       modify parameters
     * Replace `SEPADirectDebitClient#tokenize` with`SEPADirectDebitClient#createPaymentAuthRequest` 
       and modify parameters
+    * Rename `SEPADirectDebitPaymentAuthRequestCallback#onResult` to
+     `SEPADirectDebitPaymentAuthRequestCallback#onSEPADirectDebitPaymentAuthResult`
   * Visa Checkout
     * Change parameters of `VisaCheckoutCreateProfileBuilderCallback` and
       `VisaCheckoutTokenizeCallback`
