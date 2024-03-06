@@ -22,12 +22,12 @@ class ThreeDSecureAPI {
             if (responseBody != null) {
                 try {
                     ThreeDSecureParams result = ThreeDSecureParams.fromJson(responseBody);
-                    callback.onResult(result, null);
+                    callback.onThreeDSecureResult(result, null);
                 } catch (JSONException e) {
-                    callback.onResult(null, e);
+                    callback.onThreeDSecureResult(null, e);
                 }
             } else {
-                callback.onResult(null, httpError);
+                callback.onThreeDSecureResult(null, httpError);
             }
         });
     }
@@ -56,13 +56,13 @@ class ThreeDSecureAPI {
                     if (result.hasError()) {
                         result.setThreeDSecureNonce(lookupCardNonce);
                     }
-                    callback.onResult(result, null);
+                    callback.onThreeDSecureResult(result, null);
 
                 } catch (JSONException e) {
-                    callback.onResult(null, e);
+                    callback.onThreeDSecureResult(null, e);
                 }
             } else {
-                callback.onResult(null, httpError);
+                callback.onThreeDSecureResult(null, httpError);
             }
         });
     }

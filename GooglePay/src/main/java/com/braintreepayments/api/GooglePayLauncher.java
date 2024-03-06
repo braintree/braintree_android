@@ -49,7 +49,7 @@ public class GooglePayLauncher {
     GooglePayLauncher(ActivityResultRegistry registry, LifecycleOwner lifecycleOwner,
                       GooglePayLauncherCallback callback) {
         activityLauncher = registry.register(GOOGLE_PAY_RESULT, lifecycleOwner,
-                new GooglePayActivityResultContract(), callback::onResult);
+                new GooglePayActivityResultContract(), callback::onGooglePayLauncherResult);
     }
 
     /**

@@ -61,7 +61,7 @@ public class ThreeDSecureAPIUnitTest {
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
         sut.performLookup(threeDSecureRequest, "another-session-id", callback);
 
-        verify(callback).onResult(any(ThreeDSecureParams.class), isNull());
+        verify(callback).onThreeDSecureResult(any(ThreeDSecureParams.class), isNull());
     }
 
     @Test
@@ -77,7 +77,7 @@ public class ThreeDSecureAPIUnitTest {
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
         sut.performLookup(threeDSecureRequest, "cardinal-session-id", callback);
 
-        verify(callback).onResult(isNull(), any(JSONException.class));
+        verify(callback).onThreeDSecureResult(isNull(), any(JSONException.class));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class ThreeDSecureAPIUnitTest {
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
         sut.performLookup(threeDSecureRequest, "cardinal-session-id", callback);
 
-        verify(callback).onResult(isNull(), same(httpError));
+        verify(callback).onThreeDSecureResult(isNull(), same(httpError));
     }
 
     @Test
@@ -141,7 +141,7 @@ public class ThreeDSecureAPIUnitTest {
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
         sut.authenticateCardinalJWT(threeDSecureParams, cardinalJWT, callback);
 
-        verify(callback).onResult(any(ThreeDSecureParams.class), (Exception) isNull());
+        verify(callback).onThreeDSecureResult(any(ThreeDSecureParams.class), (Exception) isNull());
     }
 
     @Test
@@ -162,7 +162,7 @@ public class ThreeDSecureAPIUnitTest {
 
         ArgumentCaptor<ThreeDSecureParams> captor =
                 ArgumentCaptor.forClass(ThreeDSecureParams.class);
-        verify(callback).onResult(captor.capture(), (Exception) isNull());
+        verify(callback).onThreeDSecureResult(captor.capture(), (Exception) isNull());
 
         ThreeDSecureParams result = captor.getValue();
         assertNotNull(result.getThreeDSecureNonce());
@@ -185,7 +185,7 @@ public class ThreeDSecureAPIUnitTest {
 
         ArgumentCaptor<Exception> captor =
                 ArgumentCaptor.forClass(Exception.class);
-        verify(callback).onResult((ThreeDSecureParams) isNull(), captor.capture());
+        verify(callback).onThreeDSecureResult((ThreeDSecureParams) isNull(), captor.capture());
 
         Exception error = captor.getValue();
         assertTrue(error instanceof JSONException);
@@ -208,7 +208,7 @@ public class ThreeDSecureAPIUnitTest {
 
         ArgumentCaptor<Exception> captor =
                 ArgumentCaptor.forClass(Exception.class);
-        verify(callback).onResult((ThreeDSecureParams) isNull(), captor.capture());
+        verify(callback).onThreeDSecureResult((ThreeDSecureParams) isNull(), captor.capture());
 
         Exception error = captor.getValue();
         assertSame(postError, error);
@@ -247,7 +247,7 @@ public class ThreeDSecureAPIUnitTest {
         ThreeDSecureAPI sut = new ThreeDSecureAPI(braintreeClient);
         sut.authenticateCardinalJWT(threeDSecureParams, "jwt", threeDSecureResultCallback);
 
-        verify(threeDSecureResultCallback).onResult(any(ThreeDSecureParams.class),
+        verify(threeDSecureResultCallback).onThreeDSecureResult(any(ThreeDSecureParams.class),
                 (Exception) isNull());
     }
 
@@ -270,7 +270,7 @@ public class ThreeDSecureAPIUnitTest {
 
         ArgumentCaptor<ThreeDSecureParams> captor =
                 ArgumentCaptor.forClass(ThreeDSecureParams.class);
-        verify(threeDSecureResultCallback).onResult(captor.capture(), (Exception) isNull());
+        verify(threeDSecureResultCallback).onThreeDSecureResult(captor.capture(), (Exception) isNull());
 
         ThreeDSecureParams actualResult = captor.getValue();
         ThreeDSecureNonce cardNonce = actualResult.getThreeDSecureNonce();
@@ -300,6 +300,6 @@ public class ThreeDSecureAPIUnitTest {
         ThreeDSecureAPI sut = new ThreeDSecureAPI(braintreeClient);
         sut.authenticateCardinalJWT(threeDSecureParams, "jwt", threeDSecureResultCallback);
 
-        verify(threeDSecureResultCallback).onResult(null, exception);
+        verify(threeDSecureResultCallback).onThreeDSecureResult(null, exception);
     }
 }
