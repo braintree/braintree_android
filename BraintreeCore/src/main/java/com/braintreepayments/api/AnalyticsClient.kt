@@ -62,12 +62,13 @@ internal class AnalyticsClient @VisibleForTesting constructor(
 
     fun writeAnalytics(inputData: Data): ListenableWorker.Result {
         val eventName = inputData.getString(WORK_INPUT_KEY_EVENT_NAME)
+        val payPalContextId = inputData.getString(WORK_INPUT_KEY_PAYPAL_CONTEXT_ID)
         val timestamp = inputData.getLong(WORK_INPUT_KEY_TIMESTAMP, INVALID_TIMESTAMP)
 
         return if (eventName == null || timestamp == INVALID_TIMESTAMP) {
             ListenableWorker.Result.failure()
         } else {
-            val event = AnalyticsEvent(eventName, null, timestamp)
+            val event = AnalyticsEvent(eventName, payPalContextId, timestamp)
             val analyticsEventDao = analyticsDatabase.analyticsEventDao()
             analyticsEventDao.insertEvent(event)
             ListenableWorker.Result.success()
@@ -181,6 +182,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         for (analyticsEvent in events) {
             eventObject = JSONObject()
                 .put(KIND_KEY, analyticsEvent.name)
+                .put(PAYPAL_CONTEXT_ID_KEY, analyticsEvent.payPalContextId)
                 .put(TIMESTAMP_KEY, analyticsEvent.timestamp)
             eventObjects.put(eventObject)
         }
@@ -190,6 +192,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
 
     companion object {
         private const val ANALYTICS_KEY = "analytics"
+        private const val PAYPAL_CONTEXT_ID_KEY = "payPalContextId"
         private const val KIND_KEY = "kind"
         private const val TIMESTAMP_KEY = "timestamp"
         private const val META_KEY = "_meta"
@@ -204,6 +207,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         const val WORK_INPUT_KEY_INTEGRATION = "integration"
         const val WORK_INPUT_KEY_SESSION_ID = "sessionId"
         const val WORK_INPUT_KEY_TIMESTAMP = "timestamp"
+        const val WORK_INPUT_KEY_PAYPAL_CONTEXT_ID = "payPalContextId"
         private const val DELAY_TIME_SECONDS = 30L
 
         private fun getAuthorizationFromData(inputData: Data?): Authorization? =
