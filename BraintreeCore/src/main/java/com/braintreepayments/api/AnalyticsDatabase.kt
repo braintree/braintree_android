@@ -1,11 +1,18 @@
 package com.braintreepayments.api
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [AnalyticsEvent::class], version = 1)
+@Database(
+    version = 2,
+    entities = [AnalyticsEvent::class],
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2)
+    ]
+)
 internal abstract class AnalyticsDatabase : RoomDatabase() {
 
     abstract fun analyticsEventDao(): AnalyticsEventDao
