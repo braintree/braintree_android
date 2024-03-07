@@ -13,10 +13,11 @@ import androidx.room.Entity
 @Entity(tableName = "analytics_event")
 open class AnalyticsEvent internal constructor(
     open val name: String,
-    open val timestamp: Long,
 
     @ColumnInfo(name = "paypal_context_id")
-    open val payPalContextId: String? = null
+    open val payPalContextId: String? = null,
+
+    open val timestamp: Long = System.currentTimeMillis()
 ) {
     @JvmField
     @PrimaryKey(autoGenerate = true)

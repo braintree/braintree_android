@@ -32,36 +32,23 @@ internal class AnalyticsClient @VisibleForTesting constructor(
 
     fun sendEvent(
         configuration: Configuration,
-        eventName: String?,
+        event: AnalyticsEvent,
         sessionId: String?,
         integration: String?,
-        authorization: Authorization
-    ) {
-        val timestamp = System.currentTimeMillis()
-        sendEvent(configuration, eventName, sessionId, integration, timestamp, authorization)
-    }
-
-    @VisibleForTesting
-    fun sendEvent(
-        configuration: Configuration,
-        eventName: String?,
-        sessionId: String?,
-        integration: String?,
-        timestamp: Long,
         authorization: Authorization
     ): UUID {
         lastKnownAnalyticsUrl = configuration.analyticsUrl
-        scheduleAnalyticsWrite("android.$eventName", timestamp, authorization)
+        scheduleAnalyticsWrite(event, authorization)
         return scheduleAnalyticsUpload(configuration, authorization, sessionId, integration)
     }
 
     private fun scheduleAnalyticsWrite(
-        eventName: String, timestamp: Long, authorization: Authorization
+        event: AnalyticsEvent, authorization: Authorization
     ) {
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
-            .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
-            .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
+            .putString(WORK_INPUT_KEY_EVENT_NAME, event.name)
+            .putLong(WORK_INPUT_KEY_TIMESTAMP, event.timestamp)
             .build()
 
         val analyticsWorkRequest =
@@ -80,7 +67,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         return if (eventName == null || timestamp == INVALID_TIMESTAMP) {
             ListenableWorker.Result.failure()
         } else {
-            val event = AnalyticsEvent(eventName, timestamp)
+            val event = AnalyticsEvent(eventName, null, timestamp)
             val analyticsEventDao = analyticsDatabase.analyticsEventDao()
             analyticsEventDao.insertEvent(event)
             ListenableWorker.Result.success()
@@ -124,8 +111,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 val analyticsEventDao = analyticsDatabase.analyticsEventDao()
                 val events = analyticsEventDao.getAllEvents()
                 if (events.isNotEmpty()) {
-                    // TODO: Pass paypal_context_id
-                    val metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration, "payPalContextID")
+                    val metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration)
                     val analyticsRequest = serializeEvents(authorization, events, metadata)
                     configuration?.analyticsUrl?.let { analyticsUrl ->
                         httpClient.post(
@@ -158,9 +144,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         if (authorization == null) {
             return
         }
-        // TODO: Pass paypal_context_id
-        val metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration, "payPalContextID")
-        val event = AnalyticsEvent("android.crash", timestamp)
+        val metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration)
+        val event = AnalyticsEvent("android.crash", null, timestamp)
         val events = listOf(event)
         try {
             val analyticsRequest = serializeEvents(authorization, events, metadata)
