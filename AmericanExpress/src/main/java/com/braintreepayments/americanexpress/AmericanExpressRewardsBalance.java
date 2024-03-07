@@ -1,8 +1,10 @@
-package com.braintreepayments.api;
+package com.braintreepayments.americanexpress;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.annotation.Nullable;
+
+import com.braintreepayments.api.Json;
 
 import org.json.JSONException;
 import org.json.JSONObject;

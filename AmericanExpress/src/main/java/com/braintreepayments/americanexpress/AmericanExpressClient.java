@@ -1,10 +1,13 @@
-package com.braintreepayments.api;
+package com.braintreepayments.americanexpress;
 
 import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+
+import com.braintreepayments.api.ApiClient;
+import com.braintreepayments.api.BraintreeClient;
 
 import org.json.JSONException;
 

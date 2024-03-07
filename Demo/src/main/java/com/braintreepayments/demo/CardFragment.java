@@ -15,9 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.AmericanExpressClient;
-import com.braintreepayments.api.AmericanExpressResult;
-import com.braintreepayments.api.AmericanExpressRewardsBalance;
+import com.braintreepayments.americanexpress.AmericanExpressClient;
+import com.braintreepayments.americanexpress.AmericanExpressResult;
+import com.braintreepayments.americanexpress.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardNonce;

@@ -1,5 +1,6 @@
 package com.braintreepayments.api
 
+import com.braintreepayments.americanexpress.AmericanExpressAnalytics
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
