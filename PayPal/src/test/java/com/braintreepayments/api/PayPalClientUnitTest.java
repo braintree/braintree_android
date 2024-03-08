@@ -617,7 +617,6 @@ public class PayPalClientUnitTest {
         sut.onBrowserSwitchResult(browserSwitchResult);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.browser-switch.succeeded");
-        verify(braintreeClient).setPayPalContextID("EC-HERMES-SANDBOX-EC-TOKEN");
     }
 
     @Test
@@ -649,7 +648,6 @@ public class PayPalClientUnitTest {
         sut.onBrowserSwitchResult(browserSwitchResult);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.browser-switch.succeeded");
-        verify(braintreeClient).setPayPalContextID("EC-HERMES-SANDBOX-EC-TOKEN");
     }
 
     @Test
@@ -682,7 +680,6 @@ public class PayPalClientUnitTest {
         sut.onBrowserSwitchResult(browserSwitchResult);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.credit.accepted");
-        verify(braintreeClient).setPayPalContextID("EC-HERMES-SANDBOX-EC-TOKEN");
     }
 
     @Test
@@ -777,7 +774,6 @@ public class PayPalClientUnitTest {
 
         sut.onBrowserSwitchResult(browserSwitchResult);
         verify(listener).onPayPalSuccess(same(payPalAccountNonce));
-        verify(braintreeClient).setPayPalContextID("EC-HERMES-SANDBOX-EC-TOKEN");
     }
 
     @Test

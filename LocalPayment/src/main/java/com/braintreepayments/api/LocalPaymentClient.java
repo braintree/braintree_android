@@ -27,6 +27,10 @@ public class LocalPaymentClient {
     private final LocalPaymentApi localPaymentApi;
     private LocalPaymentListener listener;
 
+    /// Used for linking events from the client to server side request
+    /// In the Local Payment flow this will be a Payment Token/Order ID
+    private String payPalContextId = null;
+
     @VisibleForTesting
     BrowserSwitchResult pendingBrowserSwitchResult;
 
@@ -128,7 +132,7 @@ public class LocalPaymentClient {
                                 if (localPaymentResult != null) {
                                     String pairingID = localPaymentResult.getPaymentId();
                                     if (pairingID != null && !pairingID.isEmpty()) {
-                                        braintreeClient.setPayPalContextID(pairingID);
+                                        payPalContextId = pairingID;
                                     }
                                     sendAnalyticsEvent(request.getPaymentType(), "local-payment.create.succeeded");
                                 } else if (error != null) {
@@ -338,6 +342,6 @@ public class LocalPaymentClient {
 
     private void sendAnalyticsEvent(String paymentType, String eventSuffix) {
         String eventPrefix = (paymentType == null) ? "unknown" : paymentType;
-        braintreeClient.sendAnalyticsEvent(String.format("%s.%s", eventPrefix, eventSuffix));
+        braintreeClient.sendAnalyticsEvent(String.format("%s.%s", eventPrefix, eventSuffix), payPalContextId);
     }
 }

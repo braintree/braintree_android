@@ -15,56 +15,52 @@ import com.braintreepayments.api.IntegrationType.Integration
 @Suppress("LargeClass", "LongParameterList", "TooManyFunctions")
 open class BraintreeClient @VisibleForTesting internal constructor(
 
-        /**
-         * @suppress
-         */
-        @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-        val applicationContext: Context,
+    /**
+     * @suppress
+     */
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val applicationContext: Context,
 
-        /**
-         * @suppress
-         */
-        @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-        val integrationType: String,
+     /**
+      * @suppress
+      */
+     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+     val integrationType: String,
 
-        /**
-         * @suppress
-         */
-        @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-        val sessionId: String,
+     /**
+      * @suppress
+      */
+     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+     val sessionId: String,
 
-        private val authorizationLoader: AuthorizationLoader,
-        private val analyticsClient: AnalyticsClient,
-        private val httpClient: BraintreeHttpClient,
-        private val graphQLClient: BraintreeGraphQLClient,
-        private val browserSwitchClient: BrowserSwitchClient,
-        private val configurationLoader: ConfigurationLoader,
-        private val manifestValidator: ManifestValidator,
-        private val returnUrlScheme: String,
-        private val braintreeDeepLinkReturnUrlScheme: String,
+     private val authorizationLoader: AuthorizationLoader,
+     private val analyticsClient: AnalyticsClient,
+     private val httpClient: BraintreeHttpClient,
+     private val graphQLClient: BraintreeGraphQLClient,
+     private val browserSwitchClient: BrowserSwitchClient,
+     private val configurationLoader: ConfigurationLoader,
+     private val manifestValidator: ManifestValidator,
+     private val returnUrlScheme: String,
+     private val braintreeDeepLinkReturnUrlScheme: String,
 ) {
 
     private val crashReporter: CrashReporter
     private var launchesBrowserSwitchAsNewTask: Boolean = false
 
-    // Used for linking events from the client to server side request
-    // This value will be PayPal Order ID, Payment Token, EC token or Billing Agreement depending on the flow
-    var payPalContextID: String? = null
-
     // NOTE: this constructor is used to make dependency injection easy
     internal constructor(params: BraintreeClientParams) : this(
-            applicationContext = params.applicationContext,
-            integrationType = params.integrationType,
-            sessionId = params.sessionId,
-            authorizationLoader = params.authorizationLoader,
-            analyticsClient = params.analyticsClient,
-            httpClient = params.httpClient,
-            graphQLClient = params.graphQLClient,
-            browserSwitchClient = params.browserSwitchClient,
-            configurationLoader = params.configurationLoader,
-            manifestValidator = params.manifestValidator,
-            returnUrlScheme = params.returnUrlScheme,
-            braintreeDeepLinkReturnUrlScheme = params.braintreeReturnUrlScheme
+        applicationContext = params.applicationContext,
+        integrationType = params.integrationType,
+        sessionId = params.sessionId,
+        authorizationLoader = params.authorizationLoader,
+        analyticsClient = params.analyticsClient,
+        httpClient = params.httpClient,
+        graphQLClient = params.graphQLClient,
+        browserSwitchClient = params.browserSwitchClient,
+        configurationLoader = params.configurationLoader,
+        manifestValidator = params.manifestValidator,
+        returnUrlScheme = params.returnUrlScheme,
+        braintreeDeepLinkReturnUrlScheme = params.braintreeReturnUrlScheme
     )
 
     /**
@@ -109,11 +105,11 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param returnUrlScheme A custom return url to use for browser and app switching
      */
     constructor (context: Context, authorization: String, returnUrlScheme: String) : this(
-            BraintreeOptions(
-                    context = context,
-                    initialAuthString = authorization,
-                    returnUrlScheme = returnUrlScheme
-            )
+        BraintreeOptions(
+            context = context,
+            initialAuthString = authorization,
+            returnUrlScheme = returnUrlScheme
+        )
     )
 
     /**
@@ -132,29 +128,29 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param returnUrlScheme     A custom return url to use for browser and app switching
      */
     constructor(
-            context: Context,
-            clientTokenProvider: ClientTokenProvider,
-            returnUrlScheme: String
+        context: Context,
+        clientTokenProvider: ClientTokenProvider,
+        returnUrlScheme: String
     ) : this(
-            BraintreeOptions(
-                    context = context,
-                    clientTokenProvider = clientTokenProvider,
-                    returnUrlScheme = returnUrlScheme
-            )
+        BraintreeOptions(
+            context = context,
+            clientTokenProvider = clientTokenProvider,
+            returnUrlScheme = returnUrlScheme
+        )
     )
 
     internal constructor(
-            context: Context,
-            clientTokenProvider: ClientTokenProvider,
-            sessionId: String?,
-            @Integration integrationType: String
+        context: Context,
+        clientTokenProvider: ClientTokenProvider,
+        sessionId: String?,
+        @Integration integrationType: String
     ) : this(
-            BraintreeOptions(
-                    context = context,
-                    clientTokenProvider = clientTokenProvider,
-                    sessionId = sessionId,
-                    integrationType = integrationType,
-            )
+        BraintreeOptions(
+            context = context,
+            clientTokenProvider = clientTokenProvider,
+            sessionId = sessionId,
+            integrationType = integrationType,
+        )
     )
 
     internal constructor(
@@ -227,9 +223,9 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     }
 
     private fun sendAnalyticsEvent(
-            event: AnalyticsEvent,
-            configuration: Configuration?,
-            authorization: Authorization
+        event: AnalyticsEvent,
+        configuration: Configuration?,
+        authorization: Authorization
     ) {
         configuration?.let {
             if (isAnalyticsEnabled(it)) {
@@ -274,11 +270,11 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                 getConfiguration { configuration, configError ->
                     if (configuration != null) {
                         httpClient.post(
-                                url,
-                                data,
-                                configuration,
-                                authorization,
-                                responseCallback
+                            url,
+                            data,
+                            configuration,
+                            authorization,
+                            responseCallback
                         )
                     } else {
                         responseCallback.onResult(null, configError)
@@ -300,10 +296,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                 getConfiguration { configuration, configError ->
                     if (configuration != null) {
                         graphQLClient.post(
-                                payload,
-                                configuration,
-                                authorization,
-                                responseCallback
+                            payload,
+                            configuration,
+                            authorization,
+                            responseCallback
                         )
                     } else {
                         responseCallback.onResult(null, configError)
@@ -321,8 +317,8 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @Throws(BrowserSwitchException::class)
     fun startBrowserSwitch(
-            activity: FragmentActivity?,
-            browserSwitchOptions: BrowserSwitchOptions?
+        activity: FragmentActivity?,
+        browserSwitchOptions: BrowserSwitchOptions?
     ) {
         if (activity != null && browserSwitchOptions != null) {
             browserSwitchClient.start(activity, browserSwitchOptions)
@@ -334,7 +330,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun getBrowserSwitchResult(activity: FragmentActivity): BrowserSwitchResult? =
-            browserSwitchClient.getResult(activity)
+        browserSwitchClient.getResult(activity)
 
     /**
      * Deliver a browser switch result from an Activity's pending deep link intent url.
@@ -372,14 +368,14 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun parseBrowserSwitchResult(context: Context, requestCode: Int, intent: Intent?) =
-            browserSwitchClient.parseResult(context, requestCode, intent)
+        browserSwitchClient.parseResult(context, requestCode, intent)
 
     /**
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun clearActiveBrowserSwitchRequests(context: Context) =
-            browserSwitchClient.clearActiveRequests(context)
+        browserSwitchClient.clearActiveRequests(context)
 
     /**
      * @suppress
@@ -406,9 +402,9 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         val url = Uri.parse("https://braintreepayments.com")
         val returnUrlScheme = getReturnUrlScheme()
         val browserSwitchOptions = BrowserSwitchOptions()
-                .url(url)
-                .returnUrlScheme(returnUrlScheme)
-                .requestCode(requestCode)
+            .url(url)
+            .returnUrlScheme(returnUrlScheme)
+            .requestCode(requestCode)
         browserSwitchClient.assertCanPerformBrowserSwitch(activity, browserSwitchOptions)
     }
 
@@ -418,9 +414,9 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun <T> isUrlSchemeDeclaredInAndroidManifest(urlScheme: String?, klass: Class<T>?): Boolean {
         return manifestValidator.isUrlSchemeDeclaredInAndroidManifest(
-                applicationContext,
-                urlScheme,
-                klass
+            applicationContext,
+            urlScheme,
+            klass
         )
     }
 

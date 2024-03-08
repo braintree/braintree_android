@@ -28,7 +28,7 @@ class DeviceInspector @VisibleForTesting internal constructor(
     internal fun getDeviceMetadata(
         context: Context?,
         sessionId: String?,
-        integration: String?
+        integration: String?,
     ): DeviceMetadata {
         return DeviceMetadata(
             platform = "Android",
@@ -47,7 +47,7 @@ class DeviceInspector @VisibleForTesting internal constructor(
             appVersion = getAppVersion(context),
             dropInVersion = dropInVersion,
             isPayPalInstalled = isPayPalInstalled(context),
-            isVenmoInstalled = isVenmoInstalled(context),
+            isVenmoInstalled = isVenmoInstalled(context)
         )
     }
 
