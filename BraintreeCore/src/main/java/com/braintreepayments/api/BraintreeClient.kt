@@ -21,27 +21,27 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val applicationContext: Context,
 
-     /**
-      * @suppress
-      */
-     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-     val integrationType: String,
+    /**
+     * @suppress
+     */
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val integrationType: String,
 
-     /**
-      * @suppress
-      */
-     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-     val sessionId: String,
+    /**
+     * @suppress
+     */
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val sessionId: String,
 
-     private val authorizationLoader: AuthorizationLoader,
-     private val analyticsClient: AnalyticsClient,
-     private val httpClient: BraintreeHttpClient,
-     private val graphQLClient: BraintreeGraphQLClient,
-     private val browserSwitchClient: BrowserSwitchClient,
-     private val configurationLoader: ConfigurationLoader,
-     private val manifestValidator: ManifestValidator,
-     private val returnUrlScheme: String,
-     private val braintreeDeepLinkReturnUrlScheme: String,
+    private val authorizationLoader: AuthorizationLoader,
+    private val analyticsClient: AnalyticsClient,
+    private val httpClient: BraintreeHttpClient,
+    private val graphQLClient: BraintreeGraphQLClient,
+    private val browserSwitchClient: BrowserSwitchClient,
+    private val configurationLoader: ConfigurationLoader,
+    private val manifestValidator: ManifestValidator,
+    private val returnUrlScheme: String,
+    private val braintreeDeepLinkReturnUrlScheme: String,
 ) {
 
     private val crashReporter: CrashReporter
@@ -154,17 +154,17 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     )
 
     internal constructor(
-            context: Context,
-            authorization: String,
-            sessionId: String?,
-            @Integration integrationType: String
+        context: Context,
+        authorization: String,
+        sessionId: String?,
+        @Integration integrationType: String
     ) : this(
-            BraintreeOptions(
-                    context = context,
-                    initialAuthString = authorization,
-                    sessionId = sessionId,
-                    integrationType = integrationType,
-            )
+        BraintreeOptions(
+            context = context,
+            initialAuthString = authorization,
+            sessionId = sessionId,
+            integrationType = integrationType,
+        )
     )
 
     init {
@@ -395,8 +395,8 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @Throws(BrowserSwitchException::class)
     fun assertCanPerformBrowserSwitch(
-            activity: FragmentActivity?,
-            @BraintreeRequestCodes requestCode: Int
+        activity: FragmentActivity?,
+        @BraintreeRequestCodes requestCode: Int
     ) {
         // url used to see if the application is able to open an https url e.g. web browser
         val url = Uri.parse("https://braintreepayments.com")
