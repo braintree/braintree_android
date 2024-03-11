@@ -303,8 +303,8 @@ class AnalyticsClientUnitTest {
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", null,123))
-        events.add(AnalyticsEvent("event1", null,456))
+        events.add(AnalyticsEvent("event0", null, 123))
+        events.add(AnalyticsEvent("event1", null, 456))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
@@ -330,8 +330,8 @@ class AnalyticsClientUnitTest {
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", null,123))
-        events.add(AnalyticsEvent("event1", null,456))
+        events.add(AnalyticsEvent("event0", null, 123))
+        events.add(AnalyticsEvent("event1", null, 456))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val httpError = Exception("error")

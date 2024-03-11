@@ -47,7 +47,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     ) {
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
-            .putString(WORK_INPUT_KEY_EVENT_NAME, event.name)
+            .putString(WORK_INPUT_KEY_EVENT_NAME, "android.${event.name}")
             .putLong(WORK_INPUT_KEY_TIMESTAMP, event.timestamp)
             .build()
 

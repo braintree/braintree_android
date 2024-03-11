@@ -349,7 +349,9 @@ class BraintreeClientUnitTest {
         sut.sendAnalyticsEvent("event.started")
 
         verify {
-            analyticsClient.sendEvent(eq(configuration), match { it.name == "event.started" }, eq("session-id"), eq("custom"), eq(authorization))
+            analyticsClient.sendEvent(
+                eq(configuration), match { it.name == "event.started" }, eq("session-id"), eq("custom"), eq(authorization)
+            )
         }
     }
 
