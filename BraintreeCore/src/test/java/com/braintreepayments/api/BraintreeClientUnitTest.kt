@@ -14,7 +14,6 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.mock
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -350,7 +349,11 @@ class BraintreeClientUnitTest {
 
         verify {
             analyticsClient.sendEvent(
-                eq(configuration), match { it.name == "event.started" }, eq("session-id"), eq("custom"), eq(authorization)
+                configuration,
+                match { it.name == "event.started" },
+                "session-id",
+                "custom",
+                authorization
             )
         }
     }
@@ -454,7 +457,7 @@ class BraintreeClientUnitTest {
         val context = mockk<Context>(relaxed = true)
         val params = createDefaultParams(configurationLoader, authorizationLoader)
 
-        val expected = mock<BrowserSwitchResult>()
+        val expected = mockk<BrowserSwitchResult>()
         val intent = Intent()
         every { browserSwitchClient.parseResult(context, 123, intent) } returns expected
 
