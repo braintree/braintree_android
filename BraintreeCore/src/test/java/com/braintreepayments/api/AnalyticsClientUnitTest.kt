@@ -65,8 +65,9 @@ class AnalyticsClientUnitTest {
         } returns mockk()
 
         val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
+        var event = AnalyticsEvent(eventName)
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
-        sut.sendEvent(configuration, eventName, sessionId, integration, 123, authorization)
+        sut.sendEvent(configuration, event, sessionId, integration, authorization)
 
         val workSpec = workRequestSlot.captured.workSpec
         assertEquals(AnalyticsWriteToDbWorker::class.java.name, workSpec.workerClassName)
@@ -88,8 +89,9 @@ class AnalyticsClientUnitTest {
         } returns mockk()
 
         val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
+        val event = AnalyticsEvent(eventName)
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
-        sut.sendEvent(configuration, eventName, sessionId, integration, 123, authorization)
+        sut.sendEvent(configuration, event, sessionId, integration, authorization)
 
         val workSpec = workRequestSlot.captured.workSpec
         assertEquals(30000, workSpec.initialDelay)
@@ -184,8 +186,8 @@ class AnalyticsClientUnitTest {
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", 123))
-        events.add(AnalyticsEvent("event1", 456))
+        events.add(AnalyticsEvent("event0", null, 123))
+        events.add(AnalyticsEvent("event1", null, 456))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val analyticsJSONSlot = slot<String>()
@@ -301,8 +303,8 @@ class AnalyticsClientUnitTest {
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", 123))
-        events.add(AnalyticsEvent("event1", 456))
+        events.add(AnalyticsEvent("event0", null,123))
+        events.add(AnalyticsEvent("event1", null,456))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
@@ -328,8 +330,8 @@ class AnalyticsClientUnitTest {
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", 123))
-        events.add(AnalyticsEvent("event1", 456))
+        events.add(AnalyticsEvent("event0", null,123))
+        events.add(AnalyticsEvent("event1", null,456))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val httpError = Exception("error")
@@ -360,8 +362,9 @@ class AnalyticsClientUnitTest {
         } returns Unit
 
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
+        val event = AnalyticsEvent(eventName)
         val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
-        sut.sendEvent(configuration, eventName, sessionId, integration, authorization)
+        sut.sendEvent(configuration, event, sessionId, integration, authorization)
 
         sut.reportCrash(context, sessionId, integration, 123, authorization)
 
@@ -401,8 +404,9 @@ class AnalyticsClientUnitTest {
         } returns metadata
 
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
+        val event = AnalyticsEvent(eventName)
         val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
-        sut.sendEvent(configuration, eventName, sessionId, integration, authorization)
+        sut.sendEvent(configuration, event, sessionId, integration, authorization)
 
         sut.reportCrash(context, sessionId, integration, 123, null)
 
