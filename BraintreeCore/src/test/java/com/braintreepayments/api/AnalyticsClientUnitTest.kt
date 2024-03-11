@@ -65,7 +65,7 @@ class AnalyticsClientUnitTest {
         } returns mockk()
 
         val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
-        var event = AnalyticsEvent(eventName)
+        var event = AnalyticsEvent(eventName, null, 123)
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
         sut.sendEvent(configuration, event, sessionId, integration, authorization)
 
