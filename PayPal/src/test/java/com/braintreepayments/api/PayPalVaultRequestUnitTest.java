@@ -1,9 +1,12 @@
 package com.braintreepayments.api;
 
+import android.content.pm.Signature;
 import android.os.Parcel;
 
+import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 
 import java.util.ArrayList;
@@ -12,6 +15,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricTestRunner.class)
 public class PayPalVaultRequestUnitTest {
@@ -80,17 +84,33 @@ public class PayPalVaultRequestUnitTest {
 
         assertEquals("en-US", result.getLocaleCode());
         assertEquals("Billing Agreement Description",
-                result.getBillingAgreementDescription());
+            result.getBillingAgreementDescription());
         assertTrue(result.getShouldOfferCredit());
         assertTrue(result.isShippingAddressRequired());
         assertTrue(result.isShippingAddressEditable());
         assertEquals("Postal Address", result.getShippingAddressOverride()
-                .getRecipientName());
+            .getRecipientName());
         assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, result.getLandingPageType());
         assertEquals("Display Name", result.getDisplayName());
         assertEquals("123-correlation", result.getRiskCorrelationId());
         assertEquals("merchant_account_id", result.getMerchantAccountId());
         assertEquals(1, result.getLineItems().size());
         assertEquals("An Item", result.getLineItems().get(0).getName());
+    }
+
+    @Test
+    public void createRequestBody_sets_userAuthenticationEmail_when_not_null() throws JSONException {
+        String payerEmail = "payer_email@example.com";
+        PayPalVaultRequest request = new PayPalVaultRequest();
+
+        request.setUserAuthenticationEmail(payerEmail);
+        String requestBody = request.createRequestBody(
+            mock(Configuration.class),
+            mock(Authorization.class),
+            "success_url",
+            "cancel_url"
+        );
+
+        assertTrue(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
     }
 }

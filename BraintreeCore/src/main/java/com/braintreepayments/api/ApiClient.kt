@@ -32,17 +32,18 @@ class ApiClient(private val braintreeClient: BraintreeClient) {
             paymentMethod.setSessionId(braintreeClient.sessionId)
 
             sendAnalyticsEvent("card.rest.tokenization.started")
-            sendPOST(url, paymentMethod.buildJSON().toString(), object : HttpResponseCallback {
-                override fun onResult(responseBody: String?, httpError: Exception?) {
-                    parseResponseToJSON(responseBody)?.let { json ->
-                        sendAnalyticsEvent("card.rest.tokenization.success")
-                        callback.onResult(json, null)
-                    } ?: httpError?.let { error ->
-                        sendAnalyticsEvent("card.rest.tokenization.failure")
-                        callback.onResult(null, error)
-                    }
+            sendPOST(
+                url = url,
+                data = paymentMethod.buildJSON().toString(),
+            ) { responseBody, httpError ->
+                parseResponseToJSON(responseBody)?.let { json ->
+                    sendAnalyticsEvent("card.rest.tokenization.success")
+                    callback.onResult(json, null)
+                } ?: httpError?.let { error ->
+                    sendAnalyticsEvent("card.rest.tokenization.failure")
+                    callback.onResult(null, error)
                 }
-            })
+            }
         }
 
     private fun parseResponseToJSON(responseBody: String?): JSONObject? =

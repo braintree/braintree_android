@@ -37,6 +37,7 @@ public class MainFragment extends BaseFragment {
         Button samsungButton = view.findViewById(R.id.samsung_pay);
         Button sepaDirectDebitButton = view.findViewById(R.id.sepa_debit);
         Button payPalNativeCheckoutButton = view.findViewById(R.id.paypal_native_checkout);
+        Button shopperInsightsButton = view.findViewById(R.id.shopper_insights);
 
         cardsButton.setOnClickListener(this::launchCards);
         payPalButton.setOnClickListener(this::launchPayPal);
@@ -47,6 +48,7 @@ public class MainFragment extends BaseFragment {
         samsungButton.setOnClickListener(this::launchSamsungPay);
         payPalNativeCheckoutButton.setOnClickListener(this::launchPayPalNativeCheckout);
         sepaDirectDebitButton.setOnClickListener(this::launchSEPADirectDebit);
+        shopperInsightsButton.setOnClickListener(this::launchShoppingInsights);
 
         return view;
     }
@@ -124,6 +126,12 @@ public class MainFragment extends BaseFragment {
 
     public void launchSEPADirectDebit(View v) {
         NavDirections action = MainFragmentDirections.actionMainFragmentToSepaDirectDebitFragment();
+        Navigation.findNavController(v).navigate(action);
+    }
+
+    public void launchShoppingInsights(View v) {
+        NavDirections action =
+                MainFragmentDirections.actionMainFragmentToShoppingInsightsFragment();
         Navigation.findNavController(v).navigate(action);
     }
 }

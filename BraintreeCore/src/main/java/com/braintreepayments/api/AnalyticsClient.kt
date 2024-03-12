@@ -164,11 +164,11 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             val analyticsRequest = serializeEvents(authorization, events, metadata)
             lastKnownAnalyticsUrl?.let { analyticsUrl ->
                 httpClient.post(
-                    analyticsUrl,
-                    analyticsRequest.toString(),
-                    null,
-                    authorization,
-                    HttpNoResponse()
+                    path = analyticsUrl,
+                    data = analyticsRequest.toString(),
+                    configuration = null,
+                    authorization = authorization,
+                    callback = HttpNoResponse()
                 )
             }
         } catch (e: JSONException) { /* ignored */
