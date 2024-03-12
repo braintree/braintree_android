@@ -40,8 +40,10 @@ public class VenmoClient {
     private final DeviceInspector deviceInspector;
     private VenmoListener listener;
 
-    /// Used for linking events from the client to server side request
-    /// In the Venmo flow this will be a Payment Context ID
+    /**
+     * Used for linking events from the client to server side request
+     * In the Venmo flow this will be a Payment Context ID
+     */
     private String payPalContextId = null;
 
     @VisibleForTesting

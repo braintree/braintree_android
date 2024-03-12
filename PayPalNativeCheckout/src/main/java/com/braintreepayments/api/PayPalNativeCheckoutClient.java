@@ -29,8 +29,10 @@ public class PayPalNativeCheckoutClient {
 
     private PayPalNativeCheckoutListener listener;
 
-    /// Used for linking events from the client to server side request
-    /// In the PayPal Native Checkout flow this will be an Order ID
+    /**
+     * Used for linking events from the client to server side request
+     * In the PayPal Native Checkout flow this will be an Order ID
+     */
     private String payPalContextId = null;
 
     /**

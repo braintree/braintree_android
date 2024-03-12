@@ -27,8 +27,10 @@ public class LocalPaymentClient {
     private final LocalPaymentApi localPaymentApi;
     private LocalPaymentListener listener;
 
-    /// Used for linking events from the client to server side request
-    /// In the Local Payment flow this will be a Payment Token/Order ID
+    /**
+     * Used for linking events from the client to server side request
+     * In the Local Payment flow this will be a Payment Token/Order ID
+     */
     private String payPalContextId = null;
 
     @VisibleForTesting

@@ -26,8 +26,10 @@ public class PayPalClient {
 
     private PayPalListener listener;
 
-    /// Used for linking events from the client to server side request
-    /// In the PayPal flow this will be either an EC token or a Billing Agreement token
+    /**
+     * Used for linking events from the client to server side request
+     * In the PayPal flow this will be either an EC token or a Billing Agreement token
+     */
     private String payPalContextId = null;
 
     @VisibleForTesting
