@@ -1,7 +1,10 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.RestrictTo;
+
 import org.json.JSONObject;
 
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class Json {
 
     /**
@@ -15,6 +18,7 @@ public class Json {
      * @param fallback
      * @return {@link String}
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public static String optString(JSONObject json, String name, String fallback) {
         if (json == null || json.isNull(name)) {
             return fallback;
@@ -23,7 +27,8 @@ public class Json {
         }
     }
 
-    static Boolean optBoolean(JSONObject json, String name, Boolean fallback) {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public static Boolean optBoolean(JSONObject json, String name, Boolean fallback) {
         if (json == null || json.isNull(name)) {
             return fallback;
         } else {
