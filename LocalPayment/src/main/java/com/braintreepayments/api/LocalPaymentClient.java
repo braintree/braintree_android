@@ -132,9 +132,9 @@ public class LocalPaymentClient {
                             @Override
                             public void onResult(@Nullable LocalPaymentResult localPaymentResult, @Nullable Exception error) {
                                 if (localPaymentResult != null) {
-                                    String pairingID = localPaymentResult.getPaymentId();
-                                    if (pairingID != null && !pairingID.isEmpty()) {
-                                        payPalContextId = pairingID;
+                                    String pairingId = localPaymentResult.getPaymentId();
+                                    if (pairingId != null && !pairingId.isEmpty()) {
+                                        payPalContextId = pairingId;
                                     }
                                     sendAnalyticsEvent(request.getPaymentType(), "local-payment.create.succeeded");
                                 } else if (error != null) {

@@ -389,9 +389,9 @@ public class PayPalClient {
         String analyticsPrefix = isBillingAgreement ? "paypal.billing-agreement" : "paypal.single-payment";
 
         if (approvalUrl != null) {
-            String pairingID = Uri.parse(approvalUrl).getQueryParameter(tokenKey);
-            if (pairingID != null && !pairingID.isEmpty()) {
-                payPalContextId = pairingID;
+            String pairingId = Uri.parse(approvalUrl).getQueryParameter(tokenKey);
+            if (pairingId != null && !pairingId.isEmpty()) {
+                payPalContextId = pairingId;
             }
         }
 
