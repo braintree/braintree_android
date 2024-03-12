@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.42.0 (2024-03-12)
 
 * Venmo
   * Add `setIsFinalAmount()` to `VenmoRequest`
