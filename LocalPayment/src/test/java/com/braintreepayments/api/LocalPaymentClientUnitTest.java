@@ -496,7 +496,7 @@ public class LocalPaymentClientUnitTest {
         sut.onBrowserSwitchResult(activity, browserSwitchResult);
 
         verify(listener).onLocalPaymentFailure(same(postError));
-        verify(braintreeClient).sendAnalyticsEvent(eq("ideal.local-payment.tokenize.failed"));
+        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.tokenize.failed", null);
     }
 
     @Test
@@ -659,7 +659,7 @@ public class LocalPaymentClientUnitTest {
         Exception cancelException = exceptionCaptor.getValue();
         assertTrue(cancelException instanceof UserCanceledException);
         assertEquals("User canceled Local Payment.", cancelException.getMessage());
-        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.canceled");
+        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.canceled", null);
     }
 
     @Test
