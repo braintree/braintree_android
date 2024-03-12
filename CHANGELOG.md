@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* BraintreeCore
+  * Send `paypal_context_id` in `analytics_event` to PayPal's analytics service (FPTI) when available
 * Venmo
   * Add `setIsFinalAmount()` to `VenmoRequest`
 * ThreeDSecure
