@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultRegistry;
@@ -35,6 +36,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
+
+import junit.framework.Assert;
+import junit.framework.TestCase;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -431,6 +435,82 @@ public class VenmoClientUnitTest {
         verify(venmoTokenizeAccountCallback).onResult(captor.capture());
         assertEquals("Venmo is not installed", captor.getValue().getMessage());
         verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
+    }
+
+    @Test
+    public void tokenizeVenmoAccount_whenFallbackToWebTrueAndAppInstalled_appSwitchIsSuccessful() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .authorizationSuccess(clientToken)
+                .build();
+
+        VenmoApi venmoApi = new MockVenmoApiBuilder()
+                .createPaymentContextSuccess("venmo-payment-context-id")
+                .build();
+
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
+        request.setFallbackToWeb(true);
+
+        VenmoClient sut = new VenmoClient(null, null, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.tokenizeVenmoAccount(activity, request);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(activity).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.VENMO));
+        assertEquals("com.venmo/com.venmo.controller.SetupMerchantActivity",
+                captor.getValue().getComponent().flattenToString());
+    }
+
+    @Test
+    public void tokenizeVenmoAccount_whenFallbackToWebTrueAndAppNotInstalled_browserSwitchIsSuccessful() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .authorizationSuccess(clientToken)
+                .build();
+
+        VenmoApi venmoApi = new MockVenmoApiBuilder()
+                .createPaymentContextSuccess("venmo-payment-context-id")
+                .build();
+
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
+        request.setFallbackToWeb(true);
+
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(false);
+
+        VenmoClient sut = new VenmoClient(null, null, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.tokenizeVenmoAccount(activity, request);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(activity).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.VENMO));
+        assertEquals("com.venmo/com.venmo.controller.SetupMerchantActivity",
+                captor.getValue().getComponent().flattenToString());
+    }
+
+    @Test
+    public void startAppLinkFlow_whenDataIsValid_returnsCorrectUri() throws JSONException, BrowserSwitchException {
+        braintreeClient = new MockBraintreeClientBuilder()
+                .returnUrlScheme("com.example")
+                .build();
+
+        Configuration configuration = mock(Configuration.class);
+        VenmoIntentData venmoIntentData = new VenmoIntentData(configuration, "fake-profile-id", "fake-payment-context-id", "fake-session-id", "custom");
+
+        VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.startAppLinkFlow(activity, venmoIntentData);
+        ArgumentCaptor<BrowserSwitchOptions> captor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
+        verify(braintreeClient).startBrowserSwitch(same(activity), captor.capture());
+
+        BrowserSwitchOptions browserSwitchOptions = captor.getValue();
+        assertEquals(BraintreeRequestCodes.VENMO, browserSwitchOptions.getRequestCode());
+        assertEquals("com.example", browserSwitchOptions.getReturnUrlScheme());
+
+        Uri url = browserSwitchOptions.getUrl();
+        // TODO: figure out why null?
+        assertEquals("com.example://x-callback-url/vzero/auth/venmo/success", url.getQueryParameter("x-success"));
+        assertEquals("com.example://x-callback-url/vzero/auth/venmo/error", url.getQueryParameter("x-error"));
+        assertEquals("com.example://x-callback-url/vzero/auth/venmo/cancel", url.getQueryParameter("x-cancel"));
+        assertEquals("fake-profile-id", url.getQueryParameter("braintree_merchant_id"));
+        assertEquals("fake-payment-context-id", url.getQueryParameter("resource_id"));
+        assertEquals("MOBILE_APP", url.getQueryParameter("customerClient"));
     }
 
     @Test
@@ -1495,5 +1575,122 @@ public class VenmoClientUnitTest {
 
         verify(listener).onVenmoFailure(error);
         verify(braintreeClient).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.failed"));
+    }
+
+    @Test
+    public void setListener_whenPendingBrowserSwitchResultExists_deliversResultToListener_andSetsPendingResultNull() throws JSONException {
+        VenmoAccountNonce nonce = mock(VenmoAccountNonce.class);
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorizationSuccess(clientToken)
+                .build();
+
+        VenmoApi venmoApi = new MockVenmoApiBuilder()
+                .createNonceFromPaymentContextSuccess(nonce)
+                .build();
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchStatus.SUCCESS);
+
+        String successUrl = "sample-scheme://x-callback-url/vzero/auth/venmo/success?resource_id=a-resource-id";
+        when(browserSwitchResult.getRequestMetadata()).thenReturn(new JSONObject()
+                .put("deepLinkUrl", successUrl)
+        );
+
+        Uri uri = Uri.parse(successUrl);
+        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(uri);
+
+        VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.pendingBrowserSwitchResult = browserSwitchResult;
+        sut.setListener(listener);
+
+        verify(listener).onVenmoSuccess(same(nonce));
+        verify(listener, never()).onVenmoFailure(any(Exception.class));
+        TestCase.assertNull(sut.pendingBrowserSwitchResult);
+    }
+
+    @Test
+    public void setListener_whenPendingBrowserSwitchResultDoesNotExist_doesNotInvokeListener() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .build();
+
+        VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.pendingBrowserSwitchResult = null;
+        sut.setListener(listener);
+
+        verify(listener, never()).onVenmoSuccess(any(VenmoAccountNonce.class));
+        verify(listener, never()).onVenmoFailure(any(Exception.class));
+
+        TestCase.assertNull(sut.pendingBrowserSwitchResult);
+    }
+
+    @Test
+    public void onBrowserSwitchResult_whenBrowserSwitchStatusCanceled_returnsExceptionToCallback() throws BraintreeException {
+        BrowserSwitchResult browserSwitchResult =
+                new BrowserSwitchResult(BrowserSwitchStatus.CANCELED, null, null);
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+
+        VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.setListener(listener);
+        sut.onBrowserSwitchResult(browserSwitchResult);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(listener).onVenmoFailure(captor.capture());
+        verify(listener, never()).onVenmoSuccess(any(VenmoAccountNonce.class));
+
+        Exception exception = captor.getValue();
+        Assert.assertTrue(exception instanceof UserCanceledException);
+        assertEquals("User canceled Venmo.", exception.getMessage());
+        org.junit.Assert.assertFalse(((UserCanceledException) exception).isExplicitCancelation());
+    }
+
+    @Test
+    public void onBrowserSwitchResult_whenDeepLinkUriContainsCanceled_returnsExceptionToCallback() throws BraintreeException {
+        BrowserSwitchResult browserSwitchResult =
+                new BrowserSwitchResult(BrowserSwitchStatus.SUCCESS, null, Uri.parse("sample-scheme://x-callback-url/vzero/auth/venmo/cancel"));
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+
+        VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.setListener(listener);
+        sut.onBrowserSwitchResult(browserSwitchResult);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(listener).onVenmoFailure(captor.capture());
+        verify(listener, never()).onVenmoSuccess(any(VenmoAccountNonce.class));
+
+        Exception exception = captor.getValue();
+        Assert.assertTrue(exception instanceof UserCanceledException);
+        assertEquals("User canceled Venmo.", exception.getMessage());
+    }
+
+    @Test
+    public void onBrowserSwitchResult_whenDeepLinkUriContainsError_returnsExceptionToCallback() throws BraintreeException {
+        BrowserSwitchResult browserSwitchResult =
+                new BrowserSwitchResult(BrowserSwitchStatus.SUCCESS, null, Uri.parse("sample-scheme://x-callback-url/vzero/auth/venmo/error"));
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+
+        VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.setListener(listener);
+        sut.onBrowserSwitchResult(browserSwitchResult);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(listener).onVenmoFailure(captor.capture());
+        verify(listener, never()).onVenmoSuccess(any(VenmoAccountNonce.class));
+
+        Exception exception = captor.getValue();
+        Assert.assertTrue(exception instanceof Exception);
+        assertEquals("Error returned from Venmo.", exception.getMessage());
+    }
+
+    @Test
+    public void onBrowserSwitchResult_whenListenerNull_setsPendingBrowserSwitchResult_andDoesNotDeliver() throws BraintreeException {
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+
+        VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.onBrowserSwitchResult(browserSwitchResult);
+
+        verify(listener, never()).onVenmoFailure(any(Exception.class));
+        verify(listener, never()).onVenmoSuccess(any(VenmoAccountNonce.class));
     }
 }

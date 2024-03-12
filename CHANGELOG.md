@@ -1,11 +1,19 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.42.0 (2024-03-12)
 
 * PayPal
   * Add optional property `PayPalVaultRequest.setUserAuthenticationEmail()`
 * Venmo
   * Add `setIsFinalAmount()` to `VenmoRequest`
+  * Add `setFallbackToWeb()` to `VenmoRequest`
+    * If set to `true` customers will fallback to a web based Venmo flow if the Venmo app is not installed
+    * This method uses App Links instead of Deep Links
+  * Add `VenmoClient#parseBrowserSwitchResult(Context, Intent)` method
+  * Add `VenmoClient#clearActiveBrowserSwitchRequests(Context)` method
+  * Add `VenmoClient#onBrowserSwitchResult(BrowserSwitchResult, VenmoOnActivityResultCallback)` method
+* ThreeDSecure
+  * Call cleanup method to resolve `Cardinal.getInstance` memory leak
 
 ## 4.41.0 (2024-01-18)
 
