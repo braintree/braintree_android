@@ -1,4 +1,4 @@
-package com.braintreepayments.americanexpress
+package com.braintreepayments.api.americanexpress
 
 internal object AmericanExpressAnalytics {
 

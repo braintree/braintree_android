@@ -10,7 +10,7 @@ import org.robolectric.RobolectricTestRunner;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 
-import com.braintreepayments.americanexpress.AmericanExpressRewardsBalance;
+import com.braintreepayments.api.americanexpress.AmericanExpressRewardsBalance;
 
 @RunWith(RobolectricTestRunner.class)
 public class AmericanExpressRewardsBalanceUnitTest {

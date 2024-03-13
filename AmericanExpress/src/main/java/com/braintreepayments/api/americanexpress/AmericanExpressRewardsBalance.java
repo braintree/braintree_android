@@ -1,8 +1,9 @@
-package com.braintreepayments.americanexpress;
+package com.braintreepayments.api.americanexpress;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 
 import com.braintreepayments.api.Json;
 
@@ -40,7 +41,8 @@ public class AmericanExpressRewardsBalance implements Parcelable {
      * @return The {@link AmericanExpressRewardsBalance} with rewards balance data.
      * @throws JSONException when parsing fails.
      */
-    static AmericanExpressRewardsBalance fromJson(String jsonString) throws JSONException {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public static AmericanExpressRewardsBalance fromJson(String jsonString) throws JSONException {
         JSONObject json = new JSONObject(jsonString);
 
         AmericanExpressRewardsBalance rewardsBalance = new AmericanExpressRewardsBalance();

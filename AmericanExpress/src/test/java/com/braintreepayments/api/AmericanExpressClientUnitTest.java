@@ -5,15 +5,14 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.braintreepayments.americanexpress.AmericanExpressAnalytics;
-import com.braintreepayments.americanexpress.AmericanExpressClient;
-import com.braintreepayments.americanexpress.AmericanExpressGetRewardsBalanceCallback;
-import com.braintreepayments.americanexpress.AmericanExpressResult;
-import com.braintreepayments.americanexpress.AmericanExpressRewardsBalance;
+import com.braintreepayments.api.americanexpress.AmericanExpressAnalytics;
+import com.braintreepayments.api.americanexpress.AmericanExpressClient;
+import com.braintreepayments.api.americanexpress.AmericanExpressGetRewardsBalanceCallback;
+import com.braintreepayments.api.americanexpress.AmericanExpressResult;
+import com.braintreepayments.api.americanexpress.AmericanExpressRewardsBalance;
 
 import org.junit.Before;
 import org.junit.Test;
