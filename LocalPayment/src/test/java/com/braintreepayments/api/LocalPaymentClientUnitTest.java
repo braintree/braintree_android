@@ -217,6 +217,42 @@ public class LocalPaymentClientUnitTest {
         verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.create.succeeded", null);
     }
 
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+        LocalPaymentResult localPaymentResult = mock(LocalPaymentResult.class);
+        when(localPaymentResult.getPaymentId()).thenReturn("");
+
+        LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
+                .createPaymentMethodSuccess(localPaymentResult)
+                .build();
+
+        LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
+        LocalPaymentRequest request = getIdealLocalPaymentRequest();
+        sut.startPayment(request, localPaymentStartCallback);
+
+        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.start-payment.selected", null);
+        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.create.succeeded", null);
+    }
+
+
+    @Test
+    public void startPayment_success__withPaymentId_sendsAnalyticsEvents() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .build();
+        LocalPaymentResult localPaymentResult = mock(LocalPaymentResult.class);
+        when(localPaymentResult.getPaymentId()).thenReturn("some-paypal-context-id");
+
+        LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
+                .createPaymentMethodSuccess(localPaymentResult)
+                .build();
+
+        LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
+        LocalPaymentRequest request = getIdealLocalPaymentRequest();
+        sut.startPayment(request, localPaymentStartCallback);
+
+        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.start-payment.selected", null);
+        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.create.succeeded", "some-paypal-context-id");
+    }
     @Test
     public void startPayment_configurationFetchError_forwardsErrorToCallback() {
         Exception configException = new Exception(("Configuration not fetched"));
