@@ -9,6 +9,7 @@ import io.mockk.*
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -27,6 +28,7 @@ class AnalyticsClientUnitTest {
     private lateinit var deviceInspector: DeviceInspector
     private lateinit var eventName: String
     private lateinit var sessionId: String
+    private lateinit var payPalContextId: String
     private lateinit var integration: String
     private lateinit var workManager: WorkManager
     private lateinit var analyticsDatabase: AnalyticsDatabase
@@ -40,6 +42,7 @@ class AnalyticsClientUnitTest {
         timestamp = 123
         eventName = "sample-event-name"
         sessionId = "sample-session-id"
+        payPalContextId = "sample-paypal-context-id"
         integration = "sample-integration"
         authorization = fromString(Fixtures.TOKENIZATION_KEY)
         context = ApplicationProvider.getApplicationContext()
@@ -142,6 +145,7 @@ class AnalyticsClientUnitTest {
 
         val inputData = Data.Builder()
             .putString(AnalyticsClient.WORK_INPUT_KEY_EVENT_NAME, eventName)
+            .putString(AnalyticsClient.WORK_INPUT_KEY_PAYPAL_CONTEXT_ID, payPalContextId)
             .putLong(AnalyticsClient.WORK_INPUT_KEY_TIMESTAMP, timestamp)
             .build()
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
@@ -149,6 +153,7 @@ class AnalyticsClientUnitTest {
 
         val event = analyticsEventSlot.captured
         assertEquals("sample-event-name", event.name)
+        assertEquals("sample-paypal-context-id", event.payPalContextId)
         assertEquals(123, event.timestamp)
     }
 
@@ -187,7 +192,7 @@ class AnalyticsClientUnitTest {
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
         events.add(AnalyticsEvent("event0", null, 123))
-        events.add(AnalyticsEvent("event1", null, 456))
+        events.add(AnalyticsEvent("event1", payPalContextId, 456))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val analyticsJSONSlot = slot<String>()
@@ -206,9 +211,11 @@ class AnalyticsClientUnitTest {
         val eventOne = array.getJSONObject(0)
         assertEquals("event0", eventOne.getString("kind"))
         assertEquals(123, eventOne.getString("timestamp").toLong())
+        assertTrue(eventOne.isNull("payPalContextId"))
 
         val eventTwo = array.getJSONObject(1)
         assertEquals("event1", eventTwo.getString("kind"))
+        assertEquals(payPalContextId, eventTwo.getString("payPalContextId"))
         assertEquals(456, eventTwo.getString("timestamp").toLong())
     }
 
@@ -304,7 +311,7 @@ class AnalyticsClientUnitTest {
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
         events.add(AnalyticsEvent("event0", null, 123))
-        events.add(AnalyticsEvent("event1", null, 456))
+        events.add(AnalyticsEvent("event1", payPalContextId, 456))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
@@ -331,7 +338,7 @@ class AnalyticsClientUnitTest {
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
         events.add(AnalyticsEvent("event0", null, 123))
-        events.add(AnalyticsEvent("event1", null, 456))
+        events.add(AnalyticsEvent("event1", payPalContextId, 456))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val httpError = Exception("error")
@@ -378,6 +385,7 @@ class AnalyticsClientUnitTest {
         val eventOne = array.getJSONObject(0)
         assertEquals("android.crash", eventOne.getString("kind"))
         assertEquals(123, eventOne.getString("timestamp").toLong())
+        assertTrue(eventOne.isNull("payPalContextId"))
     }
 
     @Test
