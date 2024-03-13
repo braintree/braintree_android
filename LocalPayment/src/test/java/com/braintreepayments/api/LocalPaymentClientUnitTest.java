@@ -217,7 +217,11 @@ public class LocalPaymentClientUnitTest {
         verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.create.succeeded", null);
     }
 
+    @Test
+    public void startPayment_success_withEmptyPaymentId_sendsAnalyticsEvents() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .build();
         LocalPaymentResult localPaymentResult = mock(LocalPaymentResult.class);
         when(localPaymentResult.getPaymentId()).thenReturn("");
 
