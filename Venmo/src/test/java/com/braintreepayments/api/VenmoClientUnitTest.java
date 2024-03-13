@@ -220,6 +220,44 @@ public class VenmoClientUnitTest {
     }
 
     @Test
+    public void tokenizeVenmoAccount_whenCreatePaymentContextSucceeds_withObserver_withEmptyPaymentContextId_launchesObserverWithVenmoIntentData_andSendsAnalytics() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .sessionId("session-id")
+                .integration("custom")
+                .authorizationSuccess(clientToken)
+                .build();
+
+        VenmoApi venmoApi = new MockVenmoApiBuilder()
+                .createPaymentContextSuccess("")
+                .build();
+
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
+
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
+        request.setProfileId("sample-venmo-merchant");
+        request.setShouldVault(false);
+
+        VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        VenmoLifecycleObserver observer = mock(VenmoLifecycleObserver.class);
+        sut.observer = observer;
+        sut.tokenizeVenmoAccount(activity, request);
+
+        ArgumentCaptor<VenmoIntentData> captor = ArgumentCaptor.forClass(VenmoIntentData.class);
+        verify(observer).launch(captor.capture());
+
+        VenmoIntentData intent = captor.getValue();
+        assertEquals("", intent.getPaymentContextId());
+        assertSame(venmoEnabledConfiguration, intent.getConfiguration());
+        assertEquals("custom", intent.getIntegrationType());
+        assertEquals("sample-venmo-merchant", intent.getProfileId());
+        assertEquals("session-id", intent.getSessionId());
+
+        verify(sharedPrefsWriter).persistVenmoVaultOption(activity, false);
+        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.started", null);
+    }
+
+    @Test
     public void tokenizeVenmoAccount_whenCreatePaymentContextFails_collectAddressWithEcdDisabled() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
@@ -276,6 +314,35 @@ public class VenmoClientUnitTest {
         InOrder inOrder = Mockito.inOrder(activity, braintreeClient);
 
         inOrder.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.started", "venmo-payment-context-id");
+    }
+
+    @Test
+    public void tokenizeVenmoAccount_whenCreatePaymentContext_withEmptyPaymentContextId_collectAddressWithEcdEnabled() throws JSONException {
+        venmoEnabledConfiguration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO_ECD_ENABLED);
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .sessionId("session-id")
+                .integration("custom")
+                .authorizationSuccess(clientToken)
+                .build();
+
+        VenmoApi venmoApi = new MockVenmoApiBuilder()
+                .createPaymentContextSuccess("")
+                .build();
+
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(true);
+
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
+        request.setProfileId("sample-venmo-merchant");
+        request.setCollectCustomerBillingAddress(true);
+
+        VenmoClient sut = new VenmoClient(null, null, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.setListener(listener);
+        sut.tokenizeVenmoAccount(activity, request);
+
+        InOrder inOrder = Mockito.inOrder(activity, braintreeClient);
+
+        inOrder.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.started", null);
     }
 
     @Test
