@@ -121,6 +121,7 @@
   * American Express
     * Change parameters of `AmericanExpressGetRewardsBalanceCallback`
     * Add `AmericanExpressResult`
+    * Update package name to `com.braintreepayments.americanexpress`
   * Samsung Pay
     * Remove entire Samsung Pay module
   * PayPal Native Checkout

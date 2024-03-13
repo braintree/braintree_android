@@ -1,8 +1,11 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.RestrictTo;
+
 import org.json.JSONObject;
 
-class Json {
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+public class Json {
 
     /**
      * Returns the value mapped by name if it exists, coercing it if necessary, or fallback if no such mapping exists.
@@ -15,7 +18,8 @@ class Json {
      * @param fallback
      * @return {@link String}
      */
-    static String optString(JSONObject json, String name, String fallback) {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public static String optString(JSONObject json, String name, String fallback) {
         if (json == null || json.isNull(name)) {
             return fallback;
         } else {
@@ -23,7 +27,8 @@ class Json {
         }
     }
 
-    static Boolean optBoolean(JSONObject json, String name, Boolean fallback) {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public static Boolean optBoolean(JSONObject json, String name, Boolean fallback) {
         if (json == null || json.isNull(name)) {
             return fallback;
         } else {

@@ -1,10 +1,14 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.americanexpress;
 
 import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
 import androidx.annotation.VisibleForTesting;
+
+import com.braintreepayments.api.ApiClient;
+import com.braintreepayments.api.BraintreeClient;
 
 import org.json.JSONException;
 
@@ -28,7 +32,8 @@ public class AmericanExpressClient {
         this.braintreeClient = new BraintreeClient(context, authorization);
     }
 
-    @VisibleForTesting AmericanExpressClient(@NonNull BraintreeClient braintreeClient) {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public AmericanExpressClient(@NonNull BraintreeClient braintreeClient) {
         this.braintreeClient = braintreeClient;
     }
 

@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.americanexpress
 
 /**
  * Callback for receiving result of
