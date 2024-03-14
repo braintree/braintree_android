@@ -110,7 +110,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 val analyticsEventDao = analyticsDatabase.analyticsEventDao()
                 val events = analyticsEventDao.getAllEvents()
                 if (events.isNotEmpty()) {
-                    val metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration)
+                    val metadata = deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
                     val analyticsRequest = serializeEvents(authorization, events, metadata)
 
                     httpClient.post(
@@ -126,14 +126,19 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     }
 
     fun reportCrash(
-            context: Context?, sessionId: String?, integration: String?, authorization: Authorization?
+            context: Context?,
+            configuration: Configuration?,
+            sessionId: String?,
+            integration: String?,
+            authorization: Authorization?
     ) {
-        reportCrash(context, sessionId, integration, System.currentTimeMillis(), authorization)
+        reportCrash(context, configuration, sessionId, integration, System.currentTimeMillis(), authorization)
     }
 
     @VisibleForTesting
     fun reportCrash(
             context: Context?,
+            configuration: Configuration?,
             sessionId: String?,
             integration: String?,
             timestamp: Long,
@@ -142,7 +147,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         if (authorization == null) {
             return
         }
-        val metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration)
+        val metadata = deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         val event = AnalyticsEvent("android.crash", null, timestamp)
         val events = listOf(event)
         try {
