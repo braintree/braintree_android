@@ -649,11 +649,14 @@ public class VenmoClient {
 
     @VisibleForTesting
     void startAppLinkFlow(FragmentActivity activity, VenmoIntentData input) throws JSONException, BrowserSwitchException {
-        JSONObject braintreeData = new MetadataBuilder()
+        JSONObject metadata = new MetadataBuilder()
                 .sessionId(input.getSessionId())
                 .integration(input.getIntegrationType())
                 .version()
                 .build();
+
+        JSONObject braintreeData = new JSONObject()
+                .put("_meta", metadata);
 
         String applicationName = "ApplicationNameUnknown";
         Context context = braintreeClient.getApplicationContext();
