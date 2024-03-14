@@ -21,7 +21,6 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     private val workManager: WorkManager,
     private val deviceInspector: DeviceInspector
 ) {
-    private var lastKnownAnalyticsUrl: String? = null
 
     constructor(context: Context) : this(
         BraintreeHttpClient(),
@@ -37,7 +36,6 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         integration: String?,
         authorization: Authorization
     ): UUID {
-        lastKnownAnalyticsUrl = configuration.analyticsUrl
         scheduleAnalyticsWrite(event, authorization)
         return scheduleAnalyticsUpload(configuration, authorization, sessionId, integration)
     }
@@ -114,12 +112,11 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 if (events.isNotEmpty()) {
                     val metadata = deviceInspector.getDeviceMetadata(context, sessionId, integration)
                     val analyticsRequest = serializeEvents(authorization, events, metadata)
-                    configuration?.analyticsUrl?.let { analyticsUrl ->
-                        httpClient.post(
-                            analyticsUrl, analyticsRequest.toString(), configuration, authorization
-                        )
-                        analyticsEventDao.deleteEvents(events)
-                    }
+
+                    httpClient.post(
+                        FPTI_ANALYTICS_URL, analyticsRequest.toString(), configuration, authorization
+                    )
+                    analyticsEventDao.deleteEvents(events)
                 }
                 ListenableWorker.Result.success()
             } catch (e: Exception) {
@@ -150,15 +147,13 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         val events = listOf(event)
         try {
             val analyticsRequest = serializeEvents(authorization, events, metadata)
-            lastKnownAnalyticsUrl?.let { analyticsUrl ->
                 httpClient.post(
-                    analyticsUrl,
+                    FPTI_ANALYTICS_URL,
                     analyticsRequest.toString(),
                     null,
                     authorization,
                     HttpNoResponse()
                 )
-            }
         } catch (e: JSONException) { /* ignored */
         }
     }
@@ -191,6 +186,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     }
 
     companion object {
+        private const val FPTI_ANALYTICS_URL = "https://api-m.paypal.com/v1/tracking/batch/events"
         private const val ANALYTICS_KEY = "analytics"
         private const val PAYPAL_CONTEXT_ID_KEY = "payPalContextId"
         private const val KIND_KEY = "kind"
