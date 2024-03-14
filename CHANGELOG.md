@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Venmo
+  * Fix bug where SDK is not sending metadata as expected when creating payment context or constructing App Link URL
+
 ## 4.42.0 (2024-03-12)
 
 * Venmo
