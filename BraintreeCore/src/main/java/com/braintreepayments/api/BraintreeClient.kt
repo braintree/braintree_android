@@ -209,30 +209,34 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
+    @JvmOverloads
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun sendAnalyticsEvent(eventName: String) {
+    fun sendAnalyticsEvent(eventName: String, payPalContextId: String? = null) {
         getAuthorization { authorization, _ ->
             if (authorization != null) {
                 getConfiguration { configuration, _ ->
-                    sendAnalyticsEvent(eventName, configuration, authorization)
+                    val event = AnalyticsEvent(eventName, payPalContextId)
+                    sendAnalyticsEvent(event, configuration, authorization)
                 }
             }
         }
     }
 
     private fun sendAnalyticsEvent(
-        eventName: String,
+        event: AnalyticsEvent,
         configuration: Configuration?,
         authorization: Authorization
     ) {
-        if (isAnalyticsEnabled(configuration)) {
-            analyticsClient.sendEvent(
-                configuration!!,
-                eventName,
-                sessionId,
-                integrationType,
-                authorization
-            )
+        configuration?.let {
+            if (isAnalyticsEnabled(it)) {
+                analyticsClient.sendEvent(
+                    it,
+                    event,
+                    sessionId,
+                    integrationType,
+                    authorization
+                )
+            }
         }
     }
 

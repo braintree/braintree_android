@@ -39,9 +39,10 @@ public class AnalyticsClientTest {
     public void sendsCorrectlyFormattedAnalyticsRequestToSandbox() throws Exception {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_SANDBOX_ANALYTICS);
+        AnalyticsEvent event = new AnalyticsEvent("event.started", null, 123);
 
         AnalyticsClient sut = new AnalyticsClient(context);
-        UUID workSpecId = sut.sendEvent(configuration, "event.started", "sessionId", "custom", 123, authorization);
+        UUID workSpecId = sut.sendEvent(configuration, event, "sessionId", "custom", authorization);
 
         WorkInfo workInfoBeforeDelay = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
         assertEquals(workInfoBeforeDelay.getState(), WorkInfo.State.ENQUEUED);
@@ -57,9 +58,10 @@ public class AnalyticsClientTest {
     public void sendsCorrectlyFormattedAnalyticsRequestToProd() throws Exception {
         Authorization authorization = Authorization.fromString(Fixtures.PROD_TOKENIZATION_KEY);
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PROD_ANALYTICS);
+        AnalyticsEvent event = new AnalyticsEvent("event.started", null, 123);
 
         AnalyticsClient sut = new AnalyticsClient(context);
-        UUID workSpecId = sut.sendEvent(configuration, "event.started", "sessionId", "custom", 123, authorization);
+        UUID workSpecId = sut.sendEvent(configuration, event, "sessionId", "custom", authorization);
 
         WorkInfo workInfoBeforeDelay = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
         assertEquals(workInfoBeforeDelay.getState(), WorkInfo.State.ENQUEUED);

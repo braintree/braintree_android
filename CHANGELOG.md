@@ -2,6 +2,8 @@
 
 ## 4.42.0 (2024-03-12)
 
+* BraintreeCore
+  * Send `paypal_context_id` in `analytics_event` to PayPal's analytics service (FPTI) when available
 * Venmo
   * Add `setIsFinalAmount()` to `VenmoRequest`
   * Add `setFallbackToWeb()` to `VenmoRequest`
