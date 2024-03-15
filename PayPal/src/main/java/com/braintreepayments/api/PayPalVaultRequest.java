@@ -38,10 +38,11 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
      *
      * @param userAuthenticationEmail - email address of the payer
      */
-    public void setUserAuthenticationEmail(String userAuthenticationEmail) {
+    public void setUserAuthenticationEmail(@Nullable String userAuthenticationEmail) {
         this.userAuthenticationEmail = userAuthenticationEmail;
     }
 
+    @Nullable
     public String getUserAuthenticationEmail() {
         return this.userAuthenticationEmail;
     }
