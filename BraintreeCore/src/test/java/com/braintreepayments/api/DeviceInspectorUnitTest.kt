@@ -56,7 +56,6 @@ class DeviceInspectorUnitTest {
         assertEquals("Android", metadata.toJSON().getString("platform"))
     }
 
-
     @Test
     @Throws(JSONException::class)
     fun getDeviceMetadata_returnsEventSource() {

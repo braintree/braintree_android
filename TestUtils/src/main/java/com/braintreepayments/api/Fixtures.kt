@@ -999,7 +999,7 @@ object Fixtures {
           "merchantAccountId": "integration_merchant_account_id"
         }
     """
-    
+
     // language=JSON
     const val CONFIGURATION_WITHOUT_GOOGLE_PAY = """
         {
