@@ -228,15 +228,13 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         authorization: Authorization
     ) {
         configuration?.let {
-            if (isAnalyticsEnabled(it)) {
-                analyticsClient.sendEvent(
-                    it,
-                    event,
-                    sessionId,
-                    integrationType,
-                    authorization
-                )
-            }
+            analyticsClient.sendEvent(
+                it,
+                event,
+                sessionId,
+                integrationType,
+                authorization
+            )
         }
     }
 
@@ -435,11 +433,11 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     fun reportCrash() = authorizationLoader.authorizationFromCache?.let { authorization ->
         getConfiguration { configuration, _ ->
             analyticsClient.reportCrash(
-                    applicationContext,
-                    configuration,
-                    sessionId,
-                    integrationType,
-                    authorization
+                applicationContext,
+                configuration,
+                sessionId,
+                integrationType,
+                authorization
             )
         }
     }
@@ -474,16 +472,5 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     open fun launchesBrowserSwitchAsNewTask(launchesBrowserSwitchAsNewTask: Boolean) {
         this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask
-    }
-
-    companion object {
-
-        /**
-         * @suppress
-         */
-        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-        fun isAnalyticsEnabled(configuration: Configuration?): Boolean {
-            return configuration != null && configuration.isAnalyticsEnabled
-        }
     }
 }
