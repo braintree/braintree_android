@@ -16,45 +16,45 @@ import java.util.concurrent.TimeUnit
 
 @Suppress("SwallowedException", "TooGenericExceptionCaught")
 internal class AnalyticsClient @VisibleForTesting constructor(
-        private val httpClient: BraintreeHttpClient,
-        private val analyticsDatabase: AnalyticsDatabase,
-        private val workManager: WorkManager,
-        private val deviceInspector: DeviceInspector
+    private val httpClient: BraintreeHttpClient,
+    private val analyticsDatabase: AnalyticsDatabase,
+    private val workManager: WorkManager,
+    private val deviceInspector: DeviceInspector
 ) {
 
     constructor(context: Context) : this(
-            BraintreeHttpClient(),
-            getInstance(context.applicationContext),
-            WorkManager.getInstance(context.applicationContext),
-            DeviceInspector()
+        BraintreeHttpClient(),
+        getInstance(context.applicationContext),
+        WorkManager.getInstance(context.applicationContext),
+        DeviceInspector()
     )
 
     fun sendEvent(
-            configuration: Configuration,
-            event: AnalyticsEvent,
-            sessionId: String?,
-            integration: String?,
-            authorization: Authorization
+        configuration: Configuration,
+        event: AnalyticsEvent,
+        sessionId: String?,
+        integration: String?,
+        authorization: Authorization
     ): UUID {
         scheduleAnalyticsWrite(event, authorization)
         return scheduleAnalyticsUpload(configuration, authorization, sessionId, integration)
     }
 
     private fun scheduleAnalyticsWrite(
-            event: AnalyticsEvent, authorization: Authorization
+        event: AnalyticsEvent, authorization: Authorization
     ) {
         val inputData = Data.Builder()
-                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
-                .putString(WORK_INPUT_KEY_EVENT_NAME, "android.${event.name}")
-                .putLong(WORK_INPUT_KEY_TIMESTAMP, event.timestamp)
-                .build()
+            .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+            .putString(WORK_INPUT_KEY_EVENT_NAME, "android.${event.name}")
+            .putLong(WORK_INPUT_KEY_TIMESTAMP, event.timestamp)
+            .build()
 
         val analyticsWorkRequest =
-                OneTimeWorkRequest.Builder(AnalyticsWriteToDbWorker::class.java)
-                        .setInputData(inputData)
-                        .build()
+            OneTimeWorkRequest.Builder(AnalyticsWriteToDbWorker::class.java)
+                .setInputData(inputData)
+                .build()
         workManager.enqueueUniqueWork(
-                WORK_NAME_ANALYTICS_WRITE, ExistingWorkPolicy.APPEND_OR_REPLACE, analyticsWorkRequest
+            WORK_NAME_ANALYTICS_WRITE, ExistingWorkPolicy.APPEND_OR_REPLACE, analyticsWorkRequest
         )
     }
 
@@ -74,24 +74,24 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     }
 
     private fun scheduleAnalyticsUpload(
-            configuration: Configuration,
-            authorization: Authorization,
-            sessionId: String?,
-            integration: String?
+        configuration: Configuration,
+        authorization: Authorization,
+        sessionId: String?,
+        integration: String?
     ): UUID {
         val inputData = Data.Builder()
-                .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
-                .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
-                .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
-                .putString(WORK_INPUT_KEY_INTEGRATION, integration)
-                .build()
+            .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
+            .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
+            .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
+            .putString(WORK_INPUT_KEY_INTEGRATION, integration)
+            .build()
 
         val analyticsWorkRequest = OneTimeWorkRequest.Builder(AnalyticsUploadWorker::class.java)
-                .setInitialDelay(DELAY_TIME_SECONDS, TimeUnit.SECONDS)
-                .setInputData(inputData)
-                .build()
+            .setInitialDelay(DELAY_TIME_SECONDS, TimeUnit.SECONDS)
+            .setInputData(inputData)
+            .build()
         workManager.enqueueUniqueWork(
-                WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
+            WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
         )
         return analyticsWorkRequest.id
     }
@@ -102,7 +102,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         val sessionId = inputData.getString(WORK_INPUT_KEY_SESSION_ID)
         val integration = inputData.getString(WORK_INPUT_KEY_INTEGRATION)
         val isMissingInputData =
-                listOf(configuration, authorization, sessionId, integration).contains(null)
+            listOf(configuration, authorization, sessionId, integration).contains(null)
         return if (isMissingInputData) {
             ListenableWorker.Result.failure()
         } else {
@@ -126,23 +126,23 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     }
 
     fun reportCrash(
-            context: Context?,
-            configuration: Configuration?,
-            sessionId: String?,
-            integration: String?,
-            authorization: Authorization?
+        context: Context?,
+        configuration: Configuration?,
+        sessionId: String?,
+        integration: String?,
+        authorization: Authorization?
     ) {
         reportCrash(context, configuration, sessionId, integration, System.currentTimeMillis(), authorization)
     }
 
     @VisibleForTesting
     fun reportCrash(
-            context: Context?,
-            configuration: Configuration?,
-            sessionId: String?,
-            integration: String?,
-            timestamp: Long,
-            authorization: Authorization?
+        context: Context?,
+        configuration: Configuration?,
+        sessionId: String?,
+        integration: String?,
+        timestamp: Long,
+        authorization: Authorization?
     ) {
         if (authorization == null) {
             return
@@ -153,11 +153,11 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         try {
             val analyticsRequest = serializeEvents(authorization, events, metadata)
             httpClient.post(
-                    FPTI_ANALYTICS_URL,
-                    analyticsRequest.toString(),
-                    null,
-                    authorization,
-                    HttpNoResponse()
+                FPTI_ANALYTICS_URL,
+                analyticsRequest.toString(),
+                null,
+                authorization,
+                HttpNoResponse()
             )
         } catch (e: JSONException) { /* ignored */
         }
@@ -165,9 +165,9 @@ internal class AnalyticsClient @VisibleForTesting constructor(
 
     @Throws(JSONException::class)
     private fun serializeEvents(
-            authorization: Authorization?,
-            events: List<AnalyticsEvent>,
-            metadata: DeviceMetadata
+        authorization: Authorization?,
+        events: List<AnalyticsEvent>,
+        metadata: DeviceMetadata
     ): JSONObject {
         val batchParamsJSON = metadata.toJSON()
         authorization?.let {
@@ -184,10 +184,10 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         val eventParamsJSON = JSONArray()
         for (analyticsEvent in events) {
             val singleEventJSON = JSONObject()
-                    .put(EVENT_NAME_KEY, analyticsEvent.name)
-                    .putOpt(PAYPAL_CONTEXT_ID_KEY, analyticsEvent.payPalContextId)
-                    .put(TIMESTAMP_KEY, analyticsEvent.timestamp)
-                    .put(TENANT_NAME_KEY, "Braintree")
+                .put(EVENT_NAME_KEY, analyticsEvent.name)
+                .putOpt(PAYPAL_CONTEXT_ID_KEY, analyticsEvent.payPalContextId)
+                .put(TIMESTAMP_KEY, analyticsEvent.timestamp)
+                .put(TENANT_NAME_KEY, "Braintree")
             eventParamsJSON.put(singleEventJSON)
         }
         eventsContainerJSON.put(EVENT_PARAMS_KEY, eventParamsJSON)
@@ -221,17 +221,17 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         private const val DELAY_TIME_SECONDS = 30L
 
         private fun getAuthorizationFromData(inputData: Data?): Authorization? =
-                inputData?.getString(WORK_INPUT_KEY_AUTHORIZATION)?.let {
-                    Authorization.fromString(it)
-                }
+            inputData?.getString(WORK_INPUT_KEY_AUTHORIZATION)?.let {
+                Authorization.fromString(it)
+            }
 
         private fun getConfigurationFromData(inputData: Data?): Configuration? =
-                inputData?.getString(WORK_INPUT_KEY_CONFIGURATION)?.let {
-                    try {
-                        Configuration.fromJson(it)
-                    } catch (ignored: JSONException) {
-                        null
-                    }
+            inputData?.getString(WORK_INPUT_KEY_CONFIGURATION)?.let {
+                try {
+                    Configuration.fromJson(it)
+                } catch (ignored: JSONException) {
+                    null
                 }
+            }
     }
 }
