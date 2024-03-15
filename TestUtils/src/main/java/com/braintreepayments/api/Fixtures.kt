@@ -499,19 +499,6 @@ object Fixtures {
     """
 
     // language=JSON
-    const val CONFIGURATION_WITH_ANALYTICS = """
-        {
-            "clientApiUrl": "client_api_url",
-            "environment": "test",
-            "merchantId": "integration_merchant_id",
-            "merchantAccountId": "integration_merchant_account_id",
-            "analytics": {
-                "url": "analytics_url"
-            }
-        }
-    """
-
-    // language=JSON
     const val CONFIGURATION_WITH_GOOGLE_PAY = """
         {
           "clientApiUrl": "client_api_url",
@@ -647,19 +634,6 @@ object Fixtures {
             "merchantId": "integration_merchant_id",
             "merchantAccountId": "integration_merchant_account_id",
             "paypalEnabled": false
-        }
-    """
-
-    // language=JSON
-    const val CONFIGURATION_WITH_EMPTY_ANALYTICS_URL = """
-        {
-            "clientApiUrl": "client_api_url",
-            "environment": "test",
-            "merchantId": "integration_merchant_id",
-            "merchantAccountId": "integration_merchant_account_id",
-            "analytics": {
-                "url": ""
-            }
         }
     """
 
@@ -912,19 +886,6 @@ object Fixtures {
     """
 
     // language=JSON
-    const val CONFIGURATION_WITH_PROD_ANALYTICS = """
-        {
-            "clientApiUrl": "client_api_url",
-            "environment": "production",
-            "merchantId": "some-merchant-id",
-            "merchantAccountId": "some-merchant-account-id",
-            "analytics": {
-                "url": "https://client-analytics.braintreegateway.com/abc"
-            }
-        }
-    """
-
-    // language=JSON
     const val CONFIGURATION_WITH_SAMSUNGPAY = """
         {
           "clientApiUrl": "client_api_url",
@@ -953,19 +914,6 @@ object Fixtures {
             "samsungAuthorization": "example-samsung-authorization",
             "environment": "SANDBOX"
           }
-        }
-    """
-
-    // language=JSON
-    const val CONFIGURATION_WITH_SANDBOX_ANALYTICS = """
-        {
-            "clientApiUrl": "client_api_url",
-            "environment": "test",
-            "merchantId": "some-merchant-id",
-            "merchantAccountId": "some-merchant-account-id",
-            "analytics": {
-                "url": "https://origin-analytics-sand.sandbox.braintree-api.com/abc"
-            }
         }
     """
 
@@ -1051,19 +999,7 @@ object Fixtures {
           "merchantAccountId": "integration_merchant_account_id"
         }
     """
-
-    // language=JSON
-    const val CONFIGURATION_WITHOUT_ANALYTICS = """
-        {
-            "clientApiUrl": "client_api_url",
-            "environment": "test",
-            "merchantId": "integration_merchant_id",
-            "merchantAccountId": "integration_merchant_account_id",
-            "challenges": ["cvv"],
-            "paypalEnabled": false
-        }
-    """
-
+    
     // language=JSON
     const val CONFIGURATION_WITHOUT_GOOGLE_PAY = """
         {
