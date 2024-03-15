@@ -4,43 +4,43 @@ import org.json.JSONException
 import org.json.JSONObject
 
 internal class DeviceMetadata internal constructor(
-        private var appId: String? = null,
-        private var appName: String? = null,
-        private var clientSDKVersion: String? = null,
-        private var clientOs: String? = null,
-        private var component: String? = null,
-        private var deviceManufacturer: String? = null,
-        private var deviceModel: String? = null,
-        private var dropInSDKVersion: String? = null,
-        private var environment: String? = null,
-        private var eventSource: String? = null,
-        private var integrationType: String? = null,
-        private var isSimulator: Boolean = false,
-        private var merchantAppVersion: String? = null,
-        private var merchantId: String? = null,
-        private var platform: String? = null,
-        private var sessionId: String? = null,
+    private var appId: String? = null,
+    private var appName: String? = null,
+    private var clientSDKVersion: String? = null,
+    private var clientOs: String? = null,
+    private var component: String? = null,
+    private var deviceManufacturer: String? = null,
+    private var deviceModel: String? = null,
+    private var dropInSDKVersion: String? = null,
+    private var environment: String? = null,
+    private var eventSource: String? = null,
+    private var integrationType: String? = null,
+    private var isSimulator: Boolean = false,
+    private var merchantAppVersion: String? = null,
+    private var merchantId: String? = null,
+    private var platform: String? = null,
+    private var sessionId: String? = null,
 ) {
 
     @Throws(JSONException::class)
     fun toJSON(): JSONObject {
         return JSONObject()
-                .put(APP_ID_KEY, appId)
-                .put(APP_NAME_KEY, appName)
-                .put(CLIENT_SDK_VERSION_KEY, clientSDKVersion)
-                .put(CLIENT_OS_KEY, clientOs)
-                .put(COMPONENT_KEY, component)
-                .put(DEVICE_MANUFACTURER_KEY, deviceManufacturer)
-                .put(DEVICE_MODEL_KEY, deviceModel)
-                .put(DROP_IN_SDK_VERSION, dropInSDKVersion)
-                .put(EVENT_SOURCE_KEY, eventSource)
-                .put(ENVIRONMENT_KEY, environment)
-                .put(INTEGRATION_TYPE_KEY, integrationType)
-                .put(IS_SIMULATOR_KEY, isSimulator)
-                .put(MERCHANT_APP_VERSION_KEY, merchantAppVersion)
-                .put(MERCHANT_ID_KEY, merchantId)
-                .put(PLATFORM_KEY, platform)
-                .put(SESSION_ID_KEY, sessionId)
+            .put(APP_ID_KEY, appId)
+            .put(APP_NAME_KEY, appName)
+            .put(CLIENT_SDK_VERSION_KEY, clientSDKVersion)
+            .put(CLIENT_OS_KEY, clientOs)
+            .put(COMPONENT_KEY, component)
+            .put(DEVICE_MANUFACTURER_KEY, deviceManufacturer)
+            .put(DEVICE_MODEL_KEY, deviceModel)
+            .put(DROP_IN_SDK_VERSION, dropInSDKVersion)
+            .put(EVENT_SOURCE_KEY, eventSource)
+            .put(ENVIRONMENT_KEY, environment)
+            .put(INTEGRATION_TYPE_KEY, integrationType)
+            .put(IS_SIMULATOR_KEY, isSimulator)
+            .put(MERCHANT_APP_VERSION_KEY, merchantAppVersion)
+            .put(MERCHANT_ID_KEY, merchantId)
+            .put(PLATFORM_KEY, platform)
+            .put(SESSION_ID_KEY, sessionId)
     }
 
     companion object {
