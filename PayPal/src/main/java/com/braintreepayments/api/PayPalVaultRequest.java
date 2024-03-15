@@ -63,9 +63,7 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
             parameters.put(DESCRIPTION_KEY, billingAgreementDescription);
         }
 
-        if (userAuthenticationEmail != null) {
-            parameters.put(PAYER_EMAIL_KEY, userAuthenticationEmail);
-        }
+        parameters.putOpt(PAYER_EMAIL_KEY, userAuthenticationEmail);
 
         JSONObject experienceProfile = new JSONObject();
         experienceProfile.put(NO_SHIPPING_KEY, !isShippingAddressRequired());
