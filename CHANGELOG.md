@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Move from Braintree to PayPal analytics service (FPTI)
+
 ## 4.42.0 (2024-03-12)
 
 * BraintreeCore
