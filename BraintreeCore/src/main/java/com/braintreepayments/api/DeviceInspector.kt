@@ -13,38 +13,38 @@ import androidx.annotation.VisibleForTesting
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class DeviceInspector @VisibleForTesting internal constructor(
-        private val appHelper: AppHelper,
-        private val signatureVerifier: SignatureVerifier,
+    private val appHelper: AppHelper,
+    private val signatureVerifier: SignatureVerifier,
 ) {
 
     constructor() : this(
-            AppHelper(),
-            SignatureVerifier(),
+        AppHelper(),
+        SignatureVerifier(),
     )
 
     internal fun getDeviceMetadata(
-            context: Context?,
-            configuration: Configuration?,
-            sessionId: String?,
-            integration: String?
+        context: Context?,
+        configuration: Configuration?,
+        sessionId: String?,
+        integration: String?
     ): DeviceMetadata {
         return DeviceMetadata(
-                appId = context?.packageName,
-                appName = getAppName(context),
-                clientSDKVersion = BuildConfig.VERSION_NAME,
-                clientOs = getAPIVersion(),
-                component = "braintreeclientsdk",
-                deviceManufacturer = Build.MANUFACTURER,
-                deviceModel = Build.MODEL,
-                dropInSDKVersion = dropInVersion,
-                environment = configuration?.environment,
-                eventSource = "mobile-native",
-                integrationType = integration,
-                isSimulator = isDeviceEmulator,
-                merchantAppVersion = getAppVersion(context),
-                merchantId = configuration?.merchantId,
-                platform = "Android",
-                sessionId = sessionId
+            appId = context?.packageName,
+            appName = getAppName(context),
+            clientSDKVersion = BuildConfig.VERSION_NAME,
+            clientOs = getAPIVersion(),
+            component = "braintreeclientsdk",
+            deviceManufacturer = Build.MANUFACTURER,
+            deviceModel = Build.MODEL,
+            dropInSDKVersion = dropInVersion,
+            environment = configuration?.environment,
+            eventSource = "mobile-native",
+            integrationType = integration,
+            isSimulator = isDeviceEmulator,
+            merchantAppVersion = getAppVersion(context),
+            merchantId = configuration?.merchantId,
+            platform = "Android",
+            sessionId = sessionId
         )
     }
 
@@ -57,7 +57,7 @@ class DeviceInspector @VisibleForTesting internal constructor(
     fun isVenmoAppSwitchAvailable(context: Context?): Boolean {
         val isVenmoIntentAvailable = appHelper.isIntentAvailable(context, venmoIntent)
         val isVenmoSignatureValid = signatureVerifier.isSignatureValid(
-                context, VENMO_APP_PACKAGE, VENMO_BASE_64_ENCODED_SIGNATURE
+            context, VENMO_APP_PACKAGE, VENMO_BASE_64_ENCODED_SIGNATURE
         )
         return isVenmoIntentAvailable && isVenmoSignatureValid
     }
@@ -77,27 +77,27 @@ class DeviceInspector @VisibleForTesting internal constructor(
                 Build.FINGERPRINT.contains("generic")
 
     private fun getAppName(context: Context?): String =
-            getApplicationInfo(context)?.let { appInfo ->
+        getApplicationInfo(context)?.let { appInfo ->
                 context?.packageManager?.getApplicationLabel(appInfo).toString()
-            } ?: "ApplicationNameUnknown"
+        } ?: "ApplicationNameUnknown"
 
     @Suppress("SwallowedException")
     private fun getApplicationInfo(context: Context?) =
-            try {
-                context?.packageManager?.getApplicationInfo(context.packageName, 0)
-            } catch (e: PackageManager.NameNotFoundException) {
-                null
-            }
+        try {
+            context?.packageManager?.getApplicationInfo(context.packageName, 0)
+        } catch (e: PackageManager.NameNotFoundException) {
+            null
+        }
 
     private fun getAppVersion(context: Context?): String = getPackageInfo(context) ?: "VersionUnknown"
 
     private fun getPackageInfo(context: Context?) =
-            context?.let {
-                try {
-                    val packageInfo = it.packageManager.getPackageInfo(it.packageName, 0)
-                    packageInfo?.versionName
-                } catch (ignored: PackageManager.NameNotFoundException) { null }
-            }
+        context?.let {
+            try {
+                val packageInfo = it.packageManager.getPackageInfo(it.packageName, 0)
+                packageInfo?.versionName
+            } catch (ignored: PackageManager.NameNotFoundException) { null }
+        }
 
     private fun getAPIVersion(): String {
         val sdkInt = Build.VERSION.SDK_INT
@@ -122,10 +122,10 @@ class DeviceInspector @VisibleForTesting internal constructor(
         const val VENMO_BASE_64_ENCODED_SIGNATURE = "x34mMawEUcCG8l95riWCOK+kAJYejVmdt44l6tzcyUc=\n"
         private val venmoIntent: Intent
             get() = Intent().setComponent(
-                    ComponentName(
-                            VENMO_APP_PACKAGE,
-                            "$VENMO_APP_PACKAGE.$VENMO_APP_SWITCH_ACTIVITY"
-                    )
+                ComponentName(
+                    VENMO_APP_PACKAGE,
+                    "$VENMO_APP_PACKAGE.$VENMO_APP_SWITCH_ACTIVITY"
+                )
             )
         internal fun getDropInVersion(): String? {
             try {
