@@ -27,6 +27,7 @@ class AnalyticsClientUnitTest {
     private lateinit var deviceInspector: DeviceInspector
     private lateinit var eventName: String
     private lateinit var sessionId: String
+    private lateinit var payPalContextId: String
     private lateinit var integration: String
     private lateinit var workManager: WorkManager
     private lateinit var analyticsDatabase: AnalyticsDatabase
@@ -40,6 +41,7 @@ class AnalyticsClientUnitTest {
         timestamp = 123
         eventName = "sample-event-name"
         sessionId = "sample-session-id"
+        payPalContextId = "sample-paypal-context-id"
         integration = "sample-integration"
         authorization = fromString(Fixtures.TOKENIZATION_KEY)
         context = ApplicationProvider.getApplicationContext()
@@ -65,8 +67,9 @@ class AnalyticsClientUnitTest {
         } returns mockk()
 
         val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
+        var event = AnalyticsEvent(eventName, null, 123)
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
-        sut.sendEvent(configuration, eventName, sessionId, integration, 123, authorization)
+        sut.sendEvent(configuration, event, sessionId, integration, authorization)
 
         val workSpec = workRequestSlot.captured.workSpec
         assertEquals(AnalyticsWriteToDbWorker::class.java.name, workSpec.workerClassName)
@@ -88,8 +91,9 @@ class AnalyticsClientUnitTest {
         } returns mockk()
 
         val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
+        val event = AnalyticsEvent(eventName)
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
-        sut.sendEvent(configuration, eventName, sessionId, integration, 123, authorization)
+        sut.sendEvent(configuration, event, sessionId, integration, authorization)
 
         val workSpec = workRequestSlot.captured.workSpec
         assertEquals(30000, workSpec.initialDelay)
@@ -140,6 +144,7 @@ class AnalyticsClientUnitTest {
 
         val inputData = Data.Builder()
             .putString(AnalyticsClient.WORK_INPUT_KEY_EVENT_NAME, eventName)
+            .putString(AnalyticsClient.WORK_INPUT_KEY_PAYPAL_CONTEXT_ID, payPalContextId)
             .putLong(AnalyticsClient.WORK_INPUT_KEY_TIMESTAMP, timestamp)
             .build()
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
@@ -147,6 +152,7 @@ class AnalyticsClientUnitTest {
 
         val event = analyticsEventSlot.captured
         assertEquals("sample-event-name", event.name)
+        assertEquals("sample-paypal-context-id", event.payPalContextId)
         assertEquals(123, event.timestamp)
     }
 
@@ -184,8 +190,8 @@ class AnalyticsClientUnitTest {
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", 123))
-        events.add(AnalyticsEvent("event1", 456))
+        events.add(AnalyticsEvent("event0", null, 123))
+        events.add(AnalyticsEvent("event1", payPalContextId, 456))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val analyticsJSONSlot = slot<String>()
@@ -204,9 +210,11 @@ class AnalyticsClientUnitTest {
         val eventOne = array.getJSONObject(0)
         assertEquals("event0", eventOne.getString("kind"))
         assertEquals(123, eventOne.getString("timestamp").toLong())
+        assertTrue(eventOne.isNull("payPalContextId"))
 
         val eventTwo = array.getJSONObject(1)
         assertEquals("event1", eventTwo.getString("kind"))
+        assertEquals(payPalContextId, eventTwo.getString("payPalContextId"))
         assertEquals(456, eventTwo.getString("timestamp").toLong())
     }
 
@@ -301,8 +309,8 @@ class AnalyticsClientUnitTest {
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", 123))
-        events.add(AnalyticsEvent("event1", 456))
+        events.add(AnalyticsEvent("event0", null, 123))
+        events.add(AnalyticsEvent("event1", payPalContextId, 456))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
@@ -328,8 +336,8 @@ class AnalyticsClientUnitTest {
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", 123))
-        events.add(AnalyticsEvent("event1", 456))
+        events.add(AnalyticsEvent("event0", null, 123))
+        events.add(AnalyticsEvent("event1", payPalContextId, 456))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val httpError = Exception("error")
@@ -360,8 +368,9 @@ class AnalyticsClientUnitTest {
         } returns Unit
 
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
+        val event = AnalyticsEvent(eventName)
         val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
-        sut.sendEvent(configuration, eventName, sessionId, integration, authorization)
+        sut.sendEvent(configuration, event, sessionId, integration, authorization)
 
         sut.reportCrash(context, sessionId, integration, 123, authorization)
 
@@ -375,6 +384,7 @@ class AnalyticsClientUnitTest {
         val eventOne = array.getJSONObject(0)
         assertEquals("android.crash", eventOne.getString("kind"))
         assertEquals(123, eventOne.getString("timestamp").toLong())
+        assertTrue(eventOne.isNull("payPalContextId"))
     }
 
     @Test
@@ -401,8 +411,9 @@ class AnalyticsClientUnitTest {
         } returns metadata
 
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
+        val event = AnalyticsEvent(eventName)
         val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
-        sut.sendEvent(configuration, eventName, sessionId, integration, authorization)
+        sut.sendEvent(configuration, event, sessionId, integration, authorization)
 
         sut.reportCrash(context, sessionId, integration, 123, null)
 

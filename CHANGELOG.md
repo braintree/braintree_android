@@ -4,6 +4,8 @@
 
 * PayPal
   * Add optional property `PayPalVaultRequest.setUserAuthenticationEmail()`
+* BraintreeCore
+  * Send `paypal_context_id` in `analytics_event` to PayPal's analytics service (FPTI) when available
 * Venmo
   * Add `setIsFinalAmount()` to `VenmoRequest`
   * Add `setFallbackToWeb()` to `VenmoRequest`
