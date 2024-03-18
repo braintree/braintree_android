@@ -60,6 +60,14 @@ class VenmoApi {
             JSONObject variables = new JSONObject();
             variables.put("input", input);
             params.put("variables", variables);
+
+            JSONObject braintreeData = new MetadataBuilder()
+                    .sessionId(braintreeClient.getSessionId())
+                    .integration(braintreeClient.getIntegrationType())
+                    .version()
+                    .build();
+
+            params.put("clientSdkMetadata", braintreeData);
         } catch (JSONException e) {
             callback.onResult(null, new BraintreeException("unexpected error"));
         }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -659,11 +660,14 @@ public class VenmoClient {
 
     @VisibleForTesting
     void startAppLinkFlow(FragmentActivity activity, VenmoIntentData input) throws JSONException, BrowserSwitchException {
-        JSONObject braintreeData = new MetadataBuilder()
+        JSONObject metadata = new MetadataBuilder()
                 .sessionId(input.getSessionId())
                 .integration(input.getIntegrationType())
                 .version()
                 .build();
+
+        JSONObject braintreeData = new JSONObject()
+                .put("_meta", metadata);
 
         String applicationName = "ApplicationNameUnknown";
         Context context = braintreeClient.getApplicationContext();
@@ -683,7 +687,7 @@ public class VenmoClient {
                 .appendQueryParameter("braintree_access_token", input.getConfiguration().getVenmoAccessToken())
                 .appendQueryParameter("braintree_environment", input.getConfiguration().getVenmoEnvironment())
                 .appendQueryParameter("resource_id", input.getPaymentContextId())
-                .appendQueryParameter("braintree_sdk_data", braintreeData.toString())
+                .appendQueryParameter("braintree_sdk_data", Base64.encodeToString(braintreeData.toString().getBytes(), 0))
                 .appendQueryParameter("customerClient", "MOBILE_APP")
                 .build();
 
