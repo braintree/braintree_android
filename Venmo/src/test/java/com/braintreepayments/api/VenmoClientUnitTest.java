@@ -29,6 +29,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.appcompat.app.AppCompatActivity;
@@ -571,13 +572,17 @@ public class VenmoClientUnitTest {
         assertEquals("com.example", browserSwitchOptions.getReturnUrlScheme());
 
         Uri url = browserSwitchOptions.getUrl();
-        // TODO: figure out why null?
         assertEquals("com.example://x-callback-url/vzero/auth/venmo/success", url.getQueryParameter("x-success"));
         assertEquals("com.example://x-callback-url/vzero/auth/venmo/error", url.getQueryParameter("x-error"));
         assertEquals("com.example://x-callback-url/vzero/auth/venmo/cancel", url.getQueryParameter("x-cancel"));
         assertEquals("fake-profile-id", url.getQueryParameter("braintree_merchant_id"));
         assertEquals("fake-payment-context-id", url.getQueryParameter("resource_id"));
         assertEquals("MOBILE_APP", url.getQueryParameter("customerClient"));
+
+        String metadata = url.getQueryParameter("braintree_sdk_data");
+        String metadataString = new String(Base64.decode(metadata, Base64.DEFAULT));
+        String expectedMetadata = String.format("{\"_meta\":{\"platform\":\"android\",\"sessionId\":\"fake-session-id\",\"integration\":\"custom\",\"version\":\"%s\"}}", BuildConfig.VERSION_NAME);
+        assertEquals(expectedMetadata, metadataString);
     }
 
     @Test
