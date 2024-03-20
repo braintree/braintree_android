@@ -208,7 +208,7 @@ public class CardClientTest {
         sut.tokenize(card, (cardResult) -> {
             assertTrue(cardResult instanceof CardResult.Failure);
             Exception error = ((CardResult.Failure) cardResult).getError();
-            Assert.assertEquals("CVV verification failed",
+           assertEquals("CVV verification failed",
                     ((ErrorWithResponse) error).errorFor("creditCard").getFieldErrors().get(0).getMessage());
             countDownLatch.countDown();
         });
