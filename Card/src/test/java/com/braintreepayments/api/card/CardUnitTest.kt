@@ -1,7 +1,11 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.card
 
 import android.os.Parcel
+import com.braintreepayments.api.BraintreeException
 import com.braintreepayments.api.CardNumber.VISA
+import com.braintreepayments.api.GraphQLConstants
+import com.braintreepayments.api.MetadataBuilder
+import com.braintreepayments.api.PaymentMethod
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertNull

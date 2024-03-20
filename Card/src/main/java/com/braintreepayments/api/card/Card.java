@@ -29,7 +29,8 @@ public class Card extends BaseCard implements Parcelable {
 
     private boolean shouldValidate;
 
-    JSONObject buildJSONForGraphQL() throws BraintreeException, JSONException {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public JSONObject buildJSONForGraphQL() throws BraintreeException, JSONException {
         JSONObject base = new JSONObject();
         JSONObject input = new JSONObject();
         JSONObject variables = new JSONObject();

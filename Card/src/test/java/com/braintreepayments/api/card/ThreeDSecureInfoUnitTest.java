@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.card;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -7,6 +7,9 @@ import org.junit.Test;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+
+import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.ThreeDSecureInfo;
 
 public class ThreeDSecureInfoUnitTest {
 

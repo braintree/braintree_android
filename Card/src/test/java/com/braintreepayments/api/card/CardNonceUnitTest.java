@@ -1,22 +1,24 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.card;
+
+import static com.braintreepayments.api.Assertions.assertBinDataEqual;
+import static com.braintreepayments.api.card.BinData.NO;
+import static com.braintreepayments.api.card.BinData.UNKNOWN;
+import static com.braintreepayments.api.card.BinData.YES;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 import android.os.Parcel;
+
+import com.braintreepayments.api.Fixtures;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
-import static com.braintreepayments.api.BinData.NO;
-import static com.braintreepayments.api.BinData.UNKNOWN;
-import static com.braintreepayments.api.BinData.YES;
-import static com.braintreepayments.api.Assertions.assertBinDataEqual;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
 public class CardNonceUnitTest {

@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.card;
 
 import static com.braintreepayments.api.CardNumber.VISA;
 import static com.braintreepayments.api.Fixtures.TOKENIZATION_KEY;
@@ -11,7 +11,16 @@ import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.braintreepayments.api.card.CardResult;
+import com.braintreepayments.api.Authorization;
+import com.braintreepayments.api.AuthorizationException;
+import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.Configuration;
+import com.braintreepayments.api.ErrorWithResponse;
+import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.SharedPreferencesHelper;
+import com.braintreepayments.api.TestClientTokenBuilder;
+
+import junit.framework.Assert;
 
 import org.json.JSONException;
 import org.junit.Ignore;
@@ -199,7 +208,7 @@ public class CardClientTest {
         sut.tokenize(card, (cardResult) -> {
             assertTrue(cardResult instanceof CardResult.Failure);
             Exception error = ((CardResult.Failure) cardResult).getError();
-            assertEquals("CVV verification failed",
+            Assert.assertEquals("CVV verification failed",
                     ((ErrorWithResponse) error).errorFor("creditCard").getFieldErrors().get(0).getMessage());
             countDownLatch.countDown();
         });

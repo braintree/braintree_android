@@ -1,7 +1,5 @@
 package com.braintreepayments.api.card
 
-import com.braintreepayments.api.card.CardResult
-
 /**
  * Callback for receiving result of [CardClient.tokenize].
  */

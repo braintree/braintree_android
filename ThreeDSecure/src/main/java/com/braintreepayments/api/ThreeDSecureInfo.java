@@ -4,6 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
+
+import com.braintreepayments.api.card.CardNonce;
 
 import org.json.JSONObject;
 
@@ -50,7 +53,8 @@ public class ThreeDSecureInfo implements Parcelable {
     private String lookupTransactionStatus;
     private String lookupTransactionStatusReason;
 
-    static ThreeDSecureInfo fromJson(JSONObject json) {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public static ThreeDSecureInfo fromJson(JSONObject json) {
         if (json == null) {
             json = new JSONObject();
         }
