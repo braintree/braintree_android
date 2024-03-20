@@ -133,7 +133,10 @@ public class GooglePayClient {
      */
     @Deprecated
     public void isReadyToPay(@NonNull final FragmentActivity activity, @Nullable final ReadyForGooglePayRequest request, @NonNull final GooglePayIsReadyToPayCallback callback) {
-        Context applicationContext = activity.getApplicationContext();
+        Context applicationContext = null;
+        if (activity != null) {
+            applicationContext = activity.getApplicationContext();
+        }
         isReadyToPay(applicationContext, request, callback);
     }
 
