@@ -240,7 +240,7 @@ public class GooglePayClientUnitTest {
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof IllegalArgumentException);
-        assertEquals("Activity cannot be null.", exception.getMessage());
+        assertEquals("Context cannot be null.", exception.getMessage());
     }
 
     // endregion

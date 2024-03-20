@@ -173,7 +173,7 @@ public class GooglePayClient {
 
                 //noinspection ConstantConditions
                 if (context == null) {
-                    callback.onResult(false, new IllegalArgumentException("Activity cannot be null."));
+                    callback.onResult(false, new IllegalArgumentException("Context cannot be null."));
                     return;
                 }
 
