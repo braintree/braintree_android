@@ -1,10 +1,13 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.card;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
 import androidx.annotation.StringDef;
+
+import com.braintreepayments.api.Json;
 
 import org.json.JSONObject;
 
@@ -45,7 +48,8 @@ public class BinData implements Parcelable {
     private String countryOfIssuance;
     private String productId;
 
-    protected static BinData fromJson(JSONObject json) {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public static BinData fromJson(JSONObject json) {
         if (json == null) {
             json = new JSONObject();
         }

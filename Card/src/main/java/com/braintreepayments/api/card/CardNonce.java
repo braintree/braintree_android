@@ -1,26 +1,30 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.card;
+
+import static com.braintreepayments.api.card.BinData.BIN_DATA_KEY;
 
 import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
+import com.braintreepayments.api.Json;
+import com.braintreepayments.api.PaymentMethodNonce;
 
 /**
  * {@link PaymentMethodNonce} representing a credit or debit card.
  */
 public class CardNonce extends PaymentMethodNonce {
 
-    static final String API_RESOURCE_KEY = "creditCards";
+    protected static final String API_RESOURCE_KEY = "creditCards";
 
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
     private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
 
-    static final String DATA_KEY = "data";
+    protected static final String DATA_KEY = "data";
     private static final String TOKEN_KEY = "token";
 
     private static final String GRAPHQL_TOKENIZE_CREDIT_CARD_KEY = "tokenizeCreditCard";
@@ -53,8 +57,9 @@ public class CardNonce extends PaymentMethodNonce {
      * @return {@link CardNonce}
      * @throws JSONException if nonce could not be parsed successfully
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @NonNull
-    static CardNonce fromJSON(JSONObject inputJson) throws JSONException {
+    public static CardNonce fromJSON(JSONObject inputJson) throws JSONException {
         if (isGraphQLTokenizationResponse(inputJson)) {
             return CardNonce.fromGraphQLJSON(inputJson);
         } else if (isRESTfulTokenizationResponse(inputJson)) {
@@ -141,7 +146,8 @@ public class CardNonce extends PaymentMethodNonce {
         }
     }
 
-    CardNonce(String cardType, String lastTwo, String lastFour, String bin, BinData binData,
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public CardNonce(String cardType, String lastTwo, String lastFour, String bin, BinData binData,
               AuthenticationInsight authenticationInsight, String expirationMonth,
               String expirationYear, String cardholderName, String nonce, boolean isDefault) {
         super(nonce, isDefault);

@@ -11,6 +11,8 @@ import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import com.braintreepayments.api.card.CardResult;
+
 import org.json.JSONException;
 import org.junit.Ignore;
 import org.junit.Test;

@@ -15,10 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.Card;
-import com.braintreepayments.api.CardClient;
-import com.braintreepayments.api.CardNonce;
-import com.braintreepayments.api.CardResult;
+import com.braintreepayments.api.card.Card;
+import com.braintreepayments.api.card.CardClient;
+import com.braintreepayments.api.card.CardNonce;
+import com.braintreepayments.api.card.CardResult;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.DataCollectorResult;
 import com.braintreepayments.api.PaymentMethodNonce;

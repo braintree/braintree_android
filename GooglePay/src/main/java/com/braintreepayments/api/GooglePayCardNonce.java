@@ -1,13 +1,15 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.card.BinData.BIN_DATA_KEY;
+
 import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 
+import com.braintreepayments.api.card.BinData;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import static com.braintreepayments.api.BinData.BIN_DATA_KEY;
 
 /**
  * {@link PaymentMethodNonce} representing a Google Pay card.

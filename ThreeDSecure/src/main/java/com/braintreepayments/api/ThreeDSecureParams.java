@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
 
+import com.braintreepayments.api.card.CardNonce;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

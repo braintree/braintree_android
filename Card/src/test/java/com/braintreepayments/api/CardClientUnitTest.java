@@ -9,7 +9,9 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
+import com.braintreepayments.api.card.CardAnalytics;
+import com.braintreepayments.api.card.CardResult;
+import com.braintreepayments.api.card.CardTokenizeCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;

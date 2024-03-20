@@ -1,9 +1,11 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.card;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+
+import com.braintreepayments.api.Json;
 
 import org.json.JSONObject;
 
