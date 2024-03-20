@@ -4,6 +4,8 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
+import com.braintreepayments.api.card.BinData;
+
 public class Assertions {
 
     public static void assertIsANonce(String maybeANonce) {
