@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.text.TextUtils;
@@ -56,7 +57,7 @@ public class GooglePayClient {
     /**
      * Create a new instance of {@link GooglePayClient} from within an Activity using a {@link BraintreeClient}.
      *
-     * @param activity a {@link FragmentActivity}
+     * @param activity        a {@link FragmentActivity}
      * @param braintreeClient a {@link BraintreeClient}
      */
     public GooglePayClient(@NonNull FragmentActivity activity, @NonNull BraintreeClient braintreeClient) {
@@ -66,7 +67,7 @@ public class GooglePayClient {
     /**
      * Create a new instance of {@link GooglePayClient} from within a Fragment using a {@link BraintreeClient}.
      *
-     * @param fragment a {@link Fragment}
+     * @param fragment        a {@link Fragment}
      * @param braintreeClient a {@link BraintreeClient}
      */
     public GooglePayClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
@@ -75,7 +76,7 @@ public class GooglePayClient {
 
     /**
      * Create a new instance of {@link GooglePayClient} using a {@link BraintreeClient}.
-     *
+     * <p>
      * Deprecated. Use {@link GooglePayClient(Fragment, BraintreeClient)} or
      * {@link GooglePayClient(FragmentActivity, BraintreeClient)} instead.
      *
@@ -130,7 +131,23 @@ public class GooglePayClient {
      * @param request  {@link ReadyForGooglePayRequest}
      * @param callback {@link GooglePayIsReadyToPayCallback}
      */
+    @Deprecated
     public void isReadyToPay(@NonNull final FragmentActivity activity, @Nullable final ReadyForGooglePayRequest request, @NonNull final GooglePayIsReadyToPayCallback callback) {
+        Context applicationContext = activity.getApplicationContext();
+        isReadyToPay(applicationContext, request, callback);
+    }
+
+    /**
+     * Before starting the Google Pay flow, use this method to check whether the
+     * Google Pay API is supported and set up on the device. When the callback is called with
+     * {@code true}, show the Google Pay button. When it is called with {@code false}, display other
+     * checkout options.
+     *
+     * @param context  Android context
+     * @param request  {@link ReadyForGooglePayRequest}
+     * @param callback {@link GooglePayIsReadyToPayCallback}
+     */
+    public void isReadyToPay(@NonNull final Context context, @Nullable final ReadyForGooglePayRequest request, @NonNull final GooglePayIsReadyToPayCallback callback) {
         try {
             Class.forName(PaymentsClient.class.getName());
         } catch (ClassNotFoundException | NoClassDefFoundError e) {
@@ -152,7 +169,7 @@ public class GooglePayClient {
                 }
 
                 //noinspection ConstantConditions
-                if (activity == null) {
+                if (context == null) {
                     callback.onResult(false, new IllegalArgumentException("Activity cannot be null."));
                     return;
                 }
@@ -180,7 +197,7 @@ public class GooglePayClient {
                 } catch (JSONException ignored) {
                 }
                 IsReadyToPayRequest request = IsReadyToPayRequest.fromJson(json.toString());
-                internalGooglePayClient.isReadyToPay(activity, configuration, request, callback);
+                internalGooglePayClient.isReadyToPay(context, configuration, request, callback);
             }
         });
     }
@@ -222,7 +239,7 @@ public class GooglePayClient {
      * Launch a Google Pay request. This method will show the payment instrument chooser to the user.
      *
      * @param activity Android FragmentActivity
-     * @param request The {@link GooglePayRequest} containing options for the transaction.
+     * @param request  The {@link GooglePayRequest} containing options for the transaction.
      */
     public void requestPayment(@NonNull final FragmentActivity activity, @NonNull final GooglePayRequest request) {
         requestPayment(activity, request, new GooglePayRequestPaymentCallback() {
@@ -237,11 +254,11 @@ public class GooglePayClient {
 
     /**
      * Launch a Google Pay request. This method will show the payment instrument chooser to the user.
-     *
+     * <p>
      * Deprecated. Use {@link GooglePayClient#requestPayment(FragmentActivity, GooglePayRequest)}.
      *
      * @param activity Android FragmentActivity
-     * @param request The {@link GooglePayRequest} containing options for the transaction.
+     * @param request  The {@link GooglePayRequest} containing options for the transaction.
      * @param callback {@link GooglePayRequestPaymentCallback}
      */
     @Deprecated
@@ -317,8 +334,8 @@ public class GooglePayClient {
      * to get a {@link GooglePayCardNonce} or {@link PayPalAccountNonce}.
      *
      * @param paymentData {@link PaymentData} from the Intent in
-     * {@link GooglePayClient#onActivityResult(int, Intent, GooglePayOnActivityResultCallback)} method.
-     * @param callback {@link GooglePayOnActivityResultCallback}
+     *                    {@link GooglePayClient#onActivityResult(int, Intent, GooglePayOnActivityResultCallback)} method.
+     * @param callback    {@link GooglePayOnActivityResultCallback}
      */
     void tokenize(PaymentData paymentData, GooglePayOnActivityResultCallback callback) {
         try {
@@ -354,11 +371,11 @@ public class GooglePayClient {
                 }
             });
         } else if (googlePayResult.getError() != null) {
-           if (googlePayResult.getError() instanceof UserCanceledException) {
-               braintreeClient.sendAnalyticsEvent("google-payment.canceled");
-           } else {
-               braintreeClient.sendAnalyticsEvent("google-payment.failed");
-           }
+            if (googlePayResult.getError() instanceof UserCanceledException) {
+                braintreeClient.sendAnalyticsEvent("google-payment.canceled");
+            } else {
+                braintreeClient.sendAnalyticsEvent("google-payment.failed");
+            }
             listener.onGooglePayFailure(googlePayResult.getError());
         }
     }
@@ -367,8 +384,8 @@ public class GooglePayClient {
      * Deprecated. Use {@link GooglePayListener} to receive results.
      *
      * @param resultCode a code associated with the Activity result
-     * @param data Android Intent
-     * @param callback {@link GooglePayOnActivityResultCallback}
+     * @param data       Android Intent
+     * @param callback   {@link GooglePayOnActivityResultCallback}
      */
     @Deprecated
     public void onActivityResult(int resultCode, @Nullable Intent data, @NonNull final GooglePayOnActivityResultCallback callback) {
