@@ -12,12 +12,12 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.GooglePayClient;
-import com.braintreepayments.api.GooglePayLauncher;
-import com.braintreepayments.api.GooglePayPaymentAuthRequest;
-import com.braintreepayments.api.GooglePayReadinessResult;
-import com.braintreepayments.api.GooglePayRequest;
-import com.braintreepayments.api.GooglePayResult;
+import com.braintreepayments.api.googlepay.GooglePayClient;
+import com.braintreepayments.api.googlepay.GooglePayLauncher;
+import com.braintreepayments.api.googlepay.GooglePayPaymentAuthRequest;
+import com.braintreepayments.api.googlepay.GooglePayReadinessResult;
+import com.braintreepayments.api.googlepay.GooglePayRequest;
+import com.braintreepayments.api.googlepay.GooglePayResult;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.UserCanceledException;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
