@@ -53,6 +53,7 @@
     * Change `GooglePayGetTokenizationParametersCallback` parameters
     * Rename `GooglePayLauncherCallback#onResult` to 
       `GooglePayLauncherCallback#onGooglePayLauncherResult`
+    * Update package name to `com.braintreepayments.api.googlepay`
   * ThreeDSecure
     * Remove `ThreeDSecureListener`
     * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`, 
