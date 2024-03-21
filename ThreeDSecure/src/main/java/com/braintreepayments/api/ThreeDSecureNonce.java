@@ -4,6 +4,11 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
+
+import com.braintreepayments.api.card.AuthenticationInsight;
+import com.braintreepayments.api.card.BinData;
+import com.braintreepayments.api.card.CardNonce;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,8 +38,9 @@ public class ThreeDSecureNonce extends CardNonce {
         this.threeDSecureInfo = threeDSecureInfo;
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @NonNull
-    static ThreeDSecureNonce fromJSON(JSONObject inputJson) throws JSONException {
+    public static ThreeDSecureNonce fromJSON(JSONObject inputJson) throws JSONException {
         CardNonce cardNonce = CardNonce.fromJSON(inputJson);
         ThreeDSecureInfo threeDSecureInfo;
         if (inputJson.has(DATA_KEY)) { // graphQL

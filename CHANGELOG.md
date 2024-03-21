@@ -101,6 +101,7 @@
     * Move `ThreeDSecureInfo` to `three-d-secure` module
     * Add `CardResult` object
     * Change `CardTokenizeCallback` parameters
+    * Update package name to `com.braintreepayments.api.card`
   * SEPA Direct Debit
     * Remove `SEPADirectDebitLifecycleObserver` and `SEPADirectDebitListener`
     * Add `SEPADirectDebitLauncher`, `SEPADirectDebitPendingRequest`, 
@@ -121,7 +122,7 @@
   * American Express
     * Change parameters of `AmericanExpressGetRewardsBalanceCallback`
     * Add `AmericanExpressResult`
-    * Update package name to `com.braintreepayments.americanexpress`
+    * Update package name to `com.braintreepayments.api.americanexpress`
   * Samsung Pay
     * Remove entire Samsung Pay module
   * PayPal Native Checkout

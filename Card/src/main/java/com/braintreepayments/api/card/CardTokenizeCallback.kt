@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.card
 
 /**
  * Callback for receiving result of [CardClient.tokenize].

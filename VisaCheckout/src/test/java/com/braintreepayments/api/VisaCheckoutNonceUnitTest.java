@@ -1,5 +1,13 @@
 package com.braintreepayments.api;
 
+import static com.braintreepayments.api.Assertions.assertBinDataEqual;
+import static com.braintreepayments.api.card.BinData.NO;
+import static com.braintreepayments.api.card.BinData.UNKNOWN;
+import static com.braintreepayments.api.card.BinData.YES;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+
 import android.os.Parcel;
 
 import org.json.JSONArray;
@@ -8,14 +16,6 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-
-import static com.braintreepayments.api.BinData.NO;
-import static com.braintreepayments.api.BinData.UNKNOWN;
-import static com.braintreepayments.api.BinData.YES;
-import static com.braintreepayments.api.Assertions.assertBinDataEqual;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
 
 @RunWith(RobolectricTestRunner.class)
 public class VisaCheckoutNonceUnitTest {

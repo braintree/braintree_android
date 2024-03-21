@@ -1,7 +1,7 @@
 package com.braintreepayments.demo;
 
-import com.braintreepayments.api.BinData;
-import com.braintreepayments.api.CardNonce;
+import com.braintreepayments.api.card.BinData;
+import com.braintreepayments.api.card.CardNonce;
 import com.braintreepayments.api.GooglePayCardNonce;
 import com.braintreepayments.api.LocalPaymentNonce;
 import com.braintreepayments.api.PayPalAccountNonce;

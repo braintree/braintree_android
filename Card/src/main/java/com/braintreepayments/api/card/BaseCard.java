@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.card;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -6,6 +6,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
+
+import com.braintreepayments.api.PaymentMethod;
 
 import org.json.JSONException;
 import org.json.JSONObject;
