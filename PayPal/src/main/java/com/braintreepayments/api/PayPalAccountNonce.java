@@ -4,6 +4,7 @@ import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,7 +16,8 @@ import org.json.JSONObject;
  */
 public class PayPalAccountNonce extends PaymentMethodNonce {
 
-    static final String API_RESOURCE_KEY = "paypalAccounts";
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public static final String API_RESOURCE_KEY = "paypalAccounts";
     private static final String PAYMENT_METHOD_DATA_KEY = "paymentMethodData";
     private static final String TOKENIZATION_DATA_KEY = "tokenizationData";
     private static final String TOKEN_KEY = "token";
@@ -47,7 +49,8 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
     private final PayPalCreditFinancing creditFinancing;
     private final String authenticateUrl;
 
-    static PayPalAccountNonce fromJSON(JSONObject inputJson) throws JSONException {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public static PayPalAccountNonce fromJSON(JSONObject inputJson) throws JSONException {
         boolean getShippingAddressFromTopLevel = false;
 
         JSONObject json;
