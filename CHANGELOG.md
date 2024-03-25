@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.43.0 (2024-03-19)
 
 * Move from Braintree to PayPal analytics service (FPTI)
 * Venmo
@@ -8,6 +8,8 @@
 
 ## 4.42.0 (2024-03-12)
 
+* PayPal
+  * Add optional property `PayPalVaultRequest.setUserAuthenticationEmail()`
 * BraintreeCore
   * Send `paypal_context_id` in `analytics_event` to PayPal's analytics service (FPTI) when available
 * Venmo
