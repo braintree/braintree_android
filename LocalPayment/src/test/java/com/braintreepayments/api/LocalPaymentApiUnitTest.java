@@ -86,7 +86,7 @@ public class LocalPaymentApiUnitTest {
         sut.createPaymentMethod(getIdealLocalPaymentRequest(),
                 localPaymentInternalAuthRequestCallback);
 
-        verify(localPaymentInternalAuthRequestCallback).onResult(isNull(), same(error));
+        verify(localPaymentInternalAuthRequestCallback).onLocalPaymentInternalAuthResult(isNull(), same(error));
 
     }
 
@@ -101,7 +101,7 @@ public class LocalPaymentApiUnitTest {
                 localPaymentInternalAuthRequestCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(localPaymentInternalAuthRequestCallback).onResult(isNull(), captor.capture());
+        verify(localPaymentInternalAuthRequestCallback).onLocalPaymentInternalAuthResult(isNull(), captor.capture());
 
         assertTrue(captor.getValue() instanceof JSONException);
     }
@@ -118,7 +118,7 @@ public class LocalPaymentApiUnitTest {
 
         ArgumentCaptor<LocalPaymentAuthRequestParams> captor =
                 ArgumentCaptor.forClass(LocalPaymentAuthRequestParams.class);
-        verify(localPaymentInternalAuthRequestCallback).onResult(captor.capture(), isNull());
+        verify(localPaymentInternalAuthRequestCallback).onLocalPaymentInternalAuthResult(captor.capture(), isNull());
 
         LocalPaymentAuthRequestParams result = captor.getValue();
         assertNotNull(result);

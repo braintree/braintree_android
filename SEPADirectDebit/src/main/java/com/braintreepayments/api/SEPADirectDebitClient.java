@@ -67,7 +67,7 @@ public class SEPADirectDebitClient {
                                 SEPADirectDebitPaymentAuthRequestParams params =
                                         new SEPADirectDebitPaymentAuthRequestParams(buildBrowserSwitchOptions(result));
                                 braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_SUCCEEDED);
-                                callback.onResult(new SEPADirectDebitPaymentAuthRequest.ReadyToLaunch(params));
+                                callback.onSEPADirectDebitPaymentAuthResult(new SEPADirectDebitPaymentAuthRequest.ReadyToLaunch(params));
                             } catch (JSONException exception) {
                                 braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_FAILED);
                                 callbackCreatePaymentAuthFailure(callback, new SEPADirectDebitPaymentAuthRequest.Failure(exception));
@@ -144,12 +144,12 @@ public class SEPADirectDebitClient {
 
     private void callbackCreatePaymentAuthFailure(SEPADirectDebitPaymentAuthRequestCallback callback, SEPADirectDebitPaymentAuthRequest.Failure result) {
         braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_FAILED);
-        callback.onResult(result);
+        callback.onSEPADirectDebitPaymentAuthResult(result);
     }
 
     private void callbackCreatePaymentAuthChallengeNotRequiredSuccess(SEPADirectDebitPaymentAuthRequestCallback callback, SEPADirectDebitPaymentAuthRequest.LaunchNotRequired result) {
         braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_SUCCEEDED);
-        callback.onResult(result);
+        callback.onSEPADirectDebitPaymentAuthResult(result);
     }
 
     private void callbackTokenizeCancel(SEPADirectDebitTokenizeCallback callback) {

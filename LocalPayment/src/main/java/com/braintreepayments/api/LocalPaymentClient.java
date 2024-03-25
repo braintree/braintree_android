@@ -53,7 +53,7 @@ public class LocalPaymentClient {
      * authentication flow.
      *
      * @param request  {@link LocalPaymentRequest} with the payment details.
-     * @param callback {@link LocalPaymentInternalAuthRequestCallback}
+     * @param callback {@link LocalPaymentAuthCallback}
      */
     public void createPaymentAuthRequest(@NonNull final LocalPaymentRequest request,
                                          @NonNull final LocalPaymentAuthCallback callback) {

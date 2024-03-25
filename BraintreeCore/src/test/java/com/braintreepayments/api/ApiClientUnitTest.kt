@@ -2,6 +2,7 @@ package com.braintreepayments.api
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.braintreepayments.api.card.Card
 import io.mockk.*
 import org.json.JSONException
 import org.json.JSONObject

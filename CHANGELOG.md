@@ -52,6 +52,9 @@
     * Add `GooglePayClient#tokenize` 
     * Remove `merchantId` from `GooglePayRequest`
     * Change `GooglePayGetTokenizationParametersCallback` parameters
+    * Rename `GooglePayLauncherCallback#onResult` to 
+      `GooglePayLauncherCallback#onGooglePayLauncherResult`
+    * Update package name to `com.braintreepayments.api.googlepay`
   * ThreeDSecure
     * Remove `ThreeDSecureListener`
     * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`, 
@@ -100,6 +103,7 @@
     * Move `ThreeDSecureInfo` to `three-d-secure` module
     * Add `CardResult` object
     * Change `CardTokenizeCallback` parameters
+    * Update package name to `com.braintreepayments.api.card`
   * SEPA Direct Debit
     * Remove `SEPADirectDebitLifecycleObserver` and `SEPADirectDebitListener`
     * Add `SEPADirectDebitLauncher`, `SEPADirectDebitPendingRequest`, 
@@ -111,6 +115,8 @@
       modify parameters
     * Replace `SEPADirectDebitClient#tokenize` with`SEPADirectDebitClient#createPaymentAuthRequest` 
       and modify parameters
+    * Rename `SEPADirectDebitPaymentAuthRequestCallback#onResult` to
+     `SEPADirectDebitPaymentAuthRequestCallback#onSEPADirectDebitPaymentAuthResult`
   * Visa Checkout
     * Change parameters of `VisaCheckoutCreateProfileBuilderCallback` and
       `VisaCheckoutTokenizeCallback`
@@ -118,6 +124,7 @@
   * American Express
     * Change parameters of `AmericanExpressGetRewardsBalanceCallback`
     * Add `AmericanExpressResult`
+    * Update package name to `com.braintreepayments.api.americanexpress`
   * Samsung Pay
     * Remove entire Samsung Pay module
   * PayPal Native Checkout

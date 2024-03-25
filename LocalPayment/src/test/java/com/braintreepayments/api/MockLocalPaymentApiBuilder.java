@@ -54,9 +54,9 @@ public class MockLocalPaymentApiBuilder {
             LocalPaymentInternalAuthRequestCallback callback =
                     (LocalPaymentInternalAuthRequestCallback) invocation.getArguments()[1];
             if (createPaymentMethodSuccess != null) {
-                callback.onResult(createPaymentMethodSuccess, null);
+                callback.onLocalPaymentInternalAuthResult(createPaymentMethodSuccess, null);
             } else if (createPaymentMethodError != null) {
-                callback.onResult(null, createPaymentMethodError);
+                callback.onLocalPaymentInternalAuthResult(null, createPaymentMethodError);
             }
             return null;
         }).when(localPaymentAPI).createPaymentMethod(any(LocalPaymentRequest.class),
