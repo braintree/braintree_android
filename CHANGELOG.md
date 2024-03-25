@@ -2,6 +2,7 @@
 
 ## 4.43.0 (2024-03-19)
 
+* Move from Braintree to PayPal analytics service (FPTI)
 * Venmo
   * Fix bug where SDK is not sending metadata as expected when creating payment context or constructing App Link URL
 

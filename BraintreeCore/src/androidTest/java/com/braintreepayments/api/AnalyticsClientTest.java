@@ -36,28 +36,10 @@ public class AnalyticsClientTest {
     }
 
     @Test(timeout = 10000)
-    public void sendsCorrectlyFormattedAnalyticsRequestToSandbox() throws Exception {
+    public void sendsCorrectlyFormattedAnalyticsRequestToWorkManager() throws Exception {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_SANDBOX_ANALYTICS);
-        AnalyticsEvent event = new AnalyticsEvent("event.started", null, 123);
-
-        AnalyticsClient sut = new AnalyticsClient(context);
-        UUID workSpecId = sut.sendEvent(configuration, event, "sessionId", "custom", authorization);
-
-        WorkInfo workInfoBeforeDelay = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
-        assertEquals(workInfoBeforeDelay.getState(), WorkInfo.State.ENQUEUED);
-
-        TestDriver testDriver = WorkManagerTestInitHelper.getTestDriver(context);
-        testDriver.setInitialDelayMet(workSpecId);
-
-        WorkInfo workInfoAfterDelay = WorkManager.getInstance(context).getWorkInfoById(workSpecId).get();
-        assertEquals(workInfoAfterDelay.getState(), WorkInfo.State.SUCCEEDED);
-    }
-
-    @Test(timeout = 10000)
-    public void sendsCorrectlyFormattedAnalyticsRequestToProd() throws Exception {
-        Authorization authorization = Authorization.fromString(Fixtures.PROD_TOKENIZATION_KEY);
-        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PROD_ANALYTICS);
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT);
+        
         AnalyticsEvent event = new AnalyticsEvent("event.started", null, 123);
 
         AnalyticsClient sut = new AnalyticsClient(context);
