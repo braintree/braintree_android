@@ -48,8 +48,6 @@ class DeviceInspector @VisibleForTesting internal constructor(
         )
     }
 
-    // Analytics payload no longer sends appInstalled info.
-    // Leaving logic for upcoming PaymentReady API implementation.
     /**
      * @param context A context to access the installed packages.
      * @return boolean depending on if the Venmo app is installed, and has a valid signature.

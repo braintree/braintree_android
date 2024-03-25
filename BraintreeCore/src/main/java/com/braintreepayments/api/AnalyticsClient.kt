@@ -21,7 +21,6 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     private val workManager: WorkManager,
     private val deviceInspector: DeviceInspector
 ) {
-
     constructor(context: Context) : this(
         BraintreeHttpClient(),
         getInstance(context.applicationContext),
@@ -114,7 +113,10 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                     val analyticsRequest = serializeEvents(authorization, events, metadata)
 
                     httpClient.post(
-                            FPTI_ANALYTICS_URL, analyticsRequest.toString(), configuration, authorization
+                        FPTI_ANALYTICS_URL,
+                        analyticsRequest.toString(),
+                        configuration,
+                        authorization
                     )
                     analyticsEventDao.deleteEvents(events)
                 }
