@@ -93,6 +93,24 @@ public class DataCollectorUnitTest {
         verify(callback).onResult(deviceDataCaptor.capture(), (Exception) isNull());
 
         verify(payPalDataCollector).getClientMetadataId(context, configuration, false);
+    }
 
+    @Test
+    public void collectDeviceData_with_DataCollectorRequest_sets_correct_values_for_getClientMetadataId() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+            .configuration(configuration)
+            .build();
+
+        DataCollectorCallback callback = mock(DataCollectorCallback.class);
+        DataCollector sut = new DataCollector(braintreeClient, payPalDataCollector);
+
+        DataCollectorRequest dataCollectorRequest = new DataCollectorRequest(true);
+
+        sut.collectDeviceData(context, dataCollectorRequest, callback);
+
+        ArgumentCaptor<String> deviceDataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(callback).onResult(deviceDataCaptor.capture(), (Exception) isNull());
+
+        verify(payPalDataCollector).getClientMetadataId(context, configuration, true);
     }
 }
