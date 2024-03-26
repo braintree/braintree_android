@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - 'main'
-      - 'user-location-consent-feature'
+  workflow_dispatch:
 env:
   SIGNING_KEY_FILE_PATH: /home/runner/secretKey.gpg
 jobs:
