@@ -20,6 +20,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -55,6 +56,8 @@ import java.util.Collection;
 public class GooglePayClientUnitTest {
 
     private FragmentActivity activity;
+
+    private Context applicationContext;
     private Lifecycle lifecycle;
 
     private GooglePayRequest baseRequest;
@@ -69,6 +72,9 @@ public class GooglePayClientUnitTest {
     @Before
     public void beforeEach() {
         activity = mock(FragmentActivity.class);
+        applicationContext = mock(Context.class);
+        when(activity.getApplicationContext()).thenReturn(applicationContext);
+
         lifecycle = mock(Lifecycle.class);
         readyToPayCallback = mock(GooglePayIsReadyToPayCallback.class);
         requestPaymentCallback = mock(GooglePayRequestPaymentCallback.class);
@@ -155,7 +161,7 @@ public class GooglePayClientUnitTest {
         sut.isReadyToPay(activity, null, readyToPayCallback);
 
         ArgumentCaptor<IsReadyToPayRequest> captor = ArgumentCaptor.forClass(IsReadyToPayRequest.class);
-        verify(internalGooglePayClient).isReadyToPay(same(activity), same(configuration), captor.capture(), any(GooglePayIsReadyToPayCallback.class));
+        verify(internalGooglePayClient).isReadyToPay(same(applicationContext), same(configuration), captor.capture(), any(GooglePayIsReadyToPayCallback.class));
 
         String actualJson = captor.getValue().toJson();
         JSONAssert.assertEquals(
@@ -183,7 +189,7 @@ public class GooglePayClientUnitTest {
         sut.isReadyToPay(activity, readyForGooglePayRequest, readyToPayCallback);
 
         ArgumentCaptor<IsReadyToPayRequest> captor = ArgumentCaptor.forClass(IsReadyToPayRequest.class);
-        verify(internalGooglePayClient).isReadyToPay(same(activity), same(configuration), captor.capture(), any(GooglePayIsReadyToPayCallback.class));
+        verify(internalGooglePayClient).isReadyToPay(same(applicationContext), same(configuration), captor.capture(), any(GooglePayIsReadyToPayCallback.class));
 
         String actualJson = captor.getValue().toJson();
         JSONAssert.assertEquals(
@@ -234,7 +240,7 @@ public class GooglePayClientUnitTest {
 
         Exception exception = captor.getValue();
         assertTrue(exception instanceof IllegalArgumentException);
-        assertEquals("Activity cannot be null.", exception.getMessage());
+        assertEquals("Context cannot be null.", exception.getMessage());
     }
 
     // endregion

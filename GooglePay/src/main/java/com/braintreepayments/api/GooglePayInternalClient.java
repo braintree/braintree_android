@@ -1,7 +1,8 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -13,8 +14,8 @@ import com.google.android.gms.wallet.WalletConstants;
 
 class GooglePayInternalClient {
 
-    void isReadyToPay(FragmentActivity activity, Configuration configuration, IsReadyToPayRequest isReadyToPayRequest, final GooglePayIsReadyToPayCallback callback) {
-        PaymentsClient paymentsClient = Wallet.getPaymentsClient(activity,
+    void isReadyToPay(Context context, Configuration configuration, IsReadyToPayRequest isReadyToPayRequest, final GooglePayIsReadyToPayCallback callback) {
+        PaymentsClient paymentsClient = Wallet.getPaymentsClient(context,
                 new Wallet.WalletOptions.Builder()
                         .setEnvironment(getGooglePayEnvironment(configuration))
                         .build());
