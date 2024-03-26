@@ -57,7 +57,7 @@ public class DataCollectorUnitTest {
 
     @Test
     public void collectDeviceData_getsDeviceDataJSONWithCorrelationIdFromPayPal() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample_correlation_id");
+        when(payPalDataCollector.getClientMetadataId(context, configuration, false)).thenReturn("sample_correlation_id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)

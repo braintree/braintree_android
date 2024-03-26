@@ -7,6 +7,7 @@ import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertSame;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
@@ -142,7 +143,7 @@ public class LocalPaymentClientUnitTest {
                 .integration("sample-integration-type")
                 .build();
         when(braintreeClient.getApplicationContext()).thenReturn(activity);
-        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn("sample-correlation-id");
+        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig, false)).thenReturn("sample-correlation-id");
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         sut.pendingBrowserSwitchResult = browserSwitchResult;
@@ -528,7 +529,7 @@ public class LocalPaymentClientUnitTest {
                 .tokenizeError(postError)
                 .build();
 
-        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn("sample-correlation-id");
+        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig, false)).thenReturn("sample-correlation-id");
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         sut.setListener(listener);
@@ -555,7 +556,7 @@ public class LocalPaymentClientUnitTest {
                 .sessionId("sample-session-id")
                 .integration("sample-integration-type")
                 .build();
-        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn("sample-correlation-id");
+        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig, false)).thenReturn("sample-correlation-id");
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         sut.setListener(listener);
@@ -581,7 +582,7 @@ public class LocalPaymentClientUnitTest {
                 .integration("custom")
                 .sessionId("session-id")
                 .build();
-        when(payPalDataCollector.getClientMetadataId(any(Context.class), same(payPalEnabledConfig))).thenReturn("client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(any(Context.class), same(payPalEnabledConfig), anyBoolean())).thenReturn("client-metadata-id");
 
         LocalPaymentNonce successNonce = LocalPaymentNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE));
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
@@ -616,7 +617,7 @@ public class LocalPaymentClientUnitTest {
                 .tokenizeSuccess(LocalPaymentNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE)))
                 .build();
 
-        when(payPalDataCollector.getClientMetadataId(any(Context.class), same(payPalEnabledConfig))).thenReturn("client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(any(Context.class), same(payPalEnabledConfig), anyBoolean())).thenReturn("client-metadata-id");
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         sut.setListener(listener);
@@ -644,7 +645,7 @@ public class LocalPaymentClientUnitTest {
                 .sessionId("sample-session-id")
                 .integration("sample-integration-type")
                 .build();
-        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn("sample-correlation-id");
+        when(payPalDataCollector.getClientMetadataId(activity, payPalEnabledConfig, false)).thenReturn("sample-correlation-id");
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         sut.setListener(listener);

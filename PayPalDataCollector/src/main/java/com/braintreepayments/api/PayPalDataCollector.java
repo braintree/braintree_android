@@ -49,8 +49,12 @@ public class PayPalDataCollector {
      * @param configuration The merchant configuration
      */
     @MainThread
-    String getClientMetadataId(Context context, Configuration configuration) {
-        PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
+    String getClientMetadataId(
+        Context context,
+        Configuration configuration,
+        boolean hasUserLocationConsent
+    ) {
+        PayPalDataCollectorInternalRequest request = new PayPalDataCollectorInternalRequest(hasUserLocationConsent)
                 .setApplicationGuid(getPayPalInstallationGUID(context));
 
         return getClientMetadataId(context, request, configuration);
@@ -69,7 +73,7 @@ public class PayPalDataCollector {
      * @param configuration the merchant configuration
      */
     @MainThread
-    String getClientMetadataId(Context context, PayPalDataCollectorRequest request, Configuration configuration) {
+    String getClientMetadataId(Context context, PayPalDataCollectorInternalRequest request, Configuration configuration) {
         return magnesInternalClient.getClientMetadataId(context, configuration, request);
     }
 
@@ -84,8 +88,20 @@ public class PayPalDataCollector {
      * @param context  Android Context
      * @param callback {@link PayPalDataCollectorCallback}
      */
-    public void collectDeviceData(@NonNull final Context context, @NonNull final PayPalDataCollectorCallback callback) {
-        collectDeviceData(context, null, callback);
+    public void collectDeviceData(
+        @NonNull final Context context,
+        @NonNull final PayPalDataCollectorCallback callback
+    ) {
+        PayPalDataCollectorRequest request = new PayPalDataCollectorRequest(false);
+        collectDeviceData(context, request, null, callback);
+    }
+
+    public void collectDeviceData(
+        @NonNull final Context context,
+        @NonNull final PayPalDataCollectorRequest payPalDataCollectorRequest,
+        @NonNull final PayPalDataCollectorCallback callback
+    ) {
+        collectDeviceData(context, payPalDataCollectorRequest, null, callback);
     }
 
     /**
@@ -100,21 +116,37 @@ public class PayPalDataCollector {
      * @param riskCorrelationId Optional client metadata id
      * @param callback          {@link PayPalDataCollectorCallback}
      */
-    public void collectDeviceData(@NonNull final Context context, @Nullable final String riskCorrelationId, @NonNull final PayPalDataCollectorCallback callback) {
+    public void collectDeviceData(
+        @NonNull final Context context,
+        @Nullable final String riskCorrelationId,
+        @NonNull final PayPalDataCollectorCallback callback
+    ) {
+        PayPalDataCollectorRequest request = new PayPalDataCollectorRequest(false);
+        collectDeviceData(context, request, riskCorrelationId, callback);
+    }
+
+    public void collectDeviceData(
+        @NonNull final Context context,
+        @NonNull final PayPalDataCollectorRequest payPalDataCollectorRequest,
+        @Nullable final String riskCorrelationId,
+        @NonNull final PayPalDataCollectorCallback callback
+    ) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
                     final JSONObject deviceData = new JSONObject();
                     try {
-                        PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
-                                .setApplicationGuid(getPayPalInstallationGUID(context));
+                        PayPalDataCollectorInternalRequest request = new PayPalDataCollectorInternalRequest(
+                            payPalDataCollectorRequest.getHasUserLocationConsent()
+                        ).setApplicationGuid(getPayPalInstallationGUID(context));
+
                         if (riskCorrelationId != null) {
                             request.setRiskCorrelationId(riskCorrelationId);
                         }
 
                         String correlationId =
-                                magnesInternalClient.getClientMetadataId(context, configuration, request);
+                            magnesInternalClient.getClientMetadataId(context, configuration, request);
                         if (!TextUtils.isEmpty(correlationId)) {
                             deviceData.put(CORRELATION_ID_KEY, correlationId);
                         }
