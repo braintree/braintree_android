@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -75,5 +76,23 @@ public class DataCollectorUnitTest {
         String deviceData = deviceDataCaptor.getValue();
         JSONObject json = new JSONObject(deviceData);
         assertEquals("sample_correlation_id", json.getString("correlation_id"));
+    }
+
+    @Test
+    public void collectDeviceData_without_DataCollectorRequest_sets_hasUserLocationConsent_to_false() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+            .configuration(configuration)
+            .build();
+
+        DataCollectorCallback callback = mock(DataCollectorCallback.class);
+        DataCollector sut = new DataCollector(braintreeClient, payPalDataCollector);
+
+        sut.collectDeviceData(context, callback);
+
+        ArgumentCaptor<String> deviceDataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(callback).onResult(deviceDataCaptor.capture(), (Exception) isNull());
+
+        verify(payPalDataCollector).getClientMetadataId(context, configuration, false);
+
     }
 }

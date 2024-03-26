@@ -41,6 +41,8 @@ public class MagnesInternalClientUnitTest {
     private HashMap<String, String> additionalData;
     private PayPalDataCollectorInternalRequest payPalDataCollectorInternalRequest;
 
+    private boolean hasUserLocationConsent = true;
+
     @Before
     public void beforeEach() {
         magnesSDK = mock(MagnesSDK.class);
@@ -60,7 +62,7 @@ public class MagnesInternalClientUnitTest {
 
         additionalData = new HashMap<>();
 
-        payPalDataCollectorInternalRequest = new PayPalDataCollectorInternalRequest(true)
+        payPalDataCollectorInternalRequest = new PayPalDataCollectorInternalRequest(hasUserLocationConsent)
                 .setRiskCorrelationId("sample-client-metadata-id")
                 .setDisableBeacon(true)
                 .setAdditionalData(additionalData)
@@ -142,6 +144,20 @@ public class MagnesInternalClientUnitTest {
 
         MagnesSettings magnesSettings = captor.getValue();
         assertEquals(validApplicationGUID, magnesSettings.getAppGuid());
+    }
+
+    @Test
+    public void getClientMetaDataId_setsHasUserLocationConsent() throws InvalidInputException {
+        when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenReturn(magnesResult);
+
+        MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
+        sut.getClientMetadataId(context, prodConfiguration, payPalDataCollectorInternalRequest);
+
+        ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
+        verify(magnesSDK).setUp(captor.capture());
+
+        MagnesSettings magnesSettings = captor.getValue();
+        assertEquals(hasUserLocationConsent, magnesSettings.hasUserLocationConsent());
     }
 
     @Test
