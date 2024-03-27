@@ -18,18 +18,25 @@ public class PayPalVaultRequestUnitTest {
 
     @Test
     public void newPayPalVaultRequest_setsDefaultValues() {
-        PayPalNativeCheckoutVaultRequest request = new PayPalNativeCheckoutVaultRequest();
+        PayPalNativeCheckoutVaultRequest request = new PayPalNativeCheckoutVaultRequest(false);
 
         assertNull(request.getLocaleCode());
         assertFalse(request.isShippingAddressRequired());
         assertNull(request.getDisplayName());
         assertFalse(request.getShouldOfferCredit());
+        assertFalse(request.hasUserLocationConsent());
+    }
+
+    @Test
+    public void newPayPalNativeVaultRequest_without_hasUserLocationConsent_defaults_to_false() {
+        PayPalNativeCheckoutVaultRequest request = new PayPalNativeCheckoutVaultRequest();
+        assertFalse(request.hasUserLocationConsent());
     }
 
     @Test
     public void setsValuesCorrectly() {
         PostalAddress postalAddress = new PostalAddress();
-        PayPalNativeCheckoutVaultRequest request = new PayPalNativeCheckoutVaultRequest();
+        PayPalNativeCheckoutVaultRequest request = new PayPalNativeCheckoutVaultRequest(true);
         request.setLocaleCode("US");
         request.setBillingAgreementDescription("Billing Agreement Description");
         request.setShippingAddressRequired(true);
@@ -44,11 +51,12 @@ public class PayPalVaultRequestUnitTest {
         assertEquals("Display Name", request.getDisplayName());
         assertEquals("123-correlation", request.getRiskCorrelationId());
         assertTrue(request.getShouldOfferCredit());
+        assertTrue(request.hasUserLocationConsent());
     }
 
     @Test
     public void parcelsCorrectly() {
-        PayPalNativeCheckoutVaultRequest request = new PayPalNativeCheckoutVaultRequest();
+        PayPalNativeCheckoutVaultRequest request = new PayPalNativeCheckoutVaultRequest(true);
         request.setLocaleCode("en-US");
         request.setBillingAgreementDescription("Billing Agreement Description");
         request.setShippingAddressRequired(true);
@@ -82,5 +90,6 @@ public class PayPalVaultRequestUnitTest {
         assertEquals("merchant_account_id", result.getMerchantAccountId());
         assertEquals(1, result.getLineItems().size());
         assertEquals("An Item", result.getLineItems().get(0).getName());
+        assertTrue(result.hasUserLocationConsent());
     }
 }

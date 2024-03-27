@@ -58,7 +58,7 @@ class PayPalNativeCheckoutClientUnitTest {
 
     @Test
     fun tokenizePayPalAccount_throwsWhenPayPalRequestIsBaseClass() {
-        val baseRequest: PayPalNativeRequest = object : PayPalNativeRequest() {
+        val baseRequest: PayPalNativeRequest = object : PayPalNativeRequest(true) {
             @Throws(JSONException::class)
             public override fun createRequestBody(
                 configuration: Configuration,
@@ -346,7 +346,7 @@ class PayPalNativeCheckoutClientUnitTest {
 
     @Test
     fun launchNativeCheckout_notifiesErrorWhenPayPalRequestIsBaseClass_sendsAnalyticsEvents() {
-        val baseRequest: PayPalNativeRequest = object : PayPalNativeRequest() {
+        val baseRequest: PayPalNativeRequest = object : PayPalNativeRequest(true) {
             @Throws(JSONException::class)
             public override fun createRequestBody(
                 configuration: Configuration,
