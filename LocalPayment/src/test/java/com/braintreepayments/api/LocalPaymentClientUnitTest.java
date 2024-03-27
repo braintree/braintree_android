@@ -75,7 +75,7 @@ public class LocalPaymentClientUnitTest {
             localPaymentApi);
         sut.createPaymentAuthRequest(null, localPaymentAuthCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, null);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class LocalPaymentClientUnitTest {
             localPaymentApi);
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, null);
     }
 
     @Test
@@ -149,7 +149,7 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED, null);
     }
 
     @Test
@@ -190,7 +190,7 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, null);
     }
 
     @Test
@@ -335,6 +335,53 @@ public class LocalPaymentClientUnitTest {
     }
 
     @Test
+    public void createPaymentAuthRequest_success_withEmptyPaymentId_sendsAnalyticsEvents() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .build();
+        LocalPaymentRequest request = getIdealLocalPaymentRequest();
+        String approvalUrl = "https://sample.com/approval?token=sample-token";
+        LocalPaymentAuthRequestParams
+                transaction = new LocalPaymentAuthRequestParams(request, approvalUrl, null);
+
+        LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
+                .createPaymentMethodSuccess(transaction)
+                .build();
+
+        LocalPaymentClient sut =
+                new LocalPaymentClient(braintreeClient, dataCollector,
+                        localPaymentApi);
+        sut.createPaymentAuthRequest(getIdealLocalPaymentRequest(), localPaymentAuthCallback);
+
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED, null);
+    }
+
+
+    @Test
+    public void createPaymentAuthRequest_success_withPaymentId_sendsAnalyticsEvents() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .build();
+        LocalPaymentRequest request = getIdealLocalPaymentRequest();
+        String approvalUrl = "https://sample.com/approval?token=sample-token";
+        LocalPaymentAuthRequestParams
+                transaction = new LocalPaymentAuthRequestParams(request, approvalUrl, "some-paypal-context-id");
+
+        LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
+                .createPaymentMethodSuccess(transaction)
+                .build();
+
+        LocalPaymentClient sut =
+                new LocalPaymentClient(braintreeClient, dataCollector,
+                        localPaymentApi);
+        sut.createPaymentAuthRequest(getIdealLocalPaymentRequest(), localPaymentAuthCallback);
+
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED, "some-paypal-context-id");
+    }
+
+    @Test
     public void buildBrowserSwitchOptions_returnsLocalPaymentResultWithBrowserSwitchOptions()
             throws JSONException {
         LocalPaymentClient sut =
@@ -406,7 +453,7 @@ public class LocalPaymentClientUnitTest {
 
         sut.buildBrowserSwitchOptions(transaction, localPaymentAuthCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED, null);
     }
 
     @Test
@@ -439,7 +486,7 @@ public class LocalPaymentClientUnitTest {
         String expectedMessage = "LocalPayment encountered an error, return URL is invalid.";
         assertEquals(expectedMessage, exception.getMessage());
 
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, null);
     }
 
     @Test
@@ -485,7 +532,7 @@ public class LocalPaymentClientUnitTest {
         assertTrue(result instanceof LocalPaymentResult.Failure);
         Exception exception = ((LocalPaymentResult.Failure) result).getError();
         assertEquals(postError, exception);
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, null);
     }
 
     @Test
@@ -595,7 +642,7 @@ public class LocalPaymentClientUnitTest {
 
         sut.tokenize(activity, localPaymentAuthResult, localPaymentTokenizeCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_SUCCEEDED);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_SUCCEEDED, null);
     }
 
     @Test
@@ -663,7 +710,7 @@ public class LocalPaymentClientUnitTest {
 
         LocalPaymentResult result = captor.getValue();
         assertTrue(result instanceof LocalPaymentResult.Cancel);
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_CANCELED);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_CANCELED, null);
     }
 
     private LocalPaymentRequest getIdealLocalPaymentRequest() {

@@ -46,9 +46,14 @@ afterEvaluate {
         }
     }
 
+    def isCiEnvironment = System.getenv('CI')
+
     signing {
-        sign publishing.publications
-        sign configurations.archives
+        required { isCiEnvironment }
+        if(isCiEnvironment) {
+            sign publishing.publications
+            sign configurations.archives
+        }
     }
 }
 

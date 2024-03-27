@@ -23,6 +23,12 @@ public class LocalPaymentClient {
     private final LocalPaymentApi localPaymentApi;
 
     /**
+     * Used for linking events from the client to server side request
+     * In the Local Payment flow this will be a Payment Token/Order ID
+     */
+    private String payPalContextId = null;
+
+    /**
      * Initializes a new {@link LocalPaymentClient} instance
      *
      * @param context an Android Context
@@ -91,6 +97,10 @@ public class LocalPaymentClient {
                     localPaymentApi.createPaymentMethod(request,
                             (localPaymentResult, createPaymentMethodError) -> {
                                 if (localPaymentResult != null) {
+                                    String pairingId = localPaymentResult.getPaymentId();
+                                    if (pairingId != null && !pairingId.isEmpty()) {
+                                        payPalContextId = pairingId;
+                                    }
                                     buildBrowserSwitchOptions(localPaymentResult, callback);
                                 } else if (createPaymentMethodError != null) {
                                     authRequestFailure(
@@ -131,11 +141,11 @@ public class LocalPaymentClient {
 
         localPaymentAuthRequestParams.setBrowserSwitchOptions(browserSwitchOptions);
         callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.ReadyToLaunch(localPaymentAuthRequestParams));
-        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED);
+        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED, payPalContextId);
     }
 
     private void authRequestFailure(Exception error, LocalPaymentAuthCallback callback) {
-        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED);
+        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, payPalContextId);
         callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.Failure(error));
     }
 
@@ -181,7 +191,7 @@ public class LocalPaymentClient {
                         (localPaymentNonce, localPaymentError) -> {
                             if (localPaymentNonce != null) {
                                 braintreeClient.sendAnalyticsEvent(
-                                    LocalPaymentAnalytics.PAYMENT_SUCCEEDED
+                                    LocalPaymentAnalytics.PAYMENT_SUCCEEDED, payPalContextId
                                 );
                                 callback.onLocalPaymentResult(new LocalPaymentResult.Success(localPaymentNonce));
                             } else if (localPaymentError != null) {
@@ -195,11 +205,11 @@ public class LocalPaymentClient {
     }
 
     private void callbackCancel(LocalPaymentTokenizeCallback callback){
-        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_CANCELED);
+        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_CANCELED, payPalContextId);
         callback.onLocalPaymentResult(LocalPaymentResult.Cancel.INSTANCE);
     }
     private void tokenizeFailure(Exception error, LocalPaymentTokenizeCallback callback) {
-        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED);
+        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, payPalContextId);
         callback.onLocalPaymentResult(new LocalPaymentResult.Failure(error));
     }
 }

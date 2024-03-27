@@ -21,7 +21,6 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     private val workManager: WorkManager,
     private val deviceInspector: DeviceInspector
 ) {
-
     constructor(context: Context) : this(
         BraintreeHttpClient(),
         getInstance(context.applicationContext),
@@ -31,35 +30,22 @@ internal class AnalyticsClient @VisibleForTesting constructor(
 
     fun sendEvent(
         configuration: Configuration,
-        eventName: String?,
+        event: AnalyticsEvent,
         sessionId: String?,
         integration: String?,
-        authorization: Authorization
-    ) {
-        val timestamp = System.currentTimeMillis()
-        sendEvent(configuration, eventName, sessionId, integration, timestamp, authorization)
-    }
-
-    @VisibleForTesting
-    fun sendEvent(
-        configuration: Configuration,
-        eventName: String?,
-        sessionId: String?,
-        integration: String?,
-        timestamp: Long,
         authorization: Authorization
     ): UUID {
-        scheduleAnalyticsWrite("android.$eventName", timestamp, authorization)
+        scheduleAnalyticsWrite(event, authorization)
         return scheduleAnalyticsUpload(configuration, authorization, sessionId, integration)
     }
 
     private fun scheduleAnalyticsWrite(
-        eventName: String, timestamp: Long, authorization: Authorization
+        event: AnalyticsEvent, authorization: Authorization
     ) {
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
-            .putString(WORK_INPUT_KEY_EVENT_NAME, eventName)
-            .putLong(WORK_INPUT_KEY_TIMESTAMP, timestamp)
+            .putString(WORK_INPUT_KEY_EVENT_NAME, "android.${event.name}")
+            .putLong(WORK_INPUT_KEY_TIMESTAMP, event.timestamp)
             .build()
 
         val analyticsWorkRequest =
@@ -73,12 +59,13 @@ internal class AnalyticsClient @VisibleForTesting constructor(
 
     fun writeAnalytics(inputData: Data): ListenableWorker.Result {
         val eventName = inputData.getString(WORK_INPUT_KEY_EVENT_NAME)
+        val payPalContextId = inputData.getString(WORK_INPUT_KEY_PAYPAL_CONTEXT_ID)
         val timestamp = inputData.getLong(WORK_INPUT_KEY_TIMESTAMP, INVALID_TIMESTAMP)
 
         return if (eventName == null || timestamp == INVALID_TIMESTAMP) {
             ListenableWorker.Result.failure()
         } else {
-            val event = AnalyticsEvent(eventName, timestamp)
+            val event = AnalyticsEvent(eventName, payPalContextId, timestamp)
             val analyticsEventDao = analyticsDatabase.analyticsEventDao()
             analyticsEventDao.insertEvent(event)
             ListenableWorker.Result.success()
@@ -124,6 +111,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 if (events.isNotEmpty()) {
                     val metadata = deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
                     val analyticsRequest = serializeEvents(authorization, events, metadata)
+
                     httpClient.post(
                         FPTI_ANALYTICS_URL,
                         analyticsRequest.toString(),
@@ -162,7 +150,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             return
         }
         val metadata = deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
-        val event = AnalyticsEvent("android.crash", timestamp)
+        val event = AnalyticsEvent("android.crash", null, timestamp)
         val events = listOf(event)
         try {
             val analyticsRequest = serializeEvents(authorization, events, metadata)
@@ -180,7 +168,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     @Throws(JSONException::class)
     private fun serializeEvents(
         authorization: Authorization?,
-        events: List<AnalyticsEvent>, metadata: DeviceMetadata
+        events: List<AnalyticsEvent>,
+        metadata: DeviceMetadata
     ): JSONObject {
         val batchParamsJSON = metadata.toJSON()
         authorization?.let {
@@ -198,6 +187,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         for (analyticsEvent in events) {
             val singleEventJSON = JSONObject()
                 .put(EVENT_NAME_KEY, analyticsEvent.name)
+
+                .putOpt(PAYPAL_CONTEXT_ID_KEY, analyticsEvent.payPalContextId)
                 .put(TIMESTAMP_KEY, analyticsEvent.timestamp)
                 .put(TENANT_NAME_KEY, "Braintree")
             eventParamsJSON.put(singleEventJSON)
@@ -210,18 +201,19 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     }
 
     companion object {
-        private const val FPTI_ANALYTICS_URL = "https://api.paypal.com/v1/tracking/batch/events"
+        private const val FPTI_ANALYTICS_URL = "https://api-m.paypal.com/v1/tracking/batch/events"
+        private const val PAYPAL_CONTEXT_ID_KEY = "paypal_context_id"
+        private const val TOKENIZATION_KEY = "tokenization_key"
 
+        private const val AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint"
+
+        private const val INVALID_TIMESTAMP: Long = -1
         private const val EVENTS_CONTAINER_KEY = "events"
         private const val BATCH_PARAMS_KEY = "batch_params"
-        private const val AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint"
-        private const val TOKENIZATION_KEY = "tokenization_key"
         private const val EVENT_PARAMS_KEY = "event_params"
         private const val EVENT_NAME_KEY = "event_name"
         private const val TIMESTAMP_KEY = "t"
         private const val TENANT_NAME_KEY = "tenant_name"
-
-        private const val INVALID_TIMESTAMP: Long = -1
         const val WORK_NAME_ANALYTICS_UPLOAD = "uploadAnalytics"
         const val WORK_NAME_ANALYTICS_WRITE = "writeAnalyticsToDb"
         const val WORK_INPUT_KEY_AUTHORIZATION = "authorization"
@@ -230,6 +222,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         const val WORK_INPUT_KEY_INTEGRATION = "integration"
         const val WORK_INPUT_KEY_SESSION_ID = "sessionId"
         const val WORK_INPUT_KEY_TIMESTAMP = "timestamp"
+        const val WORK_INPUT_KEY_PAYPAL_CONTEXT_ID = "payPalContextId"
         private const val DELAY_TIME_SECONDS = 30L
 
         private fun getAuthorizationFromData(inputData: Data?): Authorization? =
