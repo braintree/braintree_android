@@ -49,26 +49,6 @@ public class VenmoRequestUnitTest {
     }
 
     @Test
-    public void getFallbackToWeb_whenTrue_returnsTrue() {
-        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
-        request.setFallbackToWeb(true);
-        assertEquals(true, request.getFallbackToWeb());
-    }
-
-    @Test
-    public void getFallbackToWeb_whenFalse_returnsFalse() {
-        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
-        request.setFallbackToWeb(false);
-        assertEquals(false, request.getFallbackToWeb());
-    }
-
-    @Test
-    public void getFallbackToWeb_whenNoValuePassed_defaultsToFalse() {
-        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
-        assertEquals(false, request.getFallbackToWeb());
-    }
-
-    @Test
     public void getIsFinalAmountAsString_returnsStringEquivalent() {
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.MULTI_USE);
         request.setIsFinalAmount(true);
@@ -92,7 +72,6 @@ public class VenmoRequestUnitTest {
         request.setShippingAmount("1.00");
         request.setTotalAmount("10.00");
         request.setIsFinalAmount(true);
-        request.setFallbackToWeb(true);
 
         ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
         lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "An Item", 1, "10.00"));
@@ -117,6 +96,5 @@ public class VenmoRequestUnitTest {
         assertEquals(1, result.getLineItems().size());
         assertEquals("An Item", result.getLineItems().get(0).getName());
         assertTrue(result.getIsFinalAmount());
-        assertEquals(true, result.getFallbackToWeb());
     }
 }

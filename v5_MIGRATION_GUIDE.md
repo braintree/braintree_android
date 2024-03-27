@@ -127,15 +127,7 @@ class MyActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeClients()
-+       venmoLauncher = VenmoLauncher(this) { paymentAuthResult ->
-+            venmoClient.tokenize(paymentAuthResult) { result ->
-+               when(result) {
-+                   is VenmoResult.Success -> { /* handle result.nonce */ }
-+                   is VenmoResult.Failure -> { /* handle result.error */ }
-+                   is VenmoResult.Cancel -> { /* handle user canceled */ }
-+               }
-+            }
-+       }
++       venmoLauncher = VenmoLauncher()  
     }
     
     fun initializeClients() {
@@ -145,15 +137,52 @@ class MyActivity : FragmentActivity() {
 -       venmoClient.setListener(this)
     }
     
+    // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
+    override fun onNewIntent(intent: Intent) {
++       handleReturnToAppFromBrowser(intent)
+    }
+    
+    // ALL OTHER ACTIVITY LAUNCH MODES 
+    override fun onResume() {
++       handleReturnToAppFromBrowser(requireActivity().intent)
+    }
+    
+    fun handleReturnToAppFromBrowser(intent: Intent) {
+       // fetch stored VenmoPendingRequest.Success 
++       fetchPendingRequestFromPersistantStore()?.let {
++          when (val paymentAuthResult = venmoLauncher.handleReturnToAppFromBrowser(it, intent)) {
++               is VenmoPaymentAuthResult.Success - > {
++                   completeVenmoFlow(paymentAuthResult)
++                   // clear stored VenmoPendingRequest.Success
++               }
++               is VenmoPaymentAuthResult.NoResult -> // user returned to app without completing Venmo flow, handle accordingly
++          }
++       }   
+    }
+    
     fun onVenmoButtonClick() {
 -       venmoClient.tokenizeVenmoAccount(activity, request)
 +       venmoClient.createPaymentAuthRequest(this, venmoRequest) { paymentAuthRequest ->
 +           when(paymentAuthRequest) {
 +               is VenmoPaymentAuthRequest.ReadyToLaunch -> {
-+                   venmoLauncher.launch(paymentAuthRequet)
++                   val pendingRequest = venmoLauncher.launch(this@MyActivity, paymentAuthRequet)
++                   when(pendingRequest) {
++                       is (VenmoPendingRequest.Success) { /* store pending request */ }
++                       is (VenmoPendingRequest.Failure) { /* handle error */ }
++                   }
 +               }
 +               is VenmoPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error +/ }
 +           }
++       }
+    }
+    
+    fun completeVenmoFlow(paymentAuthResult: VenmoPaymentAuthResult) {
++       venmoClient.tokenize(paymentAuthResult) { result ->
++           when(result) {
++               is VenmoResult.Success -> { /* handle result.nonce */ }
++               is VenmoResult.Failure -> { /* handle result.error */ }
++               is VenmoResult.Cancel -> { /* handle user canceled */ }
++           }          
 +       }
     }
     

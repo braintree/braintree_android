@@ -1,11 +1,18 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
+import org.json.JSONObject;
+
+import java.util.Objects;
 
 /**
  * Used to create and tokenize Venmo accounts. For more information see the <a
@@ -55,11 +62,8 @@ public class VenmoClient {
 
     /**
      * Start the Pay With Venmo flow. This will return a {@link VenmoPaymentAuthRequestParams} that
-     * will be used to authenticate the user by switching to the Venmo app in
-     * {@link VenmoLauncher#launch(VenmoPaymentAuthRequest.ReadyToLaunch)}
-     * <p>
-     * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to
-     * {@link VenmoPaymentAuthRequestCallback#onVenmoPaymentAuthRequest(VenmoPaymentAuthRequest)}
+     * will be used to authenticate the user by switching to the Venmo app or mobile browser in
+     * {@link VenmoLauncher#launch(ComponentActivity, VenmoPaymentAuthRequest.ReadyToLaunch)}
      *
      * @param context  Android Context
      * @param request  {@link VenmoRequest}
@@ -78,12 +82,6 @@ public class VenmoClient {
             if (!configuration.isVenmoEnabled()) {
                 callbackPaymentAuthFailure(callback,
                         new VenmoPaymentAuthRequest.Failure(new AppSwitchNotAvailableException("Venmo is not enabled")));
-                return;
-            }
-            if (!deviceInspector.isVenmoAppSwitchAvailable(context)) {
-                braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_FAILED);
-                callbackPaymentAuthFailure(callback,
-                        new VenmoPaymentAuthRequest.Failure(new AppSwitchNotAvailableException("Venmo is not installed")));
                 return;
             }
 
@@ -132,9 +130,38 @@ public class VenmoClient {
         boolean isClientTokenAuth = (authorization instanceof ClientToken);
         boolean shouldVault = request.getShouldVault() && isClientTokenAuth;
         sharedPrefsWriter.persistVenmoVaultOption(context, shouldVault);
-        VenmoPaymentAuthRequestParams params =
-                new VenmoPaymentAuthRequestParams(configuration, venmoProfileId, paymentContextId,
-                        braintreeClient.getSessionId(), braintreeClient.getIntegrationType());
+
+        JSONObject braintreeData = new MetadataBuilder()
+                .sessionId(braintreeClient.getSessionId())
+                .integration(braintreeClient.getIntegrationType())
+                .version()
+                .build();
+
+        String applicationName =
+                context.getPackageManager().getApplicationLabel(context.getApplicationInfo())
+                        .toString();
+
+        Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout")
+                .buildUpon()
+                .appendQueryParameter("x-success", braintreeClient.getReturnUrlScheme() + "://x-callback-url/vzero/auth/venmo/success")
+                .appendQueryParameter("x-error", braintreeClient.getReturnUrlScheme() + "://x-callback-url/vzero/auth/venmo/error")
+                .appendQueryParameter("x-cancel", braintreeClient.getReturnUrlScheme() + "://x-callback-url/vzero/auth/venmo/cancel")
+                .appendQueryParameter("x-source", applicationName)
+                .appendQueryParameter("braintree_merchant_id", venmoProfileId)
+                .appendQueryParameter("braintree_access_token", configuration.getVenmoAccessToken())
+                .appendQueryParameter("braintree_environment", configuration.getVenmoEnvironment())
+                .appendQueryParameter("resource_id", paymentContextId)
+                .appendQueryParameter("braintree_sdk_data", braintreeData.toString())
+                .appendQueryParameter("customerClient", "MOBILE_APP")
+                .build();
+
+        BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
+                .requestCode(BraintreeRequestCodes.VENMO)
+                .url(venmoBaseURL)
+                .returnUrlScheme(braintreeClient.getReturnUrlScheme());
+        VenmoPaymentAuthRequestParams params = new VenmoPaymentAuthRequestParams(
+                browserSwitchOptions);
+
         callback.onVenmoPaymentAuthRequest(new VenmoPaymentAuthRequest.ReadyToLaunch(params));
     }
 
@@ -144,72 +171,107 @@ public class VenmoClient {
      * this method should be invoked to tokenize the account to retrieve a
      * {@link VenmoAccountNonce}.
      * 
-     * @param venmoPaymentAuthResult the result of {@link VenmoLauncher#launch(VenmoPaymentAuthRequest.ReadyToLaunch)}
+     * @param paymentAuthResult the result of {@link VenmoLauncher#handleReturnToApp(VenmoPendingRequest.Started, Intent)}
      * @param callback a {@link VenmoInternalCallback} to receive a {@link VenmoAccountNonce} or
      *                 error from Venmo tokenization
      */
-    public void tokenize(@NonNull final VenmoPaymentAuthResult venmoPaymentAuthResult,
+    public void tokenize(@NonNull final VenmoPaymentAuthResult.Success paymentAuthResult,
                          @NonNull VenmoTokenizeCallback callback) {
-        if (venmoPaymentAuthResult.getError() == null) {
+            VenmoPaymentAuthResultInfo venmoPaymentAuthResultInfo = paymentAuthResult.getPaymentAuthInfo();
+            BrowserSwitchResultInfo browserSwitchResultInfo = venmoPaymentAuthResultInfo.getBrowserSwitchResultInfo();
+
+        Uri deepLinkUri = browserSwitchResultInfo.getDeepLinkUrl();
+        if (deepLinkUri != null) {
             braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED);
+            if (Objects.requireNonNull(deepLinkUri.getPath()).contains("success")) {
+                String paymentContextId = parseResourceId(String.valueOf(deepLinkUri));
+                String paymentMethodNonce = parsePaymentMethodNonce(String.valueOf(deepLinkUri));
+                String username = parseUsername(String.valueOf(deepLinkUri));
 
-            final boolean isClientTokenAuth = (braintreeClient.getAuthorization() instanceof ClientToken);
+                final boolean isClientTokenAuth = (braintreeClient.getAuthorization() instanceof ClientToken);
 
-            String paymentContextId = venmoPaymentAuthResult.getPaymentContextId();
-            if (paymentContextId != null) {
-                venmoApi.createNonceFromPaymentContext(paymentContextId, (nonce, error) -> {
-                    if (nonce != null) {
-                        boolean shouldVault =
-                                sharedPrefsWriter.getVenmoVaultOption(
-                                        braintreeClient.getApplicationContext());
-                        if (shouldVault && isClientTokenAuth) {
-                            vaultVenmoAccountNonce(nonce.getString(),
-                                    (venmoAccountNonce, vaultError) -> {
-                                        if (venmoAccountNonce != null) {
-                                            callbackSuccess(callback, new VenmoResult.Success(venmoAccountNonce));
-                                        } else if (vaultError != null) {
-                                            callbackTokenizeFailure(callback, new VenmoResult.Failure(vaultError));
-                                        }
-                                    });
-                        } else {
-                            callbackSuccess(callback, new VenmoResult.Success(nonce));
-                        }
-                    } else if (error != null) {
-                        callbackTokenizeFailure(callback, new VenmoResult.Failure(error));
-                    }
-                });
-            } else {
-                String nonce = venmoPaymentAuthResult.getVenmoAccountNonce();
-
-                boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(
-                        braintreeClient.getApplicationContext());
-                if (shouldVault && isClientTokenAuth) {
-                    vaultVenmoAccountNonce(nonce, (venmoAccountNonce, error) -> {
-                        if (venmoAccountNonce != null) {
-                            callbackSuccess(callback, new VenmoResult.Success(venmoAccountNonce));
+                if (paymentContextId != null) {
+                    venmoApi.createNonceFromPaymentContext(paymentContextId, (nonce, error) -> {
+                        if (nonce != null) {
+                            boolean shouldVault =
+                                    sharedPrefsWriter.getVenmoVaultOption(
+                                            braintreeClient.getApplicationContext());
+                            if (shouldVault && isClientTokenAuth) {
+                                vaultVenmoAccountNonce(nonce.getString(),
+                                        (venmoAccountNonce, vaultError) -> {
+                                            if (venmoAccountNonce != null) {
+                                                callbackSuccess(callback, new VenmoResult.Success(venmoAccountNonce));
+                                            } else if (vaultError != null) {
+                                                callbackTokenizeFailure(callback, new VenmoResult.Failure(vaultError));
+                                            }
+                                        });
+                            } else {
+                                callbackSuccess(callback, new VenmoResult.Success(nonce));
+                            }
                         } else if (error != null) {
                             callbackTokenizeFailure(callback, new VenmoResult.Failure(error));
                         }
                     });
-                } else {
-                    String venmoUsername = venmoPaymentAuthResult.getVenmoUsername();
-                    VenmoAccountNonce venmoAccountNonce =
-                            new VenmoAccountNonce(nonce, venmoUsername, false);
-                    callbackSuccess(callback, new VenmoResult.Success(venmoAccountNonce));
-                }
 
-            }
-        } else if (venmoPaymentAuthResult.getError() != null) {
-            if (venmoPaymentAuthResult.getError() instanceof UserCanceledException) {
+                } else if (paymentMethodNonce != null && username != null) {
+                    boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(
+                            braintreeClient.getApplicationContext());
+                    if (shouldVault && isClientTokenAuth) {
+                        vaultVenmoAccountNonce(paymentMethodNonce, (venmoAccountNonce, error) -> {
+                            if (venmoAccountNonce != null) {
+                                callbackSuccess(callback, new VenmoResult.Success(venmoAccountNonce));
+                            } else if (error != null) {
+                                callbackTokenizeFailure(callback, new VenmoResult.Failure(error));
+                            }
+                        });
+                    } else {
+                        VenmoAccountNonce venmoAccountNonce =
+                                new VenmoAccountNonce(paymentMethodNonce, username, false);
+                        callbackSuccess(callback, new VenmoResult.Success(venmoAccountNonce));
+                    }
+                }
+            } else if (deepLinkUri.getPath().contains("cancel")) {
                 callbackTokenizeCancel(callback);
-            } else {
-                callbackTokenizeFailure(callback, new VenmoResult.Failure(venmoPaymentAuthResult.getError()));
+            } else if (deepLinkUri.getPath().contains("error")) {
+                callbackTokenizeFailure(callback, new VenmoResult.Failure(new Exception("Error returned from Venmo.")));
             }
+        } else {
+            callbackTokenizeFailure(callback, new VenmoResult.Failure(new Exception("Unknown error")));
+        }
+    }
+
+    private String parseResourceId(String deepLinkUri) {
+        String resourceIdFromBrowserSwitch = Uri.parse(deepLinkUri).getQueryParameter("resource_id");
+        if (resourceIdFromBrowserSwitch != null) {
+            return resourceIdFromBrowserSwitch;
+        } else {
+            String cleanedAppSwitchUri = deepLinkUri.replaceFirst("&","?");
+            return Uri.parse(cleanedAppSwitchUri).getQueryParameter("resource_id");
+        }
+    }
+
+    private String parsePaymentMethodNonce(String deepLinkUri) {
+        String paymentMethodNonceFromBrowserSwitch = Uri.parse(deepLinkUri).getQueryParameter("payment_method_nonce");
+        if (paymentMethodNonceFromBrowserSwitch != null) {
+            return paymentMethodNonceFromBrowserSwitch;
+        } else {
+            String cleanedAppSwitchUri = deepLinkUri.replaceFirst("&","?");
+            return Uri.parse(cleanedAppSwitchUri).getQueryParameter("payment_method_nonce");
+        }
+    }
+
+    private String parseUsername(String deepLinkUri) {
+        String usernameFromBrowserSwitch = Uri.parse(deepLinkUri).getQueryParameter("username");
+        if (usernameFromBrowserSwitch != null) {
+            return usernameFromBrowserSwitch;
+        } else {
+            String cleanedAppSwitchUri = deepLinkUri.replaceFirst("&","?");
+            return Uri.parse(cleanedAppSwitchUri).getQueryParameter("username");
         }
     }
 
     private void vaultVenmoAccountNonce(String nonce, final VenmoInternalCallback callback) {
-        venmoApi.vaultVenmoAccountNonce(nonce, (venmoAccountNonce, error) -> callback.onResult(venmoAccountNonce, error));
+        venmoApi.vaultVenmoAccountNonce(nonce, callback);
     }
 
     /**
@@ -230,6 +292,7 @@ public class VenmoClient {
      * @param context  Android Context
      * @param callback {@link VenmoIsReadyToPayCallback}
      */
+    // TODO: How should this method behave with web fallback enabled?
     public void isReadyToPay(final Context context, final VenmoIsReadyToPayCallback callback) {
         braintreeClient.getConfiguration((configuration, configError) -> {
             if (configuration != null) {

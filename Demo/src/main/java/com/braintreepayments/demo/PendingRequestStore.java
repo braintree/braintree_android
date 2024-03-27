@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import com.braintreepayments.api.LocalPaymentPendingRequest;
 import com.braintreepayments.api.PayPalPendingRequest;
 import com.braintreepayments.api.SEPADirectDebitPendingRequest;
+import com.braintreepayments.api.VenmoPendingRequest;
 
 import org.json.JSONException;
 
@@ -16,11 +17,33 @@ public class PendingRequestStore {
     static final String PAYPAL_PENDING_REQUEST_KEY = "PAYPAL_PENDING_REQUEST";
     static final String LOCAL_PAYMENT_PENDING_REQUEST_KEY = "LOCAL_PAYMENT_PENDING_REQUEST";
     static final String SEPA_DIRECT_DEBIT_PENDING_REQUEST_KEY = "SEPA_DIRECT_DEBIT_PENDING_REQUEST";
+    static final String VENMO_PENDING_REQUEST_KEY = "VENMO_PENDING_REQUEST";
 
     private static final PendingRequestStore INSTANCE = new PendingRequestStore();
 
     static PendingRequestStore getInstance() {
         return INSTANCE;
+    }
+
+    public void putVenmoPendingRequest(Context context,
+                                        VenmoPendingRequest.Started pendingRequest) {
+        put(VENMO_PENDING_REQUEST_KEY, pendingRequest.toJsonString(), context);
+    }
+
+    public VenmoPendingRequest.Started getVenmoPendingRequest(Context context) {
+        String requestString = get(VENMO_PENDING_REQUEST_KEY, context);
+        if (requestString != null) {
+            try {
+                return new VenmoPendingRequest.Started(requestString);
+            } catch (JSONException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    public void clearVenmoPendingRequest(Context context) {
+        remove(VENMO_PENDING_REQUEST_KEY, context);
     }
 
     public void putPayPalPendingRequest(Context context,
