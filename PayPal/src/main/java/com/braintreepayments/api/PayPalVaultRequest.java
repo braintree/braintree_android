@@ -18,7 +18,19 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
 
     private String userAuthenticationEmail;
 
+    /**
+     * Deprecated. Use {@link PayPalVaultRequest#PayPalVaultRequest(boolean)} instead.
+     */
+    @Deprecated
     public PayPalVaultRequest() {
+        super(false);
+    }
+
+    /**
+     * TODO: add javadoc for hasUserLocationConsent param
+     */
+    public PayPalVaultRequest(boolean hasUserLocationConsent) {
+        super(hasUserLocationConsent);
     }
 
     /**

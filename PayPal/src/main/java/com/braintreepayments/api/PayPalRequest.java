@@ -70,13 +70,17 @@ public abstract class PayPalRequest implements Parcelable {
     private String merchantAccountId;
     private String riskCorrelationId;
     private final ArrayList<PayPalLineItem> lineItems;
+    private final boolean hasUserLocationConsent;
 
     /**
      * Constructs a request for PayPal Checkout and Vault flows.
+     *
+     * TODO: add javadoc for hasUserLocationConsent param
      */
-    public PayPalRequest() {
+    public PayPalRequest(boolean hasUserLocationConsent) {
         shippingAddressRequired = false;
         lineItems = new ArrayList<>();
+        this.hasUserLocationConsent = hasUserLocationConsent;
     }
 
     /**
@@ -255,6 +259,10 @@ public abstract class PayPalRequest implements Parcelable {
         return landingPageType;
     }
 
+    public boolean hasUserLocationConsent() {
+        return hasUserLocationConsent;
+    }
+
     abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;
 
     protected PayPalRequest(Parcel in) {
@@ -268,6 +276,7 @@ public abstract class PayPalRequest implements Parcelable {
         merchantAccountId = in.readString();
         riskCorrelationId = in.readString();
         lineItems = in.createTypedArrayList(PayPalLineItem.CREATOR);
+        hasUserLocationConsent = in.readByte() != 0;
     }
 
     @Override
@@ -287,5 +296,6 @@ public abstract class PayPalRequest implements Parcelable {
         parcel.writeString(merchantAccountId);
         parcel.writeString(riskCorrelationId);
         parcel.writeTypedList(lineItems);
+        parcel.writeByte((byte) (hasUserLocationConsent ? 1 : 0));
     }
 }
