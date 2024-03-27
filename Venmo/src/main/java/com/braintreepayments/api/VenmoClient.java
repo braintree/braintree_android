@@ -18,6 +18,12 @@ public class VenmoClient {
     private final VenmoSharedPrefsWriter sharedPrefsWriter;
     private final DeviceInspector deviceInspector;
 
+    /**
+     * Used for linking events from the client to server side request
+     * In the Venmo flow this will be a Payment Context ID
+     */
+    private String payPalContextId = null;
+
     private VenmoClient(BraintreeClient braintreeClient, ApiClient apiClient) {
         this(braintreeClient, new VenmoApi(braintreeClient, apiClient),
                 new VenmoSharedPrefsWriter(), new DeviceInspector());
@@ -101,6 +107,9 @@ public class VenmoClient {
             venmoApi.createPaymentContext(request, venmoProfileId,
                     (paymentContextId, exception) -> {
                         if (exception == null) {
+                            if (paymentContextId != null && !paymentContextId.isEmpty()) {
+                                payPalContextId = paymentContextId;
+                            }
                             createPaymentAuthRequest(context, request, configuration,
                                     braintreeClient.getAuthorization(), finalVenmoProfileId,
                                     paymentContextId, callback);
@@ -238,22 +247,22 @@ public class VenmoClient {
     }
 
     private void callbackPaymentAuthFailure(VenmoPaymentAuthRequestCallback callback, VenmoPaymentAuthRequest request) {
-        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED);
+        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, payPalContextId);
         callback.onVenmoPaymentAuthRequest(request);
     }
 
     private void callbackSuccess(VenmoTokenizeCallback callback, VenmoResult venmoResult) {
-        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_SUCCEEDED);
+        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_SUCCEEDED, payPalContextId);
         callback.onVenmoResult(venmoResult);
     }
 
     private void callbackTokenizeCancel(VenmoTokenizeCallback callback) {
-        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_CANCELED);
+        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_CANCELED, payPalContextId);
         callback.onVenmoResult(VenmoResult.Cancel.INSTANCE);
     }
     
     private void callbackTokenizeFailure(VenmoTokenizeCallback callback, VenmoResult venmoResult) {
-        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED);
+        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, payPalContextId);
         callback.onVenmoResult(venmoResult);
     }
 }

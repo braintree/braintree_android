@@ -278,7 +278,11 @@ class BraintreeClientUnitTest {
 
         verify {
             analyticsClient.sendEvent(
-                configuration, "event.started", "session-id", "custom", authorization
+                configuration,
+                match { it.name == "event.started" },
+                "session-id",
+                "custom",
+                authorization
             )
         }
     }

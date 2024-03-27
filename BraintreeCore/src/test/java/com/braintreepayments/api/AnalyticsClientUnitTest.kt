@@ -28,6 +28,7 @@ class AnalyticsClientUnitTest {
     private lateinit var deviceInspector: DeviceInspector
     private lateinit var eventName: String
     private lateinit var sessionId: String
+    private lateinit var payPalContextId: String
     private lateinit var integration: String
     private lateinit var workManager: WorkManager
     private lateinit var analyticsDatabase: AnalyticsDatabase
@@ -41,6 +42,7 @@ class AnalyticsClientUnitTest {
         timestamp = 123
         eventName = "sample-event-name"
         sessionId = "sample-session-id"
+        payPalContextId = "sample-paypal-context-id"
         integration = "sample-integration"
         authorization = fromString(Fixtures.TOKENIZATION_KEY)
         context = ApplicationProvider.getApplicationContext()
@@ -66,8 +68,9 @@ class AnalyticsClientUnitTest {
             )
         } returns mockk()
 
+        var event = AnalyticsEvent(eventName, null, 123)
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
-        sut.sendEvent(configuration, eventName, sessionId, integration, 123, authorization)
+        sut.sendEvent(configuration, event, sessionId, integration, authorization)
 
         val workSpec = workRequestSlot.captured.workSpec
         assertEquals(AnalyticsWriteToDbWorker::class.java.name, workSpec.workerClassName)
@@ -88,8 +91,9 @@ class AnalyticsClientUnitTest {
             )
         } returns mockk()
 
+        val event = AnalyticsEvent(eventName)
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
-        sut.sendEvent(configuration, eventName, sessionId, integration, 123, authorization)
+        sut.sendEvent(configuration, event, sessionId, integration, authorization)
 
         val workSpec = workRequestSlot.captured.workSpec
         assertEquals(30000, workSpec.initialDelay)
@@ -140,6 +144,7 @@ class AnalyticsClientUnitTest {
 
         val inputData = Data.Builder()
             .putString(AnalyticsClient.WORK_INPUT_KEY_EVENT_NAME, eventName)
+            .putString(AnalyticsClient.WORK_INPUT_KEY_PAYPAL_CONTEXT_ID, payPalContextId)
             .putLong(AnalyticsClient.WORK_INPUT_KEY_TIMESTAMP, timestamp)
             .build()
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
@@ -147,6 +152,7 @@ class AnalyticsClientUnitTest {
 
         val event = analyticsEventSlot.captured
         assertEquals("sample-event-name", event.name)
+        assertEquals("sample-paypal-context-id", event.payPalContextId)
         assertEquals(123, event.timestamp)
     }
 
@@ -182,14 +188,14 @@ class AnalyticsClientUnitTest {
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", 123))
-        events.add(AnalyticsEvent("event1", 456))
+        events.add(AnalyticsEvent("event0", null, 123))
+        events.add(AnalyticsEvent("event1", payPalContextId, 456))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val analyticsJSONSlot = slot<String>()
         every {
             httpClient.post(
-                "https://api.paypal.com/v1/tracking/batch/events",
+                "https://api-m.paypal.com/v1/tracking/batch/events",
                 capture(analyticsJSONSlot),
                 any(),
                 any()
@@ -205,7 +211,7 @@ class AnalyticsClientUnitTest {
         val eventJSON = eventsArray[0] as JSONObject
         assertNotNull("JSON body missing top level `events` key.", eventJSON)
 
-         verifyBatchParams(eventJSON["batch_params"] as JSONObject)
+        verifyBatchParams(eventJSON["batch_params"] as JSONObject)
 
         val eventParams = eventJSON.getJSONArray("event_params")
         assertEquals(2, eventParams.length())
@@ -256,18 +262,19 @@ class AnalyticsClientUnitTest {
     @Throws(JSONException::class)
     fun uploadAnalytics_whenAuthorizationIsClientToken_includesAuthFingerprintBatchParam() {
         val inputData = Data.Builder()
-            .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, Fixtures.BASE64_CLIENT_TOKEN2)
-            .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
-            .putString(AnalyticsClient.WORK_INPUT_KEY_SESSION_ID, sessionId)
-            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration)
-            .build()
+
+                .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, Fixtures.BASE64_CLIENT_TOKEN2)
+                .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
+                .putString(AnalyticsClient.WORK_INPUT_KEY_SESSION_ID, sessionId)
+                .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration)
+                .build()
 
         every {
             deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
         } returns createSampleDeviceMetadata()
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", 123))
+        events.add(AnalyticsEvent("event0"))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val analyticsJSONSlot = slot<String>()
@@ -333,8 +340,8 @@ class AnalyticsClientUnitTest {
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", 123))
-        events.add(AnalyticsEvent("event1", 456))
+        events.add(AnalyticsEvent("event0", null, 123))
+        events.add(AnalyticsEvent("event1", payPalContextId, 456))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
@@ -358,8 +365,8 @@ class AnalyticsClientUnitTest {
         } returns createSampleDeviceMetadata()
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", 123))
-        events.add(AnalyticsEvent("event1", 456))
+        events.add(AnalyticsEvent("event0", null, 123))
+        events.add(AnalyticsEvent("event1", payPalContextId, 456))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val httpError = Exception("error")
@@ -381,7 +388,7 @@ class AnalyticsClientUnitTest {
         val analyticsJSONSlot = slot<String>()
         every {
             httpClient.post(
-                "https://api.paypal.com/v1/tracking/batch/events",
+                "https://api-m.paypal.com/v1/tracking/batch/events",
                 capture(analyticsJSONSlot),
                 any(),
                 authorization,
@@ -390,7 +397,9 @@ class AnalyticsClientUnitTest {
         } returns Unit
 
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
-        sut.sendEvent(configuration, eventName, sessionId, integration, authorization)
+
+        val event = AnalyticsEvent(eventName)
+        sut.sendEvent(configuration, event, sessionId, integration, authorization)
 
         sut.reportCrash(context, configuration, sessionId, integration, 123, authorization)
 
@@ -410,6 +419,24 @@ class AnalyticsClientUnitTest {
         assertEquals(123, eventOne.getString("t").toLong())
     }
 
+    @Test
+    @Throws(JSONException::class)
+    fun reportCrash_whenAuthorizationIsNull_doesNothing() {
+        val metadata = createSampleDeviceMetadata()
+        every {
+            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
+        } returns metadata
+
+        val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
+        val event = AnalyticsEvent(eventName)
+        sut.sendEvent(configuration, event, sessionId, integration, authorization)
+
+        sut.reportCrash(context, configuration, sessionId, integration, 123, null)
+
+        // or confirmVerified(httpClient)
+        verify { httpClient wasNot Called }
+    }
+
     private fun verifyBatchParams(batchParams: JSONObject) {
         assertEquals("fake-app-id", batchParams["app_id"])
         assertEquals("fake-app-name", batchParams["app_name"])
@@ -427,23 +454,6 @@ class AnalyticsClientUnitTest {
         assertEquals("fake-platform", batchParams["platform"])
         assertEquals("fake-session-id", batchParams["session_id"])
         assertEquals("sandbox_tmxhyf7d_dcpspy2brwdjr3qn", batchParams["tokenization_key"])
-    }
-
-    @Test
-    @Throws(JSONException::class)
-    fun reportCrash_whenAuthorizationIsNull_doesNothing() {
-        val metadata = createSampleDeviceMetadata()
-        every {
-            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
-        } returns metadata
-
-        val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
-        sut.sendEvent(configuration, eventName, sessionId, integration, authorization)
-
-        sut.reportCrash(context, configuration, sessionId, integration, 123, null)
-
-        // or confirmVerified(httpClient)
-        verify { httpClient wasNot Called }
     }
 
     companion object {

@@ -2,7 +2,6 @@
 
 ## unreleased
 
-* Move from Braintree to PayPal analytics service (FPTI)
 * Breaking Changes
   * All Modules
     * Bump `minSdkVersion` to API 23
@@ -128,8 +127,19 @@
     * Remove entire Samsung Pay module
   * PayPal Native Checkout
     * Remove entire PayPal Native Checkout module
-    
-## unreleased (v4)
+
+## 4.43.0 (2024-03-19)
+
+* Move from Braintree to PayPal analytics service (FPTI)
+* Venmo
+  * Fix bug where SDK is not sending metadata as expected when creating payment context or constructing App Link URL
+
+## 4.42.0 (2024-03-12)
+
+* PayPal
+  * Add optional property `PayPalVaultRequest.setUserAuthenticationEmail()`
+* BraintreeCore
+  * Send `paypal_context_id` in `analytics_event` to PayPal's analytics service (FPTI) when available
 * Venmo
   * Add `setIsFinalAmount()` to `VenmoRequest`
   * Add `setFallbackToWeb()` to `VenmoRequest`

@@ -22,6 +22,12 @@ public class PayPalClient {
     private final PayPalInternalClient internalPayPalClient;
 
     /**
+     * Used for linking events from the client to server side request
+     * In the PayPal flow this will be either an EC token or a Billing Agreement token
+     */
+    private String payPalContextId = null;
+
+    /**
      * Initializes a new {@link PayPalClient} instance
      *
      * @param context       an Android Context
@@ -181,6 +187,13 @@ public class PayPalClient {
         boolean isBillingAgreement = paymentType.equalsIgnoreCase("billing-agreement");
         String tokenKey = isBillingAgreement ? "ba_token" : "token";
 
+        if (approvalUrl != null) {
+            String pairingId = Uri.parse(approvalUrl).getQueryParameter(tokenKey);
+            if (pairingId != null && !pairingId.isEmpty()) {
+                payPalContextId = pairingId;
+            }
+        }
+
         try {
             Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
             if (deepLinkUri != null) {
@@ -255,25 +268,25 @@ public class PayPalClient {
 
     private void callbackCreatePaymentAuthFailure(PayPalPaymentAuthCallback callback,
                                                   PayPalPaymentAuthRequest.Failure failure) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED);
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, payPalContextId);
         callback.onPayPalPaymentAuthRequest(failure);
     }
 
     private void callbackBrowserSwitchCancel(PayPalTokenizeCallback callback,
                                              PayPalResult.Cancel cancel) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED);
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, payPalContextId);
         callback.onPayPalResult(cancel);
     }
 
     private void callbackTokenizeFailure(PayPalTokenizeCallback callback,
                                          PayPalResult.Failure failure) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED);
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, payPalContextId);
         callback.onPayPalResult(failure);
     }
 
     private void callbackTokenizeSuccess(PayPalTokenizeCallback callback,
                                          PayPalResult.Success success) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED);
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, payPalContextId);
         callback.onPayPalResult(success);
     }
 }

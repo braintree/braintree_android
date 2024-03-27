@@ -71,6 +71,10 @@ public class VenmoApiUnitTest {
         assertEquals("CONTINUE", input.getString("intent"));
         assertEquals("display-name", input.getString("displayName"));
 
+        JSONObject metadata = graphQLJSON.getJSONObject("clientSdkMetadata");
+        assertEquals(BuildConfig.VERSION_NAME, metadata.getString("version"));
+        assertEquals("android", metadata.getString("platform"));
+
         JSONObject paysheetDetails = input.getJSONObject("paysheetDetails");
         assertEquals("true", paysheetDetails.getString("collectCustomerBillingAddress"));
         assertEquals("true", paysheetDetails.getString("collectCustomerShippingAddress"));

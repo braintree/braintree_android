@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,6 +15,8 @@ import org.json.JSONObject;
 public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
 
     private boolean shouldOfferCredit;
+
+    private String userAuthenticationEmail;
 
     public PayPalVaultRequest() {
     }
@@ -30,8 +34,24 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
         return shouldOfferCredit;
     }
 
+    /**
+     * Optional: User email to initiate a quicker authentication flow in cases where the user has a
+     * PayPal Account with the same email.
+     *
+     * @param userAuthenticationEmail - email address of the payer
+     */
+    public void setUserAuthenticationEmail(@Nullable String userAuthenticationEmail) {
+        this.userAuthenticationEmail = userAuthenticationEmail;
+    }
+
+    @Nullable
+    public String getUserAuthenticationEmail() {
+        return this.userAuthenticationEmail;
+    }
+
     String createRequestBody(Configuration configuration, Authorization authorization,
                              String successUrl, String cancelUrl) throws JSONException {
+
         JSONObject parameters = new JSONObject()
                 .put(RETURN_URL_KEY, successUrl)
                 .put(CANCEL_URL_KEY, cancelUrl)
@@ -47,6 +67,8 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
         if (!TextUtils.isEmpty(billingAgreementDescription)) {
             parameters.put(DESCRIPTION_KEY, billingAgreementDescription);
         }
+
+        parameters.putOpt(PAYER_EMAIL_KEY, userAuthenticationEmail);
 
         JSONObject experienceProfile = new JSONObject();
         experienceProfile.put(NO_SHIPPING_KEY, !isShippingAddressRequired());
