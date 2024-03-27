@@ -409,7 +409,7 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_whenRiskCorrelationIdNotNull_setsClientMetadataIdToRiskCorrelationId() {
-        when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(context, configuration, false)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
@@ -433,7 +433,7 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_whenRiskCorrelationIdNull_setsClientMetadataIdFromPayPalDataCollector() {
-        when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(context, configuration, false)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
@@ -481,7 +481,7 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess() {
-        when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(context, configuration, false)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
@@ -512,7 +512,7 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_withPayPalCheckoutRequest_callsBackPayPalResponseOnSuccess() {
-        when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(context, configuration, false)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)

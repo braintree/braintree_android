@@ -39,7 +39,9 @@ public class MagnesInternalClientUnitTest {
     private MagnesResult magnesResult;
 
     private HashMap<String, String> additionalData;
-    private PayPalDataCollectorRequest payPalDataCollectorRequest;
+    private PayPalDataCollectorInternalRequest payPalDataCollectorInternalRequest;
+
+    private boolean hasUserLocationConsent = true;
 
     @Before
     public void beforeEach() {
@@ -60,7 +62,7 @@ public class MagnesInternalClientUnitTest {
 
         additionalData = new HashMap<>();
 
-        payPalDataCollectorRequest = new PayPalDataCollectorRequest()
+        payPalDataCollectorInternalRequest = new PayPalDataCollectorInternalRequest(hasUserLocationConsent)
                 .setRiskCorrelationId("sample-client-metadata-id")
                 .setDisableBeacon(true)
                 .setAdditionalData(additionalData)
@@ -70,7 +72,7 @@ public class MagnesInternalClientUnitTest {
     @Test
     public void getClientMetaDataId_returnsEmptyStringWhenContextIsNull() {
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
-        String result = sut.getClientMetadataId(null, sandboxConfiguration, payPalDataCollectorRequest);
+        String result = sut.getClientMetadataId(null, sandboxConfiguration, payPalDataCollectorInternalRequest);
         assertEquals("", result);
     }
 
@@ -79,7 +81,7 @@ public class MagnesInternalClientUnitTest {
         when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenReturn(magnesResult);
 
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
-        sut.getClientMetadataId(context, sandboxConfiguration, payPalDataCollectorRequest);
+        sut.getClientMetadataId(context, sandboxConfiguration, payPalDataCollectorInternalRequest);
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
         verify(magnesSDK).setUp(captor.capture());
@@ -93,7 +95,7 @@ public class MagnesInternalClientUnitTest {
         when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenReturn(magnesResult);
 
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
-        sut.getClientMetadataId(context, sandboxConfiguration, payPalDataCollectorRequest);
+        sut.getClientMetadataId(context, sandboxConfiguration, payPalDataCollectorInternalRequest);
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
         verify(magnesSDK).setUp(captor.capture());
@@ -107,7 +109,7 @@ public class MagnesInternalClientUnitTest {
         when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenReturn(magnesResult);
 
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
-        sut.getClientMetadataId(context, prodConfiguration, payPalDataCollectorRequest);
+        sut.getClientMetadataId(context, prodConfiguration, payPalDataCollectorInternalRequest);
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
         verify(magnesSDK).setUp(captor.capture());
@@ -121,7 +123,7 @@ public class MagnesInternalClientUnitTest {
         when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenReturn(magnesResult);
 
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
-        sut.getClientMetadataId(context, prodConfiguration, payPalDataCollectorRequest);
+        sut.getClientMetadataId(context, prodConfiguration, payPalDataCollectorInternalRequest);
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
         verify(magnesSDK).setUp(captor.capture());
@@ -135,7 +137,7 @@ public class MagnesInternalClientUnitTest {
         when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenReturn(magnesResult);
 
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
-        sut.getClientMetadataId(context, prodConfiguration, payPalDataCollectorRequest);
+        sut.getClientMetadataId(context, prodConfiguration, payPalDataCollectorInternalRequest);
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
         verify(magnesSDK).setUp(captor.capture());
@@ -145,8 +147,22 @@ public class MagnesInternalClientUnitTest {
     }
 
     @Test
+    public void getClientMetaDataId_setsHasUserLocationConsent() throws InvalidInputException {
+        when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenReturn(magnesResult);
+
+        MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
+        sut.getClientMetadataId(context, prodConfiguration, payPalDataCollectorInternalRequest);
+
+        ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
+        verify(magnesSDK).setUp(captor.capture());
+
+        MagnesSettings magnesSettings = captor.getValue();
+        assertEquals(hasUserLocationConsent, magnesSettings.hasUserLocationConsent());
+    }
+
+    @Test
     public void getClientMetaDataId_returnsAnEmptyStringWhenApplicationGUIDIsInvalid() {
-        PayPalDataCollectorRequest requestWithInvalidGUID = new PayPalDataCollectorRequest()
+        PayPalDataCollectorInternalRequest requestWithInvalidGUID = new PayPalDataCollectorInternalRequest(true)
                 .setApplicationGuid("invalid guid");
 
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
@@ -160,7 +176,7 @@ public class MagnesInternalClientUnitTest {
         when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenReturn(magnesResult);
 
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
-        String result = sut.getClientMetadataId(context, prodConfiguration, payPalDataCollectorRequest);
+        String result = sut.getClientMetadataId(context, prodConfiguration, payPalDataCollectorInternalRequest);
 
         assertEquals("magnes-client-metadata-id", result);
     }
@@ -171,7 +187,7 @@ public class MagnesInternalClientUnitTest {
         when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenThrow(new InvalidInputException("invalid input"));
 
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
-        String result = sut.getClientMetadataId(context, prodConfiguration, payPalDataCollectorRequest);
+        String result = sut.getClientMetadataId(context, prodConfiguration, payPalDataCollectorInternalRequest);
 
         assertEquals("", result);
     }

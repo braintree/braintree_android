@@ -34,10 +34,51 @@ public class DataCollector {
      * Collect device information for fraud identification purposes.
      *
      * @param context  Android Context
+     * @param callback {@link DataCollectorCallback
+     * @deprecated Passing in {@link DataCollectorRequest} is required. Use
+     * {@link PayPalDataCollector#collectDeviceData(Context, DataCollectorRequest, PayPalDataCollectorCallback)} instead.
+     */
+    @Deprecated()
+    public void collectDeviceData(
+        @NonNull Context context,
+        @NonNull DataCollectorCallback callback
+    ) {
+        DataCollectorRequest request = new DataCollectorRequest(false);
+        collectDeviceData(context, request, callback);
+    }
+
+    /**
+     * Collect device information for fraud identification purposes.
+     *
+     * @param context  Android Context
+     * @param dataCollectorRequest The {@link DataCollectorRequest} containing the configuration for
+     *                             the data collection request
      * @param callback {@link DataCollectorCallback}
      */
-    public void collectDeviceData(@NonNull Context context, @NonNull DataCollectorCallback callback) {
-        collectDeviceData(context, null, callback);
+    public void collectDeviceData(
+        @NonNull Context context,
+        @NonNull DataCollectorRequest dataCollectorRequest,
+        @NonNull DataCollectorCallback callback
+    ) {
+        final Context appContext = context.getApplicationContext();
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
+            @Override
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                if (configuration != null) {
+                    final JSONObject deviceData = new JSONObject();
+                    try {
+                        String clientMetadataId = getPayPalClientMetadataId(appContext, configuration, dataCollectorRequest);
+                        if (!TextUtils.isEmpty(clientMetadataId)) {
+                            deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
+                        }
+                    } catch (JSONException ignored) {
+                    }
+                    callback.onResult(deviceData.toString(), null);
+                } else {
+                    callback.onResult(null, error);
+                }
+            }
+        });
     }
 
     /**
@@ -54,26 +95,12 @@ public class DataCollector {
      * @deprecated Kount is officially deprecated, use {@link PayPalDataCollector#collectDeviceData(Context, String, PayPalDataCollectorCallback)} instead.
      */
     @Deprecated
-    public void collectDeviceData(@NonNull final Context context, @Nullable final String merchantId, @NonNull final DataCollectorCallback callback) {
-        final Context appContext = context.getApplicationContext();
-        braintreeClient.getConfiguration(new ConfigurationCallback() {
-            @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                if (configuration != null) {
-                    final JSONObject deviceData = new JSONObject();
-                    try {
-                        String clientMetadataId = getPayPalClientMetadataId(appContext, configuration);
-                        if (!TextUtils.isEmpty(clientMetadataId)) {
-                            deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
-                        }
-                    } catch (JSONException ignored) {
-                    }
-                    callback.onResult(deviceData.toString(), null);
-                } else {
-                    callback.onResult(null, error);
-                }
-            }
-        });
+    public void collectDeviceData(
+        @NonNull final Context context,
+        @Nullable final String merchantId,
+        @NonNull final DataCollectorCallback callback
+    ) {
+        collectDeviceData(context, callback);
     }
 
     /**
@@ -83,9 +110,13 @@ public class DataCollector {
      * @param configuration the merchant configuration
      * @return The client metadata id associated with the collected data.
      */
-    private String getPayPalClientMetadataId(Context context, Configuration configuration) {
+    private String getPayPalClientMetadataId(
+        Context context,
+        Configuration configuration,
+        DataCollectorRequest dataCollectorRequest
+    ) {
         try {
-            return payPalDataCollector.getClientMetadataId(context, configuration);
+            return payPalDataCollector.getClientMetadataId(context, configuration, dataCollectorRequest.getHasUserLocationConsent());
         } catch (NoClassDefFoundError ignored) {
         }
         return "";

@@ -59,8 +59,9 @@ class PayPalNativeCheckoutInternalClient {
 
                                         String pairingIdKey = isBillingAgreement ? "ba_token" : "token";
                                         String pairingId = parsedRedirectUri.getQueryParameter(pairingIdKey);
+                                        // TODO: pass in hasUserLocationConsent value
                                         String clientMetadataId = payPalRequest.getRiskCorrelationId() != null
-                                                ? payPalRequest.getRiskCorrelationId() : payPalDataCollector.getClientMetadataId(context, configuration);
+                                                ? payPalRequest.getRiskCorrelationId() : payPalDataCollector.getClientMetadataId(context, configuration, false);
 
                                         if (pairingId != null) {
                                             payPalResponse
