@@ -14,7 +14,19 @@ public class PayPalNativeCheckoutVaultRequest extends PayPalNativeRequest implem
 
     private boolean shouldOfferCredit;
 
+    /**
+     * Deprecated. Use {@link PayPalNativeCheckoutVaultRequest#PayPalNativeCheckoutVaultRequest(boolean)} instead.
+     */@Deprecated
+
     public PayPalNativeCheckoutVaultRequest() {
+        super(false);
+    }
+
+    /**
+     * TODO: add javadoc for hasUserLocationConsent param
+     */
+    public PayPalNativeCheckoutVaultRequest(boolean hasUserLocationConsent) {
+        super(hasUserLocationConsent);
     }
 
     /**

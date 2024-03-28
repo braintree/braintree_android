@@ -45,6 +45,22 @@ public class LocalPaymentRequest {
     private String phone;
     private boolean shippingAddressRequired;
     private String surname;
+    private final boolean hasUserLocationConsent;
+
+    /**
+     * Deprecated. Use {@link LocalPaymentRequest#LocalPaymentRequest(boolean)} instead.
+     **/
+    @Deprecated
+    public LocalPaymentRequest() {
+        hasUserLocationConsent = false;
+    }
+
+    /**
+     * TODO: add javadoc for hasUserLocationConsent param
+     */
+    public LocalPaymentRequest(boolean hasUserLocationConsent) {
+        this.hasUserLocationConsent = hasUserLocationConsent;
+    }
 
     /**
      * @param address Optional - The address of the customer. An error will occur if this address is not valid.
@@ -204,6 +220,10 @@ public class LocalPaymentRequest {
     @Nullable
     public String getSurname() {
         return surname;
+    }
+
+    public boolean hasUserLocationConsent() {
+        return hasUserLocationConsent;
     }
 
     public String build(String returnUrl, String cancelUrl) {
