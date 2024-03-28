@@ -797,7 +797,7 @@ public class LocalPaymentClientUnitTest {
         sut.setListener(listener);
         sut.onBrowserSwitchResult(activity, browserSwitchResult);
 
-        verify(payPalDataCollector).getClientMetadataId(any(), eq(payPalEnabledConfig), eq(true));
+        verify(payPalDataCollector).getClientMetadataId(any(), same(payPalEnabledConfig), eq(true));
     }
 
     private LocalPaymentRequest getIdealLocalPaymentRequest() {

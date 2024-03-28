@@ -2,23 +2,34 @@
 
 ## unreleased
 
+
 * Local Payment
-  * Add required property `hasUserLocationConsent` to `LocalPaymentRequest`
-  * Deprecate existing constructor that does not pass in `hasUserLocationConsent`
+  * Fixes Google Play Store Rejection
+    * See [developer documentation](link) for required updates for user location data compliance
+    * Add `hasUserLocationConsent` property to `LocalPaymentRequest`
+    * Deprecate existing constructor that does not pass in `hasUserLocationConsent`
 * PayPal
-  * Add required property `hasUserLocationConsent` to `PayPalCheckoutRequest`, `PayPalVaultRequest` and `PayPalRequest`
-  * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
+  * Fixes Google Play Store Rejection
+    * See [developer documentation](link) for required updates for user location data compliance
+    * Add `hasUserLocationConsent` property to `PayPalCheckoutRequest`, `PayPalVaultRequest` and `PayPalRequest`
+    * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
 * PayPalNativeCheckout
-  * Add required property `hasUserLocationConsent` to `PayPalNativeCheckoutRequest`, `PayPalNativeVaultRequest` and `PayPalNativeCheckoutRequest`
-  * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
+  * Fixes Google Play Store Rejection
+    * See [developer documentation](link) for required updates for user location data compliance
+    * Add `hasUserLocationConsent` property to `PayPalNativeCheckoutRequest`, `PayPalNativeVaultRequest` and `PayPalNativeCheckoutRequest`
+    * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
 * BraintreeDataCollector
-  * Add `DataCollectorRequest` to pass in `hasUserLocationConsent`
-  * Update `DataCollector.collectDeviceData()` to take in `DataCollectorRequest`
-  * Deprecate existing `DataCollector.collectDeviceData()`
+  * Fixes Google Play Store Rejection
+    * See [developer documentation](link) for required updates for user location data compliance
+    * Add `DataCollectorRequest` to pass in `hasUserLocationConsent`
+    * Update `DataCollector.collectDeviceData()` to take in `DataCollectorRequest`
+    * Deprecate existing `DataCollector.collectDeviceData()`
 * PayPalDataCollector
-  * Add `PayPalDataCollectorRequest` to pass in `hasUserLocationConsent`
-  * Update `PayPalDataCollector.collectDeviceData()` to take in `PayPalDataCollectorRequest`
-  * Deprecate existing `PayPalDataCollector.collectDeviceData()`
+  * Fixes Google Play Store Rejection
+    * See [developer documentation](link) for required updates for user location data compliance
+    * Add `PayPalDataCollectorRequest` to pass in `hasUserLocationConsent`
+    * Update `PayPalDataCollector.collectDeviceData()` to take in `PayPalDataCollectorRequest`
+    * Deprecate existing `PayPalDataCollector.collectDeviceData()`
 
 ## 4.43.0 (2024-03-19)
 
