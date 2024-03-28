@@ -11,6 +11,14 @@
 * PayPalNativeCheckout
   * Add required property `hasUserLocationConsent` to `PayPalNativeCheckoutRequest`, `PayPalNativeVaultRequest` and `PayPalNativeCheckoutRequest`
   * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
+* BraintreeDataCollector
+  * Add `DataCollectorRequest` to pass in `hasUserLocationConsent`
+  * Update `DataCollector.collectDeviceData()` to take in `DataCollectorRequest`
+  * Deprecate existing `DataCollector.collectDeviceData()`
+* PayPalDataCollector
+  * Add `PayPalDataCollectorRequest` to pass in `hasUserLocationConsent`
+  * Update `PayPalDataCollector.collectDeviceData()` to take in `PayPalDataCollectorRequest`
+  * Deprecate existing `PayPalDataCollector.collectDeviceData()`
 
 ## 4.43.0 (2024-03-19)
 
