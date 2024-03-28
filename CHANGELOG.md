@@ -1,5 +1,17 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Local Payment
+  * Add required property `hasUserLocationConsent` to `LocalPaymentRequest`
+  * Deprecate existing constructor that does not pass in `hasUserLocationConsent`
+* PayPal
+  * Add required property `hasUserLocationConsent` to `PayPalCheckoutRequest`, `PayPalVaultRequest` and `PayPalRequest`
+  * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
+* PayPalNativeCheckout
+  * Add required property `hasUserLocationConsent` to `PayPalNativeCheckoutRequest`, `PayPalNativeVaultRequest` and `PayPalNativeCheckoutRequest`
+  * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
+
 ## 4.43.0 (2024-03-19)
 
 * Move from Braintree to PayPal analytics service (FPTI)
