@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Base64;
 
 import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Objects;
@@ -108,9 +110,13 @@ public class VenmoClient {
                             if (paymentContextId != null && !paymentContextId.isEmpty()) {
                                 payPalContextId = paymentContextId;
                             }
-                            createPaymentAuthRequest(context, request, configuration,
-                                    braintreeClient.getAuthorization(), finalVenmoProfileId,
-                                    paymentContextId, callback);
+                            try {
+                                createPaymentAuthRequest(context, request, configuration,
+                                        braintreeClient.getAuthorization(), finalVenmoProfileId,
+                                        paymentContextId, callback);
+                            } catch (JSONException e) {
+                                callbackPaymentAuthFailure(callback, new VenmoPaymentAuthRequest.Failure(e));
+                            }
                         } else {
                             callbackPaymentAuthFailure(callback, new VenmoPaymentAuthRequest.Failure(exception));
                         }
@@ -126,16 +132,19 @@ public class VenmoClient {
             final String venmoProfileId,
             @Nullable final String paymentContextId,
             VenmoPaymentAuthRequestCallback callback
-    ) {
+    ) throws JSONException {
         boolean isClientTokenAuth = (authorization instanceof ClientToken);
         boolean shouldVault = request.getShouldVault() && isClientTokenAuth;
         sharedPrefsWriter.persistVenmoVaultOption(context, shouldVault);
 
-        JSONObject braintreeData = new MetadataBuilder()
+        JSONObject metadata = new MetadataBuilder()
                 .sessionId(braintreeClient.getSessionId())
                 .integration(braintreeClient.getIntegrationType())
                 .version()
                 .build();
+
+        JSONObject braintreeData = new JSONObject()
+                .put("_meta", metadata);
 
         String applicationName =
                 context.getPackageManager().getApplicationLabel(context.getApplicationInfo())
@@ -151,7 +160,7 @@ public class VenmoClient {
                 .appendQueryParameter("braintree_access_token", configuration.getVenmoAccessToken())
                 .appendQueryParameter("braintree_environment", configuration.getVenmoEnvironment())
                 .appendQueryParameter("resource_id", paymentContextId)
-                .appendQueryParameter("braintree_sdk_data", braintreeData.toString())
+                .appendQueryParameter("braintree_sdk_data", Base64.encodeToString(braintreeData.toString().getBytes(), 0))
                 .appendQueryParameter("customerClient", "MOBILE_APP")
                 .build();
 

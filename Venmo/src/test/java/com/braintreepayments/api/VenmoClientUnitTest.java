@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Base64;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -109,7 +110,7 @@ public class VenmoClientUnitTest {
     public void createPaymentAuthRequest_whenCreatePaymentContextSucceeds_createsVenmoAuthChallenge() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
-                .sessionId("session-id")
+                .sessionId("fake-session-id")
                 .integration("custom")
                 .authorizationSuccess(clientToken)
                 .returnUrlScheme("com.example")
@@ -144,12 +145,6 @@ public class VenmoClientUnitTest {
         assertEquals(BraintreeRequestCodes.VENMO, browserSwitchOptions.getRequestCode());
         assertEquals("com.example", browserSwitchOptions.getReturnUrlScheme());
 
-        JSONObject expectedMetadata = new MetadataBuilder()
-                .sessionId(braintreeClient.getSessionId())
-                .integration(braintreeClient.getIntegrationType())
-                .version()
-                .build();
-
         Uri url = browserSwitchOptions.getUrl();
         assertEquals("com.example://x-callback-url/vzero/auth/venmo/success", url.getQueryParameter("x-success"));
         assertEquals("com.example://x-callback-url/vzero/auth/venmo/error", url.getQueryParameter("x-error"));
@@ -157,7 +152,11 @@ public class VenmoClientUnitTest {
         assertEquals("sample-venmo-merchant", url.getQueryParameter("braintree_merchant_id"));
         assertEquals("venmo-payment-context-id", url.getQueryParameter("resource_id"));
         assertEquals("MOBILE_APP", url.getQueryParameter("customerClient"));
-        assertEquals(expectedMetadata.toString(), url.getQueryParameter("braintree_sdk_data"));
+
+        String metadata = url.getQueryParameter("braintree_sdk_data");
+        String metadataString = new String(Base64.decode(metadata, Base64.DEFAULT));
+        String expectedMetadata = String.format("{\"_meta\":{\"platform\":\"android\",\"sessionId\":\"fake-session-id\",\"integration\":\"custom\",\"version\":\"%s\"}}", BuildConfig.VERSION_NAME);
+        assertEquals(expectedMetadata, metadataString);
     }
 
     @Test

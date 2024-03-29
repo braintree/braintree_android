@@ -173,17 +173,6 @@
             android:title="@string/vault_venmo"
             android:summary="@string/vault_venmo_summary"
             android:defaultValue="true" />
-        <CheckBoxPreference
-            android:key="venmo_fallback_to_web"
-            android:title="@string/venmo_fallback_to_web"
-            android:summary="@string/venmo_fallback_to_web_summary"
-            android:defaultValue="false" />
-
-        <CheckBoxPreference
-            android:key="venmo_fallback_to_web"
-            android:title="@string/venmo_fallback_to_web"
-            android:summary="@string/venmo_fallback_to_web_summary"
-            android:defaultValue="false" />
 
     </PreferenceCategory>
 
