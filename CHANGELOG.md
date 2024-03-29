@@ -36,9 +36,10 @@
     * Remove overload constructors, `setListener`, and `onActivityResult` from `VenmoClient`
     * Change `VenmoClient#tokenizeVenmoAccount` parameters and rename to 
       `VenmoClient#tokenize`
-    * Change parameters of `VenmoIsReadyToPayCallback` and add `VenmoReadinessResult`
+    * Remove `VenmoIsReadyToPayCallback`
     * Add `VenmoClient#createPaymentAuthRequest`
     * Move `showVenmoInGooglePlayStore` to `VenmoLauncher`
+    * Remove `isVenmoAppSwitchAvailable` and `isReadyToPay` (no longer required as Venmo flow will fallback to web if app is not installed)
   * GooglePay
     * Remove `GooglePayListener` and `GooglePayRequestPaymentCallback`
     * Add `GooglePayLauncher`, `GooglePayPaymentAuthRequest`, 

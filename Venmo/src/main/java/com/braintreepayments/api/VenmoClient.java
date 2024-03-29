@@ -25,7 +25,6 @@ public class VenmoClient {
     private final BraintreeClient braintreeClient;
     private final VenmoApi venmoApi;
     private final VenmoSharedPrefsWriter sharedPrefsWriter;
-    private final DeviceInspector deviceInspector;
 
     /**
      * Used for linking events from the client to server side request
@@ -35,7 +34,7 @@ public class VenmoClient {
 
     private VenmoClient(BraintreeClient braintreeClient, ApiClient apiClient) {
         this(braintreeClient, new VenmoApi(braintreeClient, apiClient),
-                new VenmoSharedPrefsWriter(), new DeviceInspector());
+                new VenmoSharedPrefsWriter());
     }
 
     /**
@@ -55,10 +54,9 @@ public class VenmoClient {
 
     @VisibleForTesting
     VenmoClient(BraintreeClient braintreeClient, VenmoApi venmoApi,
-                VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector) {
+                VenmoSharedPrefsWriter sharedPrefsWriter) {
         this.braintreeClient = braintreeClient;
         this.sharedPrefsWriter = sharedPrefsWriter;
-        this.deviceInspector = deviceInspector;
         this.venmoApi = venmoApi;
     }
 
@@ -281,41 +279,6 @@ public class VenmoClient {
 
     private void vaultVenmoAccountNonce(String nonce, final VenmoInternalCallback callback) {
         venmoApi.vaultVenmoAccountNonce(nonce, callback);
-    }
-
-    /**
-     * Check if Venmo app switch is available.
-     *
-     * @param context Application Context
-     * @return true if the Venmo app is installed, false otherwise
-     */
-    public boolean isVenmoAppSwitchAvailable(@NonNull Context context) {
-        return deviceInspector.isVenmoAppSwitchAvailable(context);
-    }
-
-    /**
-     * Before starting the Venmo flow, use this method to check whether Venmo is supported and set
-     * up on the device. When the callback is called with {@code true}, show the Venmo button. When
-     * it is called with {@code false}, display other checkout options.
-     *
-     * @param context  Android Context
-     * @param callback {@link VenmoIsReadyToPayCallback}
-     */
-    // TODO: How should this method behave with web fallback enabled?
-    public void isReadyToPay(final Context context, final VenmoIsReadyToPayCallback callback) {
-        braintreeClient.getConfiguration((configuration, configError) -> {
-            if (configuration != null) {
-                boolean isReadyToPay =
-                        configuration.isVenmoEnabled() && isVenmoAppSwitchAvailable(context);
-                if (isReadyToPay) {
-                    callback.onVenmoReadinessResult(VenmoReadinessResult.ReadyToPay.INSTANCE);
-                } else {
-                   callback.onVenmoReadinessResult(VenmoReadinessResult.NotReadyToPay.INSTANCE);
-                }
-            } else if (configError != null) {
-                callback.onVenmoReadinessResult(new VenmoReadinessResult.Failure(configError));
-            }
-        });
     }
 
     private void callbackPaymentAuthFailure(VenmoPaymentAuthRequestCallback callback, VenmoPaymentAuthRequest request) {
