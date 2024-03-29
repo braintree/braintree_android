@@ -1,5 +1,36 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+
+* Local Payment
+  * Fixes Google Play Store Rejection
+    * See [developer documentation](link) for required updates for user location data compliance
+    * Add `hasUserLocationConsent` property to `LocalPaymentRequest`
+    * Deprecate existing constructor that does not pass in `hasUserLocationConsent`
+* PayPal
+  * Fixes Google Play Store Rejection
+    * See [developer documentation](link) for required updates for user location data compliance
+    * Add `hasUserLocationConsent` property to `PayPalCheckoutRequest`, `PayPalVaultRequest` and `PayPalRequest`
+    * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
+* PayPalNativeCheckout
+  * Fixes Google Play Store Rejection
+    * See [developer documentation](link) for required updates for user location data compliance
+    * Add `hasUserLocationConsent` property to `PayPalNativeCheckoutRequest`, `PayPalNativeVaultRequest` and `PayPalNativeCheckoutRequest`
+    * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
+* BraintreeDataCollector
+  * Fixes Google Play Store Rejection
+    * See [developer documentation](link) for required updates for user location data compliance
+    * Add `DataCollectorRequest` to pass in `hasUserLocationConsent`
+    * Update `DataCollector.collectDeviceData()` to take in `DataCollectorRequest`
+    * Deprecate existing `DataCollector.collectDeviceData()`
+* PayPalDataCollector
+  * Fixes Google Play Store Rejection
+    * See [developer documentation](link) for required updates for user location data compliance
+    * Add `PayPalDataCollectorRequest` to pass in `hasUserLocationConsent`
+    * Update `PayPalDataCollector.collectDeviceData()` to take in `PayPalDataCollectorRequest`
+    * Deprecate existing `PayPalDataCollector.collectDeviceData()`
+
 ## 4.43.0 (2024-03-19)
 
 * Move from Braintree to PayPal analytics service (FPTI)
