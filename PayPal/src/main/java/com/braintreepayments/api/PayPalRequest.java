@@ -73,6 +73,18 @@ public abstract class PayPalRequest implements Parcelable {
     private final boolean hasUserLocationConsent;
 
     /**
+     * Deprecated. Use {@link PayPalRequest#PayPalRequest(boolean)} instead.
+     *
+     * Constructs a request for PayPal Checkout and Vault flows.
+     */
+    @Deprecated
+    public PayPalRequest() {
+        shippingAddressRequired = false;
+        lineItems = new ArrayList<>();
+        hasUserLocationConsent = false;
+    }
+
+    /**
      * Constructs a request for PayPal Checkout and Vault flows.
      *
      * TODO: add javadoc for hasUserLocationConsent param
