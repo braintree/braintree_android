@@ -16,8 +16,8 @@ public class PayPalNativeCheckoutVaultRequest extends PayPalNativeRequest implem
 
     /**
      * Deprecated. Use {@link PayPalNativeCheckoutVaultRequest#PayPalNativeCheckoutVaultRequest(boolean)} instead.
-     */@Deprecated
-
+     */
+     @Deprecated
     public PayPalNativeCheckoutVaultRequest() {
         super(false);
     }
