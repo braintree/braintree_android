@@ -14,7 +14,6 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.mock
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -72,7 +71,7 @@ class BraintreeClientUnitTest {
             .authorization(authorization)
             .build()
 
-        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
+        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
@@ -339,7 +338,7 @@ class BraintreeClientUnitTest {
             .authorization(authorization)
             .build()
 
-        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
+        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
@@ -350,7 +349,11 @@ class BraintreeClientUnitTest {
 
         verify {
             analyticsClient.sendEvent(
-                configuration, "event.started", "session-id", "custom", authorization
+                configuration,
+                match { it.name == "event.started" },
+                "session-id",
+                "custom",
+                authorization
             )
         }
     }
@@ -375,25 +378,6 @@ class BraintreeClientUnitTest {
             .build()
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(Exception("error"))
-            .build()
-
-        val params = createDefaultParams(configurationLoader, authorizationLoader)
-        val sut = BraintreeClient(params)
-        sut.sendAnalyticsEvent("event.started")
-
-        verify { analyticsClient wasNot Called }
-    }
-
-    @Test
-    @Throws(JSONException::class)
-    fun sendAnalyticsEvent_whenAnalyticsNotEnabled_doesNothing() {
-        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ANALYTICS)
-
-        val authorizationLoader = MockkAuthorizationLoaderBuilder()
-            .authorization(authorization)
-            .build()
-        val configurationLoader = MockkConfigurationLoaderBuilder()
-            .configuration(configuration)
             .build()
 
         val params = createDefaultParams(configurationLoader, authorizationLoader)
@@ -454,7 +438,7 @@ class BraintreeClientUnitTest {
         val context = mockk<Context>(relaxed = true)
         val params = createDefaultParams(configurationLoader, authorizationLoader)
 
-        val expected = mock<BrowserSwitchResult>()
+        val expected = mockk<BrowserSwitchResult>()
         val intent = Intent()
         every { browserSwitchClient.parseResult(context, 123, intent) } returns expected
 
@@ -639,7 +623,7 @@ class BraintreeClientUnitTest {
     fun reportCrash_reportsCrashViaAnalyticsClient() {
         every { authorizationLoader.authorizationFromCache } returns authorization
 
-        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
+        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
@@ -647,9 +631,23 @@ class BraintreeClientUnitTest {
         val sut = BraintreeClient(params)
         sut.reportCrash()
 
+        val authCallbackSlot = slot<AuthorizationCallback>()
+        verify {
+            authorizationLoader.loadAuthorization(capture(authCallbackSlot))
+        }
+        authCallbackSlot.captured.onAuthorizationResult(authorization, null)
+
+        val callbackSlot = slot<ConfigurationLoaderCallback>()
+        verify {
+            configurationLoader.loadConfiguration(authorization, capture(callbackSlot))
+        }
+
+        callbackSlot.captured.onResult(configuration, null)
+
         verify {
             analyticsClient.reportCrash(
                 applicationContext,
+                any(),
                 "session-id",
                 IntegrationType.CUSTOM,
                 authorization

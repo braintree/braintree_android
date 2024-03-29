@@ -27,6 +27,7 @@ class VenmoApi {
             input.put("merchantProfileId", venmoProfileId);
             input.put("customerClient", "MOBILE_APP");
             input.put("intent", "CONTINUE");
+            input.put("isFinalAmount", request.getIsFinalAmountAsString());
             JSONObject paysheetDetails = new JSONObject();
             paysheetDetails.put("collectCustomerShippingAddress", request.getCollectCustomerShippingAddressAsString());
             paysheetDetails.put("collectCustomerBillingAddress", request.getCollectCustomerBillingAddressAsString());
@@ -59,6 +60,14 @@ class VenmoApi {
             JSONObject variables = new JSONObject();
             variables.put("input", input);
             params.put("variables", variables);
+
+            JSONObject braintreeData = new MetadataBuilder()
+                    .sessionId(braintreeClient.getSessionId())
+                    .integration(braintreeClient.getIntegrationType())
+                    .version()
+                    .build();
+
+            params.put("clientSdkMetadata", braintreeData);
         } catch (JSONException e) {
             callback.onResult(null, new BraintreeException("unexpected error"));
         }

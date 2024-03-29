@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -25,6 +27,8 @@ public class VenmoRequest implements Parcelable {
     private String taxAmount;
     private String shippingAmount;
     private ArrayList<VenmoLineItem> lineItems;
+    private boolean isFinalAmount;
+    private boolean fallbackToWeb = false;
 
     private final @VenmoPaymentMethodUsage int paymentMethodUsage;
 
@@ -248,6 +252,49 @@ public class VenmoRequest implements Parcelable {
         return lineItems;
     }
 
+    /**
+     * @param fallbackToWeb Optional - Used to determine if the customer should fallback
+     *                      to the web flow if Venmo app is not installed.
+     *                      Defaults to false.
+     *                      
+     * If using the manual browser switch pattern, you must implement the following methods:
+     * {@link VenmoClient#parseBrowserSwitchResult(Context, Intent)}
+     * {@link VenmoClient#onBrowserSwitchResult(BrowserSwitchResult, VenmoOnActivityResultCallback)}
+     * {@link VenmoClient#clearActiveBrowserSwitchRequests(Context)}
+     */
+    public void setFallbackToWeb(boolean fallbackToWeb) {
+        this.fallbackToWeb = fallbackToWeb;
+    }
+
+    /**
+     * @return Whether or not to fallback to the web flow if Venmo app is not installed.
+     */
+    public boolean getFallbackToWeb() {
+        return fallbackToWeb;
+    }
+
+    /**
+     * @param isFinalAmount Optional - Indicates whether the purchase amount is the final amount.
+     *                    Defaults to false.
+     */
+    public void setIsFinalAmount(boolean isFinalAmount) {
+        this.isFinalAmount = isFinalAmount;
+    }
+
+    /**
+     * @return The boolean value of the flag that signifies whether the purchase amount is the final amount.
+     */
+    public boolean getIsFinalAmount() {
+        return isFinalAmount;
+    }
+
+    /**
+     * @return Whether or not the purchase amount is the final amount as a string value.
+     */
+    String getIsFinalAmountAsString() {
+        return String.valueOf(this.isFinalAmount);
+    }
+
     protected VenmoRequest(Parcel in) {
         shouldVault = in.readByte() != 0;
         collectCustomerBillingAddress = in.readByte() != 0;
@@ -261,6 +308,8 @@ public class VenmoRequest implements Parcelable {
         taxAmount = in.readString();
         totalAmount = in.readString();
         lineItems = in.createTypedArrayList(VenmoLineItem.CREATOR);
+        isFinalAmount = in.readByte() != 0;
+        fallbackToWeb = in.readByte() != 0;
     }
 
     public static final Creator<VenmoRequest> CREATOR = new Creator<VenmoRequest>() {
@@ -294,5 +343,7 @@ public class VenmoRequest implements Parcelable {
         parcel.writeString(taxAmount);
         parcel.writeString(totalAmount);
         parcel.writeTypedList(lineItems);
+        parcel.writeByte((byte) (isFinalAmount ? 1 : 0));
+        parcel.writeByte((byte) (fallbackToWeb ? 1 : 0));
     }
 }

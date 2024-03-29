@@ -7,6 +7,29 @@
   * Add `PayPalMessagingView(BraintreeClient, Context)` to display PayPal messages to promote offers such as Pay Later and PayPal Credit to customers.
     * To get started call `PayPalMessagingView#start()` with an optional `PayPalMessagingRequest`
 
+## 4.43.0 (2024-03-19)
+
+* Move from Braintree to PayPal analytics service (FPTI)
+* Venmo
+  * Fix bug where SDK is not sending metadata as expected when creating payment context or constructing App Link URL
+
+## 4.42.0 (2024-03-12)
+
+* PayPal
+  * Add optional property `PayPalVaultRequest.setUserAuthenticationEmail()`
+* BraintreeCore
+  * Send `paypal_context_id` in `analytics_event` to PayPal's analytics service (FPTI) when available
+* Venmo
+  * Add `setIsFinalAmount()` to `VenmoRequest`
+  * Add `setFallbackToWeb()` to `VenmoRequest`
+    * If set to `true` customers will fallback to a web based Venmo flow if the Venmo app is not installed
+    * This method uses App Links instead of Deep Links
+  * Add `VenmoClient#parseBrowserSwitchResult(Context, Intent)` method
+  * Add `VenmoClient#clearActiveBrowserSwitchRequests(Context)` method
+  * Add `VenmoClient#onBrowserSwitchResult(BrowserSwitchResult, VenmoOnActivityResultCallback)` method
+* ThreeDSecure
+  * Call cleanup method to resolve `Cardinal.getInstance` memory leak
+
 ## 4.41.0 (2024-01-18)
 
 * PayPal

@@ -100,6 +100,8 @@
     <string name="paypal_native_checkout_launch">Launch PayPal Native Checkout</string>
     <string name="paypal_native_checkout_vault_launch">Launch PayPal Native Vault Checkout</string>
     <string name="venmo">Venmo</string>
+    <string name="venmo_fallback_to_web">Venmo Fallback to Web</string>
+    <string name="venmo_fallback_to_web_summary">Fallback to web if the Venmo app is not installed.</string>
     <string name="vault_venmo">Vault Venmo</string>
     <string name="vault_venmo_summary">Vault Venmo payment methods on creation. Requires a customer id to be set.</string>
     <string name="amex">Amex</string>

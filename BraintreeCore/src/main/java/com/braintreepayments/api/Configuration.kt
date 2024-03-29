@@ -45,7 +45,6 @@ open class Configuration internal constructor(configurationString: String?) {
      * @suppress
      */
     companion object {
-        private const val ANALYTICS_KEY = "analytics"
         private const val ASSETS_URL_KEY = "assetsUrl"
         private const val BRAINTREE_API_KEY = "braintreeApi"
         private const val CARDINAL_AUTHENTICATION_JWT = "cardinalAuthenticationJWT"
@@ -99,12 +98,6 @@ open class Configuration internal constructor(configurationString: String?) {
     // region Internal Properties
 
     /**
-     * @return [String] url of the Braintree analytics service.
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val analyticsUrl: String?
-
-    /**
      * @return The Access Token for Braintree API.
      * @suppress
      */
@@ -152,12 +145,6 @@ open class Configuration internal constructor(configurationString: String?) {
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val graphQLUrl: String
-
-    /**
-     * @return `true` if analytics are enabled, `false` otherwise.
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val isAnalyticsEnabled: Boolean
 
     /**
      * @return a boolean indicating whether Braintree API is enabled for this merchant.
@@ -291,7 +278,6 @@ open class Configuration internal constructor(configurationString: String?) {
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val visaCheckoutSupportedNetworks: List<String>
 
-    private val analyticsConfiguration: AnalyticsConfiguration
     private val braintreeApiConfiguration: BraintreeApiConfiguration
     private val cardConfiguration: CardConfiguration
     private val challenges: MutableSet<String>
@@ -324,7 +310,6 @@ open class Configuration internal constructor(configurationString: String?) {
             }
         }
 
-        analyticsConfiguration = AnalyticsConfiguration(json.optJSONObject(ANALYTICS_KEY))
         braintreeApiConfiguration = BraintreeApiConfiguration(json.optJSONObject(BRAINTREE_API_KEY))
         cardConfiguration = CardConfiguration(json.optJSONObject(CARD_KEY))
         cardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, null)
@@ -353,7 +338,6 @@ open class Configuration internal constructor(configurationString: String?) {
         payPalPrivacyUrl = payPalConfiguration.privacyUrl
         payPalUserAgreementUrl = payPalConfiguration.userAgreementUrl
 
-        analyticsUrl = analyticsConfiguration.url
         braintreeApiAccessToken = braintreeApiConfiguration.accessToken
         braintreeApiUrl = braintreeApiConfiguration.url
         googlePayAuthorizationFingerprint = googlePayConfiguration.googleAuthorizationFingerprint
@@ -362,7 +346,6 @@ open class Configuration internal constructor(configurationString: String?) {
         googlePayPayPalClientId = googlePayConfiguration.paypalClientId
         googlePaySupportedNetworks = googlePayConfiguration.supportedNetworks
         graphQLUrl = graphQLConfiguration.url
-        isAnalyticsEnabled = analyticsConfiguration.isEnabled
         isBraintreeApiEnabled = braintreeApiConfiguration.isEnabled
         isFraudDataCollectionEnabled = cardConfiguration.isFraudDataCollectionEnabled
         isGraphQLEnabled = graphQLConfiguration.isEnabled

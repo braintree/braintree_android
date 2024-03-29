@@ -431,30 +431,6 @@ class ConfigurationUnitTest {
     }
 
     @Test
-    fun analyticsUrl_forwardsValueFromConfiguration() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
-        assertEquals("analytics_url", sut.analyticsUrl)
-    }
-
-    @Test
-    fun isAnalyticsEnabled_returnsTrueWhenAnalyticsPresent() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANALYTICS)
-        assertTrue(sut.isAnalyticsEnabled)
-    }
-
-    @Test
-    fun isAnalyticsEnabled_returnsFalseWhenAnalyticsNotPresent() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ANALYTICS)
-        assertFalse(sut.isAnalyticsEnabled)
-    }
-
-    @Test
-    fun isAnalyticsEnabled_returnsFalseWhenAnalyticsUrlEmpty() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_EMPTY_ANALYTICS_URL)
-        assertFalse(sut.isAnalyticsEnabled)
-    }
-
-    @Test
     fun isGraphQLFeatureEnabled_returnsTrue_whenFeatureEnabled() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL)
         assertTrue(sut.isGraphQLFeatureEnabled(GraphQLConstants.Features.TOKENIZE_CREDIT_CARDS))
