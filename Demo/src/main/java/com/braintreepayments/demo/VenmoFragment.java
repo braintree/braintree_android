@@ -120,7 +120,6 @@ public class VenmoFragment extends BaseFragment {
                 }
             }
         });
-
     }
 
     private void completeVenmoFlow(VenmoPaymentAuthResult.Success paymentAuthResult) {
