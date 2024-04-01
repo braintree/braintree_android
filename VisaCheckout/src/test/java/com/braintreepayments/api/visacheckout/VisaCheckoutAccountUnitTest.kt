@@ -1,5 +1,6 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.visacheckout
 
+import com.braintreepayments.api.visacheckout.VisaCheckoutAccount
 import com.visa.checkout.VisaPaymentSummary
 import io.mockk.every
 import io.mockk.mockk

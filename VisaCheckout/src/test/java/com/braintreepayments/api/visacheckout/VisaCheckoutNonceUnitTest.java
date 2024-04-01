@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.visacheckout;
 
 import static com.braintreepayments.api.Assertions.assertBinDataEqual;
 import static com.braintreepayments.api.card.BinData.NO;
@@ -9,6 +9,10 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 
 import android.os.Parcel;
+
+import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.visacheckout.VisaCheckoutAddress;
+import com.braintreepayments.api.visacheckout.VisaCheckoutNonce;
 
 import org.json.JSONArray;
 import org.json.JSONException;

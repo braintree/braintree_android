@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.visacheckout;
 
 import static com.braintreepayments.api.card.BinData.BIN_DATA_KEY;
 
@@ -6,6 +6,8 @@ import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 
+import com.braintreepayments.api.Json;
+import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.card.BinData;
 
 import org.json.JSONException;

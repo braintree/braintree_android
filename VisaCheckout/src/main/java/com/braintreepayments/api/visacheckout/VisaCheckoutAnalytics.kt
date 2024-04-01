@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.visacheckout
 
 internal object VisaCheckoutAnalytics {
 
