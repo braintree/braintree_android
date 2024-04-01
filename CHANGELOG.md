@@ -6,7 +6,7 @@
   * All Modules
     * Bump `minSdkVersion` to API 23
     * Bump target Java version to Java 11
-    * Ugrapde Kotlin version to 1.9.10
+    * Upgrade Kotlin version to 1.9.10
     * Upgrade to Android Gradle Plugin 8
   * BraintreeCore
     * Remove `BraintreeClient` public constructors
@@ -27,6 +27,7 @@
   * PayPalDataCollector
     * Remove `paypal-data-collector` module (use `data-collector`)
   * Venmo
+    * Remove `setFallbackToWeb()` from `VenmoRequest` - fallback to web is default behavior now
     * Remove `VenmoListener`, `VenmoTokenizeAccountCallback`, and `VenmoResultCallback`
     * Add `VenmoLauncher`, `VenmoPaymentAuthRequest`, `VenmoPaymentAuthRequestCallback`, 
       `VenmoPaymentAuthResult`, `VenmoResult`, `VenmoTokenizeCallback`, and 
@@ -35,9 +36,10 @@
     * Remove overload constructors, `setListener`, and `onActivityResult` from `VenmoClient`
     * Change `VenmoClient#tokenizeVenmoAccount` parameters and rename to 
       `VenmoClient#tokenize`
-    * Change parameters of `VenmoIsReadyToPayCallback` and add `VenmoReadinessResult`
+    * Remove `VenmoIsReadyToPayCallback`
     * Add `VenmoClient#createPaymentAuthRequest`
     * Move `showVenmoInGooglePlayStore` to `VenmoLauncher`
+    * Remove `isVenmoAppSwitchAvailable` and `isReadyToPay` (no longer required as Venmo flow will fallback to web if app is not installed)
   * GooglePay
     * Remove `GooglePayListener` and `GooglePayRequestPaymentCallback`
     * Add `GooglePayLauncher`, `GooglePayPaymentAuthRequest`, 
