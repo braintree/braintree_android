@@ -6,6 +6,8 @@ import static junit.framework.Assert.assertTrue;
 
 import android.os.Parcel;
 
+import com.braintreepayments.api.threedsecure.ThreeDSecureParams;
+
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;

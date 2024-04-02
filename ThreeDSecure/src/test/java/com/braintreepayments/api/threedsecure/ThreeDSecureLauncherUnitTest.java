@@ -16,6 +16,12 @@ import androidx.activity.result.ActivityResultRegistry;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.fragment.app.FragmentActivity;
 
+import com.braintreepayments.api.threedsecure.ThreeDSecureLauncher;
+import com.braintreepayments.api.threedsecure.ThreeDSecureLauncherCallback;
+import com.braintreepayments.api.threedsecure.ThreeDSecureParams;
+import com.braintreepayments.api.threedsecure.ThreeDSecurePaymentAuthRequest;
+import com.braintreepayments.api.threedsecure.ThreeDSecurePaymentAuthResult;
+
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;

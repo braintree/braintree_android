@@ -1,8 +1,8 @@
 package com.braintreepayments.api;
 
-import static com.braintreepayments.api.ThreeDSecureActivity.EXTRA_JWT;
-import static com.braintreepayments.api.ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT;
-import static com.braintreepayments.api.ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE;
+import static com.braintreepayments.api.threedsecure.ThreeDSecureActivity.EXTRA_JWT;
+import static com.braintreepayments.api.threedsecure.ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT;
+import static com.braintreepayments.api.threedsecure.ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
@@ -14,6 +14,10 @@ import android.content.Intent;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import com.braintreepayments.api.threedsecure.ThreeDSecureActivity;
+import com.braintreepayments.api.threedsecure.ThreeDSecureActivityResultContract;
+import com.braintreepayments.api.threedsecure.ThreeDSecureParams;
+import com.braintreepayments.api.threedsecure.ThreeDSecurePaymentAuthResult;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
 import org.json.JSONException;

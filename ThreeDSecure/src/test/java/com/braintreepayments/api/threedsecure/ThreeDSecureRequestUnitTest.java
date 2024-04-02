@@ -13,6 +13,16 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
+import com.braintreepayments.api.threedsecure.ThreeDSecureAdditionalInformation;
+import com.braintreepayments.api.threedsecure.ThreeDSecurePostalAddress;
+import com.braintreepayments.api.threedsecure.ThreeDSecureRequest;
+import com.braintreepayments.api.threedsecure.ThreeDSecureShippingMethod;
+import com.braintreepayments.api.threedsecure.ThreeDSecureV2ButtonCustomization;
+import com.braintreepayments.api.threedsecure.ThreeDSecureV2LabelCustomization;
+import com.braintreepayments.api.threedsecure.ThreeDSecureV2TextBoxCustomization;
+import com.braintreepayments.api.threedsecure.ThreeDSecureV2ToolbarCustomization;
+import com.braintreepayments.api.threedsecure.ThreeDSecureV2UiCustomization;
+
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureRequestUnitTest {
 

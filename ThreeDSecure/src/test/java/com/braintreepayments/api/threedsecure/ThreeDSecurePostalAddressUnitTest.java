@@ -12,6 +12,8 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
+import com.braintreepayments.api.threedsecure.ThreeDSecurePostalAddress;
+
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecurePostalAddressUnitTest {
 

@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
+import com.braintreepayments.api.threedsecure.ThreeDSecureV2LabelCustomization;
 import com.cardinalcommerce.shared.userinterfaces.LabelCustomization;
 
 import org.junit.Test;

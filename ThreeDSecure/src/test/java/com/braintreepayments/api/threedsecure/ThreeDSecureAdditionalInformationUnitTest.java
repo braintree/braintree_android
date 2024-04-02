@@ -11,6 +11,9 @@ import org.robolectric.RobolectricTestRunner;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
+import com.braintreepayments.api.threedsecure.ThreeDSecureAdditionalInformation;
+import com.braintreepayments.api.threedsecure.ThreeDSecurePostalAddress;
+
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureAdditionalInformationUnitTest {
     @Test

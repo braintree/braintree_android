@@ -13,6 +13,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.braintreepayments.api.threedsecure.ThreeDSecureAPI;
+import com.braintreepayments.api.threedsecure.ThreeDSecureInfo;
+import com.braintreepayments.api.threedsecure.ThreeDSecureNonce;
+import com.braintreepayments.api.threedsecure.ThreeDSecureParams;
+import com.braintreepayments.api.threedsecure.ThreeDSecureRequest;
+import com.braintreepayments.api.threedsecure.ThreeDSecureResultCallback;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;

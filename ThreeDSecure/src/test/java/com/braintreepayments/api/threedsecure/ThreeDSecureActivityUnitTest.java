@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-import static com.braintreepayments.api.ThreeDSecureActivity.RESULT_COULD_NOT_START_CARDINAL;
+import static com.braintreepayments.api.threedsecure.ThreeDSecureActivity.RESULT_COULD_NOT_START_CARDINAL;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -13,6 +13,10 @@ import static org.mockito.Mockito.verify;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.braintreepayments.api.threedsecure.CardinalClient;
+import com.braintreepayments.api.threedsecure.ThreeDSecureActivity;
+import com.braintreepayments.api.threedsecure.ThreeDSecureLookup;
+import com.braintreepayments.api.threedsecure.ThreeDSecureParams;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver;
 
 import org.json.JSONException;

@@ -12,6 +12,8 @@ import static org.junit.Assert.assertNull;
 
 import android.os.Parcel;
 
+import com.braintreepayments.api.threedsecure.ThreeDSecureNonce;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
