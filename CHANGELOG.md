@@ -13,6 +13,7 @@
     * Add `hasUserLocationConsent` property to `PayPalCheckoutRequest`, `PayPalVaultRequest` and `PayPalRequest`
     * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
 * BraintreeDataCollector
+  * Bump Magnes SDK to version 5.5.0
   * Fixes Google Play Store Rejection
     * See [developer documentation](link) for required updates for user location data compliance
     * Add `DataCollectorRequest` to pass in `hasUserLocationConsent`
