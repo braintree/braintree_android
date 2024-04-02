@@ -36,7 +36,7 @@ android {
 }
 
 dependencies {
-    implementation files('libs/android-magnessdk-5.5.0-beta1.jar')
+    implementation files('libs/android-magnessdk-5.5.0.jar')
 
     implementation deps.annotation
     api project(':BraintreeCore')
