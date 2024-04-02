@@ -118,7 +118,7 @@ public class ThreeDSecureClientUnitTest {
         JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
         Assert.assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
         Assert.assertEquals(clientMetaData.getString("sdkVersion"),
-                "Android/" + BuildConfig.VERSION_NAME);
+                "Android/" + com.braintreepayments.api.BuildConfig.VERSION_NAME);
     }
 
     @Test
