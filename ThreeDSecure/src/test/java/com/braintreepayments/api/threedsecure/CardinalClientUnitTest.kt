@@ -1,13 +1,9 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.threedsecure
 
 import android.content.Context
 import androidx.fragment.app.FragmentActivity
-import com.braintreepayments.api.threedsecure.CardinalClient
-import com.braintreepayments.api.threedsecure.CardinalInitializeCallback
-import com.braintreepayments.api.threedsecure.ThreeDSecureLookup
-import com.braintreepayments.api.threedsecure.ThreeDSecureParams
-import com.braintreepayments.api.threedsecure.ThreeDSecureRequest
-import com.braintreepayments.api.threedsecure.ThreeDSecureV2UiCustomization
+import com.braintreepayments.api.BraintreeException
+import com.braintreepayments.api.Configuration
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalUiType

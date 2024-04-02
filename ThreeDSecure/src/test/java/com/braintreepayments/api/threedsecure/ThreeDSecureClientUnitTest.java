@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.threedsecure;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -15,22 +15,15 @@ import static org.mockito.Mockito.when;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.api.threedsecure.CardinalClient;
-import com.braintreepayments.api.threedsecure.CardinalInitializeCallback;
-import com.braintreepayments.api.threedsecure.ThreeDSecureAPI;
-import com.braintreepayments.api.threedsecure.ThreeDSecureAnalytics;
-import com.braintreepayments.api.threedsecure.ThreeDSecureClient;
-import com.braintreepayments.api.threedsecure.ThreeDSecureParams;
-import com.braintreepayments.api.threedsecure.ThreeDSecurePaymentAuthRequest;
-import com.braintreepayments.api.threedsecure.ThreeDSecurePaymentAuthRequestCallback;
-import com.braintreepayments.api.threedsecure.ThreeDSecurePaymentAuthResult;
-import com.braintreepayments.api.threedsecure.ThreeDSecurePostalAddress;
-import com.braintreepayments.api.threedsecure.ThreeDSecurePrepareLookupCallback;
-import com.braintreepayments.api.threedsecure.ThreeDSecurePrepareLookupResult;
-import com.braintreepayments.api.threedsecure.ThreeDSecureRequest;
-import com.braintreepayments.api.threedsecure.ThreeDSecureResult;
-import com.braintreepayments.api.threedsecure.ThreeDSecureResultCallback;
-import com.braintreepayments.api.threedsecure.ThreeDSecureTokenizeCallback;
+import com.braintreepayments.api.Authorization;
+import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.BraintreeException;
+import com.braintreepayments.api.BuildConfig;
+import com.braintreepayments.api.Configuration;
+import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.HttpResponseCallback;
+import com.braintreepayments.api.MockBraintreeClientBuilder;
+import com.braintreepayments.api.TestConfigurationBuilder;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
@@ -118,14 +111,14 @@ public class ThreeDSecureClientUnitTest {
         Assert.assertEquals("encoded_auth_fingerprint",
                 lookup.getString("authorizationFingerprint"));
         Assert.assertEquals(lookup.getString("braintreeLibraryVersion"),
-                "Android-" + BuildConfig.VERSION_NAME);
+                "Android-" + com.braintreepayments.api.BuildConfig.VERSION_NAME);
         Assert.assertEquals(lookup.getString("dfReferenceId"), "fake-df");
         Assert.assertEquals(lookup.getString("nonce"), "a-nonce");
 
         JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
         Assert.assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
         Assert.assertEquals(clientMetaData.getString("sdkVersion"),
-                "Android/" + BuildConfig.VERSION_NAME);
+                "Android/" + com.braintreepayments.api.BuildConfig.VERSION_NAME);
     }
 
     @Test
@@ -159,7 +152,7 @@ public class ThreeDSecureClientUnitTest {
         Assert.assertEquals("encoded_auth_fingerprint",
                 lookup.getString("authorizationFingerprint"));
         Assert.assertEquals(lookup.getString("braintreeLibraryVersion"),
-                "Android-" + BuildConfig.VERSION_NAME);
+                "Android-" + com.braintreepayments.api.BuildConfig.VERSION_NAME);
         Assert.assertEquals(lookup.getString("nonce"), "a-nonce");
         assertFalse(lookup.has("dfReferenceId"));
 

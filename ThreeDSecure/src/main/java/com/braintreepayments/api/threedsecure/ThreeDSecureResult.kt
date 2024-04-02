@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.threedsecure
 
 /**
  * Result of upgrading a [PaymentMethodNonce] with 3D Secure Authentication

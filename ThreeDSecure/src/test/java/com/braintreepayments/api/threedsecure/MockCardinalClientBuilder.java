@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.threedsecure;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
@@ -8,9 +8,8 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
-import com.braintreepayments.api.threedsecure.CardinalClient;
-import com.braintreepayments.api.threedsecure.CardinalInitializeCallback;
-import com.braintreepayments.api.threedsecure.ThreeDSecureRequest;
+import com.braintreepayments.api.BraintreeException;
+import com.braintreepayments.api.Configuration;
 
 import org.mockito.stubbing.Answer;
 

@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.threedsecure
 
 /**
  * Callback for receiving the results via [ThreeDSecureLauncher]

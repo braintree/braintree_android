@@ -1,9 +1,9 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.threedsecure;
 
-import static com.braintreepayments.api.ThreeDSecureActivity.EXTRA_ERROR_MESSAGE;
-import static com.braintreepayments.api.ThreeDSecureActivity.EXTRA_JWT;
-import static com.braintreepayments.api.ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT;
-import static com.braintreepayments.api.ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE;
+import static com.braintreepayments.api.threedsecure.ThreeDSecureActivity.EXTRA_ERROR_MESSAGE;
+import static com.braintreepayments.api.threedsecure.ThreeDSecureActivity.EXTRA_JWT;
+import static com.braintreepayments.api.threedsecure.ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT;
+import static com.braintreepayments.api.threedsecure.ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,6 +14,8 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.braintreepayments.api.BraintreeException;
+import com.braintreepayments.api.UserCanceledException;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
 class ThreeDSecureActivityResultContract

@@ -75,6 +75,7 @@
     * Remove `ThreeDSecureV2BaseCustomization`
     * Remove `CardinalValidateReceiver` from `ThreeDSecureActivity`
     * Make empty `ThreeDSecureLookup` constructor package-private
+    * Update package name to `com.braintreepayments.api.threedsecure`
   * PayPal
     * Remove `PayPalListener`
     * Add `PayPalLauncher`, `PayPalPaymentAuthRequest`, `PayPalPendingRequest`, `PayPalPaymentAuthResult`, 

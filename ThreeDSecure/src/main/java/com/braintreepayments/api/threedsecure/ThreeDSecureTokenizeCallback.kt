@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.threedsecure
 
 /**
  * Used to receive the result of [ThreeDSecureClient.tokenize]

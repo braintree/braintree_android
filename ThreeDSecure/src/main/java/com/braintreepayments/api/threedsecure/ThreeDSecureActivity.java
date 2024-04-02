@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.threedsecure;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.braintreepayments.api.BraintreeException;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 

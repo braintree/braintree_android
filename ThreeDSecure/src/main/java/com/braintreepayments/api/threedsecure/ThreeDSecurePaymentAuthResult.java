@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.threedsecure;
 
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 

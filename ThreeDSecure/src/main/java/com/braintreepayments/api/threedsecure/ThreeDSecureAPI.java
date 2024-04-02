@@ -1,4 +1,7 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.threedsecure;
+
+import com.braintreepayments.api.ApiClient;
+import com.braintreepayments.api.BraintreeClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;

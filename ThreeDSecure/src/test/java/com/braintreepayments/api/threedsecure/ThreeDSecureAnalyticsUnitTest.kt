@@ -1,6 +1,5 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.threedsecure
 
-import com.braintreepayments.api.threedsecure.ThreeDSecureAnalytics
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

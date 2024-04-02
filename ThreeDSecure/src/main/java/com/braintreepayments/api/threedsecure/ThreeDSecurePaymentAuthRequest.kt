@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.threedsecure
 
 /**
  * A request used to launch continuation of the 3D Secure authentication flow.
@@ -16,7 +16,8 @@ sealed class ThreeDSecurePaymentAuthRequest {
      * [nonce] can be sent to your server.
      */
     class LaunchNotRequired(val nonce: ThreeDSecureNonce, val threeDSecureLookup:
-    ThreeDSecureLookup) : ThreeDSecurePaymentAuthRequest()
+    ThreeDSecureLookup
+    ) : ThreeDSecurePaymentAuthRequest()
 
     /**
      * There was an [error] creating the request

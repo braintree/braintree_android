@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.threedsecure;
 
 import static com.braintreepayments.api.threedsecure.ThreeDSecureActivity.EXTRA_JWT;
 import static com.braintreepayments.api.threedsecure.ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT;
@@ -14,6 +14,9 @@ import android.content.Intent;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import com.braintreepayments.api.BraintreeException;
+import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.UserCanceledException;
 import com.braintreepayments.api.threedsecure.ThreeDSecureActivity;
 import com.braintreepayments.api.threedsecure.ThreeDSecureActivityResultContract;
 import com.braintreepayments.api.threedsecure.ThreeDSecureParams;

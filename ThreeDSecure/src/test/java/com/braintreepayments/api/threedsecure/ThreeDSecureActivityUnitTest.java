@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.threedsecure;
 
 import static com.braintreepayments.api.threedsecure.ThreeDSecureActivity.RESULT_COULD_NOT_START_CARDINAL;
 import static org.junit.Assert.assertEquals;
@@ -13,6 +13,8 @@ import static org.mockito.Mockito.verify;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.braintreepayments.api.BraintreeException;
+import com.braintreepayments.api.Fixtures;
 import com.braintreepayments.api.threedsecure.CardinalClient;
 import com.braintreepayments.api.threedsecure.ThreeDSecureActivity;
 import com.braintreepayments.api.threedsecure.ThreeDSecureLookup;

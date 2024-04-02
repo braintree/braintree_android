@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.threedsecure;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -13,6 +13,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.HttpResponseCallback;
+import com.braintreepayments.api.MockBraintreeClientBuilder;
 import com.braintreepayments.api.threedsecure.ThreeDSecureAPI;
 import com.braintreepayments.api.threedsecure.ThreeDSecureInfo;
 import com.braintreepayments.api.threedsecure.ThreeDSecureNonce;

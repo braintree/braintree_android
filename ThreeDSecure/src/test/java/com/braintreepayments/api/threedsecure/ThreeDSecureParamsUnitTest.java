@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.threedsecure;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
@@ -6,6 +6,7 @@ import static junit.framework.Assert.assertTrue;
 
 import android.os.Parcel;
 
+import com.braintreepayments.api.Fixtures;
 import com.braintreepayments.api.threedsecure.ThreeDSecureParams;
 
 import org.json.JSONException;
