@@ -45,8 +45,14 @@ public class PayPalDataCollector {
      * "future payment") from a mobile device. Pass the result to your server, to include in the
      * payment request sent to PayPal. Do not otherwise cache or store this value.
      *
-     * @param context       Android Context
-     * @param configuration The merchant configuration
+     * @param context                Android Context
+     * @param configuration           The merchant configuration
+     * @param hasUserLocationConsent is an optional parameter that informs the SDK
+     *                               if your application has obtained consent from the user to collect location data in compliance with
+     *                               <a href="https://support.google.com/googleplay/android-developer/answer/10144311#personal-sensitive">Google Play Developer Program policies</a>
+     *                               This flag enables PayPal to collect necessary information required for Fraud Detection and Risk Management.
+     * @see <a href="https://support.google.com/googleplay/android-developer/answer/10144311#personal-sensitive">User Data policies for the Google Play Developer Program </a>
+     * @see <a href="https://support.google.com/googleplay/android-developer/answer/9799150?hl=en#Prominent%20in-app%20disclosure">Examples of prominent in-app disclosures</a>
      */
     @MainThread
     String getClientMetadataId(
@@ -55,7 +61,7 @@ public class PayPalDataCollector {
         boolean hasUserLocationConsent
     ) {
         PayPalDataCollectorInternalRequest request = new PayPalDataCollectorInternalRequest(hasUserLocationConsent)
-                .setApplicationGuid(getPayPalInstallationGUID(context));
+            .setApplicationGuid(getPayPalInstallationGUID(context));
 
         return getClientMetadataId(context, request, configuration);
     }
@@ -96,6 +102,18 @@ public class PayPalDataCollector {
         collectDeviceData(context, request, null, callback);
     }
 
+    /**
+     * Collects device data based on your merchant configuration.
+     * <p>
+     * We recommend that you call this method as early as possible, e.g. at app launch. If that's too early,
+     * call it at the beginning of customer checkout.
+     * <p>
+     * Use the return value on your server, e.g. with `Transaction.sale`.
+     *
+     * @param context                    Android Context
+     * @param payPalDataCollectorRequest params for the data collection request
+     * @param callback                   {@link PayPalDataCollectorCallback}
+     */
     public void collectDeviceData(
         @NonNull final Context context,
         @NonNull final PayPalDataCollectorRequest payPalDataCollectorRequest,
@@ -125,6 +143,19 @@ public class PayPalDataCollector {
         collectDeviceData(context, request, riskCorrelationId, callback);
     }
 
+    /**
+     * Collects device data for PayPal APIs.
+     * <p>
+     * We recommend that you call this method as early as possible, e.g. at app launch. If that's too early,
+     * call it at the beginning of customer checkout.
+     * <p>
+     * Use the return value on your server, e.g. with `Transaction.sale`.
+     *
+     * @param context                    Android Context
+     * @param payPalDataCollectorRequest params for the data collection request
+     * @param riskCorrelationId          Optional client metadata id
+     * @param callback                   {@link PayPalDataCollectorCallback}
+     */
     public void collectDeviceData(
         @NonNull final Context context,
         @NonNull final PayPalDataCollectorRequest payPalDataCollectorRequest,
