@@ -111,14 +111,14 @@ public class ThreeDSecureClientUnitTest {
         Assert.assertEquals("encoded_auth_fingerprint",
                 lookup.getString("authorizationFingerprint"));
         Assert.assertEquals(lookup.getString("braintreeLibraryVersion"),
-                "Android-" + com.braintreepayments.api.BuildConfig.VERSION_NAME);
+                "Android-" + BuildConfig.VERSION_NAME);
         Assert.assertEquals(lookup.getString("dfReferenceId"), "fake-df");
         Assert.assertEquals(lookup.getString("nonce"), "a-nonce");
 
         JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
         Assert.assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
         Assert.assertEquals(clientMetaData.getString("sdkVersion"),
-                "Android/" + com.braintreepayments.api.BuildConfig.VERSION_NAME);
+                "Android/" + BuildConfig.VERSION_NAME);
     }
 
     @Test
@@ -152,7 +152,7 @@ public class ThreeDSecureClientUnitTest {
         Assert.assertEquals("encoded_auth_fingerprint",
                 lookup.getString("authorizationFingerprint"));
         Assert.assertEquals(lookup.getString("braintreeLibraryVersion"),
-                "Android-" + com.braintreepayments.api.BuildConfig.VERSION_NAME);
+                "Android-" + BuildConfig.VERSION_NAME);
         Assert.assertEquals(lookup.getString("nonce"), "a-nonce");
         assertFalse(lookup.has("dfReferenceId"));
 
