@@ -10,9 +10,9 @@ import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.PaymentMethodNonce;
-import com.braintreepayments.api.VisaCheckoutClient;
-import com.braintreepayments.api.VisaCheckoutProfileBuilderResult;
-import com.braintreepayments.api.VisaCheckoutResult;
+import com.braintreepayments.api.visacheckout.VisaCheckoutClient;
+import com.braintreepayments.api.visacheckout.VisaCheckoutProfileBuilderResult;
+import com.braintreepayments.api.visacheckout.VisaCheckoutResult;
 import com.visa.checkout.CheckoutButton;
 import com.visa.checkout.Profile;
 import com.visa.checkout.PurchaseInfo;

@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.visacheckout
 
 /**
  * Callback for receiving result of [VisaCheckoutClient.tokenize].

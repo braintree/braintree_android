@@ -118,6 +118,7 @@
     * Rename `SEPADirectDebitPaymentAuthRequestCallback#onResult` to
      `SEPADirectDebitPaymentAuthRequestCallback#onSEPADirectDebitPaymentAuthResult`
   * Visa Checkout
+    * Update package name to `com.braintreepayments.api.visacheckout`
     * Change parameters of `VisaCheckoutCreateProfileBuilderCallback` and
       `VisaCheckoutTokenizeCallback`
     * Add `VisaCheckoutProfileBuilderResult` and `VisaCheckoutTokenizeResult`

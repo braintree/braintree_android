@@ -9,8 +9,8 @@ import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.PostalAddress;
 import com.braintreepayments.api.ThreeDSecureNonce;
 import com.braintreepayments.api.VenmoAccountNonce;
-import com.braintreepayments.api.VisaCheckoutAddress;
-import com.braintreepayments.api.VisaCheckoutNonce;
+import com.braintreepayments.api.visacheckout.VisaCheckoutAddress;
+import com.braintreepayments.api.visacheckout.VisaCheckoutNonce;
 
 import java.util.Arrays;
 import java.util.List;

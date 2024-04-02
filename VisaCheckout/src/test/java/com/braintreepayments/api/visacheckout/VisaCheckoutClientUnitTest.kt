@@ -1,6 +1,11 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.visacheckout
 
+import com.braintreepayments.api.Configuration
 import com.braintreepayments.api.Configuration.Companion.fromJson
+import com.braintreepayments.api.Fixtures
+import com.braintreepayments.api.MockkApiClientBuilder
+import com.braintreepayments.api.MockkBraintreeClientBuilder
+import com.braintreepayments.api.TestConfigurationBuilder
 import com.braintreepayments.api.TestConfigurationBuilder.TestVisaCheckoutConfigurationBuilder
 import com.visa.checkout.Profile.CardBrand
 import com.visa.checkout.VisaPaymentSummary
@@ -43,7 +48,10 @@ class VisaCheckoutClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
-        val sut = VisaCheckoutClient(braintreeClient, apiClient)
+        val sut = VisaCheckoutClient(
+            braintreeClient,
+            apiClient
+        )
         val listener = mockk<VisaCheckoutCreateProfileBuilderCallback>(relaxed = true)
         sut.createProfileBuilder(listener)
 
@@ -73,7 +81,10 @@ class VisaCheckoutClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(fromJson(configString))
             .build()
-        val sut = VisaCheckoutClient(braintreeClient, apiClient)
+        val sut = VisaCheckoutClient(
+            braintreeClient,
+            apiClient
+        )
         sut.createProfileBuilder { profileBuilderResult ->
             assertTrue(profileBuilderResult is VisaCheckoutProfileBuilderResult.Success)
             val profileBuilder = (profileBuilderResult as VisaCheckoutProfileBuilderResult
@@ -104,7 +115,10 @@ class VisaCheckoutClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(fromJson(configString))
             .build()
-        val sut = VisaCheckoutClient(braintreeClient, apiClient)
+        val sut = VisaCheckoutClient(
+            braintreeClient,
+            apiClient
+        )
         sut.createProfileBuilder { profileBuilderResult ->
             val profileBuilder = (profileBuilderResult as VisaCheckoutProfileBuilderResult
             .Success).profileBuilder
@@ -126,7 +140,10 @@ class VisaCheckoutClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configurationWithVisaCheckout)
             .build()
-        val sut = VisaCheckoutClient(braintreeClient, apiClient)
+        val sut = VisaCheckoutClient(
+            braintreeClient,
+            apiClient
+        )
         sut.tokenize(visaPaymentSummary) { visaCheckoutResult ->
             assertTrue(visaCheckoutResult is VisaCheckoutResult.Success)
             val nonce = (visaCheckoutResult as VisaCheckoutResult.Success).nonce
@@ -143,7 +160,10 @@ class VisaCheckoutClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configurationWithVisaCheckout)
             .build()
-        val sut = VisaCheckoutClient(braintreeClient, apiClient)
+        val sut = VisaCheckoutClient(
+            braintreeClient,
+            apiClient
+        )
         val listener = mockk<VisaCheckoutTokenizeCallback>(relaxed = true)
         sut.tokenize(visaPaymentSummary, listener)
         verify { braintreeClient.sendAnalyticsEvent(VisaCheckoutAnalytics.TOKENIZE_STARTED) }
@@ -159,7 +179,10 @@ class VisaCheckoutClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configurationWithVisaCheckout)
             .build()
-        val sut = VisaCheckoutClient(braintreeClient, apiClient)
+        val sut = VisaCheckoutClient(
+            braintreeClient,
+            apiClient
+        )
         sut.tokenize(visaPaymentSummary) { visaCheckoutResult ->
             assertTrue(visaCheckoutResult is VisaCheckoutResult.Failure)
             val error = (visaCheckoutResult as VisaCheckoutResult.Failure).error
@@ -176,7 +199,10 @@ class VisaCheckoutClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configurationWithVisaCheckout)
             .build()
-        val sut = VisaCheckoutClient(braintreeClient, apiClient)
+        val sut = VisaCheckoutClient(
+            braintreeClient,
+            apiClient
+        )
         val listener = mockk<VisaCheckoutTokenizeCallback>(relaxed = true)
         sut.tokenize(visaPaymentSummary, listener)
         verify { braintreeClient.sendAnalyticsEvent(VisaCheckoutAnalytics.TOKENIZE_STARTED) }

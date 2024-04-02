@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.visacheckout;
 
 import android.os.Parcel;
 
@@ -10,6 +10,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 import static junit.framework.Assert.assertEquals;
+
+import com.braintreepayments.api.visacheckout.VisaCheckoutUserData;
 
 @RunWith(RobolectricTestRunner.class)
 public class VisaCheckoutUserDataUnitTest {
