@@ -2,7 +2,6 @@
 
 ## unreleased
 
-
 * Local Payment
   * Fixes Google Play Store Rejection
     * See [developer documentation](link) for required updates for user location data compliance
@@ -12,11 +11,6 @@
   * Fixes Google Play Store Rejection
     * See [developer documentation](link) for required updates for user location data compliance
     * Add `hasUserLocationConsent` property to `PayPalCheckoutRequest`, `PayPalVaultRequest` and `PayPalRequest`
-    * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
-* PayPalNativeCheckout
-  * Fixes Google Play Store Rejection
-    * See [developer documentation](link) for required updates for user location data compliance
-    * Add `hasUserLocationConsent` property to `PayPalNativeCheckoutRequest`, `PayPalNativeVaultRequest` and `PayPalNativeCheckoutRequest`
     * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
 * BraintreeDataCollector
   * Fixes Google Play Store Rejection
