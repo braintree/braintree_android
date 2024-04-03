@@ -4,24 +4,20 @@
 
 * Local Payment
   * Fixes Google Play Store Rejection
-    * See [developer documentation](link) for required updates for user location data compliance
     * Add `hasUserLocationConsent` property to `LocalPaymentRequest`
     * Deprecate existing constructor that does not pass in `hasUserLocationConsent`
 * PayPal
   * Fixes Google Play Store Rejection
-    * See [developer documentation](link) for required updates for user location data compliance
     * Add `hasUserLocationConsent` property to `PayPalCheckoutRequest`, `PayPalVaultRequest` and `PayPalRequest`
     * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
 * BraintreeDataCollector
   * Bump Magnes SDK to version 5.5.0
   * Fixes Google Play Store Rejection
-    * See [developer documentation](link) for required updates for user location data compliance
     * Add `DataCollectorRequest` to pass in `hasUserLocationConsent`
     * Update `DataCollector.collectDeviceData()` to take in `DataCollectorRequest`
     * Deprecate existing `DataCollector.collectDeviceData()`
 * PayPalDataCollector
   * Fixes Google Play Store Rejection
-    * See [developer documentation](link) for required updates for user location data compliance
     * Add `PayPalDataCollectorRequest` to pass in `hasUserLocationConsent`
     * Update `PayPalDataCollector.collectDeviceData()` to take in `PayPalDataCollectorRequest`
     * Deprecate existing `PayPalDataCollector.collectDeviceData()`
