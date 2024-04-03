@@ -62,8 +62,7 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
      */
     @Deprecated
     public PayPalCheckoutRequest(@NonNull String amount) {
-        super(false);
-        this.amount = amount;
+       this(amount, false);
     }
 
     /**
