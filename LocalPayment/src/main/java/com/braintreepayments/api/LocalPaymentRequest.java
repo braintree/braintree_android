@@ -52,7 +52,7 @@ public class LocalPaymentRequest {
      **/
     @Deprecated
     public LocalPaymentRequest() {
-        hasUserLocationConsent = false;
+        this(false);
     }
 
     /**
