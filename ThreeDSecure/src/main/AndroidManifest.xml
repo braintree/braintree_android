@@ -2,7 +2,7 @@
 
     <application>
         <activity
-            android:name="com.braintreepayments.api.ThreeDSecureActivity"
+            android:name=".ThreeDSecureActivity"
             android:theme="@style/Theme.AppCompat" />
     </application>
 </manifest>

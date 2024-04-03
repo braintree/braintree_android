@@ -9,7 +9,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.ThreeDSecureInfo;
+import com.braintreepayments.api.threedsecure.ThreeDSecureInfo;
 
 public class ThreeDSecureInfoUnitTest {
 
