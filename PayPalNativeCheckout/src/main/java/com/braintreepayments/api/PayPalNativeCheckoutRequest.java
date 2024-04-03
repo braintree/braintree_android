@@ -49,8 +49,6 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
     private boolean shouldOfferPayLater;
 
     /**
-     * Deprecated. Use {@link PayPalNativeCheckoutRequest#PayPalNativeCheckoutRequest(String, boolean)} instead.
-     *
      * @param amount The transaction amount in currency units (as * determined by setCurrencyCode).
      *               For example, "1.20" corresponds to one dollar and twenty cents. Amount must be a non-negative
      *               number, may optionally contain exactly 2 decimal places separated by '.' and is
@@ -60,25 +58,7 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
      *               for mismatches between this client-side amount and the final amount in the Transaction
      *               are determined by the gateway.
      **/
-    @Deprecated
     public PayPalNativeCheckoutRequest(@NonNull String amount) {
-        super(false);
-        this.amount = amount;
-    }
-
-    /**
-     * @param amount The transaction amount in currency units (as * determined by setCurrencyCode).
-     *               For example, "1.20" corresponds to one dollar and twenty cents. Amount must be a non-negative
-     *               number, may optionally contain exactly 2 decimal places separated by '.' and is
-     *               limited to 7 digits before the decimal point.
-     *               <p>
-     *               This amount may differ slightly from the transaction amount. The exact decline rules
-     *               for mismatches between this client-side amount and the final amount in the Transaction
-     *               are determined by the gateway.
-     * TODO: add javadoc for hasUserLocationConsent param
-     **/
-    public PayPalNativeCheckoutRequest(@NonNull String amount, boolean hasUserLocationConsent) {
-        super(hasUserLocationConsent);
         this.amount = amount;
     }
 

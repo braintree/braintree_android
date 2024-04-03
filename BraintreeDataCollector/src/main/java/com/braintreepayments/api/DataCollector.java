@@ -108,6 +108,8 @@ public class DataCollector {
      *
      * @param context Android Context
      * @param configuration the merchant configuration
+     * @param dataCollectorRequest The {@link DataCollectorRequest} containing the configuration for
+     * the data collection request
      * @return The client metadata id associated with the collected data.
      */
     private String getPayPalClientMetadataId(
