@@ -31,14 +31,15 @@ public class DataCollector {
     }
 
     /**
+     * @deprecated Passing in {@link DataCollectorRequest} is required. Use
+     * {@link DataCollector#collectDeviceData(Context, DataCollectorRequest, DataCollectorCallback)} instead.
+     *
      * Collect device information for fraud identification purposes.
      *
      * @param context  Android Context
-     * @param callback {@link DataCollectorCallback
-     * @deprecated Passing in {@link DataCollectorRequest} is required. Use
-     * {@link PayPalDataCollector#collectDeviceData(Context, DataCollectorRequest, PayPalDataCollectorCallback)} instead.
+     * @param callback {@link DataCollectorCallback}
      */
-    @Deprecated()
+    @Deprecated
     public void collectDeviceData(
         @NonNull Context context,
         @NonNull DataCollectorCallback callback
