@@ -17,6 +17,7 @@
     * Remove `BraintreeSharedPreferencesException`
     * Convert `PostalAddress` to data class
     * Remove `open` modifier on `Configuration`
+    * Update package name to `com.braintreepayments.api.core`
   * UnionPay
     * Remove `union-pay` module
       * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover
