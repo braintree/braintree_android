@@ -15,9 +15,6 @@ class PayPalDataCollectorInternalRequest {
     final private boolean hasUserLocationConsent;
     private HashMap<String,String> additionalData;
 
-    /**
-     * @param hasUserLocationConsent Indicates if the beacon feature should be disabled.
-     */
     PayPalDataCollectorInternalRequest(boolean hasUserLocationConsent) {
         this.hasUserLocationConsent = hasUserLocationConsent;
     }
