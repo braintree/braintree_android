@@ -256,6 +256,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
         return lineItems;
     }
 
+
     abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;
 
     protected PayPalNativeRequest(Parcel in) {

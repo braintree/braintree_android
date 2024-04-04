@@ -49,6 +49,8 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
     private boolean shouldOfferPayLater;
 
     /**
+     * Deprecated. Use {@link PayPalCheckoutRequest#PayPalCheckoutRequest(String, boolean)} instead.
+     *
      * @param amount The transaction amount in currency units (as * determined by setCurrencyCode).
      *               For example, "1.20" corresponds to one dollar and twenty cents. Amount must be a non-negative
      *               number, may optionally contain exactly 2 decimal places separated by '.' and is
@@ -57,8 +59,31 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
      *               This amount may differ slightly from the transaction amount. The exact decline rules
      *               for mismatches between this client-side amount and the final amount in the Transaction
      *               are determined by the gateway.
-     **/
+     */
+    @Deprecated
     public PayPalCheckoutRequest(@NonNull String amount) {
+       this(amount, false);
+    }
+
+    /**
+     * @param amount The transaction amount in currency units (as * determined by setCurrencyCode).
+     * For example, "1.20" corresponds to one dollar and twenty cents. Amount must be a non-negative
+     * number, may optionally contain exactly 2 decimal places separated by '.' and is
+     * limited to 7 digits before the decimal point.
+     * <p>
+     * This amount may differ slightly from the transaction amount. The exact decline rules
+     * for mismatches between this client-side amount and the final amount in the Transaction
+     * are determined by the gateway.
+     * @param hasUserLocationConsent is an optional parameter that informs the SDK
+     * if your application has obtained consent from the user to collect location data in compliance with
+     * <a href="https://support.google.com/googleplay/android-developer/answer/10144311#personal-sensitive">Google Play Developer Program policies</a>
+     * This flag enables PayPal to collect necessary information required for Fraud Detection and Risk Management.
+     *
+     * @see <a href="https://support.google.com/googleplay/android-developer/answer/10144311#personal-sensitive">User Data policies for the Google Play Developer Program </a>
+     * @see <a href="https://support.google.com/googleplay/android-developer/answer/9799150?hl=en#Prominent%20in-app%20disclosure">Examples of prominent in-app disclosures</a>
+     */
+    public PayPalCheckoutRequest(@NonNull String amount, boolean hasUserLocationConsent) {
+        super(hasUserLocationConsent);
         this.amount = amount;
     }
 
