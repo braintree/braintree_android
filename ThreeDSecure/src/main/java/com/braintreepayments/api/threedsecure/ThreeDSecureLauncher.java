@@ -11,7 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 
-import com.braintreepayments.api.BraintreeException;
+import com.braintreepayments.api.core.BraintreeException;
 
 /**
  * Launcher for the app-based authentication challenge for 3D secure tokenization.

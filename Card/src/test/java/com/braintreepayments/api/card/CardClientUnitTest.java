@@ -9,13 +9,13 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.braintreepayments.api.ApiClient;
+import com.braintreepayments.api.core.ApiClient;
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.Configuration;
+import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.Fixtures;
 import com.braintreepayments.api.MockApiClientBuilder;
 import com.braintreepayments.api.MockBraintreeClientBuilder;
-import com.braintreepayments.api.TokenizeCallback;
+import com.braintreepayments.api.core.TokenizeCallback;
 import com.braintreepayments.api.card.CardAnalytics;
 import com.braintreepayments.api.card.CardResult;
 import com.braintreepayments.api.card.CardTokenizeCallback;

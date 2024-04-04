@@ -4,6 +4,9 @@ import android.content.Context;
 
 import androidx.annotation.RestrictTo;
 
+import com.braintreepayments.api.core.Configuration;
+import com.braintreepayments.api.core.PaymentMethod;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

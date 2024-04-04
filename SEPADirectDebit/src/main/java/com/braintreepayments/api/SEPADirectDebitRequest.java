@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.braintreepayments.api.core.PostalAddress;
+
 /**
  * Parameters for creating a SEPA Direct Debit tokenization request.
  */

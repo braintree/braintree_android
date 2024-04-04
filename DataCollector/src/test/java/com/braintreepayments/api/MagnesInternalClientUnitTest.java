@@ -10,6 +10,8 @@ import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import com.braintreepayments.api.core.Configuration;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

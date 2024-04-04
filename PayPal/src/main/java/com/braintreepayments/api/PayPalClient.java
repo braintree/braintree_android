@@ -9,6 +9,11 @@ import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.BraintreeRequestCodes;
+import com.braintreepayments.api.core.Configuration;
+import com.braintreepayments.api.core.UserCanceledException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

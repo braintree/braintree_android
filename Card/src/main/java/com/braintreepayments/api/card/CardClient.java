@@ -5,11 +5,11 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.ApiClient;
+import com.braintreepayments.api.core.ApiClient;
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.BraintreeException;
-import com.braintreepayments.api.ErrorWithResponse;
-import com.braintreepayments.api.GraphQLConstants;
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.ErrorWithResponse;
+import com.braintreepayments.api.core.GraphQLConstants;
 
 import org.json.JSONException;
 import org.json.JSONObject;

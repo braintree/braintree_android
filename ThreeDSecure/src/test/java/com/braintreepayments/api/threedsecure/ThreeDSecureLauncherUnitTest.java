@@ -16,7 +16,7 @@ import androidx.activity.result.ActivityResultRegistry;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.api.BraintreeException;
+import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.Fixtures;
 import com.braintreepayments.api.threedsecure.ThreeDSecureLauncher;
 import com.braintreepayments.api.threedsecure.ThreeDSecureLauncherCallback;

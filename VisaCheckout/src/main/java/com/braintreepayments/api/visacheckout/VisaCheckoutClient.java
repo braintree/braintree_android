@@ -5,9 +5,9 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.ApiClient;
+import com.braintreepayments.api.core.ApiClient;
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.ConfigurationException;
+import com.braintreepayments.api.core.ConfigurationException;
 import com.visa.checkout.Environment;
 import com.visa.checkout.Profile;
 import com.visa.checkout.VisaPaymentSummary;

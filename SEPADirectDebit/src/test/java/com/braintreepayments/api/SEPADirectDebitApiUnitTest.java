@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import com.braintreepayments.api.core.PostalAddress;
+
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;

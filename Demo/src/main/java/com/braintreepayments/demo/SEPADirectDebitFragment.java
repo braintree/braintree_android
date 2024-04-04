@@ -9,7 +9,7 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.PostalAddress;
+import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.SEPADirectDebitClient;
 import com.braintreepayments.api.SEPADirectDebitLauncher;
 import com.braintreepayments.api.SEPADirectDebitMandateType;
@@ -20,7 +20,7 @@ import com.braintreepayments.api.SEPADirectDebitPaymentAuthResultInfo;
 import com.braintreepayments.api.SEPADirectDebitPendingRequest;
 import com.braintreepayments.api.SEPADirectDebitRequest;
 import com.braintreepayments.api.SEPADirectDebitResult;
-import com.braintreepayments.api.UserCanceledException;
+import com.braintreepayments.api.core.UserCanceledException;
 
 import java.util.UUID;
 

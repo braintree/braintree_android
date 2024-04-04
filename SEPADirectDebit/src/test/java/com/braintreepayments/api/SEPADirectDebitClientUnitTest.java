@@ -14,6 +14,9 @@ import static org.mockito.Mockito.when;
 
 import android.net.Uri;
 
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.BraintreeRequestCodes;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;

@@ -6,6 +6,8 @@ import android.util.Log;
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.core.Configuration;
+
 import lib.android.paypal.com.magnessdk.Environment;
 import lib.android.paypal.com.magnessdk.InvalidInputException;
 import lib.android.paypal.com.magnessdk.MagnesResult;

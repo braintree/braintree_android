@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.PaymentMethodNonce;
+import com.braintreepayments.api.core.PaymentMethodNonce;
 import com.braintreepayments.api.visacheckout.VisaCheckoutClient;
 import com.braintreepayments.api.visacheckout.VisaCheckoutProfileBuilderResult;
 import com.braintreepayments.api.visacheckout.VisaCheckoutResult;

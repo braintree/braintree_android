@@ -12,7 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.braintreepayments.api.Json;
-import com.braintreepayments.api.PaymentMethodNonce;
+import com.braintreepayments.api.core.PaymentMethodNonce;
 
 /**
  * {@link PaymentMethodNonce} representing a credit or debit card.

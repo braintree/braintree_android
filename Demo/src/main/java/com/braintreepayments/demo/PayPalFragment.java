@@ -24,7 +24,7 @@ import com.braintreepayments.api.PayPalPaymentAuthResultInfo;
 import com.braintreepayments.api.PayPalPendingRequest;
 import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PayPalResult;
-import com.braintreepayments.api.PaymentMethodNonce;
+import com.braintreepayments.api.core.PaymentMethodNonce;
 
 public class PayPalFragment extends BaseFragment {
 

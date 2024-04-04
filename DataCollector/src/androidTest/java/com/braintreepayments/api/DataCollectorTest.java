@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
+import com.braintreepayments.api.core.Configuration;
+
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;

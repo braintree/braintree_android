@@ -13,6 +13,7 @@ import com.braintreepayments.api.americanexpress.AmericanExpressClient;
 import com.braintreepayments.api.americanexpress.AmericanExpressGetRewardsBalanceCallback;
 import com.braintreepayments.api.americanexpress.AmericanExpressResult;
 import com.braintreepayments.api.americanexpress.AmericanExpressRewardsBalance;
+import com.braintreepayments.api.core.BraintreeClient;
 
 import org.junit.Before;
 import org.junit.Test;

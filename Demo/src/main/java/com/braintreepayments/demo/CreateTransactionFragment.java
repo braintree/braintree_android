@@ -15,7 +15,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.braintreepayments.api.PaymentMethodNonce;
+import com.braintreepayments.api.core.PaymentMethodNonce;
 import com.braintreepayments.demo.models.Transaction;
 
 import retrofit.Callback;

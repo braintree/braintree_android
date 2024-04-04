@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import com.braintreepayments.api.core.MetadataBuilder;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;

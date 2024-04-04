@@ -7,6 +7,10 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.BraintreeRequestCodes;
+import com.braintreepayments.api.core.ConfigurationException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

@@ -6,7 +6,7 @@ import com.braintreepayments.api.PayPalCheckoutRequest;
 import com.braintreepayments.api.PayPalPaymentIntent;
 import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PayPalVaultRequest;
-import com.braintreepayments.api.PostalAddress;
+import com.braintreepayments.api.core.PostalAddress;
 
 public class PayPalRequestFactory {
 

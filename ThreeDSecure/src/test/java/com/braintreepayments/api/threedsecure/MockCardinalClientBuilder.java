@@ -8,8 +8,8 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
-import com.braintreepayments.api.BraintreeException;
-import com.braintreepayments.api.Configuration;
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.Configuration;
 
 import org.mockito.stubbing.Answer;
 

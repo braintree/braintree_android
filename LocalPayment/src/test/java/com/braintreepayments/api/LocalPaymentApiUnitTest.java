@@ -13,6 +13,8 @@ import static org.mockito.Mockito.verify;
 
 import android.net.Uri;
 
+import com.braintreepayments.api.core.PostalAddress;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;

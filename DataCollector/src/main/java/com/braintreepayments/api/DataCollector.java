@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.core.Configuration;
+import com.braintreepayments.api.core.UUIDHelper;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

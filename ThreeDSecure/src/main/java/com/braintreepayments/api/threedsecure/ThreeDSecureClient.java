@@ -6,9 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.BraintreeException;
+import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.BuildConfig;
-import com.braintreepayments.api.InvalidArgumentException;
+import com.braintreepayments.api.core.InvalidArgumentException;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
 import org.json.JSONException;

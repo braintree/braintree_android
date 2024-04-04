@@ -13,7 +13,7 @@ import static org.mockito.Mockito.verify;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.braintreepayments.api.BraintreeException;
+import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.Fixtures;
 import com.braintreepayments.api.threedsecure.CardinalClient;
 import com.braintreepayments.api.threedsecure.ThreeDSecureActivity;

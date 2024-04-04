@@ -4,6 +4,10 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import com.braintreepayments.api.core.ApiClient;
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.MetadataBuilder;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
