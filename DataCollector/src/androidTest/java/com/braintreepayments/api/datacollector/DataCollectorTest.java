@@ -1,9 +1,13 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.datacollector;
 
 import android.text.TextUtils;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
+
+import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.Configuration;
+import com.braintreepayments.api.Fixtures;
 
 import org.json.JSONException;
 import org.junit.Test;

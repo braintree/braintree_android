@@ -16,6 +16,8 @@ import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.braintreepayments.api.datacollector.DataCollector;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;

@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.datacollector;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -9,6 +9,10 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
+
+import com.braintreepayments.api.Configuration;
+import com.braintreepayments.api.datacollector.DataCollectorRequest;
+import com.braintreepayments.api.datacollector.MagnesInternalClient;
 
 import org.junit.Before;
 import org.junit.Test;

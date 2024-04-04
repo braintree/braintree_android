@@ -15,6 +15,8 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
+import com.braintreepayments.api.datacollector.DataCollector;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

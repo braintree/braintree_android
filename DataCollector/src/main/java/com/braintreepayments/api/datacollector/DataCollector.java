@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.datacollector;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -7,6 +7,10 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
+import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.Configuration;
+import com.braintreepayments.api.UUIDHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;

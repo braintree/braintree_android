@@ -1,4 +1,6 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.datacollector;
+
+import com.braintreepayments.api.datacollector.DataCollectorRequest;
 
 import static junit.framework.Assert.assertEquals;
 
