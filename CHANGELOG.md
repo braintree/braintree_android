@@ -22,8 +22,8 @@
     * Update `PayPalDataCollector.collectDeviceData()` to take in `PayPalDataCollectorRequest`
     * Deprecate existing `PayPalDataCollector.collectDeviceData()`
 * GooglePay
-    * Add `GooglePayClient#isReadyToPay(Context, ReadyForGooglePayRequest, GooglePayIsReadyToPayCallback)` method
-    * Deprecate  `GooglePayClient#isReadyToPay(FragmentActivity, ReadyForGooglePayRequest, GooglePayIsReadyToPayCallback)` method
+  * Add `GooglePayClient#isReadyToPay(Context, ReadyForGooglePayRequest, GooglePayIsReadyToPayCallback)` method
+  * Deprecate  `GooglePayClient#isReadyToPay(FragmentActivity, ReadyForGooglePayRequest, GooglePayIsReadyToPayCallback)` method
 
 ## 4.43.0 (2024-03-19)
 
