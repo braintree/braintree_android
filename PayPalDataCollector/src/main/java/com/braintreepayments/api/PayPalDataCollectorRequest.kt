@@ -10,7 +10,10 @@ package com.braintreepayments.api
  *
  * @see [User Data policies for the Google Play Developer Program](https://support.google.com/googleplay/android-developer/answer/10144311#personal-sensitive)
  * @see [Examples of prominent in-app disclosures](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en#Prominent%20in-app%20disclosure)
+ *
+ * @property riskCorrelationId Optional client metadata id
  */
 data class PayPalDataCollectorRequest(
-    val hasUserLocationConsent: Boolean
+    val hasUserLocationConsent: Boolean,
+    val riskCorrelationId: String? = null
 )

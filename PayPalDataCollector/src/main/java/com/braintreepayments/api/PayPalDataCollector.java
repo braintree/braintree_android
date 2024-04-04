@@ -84,6 +84,8 @@ public class PayPalDataCollector {
     }
 
     /**
+     * Deprecated. Use {@link PayPalDataCollector#collectDeviceData(Context, PayPalDataCollectorRequest, PayPalDataCollectorCallback)}
+     *
      * Collects device data based on your merchant configuration.
      * <p>
      * We recommend that you call this method as early as possible, e.g. at app launch. If that's too early,
@@ -94,35 +96,18 @@ public class PayPalDataCollector {
      * @param context  Android Context
      * @param callback {@link PayPalDataCollectorCallback}
      */
+    @Deprecated
     public void collectDeviceData(
         @NonNull final Context context,
         @NonNull final PayPalDataCollectorCallback callback
     ) {
-        PayPalDataCollectorRequest request = new PayPalDataCollectorRequest(false);
-        collectDeviceData(context, request, null, callback);
+        PayPalDataCollectorRequest request = new PayPalDataCollectorRequest(false, null);
+        collectDeviceData(context, request, callback);
     }
 
     /**
-     * Collects device data based on your merchant configuration.
-     * <p>
-     * We recommend that you call this method as early as possible, e.g. at app launch. If that's too early,
-     * call it at the beginning of customer checkout.
-     * <p>
-     * Use the return value on your server, e.g. with `Transaction.sale`.
+     * Deprecated. Use {@link PayPalDataCollector#collectDeviceData(Context, PayPalDataCollectorRequest, PayPalDataCollectorCallback)}
      *
-     * @param context                    Android Context
-     * @param payPalDataCollectorRequest params for the data collection request
-     * @param callback                   {@link PayPalDataCollectorCallback}
-     */
-    public void collectDeviceData(
-        @NonNull final Context context,
-        @NonNull final PayPalDataCollectorRequest payPalDataCollectorRequest,
-        @NonNull final PayPalDataCollectorCallback callback
-    ) {
-        collectDeviceData(context, payPalDataCollectorRequest, null, callback);
-    }
-
-    /**
      * Collects device data for PayPal APIs.
      * <p>
      * We recommend that you call this method as early as possible, e.g. at app launch. If that's too early,
@@ -134,13 +119,14 @@ public class PayPalDataCollector {
      * @param riskCorrelationId Optional client metadata id
      * @param callback          {@link PayPalDataCollectorCallback}
      */
+    @Deprecated
     public void collectDeviceData(
         @NonNull final Context context,
         @Nullable final String riskCorrelationId,
         @NonNull final PayPalDataCollectorCallback callback
     ) {
-        PayPalDataCollectorRequest request = new PayPalDataCollectorRequest(false);
-        collectDeviceData(context, request, riskCorrelationId, callback);
+        PayPalDataCollectorRequest request = new PayPalDataCollectorRequest(false, riskCorrelationId);
+        collectDeviceData(context, request, callback);
     }
 
     /**
@@ -153,13 +139,11 @@ public class PayPalDataCollector {
      *
      * @param context                    Android Context
      * @param payPalDataCollectorRequest params for the data collection request
-     * @param riskCorrelationId          Optional client metadata id
      * @param callback                   {@link PayPalDataCollectorCallback}
      */
     public void collectDeviceData(
         @NonNull final Context context,
         @NonNull final PayPalDataCollectorRequest payPalDataCollectorRequest,
-        @Nullable final String riskCorrelationId,
         @NonNull final PayPalDataCollectorCallback callback
     ) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
@@ -172,8 +156,8 @@ public class PayPalDataCollector {
                             payPalDataCollectorRequest.getHasUserLocationConsent()
                         ).setApplicationGuid(getPayPalInstallationGUID(context));
 
-                        if (riskCorrelationId != null) {
-                            request.setRiskCorrelationId(riskCorrelationId);
+                        if (payPalDataCollectorRequest.getRiskCorrelationId() != null) {
+                            request.setRiskCorrelationId(payPalDataCollectorRequest.getRiskCorrelationId());
                         }
 
                         String correlationId =
