@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.44.0 (2024-04-05)
 
 * Local Payment
   * Fixes Google Play Store Rejection
