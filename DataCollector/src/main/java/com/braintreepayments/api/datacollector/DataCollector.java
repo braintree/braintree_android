@@ -36,8 +36,7 @@ public class DataCollector {
         this(new BraintreeClient(context, authorization));
     }
 
-    @VisibleForTesting
-    DataCollector(@NonNull BraintreeClient braintreeClient) {
+    public DataCollector(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new MagnesInternalClient(), new UUIDHelper());
     }
 
@@ -64,7 +63,7 @@ public class DataCollector {
      * @param configuration The merchant configuration
      */
     @MainThread
-    String getClientMetadataId(Context context, Configuration configuration) {
+    public String getClientMetadataId(Context context, Configuration configuration) {
         DataCollectorRequest request = new DataCollectorRequest()
                 .setApplicationGuid(getPayPalInstallationGUID(context));
 
