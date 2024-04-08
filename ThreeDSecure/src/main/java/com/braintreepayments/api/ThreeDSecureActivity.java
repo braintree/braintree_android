@@ -10,14 +10,15 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver;
-import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
-import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
+import com.cardinalcommerce.ThreeDotOh.interfaces.ChallengeStatusReceiver;
+import com.cardinalcommerce.ThreeDotOh.models.CardinalChallengeObserver;
+import com.cardinalcommerce.ThreeDotOh.models.ChallengeCompletionResult;
+import com.cardinalcommerce.shared.cs.interfaces.Error;
 
 /**
  * The Activity that receives Cardinal SDK result from 3DS v2 flow
  */
-public class ThreeDSecureActivity extends AppCompatActivity implements CardinalValidateReceiver {
+public class ThreeDSecureActivity extends AppCompatActivity {
 
     static final String EXTRA_ERROR_MESSAGE = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_ERROR_MESSAGE";
     static final String EXTRA_THREE_D_SECURE_RESULT = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT";
@@ -32,8 +33,47 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        challengeObserver = new CardinalChallengeObserver(
-                this, (context, validateResponse, s) -> handleValidated(validateResponse, s));
+        challengeObserver = new CardinalChallengeObserver(this, new ChallengeStatusReceiver() {
+            @Override
+            public void completed(ChallengeCompletionResult challengeCompletionResult) {
+                // QUESTION: is transaction status the same as ValidateResponse.getActionCode() ?
+                String transactionStatus = challengeCompletionResult.getTransactionStatus();
+
+                // QUESTION: What is an SDK Transaction ID ?
+                String sdkTransactionId = challengeCompletionResult.getSdkTransactionID();
+
+                Intent result = new Intent();
+
+                // TODO: forward jwt via parcelable extras
+//                result.putExtra(EXTRA_JWT, jwt);
+//                result.putExtra(EXTRA_THREE_D_SECURE_RESULT, (ThreeDSecureResult) getIntent().getExtras()
+//                        .getParcelable(EXTRA_THREE_D_SECURE_RESULT));
+//                result.putExtra(EXTRA_VALIDATION_RESPONSE, validateResponse);
+//
+//                setResult(RESULT_OK, result);
+//                finish();
+            }
+
+            @Override
+            public void cancelled() {
+
+            }
+
+            @Override
+            public void timedOut() {
+
+            }
+
+            @Override
+            public void runtimeError(Error<String> error) {
+
+            }
+
+            @Override
+            public void protocolError(Error<String> error) {
+
+            }
+        });
 
         /*
             Here, we schedule the 3DS auth challenge launch to run immediately after onCreate() is
@@ -81,20 +121,20 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
         finish();
     }
 
-    // TODO: NEXT_MAJOR_VERSION remove implementation of CardinalValidateReceiver
-    @Override
-    public void onValidated(Context context, ValidateResponse validateResponse, String jwt) {
-        handleValidated(validateResponse, jwt);
-    }
-
-    private void handleValidated(ValidateResponse validateResponse, String jwt) {
-        Intent result = new Intent();
-        result.putExtra(EXTRA_JWT, jwt);
-        result.putExtra(EXTRA_THREE_D_SECURE_RESULT, (ThreeDSecureResult) getIntent().getExtras()
-                .getParcelable(EXTRA_THREE_D_SECURE_RESULT));
-        result.putExtra(EXTRA_VALIDATION_RESPONSE, validateResponse);
-
-        setResult(RESULT_OK, result);
-        finish();
-    }
+//    // TODO: NEXT_MAJOR_VERSION remove implementation of CardinalValidateReceiver
+//    @Override
+//    public void onValidated(Context context, ValidateResponse validateResponse, String jwt) {
+//        handleValidated(validateResponse, jwt);
+//    }
+//
+//    private void handleValidated(ValidateResponse validateResponse, String jwt) {
+//        Intent result = new Intent();
+//        result.putExtra(EXTRA_JWT, jwt);
+//        result.putExtra(EXTRA_THREE_D_SECURE_RESULT, (ThreeDSecureResult) getIntent().getExtras()
+//                .getParcelable(EXTRA_THREE_D_SECURE_RESULT));
+//        result.putExtra(EXTRA_VALIDATION_RESPONSE, validateResponse);
+//
+//        setResult(RESULT_OK, result);
+//        finish();
+//    }
 }

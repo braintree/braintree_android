@@ -24,7 +24,6 @@ import androidx.activity.result.ActivityResultRegistry;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
-import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
 import org.json.JSONException;

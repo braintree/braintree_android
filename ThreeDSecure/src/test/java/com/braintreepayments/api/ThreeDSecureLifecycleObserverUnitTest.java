@@ -65,7 +65,7 @@ public class ThreeDSecureLifecycleObserverUnitTest {
         ValidateResponse validateResponse = mock(ValidateResponse.class);
 
         CardinalResult cardinalResult =
-                new CardinalResult(threeDSecureResult, "sample jwt", validateResponse);
+                new CardinalResult(threeDSecureResult, "sample jwt");
 
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
 

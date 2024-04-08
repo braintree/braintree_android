@@ -38,6 +38,7 @@ public class ThreeDSecureRequest implements Parcelable {
     public static final String TRUSTED_BENEFICIARY = "trusted_beneficiary";
     public static final String TRANSACTION_RISK_ANALYSIS = "transaction_risk_analysis";
 
+    // TODO: convert into an enum
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({NATIVE, HTML, BOTH})
     @interface ThreeDSecureUiType {}

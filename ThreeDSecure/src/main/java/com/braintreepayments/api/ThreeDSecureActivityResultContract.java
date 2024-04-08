@@ -14,8 +14,6 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
-
 class ThreeDSecureActivityResultContract extends ActivityResultContract<ThreeDSecureResult, CardinalResult> {
 
     @NonNull
@@ -45,10 +43,10 @@ class ThreeDSecureActivityResultContract extends ActivityResultContract<ThreeDSe
         } else {
             ThreeDSecureResult threeDSecureResult =
                     intent.getParcelableExtra(EXTRA_THREE_D_SECURE_RESULT);
-            ValidateResponse validateResponse =
-                    (ValidateResponse) intent.getSerializableExtra(EXTRA_VALIDATION_RESPONSE);
+//            ValidateResponse validateResponse =
+//                    (ValidateResponse) intent.getSerializableExtra(EXTRA_VALIDATION_RESPONSE);
             String jwt = intent.getStringExtra(EXTRA_JWT);
-            result = new CardinalResult(threeDSecureResult, jwt, validateResponse);
+            result = new CardinalResult(threeDSecureResult, jwt);
         }
         return result;
     }

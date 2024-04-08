@@ -404,7 +404,7 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureListener listener = mock(ThreeDSecureListener.class);
         sut.setListener(listener);
 
-        CardinalResult cardinalResult = new CardinalResult(threeDSecureResult, "jwt", validateResponse);
+        CardinalResult cardinalResult = new CardinalResult(threeDSecureResult, "jwt");
         sut.onCardinalResult(cardinalResult);
 
         verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.cardinal-sdk.action-code.success");
@@ -423,7 +423,7 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureListener listener = mock(ThreeDSecureListener.class);
         sut.setListener(listener);
 
-        CardinalResult cardinalResult = new CardinalResult(threeDSecureResult, "jwt", validateResponse);
+        CardinalResult cardinalResult = new CardinalResult(threeDSecureResult, "jwt");
         sut.onCardinalResult(cardinalResult);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
@@ -446,7 +446,7 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureListener listener = mock(ThreeDSecureListener.class);
         sut.setListener(listener);
 
-        CardinalResult cardinalResult = new CardinalResult(threeDSecureResult, "jwt", validateResponse);
+        CardinalResult cardinalResult = new CardinalResult(threeDSecureResult, "jwt");
         sut.onCardinalResult(cardinalResult);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
@@ -480,7 +480,7 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureListener listener = mock(ThreeDSecureListener.class);
         sut.setListener(listener);
 
-        CardinalResult cardinalResult = new CardinalResult(threeDSecureResult, "jwt", validateResponse);
+        CardinalResult cardinalResult = new CardinalResult(threeDSecureResult, "jwt");
         sut.onCardinalResult(cardinalResult);
 
         verify(listener).onThreeDSecureSuccess(threeDSecureResult);
@@ -514,7 +514,7 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureListener listener = mock(ThreeDSecureListener.class);
         sut.setListener(listener);
 
-        CardinalResult cardinalResult = new CardinalResult(threeDSecureResult, "jwt", validateResponse);
+        CardinalResult cardinalResult = new CardinalResult(threeDSecureResult, "jwt");
         sut.onCardinalResult(cardinalResult);
 
         verify(listener).onThreeDSecureSuccess(threeDSecureResult);
@@ -545,7 +545,7 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureListener listener = mock(ThreeDSecureListener.class);
         sut.setListener(listener);
 
-        CardinalResult cardinalResult = new CardinalResult(threeDSecureResult, "jwt", validateResponse);
+        CardinalResult cardinalResult = new CardinalResult(threeDSecureResult, "jwt");
         sut.onCardinalResult(cardinalResult);
 
         verify(listener).onThreeDSecureFailure(exception);
