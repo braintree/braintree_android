@@ -1,7 +1,11 @@
 package com.braintreepayments.api
 
 import android.net.Uri
-import com.braintreepayments.api.HttpClient.RetryStrategy
+import com.braintreepayments.api.sharedutils.HttpClient
+import com.braintreepayments.api.sharedutils.HttpClient.RetryStrategy
+import com.braintreepayments.api.sharedutils.HttpRequest
+import com.braintreepayments.api.sharedutils.HttpResponseCallback
+import com.braintreepayments.api.sharedutils.TLSSocketFactory
 import org.json.JSONException
 import org.json.JSONObject
 

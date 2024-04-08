@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.StringDef;
 
-import com.braintreepayments.api.Json;
+import com.braintreepayments.api.sharedutils.Json;
 
 import org.json.JSONObject;
 

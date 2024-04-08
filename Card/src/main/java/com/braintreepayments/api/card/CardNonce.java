@@ -11,7 +11,7 @@ import androidx.annotation.RestrictTo;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.braintreepayments.api.Json;
+import com.braintreepayments.api.sharedutils.Json;
 import com.braintreepayments.api.PaymentMethodNonce;
 
 /**

@@ -1,6 +1,11 @@
 package com.braintreepayments.api
 
 import androidx.annotation.VisibleForTesting
+import com.braintreepayments.api.sharedutils.AuthorizationException
+import com.braintreepayments.api.sharedutils.BaseHttpResponseParser
+import com.braintreepayments.api.sharedutils.HttpResponseParser
+import com.braintreepayments.api.sharedutils.Json
+import com.braintreepayments.api.sharedutils.UnexpectedException
 import org.json.JSONObject
 import java.net.HttpURLConnection
 
