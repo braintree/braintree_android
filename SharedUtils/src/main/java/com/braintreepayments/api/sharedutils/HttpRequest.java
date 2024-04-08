@@ -21,16 +21,14 @@ public class HttpRequest {
 
     private String path;
     private String baseUrl;
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    public byte[] data;
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    public String method;
+
+    private byte[] data;
+    private String method;
 
     private final int readTimeout;
     private final int connectTimeout;
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    public Map<String, String> headers;
+    private Map<String, String> headers;
     private final Map<String, String> additionalHeaders;
 
     static HttpRequest newInstance() {
@@ -81,7 +79,8 @@ public class HttpRequest {
         return path;
     }
 
-    byte[] getData() {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public byte[] getData() {
         return data;
     }
 
@@ -92,11 +91,13 @@ public class HttpRequest {
         }
     }
 
-    String getMethod() {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public String getMethod() {
         return method;
     }
 
-    Map<String, String> getHeaders() {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public Map<String, String> getHeaders() {
         if (headers == null) {
             headers = new HashMap<>();
             headers.put("Accept-Encoding", "gzip");
