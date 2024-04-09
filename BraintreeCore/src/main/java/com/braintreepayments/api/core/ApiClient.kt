@@ -9,7 +9,7 @@ import org.json.JSONObject
  * @suppress
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class ApiClient(private val braintreeClient: _root_ide_package_.com.braintreepayments.api.core.BraintreeClient) {
+class ApiClient(private val braintreeClient: BraintreeClient) {
 
     fun tokenizeGraphQL(tokenizePayload: JSONObject, callback: TokenizeCallback) =
         braintreeClient.run {

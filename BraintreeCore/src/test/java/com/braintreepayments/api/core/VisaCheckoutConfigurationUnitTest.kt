@@ -1,6 +1,5 @@
 package com.braintreepayments.api.core
 
-import com.braintreepayments.api.core.VisaCheckoutConfiguration
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Assert.*

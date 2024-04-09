@@ -1,6 +1,5 @@
 package com.braintreepayments.api.core
 
-import com.braintreepayments.api.core.CrashReporter
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Assert.assertSame

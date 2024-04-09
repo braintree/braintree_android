@@ -1,6 +1,5 @@
 package com.braintreepayments.api.core
 
-import com.braintreepayments.api.core.BraintreeRequestCodes
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith

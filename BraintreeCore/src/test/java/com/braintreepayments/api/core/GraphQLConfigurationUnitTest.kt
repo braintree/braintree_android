@@ -1,6 +1,5 @@
 package com.braintreepayments.api.core
 
-import com.braintreepayments.api.core.GraphQLConstants
 import org.robolectric.RobolectricTestRunner
 import org.json.JSONArray
 import org.json.JSONObject

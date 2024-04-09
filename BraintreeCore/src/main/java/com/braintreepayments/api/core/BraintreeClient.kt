@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
+import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.core.IntegrationType.Integration
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.ManifestValidator
@@ -37,23 +38,23 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val authorization: _root_ide_package_.com.braintreepayments.api.core.Authorization,
+    val authorization: Authorization,
 
-    private val analyticsClient: _root_ide_package_.com.braintreepayments.api.core.AnalyticsClient,
-    private val httpClient: _root_ide_package_.com.braintreepayments.api.core.BraintreeHttpClient,
-    private val graphQLClient: _root_ide_package_.com.braintreepayments.api.core.BraintreeGraphQLClient,
-    private val browserSwitchClient: _root_ide_package_.com.braintreepayments.api.BrowserSwitchClient,
-    private val configurationLoader: _root_ide_package_.com.braintreepayments.api.core.ConfigurationLoader,
+    private val analyticsClient: AnalyticsClient,
+    private val httpClient: BraintreeHttpClient,
+    private val graphQLClient: BraintreeGraphQLClient,
+    private val browserSwitchClient: BrowserSwitchClient,
+    private val configurationLoader: ConfigurationLoader,
     private val manifestValidator: ManifestValidator,
     private val returnUrlScheme: String,
     private val braintreeDeepLinkReturnUrlScheme: String,
 ) {
 
-    private val crashReporter: _root_ide_package_.com.braintreepayments.api.core.CrashReporter
+    private val crashReporter: CrashReporter
     private var launchesBrowserSwitchAsNewTask: Boolean = false
 
     // NOTE: this constructor is used to make dependency injection easy
-    internal constructor(params: _root_ide_package_.com.braintreepayments.api.core.BraintreeClientParams) : this(
+    internal constructor(params: BraintreeClientParams) : this(
         applicationContext = params.applicationContext,
         integrationType = params.integrationType,
         sessionId = params.sessionId,
@@ -74,9 +75,9 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     constructor(context: Context, authorization: String) :
             this(
-                _root_ide_package_.com.braintreepayments.api.core.BraintreeOptions(
+                BraintreeOptions(
                     context = context,
-                    authorization = _root_ide_package_.com.braintreepayments.api.core.Authorization.fromString
+                    authorization = Authorization.fromString
                         (authorization)
                 )
             )

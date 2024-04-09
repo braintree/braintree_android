@@ -2,6 +2,7 @@ package com.braintreepayments.api.core
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
+import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.core.IntegrationType.Integration
 import com.braintreepayments.api.sharedutils.ManifestValidator
 
