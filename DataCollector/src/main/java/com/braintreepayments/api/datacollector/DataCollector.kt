@@ -3,6 +3,7 @@ package com.braintreepayments.api.datacollector
 import android.content.Context
 import android.text.TextUtils
 import androidx.annotation.MainThread
+import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.BraintreeClient
 import com.braintreepayments.api.Configuration
@@ -37,7 +38,12 @@ class DataCollector @VisibleForTesting internal constructor(
         UUIDHelper()
     )
 
-    internal fun getPayPalInstallationGUID(context: Context?): String {
+    /**
+     * @suppress
+     */
+    @VisibleForTesting
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun getPayPalInstallationGUID(context: Context?): String {
         return uuidHelper.getInstallationGUID(context)
     }
 
@@ -53,7 +59,8 @@ class DataCollector @VisibleForTesting internal constructor(
      * @param configuration The merchant configuration
      */
     @MainThread
-    internal fun getClientMetadataId(context: Context?, configuration: Configuration?): String {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun getClientMetadataId(context: Context?, configuration: Configuration?): String {
         val request = DataCollectorRequest()
             .setApplicationGuid(getPayPalInstallationGUID(context))
         return getClientMetadataId(context, request, configuration)
@@ -70,9 +77,13 @@ class DataCollector @VisibleForTesting internal constructor(
      * @param context       Android Context.
      * @param request       configures what data to collect.
      * @param configuration the merchant configuration
+     *
+     * @suppress
      */
     @MainThread
-    internal fun getClientMetadataId(
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    @VisibleForTesting
+    fun getClientMetadataId(
         context: Context?,
         request: DataCollectorRequest?,
         configuration: Configuration?
