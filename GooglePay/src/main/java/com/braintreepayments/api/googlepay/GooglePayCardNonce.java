@@ -6,7 +6,7 @@ import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 
-import com.braintreepayments.api.Json;
+import com.braintreepayments.api.sharedutils.Json;
 import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.PostalAddress;

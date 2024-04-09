@@ -5,6 +5,8 @@ import static junit.framework.Assert.assertTrue;
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
+import com.braintreepayments.api.sharedutils.AuthorizationException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

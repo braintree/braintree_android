@@ -12,15 +12,13 @@ import android.content.Context;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.braintreepayments.api.Authorization;
-import com.braintreepayments.api.AuthorizationException;
+import com.braintreepayments.api.sharedutils.AuthorizationException;
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.Configuration;
 import com.braintreepayments.api.ErrorWithResponse;
 import com.braintreepayments.api.Fixtures;
 import com.braintreepayments.api.SharedPreferencesHelper;
 import com.braintreepayments.api.TestClientTokenBuilder;
-
-import junit.framework.Assert;
 
 import org.json.JSONException;
 import org.junit.Ignore;

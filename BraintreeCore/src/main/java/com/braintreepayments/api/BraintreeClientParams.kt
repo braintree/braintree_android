@@ -3,6 +3,7 @@ package com.braintreepayments.api
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.IntegrationType.Integration
+import com.braintreepayments.api.sharedutils.ManifestValidator
 
 internal data class BraintreeClientParams @VisibleForTesting constructor(
     val context: Context,

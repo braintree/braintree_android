@@ -7,6 +7,8 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.sharedutils.Json;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

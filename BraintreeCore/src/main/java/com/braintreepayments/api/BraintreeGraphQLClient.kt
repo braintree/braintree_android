@@ -1,5 +1,9 @@
 package com.braintreepayments.api
 
+import com.braintreepayments.api.sharedutils.HttpClient
+import com.braintreepayments.api.sharedutils.HttpRequest
+import com.braintreepayments.api.sharedutils.HttpResponseCallback
+import com.braintreepayments.api.sharedutils.TLSSocketFactory
 import java.util.Locale
 
 internal class BraintreeGraphQLClient(

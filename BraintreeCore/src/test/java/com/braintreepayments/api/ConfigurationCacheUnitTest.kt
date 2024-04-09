@@ -1,6 +1,7 @@
 package com.braintreepayments.api
 
 import com.braintreepayments.api.Configuration.Companion.fromJson
+import com.braintreepayments.api.sharedutils.BraintreeSharedPreferences
 import org.robolectric.RobolectricTestRunner
 import io.mockk.*
 import org.junit.Assert.assertEquals

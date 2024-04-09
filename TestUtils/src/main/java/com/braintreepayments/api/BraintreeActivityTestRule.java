@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.rule.ActivityTestRule;
 
+import com.braintreepayments.api.sharedutils.BraintreeSharedPreferences;
+
 @SuppressWarnings("deprecation")
 public class BraintreeActivityTestRule<T extends AppCompatActivity> extends ActivityTestRule<T> {
 

@@ -5,6 +5,8 @@ import android.content.pm.ActivityInfo
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.IntegrationType.Integration
+import com.braintreepayments.api.sharedutils.HttpResponseCallback
+import com.braintreepayments.api.sharedutils.ManifestValidator
 
 /**
  * Core Braintree class that handles network requests.

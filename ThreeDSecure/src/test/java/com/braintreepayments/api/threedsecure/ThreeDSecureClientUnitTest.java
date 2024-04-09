@@ -21,7 +21,7 @@ import com.braintreepayments.api.BraintreeException;
 import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.Configuration;
 import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.HttpResponseCallback;
+import com.braintreepayments.api.sharedutils.HttpResponseCallback;
 import com.braintreepayments.api.MockBraintreeClientBuilder;
 import com.braintreepayments.api.TestConfigurationBuilder;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;

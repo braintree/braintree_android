@@ -2,6 +2,7 @@ package com.braintreepayments.api
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
+import com.braintreepayments.api.sharedutils.BraintreeSharedPreferences
 import java.util.concurrent.TimeUnit
 
 internal class ConfigurationCache @VisibleForTesting constructor(
