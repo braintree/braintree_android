@@ -1,10 +1,12 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.datacollector;
 
 import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
+
+import com.braintreepayments.api.Configuration;
 
 import lib.android.paypal.com.magnessdk.Environment;
 import lib.android.paypal.com.magnessdk.InvalidInputException;

@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.datacollector
 
 /**
  * Result of collecting device data for fraud detection

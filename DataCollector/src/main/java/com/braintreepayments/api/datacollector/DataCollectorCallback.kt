@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.datacollector
 
 /**
  * Callback for receiving result of [DataCollector.collectDeviceData]

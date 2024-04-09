@@ -14,13 +14,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.DataCollector;
-import com.braintreepayments.api.DataCollectorResult;
+import com.braintreepayments.api.datacollector.DataCollector;
+import com.braintreepayments.api.datacollector.DataCollectorResult;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalLauncher;
 import com.braintreepayments.api.PayPalPaymentAuthRequest;
 import com.braintreepayments.api.PayPalPaymentAuthResult;
-import com.braintreepayments.api.PayPalPaymentAuthResultInfo;
 import com.braintreepayments.api.PayPalPendingRequest;
 import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PayPalResult;

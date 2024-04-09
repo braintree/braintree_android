@@ -1,13 +1,15 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.datacollector;
 
 import java.util.HashMap;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
 
 /**
  * Used to configuration the PayPalDataCollector request
  */
-class DataCollectorRequest {
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+public class DataCollectorRequest {
 
     private String applicationGuid;
     private String clientMetadataId;

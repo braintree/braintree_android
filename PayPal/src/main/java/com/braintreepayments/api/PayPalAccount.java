@@ -4,6 +4,8 @@ import android.content.Context;
 
 import androidx.annotation.RestrictTo;
 
+import com.braintreepayments.api.datacollector.DataCollector;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
+import com.braintreepayments.api.datacollector.DataCollector;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
 
 import org.json.JSONArray;
