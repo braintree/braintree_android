@@ -14,7 +14,7 @@ import androidx.test.core.app.ApplicationProvider;
 import com.braintreepayments.api.Authorization;
 import com.braintreepayments.api.sharedutils.AuthorizationException;
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.Configuration;
+import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.ErrorWithResponse;
 import com.braintreepayments.api.Fixtures;
 import com.braintreepayments.api.SharedPreferencesHelper;

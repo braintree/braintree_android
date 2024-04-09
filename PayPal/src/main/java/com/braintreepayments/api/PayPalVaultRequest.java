@@ -6,6 +6,9 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import com.braintreepayments.api.core.Configuration;
+import com.braintreepayments.api.core.PostalAddressParser;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

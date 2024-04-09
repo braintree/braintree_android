@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.GraphQLConstants.Features;
+import com.braintreepayments.api.core.GraphQLConstants.Features;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -163,7 +163,7 @@ public class TestConfigurationBuilder extends JSONBuilder {
     @SuppressWarnings("unchecked")
     public <T> T buildConfiguration() {
         try {
-            Class configuration = Class.forName("com.braintreepayments.api.Configuration");
+            Class configuration = Class.forName("com.braintreepayments.api.core.Configuration");
             Method fromJson = configuration.getDeclaredMethod("fromJson", String.class);
             return (T) fromJson.invoke(null, build());
         } catch (NoSuchMethodException ignored) {

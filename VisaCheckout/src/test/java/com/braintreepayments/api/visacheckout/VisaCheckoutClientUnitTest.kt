@@ -1,7 +1,7 @@
 package com.braintreepayments.api.visacheckout
 
-import com.braintreepayments.api.Configuration
-import com.braintreepayments.api.Configuration.Companion.fromJson
+import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.Configuration.Companion.fromJson
 import com.braintreepayments.api.Fixtures
 import com.braintreepayments.api.MockkApiClientBuilder
 import com.braintreepayments.api.MockkBraintreeClientBuilder

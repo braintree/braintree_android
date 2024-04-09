@@ -1,5 +1,6 @@
 package com.braintreepayments.api
 
+import com.braintreepayments.api.core.TokenizeCallback
 import io.mockk.every
 import io.mockk.mockk
 import org.json.JSONObject

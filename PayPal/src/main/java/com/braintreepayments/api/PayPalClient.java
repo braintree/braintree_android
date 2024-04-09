@@ -9,6 +9,8 @@ import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.core.BraintreeRequestCodes;
+import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.sharedutils.Json;
 
 import org.json.JSONException;

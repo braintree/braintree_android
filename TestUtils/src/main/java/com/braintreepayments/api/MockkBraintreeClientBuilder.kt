@@ -1,5 +1,7 @@
 package com.braintreepayments.api
 
+import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.ConfigurationCallback
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import io.mockk.every
 import io.mockk.mockk

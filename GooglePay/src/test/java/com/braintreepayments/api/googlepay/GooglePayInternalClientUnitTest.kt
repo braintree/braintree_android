@@ -3,7 +3,7 @@ package com.braintreepayments.api.googlepay
 import android.app.Activity
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.braintreepayments.api.Configuration
+import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.Fixtures
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Status

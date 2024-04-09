@@ -21,7 +21,7 @@ import androidx.fragment.app.FragmentActivity;
 import com.braintreepayments.api.Authorization;
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.BraintreeException;
-import com.braintreepayments.api.Configuration;
+import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.Fixtures;
 import com.braintreepayments.api.MockBraintreeClientBuilder;
 import com.braintreepayments.api.PayPalAccountNonce;

@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
+import com.braintreepayments.api.core.PostalAddressParser;
 import com.braintreepayments.api.sharedutils.Json;
 
 import org.json.JSONException;

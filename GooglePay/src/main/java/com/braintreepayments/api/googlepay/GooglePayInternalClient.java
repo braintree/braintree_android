@@ -2,7 +2,7 @@ package com.braintreepayments.api.googlepay;
 
 import android.content.Context;
 
-import com.braintreepayments.api.Configuration;
+import com.braintreepayments.api.core.Configuration;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.wallet.IsReadyToPayRequest;
 import com.google.android.gms.wallet.PaymentsClient;

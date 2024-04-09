@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
+import com.braintreepayments.api.core.Configuration;
+import com.braintreepayments.api.core.PostalAddressParser;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

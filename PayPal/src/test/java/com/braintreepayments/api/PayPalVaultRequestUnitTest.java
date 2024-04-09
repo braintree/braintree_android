@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import android.content.pm.Signature;
 import android.os.Parcel;
 
+import com.braintreepayments.api.core.Configuration;
+
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -17,6 +17,9 @@ import android.util.Base64;
 import androidx.test.core.app.ApplicationProvider;
 
 
+import com.braintreepayments.api.core.BraintreeRequestCodes;
+import com.braintreepayments.api.core.Configuration;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;

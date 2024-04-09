@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
+import com.braintreepayments.api.core.Configuration;
+
 import org.json.JSONException;
 
 import java.lang.annotation.Retention;
