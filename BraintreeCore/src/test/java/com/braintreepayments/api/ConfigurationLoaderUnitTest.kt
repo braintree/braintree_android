@@ -1,6 +1,8 @@
 package com.braintreepayments.api
 
 import android.util.Base64
+import com.braintreepayments.api.sharedutils.HttpClient
+import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import io.mockk.*
 import org.robolectric.RobolectricTestRunner
 import org.json.JSONException

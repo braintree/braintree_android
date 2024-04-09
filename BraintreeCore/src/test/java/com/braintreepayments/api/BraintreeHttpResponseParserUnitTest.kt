@@ -1,5 +1,8 @@
 package com.braintreepayments.api
 
+import com.braintreepayments.api.sharedutils.AuthorizationException
+import com.braintreepayments.api.sharedutils.BaseHttpResponseParser
+import com.braintreepayments.api.sharedutils.UnprocessableEntityException
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert.*

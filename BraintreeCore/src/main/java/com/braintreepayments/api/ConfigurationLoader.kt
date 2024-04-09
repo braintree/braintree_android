@@ -3,6 +3,8 @@ package com.braintreepayments.api
 import android.content.Context
 import android.net.Uri
 import android.util.Base64
+import com.braintreepayments.api.sharedutils.HttpClient
+import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import org.json.JSONException
 
 internal class ConfigurationLoader internal constructor(

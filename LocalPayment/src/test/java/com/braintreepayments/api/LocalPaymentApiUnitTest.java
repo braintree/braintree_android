@@ -13,6 +13,8 @@ import static org.mockito.Mockito.verify;
 
 import android.net.Uri;
 
+import com.braintreepayments.api.sharedutils.HttpResponseCallback;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;

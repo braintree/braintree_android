@@ -1,5 +1,6 @@
 package com.braintreepayments.api
 
+import com.braintreepayments.api.sharedutils.BraintreeSharedPreferences
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

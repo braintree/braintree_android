@@ -5,7 +5,7 @@ import android.os.Parcelable;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
-import com.braintreepayments.api.Json;
+import com.braintreepayments.api.sharedutils.Json;
 
 import org.json.JSONException;
 import org.json.JSONObject;

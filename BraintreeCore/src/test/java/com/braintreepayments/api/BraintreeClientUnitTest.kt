@@ -5,6 +5,8 @@ import android.content.pm.ActivityInfo
 import androidx.fragment.app.FragmentActivity
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.testing.WorkManagerTestInitHelper
+import com.braintreepayments.api.sharedutils.HttpResponseCallback
+import com.braintreepayments.api.sharedutils.ManifestValidator
 import io.mockk.*
 import org.json.JSONException
 import org.junit.Assert.*

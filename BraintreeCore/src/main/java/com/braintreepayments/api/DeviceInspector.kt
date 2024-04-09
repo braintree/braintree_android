@@ -7,6 +7,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
+import com.braintreepayments.api.sharedutils.AppHelper
+import com.braintreepayments.api.sharedutils.SignatureVerifier
 
 /**
  * @suppress

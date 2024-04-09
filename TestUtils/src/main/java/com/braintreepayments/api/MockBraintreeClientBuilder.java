@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 
 import android.content.pm.ActivityInfo;
 
+import com.braintreepayments.api.sharedutils.HttpResponseCallback;
+
 import org.mockito.stubbing.Answer;
 
 public class MockBraintreeClientBuilder {

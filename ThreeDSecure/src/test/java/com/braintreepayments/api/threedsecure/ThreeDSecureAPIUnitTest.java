@@ -15,14 +15,8 @@ import static org.mockito.Mockito.when;
 
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.HttpResponseCallback;
+import com.braintreepayments.api.sharedutils.HttpResponseCallback;
 import com.braintreepayments.api.MockBraintreeClientBuilder;
-import com.braintreepayments.api.threedsecure.ThreeDSecureAPI;
-import com.braintreepayments.api.threedsecure.ThreeDSecureInfo;
-import com.braintreepayments.api.threedsecure.ThreeDSecureNonce;
-import com.braintreepayments.api.threedsecure.ThreeDSecureParams;
-import com.braintreepayments.api.threedsecure.ThreeDSecureRequest;
-import com.braintreepayments.api.threedsecure.ThreeDSecureResultCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;

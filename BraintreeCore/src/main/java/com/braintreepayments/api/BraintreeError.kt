@@ -4,6 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.GraphQLConstants.ErrorTypes
+import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject

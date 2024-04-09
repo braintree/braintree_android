@@ -132,6 +132,8 @@
     * Remove entire Samsung Pay module
   * PayPal Native Checkout
     * Remove entire PayPal Native Checkout module
+  * SharedUtils
+    * Update package name to `com.braintreepayments.api.sharedutils`
 
 ## 4.43.0 (2024-03-19)
 

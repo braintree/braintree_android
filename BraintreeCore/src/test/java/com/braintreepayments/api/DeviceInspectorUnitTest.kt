@@ -10,6 +10,8 @@ import android.content.res.Resources
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Build.VERSION
+import com.braintreepayments.api.sharedutils.AppHelper
+import com.braintreepayments.api.sharedutils.SignatureVerifier
 import io.mockk.*
 import org.json.JSONException
 import org.junit.Assert.*

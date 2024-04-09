@@ -1,5 +1,8 @@
 package com.braintreepayments.api
 
+import com.braintreepayments.api.sharedutils.HttpClient
+import com.braintreepayments.api.sharedutils.HttpRequest
+import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
