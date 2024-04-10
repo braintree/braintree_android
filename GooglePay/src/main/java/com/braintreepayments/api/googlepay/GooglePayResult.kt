@@ -2,7 +2,6 @@ package com.braintreepayments.api.googlepay
 
 import com.braintreepayments.api.core.PaymentMethodNonce
 
-
 /**
  * Result of tokenizing a Google Pay payment method
  */

@@ -1,13 +1,11 @@
 package com.braintreepayments.api.core
 
 import com.braintreepayments.api.core.Authorization.Companion.fromString
-import com.braintreepayments.api.core.BuildConfig
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.robolectric.RobolectricTestRunner
-
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class TokenizationKeyUnitTest {
