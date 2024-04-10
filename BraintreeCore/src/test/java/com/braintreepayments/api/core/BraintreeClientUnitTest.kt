@@ -337,7 +337,7 @@ class BraintreeClientUnitTest {
     fun returnUrlScheme_returnsUrlSchemeBasedOnApplicationIdByDefault() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val sut = BraintreeClient(BraintreeOptions(context, authorization))
-        assertEquals("com.braintreepayments.api.test.braintree", sut.getReturnUrlScheme())
+        assertEquals("com.braintreepayments.api.core.test.braintree", sut.getReturnUrlScheme())
     }
 
     @Test
@@ -355,7 +355,7 @@ class BraintreeClientUnitTest {
         val sut = BraintreeClient(BraintreeOptions(context, authorization))
         sut.launchesBrowserSwitchAsNewTask(true)
         assertEquals(
-            "com.braintreepayments.api.test.braintree.deeplinkhandler",
+            "com.braintreepayments.api.core.test.braintree.deeplinkhandler",
             sut.getReturnUrlScheme()
         )
     }

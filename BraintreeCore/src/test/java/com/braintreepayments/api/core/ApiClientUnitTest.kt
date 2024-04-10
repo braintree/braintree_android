@@ -95,8 +95,8 @@ class ApiClientUnitTest {
             .build()
 
         val sut = ApiClient(braintreeClient)
-        sut.tokenizeREST(mockk(), tokenizeCallback)
-        sut.tokenizeREST(mockk(), tokenizeCallback)
+        sut.tokenizeREST(mockk(relaxed = true), tokenizeCallback)
+        sut.tokenizeREST(mockk(relaxed = true), tokenizeCallback)
 
         verify(inverse = true) { braintreeClient.sendGraphQLPOST(any(), any()) }
     }

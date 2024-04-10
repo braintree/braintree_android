@@ -78,7 +78,7 @@ public class VenmoApiUnitTest {
         assertEquals("display-name", input.getString("displayName"));
 
         JSONObject metadata = graphQLJSON.getJSONObject("clientSdkMetadata");
-        assertEquals(BuildConfig.VERSION_NAME, metadata.getString("version"));
+        assertEquals(com.braintreepayments.api.core.BuildConfig.VERSION_NAME, metadata.getString("version"));
         assertEquals("android", metadata.getString("platform"));
 
         JSONObject paysheetDetails = input.getJSONObject("paysheetDetails");
