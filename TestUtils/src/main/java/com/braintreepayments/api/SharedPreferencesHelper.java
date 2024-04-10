@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Base64;
 
+import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.sharedutils.BraintreeSharedPreferences;
 
