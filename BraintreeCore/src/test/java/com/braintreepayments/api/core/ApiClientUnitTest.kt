@@ -4,8 +4,6 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.Fixtures
 import com.braintreepayments.api.MockkBraintreeClientBuilder
-import com.braintreepayments.api.PayPalAccount
-import com.braintreepayments.api.VenmoAccount
 import com.braintreepayments.api.card.Card
 import io.mockk.*
 import org.json.JSONException
@@ -97,8 +95,8 @@ class ApiClientUnitTest {
             .build()
 
         val sut = ApiClient(braintreeClient)
-        sut.tokenizeREST(PayPalAccount(), tokenizeCallback)
-        sut.tokenizeREST(VenmoAccount(), tokenizeCallback)
+        sut.tokenizeREST(mockk(), tokenizeCallback)
+        sut.tokenizeREST(mockk(), tokenizeCallback)
 
         verify(inverse = true) { braintreeClient.sendGraphQLPOST(any(), any()) }
     }
