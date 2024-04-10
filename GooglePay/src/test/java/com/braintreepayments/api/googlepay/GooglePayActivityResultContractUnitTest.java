@@ -16,13 +16,8 @@ import android.content.Intent;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.braintreepayments.api.BraintreeException;
-import com.braintreepayments.api.UserCanceledException;
-import com.braintreepayments.api.googlepay.GooglePayActivityResultContract;
-import com.braintreepayments.api.googlepay.GooglePayException;
-import com.braintreepayments.api.googlepay.GooglePayPaymentAuthRequestParams;
-import com.braintreepayments.api.googlepay.GooglePayPaymentAuthResult;
-import com.braintreepayments.api.googlepay.GooglePayRequest;
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.UserCanceledException;
 import com.google.android.gms.wallet.PaymentData;
 import com.google.android.gms.wallet.PaymentDataRequest;
 import com.google.android.gms.wallet.TransactionInfo;

@@ -15,10 +15,9 @@ import static org.mockito.Mockito.when;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.api.Authorization;
-import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.BraintreeException;
-import com.braintreepayments.api.BuildConfig;
+import com.braintreepayments.api.core.Authorization;
+import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.Fixtures;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
@@ -118,7 +117,7 @@ public class ThreeDSecureClientUnitTest {
         JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
         Assert.assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
         Assert.assertEquals(clientMetaData.getString("sdkVersion"),
-                "Android/" + com.braintreepayments.api.BuildConfig.VERSION_NAME);
+                "Android/" + com.braintreepayments.api.core.BuildConfig.VERSION_NAME);
     }
 
     @Test

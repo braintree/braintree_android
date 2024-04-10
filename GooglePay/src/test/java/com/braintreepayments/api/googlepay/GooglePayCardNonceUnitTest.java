@@ -13,8 +13,8 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.sharedutils.Json;
-import com.braintreepayments.api.PostalAddress;
 
 @RunWith(RobolectricTestRunner.class)
 public class GooglePayCardNonceUnitTest {

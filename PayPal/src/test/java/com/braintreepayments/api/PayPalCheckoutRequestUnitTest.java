@@ -2,6 +2,8 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
+import com.braintreepayments.api.core.PostalAddress;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;

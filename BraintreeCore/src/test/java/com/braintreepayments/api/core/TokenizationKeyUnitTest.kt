@@ -1,7 +1,7 @@
 package com.braintreepayments.api.core
 
-import com.braintreepayments.api.Authorization.Companion.fromString
-import com.braintreepayments.api.BuildConfig
+import com.braintreepayments.api.browserswitch.BuildConfig
+import com.braintreepayments.api.core.Authorization.Companion.fromString
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.robolectric.RobolectricTestRunner

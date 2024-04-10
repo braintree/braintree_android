@@ -3,22 +3,18 @@ package com.braintreepayments.api.card;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.braintreepayments.api.ApiClient;
-import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.core.ApiClient;
+import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.Fixtures;
 import com.braintreepayments.api.MockApiClientBuilder;
 import com.braintreepayments.api.MockBraintreeClientBuilder;
 import com.braintreepayments.api.core.TokenizeCallback;
-import com.braintreepayments.api.card.CardAnalytics;
-import com.braintreepayments.api.card.CardResult;
-import com.braintreepayments.api.card.CardTokenizeCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;

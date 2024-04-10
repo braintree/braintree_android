@@ -1,6 +1,6 @@
 package com.braintreepayments.api.core
 
-import com.braintreepayments.api.Authorization.Companion.fromString
+import com.braintreepayments.api.core.Authorization.Companion.fromString
 import com.braintreepayments.api.Fixtures
 import org.robolectric.RobolectricTestRunner
 import org.junit.Assert.assertTrue

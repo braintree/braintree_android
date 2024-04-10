@@ -3,21 +3,19 @@ package com.braintreepayments.api.core
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.*
-import com.braintreepayments.api.Authorization.Companion.fromString
 import com.braintreepayments.api.Fixtures
+import com.braintreepayments.api.core.Authorization.Companion.fromString
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
 import io.mockk.*
+import java.io.IOException
+import java.security.GeneralSecurityException
 import org.json.JSONException
 import org.json.JSONObject
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.io.IOException
-import java.security.GeneralSecurityException
 
 @RunWith(RobolectricTestRunner::class)
 class AnalyticsClientUnitTest {

@@ -10,6 +10,9 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import com.braintreepayments.api.core.ApiClient;
+import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.TokenizeCallback;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
 

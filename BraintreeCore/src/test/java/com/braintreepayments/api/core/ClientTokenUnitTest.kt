@@ -1,12 +1,12 @@
 package com.braintreepayments.api.core
 
-import com.braintreepayments.api.Authorization.Companion.fromString
 import com.braintreepayments.api.Fixtures
 import com.braintreepayments.api.FixturesHelper
+import com.braintreepayments.api.core.Authorization.Companion.fromString
 import org.junit.Assert.*
-import org.robolectric.RobolectricTestRunner
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class ClientTokenUnitTest {

@@ -1,6 +1,5 @@
 package com.braintreepayments.api.core
 
-import com.braintreepayments.api.BuildConfig
 import org.robolectric.RobolectricTestRunner
 import org.json.JSONException
 import org.junit.Assert.assertEquals
