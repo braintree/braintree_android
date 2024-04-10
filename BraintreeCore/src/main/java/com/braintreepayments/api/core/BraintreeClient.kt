@@ -74,13 +74,12 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     constructor(context: Context, authorization: String) :
-            this(
-                BraintreeOptions(
-                    context = context,
-                    authorization = Authorization.fromString
-                        (authorization)
-                )
+        this(
+            BraintreeOptions(
+                context = context,
+                authorization = Authorization.fromString(authorization)
             )
+        )
 
     /**
      * @suppress
@@ -136,7 +135,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendAnalyticsEvent(eventName: String) {
-       sendAnalyticsEvent(eventName, null)
+        sendAnalyticsEvent(eventName, null)
     }
 
     /**
