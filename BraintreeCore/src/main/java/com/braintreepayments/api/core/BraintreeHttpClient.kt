@@ -1,7 +1,6 @@
 package com.braintreepayments.api.core
 
 import android.net.Uri
-import com.braintreepayments.api.BuildConfig
 import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpClient.RetryStrategy
 import com.braintreepayments.api.sharedutils.HttpRequest
