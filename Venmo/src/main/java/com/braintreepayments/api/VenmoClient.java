@@ -11,8 +11,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.core.ApiClient;
+import com.braintreepayments.api.core.AppSwitchNotAvailableException;
+import com.braintreepayments.api.core.Authorization;
+import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.BraintreeRequestCodes;
+import com.braintreepayments.api.core.ClientToken;
 import com.braintreepayments.api.core.Configuration;
+import com.braintreepayments.api.core.MetadataBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.core.PaymentMethodNonce;
 import com.braintreepayments.api.datacollector.DataCollector;
 import com.braintreepayments.api.datacollector.DataCollectorResult;
 import com.braintreepayments.api.PayPalClient;
@@ -23,7 +24,6 @@ import com.braintreepayments.api.PayPalPaymentAuthResult;
 import com.braintreepayments.api.PayPalPendingRequest;
 import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PayPalResult;
-import com.braintreepayments.api.PaymentMethodNonce;
 
 public class PayPalFragment extends BaseFragment {
 

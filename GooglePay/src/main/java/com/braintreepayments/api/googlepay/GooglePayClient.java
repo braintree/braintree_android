@@ -8,15 +8,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.Authorization;
-import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.BraintreeException;
+import com.braintreepayments.api.core.Authorization;
+import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.Configuration;
-import com.braintreepayments.api.ErrorWithResponse;
-import com.braintreepayments.api.MetadataBuilder;
-import com.braintreepayments.api.PaymentMethodNonce;
-import com.braintreepayments.api.TokenizationKey;
-import com.braintreepayments.api.UserCanceledException;
+import com.braintreepayments.api.core.ErrorWithResponse;
+import com.braintreepayments.api.core.MetadataBuilder;
+import com.braintreepayments.api.core.PaymentMethodNonce;
+import com.braintreepayments.api.core.TokenizationKey;
+import com.braintreepayments.api.core.UserCanceledException;
 import com.google.android.gms.wallet.CardRequirements;
 import com.google.android.gms.wallet.IsReadyToPayRequest;
 import com.google.android.gms.wallet.PaymentData;
@@ -291,7 +291,7 @@ public class GooglePayClient {
         try {
             version = metadata.getString("version");
         } catch (JSONException e) {
-            version = com.braintreepayments.api.BuildConfig.VERSION_NAME;
+            version = com.braintreepayments.api.core.BuildConfig.VERSION_NAME;
         }
 
         PaymentMethodTokenizationParameters.Builder parameters =

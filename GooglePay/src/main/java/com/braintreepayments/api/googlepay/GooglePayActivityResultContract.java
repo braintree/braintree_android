@@ -13,8 +13,8 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.braintreepayments.api.BraintreeException;
-import com.braintreepayments.api.UserCanceledException;
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.UserCanceledException;
 import com.google.android.gms.wallet.AutoResolveHelper;
 import com.google.android.gms.wallet.PaymentData;
 

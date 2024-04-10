@@ -11,7 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
-import com.braintreepayments.api.PaymentMethodNonce;
+import com.braintreepayments.api.core.PaymentMethodNonce;
+
 
 public class MainFragment extends BaseFragment {
 

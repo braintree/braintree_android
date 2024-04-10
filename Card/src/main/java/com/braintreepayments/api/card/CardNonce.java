@@ -11,8 +11,8 @@ import androidx.annotation.RestrictTo;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.braintreepayments.api.core.PaymentMethodNonce;
 import com.braintreepayments.api.sharedutils.Json;
-import com.braintreepayments.api.PaymentMethodNonce;
 
 /**
  * {@link PaymentMethodNonce} representing a credit or debit card.

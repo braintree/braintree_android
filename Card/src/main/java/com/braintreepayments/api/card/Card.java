@@ -7,7 +7,7 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
-import com.braintreepayments.api.BraintreeException;
+import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.GraphQLConstants.Keys;
 
 import org.json.JSONException;

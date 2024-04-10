@@ -13,7 +13,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.UserCanceledException;
 import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.VenmoClient;
 import com.braintreepayments.api.VenmoLauncher;
@@ -24,6 +23,7 @@ import com.braintreepayments.api.VenmoPaymentMethodUsage;
 import com.braintreepayments.api.VenmoPendingRequest;
 import com.braintreepayments.api.VenmoRequest;
 import com.braintreepayments.api.VenmoResult;
+import com.braintreepayments.api.core.UserCanceledException;
 
 import java.util.ArrayList;
 

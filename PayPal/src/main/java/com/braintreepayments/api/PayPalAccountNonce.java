@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
+import com.braintreepayments.api.core.PaymentMethodNonce;
+import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.core.PostalAddressParser;
 import com.braintreepayments.api.sharedutils.Json;
 

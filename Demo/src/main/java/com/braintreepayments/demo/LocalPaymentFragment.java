@@ -10,18 +10,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.BraintreeException;
 import com.braintreepayments.api.LocalPaymentAuthRequest;
 import com.braintreepayments.api.LocalPaymentAuthResult;
-import com.braintreepayments.api.LocalPaymentAuthResultInfo;
 import com.braintreepayments.api.LocalPaymentClient;
 import com.braintreepayments.api.LocalPaymentLauncher;
 import com.braintreepayments.api.LocalPaymentNonce;
 import com.braintreepayments.api.LocalPaymentPendingRequest;
 import com.braintreepayments.api.LocalPaymentRequest;
 import com.braintreepayments.api.LocalPaymentResult;
-import com.braintreepayments.api.PostalAddress;
-import com.braintreepayments.api.UserCanceledException;
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.PostalAddress;
+import com.braintreepayments.api.core.UserCanceledException;
 
 public class LocalPaymentFragment extends BaseFragment {
 

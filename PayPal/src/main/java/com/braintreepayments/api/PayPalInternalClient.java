@@ -5,6 +5,8 @@ import android.net.Uri;
 
 import androidx.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.core.ApiClient;
+import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.datacollector.DataCollector;
 
 import org.json.JSONException;

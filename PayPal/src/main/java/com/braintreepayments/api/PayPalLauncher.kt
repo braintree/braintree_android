@@ -2,6 +2,7 @@ package com.braintreepayments.api
 
 import android.content.Intent
 import androidx.activity.ComponentActivity
+import com.braintreepayments.api.core.BraintreeException
 
 /**
  * Responsible for launching PayPal user authentication in a web browser
