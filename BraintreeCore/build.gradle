@@ -9,7 +9,7 @@ plugins {
 def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"'
 
 android {
-    namespace "com.braintreepayments.api"
+    namespace "com.braintreepayments.api.core"
     compileSdk rootProject.compileSdkVersion
 
     defaultConfig {

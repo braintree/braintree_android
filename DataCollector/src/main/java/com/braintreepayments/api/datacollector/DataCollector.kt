@@ -5,9 +5,9 @@ import android.text.TextUtils
 import androidx.annotation.MainThread
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
-import com.braintreepayments.api.BraintreeClient
+import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.Configuration
-import com.braintreepayments.api.UUIDHelper
+import com.braintreepayments.api.core.UUIDHelper
 import org.json.JSONException
 import org.json.JSONObject
 
