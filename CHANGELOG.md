@@ -24,6 +24,7 @@
 * GooglePay
   * Add `GooglePayClient#isReadyToPay(Context, ReadyForGooglePayRequest, GooglePayIsReadyToPayCallback)` method
   * Deprecate  `GooglePayClient#isReadyToPay(FragmentActivity, ReadyForGooglePayRequest, GooglePayIsReadyToPayCallback)` method
+  * Add `GooglePayClient#tokenize(PaymentData, GooglePayOnActivityResultCallback)` to be invoked after direct Google Play Services integration
 
 ## 4.43.0 (2024-03-19)
 
