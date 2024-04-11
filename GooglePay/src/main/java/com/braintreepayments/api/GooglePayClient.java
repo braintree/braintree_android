@@ -332,15 +332,15 @@ public class GooglePayClient {
     }
 
     /**
-     * This method is called when you've received a successful {@link PaymentData} response in
-     * {@link GooglePayClient#onActivityResult(int, Intent, GooglePayOnActivityResultCallback)}
-     * to get a {@link GooglePayCardNonce} or {@link PayPalAccountNonce}.
+     * Call this method when you've received a successful {@link PaymentData} response from a
+     * direct Google Play Services integration to get a {@link GooglePayCardNonce} or
+     * {@link PayPalAccountNonce}.
      *
-     * @param paymentData {@link PaymentData} from the Intent in
-     *                    {@link GooglePayClient#onActivityResult(int, Intent, GooglePayOnActivityResultCallback)} method.
+     * @param paymentData {@link PaymentData} retrieved from directly integrating with Google Play
+     *                                       Services through {@link PaymentsClient#loadPaymentData(PaymentDataRequest)}
      * @param callback    {@link GooglePayOnActivityResultCallback}
      */
-    void tokenize(PaymentData paymentData, GooglePayOnActivityResultCallback callback) {
+    public void tokenize(PaymentData paymentData, GooglePayOnActivityResultCallback callback) {
         try {
             JSONObject result = new JSONObject(paymentData.toJson());
             callback.onResult(GooglePayCardNonce.fromJSON(result), null);

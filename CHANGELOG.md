@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Google Pay
+  * Add `GooglePayClient#tokenize(PaymentData, GooglePayOnActivityResultCallback)` to be invoked after direct Google Play Services integration
+
 ## 4.44.0 (2024-04-05)
 
 * Local Payment
