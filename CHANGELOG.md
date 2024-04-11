@@ -1,6 +1,7 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+
 * Updated expiring pinned vendor SSL certificates
 
 ## 4.44.0 (2024-04-05)
