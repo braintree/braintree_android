@@ -6,7 +6,8 @@ import androidx.annotation.CallSuper;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.api.PaymentMethodNonce;
+
+import com.braintreepayments.api.core.PaymentMethodNonce;
 
 import java.util.Objects;
 

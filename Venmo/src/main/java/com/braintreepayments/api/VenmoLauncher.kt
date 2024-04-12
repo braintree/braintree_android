@@ -3,6 +3,7 @@ package com.braintreepayments.api
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
+import com.braintreepayments.api.core.BraintreeException
 
 /**
  * Responsible for launching the Venmo app to authenticate users

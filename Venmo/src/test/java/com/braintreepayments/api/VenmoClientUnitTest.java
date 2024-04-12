@@ -16,6 +16,11 @@ import android.util.Base64;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import com.braintreepayments.api.core.Authorization;
+import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.BraintreeRequestCodes;
+import com.braintreepayments.api.core.Configuration;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -149,7 +154,7 @@ public class VenmoClientUnitTest {
 
         String metadata = url.getQueryParameter("braintree_sdk_data");
         String metadataString = new String(Base64.decode(metadata, Base64.DEFAULT));
-        String expectedMetadata = String.format("{\"_meta\":{\"platform\":\"android\",\"sessionId\":\"fake-session-id\",\"integration\":\"custom\",\"version\":\"%s\"}}", BuildConfig.VERSION_NAME);
+        String expectedMetadata = String.format("{\"_meta\":{\"platform\":\"android\",\"sessionId\":\"fake-session-id\",\"integration\":\"custom\",\"version\":\"%s\"}}", com.braintreepayments.api.core.BuildConfig.VERSION_NAME);
         assertEquals(expectedMetadata, metadataString);
     }
 

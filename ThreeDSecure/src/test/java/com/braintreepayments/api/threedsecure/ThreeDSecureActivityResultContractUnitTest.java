@@ -14,13 +14,9 @@ import android.content.Intent;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.braintreepayments.api.BraintreeException;
 import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.UserCanceledException;
-import com.braintreepayments.api.threedsecure.ThreeDSecureActivity;
-import com.braintreepayments.api.threedsecure.ThreeDSecureActivityResultContract;
-import com.braintreepayments.api.threedsecure.ThreeDSecureParams;
-import com.braintreepayments.api.threedsecure.ThreeDSecurePaymentAuthResult;
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.UserCanceledException;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
 import org.json.JSONException;

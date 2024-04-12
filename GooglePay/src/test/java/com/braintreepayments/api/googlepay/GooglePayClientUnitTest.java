@@ -18,16 +18,16 @@ import android.os.Bundle;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.api.Authorization;
-import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.BraintreeException;
-import com.braintreepayments.api.Configuration;
+import com.braintreepayments.api.core.Authorization;
+import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.Fixtures;
 import com.braintreepayments.api.MockBraintreeClientBuilder;
 import com.braintreepayments.api.PayPalAccountNonce;
-import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.TestConfigurationBuilder;
-import com.braintreepayments.api.UserCanceledException;
+import com.braintreepayments.api.core.PaymentMethodNonce;
+import com.braintreepayments.api.core.UserCanceledException;
 import com.google.android.gms.wallet.IsReadyToPayRequest;
 import com.google.android.gms.wallet.PaymentData;
 import com.google.android.gms.wallet.PaymentDataRequest;
@@ -1247,7 +1247,7 @@ public class GooglePayClientUnitTest {
         assertEquals(configuration.getGooglePayAuthorizationFingerprint(),
                 tokenizationParameters.getString("braintree:authorizationFingerprint"));
         assertEquals("v1", tokenizationParameters.getString("braintree:apiVersion"));
-        assertEquals(com.braintreepayments.api.BuildConfig.VERSION_NAME,
+        assertEquals(com.braintreepayments.api.core.BuildConfig.VERSION_NAME,
                 tokenizationParameters.getString("braintree:sdkVersion"));
     }
 

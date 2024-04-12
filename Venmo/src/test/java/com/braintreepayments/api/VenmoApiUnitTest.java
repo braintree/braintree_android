@@ -10,6 +10,10 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import com.braintreepayments.api.core.ApiClient;
+import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.TokenizeCallback;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
 
 import org.json.JSONArray;
@@ -74,7 +78,7 @@ public class VenmoApiUnitTest {
         assertEquals("display-name", input.getString("displayName"));
 
         JSONObject metadata = graphQLJSON.getJSONObject("clientSdkMetadata");
-        assertEquals(BuildConfig.VERSION_NAME, metadata.getString("version"));
+        assertEquals(com.braintreepayments.api.core.BuildConfig.VERSION_NAME, metadata.getString("version"));
         assertEquals("android", metadata.getString("platform"));
 
         JSONObject paysheetDetails = input.getJSONObject("paysheetDetails");

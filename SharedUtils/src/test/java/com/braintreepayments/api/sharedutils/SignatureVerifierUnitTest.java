@@ -1,20 +1,11 @@
 package com.braintreepayments.api.sharedutils;
 
 
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.util.Base64;
-
-import com.braintreepayments.api.sharedutils.CertificateHelper;
-import com.braintreepayments.api.sharedutils.SignatureVerifier;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +15,12 @@ import org.robolectric.RobolectricTestRunner;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class SignatureVerifierUnitTest {

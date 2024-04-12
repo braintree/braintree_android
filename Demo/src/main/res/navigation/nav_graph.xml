@@ -56,7 +56,7 @@
         tools:layout="@layout/fragment_display_nonce">
         <argument
             android:name="paymentMethodNonce"
-            app:argType="com.braintreepayments.api.PaymentMethodNonce" />
+            app:argType="com.braintreepayments.api.core.PaymentMethodNonce" />
         <argument
             android:name="transactionAmount"
             android:defaultValue="1.00"
@@ -79,7 +79,7 @@
         tools:layout="@layout/fragment_create_transaction">
         <argument
             android:name="paymentMethodNonce"
-            app:argType="com.braintreepayments.api.PaymentMethodNonce" />
+            app:argType="com.braintreepayments.api.core.PaymentMethodNonce" />
         <argument
             android:name="transactionAmount"
             android:defaultValue="1.00"

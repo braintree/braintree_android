@@ -16,6 +16,12 @@ import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.BraintreeRequestCodes;
+import com.braintreepayments.api.core.Configuration;
+import com.braintreepayments.api.core.ConfigurationException;
+import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.datacollector.DataCollector;
 
 import org.json.JSONException;

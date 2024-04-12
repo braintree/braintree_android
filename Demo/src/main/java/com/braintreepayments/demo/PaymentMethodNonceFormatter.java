@@ -2,11 +2,11 @@ package com.braintreepayments.demo;
 
 import com.braintreepayments.api.card.BinData;
 import com.braintreepayments.api.card.CardNonce;
+import com.braintreepayments.api.core.PaymentMethodNonce;
+import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.googlepay.GooglePayCardNonce;
 import com.braintreepayments.api.LocalPaymentNonce;
 import com.braintreepayments.api.PayPalAccountNonce;
-import com.braintreepayments.api.PaymentMethodNonce;
-import com.braintreepayments.api.PostalAddress;
 import com.braintreepayments.api.threedsecure.ThreeDSecureNonce;
 import com.braintreepayments.api.VenmoAccountNonce;
 import com.braintreepayments.api.visacheckout.VisaCheckoutAddress;

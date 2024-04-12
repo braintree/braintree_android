@@ -7,6 +7,10 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.BraintreeRequestCodes;
+import com.braintreepayments.api.core.ConfigurationException;
 import com.braintreepayments.api.datacollector.DataCollector;
 import com.braintreepayments.api.sharedutils.Json;
 

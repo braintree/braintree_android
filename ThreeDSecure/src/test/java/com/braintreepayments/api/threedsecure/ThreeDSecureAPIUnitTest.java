@@ -13,8 +13,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
 import com.braintreepayments.api.MockBraintreeClientBuilder;
 

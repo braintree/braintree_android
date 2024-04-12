@@ -6,10 +6,10 @@ import android.os.Parcel;
 import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
 
-import com.braintreepayments.api.PaymentMethodNonce;
 import com.braintreepayments.api.card.AuthenticationInsight;
 import com.braintreepayments.api.card.BinData;
 import com.braintreepayments.api.card.CardNonce;
+import com.braintreepayments.api.core.PaymentMethodNonce;
 
 import org.json.JSONException;
 import org.json.JSONObject;

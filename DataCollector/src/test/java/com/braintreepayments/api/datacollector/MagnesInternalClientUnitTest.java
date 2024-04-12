@@ -10,7 +10,7 @@ import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.braintreepayments.api.Configuration;
+import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.datacollector.DataCollectorRequest;
 import com.braintreepayments.api.datacollector.MagnesInternalClient;
 

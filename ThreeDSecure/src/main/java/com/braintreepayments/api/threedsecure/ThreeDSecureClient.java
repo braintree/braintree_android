@@ -5,10 +5,10 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.BraintreeException;
-import com.braintreepayments.api.BuildConfig;
-import com.braintreepayments.api.InvalidArgumentException;
+import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.BuildConfig;
+import com.braintreepayments.api.core.InvalidArgumentException;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
 import org.json.JSONException;
@@ -151,7 +151,7 @@ public class ThreeDSecureClient {
             lookupJSON
                     .put("authorizationFingerprint", braintreeClient.getAuthorization().getBearer())
                     .put("braintreeLibraryVersion",
-                            "Android-" + com.braintreepayments.api.BuildConfig.VERSION_NAME)
+                            "Android-" + BuildConfig.VERSION_NAME)
                     .put("nonce", request.getNonce())
                     .put("clientMetadata", new JSONObject()
                             .put("requestedThreeDSecureVersion", "2")

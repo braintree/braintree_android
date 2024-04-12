@@ -4,6 +4,8 @@ import android.os.Parcel;
 
 import androidx.annotation.Nullable;
 
+import com.braintreepayments.api.core.PaymentMethodNonce;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

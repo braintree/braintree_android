@@ -15,11 +15,10 @@ import static org.mockito.Mockito.when;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.api.Authorization;
-import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.BraintreeException;
-import com.braintreepayments.api.BuildConfig;
-import com.braintreepayments.api.Configuration;
+import com.braintreepayments.api.core.Authorization;
+import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.Fixtures;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
 import com.braintreepayments.api.MockBraintreeClientBuilder;
@@ -111,14 +110,14 @@ public class ThreeDSecureClientUnitTest {
         Assert.assertEquals("encoded_auth_fingerprint",
                 lookup.getString("authorizationFingerprint"));
         Assert.assertEquals(lookup.getString("braintreeLibraryVersion"),
-                "Android-" + BuildConfig.VERSION_NAME);
+                "Android-" + com.braintreepayments.api.core.BuildConfig.VERSION_NAME);
         Assert.assertEquals(lookup.getString("dfReferenceId"), "fake-df");
         Assert.assertEquals(lookup.getString("nonce"), "a-nonce");
 
         JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
         Assert.assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
         Assert.assertEquals(clientMetaData.getString("sdkVersion"),
-                "Android/" + com.braintreepayments.api.BuildConfig.VERSION_NAME);
+                "Android/" + com.braintreepayments.api.core.BuildConfig.VERSION_NAME);
     }
 
     @Test
@@ -152,14 +151,14 @@ public class ThreeDSecureClientUnitTest {
         Assert.assertEquals("encoded_auth_fingerprint",
                 lookup.getString("authorizationFingerprint"));
         Assert.assertEquals(lookup.getString("braintreeLibraryVersion"),
-                "Android-" + BuildConfig.VERSION_NAME);
+                "Android-" + com.braintreepayments.api.core.BuildConfig.VERSION_NAME);
         Assert.assertEquals(lookup.getString("nonce"), "a-nonce");
         assertFalse(lookup.has("dfReferenceId"));
 
         JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
         Assert.assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
         Assert.assertEquals(clientMetaData.getString("sdkVersion"),
-                "Android/" + BuildConfig.VERSION_NAME);
+                "Android/" + com.braintreepayments.api.core.BuildConfig.VERSION_NAME);
     }
 
     @Test

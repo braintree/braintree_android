@@ -2,6 +2,8 @@ package com.braintreepayments.api;
 
 import androidx.annotation.Nullable;
 
+import com.braintreepayments.api.core.PostalAddress;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

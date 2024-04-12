@@ -15,6 +15,13 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
+import com.braintreepayments.api.core.ApiClient;
+import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.core.ClientToken;
+import com.braintreepayments.api.core.Configuration;
+import com.braintreepayments.api.core.PostalAddress;
+import com.braintreepayments.api.core.TokenizationKey;
+import com.braintreepayments.api.core.TokenizeCallback;
 import com.braintreepayments.api.datacollector.DataCollector;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
 

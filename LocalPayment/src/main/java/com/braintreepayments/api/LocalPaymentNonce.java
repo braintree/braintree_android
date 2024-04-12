@@ -5,6 +5,9 @@ import android.os.Parcel;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.braintreepayments.api.core.PaymentMethodNonce;
+import com.braintreepayments.api.core.PostalAddress;
+import com.braintreepayments.api.core.PostalAddressParser;
 import com.braintreepayments.api.sharedutils.Json;
 
 import org.json.JSONException;

@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import com.braintreepayments.api.core.BraintreeClient;
+
 import static com.braintreepayments.api.LocalPaymentClient.LOCAL_PAYMENT_CANCEL;
 import static com.braintreepayments.api.LocalPaymentClient.LOCAL_PAYMENT_SUCCESS;
 
