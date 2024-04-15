@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.core
 
 import java.io.ByteArrayInputStream
 import java.io.InputStream
