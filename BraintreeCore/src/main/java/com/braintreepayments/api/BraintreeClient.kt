@@ -211,11 +211,15 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @JvmOverloads
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun sendAnalyticsEvent(eventName: String, payPalContextId: String? = null) {
+    fun sendAnalyticsEvent(
+            eventName: String,
+            payPalContextId: String? = null,
+            linkType: String? = null
+    ) {
         getAuthorization { authorization, _ ->
             if (authorization != null) {
                 getConfiguration { configuration, _ ->
-                    val event = AnalyticsEvent(eventName, payPalContextId)
+                    val event = AnalyticsEvent(eventName, payPalContextId, linkType)
                     sendAnalyticsEvent(event, configuration, authorization)
                 }
             }
