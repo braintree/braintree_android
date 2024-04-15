@@ -4,6 +4,8 @@
 
 * Updated expiring pinned vendor SSL certificates
 * Add `GooglePayClient#tokenize(PaymentData, GooglePayOnActivityResultCallback)` to be invoked after direct Google Play Services integration
+* Venmo
+  * Send `link_type` in `event_params` to PayPal's analytics service (FPTI)
 
 ## 4.44.0 (2024-04-05)
 
