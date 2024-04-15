@@ -8,10 +8,10 @@ import androidx.room.RoomDatabase
 
 // Ref: https://developer.android.com/training/data-storage/room/migrating-db-versions
 @Database(
-        version = 2,
+        version = 3,
         entities = [AnalyticsEvent::class],
         autoMigrations = [
-            AutoMigration(from = 1, to = 2)
+            AutoMigration(from = 2, to = 3)
         ]
 )
 internal abstract class AnalyticsDatabase : RoomDatabase() {
