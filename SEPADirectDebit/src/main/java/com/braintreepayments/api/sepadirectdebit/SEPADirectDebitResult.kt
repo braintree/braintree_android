@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.sepadirectdebit
 
 /**
  * Result of tokenizing a SEPA Direct Debit payment method

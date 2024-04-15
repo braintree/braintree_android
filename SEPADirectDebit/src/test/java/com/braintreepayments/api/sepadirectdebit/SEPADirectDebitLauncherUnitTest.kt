@@ -1,7 +1,14 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.sepadirectdebit
 
 import android.content.Intent
 import androidx.activity.ComponentActivity
+import com.braintreepayments.api.BrowserSwitchClient
+import com.braintreepayments.api.BrowserSwitchException
+import com.braintreepayments.api.BrowserSwitchOptions
+import com.braintreepayments.api.BrowserSwitchPendingRequest
+import com.braintreepayments.api.BrowserSwitchRequest
+import com.braintreepayments.api.BrowserSwitchResult
+import com.braintreepayments.api.BrowserSwitchResultInfo
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert.assertSame

@@ -9,16 +9,16 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.SEPADirectDebitClient;
-import com.braintreepayments.api.SEPADirectDebitLauncher;
-import com.braintreepayments.api.SEPADirectDebitMandateType;
-import com.braintreepayments.api.SEPADirectDebitNonce;
-import com.braintreepayments.api.SEPADirectDebitPaymentAuthRequest;
-import com.braintreepayments.api.SEPADirectDebitPaymentAuthResult;
-import com.braintreepayments.api.SEPADirectDebitPendingRequest;
-import com.braintreepayments.api.SEPADirectDebitRequest;
-import com.braintreepayments.api.SEPADirectDebitResult;
 import com.braintreepayments.api.core.PostalAddress;
+import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitClient;
+import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitLauncher;
+import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitMandateType;
+import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitNonce;
+import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitPaymentAuthRequest;
+import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitPaymentAuthResult;
+import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitPendingRequest;
+import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitRequest;
+import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitResult;
 import com.braintreepayments.api.core.UserCanceledException;
 
 import java.util.UUID;
