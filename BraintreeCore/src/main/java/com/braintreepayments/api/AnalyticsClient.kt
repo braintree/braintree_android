@@ -189,7 +189,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             val singleEventJSON = JSONObject()
                 .put(EVENT_NAME_KEY, analyticsEvent.name)
                 .putOpt(PAYPAL_CONTEXT_ID_KEY, analyticsEvent.payPalContextId)
-                .putOpt(PAYPAL_CONTEXT_ID_KEY, analyticsEvent.linkType)
+                .putOpt(LINK_TYPE_KEY, analyticsEvent.linkType)
                 .put(TIMESTAMP_KEY, analyticsEvent.timestamp)
                 .put(TENANT_NAME_KEY, "Braintree")
             eventParamsJSON.put(singleEventJSON)

@@ -725,6 +725,32 @@ public class VenmoClientUnitTest {
     }
 
     @Test
+    public void tokenizeVenmoAccount_withFallbackToWeb_sendsAnalyticsEventWhenStarted() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .authorizationSuccess(clientToken)
+                .build();
+
+        VenmoApi venmoApi = new MockVenmoApiBuilder()
+                .createPaymentContextSuccess("venmo-payment-context-id")
+                .build();
+
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
+        request.setProfileId(null);
+        request.setShouldVault(false);
+        request.setFallbackToWeb(true);
+
+        when(deviceInspector.isVenmoAppSwitchAvailable(activity)).thenReturn(false);
+
+        VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
+        sut.observer = mock(VenmoLifecycleObserver.class);
+        sut.tokenizeVenmoAccount(activity, request);
+
+        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.selected", null, "universal");
+        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.started", "venmo-payment-context-id", "universal");
+    }
+
+    @Test
     public void tokenizeVenmoAccount_whenShouldVaultIsTrue_persistsVenmoVaultTrue() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
