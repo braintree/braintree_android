@@ -4,6 +4,13 @@
 
 * Updated expiring pinned vendor SSL certificates
 * Add `GooglePayClient#tokenize(PaymentData, GooglePayOnActivityResultCallback)` to be invoked after direct Google Play Services integration
+* PayPalNativeCheckout
+  * Bump native-checkout version to `1.3.2`
+  * Fixes Google Play Store Rejection
+    * Add `hasUserLocationConsent` property to `PayPalNativeCheckoutRequest`, `PayPalNativeCheckoutVaultRequest` and `PayPalNativeRequest`
+    * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
+* PayPalDataCollector
+  * Bump Magnes version to `5.5.1`
 
 ## 4.44.0 (2024-04-05)
 
