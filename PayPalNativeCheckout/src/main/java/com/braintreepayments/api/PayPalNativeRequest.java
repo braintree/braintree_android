@@ -64,7 +64,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
         this(false);
     }
 
-    public PayPalNativeRequest(boolean hasUserLocationConsent) {
+    PayPalNativeRequest(boolean hasUserLocationConsent) {
         shippingAddressRequired = false;
         lineItems = new ArrayList<>();
         this.hasUserLocationConsent = hasUserLocationConsent;
