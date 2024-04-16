@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.sepadirectdebit;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +9,8 @@ import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.BrowserSwitchOptions;
+import com.braintreepayments.api.BrowserSwitchResultInfo;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.BraintreeRequestCodes;

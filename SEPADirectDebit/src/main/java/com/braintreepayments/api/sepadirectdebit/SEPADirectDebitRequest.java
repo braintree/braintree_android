@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.sepadirectdebit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

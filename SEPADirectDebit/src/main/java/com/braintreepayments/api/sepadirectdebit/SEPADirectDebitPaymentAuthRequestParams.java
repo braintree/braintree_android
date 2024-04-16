@@ -1,6 +1,8 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.sepadirectdebit;
 
 import androidx.fragment.app.FragmentActivity;
+
+import com.braintreepayments.api.BrowserSwitchOptions;
 
 /**
  * Returned via the {@link SEPADirectDebitPaymentAuthRequestCallback} after calling

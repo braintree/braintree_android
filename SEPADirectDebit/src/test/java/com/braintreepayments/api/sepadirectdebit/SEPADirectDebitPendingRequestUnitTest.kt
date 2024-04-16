@@ -1,6 +1,8 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.sepadirectdebit
 
 import android.net.Uri
+import com.braintreepayments.api.BrowserSwitchPendingRequest
+import com.braintreepayments.api.BrowserSwitchRequest
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertEquals

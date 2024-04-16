@@ -1,8 +1,12 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.sepadirectdebit;
 
 import static junit.framework.TestCase.assertEquals;
 
 import android.os.Parcel;
+
+import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitMandateType;
+import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitNonce;
 
 import org.json.JSONException;
 import org.json.JSONObject;

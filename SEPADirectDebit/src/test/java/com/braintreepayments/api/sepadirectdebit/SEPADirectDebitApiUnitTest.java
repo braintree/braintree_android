@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.sepadirectdebit;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
@@ -12,6 +12,15 @@ import static org.mockito.Mockito.verify;
 
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.PostalAddress;
+import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.MockBraintreeClientBuilder;
+import com.braintreepayments.api.sepadirectdebit.CreateMandateCallback;
+import com.braintreepayments.api.sepadirectdebit.CreateMandateResult;
+import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitApi;
+import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitInternalTokenizeCallback;
+import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitMandateType;
+import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitNonce;
+import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitRequest;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
 
 import org.json.JSONException;
