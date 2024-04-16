@@ -107,6 +107,7 @@ complexity:
   LargeClass:
     active: true
     threshold: 600
+    excludes: 'TLSCertificatePinning'
   LongMethod:
     active: true
     threshold: 60
