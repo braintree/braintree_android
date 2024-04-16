@@ -16,7 +16,6 @@ import javax.net.ssl.SSLException
  * Do not update this file directly. If new certificates are needed, update the 'certificates' directory
  * in 'braintree-mobile-certificate-generation' and re-run the certificate generation script.
  */
-@Suppress("LargeClass")
 internal object TLSCertificatePinning {
 
     private const val CERTIFICATES = """-----BEGIN CERTIFICATE-----
