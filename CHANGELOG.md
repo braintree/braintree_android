@@ -2,8 +2,10 @@
 
 ## unreleased
 
-* Updated expiring pinned vendor SSL certificates
-* Add `GooglePayClient#tokenize(PaymentData, GooglePayOnActivityResultCallback)` to be invoked after direct Google Play Services integration
+* BraintreeCore
+  * Updated expiring pinned vendor SSL certificates
+* GooglePay
+  * Add `GooglePayClient#tokenize(PaymentData, GooglePayOnActivityResultCallback)` to be invoked after direct Google Play Services integration
 * PayPalNativeCheckout
   * Bump native-checkout version to `1.3.2`
   * Fixes Google Play Store Rejection
