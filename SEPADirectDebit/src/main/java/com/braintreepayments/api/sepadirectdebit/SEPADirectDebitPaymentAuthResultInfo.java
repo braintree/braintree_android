@@ -1,4 +1,6 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.sepadirectdebit;
+
+import com.braintreepayments.api.BrowserSwitchResultInfo;
 
 /**
  * Details of a {@link SEPADirectDebitPaymentAuthResult.Success}

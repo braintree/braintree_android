@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.sepadirectdebit
 
 /**
  * A request used to launch the continuation of the SEPA Direct Debit flow.

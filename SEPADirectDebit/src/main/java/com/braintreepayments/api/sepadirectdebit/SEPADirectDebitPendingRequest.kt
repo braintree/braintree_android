@@ -1,5 +1,6 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.sepadirectdebit
 
+import com.braintreepayments.api.BrowserSwitchPendingRequest
 import org.json.JSONException
 import java.lang.Exception
 

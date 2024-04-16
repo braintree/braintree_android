@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.sepadirectdebit
 
 /**
  * Result of the SEPA Direct Debit web flow received from [SEPADirectDebitLauncher.handleReturnToAppFromBrowser].
