@@ -107,7 +107,7 @@ complexity:
   LargeClass:
     active: true
     threshold: 600
-    excludes: 'TLSCertificatePinning.kt'
+    excludes: ['**/TLSCertificatePinning.kt']
   LongMethod:
     active: true
     threshold: 60
