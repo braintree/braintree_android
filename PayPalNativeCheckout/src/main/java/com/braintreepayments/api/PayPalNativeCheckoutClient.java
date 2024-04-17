@@ -218,7 +218,7 @@ public class PayPalNativeCheckoutClient {
                         createOrderActions.setBillingAgreementId(payPalResponse.getPairingId());
                         braintreeClient.sendAnalyticsEvent("paypal-native.billing-agreement.succeeded", payPalContextId, null);
                     }
-                });
+                }, payPalRequest.hasUserLocationConsent());
             } else {
                 listener.onPayPalFailure(new Exception(error));
             }

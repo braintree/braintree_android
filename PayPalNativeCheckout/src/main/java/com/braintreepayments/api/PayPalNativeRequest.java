@@ -52,13 +52,22 @@ public abstract class PayPalNativeRequest implements Parcelable {
     private final ArrayList<PayPalNativeCheckoutLineItem> lineItems;
     private String returnUrl;
     private String userAuthenticationEmail;
+    private final boolean hasUserLocationConsent;
 
     /**
+     * Deprecated. Use {@link PayPalNativeRequest#PayPalNativeRequest(boolean)} instead.
+     *
      * Constructs a request for PayPal Checkout and Vault flows.
      */
+    @Deprecated
     public PayPalNativeRequest() {
+        this(false);
+    }
+
+    PayPalNativeRequest(boolean hasUserLocationConsent) {
         shippingAddressRequired = false;
         lineItems = new ArrayList<>();
+        this.hasUserLocationConsent = hasUserLocationConsent;
     }
 
     /**
@@ -256,6 +265,9 @@ public abstract class PayPalNativeRequest implements Parcelable {
         return lineItems;
     }
 
+    public boolean hasUserLocationConsent() {
+        return hasUserLocationConsent;
+    }
 
     abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;
 
@@ -272,6 +284,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
         lineItems = in.createTypedArrayList(PayPalNativeCheckoutLineItem.CREATOR);
         returnUrl = in.readString();
         userAuthenticationEmail = in.readString();
+        hasUserLocationConsent = in.readByte() != 0;
     }
 
     @Override
@@ -293,5 +306,6 @@ public abstract class PayPalNativeRequest implements Parcelable {
         parcel.writeTypedList(lineItems);
         parcel.writeString(returnUrl);
         parcel.writeString(userAuthenticationEmail);
+        parcel.writeByte((byte) (hasUserLocationConsent ? 1 : 0));
     }
 }

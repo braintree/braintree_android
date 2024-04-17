@@ -16,10 +16,17 @@ import com.paypal.checkout.error.ErrorInfo
 import com.paypal.checkout.error.OnError
 import com.paypal.checkout.shipping.OnShippingChange
 import com.paypal.pyplcheckout.instrumentation.constants.PEnums
+import com.paypal.pyplcheckout.instrumentation.constants.PEnums.EventCode
+import com.paypal.pyplcheckout.instrumentation.constants.PEnums.Outcome
+import com.paypal.pyplcheckout.instrumentation.constants.PEnums.StateName
+import com.paypal.pyplcheckout.instrumentation.constants.PEnums.TransitionName
 import com.paypal.pyplcheckout.instrumentation.di.PLog
+import com.paypal.pyplcheckout.instrumentation.di.PLog.transition
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.runs
 import io.mockk.slot
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
@@ -45,6 +52,13 @@ class PayPalNativeCheckoutClientUnitTest {
     fun beforeEach() {
         mockkStatic(PayPalCheckout::class)
         mockkStatic(PLog::class)
+        mockkStatic(PayPalCheckout::class)
+
+        every { PayPalCheckout.setConfig(any()) } just runs
+        every { PayPalCheckout.startCheckout(any(), any()) } just runs
+        every {
+           PLog.transition(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any())
+        } just runs
 
         activity = mockk(relaxed = true)
         listener = mockk(relaxed = true)
@@ -58,7 +72,7 @@ class PayPalNativeCheckoutClientUnitTest {
 
     @Test
     fun tokenizePayPalAccount_throwsWhenPayPalRequestIsBaseClass() {
-        val baseRequest: PayPalNativeRequest = object : PayPalNativeRequest() {
+        val baseRequest: PayPalNativeRequest = object : PayPalNativeRequest(true) {
             @Throws(JSONException::class)
             public override fun createRequestBody(
                 configuration: Configuration,
@@ -86,7 +100,7 @@ class PayPalNativeCheckoutClientUnitTest {
     @Test
     @Ignore("Refactor test to work with mockk")
     fun requestBillingAgreement_launchNativeCheckout_sendsAnalyticsEvents() {
-        val payPalVaultRequest = PayPalNativeCheckoutVaultRequest()
+        val payPalVaultRequest = PayPalNativeCheckoutVaultRequest(true)
         payPalVaultRequest.merchantAccountId = "sample-merchant-account-id"
         payPalVaultRequest.returnUrl = "returnUrl://paypalpay"
         val payPalResponse = PayPalNativeCheckoutResponse(payPalVaultRequest)
@@ -125,7 +139,7 @@ class PayPalNativeCheckoutClientUnitTest {
 
     @Test
     fun requestNativeCheckout_returnsErrorFromFailedResponse() {
-        val payPalVaultRequest = PayPalNativeCheckoutVaultRequest()
+        val payPalVaultRequest = PayPalNativeCheckoutVaultRequest(true)
         payPalVaultRequest.merchantAccountId = "sample-merchant-account-id"
         payPalVaultRequest.returnUrl = "returnUrl://paypalpay"
         val payPalInternalClient = MockkPayPalInternalClientBuilder()
@@ -144,7 +158,7 @@ class PayPalNativeCheckoutClientUnitTest {
     @Ignore("Refactor test to work with mockk")
     @Suppress("LongMethod")
     fun requestOneTimePayment_launchNativeCheckout_sendsAnalyticsEvents() {
-        val payPalCheckoutRequest = PayPalNativeCheckoutRequest("1.00")
+        val payPalCheckoutRequest = PayPalNativeCheckoutRequest("1.00", true)
         payPalCheckoutRequest.intent = "authorize"
         payPalCheckoutRequest.merchantAccountId = "sample-merchant-account-id"
         payPalCheckoutRequest.returnUrl = "returnUrl://paypalpay"
@@ -235,7 +249,7 @@ class PayPalNativeCheckoutClientUnitTest {
     fun paypalAccount_isSetupCorrectly() {
         val riskCorrelationId = "riskId"
         val sampleMerchantId = "sample-merchant-account-id"
-        val payPalCheckoutRequest = PayPalNativeCheckoutRequest("1.00")
+        val payPalCheckoutRequest = PayPalNativeCheckoutRequest("1.00", true)
         payPalCheckoutRequest.intent = "authorize"
         payPalCheckoutRequest.merchantAccountId = sampleMerchantId
         payPalCheckoutRequest.returnUrl = "returnUrl://paypalpay"
@@ -259,7 +273,7 @@ class PayPalNativeCheckoutClientUnitTest {
     @Throws(Exception::class)
     @Ignore("Refactor test to work with mockk")
     fun requestOneTimePayment_sendsBrowserSwitchStartAnalyticsEvent() {
-        val payPalCheckoutRequest = PayPalNativeCheckoutRequest("1.00")
+        val payPalCheckoutRequest = PayPalNativeCheckoutRequest("1.00", true)
         payPalCheckoutRequest.intent = "authorize"
         payPalCheckoutRequest.merchantAccountId = "sample-merchant-account-id"
         payPalCheckoutRequest.returnUrl = "returnUrl://paypalpay"
@@ -300,7 +314,7 @@ class PayPalNativeCheckoutClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder().build()
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
         val sut = PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient)
-        val request = PayPalNativeCheckoutRequest("1.00")
+        val request = PayPalNativeCheckoutRequest("1.00", true)
         request.shouldOfferPayLater = true
         sut.tokenizePayPalAccount(activity, request)
         verify { braintreeClient.sendAnalyticsEvent("paypal-native.single-payment.paylater.offered") }
@@ -313,7 +327,7 @@ class PayPalNativeCheckoutClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalEnabledConfig)
             .build()
-        val payPalRequest = PayPalNativeCheckoutVaultRequest()
+        val payPalRequest = PayPalNativeCheckoutVaultRequest(true)
         val sut = PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient)
         sut.tokenizePayPalAccount(activity, payPalRequest)
         verify { payPalInternalClient.sendRequest(activity, payPalRequest, any()) }
@@ -326,7 +340,7 @@ class PayPalNativeCheckoutClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalEnabledConfig)
             .build()
-        val payPalRequest = PayPalNativeCheckoutRequest("1.00")
+        val payPalRequest = PayPalNativeCheckoutRequest("1.00", true)
         val sut = PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient)
         sut.tokenizePayPalAccount(activity, payPalRequest)
         verify { payPalInternalClient.sendRequest(activity, payPalRequest, any()) }
@@ -337,7 +351,7 @@ class PayPalNativeCheckoutClientUnitTest {
     fun tokenizePayPalAccount_sendsPayPalCreditOfferedAnalyticsEvent() {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
         val braintreeClient = MockkBraintreeClientBuilder().build()
-        val payPalRequest = PayPalNativeCheckoutVaultRequest()
+        val payPalRequest = PayPalNativeCheckoutVaultRequest(true)
         payPalRequest.shouldOfferCredit = true
         val sut = PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient)
         sut.tokenizePayPalAccount(activity, payPalRequest)
@@ -346,7 +360,7 @@ class PayPalNativeCheckoutClientUnitTest {
 
     @Test
     fun launchNativeCheckout_notifiesErrorWhenPayPalRequestIsBaseClass_sendsAnalyticsEvents() {
-        val baseRequest: PayPalNativeRequest = object : PayPalNativeRequest() {
+        val baseRequest: PayPalNativeRequest = object : PayPalNativeRequest(true) {
             @Throws(JSONException::class)
             public override fun createRequestBody(
                 configuration: Configuration,
@@ -368,5 +382,25 @@ class PayPalNativeCheckoutClientUnitTest {
         assertEquals(expectedMessage, capturedException.message)
         verify { braintreeClient.sendAnalyticsEvent("paypal-native.tokenize.started") }
         verify { braintreeClient.sendAnalyticsEvent("paypal-native.tokenize.invalid-request.failed") }
+    }
+
+    @Test
+    fun `when launchNativeCheckout is called, hasUserLocationConsent is sent to PayPalCheckout startCheckout`() {
+        val request = PayPalNativeCheckoutVaultRequest(true)
+        request.returnUrl = "returnUrl://paypalpay"
+
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(payPalEnabledConfig)
+            .build()
+        val payPalResponse = PayPalNativeCheckoutResponse(request)
+            .clientMetadataId("sample-client-metadata-id")
+        val payPalInternalClient = MockkPayPalInternalClientBuilder()
+            .sendRequestSuccess(payPalResponse)
+            .build()
+        val sut = PayPalNativeCheckoutClient(braintreeClient, payPalInternalClient)
+
+        sut.launchNativeCheckout(activity, request)
+
+        verify { PayPalCheckout.startCheckout(any(), true) }
     }
 }
