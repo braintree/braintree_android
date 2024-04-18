@@ -22,6 +22,7 @@ import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.PayPalClient;
 import com.braintreepayments.api.PayPalListener;
 import com.braintreepayments.api.PaymentMethodNonce;
+import com.google.android.material.textfield.TextInputEditText;
 
 public class PayPalFragment extends BaseFragment implements PayPalListener {
 
@@ -39,11 +40,16 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_paypal, container, false);
+        TextInputEditText buyerEmailEditText = view.findViewById(R.id.buyer_email_edit_text);
         Button billingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
 
-        billingAgreementButton.setOnClickListener(this::launchBillingAgreement);
-        singlePaymentButton.setOnClickListener(this::launchSinglePayment);
+        singlePaymentButton.setOnClickListener(v -> {
+            launchPayPal(false, buyerEmailEditText.getText().toString());
+        });
+        billingAgreementButton.setOnClickListener(v -> {
+            launchPayPal(true, buyerEmailEditText.getText().toString());
+        });
 
         braintreeClient = getBraintreeClient();
 
@@ -83,15 +89,7 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
         payPalClient.clearActiveBrowserSwitchRequests(requireContext());
     }
 
-    public void launchSinglePayment(View v) {
-        launchPayPal(false);
-    }
-
-    public void launchBillingAgreement(View v) {
-        launchPayPal(true);
-    }
-
-    private void launchPayPal(boolean isBillingAgreement) {
+    private void launchPayPal(boolean isBillingAgreement, String buyerEmailAddress) {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
@@ -104,16 +102,16 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
                         deviceData = deviceDataResult;
                     }
                     if (isBillingAgreement) {
-                        payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity));
+                        payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity, buyerEmailAddress));
                     } else {
-                        payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, amount));
+                        payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, amount, buyerEmailAddress));
                     }
                 });
             } else {
                 if (isBillingAgreement) {
-                    payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity));
+                    payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity, buyerEmailAddress));
                 } else {
-                    payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, amount));
+                    payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, amount, buyerEmailAddress));
                 }
             }
         });
@@ -124,7 +122,7 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
             super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
             PayPalFragmentDirections.ActionPayPalFragmentToDisplayNonceFragment action =
-                    PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
+                PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
             action.setTransactionAmount(amount);
             action.setDeviceData(deviceData);
 

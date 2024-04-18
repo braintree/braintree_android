@@ -137,7 +137,7 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
         shopperInsightsClient.sendPayPalSelectedEvent()
         payPalClient.tokenizePayPalAccount(
             requireActivity(),
-            PayPalRequestFactory.createPayPalVaultRequest(activity)
+            PayPalRequestFactory.createPayPalVaultRequest(activity, emailInput.editText?.text.toString())
         )
     }
 
