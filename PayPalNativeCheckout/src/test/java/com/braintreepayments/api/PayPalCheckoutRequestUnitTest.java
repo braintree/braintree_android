@@ -1,5 +1,11 @@
 package com.braintreepayments.api;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+
 import android.os.Parcel;
 
 import org.junit.Test;
@@ -8,18 +14,12 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.util.ArrayList;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
-
 @RunWith(RobolectricTestRunner.class)
 public class PayPalCheckoutRequestUnitTest {
 
     @Test
     public void newPayPalCheckoutRequest_setsDefaultValues() {
-        PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest("1.00");
+        PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest("1.00", false);
 
         assertNotNull(request.getAmount());
         assertNull(request.getCurrencyCode());
@@ -29,11 +29,18 @@ public class PayPalCheckoutRequestUnitTest {
         assertEquals(PayPalNativeCheckoutPaymentIntent.AUTHORIZE, request.getIntent());
         assertNull(request.getBillingAgreementDescription());
         assertFalse(request.getShouldOfferPayLater());
+        assertFalse(request.hasUserLocationConsent());
+    }
+
+    @Test
+    public void newPayPalCheckoutRequest_without_hasUserLocationConsent_defaults_to_false() {
+        PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest("1.00");
+        assertFalse(request.hasUserLocationConsent());
     }
 
     @Test
     public void setsValuesCorrectly() {
-        PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest("1.00");
+        PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest("1.00", true);
         request.setCurrencyCode("USD");
         request.setShouldOfferPayLater(true);
         request.setIntent(PayPalNativeCheckoutPaymentIntent.SALE);
@@ -74,11 +81,12 @@ public class PayPalCheckoutRequestUnitTest {
         assertEquals("CA", request.getShippingAddressOverride().getRegion());
         assertEquals("US", request.getShippingAddressOverride().getCountryCodeAlpha2());
         assertTrue(request.getShouldOfferPayLater());
+        assertTrue(request.hasUserLocationConsent());
     }
 
     @Test
     public void parcelsCorrectly() {
-        PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest("12.34");
+        PayPalNativeCheckoutRequest request = new PayPalNativeCheckoutRequest("12.34", true);
         request.setCurrencyCode("USD");
         request.setLocaleCode("en-US");
         request.setBillingAgreementDescription("Billing Agreement Description");
@@ -117,5 +125,6 @@ public class PayPalCheckoutRequestUnitTest {
         assertEquals("merchant_account_id", result.getMerchantAccountId());
         assertEquals(1, result.getLineItems().size());
         assertEquals("An Item", result.getLineItems().get(0).getName());
+        assertTrue(result.hasUserLocationConsent());
     }
 }

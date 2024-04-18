@@ -18,6 +18,13 @@ android {
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
         buildConfigField "String", "VERSION_NAME", "\"${rootProject.versionName}\""
+
+        // Ref: https://stackoverflow.com/a/75735523
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments['room.schemaLocation'] = "$projectDir/schemas"
+            }
+        }
     }
 
     testOptions {

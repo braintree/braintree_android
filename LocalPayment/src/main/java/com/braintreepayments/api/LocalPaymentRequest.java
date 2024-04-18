@@ -45,6 +45,28 @@ public class LocalPaymentRequest {
     private String phone;
     private boolean shippingAddressRequired;
     private String surname;
+    private final boolean hasUserLocationConsent;
+
+    /**
+     * Deprecated. Use {@link LocalPaymentRequest#LocalPaymentRequest(boolean)} instead.
+     **/
+    @Deprecated
+    public LocalPaymentRequest() {
+        this(false);
+    }
+
+    /**
+     * @param hasUserLocationConsent is an optional parameter that informs the SDK
+     * if your application has obtained consent from the user to collect location data in compliance with
+     * <a href="https://support.google.com/googleplay/android-developer/answer/10144311#personal-sensitive">Google Play Developer Program policies</a>
+     * This flag enables PayPal to collect necessary information required for Fraud Detection and Risk Management.
+     *
+     * @see <a href="https://support.google.com/googleplay/android-developer/answer/10144311#personal-sensitive">User Data policies for the Google Play Developer Program </a>
+     * @see <a href="https://support.google.com/googleplay/android-developer/answer/9799150?hl=en#Prominent%20in-app%20disclosure">Examples of prominent in-app disclosures</a>
+     */
+    public LocalPaymentRequest(boolean hasUserLocationConsent) {
+        this.hasUserLocationConsent = hasUserLocationConsent;
+    }
 
     /**
      * @param address Optional - The address of the customer. An error will occur if this address is not valid.
@@ -204,6 +226,10 @@ public class LocalPaymentRequest {
     @Nullable
     public String getSurname() {
         return surname;
+    }
+
+    public boolean hasUserLocationConsent() {
+        return hasUserLocationConsent;
     }
 
     public String build(String returnUrl, String cancelUrl) {

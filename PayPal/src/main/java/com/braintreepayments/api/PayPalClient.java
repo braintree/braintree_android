@@ -26,6 +26,12 @@ public class PayPalClient {
 
     private PayPalListener listener;
 
+    /**
+     * Used for linking events from the client to server side request
+     * In the PayPal flow this will be either an EC token or a Billing Agreement token
+     */
+    private String payPalContextId = null;
+
     @VisibleForTesting
     BrowserSwitchResult pendingBrowserSwitchResult;
 
@@ -201,9 +207,9 @@ public class PayPalClient {
     }
 
     private void sendCheckoutRequest(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
-        braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
+        braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected", payPalContextId);
         if (payPalCheckoutRequest.getShouldOfferPayLater()) {
-            braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
+            braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered", payPalContextId);
         }
 
         braintreeClient.getConfiguration(new ConfigurationCallback() {
@@ -223,7 +229,7 @@ public class PayPalClient {
                 try {
                     assertCanPerformBrowserSwitch(activity);
                 } catch (BrowserSwitchException browserSwitchException) {
-                    braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
+                    braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest", payPalContextId);
                     Exception manifestInvalidError =
                             createBrowserSwitchError(browserSwitchException);
                     callback.onResult(manifestInvalidError);
@@ -236,9 +242,9 @@ public class PayPalClient {
     }
 
     private void sendVaultRequest(final FragmentActivity activity, final PayPalVaultRequest payPalVaultRequest, final PayPalFlowStartedCallback callback) {
-        braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
+        braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected", payPalContextId);
         if (payPalVaultRequest.getShouldOfferCredit()) {
-            braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
+            braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered", payPalContextId);
         }
 
         braintreeClient.getConfiguration(new ConfigurationCallback() {
@@ -258,7 +264,7 @@ public class PayPalClient {
                 try {
                     assertCanPerformBrowserSwitch(activity);
                 } catch (BrowserSwitchException browserSwitchException) {
-                    braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
+                    braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest", payPalContextId);
                     Exception manifestInvalidError =
                             createBrowserSwitchError(browserSwitchException);
                     callback.onResult(manifestInvalidError);
@@ -275,7 +281,7 @@ public class PayPalClient {
             public void onResult(PayPalResponse payPalResponse, Exception error) {
                 if (payPalResponse != null) {
                     String analyticsPrefix = getAnalyticsEventPrefix(payPalRequest);
-                    braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.started", analyticsPrefix));
+                    braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.started", analyticsPrefix), payPalContextId);
 
                     try {
                         startBrowserSwitch(activity, payPalResponse);
@@ -382,11 +388,18 @@ public class PayPalClient {
         String tokenKey = isBillingAgreement ? "ba_token" : "token";
         String analyticsPrefix = isBillingAgreement ? "paypal.billing-agreement" : "paypal.single-payment";
 
+        if (approvalUrl != null) {
+            String pairingId = Uri.parse(approvalUrl).getQueryParameter(tokenKey);
+            if (pairingId != null && !pairingId.isEmpty()) {
+                payPalContextId = pairingId;
+            }
+        }
+
         int result = browserSwitchResult.getStatus();
         switch (result) {
             case BrowserSwitchStatus.CANCELED:
                 callback.onResult(null, new UserCanceledException("User canceled PayPal."));
-                braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.canceled", analyticsPrefix));
+                braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.canceled", analyticsPrefix), payPalContextId);
                 break;
             case BrowserSwitchStatus.SUCCESS:
                 try {
@@ -412,22 +425,22 @@ public class PayPalClient {
                             @Override
                             public void onResult(@Nullable PayPalAccountNonce payPalAccountNonce, @Nullable Exception error) {
                                 if (payPalAccountNonce != null && payPalAccountNonce.getCreditFinancing() != null) {
-                                    braintreeClient.sendAnalyticsEvent("paypal.credit.accepted");
+                                    braintreeClient.sendAnalyticsEvent("paypal.credit.accepted", payPalContextId);
                                 }
                                 callback.onResult(payPalAccountNonce, error);
                             }
                         });
 
-                        braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.succeeded", analyticsPrefix));
+                        braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.succeeded", analyticsPrefix), payPalContextId);
                     } else {
                         callback.onResult(null, new BraintreeException("Unknown error"));
                     }
                 } catch (UserCanceledException e) {
                     callback.onResult(null, e);
-                    braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.canceled", analyticsPrefix));
+                    braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.canceled", analyticsPrefix), payPalContextId);
                 } catch (JSONException | PayPalBrowserSwitchException e) {
                     callback.onResult(null, e);
-                    braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.failed", analyticsPrefix));
+                    braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.failed", analyticsPrefix), payPalContextId);
                 }
                 break;
         }

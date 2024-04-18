@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -40,8 +41,17 @@ public class VenmoClient {
     private final DeviceInspector deviceInspector;
     private VenmoListener listener;
 
+    /**
+     * Used for linking events from the client to server side request
+     * In the Venmo flow this will be a Payment Context ID
+     */
+    private String payPalContextId = null;
+
     @VisibleForTesting
     VenmoLifecycleObserver observer;
+
+    @VisibleForTesting
+    BrowserSwitchResult pendingBrowserSwitchResult;
 
     /**
      * Create a new instance of {@link VenmoClient} from within an Activity using a {@link BraintreeClient}.
@@ -105,6 +115,9 @@ public class VenmoClient {
      */
     public void setListener(VenmoListener listener) {
         this.listener = listener;
+        if (pendingBrowserSwitchResult != null) {
+            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
+        }
     }
 
     /**
@@ -113,7 +126,7 @@ public class VenmoClient {
      * @param activity used to open the Venmo's Google Play Store
      */
     public void showVenmoInGooglePlayStore(@NonNull FragmentActivity activity) {
-        braintreeClient.sendAnalyticsEvent("android.pay-with-venmo.app-store.invoked");
+        braintreeClient.sendAnalyticsEvent("android.pay-with-venmo.app-store.invoked", payPalContextId);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(
                 "https://play.google.com/store/apps/details?id=" + VENMO_PACKAGE_NAME));
@@ -152,33 +165,37 @@ public class VenmoClient {
      */
     @Deprecated
     public void tokenizeVenmoAccount(@NonNull final FragmentActivity activity, @NonNull final VenmoRequest request, @NonNull final VenmoTokenizeAccountCallback callback) {
-        braintreeClient.sendAnalyticsEvent("pay-with-venmo.selected");
+        braintreeClient.sendAnalyticsEvent("pay-with-venmo.selected", payPalContextId);
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
                 if (configuration == null) {
                     callback.onResult(error);
-                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
+                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed", payPalContextId);
                     return;
                 }
 
                 String exceptionMessage = null;
+                if (!request.getFallbackToWeb()) {
+                     if (!deviceInspector.isVenmoAppSwitchAvailable(activity)) {
+                        exceptionMessage = "Venmo is not installed";
+                    }
+                }
+
                 if (!configuration.isVenmoEnabled()) {
                     exceptionMessage = "Venmo is not enabled";
-                } else if (!deviceInspector.isVenmoAppSwitchAvailable(activity)) {
-                    exceptionMessage = "Venmo is not installed";
                 }
 
                 if (exceptionMessage != null) {
                     callback.onResult(new AppSwitchNotAvailableException(exceptionMessage));
-                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
+                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed", payPalContextId);
                     return;
                 }
 
                 // Merchants are not allowed to collect user addresses unless ECD (Enriched Customer Data) is enabled on the BT Control Panel.
                 if ((request.getCollectCustomerShippingAddress() || request.getCollectCustomerBillingAddress()) && !configuration.getVenmoEnrichedCustomerDataEnabled()) {
                     callback.onResult(new BraintreeException("Cannot collect customer data when ECD is disabled. Enable this feature in the Control Panel to collect this data."));
-                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
+                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed", payPalContextId);
                     return;
                 }
 
@@ -192,6 +209,11 @@ public class VenmoClient {
                     @Override
                     public void onResult(@Nullable final String paymentContextId, @Nullable Exception exception) {
                         if (exception == null) {
+
+                            if (paymentContextId != null && !paymentContextId.isEmpty()) {
+                                payPalContextId = paymentContextId;
+                            }
+
                             braintreeClient.getAuthorization(new AuthorizationCallback() {
                                 @Override
                                 public void onAuthorizationResult(@Nullable Authorization authorization, @Nullable Exception authError) {
@@ -204,7 +226,7 @@ public class VenmoClient {
                             });
                         } else {
                             callback.onResult(exception);
-                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
+                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed", payPalContextId);
                         }
                     }
                 });
@@ -225,17 +247,26 @@ public class VenmoClient {
         sharedPrefsWriter.persistVenmoVaultOption(activity, shouldVault);
         if (observer != null) {
             VenmoIntentData intentData = new VenmoIntentData(configuration, venmoProfileId, paymentContextId, braintreeClient.getSessionId(), braintreeClient.getIntegrationType());
-            observer.launch(intentData);
+            if (request.getFallbackToWeb()) {
+                try {
+                    startAppLinkFlow(activity, intentData);
+                } catch (JSONException | BrowserSwitchException exception) {
+                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.failure");
+                    deliverVenmoFailure(exception);
+                }
+            } else {
+                observer.launch(intentData);
+            }
         } else {
             Intent launchIntent = getLaunchIntent(configuration, venmoProfileId, paymentContextId);
             activity.startActivityForResult(launchIntent, BraintreeRequestCodes.VENMO);
         }
-        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
+        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started", payPalContextId);
     }
 
     void onVenmoResult(final VenmoResult venmoResult) {
         if (venmoResult.getError() == null) {
-            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.success");
+            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.success", payPalContextId);
 
             braintreeClient.getAuthorization(new AuthorizationCallback() {
                 @Override
@@ -262,11 +293,11 @@ public class VenmoClient {
                                                 }
                                             });
                                         } else {
-                                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
+                                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure", payPalContextId);
                                             deliverVenmoSuccess(nonce);
                                         }
                                     } else {
-                                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
+                                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure", payPalContextId);
                                         deliverVenmoFailure(error);
                                     }
                                 }
@@ -301,7 +332,7 @@ public class VenmoClient {
 
         } else if (venmoResult.getError() != null) {
             if (venmoResult.getError() instanceof UserCanceledException) {
-                braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.canceled");
+                braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.canceled", payPalContextId);
             }
             deliverVenmoFailure(venmoResult.getError());
         }
@@ -331,7 +362,7 @@ public class VenmoClient {
      */
     public void onActivityResult(@NonNull final Context context, int resultCode, @Nullable final Intent data, @NonNull final VenmoOnActivityResultCallback callback) {
         if (resultCode == AppCompatActivity.RESULT_OK) {
-            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.success");
+            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.success", payPalContextId);
 
             braintreeClient.getAuthorization(new AuthorizationCallback() {
                 @Override
@@ -349,12 +380,12 @@ public class VenmoClient {
                                         if (shouldVault && isClientTokenAuth) {
                                             vaultVenmoAccountNonce(nonce.getString(), callback);
                                         } else {
-                                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
+                                            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure", payPalContextId);
                                             callback.onResult(nonce, null);
                                         }
 
                                     } else {
-                                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure");
+                                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure", payPalContextId);
                                         callback.onResult(null, error);
                                     }
                                 }
@@ -378,7 +409,7 @@ public class VenmoClient {
             });
 
         } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
-            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.canceled");
+            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.canceled", payPalContextId);
             callback.onResult(null, new UserCanceledException("User canceled Venmo."));
         }
     }
@@ -388,9 +419,9 @@ public class VenmoClient {
             @Override
             public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
                 if (venmoAccountNonce != null) {
-                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.success");
+                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.success", payPalContextId);
                 } else {
-                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.failed");
+                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.failed", payPalContextId);
                 }
                 callback.onResult(venmoAccountNonce, error);
             }
@@ -426,6 +457,247 @@ public class VenmoClient {
         }
 
         return venmoIntent;
+    }
+
+    /**
+     * Use this method with the manual browser switch integration pattern.
+     *
+     * @param browserSwitchResult a {@link BrowserSwitchResult} with a {@link BrowserSwitchStatus}
+     * @param callback            {@link VenmoOnActivityResultCallback}
+     */
+    public void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult, @NonNull final VenmoOnActivityResultCallback callback) {
+        int result = browserSwitchResult.getStatus();
+        switch (result) {
+            case BrowserSwitchStatus.CANCELED:
+                braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.canceled");
+                callback.onResult(null, new UserCanceledException("User canceled Venmo."));
+                break;
+            case BrowserSwitchStatus.SUCCESS:
+                Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
+                if (deepLinkUri != null) {
+                    if (deepLinkUri.getPath().contains("success")) {
+                        String resourceId = parseResourceId(String.valueOf(deepLinkUri));
+                        String paymentMethodNonce = parsePaymentMethodNonce(String.valueOf(deepLinkUri));
+                        String username = parseUsername(String.valueOf(deepLinkUri));
+                        Context context = braintreeClient.getApplicationContext();
+
+                        braintreeClient.getAuthorization(new AuthorizationCallback() {
+                            @Override
+                            public void onAuthorizationResult(@Nullable Authorization authorization, @Nullable Exception authError) {
+                            if (authorization != null) {
+                                final boolean isClientTokenAuth = (authorization instanceof ClientToken);
+
+                                if (resourceId != null) {
+                                    venmoApi.createNonceFromPaymentContext(resourceId, new VenmoOnActivityResultCallback() {
+                                        @Override
+                                        public void onResult(@Nullable VenmoAccountNonce nonce, @Nullable Exception error) {
+                                            if (nonce != null) {
+                                                boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(context);
+                                                if (shouldVault && isClientTokenAuth) {
+                                                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.success");
+                                                    vaultVenmoAccountNonce(nonce.getString(), callback);
+                                                } else {
+                                                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.success");
+                                                    callback.onResult(nonce, null);
+                                                }
+                                            } else {
+                                                braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.failure");
+                                                callback.onResult(null, error);
+                                            }
+                                        }
+                                    });
+                                } else if (paymentMethodNonce != null && username != null) {
+                                    boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(context);
+                                    if (shouldVault && isClientTokenAuth) {
+                                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.success");
+                                        vaultVenmoAccountNonce(paymentMethodNonce, callback);
+                                    } else {
+                                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.success");
+                                        VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(paymentMethodNonce, username, false);
+                                        callback.onResult(venmoAccountNonce, null);
+                                    }
+                                }
+                            } else if (authError != null) {
+                                braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.failure");
+                                callback.onResult(null, authError);
+                            }
+                        }
+                        });
+                    } else if (deepLinkUri.getPath().contains("cancel")) {
+                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.canceled");
+                        callback.onResult(null, new UserCanceledException("User canceled Venmo."));
+                    } else if (deepLinkUri.getPath().contains("error")) {
+                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.failure");
+                        callback.onResult(null, new Exception("Error returned from Venmo."));
+                    }
+                } else {
+                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.failure");
+                    callback.onResult(null, new Exception("Unknown error"));
+                }
+                break;
+        }
+    }
+
+    /**
+     * After calling {@link VenmoClient#tokenizeVenmoAccount(FragmentActivity, VenmoRequest)},
+     * call this method in your Activity or Fragment's onResume() method to see if a response
+     * was provided through deep linking.
+     *
+     * If a BrowserSwitchResult exists, call {@link VenmoClient#onBrowserSwitchResult(BrowserSwitchResult)}
+     * to allow the SDK to continue tokenization of the VenmoAccount.
+     *
+     * Make sure to call {@link VenmoClient#clearActiveBrowserSwitchRequests(Context)} after
+     * successfully parsing a BrowserSwitchResult to guard against multiple invocations of browser
+     * switch event handling.
+     *
+     * @param context The context used to check for pending browser switch requests
+     * @param intent The intent containing a potential deep link response. May be null.
+     * @return {@link BrowserSwitchResult} when a result has been parsed successfully from a deep link; null when an input Intent is null
+     */
+    @Nullable
+    public BrowserSwitchResult parseBrowserSwitchResult(@NonNull Context context, @Nullable Intent intent) {
+        int requestCode = BraintreeRequestCodes.VENMO;
+        return braintreeClient.parseBrowserSwitchResult(context, requestCode, intent);
+    }
+
+    /**
+     * Make sure to call this method after {@link VenmoClient#parseBrowserSwitchResult(Context, Intent)}
+     * parses a {@link BrowserSwitchResult} successfully to prevent multiple invocations of browser
+     * switch event handling logic.
+     *
+     * @param context The context used to clear pending browser switch requests
+     */
+    public void clearActiveBrowserSwitchRequests(@NonNull Context context) {
+        braintreeClient.clearActiveBrowserSwitchRequests(context);
+    }
+
+    void onBrowserSwitchResult(@NonNull BrowserSwitchResult browserSwitchResult) {
+        this.pendingBrowserSwitchResult = browserSwitchResult;
+        if (listener != null) {
+            // NEXT_MAJOR_VERSION: remove all manual browser switching methods
+            deliverBrowserSwitchResultToListener(pendingBrowserSwitchResult);
+        }
+    }
+
+    // NEXT_MAJOR_VERSION: remove all manual browser switching methods
+    BrowserSwitchResult getBrowserSwitchResult(FragmentActivity activity) {
+        return braintreeClient.getBrowserSwitchResult(activity);
+    }
+
+    BrowserSwitchResult deliverBrowserSwitchResult(FragmentActivity activity) {
+        return braintreeClient.deliverBrowserSwitchResult(activity);
+    }
+
+    BrowserSwitchResult getBrowserSwitchResultFromNewTask(FragmentActivity activity) {
+        return braintreeClient.getBrowserSwitchResultFromNewTask(activity);
+    }
+
+    BrowserSwitchResult deliverBrowserSwitchResultFromNewTask(FragmentActivity activity) {
+        return braintreeClient.deliverBrowserSwitchResultFromNewTask(activity);
+    }
+
+    private String parseResourceId(String deepLinkUri) {
+        String resourceIdFromBrowserSwitch = Uri.parse(deepLinkUri).getQueryParameter("resource_id");
+        if (resourceIdFromBrowserSwitch != null) {
+            return resourceIdFromBrowserSwitch;
+        } else {
+            String cleanedAppSwitchUri = deepLinkUri.replaceFirst("&","?");
+            String resourceIdFromAppSwitch = Uri.parse(String.valueOf(cleanedAppSwitchUri)).getQueryParameter("resource_id");
+            if (resourceIdFromAppSwitch != null) {
+                return resourceIdFromAppSwitch;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    private String parsePaymentMethodNonce(String deepLinkUri) {
+        String paymentMethodNonceFromBrowserSwitch = Uri.parse(deepLinkUri).getQueryParameter("payment_method_nonce");
+        if (paymentMethodNonceFromBrowserSwitch != null) {
+            return paymentMethodNonceFromBrowserSwitch;
+        } else {
+            String cleanedAppSwitchUri = deepLinkUri.replaceFirst("&","?");
+            String paymentMethodNonceFromAppSwitch = Uri.parse(String.valueOf(cleanedAppSwitchUri)).getQueryParameter("payment_method_nonce");
+            if (paymentMethodNonceFromAppSwitch != null) {
+                return paymentMethodNonceFromAppSwitch;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    private String parseUsername(String deepLinkUri) {
+        String usernameFromBrowserSwitch = Uri.parse(deepLinkUri).getQueryParameter("username");
+        if (usernameFromBrowserSwitch != null) {
+            return usernameFromBrowserSwitch;
+        } else {
+            String cleanedAppSwitchUri = deepLinkUri.replaceFirst("&","?");
+            String usernameFromAppSwitch = Uri.parse(String.valueOf(cleanedAppSwitchUri)).getQueryParameter("username");
+            if (usernameFromAppSwitch != null) {
+                return usernameFromAppSwitch;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    private void deliverBrowserSwitchResultToListener(final BrowserSwitchResult browserSwitchResult) {
+        onBrowserSwitchResult(browserSwitchResult, new VenmoOnActivityResultCallback() {
+            @Override
+            public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
+                if (listener != null) {
+                    if (venmoAccountNonce != null) {
+                        listener.onVenmoSuccess(venmoAccountNonce);
+                    } else if (error != null) {
+                        listener.onVenmoFailure(error);
+                    }
+                }
+            }
+        });
+
+        this.pendingBrowserSwitchResult = null;
+    }
+
+    @VisibleForTesting
+    void startAppLinkFlow(FragmentActivity activity, VenmoIntentData input) throws JSONException, BrowserSwitchException {
+        JSONObject metadata = new MetadataBuilder()
+                .sessionId(input.getSessionId())
+                .integration(input.getIntegrationType())
+                .version()
+                .build();
+
+        JSONObject braintreeData = new JSONObject()
+                .put("_meta", metadata);
+
+        String applicationName = "ApplicationNameUnknown";
+        Context context = braintreeClient.getApplicationContext();
+        if (context != null) {
+            if (context.getPackageManager().getApplicationLabel(context.getApplicationInfo()).toString() != null) {
+                applicationName = context.getPackageManager().getApplicationLabel(context.getApplicationInfo()).toString();
+            }
+        }
+
+        Uri venmoBaseURL = Uri.parse("https://venmo.com/go/checkout")
+                .buildUpon()
+                .appendQueryParameter("x-success", braintreeClient.getReturnUrlScheme() + "://x-callback-url/vzero/auth/venmo/success")
+                .appendQueryParameter("x-error", braintreeClient.getReturnUrlScheme() + "://x-callback-url/vzero/auth/venmo/error")
+                .appendQueryParameter("x-cancel", braintreeClient.getReturnUrlScheme() + "://x-callback-url/vzero/auth/venmo/cancel")
+                .appendQueryParameter("x-source", applicationName)
+                .appendQueryParameter("braintree_merchant_id", input.getProfileId())
+                .appendQueryParameter("braintree_access_token", input.getConfiguration().getVenmoAccessToken())
+                .appendQueryParameter("braintree_environment", input.getConfiguration().getVenmoEnvironment())
+                .appendQueryParameter("resource_id", input.getPaymentContextId())
+                .appendQueryParameter("braintree_sdk_data", Base64.encodeToString(braintreeData.toString().getBytes(), 0))
+                .appendQueryParameter("customerClient", "MOBILE_APP")
+                .build();
+
+        BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
+                .requestCode(BraintreeRequestCodes.VENMO)
+                .url(venmoBaseURL)
+                .returnUrlScheme(braintreeClient.getReturnUrlScheme());
+
+        braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
+        braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.started");
     }
 
     /**

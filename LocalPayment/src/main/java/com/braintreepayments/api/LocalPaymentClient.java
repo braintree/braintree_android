@@ -27,6 +27,14 @@ public class LocalPaymentClient {
     private final LocalPaymentApi localPaymentApi;
     private LocalPaymentListener listener;
 
+    /**
+     * Used for linking events from the client to server side request
+     * In the Local Payment flow this will be a Payment Token/Order ID
+     */
+    private String payPalContextId = null;
+
+    private boolean hasUserLocationConsent;
+
     @VisibleForTesting
     BrowserSwitchResult pendingBrowserSwitchResult;
 
@@ -126,6 +134,11 @@ public class LocalPaymentClient {
                             @Override
                             public void onResult(@Nullable LocalPaymentResult localPaymentResult, @Nullable Exception error) {
                                 if (localPaymentResult != null) {
+                                    String pairingId = localPaymentResult.getPaymentId();
+                                    if (pairingId != null && !pairingId.isEmpty()) {
+                                        payPalContextId = pairingId;
+                                    }
+                                    hasUserLocationConsent = request.hasUserLocationConsent();
                                     sendAnalyticsEvent(request.getPaymentType(), "local-payment.create.succeeded");
                                 } else if (error != null) {
                                     sendAnalyticsEvent(request.getPaymentType(), "local-payment.webswitch.initiate.failed");
@@ -313,17 +326,18 @@ public class LocalPaymentClient {
                     @Override
                     public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                         if (configuration != null) {
-                            localPaymentApi.tokenize(merchantAccountId, responseString, payPalDataCollector.getClientMetadataId(context, configuration), new LocalPaymentBrowserSwitchResultCallback() {
-                                @Override
-                                public void onResult(@Nullable LocalPaymentNonce localPaymentNonce, @Nullable Exception error) {
-                                    if (localPaymentNonce != null) {
-                                        sendAnalyticsEvent(paymentType, "local-payment.tokenize.succeeded");
-                                    } else if (error != null) {
-                                        sendAnalyticsEvent(paymentType, "local-payment.tokenize.failed");
+                            localPaymentApi.tokenize(merchantAccountId, responseString, payPalDataCollector.getClientMetadataId(context, configuration, hasUserLocationConsent),
+                                new LocalPaymentBrowserSwitchResultCallback() {
+                                    @Override
+                                    public void onResult(@Nullable LocalPaymentNonce localPaymentNonce, @Nullable Exception error) {
+                                        if (localPaymentNonce != null) {
+                                            sendAnalyticsEvent(paymentType, "local-payment.tokenize.succeeded");
+                                        } else if (error != null) {
+                                            sendAnalyticsEvent(paymentType, "local-payment.tokenize.failed");
+                                        }
+                                        callback.onResult(localPaymentNonce, error);
                                     }
-                                    callback.onResult(localPaymentNonce, error);
-                                }
-                            });
+                                });
                         } else if (error != null) {
                             callback.onResult(null, error);
                         }
@@ -334,6 +348,6 @@ public class LocalPaymentClient {
 
     private void sendAnalyticsEvent(String paymentType, String eventSuffix) {
         String eventPrefix = (paymentType == null) ? "unknown" : paymentType;
-        braintreeClient.sendAnalyticsEvent(String.format("%s.%s", eventPrefix, eventSuffix));
+        braintreeClient.sendAnalyticsEvent(String.format("%s.%s", eventPrefix, eventSuffix), payPalContextId);
     }
 }

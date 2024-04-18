@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,7 +18,25 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
 
     private String userAuthenticationEmail;
 
+    /**
+     * Deprecated. Use {@link PayPalVaultRequest#PayPalVaultRequest(boolean)} instead.
+     */
+    @Deprecated
     public PayPalVaultRequest() {
+        super(false);
+    }
+
+    /**
+     * @param hasUserLocationConsent is an optional parameter that informs the SDK
+     * if your application has obtained consent from the user to collect location data in compliance with
+     * <a href="https://support.google.com/googleplay/android-developer/answer/10144311#personal-sensitive">Google Play Developer Program policies</a>
+     * This flag enables PayPal to collect necessary information required for Fraud Detection and Risk Management.
+     *
+     * @see <a href="https://support.google.com/googleplay/android-developer/answer/10144311#personal-sensitive">User Data policies for the Google Play Developer Program </a>
+     * @see <a href="https://support.google.com/googleplay/android-developer/answer/9799150?hl=en#Prominent%20in-app%20disclosure">Examples of prominent in-app disclosures</a>
+     */
+    public PayPalVaultRequest(boolean hasUserLocationConsent) {
+        super(hasUserLocationConsent);
     }
 
     /**
@@ -38,10 +58,11 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
      *
      * @param userAuthenticationEmail - email address of the payer
      */
-    public void setUserAuthenticationEmail(String userAuthenticationEmail) {
+    public void setUserAuthenticationEmail(@Nullable String userAuthenticationEmail) {
         this.userAuthenticationEmail = userAuthenticationEmail;
     }
 
+    @Nullable
     public String getUserAuthenticationEmail() {
         return this.userAuthenticationEmail;
     }
@@ -63,9 +84,7 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
             parameters.put(DESCRIPTION_KEY, billingAgreementDescription);
         }
 
-        if (userAuthenticationEmail != null) {
-            parameters.put(PAYER_EMAIL_KEY, userAuthenticationEmail);
-        }
+        parameters.putOpt(PAYER_EMAIL_KEY, userAuthenticationEmail);
 
         JSONObject experienceProfile = new JSONObject();
         experienceProfile.put(NO_SHIPPING_KEY, !isShippingAddressRequired());

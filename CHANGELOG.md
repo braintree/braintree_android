@@ -3,9 +3,69 @@
 ## unreleased
 
 * PayPal
+    * Add optional property `PayPalVaultRequest.setUserAuthenticationEmail()`
+
+## 4.45.0 (2024-04-16)
+
+* BraintreeCore
+  * Updated expiring pinned vendor SSL certificates
+* GooglePay
+  * Add `GooglePayClient#tokenize(PaymentData, GooglePayOnActivityResultCallback)` to be invoked after direct Google Play Services integration
+* PayPalNativeCheckout
+  * Bump native-checkout version to `1.3.2`
+  * Fixes Google Play Store Rejection
+    * Add `hasUserLocationConsent` property to `PayPalNativeCheckoutRequest`, `PayPalNativeCheckoutVaultRequest` and `PayPalNativeRequest`
+    * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
+* PayPalDataCollector
+  * Bump Magnes version to `5.5.1`
+
+## 4.44.0 (2024-04-05)
+
+* Local Payment
+  * Fixes Google Play Store Rejection
+    * Add `hasUserLocationConsent` property to `LocalPaymentRequest`
+    * Deprecate existing constructor that does not pass in `hasUserLocationConsent`
+* PayPal
+  * Fixes Google Play Store Rejection
+    * Add `hasUserLocationConsent` property to `PayPalCheckoutRequest`, `PayPalVaultRequest` and `PayPalRequest`
+    * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
+* BraintreeDataCollector
+  * Bump Magnes SDK to version 5.5.0
+  * Fixes Google Play Store Rejection
+    * Add `DataCollectorRequest` to pass in `hasUserLocationConsent`
+    * Update `DataCollector.collectDeviceData()` to take in `DataCollectorRequest`
+    * Deprecate existing `DataCollector.collectDeviceData()`
+* PayPalDataCollector
+  * Fixes Google Play Store Rejection
+    * Add `PayPalDataCollectorRequest` to pass in `hasUserLocationConsent`
+    * Update `PayPalDataCollector.collectDeviceData()` to take in `PayPalDataCollectorRequest`
+    * Deprecate existing `PayPalDataCollector.collectDeviceData()`
+* GooglePay
+  * Add `GooglePayClient#isReadyToPay(Context, ReadyForGooglePayRequest, GooglePayIsReadyToPayCallback)` method
+  * Deprecate  `GooglePayClient#isReadyToPay(FragmentActivity, ReadyForGooglePayRequest, GooglePayIsReadyToPayCallback)` method
+
+## 4.43.0 (2024-03-19)
+
+* Move from Braintree to PayPal analytics service (FPTI)
+* Venmo
+  * Fix bug where SDK is not sending metadata as expected when creating payment context or constructing App Link URL
+
+## 4.42.0 (2024-03-12)
+
+* PayPal
   * Add optional property `PayPalVaultRequest.setUserAuthenticationEmail()`
+* BraintreeCore
+  * Send `paypal_context_id` in `analytics_event` to PayPal's analytics service (FPTI) when available
 * Venmo
   * Add `setIsFinalAmount()` to `VenmoRequest`
+  * Add `setFallbackToWeb()` to `VenmoRequest`
+    * If set to `true` customers will fallback to a web based Venmo flow if the Venmo app is not installed
+    * This method uses App Links instead of Deep Links
+  * Add `VenmoClient#parseBrowserSwitchResult(Context, Intent)` method
+  * Add `VenmoClient#clearActiveBrowserSwitchRequests(Context)` method
+  * Add `VenmoClient#onBrowserSwitchResult(BrowserSwitchResult, VenmoOnActivityResultCallback)` method
+* ThreeDSecure
+  * Call cleanup method to resolve `Cardinal.getInstance` memory leak
 
 ## 4.41.0 (2024-01-18)
 

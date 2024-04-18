@@ -27,7 +27,7 @@ class MagnesInternalClient {
     }
 
     @MainThread
-    String getClientMetadataId(Context context, Configuration configuration, PayPalDataCollectorRequest request) {
+    String getClientMetadataId(Context context, Configuration configuration, PayPalDataCollectorInternalRequest request) {
         if (context == null) {
             return "";
         }
@@ -42,7 +42,8 @@ class MagnesInternalClient {
                     .setMagnesSource(MagnesSource.BRAINTREE)
                     .disableBeacon(request.isDisableBeacon())
                     .setMagnesEnvironment(magnesEnvironment)
-                    .setAppGuid(request.getApplicationGuid());
+                    .setAppGuid(request.getApplicationGuid())
+                    .setHasUserLocationConsent(request.getHasUserLocationConsent());
 
             magnesSDK.setUp(magnesSettingsBuilder.build());
             MagnesResult result = magnesSDK.collectAndSubmit(context.getApplicationContext(), request.getClientMetadataId(), request.getAdditionalData());

@@ -4,8 +4,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Configuration
-import android.net.ConnectivityManager
 import android.os.Build
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
@@ -16,38 +14,37 @@ import androidx.annotation.VisibleForTesting
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class DeviceInspector @VisibleForTesting internal constructor(
     private val appHelper: AppHelper,
-    private val uuidHelper: UUIDHelper,
     private val signatureVerifier: SignatureVerifier,
 ) {
+
     constructor() : this(
         AppHelper(),
-        UUIDHelper(),
         SignatureVerifier(),
     )
 
     internal fun getDeviceMetadata(
         context: Context?,
+        configuration: Configuration?,
         sessionId: String?,
-        integration: String?,
+        integration: String?
     ): DeviceMetadata {
         return DeviceMetadata(
-            platform = "Android",
-            platformVersion = Build.VERSION.SDK_INT.toString(),
-            sdkVersion = BuildConfig.VERSION_NAME,
-            merchantAppId = context?.packageName,
-            merchantAppName = getAppName(context),
+            appId = context?.packageName,
+            appName = getAppName(context),
+            clientSDKVersion = BuildConfig.VERSION_NAME,
+            clientOs = getAPIVersion(),
+            component = "braintreeclientsdk",
             deviceManufacturer = Build.MANUFACTURER,
             deviceModel = Build.MODEL,
-            devicePersistentUUID = uuidHelper.getPersistentUUID(context),
+            dropInSDKVersion = dropInVersion,
+            environment = configuration?.environment,
+            eventSource = "mobile-native",
+            integrationType = integration,
             isSimulator = isDeviceEmulator,
-            sessionId = sessionId,
-            integration = integration,
-            networkType = getNetworkType(context),
-            userOrientation = getUserOrientation(context),
-            appVersion = getAppVersion(context),
-            dropInVersion = dropInVersion,
-            isPayPalInstalled = isPayPalInstalled(context),
-            isVenmoInstalled = isVenmoInstalled(context)
+            merchantAppVersion = getAppVersion(context),
+            merchantId = configuration?.merchantId,
+            platform = "Android",
+            sessionId = sessionId
         )
     }
 
@@ -90,13 +87,6 @@ class DeviceInspector @VisibleForTesting internal constructor(
             null
         }
 
-    private fun getNetworkType(context: Context?): String =
-        context?.let {
-            val connectivityManager =
-                it.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            connectivityManager.activeNetworkInfo?.typeName
-        } ?: "none"
-
     private fun getAppVersion(context: Context?): String = getPackageInfo(context) ?: "VersionUnknown"
 
     private fun getPackageInfo(context: Context?) =
@@ -107,12 +97,10 @@ class DeviceInspector @VisibleForTesting internal constructor(
             } catch (ignored: PackageManager.NameNotFoundException) { null }
         }
 
-    private fun getUserOrientation(context: Context?): String =
-        when (context?.resources?.configuration?.orientation ?: Configuration.ORIENTATION_UNDEFINED) {
-            Configuration.ORIENTATION_PORTRAIT -> "Portrait"
-            Configuration.ORIENTATION_LANDSCAPE -> "Landscape"
-            else -> "Unknown"
-        }
+    private fun getAPIVersion(): String {
+        val sdkInt = Build.VERSION.SDK_INT
+        return "Android API $sdkInt"
+    }
 
     /**
      * Gets the current Drop-in version or null.
@@ -137,7 +125,6 @@ class DeviceInspector @VisibleForTesting internal constructor(
                     "$VENMO_APP_PACKAGE.$VENMO_APP_SWITCH_ACTIVITY"
                 )
             )
-
         internal fun getDropInVersion(): String? {
             try {
                 val dropInBuildConfigClass = Class.forName("com.braintreepayments.api.dropin.BuildConfig")
