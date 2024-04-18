@@ -45,6 +45,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(WORK_INPUT_KEY_EVENT_NAME, "android.${event.name}")
+            .putString(WORK_INPUT_KEY_PAYPAL_CONTEXT_ID, event.payPalContextId)
+            .putString(WORK_INPUT_KEY_LINK_TYPE, event.linkType)
             .putLong(WORK_INPUT_KEY_TIMESTAMP, event.timestamp)
             .build()
 

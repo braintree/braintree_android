@@ -5,6 +5,9 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+
 
 // Ref: https://developer.android.com/training/data-storage/room/migrating-db-versions
 @Database(
@@ -27,11 +30,17 @@ internal abstract class AnalyticsDatabase : RoomDatabase() {
         @JvmStatic
         fun getInstance(context: Context): AnalyticsDatabase =
             INSTANCE ?: synchronized(this) {
+                val MIGRATION_2_3 = object : Migration(2, 3) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        database.execSQL("ALTER TABLE analytics_event ADD COLUMN link_type TEXT")
+                    }
+                }
+
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AnalyticsDatabase::class.java,
                     "analytics_database"
-                ).build()
+                ).addMigrations(MIGRATION_2_3).build()
                 INSTANCE = instance
                 // return instance
                 instance
