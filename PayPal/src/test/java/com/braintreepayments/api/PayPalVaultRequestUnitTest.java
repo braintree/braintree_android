@@ -122,20 +122,4 @@ public class PayPalVaultRequestUnitTest {
 
         assertTrue(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
     }
-
-    @Test
-    public void createRequestBody_sets_userAuthenticationEmail_when_not_null() throws JSONException {
-        String payerEmail = "payer_email@example.com";
-        PayPalVaultRequest request = new PayPalVaultRequest();
-
-        request.setUserAuthenticationEmail(payerEmail);
-        String requestBody = request.createRequestBody(
-            mock(Configuration.class),
-            mock(Authorization.class),
-            "success_url",
-            "cancel_url"
-        );
-
-        assertTrue(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
-    }
 }
