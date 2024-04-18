@@ -3,7 +3,7 @@
 ## unreleased
 
 * PayPal
-    * Add optional property `PayPalVaultRequest.setUserAuthenticationEmail()`
+    * Add optional property `PayPalCheckoutRequest.setUserAuthenticationEmail()`
 
 ## 4.45.0 (2024-04-16)
 
