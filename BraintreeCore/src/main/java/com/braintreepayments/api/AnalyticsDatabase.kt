@@ -13,6 +13,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         version = 3,
         entities = [AnalyticsEvent::class],
         autoMigrations = [
+            AutoMigration(from = 1, to = 3),
             AutoMigration(from = 2, to = 3)
         ]
 )
