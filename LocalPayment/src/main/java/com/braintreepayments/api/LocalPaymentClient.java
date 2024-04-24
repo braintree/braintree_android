@@ -33,6 +33,8 @@ public class LocalPaymentClient {
      */
     private String payPalContextId = null;
 
+    private boolean hasUserLocationConsent;
+
     @VisibleForTesting
     BrowserSwitchResult pendingBrowserSwitchResult;
 
@@ -136,6 +138,7 @@ public class LocalPaymentClient {
                                     if (pairingId != null && !pairingId.isEmpty()) {
                                         payPalContextId = pairingId;
                                     }
+                                    hasUserLocationConsent = request.hasUserLocationConsent();
                                     sendAnalyticsEvent(request.getPaymentType(), "local-payment.create.succeeded");
                                 } else if (error != null) {
                                     sendAnalyticsEvent(request.getPaymentType(), "local-payment.webswitch.initiate.failed");
@@ -323,17 +326,18 @@ public class LocalPaymentClient {
                     @Override
                     public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                         if (configuration != null) {
-                            localPaymentApi.tokenize(merchantAccountId, responseString, payPalDataCollector.getClientMetadataId(context, configuration), new LocalPaymentBrowserSwitchResultCallback() {
-                                @Override
-                                public void onResult(@Nullable LocalPaymentNonce localPaymentNonce, @Nullable Exception error) {
-                                    if (localPaymentNonce != null) {
-                                        sendAnalyticsEvent(paymentType, "local-payment.tokenize.succeeded");
-                                    } else if (error != null) {
-                                        sendAnalyticsEvent(paymentType, "local-payment.tokenize.failed");
+                            localPaymentApi.tokenize(merchantAccountId, responseString, payPalDataCollector.getClientMetadataId(context, configuration, hasUserLocationConsent),
+                                new LocalPaymentBrowserSwitchResultCallback() {
+                                    @Override
+                                    public void onResult(@Nullable LocalPaymentNonce localPaymentNonce, @Nullable Exception error) {
+                                        if (localPaymentNonce != null) {
+                                            sendAnalyticsEvent(paymentType, "local-payment.tokenize.succeeded");
+                                        } else if (error != null) {
+                                            sendAnalyticsEvent(paymentType, "local-payment.tokenize.failed");
+                                        }
+                                        callback.onResult(localPaymentNonce, error);
                                     }
-                                    callback.onResult(localPaymentNonce, error);
-                                }
-                            });
+                                });
                         } else if (error != null) {
                             callback.onResult(null, error);
                         }

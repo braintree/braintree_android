@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -321,7 +322,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
 
     @Test
     public void sendRequest_whenRiskCorrelationIdNotNull_setsClientMetadataIdToRiskCorrelationId() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(context, configuration, false)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -345,7 +346,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
 
     @Test
     public void sendRequest_whenRiskCorrelationIdNull_setsClientMetadataIdFromPayPalDataCollector() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(any(), any())).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(any(), any(), anyBoolean())).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -393,7 +394,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
 
     @Test
     public void sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(any(), any())).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(any(), any(), anyBoolean())).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -424,7 +425,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
 
     @Test
     public void sendRequest_withPayPalCheckoutRequest_callsBackPayPalResponseOnSuccess() throws Exception {
-        when(payPalDataCollector.getClientMetadataId(any(), any())).thenReturn("sample-client-metadata-id");
+        when(payPalDataCollector.getClientMetadataId(any(), any(), anyBoolean())).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
@@ -604,5 +605,26 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
         sut.tokenize(payPalAccount, callback);
 
         verify(callback).onResult(isNull(), same(error));
+    }
+
+    @Test
+    public void payPalDataCollector_passes_correct_arguments_to_getClientMetadataId() throws Exception {
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL);
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+            .configuration(configuration)
+            .authorizationSuccess(clientToken)
+            .returnUrlScheme("sample-scheme")
+            .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
+            .build();
+
+        PayPalNativeCheckoutInternalClient sut = new PayPalNativeCheckoutInternalClient(braintreeClient, payPalDataCollector, apiClient);
+
+        PayPalNativeCheckoutRequest payPalRequest = new PayPalNativeCheckoutRequest("1.00", true);
+        payPalRequest.setIntent("authorize");
+        payPalRequest.setMerchantAccountId("sample-merchant-account-id");
+
+        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+
+        verify(payPalDataCollector).getClientMetadataId(context, configuration, true);
     }
 }

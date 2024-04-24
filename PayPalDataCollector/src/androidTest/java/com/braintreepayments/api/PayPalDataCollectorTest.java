@@ -19,7 +19,7 @@ public class PayPalDataCollectorTest {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL);
         BraintreeClient braintreeClient = new BraintreeClient(ApplicationProvider.getApplicationContext(), Fixtures.TOKENIZATION_KEY);
         PayPalDataCollector sut = new PayPalDataCollector(braintreeClient);
-        String clientMetadataId = sut.getClientMetadataId(ApplicationProvider.getApplicationContext(), configuration);
+        String clientMetadataId = sut.getClientMetadataId(ApplicationProvider.getApplicationContext(), configuration, true);
 
         assertFalse(TextUtils.isEmpty(clientMetadataId));
     }
