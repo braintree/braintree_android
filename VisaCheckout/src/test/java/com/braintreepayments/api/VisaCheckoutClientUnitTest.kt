@@ -135,7 +135,7 @@ class VisaCheckoutClientUnitTest {
         val sut = VisaCheckoutClient(braintreeClient, apiClient)
         val listener = mockk<VisaCheckoutTokenizeCallback>(relaxed = true)
         sut.tokenize(visaPaymentSummary, listener)
-        verify { braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.succeeded", null) }
+        verify { braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.succeeded", null, null) }
     }
 
     @Test
@@ -165,6 +165,6 @@ class VisaCheckoutClientUnitTest {
         val sut = VisaCheckoutClient(braintreeClient, apiClient)
         val listener = mockk<VisaCheckoutTokenizeCallback>(relaxed = true)
         sut.tokenize(visaPaymentSummary, listener)
-        verify { braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.failed", null) }
+        verify { braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.failed", null, null) }
     }
 }
