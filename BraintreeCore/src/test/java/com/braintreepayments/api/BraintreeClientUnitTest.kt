@@ -575,47 +575,11 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sessionId_withAuthString_returnsSessionIdDefinedInConstructor() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val authorization = Fixtures.BASE64_CLIENT_TOKEN
-        val sessionId = "custom-session-id"
-        val sut = BraintreeClient(context, authorization, sessionId, IntegrationType.DROP_IN)
-        assertEquals("custom-session-id", sut.sessionId)
-    }
-
-    @Test
-    fun sessionId_withClientTokenProvider_returnsSessionIdDefinedInConstructor() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val clientTokenProvider = mockk<ClientTokenProvider>(relaxed = true)
-        val sessionId = "custom-session-id"
-        val sut = BraintreeClient(context, clientTokenProvider, sessionId, IntegrationType.DROP_IN)
-        assertEquals("custom-session-id", sut.sessionId)
-    }
-
-    @Test
     fun integrationType_returnsCustomByDefault() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val authorization = Fixtures.BASE64_CLIENT_TOKEN
         val sut = BraintreeClient(context, authorization)
         assertEquals("custom", sut.integrationType)
-    }
-
-    @Test
-    fun integrationType_withAuthString_returnsIntegrationTypeDefinedInConstructor() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val authorization = Fixtures.BASE64_CLIENT_TOKEN
-        val sessionId = "custom-session-id"
-        val sut = BraintreeClient(context, authorization, sessionId, IntegrationType.DROP_IN)
-        assertEquals("dropin", sut.integrationType)
-    }
-
-    @Test
-    fun integrationType_withClientTokenProvider_returnsIntegrationTypeDefinedInConstructor() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val clientTokenProvider = mockk<ClientTokenProvider>(relaxed = true)
-        val sessionId = "custom-session-id"
-        val sut = BraintreeClient(context, clientTokenProvider, sessionId, IntegrationType.DROP_IN)
-        assertEquals("dropin", sut.integrationType)
     }
 
     @Test
@@ -670,7 +634,8 @@ class BraintreeClientUnitTest {
             browserSwitchClient = browserSwitchClient,
             manifestValidator = manifestValidator,
             configurationLoader = configurationLoader,
-            integrationType = IntegrationType.CUSTOM
+            integrationType = IntegrationType.CUSTOM,
+            appLinkReturnUri = Uri.parse("https://sample-merchant-site.com"),
         )
 
     companion object {
