@@ -76,7 +76,7 @@ class PayPalMessagingViewUnitTest {
         verify { braintreeClient.sendAnalyticsEvent("paypal-messaging:create-view:started") }
         verify { PayPalMessageConfig.setGlobalAnalytics(
                 integrationName = braintreeClient.integrationType,
-                integrationVersion = ""
+                integrationVersion = braintreeClient.getVersionSDK()
         ) }
     }
 }
