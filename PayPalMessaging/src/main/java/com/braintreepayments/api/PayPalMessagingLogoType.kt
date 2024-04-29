@@ -25,13 +25,13 @@ enum class PayPalMessagingLogoType {
     /**
      * "PayPal" as bold text inline with the message
      */
-    SIMPLE;
+    NONE;
 
     internal val logoTypeRawValue: PayPalMessageLogoType
         get() = when (this) {
             PRIMARY -> PayPalMessageLogoType.PRIMARY
             ALTERNATIVE -> PayPalMessageLogoType.ALTERNATIVE
             INLINE -> PayPalMessageLogoType.INLINE
-            SIMPLE -> PayPalMessageLogoType.NONE
+            NONE -> PayPalMessageLogoType.NONE
         }
 }

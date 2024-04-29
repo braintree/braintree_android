@@ -118,10 +118,12 @@ class PayPalMessagingView(
             viewStateCallbacks = viewStateCallbacks,
             eventsCallbacks = eventsCallbacks
         )
+
         PayPalMessageConfig.setGlobalAnalytics(
-                integrationName = braintreeClient.integrationType,
-                integrationVersion = ""
+            integrationName = braintreeClient.integrationType,
+            integrationVersion = braintreeClient.getVersionSDK()
         )
+
         return PayPalMessageView(context = context, config = messageConfig)
     }
 
