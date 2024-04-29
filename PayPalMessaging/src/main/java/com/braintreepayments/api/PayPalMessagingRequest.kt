@@ -8,7 +8,7 @@ package com.braintreepayments.api
  *
  * @property amount Price expressed in cents amount based on the current context
  * (i.e. individual product price vs total cart price)
- * @property placement Message screen location (e.g. product, cart, home)
+ * @property pageType Message screen location (e.g. product, cart, home)
  * @property offerType Preferred message offer to display
  * @property buyerCountry Consumer's country (Integrations must be approved by PayPal to use this option)
  * @property logoType Logo type option for a PayPal Message. Defaults to [PayPalMessagingLogoType.INLINE]
@@ -17,10 +17,10 @@ package com.braintreepayments.api
  */
 data class PayPalMessagingRequest(
     var amount: Double? = null,
-    var placement: PayPalMessagingPlacement? = null,
+    var pageType: PayPalMessagingPageType? = null,
     var offerType: PayPalMessagingOfferType? = null,
     var buyerCountry: String? = null,
-    var logoType: PayPalMessagingLogoType? = PayPalMessagingLogoType.INLINE,
-    var textAlignment: PayPalMessagingTextAlignment? = PayPalMessagingTextAlignment.RIGHT,
-    var color: PayPalMessagingColor? = PayPalMessagingColor.BLACK
+    var logoType: PayPalMessagingLogoType = PayPalMessagingLogoType.INLINE,
+    var textAlignment: PayPalMessagingTextAlignment = PayPalMessagingTextAlignment.RIGHT,
+    var color: PayPalMessagingColor = PayPalMessagingColor.BLACK
 )

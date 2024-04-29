@@ -81,14 +81,14 @@ class PayPalMessagingView(
             amount = request.amount,
             buyerCountry = request.buyerCountry,
             offerType = request.offerType?.offerTypeRawValue,
-            placement = request.placement?.rawValue,
+            pageType = request.pageType?.rawValue,
             environment = environment
         )
 
         val messageStyle = PayPalMessageStyle(
-            color = request.color?.messageColorRawValue,
-            logoType = request.logoType?.logoTypeRawValue,
-            textAlign = request.textAlignment?.textAlignmentRawValue
+            color = request.color.messageColorRawValue,
+            logoType = request.logoType.logoTypeRawValue,
+            textAlign = request.textAlignment.textAlignmentRawValue
         )
 
         val viewStateCallbacks = PayPalMessageViewStateCallbacks(
@@ -118,7 +118,10 @@ class PayPalMessagingView(
             viewStateCallbacks = viewStateCallbacks,
             eventsCallbacks = eventsCallbacks
         )
-
+        PayPalMessageConfig.setGlobalAnalytics(
+                integrationName = braintreeClient.integrationType,
+                integrationVersion = ""
+        )
         return PayPalMessageView(context = context, config = messageConfig)
     }
 
