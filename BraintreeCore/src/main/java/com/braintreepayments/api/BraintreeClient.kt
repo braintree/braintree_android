@@ -89,7 +89,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param authorization   The tokenization key or client token to use. If an invalid
      * authorization is provided, a [BraintreeException] will be returned via callback.
      * @param returnUrlScheme A custom return url to use for browser and app switching
-     * @param appLinkReturnUri A [Uri] containing the Android App Link to use for app switching
+     * @param appLinkReturnUri A [Uri] containing the Android App Link website associated with your application to be used to return to your app from browser or app switch based payment flows. This Android App Link will only be used for payment flows where `useAppLinkReturn` is set to `true`.
      */
     @JvmOverloads
     constructor (
