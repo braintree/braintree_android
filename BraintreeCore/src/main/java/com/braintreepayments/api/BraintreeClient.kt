@@ -355,6 +355,14 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     }
 
     /**
+     * @suppress
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun getVersionSDK(): String {
+        return BuildConfig.VERSION_NAME
+    }
+
+    /**
      * Deliver pending browser switch result received by [BraintreeDeepLinkActivity] when
      * [BraintreeClient.launchesBrowserSwitchAsNewTask] is set to true.
      *

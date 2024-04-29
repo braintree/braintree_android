@@ -23,6 +23,6 @@ class PayPalMessagingLogoTypeUnitTest {
 
     @Test
     fun `test simple logo returns raw value none`() {
-        assertEquals(PayPalMessageLogoType.NONE, PayPalMessagingLogoType.SIMPLE.logoTypeRawValue)
+        assertEquals(PayPalMessageLogoType.NONE, PayPalMessagingLogoType.NONE.logoTypeRawValue)
     }
 }
