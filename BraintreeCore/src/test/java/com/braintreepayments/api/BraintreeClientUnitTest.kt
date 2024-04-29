@@ -619,6 +619,48 @@ class BraintreeClientUnitTest {
         }
     }
 
+    @Test
+    fun `when client is created with authorization, app link is set on appLinkReturnUri`() {
+        val appLinkUrl = "https://merchant-site.com"
+        val sut: BraintreeClient = BraintreeClient(
+            context = context,
+            authorization = "authorization",
+            returnUrlScheme = "returnUrlScheme",
+            appLinkReturnUri = Uri.parse(appLinkUrl)
+        )
+        assertEquals(appLinkUrl, sut.appLinkReturnUri.toString())
+    }
+
+    @Test
+    fun `when client is created with ClientTokenProvider, app link is set on appLinkReturnUri`() {
+        val appLinkUrl = "https://merchant-site.com"
+        val sut: BraintreeClient = BraintreeClient(
+            context = context,
+            clientTokenProvider = mockk(),
+            returnUrlScheme = "returnUrlScheme",
+            appLinkReturnUri = Uri.parse(appLinkUrl)
+        )
+        assertEquals(appLinkUrl, sut.appLinkReturnUri.toString())
+    }
+
+    @Test
+    fun `when client is created with authorization without an app link, appLinkReturnUri is null`() {
+        val sut: BraintreeClient = BraintreeClient(
+            context = context,
+            authorization = "authorization"
+        )
+        assertNull(sut.appLinkReturnUri)
+    }
+
+    @Test
+    fun `when client is created with ClientTokenProvider without an app link, appLinkReturnUri is null`() {
+        val sut: BraintreeClient = BraintreeClient(
+            context = context,
+            clientTokenProvider = mockk()
+        )
+        assertNull(sut.appLinkReturnUri)
+    }
+
     private fun createDefaultParams(
         configurationLoader: ConfigurationLoader,
         authorizationLoader: AuthorizationLoader

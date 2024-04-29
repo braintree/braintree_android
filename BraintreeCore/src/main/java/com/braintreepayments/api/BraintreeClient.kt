@@ -41,7 +41,12 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     private val manifestValidator: ManifestValidator,
     private val returnUrlScheme: String,
     private val braintreeDeepLinkReturnUrlScheme: String,
-    private val appLinkReturnUri: Uri?,
+
+    /**
+     * @suppress
+     */
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val appLinkReturnUri: Uri?,
 ) {
 
     private val crashReporter: CrashReporter
@@ -84,7 +89,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param authorization   The tokenization key or client token to use. If an invalid
      * authorization is provided, a [BraintreeException] will be returned via callback.
      * @param returnUrlScheme A custom return url to use for browser and app switching
-     * @param appLinkReturnUri TODO
+     * @param appLinkReturnUri A [Uri] containing the Android App Link to use for app switching
      */
     @JvmOverloads
     constructor (
@@ -115,7 +120,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param clientTokenProvider An implementation of [ClientTokenProvider] that [BraintreeClient]
      * will use to fetch a client token on demand.
      * @param returnUrlScheme     A custom return url to use for browser and app switching
-     * @param appLinkReturnUri TODO
+     * @param appLinkReturnUri    A [Uri] containing the Android App Link to use for app switching
      */
     @JvmOverloads
     constructor(
