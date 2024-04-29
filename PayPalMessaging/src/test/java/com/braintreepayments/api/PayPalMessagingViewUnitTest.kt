@@ -3,6 +3,7 @@ package com.braintreepayments.api
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.Configuration.Companion.fromJson
+import com.paypal.messages.config.message.PayPalMessageConfig
 import io.mockk.verify
 import io.mockk.mockk
 import io.mockk.slot
@@ -73,5 +74,9 @@ class PayPalMessagingViewUnitTest {
 
         verify { listener.onPayPalMessagingLoading() }
         verify { braintreeClient.sendAnalyticsEvent("paypal-messaging:create-view:started") }
+        verify { PayPalMessageConfig.setGlobalAnalytics(
+                integrationName = braintreeClient.integrationType,
+                integrationVersion = ""
+        ) }
     }
 }

@@ -11,7 +11,7 @@ class PayPalMessagingRequestUnitTest {
         val request = PayPalMessagingRequest()
 
         assertNull(request.amount)
-        assertNull(request.placement)
+        assertNull(request.pageType)
         assertNull(request.offerType)
         assertNull(request.buyerCountry)
         assertEquals(PayPalMessagingLogoType.INLINE, request.logoType)
@@ -23,7 +23,7 @@ class PayPalMessagingRequestUnitTest {
     fun `test PayPalMessagingRequest with all values initialized sets all values`() {
         val request = PayPalMessagingRequest(
             amount = 6.66,
-            placement = PayPalMessagingPlacement.HOME,
+            pageType = PayPalMessagingPageType.HOME,
             offerType = PayPalMessagingOfferType.PAYPAL_CREDIT_NO_INTEREST,
             buyerCountry = "US",
             logoType = PayPalMessagingLogoType.ALTERNATIVE,
@@ -32,7 +32,7 @@ class PayPalMessagingRequestUnitTest {
         )
 
         assertEquals(6.66, request.amount)
-        assertEquals(PayPalMessagingPlacement.HOME, request.placement)
+        assertEquals(PayPalMessagingPageType.HOME, request.pageType)
         assertEquals(PayPalMessagingOfferType.PAYPAL_CREDIT_NO_INTEREST, request.offerType)
         assertEquals("US", request.buyerCountry)
         assertEquals(PayPalMessagingLogoType.ALTERNATIVE, request.logoType)
