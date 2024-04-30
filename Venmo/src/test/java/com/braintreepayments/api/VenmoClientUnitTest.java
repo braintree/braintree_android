@@ -288,7 +288,7 @@ public class VenmoClientUnitTest {
         sut.tokenizeVenmoAccount(activity, request);
 
         verify(listener).onVenmoFailure(captor.capture());
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed", null, "deeplink");
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalyticEvents.APP_SWITCH_FAILED.getValue(), null, "deeplink");
         assertEquals("Cannot collect customer data when ECD is disabled. Enable this feature in the Control Panel to collect this data.", captor.getValue().getMessage());
     }
 
@@ -457,7 +457,7 @@ public class VenmoClientUnitTest {
                 ArgumentCaptor.forClass(Exception.class);
         verify(listener).onVenmoFailure(captor.capture());
         assertEquals("Configuration fetching error", captor.getValue().getMessage());
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed", null, "deeplink");
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalyticEvents.APP_SWITCH_FAILED.getValue(), null, "deeplink");
     }
 
     @Test
@@ -478,7 +478,7 @@ public class VenmoClientUnitTest {
                 ArgumentCaptor.forClass(AppSwitchNotAvailableException.class);
         verify(listener).onVenmoFailure(captor.capture());
         assertEquals("Venmo is not enabled", captor.getValue().getMessage());
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed", null, "deeplink");
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalyticEvents.APP_SWITCH_FAILED.getValue(), null, "deeplink");
     }
 
     @Test
@@ -502,7 +502,7 @@ public class VenmoClientUnitTest {
                 ArgumentCaptor.forClass(AppSwitchNotAvailableException.class);
         verify(venmoTokenizeAccountCallback).onResult(captor.capture());
         assertEquals("Venmo is not installed", captor.getValue().getMessage());
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed", null, "deeplink");
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalyticEvents.APP_SWITCH_FAILED.getValue(), null, "deeplink");
     }
 
     @Test
@@ -696,7 +696,7 @@ public class VenmoClientUnitTest {
         sut.setListener(listener);
         sut.tokenizeVenmoAccount(activity, request);
 
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.selected", null, "deeplink");
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalyticEvents.TOKENIZE_STARTED.getValue(), null, "deeplink");
     }
 
     @Test
@@ -720,7 +720,7 @@ public class VenmoClientUnitTest {
         sut.observer = mock(VenmoLifecycleObserver.class);
         sut.tokenizeVenmoAccount(activity, request);
 
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.selected", null, "deeplink");
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalyticEvents.TOKENIZE_STARTED.getValue(), null, "deeplink");
         verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.started", "venmo-payment-context-id", "deeplink");
     }
 
@@ -927,7 +927,7 @@ public class VenmoClientUnitTest {
         assertEquals("Venmo is not installed", captor.getValue().getMessage());
 
         order.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.selected", null, "deeplink");
-        order.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed", null, "deeplink");
+        order.verify(braintreeClient).sendAnalyticsEvent(VenmoAnalyticEvents.APP_SWITCH_FAILED.getValue(), null, "deeplink");
     }
 
     @Test
@@ -950,7 +950,7 @@ public class VenmoClientUnitTest {
         sut.tokenizeVenmoAccount(activity, request);
 
         verify(listener).onVenmoFailure(graphQLError);
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed", null, "deeplink");
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalyticEvents.APP_SWITCH_FAILED.getValue(), null, "deeplink");
     }
 
     @Test
@@ -993,7 +993,7 @@ public class VenmoClientUnitTest {
         assertEquals("fake-venmo-nonce", nonce.getString());
         assertEquals("venmojoe", nonce.getUsername());
 
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.success", null, null);
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalyticEvents.APP_SWITCH_SUCCEEDED.getValue(), null, null);
     }
 
     @Test
@@ -1078,7 +1078,7 @@ public class VenmoClientUnitTest {
 
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.success", null, null);
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalyticEvents.APP_SWITCH_SUCCEEDED.getValue(), null, null);
     }
 
     @Test
@@ -1086,7 +1086,7 @@ public class VenmoClientUnitTest {
         VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
         sut.onActivityResult(activity, AppCompatActivity.RESULT_CANCELED, new Intent(), onActivityResultCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.canceled", null, null);
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalyticEvents.TOKENIZE_CANCELED.getValue(), null, null);
     }
 
     @Test
@@ -1406,7 +1406,7 @@ public class VenmoClientUnitTest {
         assertEquals("fake-venmo-nonce", nonce.getString());
         assertEquals("venmojoe", nonce.getUsername());
 
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.success", null, null);
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalyticEvents.APP_SWITCH_SUCCEEDED.getValue(), null, null);
     }
 
     @Test
@@ -1487,7 +1487,7 @@ public class VenmoClientUnitTest {
         VenmoResult venmoResult = new VenmoResult("payment-context-id", "some-nonce", "venmo-username", null);
         sut.onVenmoResult(venmoResult);
 
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.success", null, null);
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalyticEvents.APP_SWITCH_SUCCEEDED.getValue(), null, null);
     }
 
     @Test
