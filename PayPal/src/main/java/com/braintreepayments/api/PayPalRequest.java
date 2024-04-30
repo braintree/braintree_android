@@ -232,7 +232,7 @@ public abstract class PayPalRequest implements Parcelable {
     /**
      * Optional: When set to true, the Android App Link website associated with your application
      * will be used to return to your app from browser or app switch based payment flows. When set
-     * to false, the Set the deep link return URL will be used.
+     * to false, the default or set deep link return URL will be used.
      *
      * Set the App Link value on `appLinkReturnUri` parameter in the {@link BraintreeClient}
      * constructor.
