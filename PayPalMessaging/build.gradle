@@ -12,6 +12,8 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "VERSION_NAME", "\"${rootProject.versionName}\""
     }
 
     testOptions {

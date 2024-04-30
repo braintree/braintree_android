@@ -4,9 +4,9 @@ import android.content.Context
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.paypal.messages.PayPalMessageView
-import com.paypal.messages.config.message.PayPalMessageData
 import com.paypal.messages.config.PayPalEnvironment
 import com.paypal.messages.config.message.PayPalMessageConfig
+import com.paypal.messages.config.message.PayPalMessageData
 import com.paypal.messages.config.message.PayPalMessageEventsCallbacks
 import com.paypal.messages.config.message.PayPalMessageStyle
 import com.paypal.messages.config.message.PayPalMessageViewStateCallbacks
@@ -120,8 +120,8 @@ class PayPalMessagingView(
         )
 
         PayPalMessageConfig.setGlobalAnalytics(
-            integrationName = braintreeClient.integrationType,
-            integrationVersion = braintreeClient.getVersionSDK()
+            integrationName = "BT_SDK",
+            integrationVersion = BuildConfig.VERSION_NAME
         )
 
         return PayPalMessageView(context = context, config = messageConfig)
