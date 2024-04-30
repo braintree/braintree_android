@@ -71,7 +71,7 @@ public abstract class PayPalRequest implements Parcelable {
     private String riskCorrelationId;
     private final ArrayList<PayPalLineItem> lineItems;
     private final boolean hasUserLocationConsent;
-    private boolean useAppLinkReturn;
+    private boolean appLinkEnabled;
 
     /**
      * Deprecated. Use {@link PayPalRequest#PayPalRequest(boolean)} instead.
@@ -237,10 +237,10 @@ public abstract class PayPalRequest implements Parcelable {
      * Set the App Link value on `appLinkReturnUri` parameter in the {@link BraintreeClient}
      * constructor.
      *
-     * @param useAppLinkReturn indicates whether to use the set Android App Link
+     * @param appLinkEnabled indicates whether to use the set Android App Link
      */
-    public void setUseAppLinkReturn(boolean useAppLinkReturn) {
-        this.useAppLinkReturn = useAppLinkReturn;
+    public void setAppLinkEnabled(boolean appLinkEnabled) {
+        this.appLinkEnabled = appLinkEnabled;
     }
 
     @Nullable
@@ -296,8 +296,8 @@ public abstract class PayPalRequest implements Parcelable {
         return hasUserLocationConsent;
     }
 
-    public boolean isUseAppLinkReturn() {
-        return useAppLinkReturn;
+    public boolean isAppLinkEnabled() {
+        return appLinkEnabled;
     }
 
     abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;
@@ -314,7 +314,7 @@ public abstract class PayPalRequest implements Parcelable {
         riskCorrelationId = in.readString();
         lineItems = in.createTypedArrayList(PayPalLineItem.CREATOR);
         hasUserLocationConsent = in.readByte() != 0;
-        useAppLinkReturn = in.readByte() != 0;
+        appLinkEnabled = in.readByte() != 0;
     }
 
     @Override
@@ -335,6 +335,6 @@ public abstract class PayPalRequest implements Parcelable {
         parcel.writeString(riskCorrelationId);
         parcel.writeTypedList(lineItems);
         parcel.writeByte((byte) (hasUserLocationConsent ? 1 : 0));
-        parcel.writeByte((byte) (useAppLinkReturn ? 1 : 0));
+        parcel.writeByte((byte) (appLinkEnabled ? 1 : 0));
     }
 }
