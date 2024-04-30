@@ -32,6 +32,7 @@ public class PayPalCheckoutRequestUnitTest {
         assertNull(request.getBillingAgreementDescription());
         assertFalse(request.getShouldOfferPayLater());
         assertFalse(request.hasUserLocationConsent());
+        assertFalse(request.isUseAppLinkReturn());
     }
 
     @Test
@@ -57,6 +58,7 @@ public class PayPalCheckoutRequestUnitTest {
         request.setDisplayName("Display Name");
         request.setRiskCorrelationId("123-correlation");
         request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+        request.setUseAppLinkReturn(true);
 
         assertEquals("1.00", request.getAmount());
         assertEquals("USD", request.getCurrencyCode());
@@ -72,6 +74,7 @@ public class PayPalCheckoutRequestUnitTest {
         assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
         assertTrue(request.getShouldOfferPayLater());
         assertTrue(request.hasUserLocationConsent());
+        assertTrue(request.isUseAppLinkReturn());
     }
 
     @Test
@@ -93,6 +96,7 @@ public class PayPalCheckoutRequestUnitTest {
         request.setDisplayName("Display Name");
         request.setRiskCorrelationId("123-correlation");
         request.setMerchantAccountId("merchant_account_id");
+        request.setUseAppLinkReturn(true);
 
         ArrayList<PayPalLineItem> lineItems = new ArrayList<>();
         lineItems.add(new PayPalLineItem(PayPalLineItem.KIND_DEBIT, "An Item", "1", "1"));
@@ -121,5 +125,6 @@ public class PayPalCheckoutRequestUnitTest {
         assertEquals(1, result.getLineItems().size());
         assertEquals("An Item", result.getLineItems().get(0).getName());
         assertTrue(result.hasUserLocationConsent());
+        assertTrue(result.isUseAppLinkReturn());
     }
 }
