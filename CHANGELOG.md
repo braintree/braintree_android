@@ -6,6 +6,8 @@
   * Add 'appLinkReturnUri' to `BraintreeClient` constructors for Android App Link support
 * Venmo
   * Send `link_type` in `event_params` to PayPal's analytics service (FPTI)
+* PayPal
+  * Add `appLinkEnabled` property to `PayPalRequest` for Android App Link support
   
 ## 4.45.0 (2024-04-16)
 
