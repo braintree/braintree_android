@@ -6,6 +6,7 @@ import com.braintreepayments.api.Configuration.Companion.fromJson
 import com.paypal.messages.config.message.PayPalMessageConfig
 import io.mockk.verify
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.slot
 import junit.framework.TestCase.assertEquals
 import org.junit.Before
@@ -64,6 +65,7 @@ class PayPalMessagingViewUnitTest {
     @Test
     fun `test start with valid configuration calls onPayPalMessagingLoading delegate and sends analytics`() {
         val payPalConfiguration: Configuration = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
+        mockkObject(PayPalMessageConfig)
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalConfiguration)
             .build()
@@ -75,8 +77,8 @@ class PayPalMessagingViewUnitTest {
         verify { listener.onPayPalMessagingLoading() }
         verify { braintreeClient.sendAnalyticsEvent("paypal-messaging:create-view:started") }
         verify { PayPalMessageConfig.setGlobalAnalytics(
-                integrationName = braintreeClient.integrationType,
-                integrationVersion = braintreeClient.getVersionSDK()
+                integrationName = "BT_SDK",
+                integrationVersion = BuildConfig.VERSION_NAME
         ) }
     }
 }
