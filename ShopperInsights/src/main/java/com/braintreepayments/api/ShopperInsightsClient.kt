@@ -8,7 +8,6 @@ import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_PRESENTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_SELECTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_PRESENTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_SELECTED
-import java.lang.Exception
 
 /**
  * Use [ShopperInsightsClient] to optimize your checkout experience
@@ -18,6 +17,7 @@ import java.lang.Exception
  *
  * Note: **This feature is in beta. It's public API may change in future releases.**
  */
+@UnstableApi
 class ShopperInsightsClient @VisibleForTesting internal constructor(
     private val api: ShopperInsightsApi,
     private val braintreeClient: BraintreeClient
