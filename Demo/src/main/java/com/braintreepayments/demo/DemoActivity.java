@@ -54,7 +54,7 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
                 boolean useAppLink = Settings.getPayPalLinkType(this).equals(getString(R.string.paypal_app_link));
                 Uri appLinkUri = null;
                 if (useAppLink) {
-                    appLinkUri = Uri.parse("https://example.com");
+                    appLinkUri = Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/");
                 }
                 braintreeClient = new BraintreeClient(this, tokenizationKey, null, appLinkUri);
             } else {
