@@ -84,7 +84,7 @@ public class LocalPaymentClientUnitTest {
             localPaymentApi);
         sut.createPaymentAuthRequest(null, localPaymentAuthCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, null);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, null, null);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class LocalPaymentClientUnitTest {
             localPaymentApi);
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, null);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, null, null);
     }
 
     @Test
@@ -158,7 +158,7 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED, null);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED, null, null);
     }
 
     @Test
@@ -199,7 +199,7 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, null);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, null, null);
     }
 
     @Test
@@ -363,7 +363,7 @@ public class LocalPaymentClientUnitTest {
         sut.createPaymentAuthRequest(getIdealLocalPaymentRequest(), localPaymentAuthCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED);
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED, null);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED, null, null);
     }
 
 
@@ -387,7 +387,7 @@ public class LocalPaymentClientUnitTest {
         sut.createPaymentAuthRequest(getIdealLocalPaymentRequest(), localPaymentAuthCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED);
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED, "some-paypal-context-id");
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED, "some-paypal-context-id", null);
     }
 
     @Test
@@ -462,7 +462,7 @@ public class LocalPaymentClientUnitTest {
 
         sut.buildBrowserSwitchOptions(transaction, localPaymentAuthCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED, null);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED, null, null);
     }
 
     @Test
@@ -495,7 +495,7 @@ public class LocalPaymentClientUnitTest {
         String expectedMessage = "LocalPayment encountered an error, return URL is invalid.";
         assertEquals(expectedMessage, exception.getMessage());
 
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, null);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, null, null);
     }
 
     @Test
@@ -541,7 +541,7 @@ public class LocalPaymentClientUnitTest {
         assertTrue(result instanceof LocalPaymentResult.Failure);
         Exception exception = ((LocalPaymentResult.Failure) result).getError();
         assertEquals(postError, exception);
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, null);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, null, null);
     }
 
     @Test
@@ -652,7 +652,7 @@ public class LocalPaymentClientUnitTest {
 
         sut.tokenize(activity, localPaymentAuthResult, localPaymentTokenizeCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_SUCCEEDED, null);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_SUCCEEDED, null, null);
     }
 
     @Test
@@ -720,9 +720,10 @@ public class LocalPaymentClientUnitTest {
 
         LocalPaymentResult result = captor.getValue();
         assertTrue(result instanceof LocalPaymentResult.Cancel);
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_CANCELED, null);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_CANCELED, null, null);
     }
 
+    // TODO: Update test when hasUserLocationConsent passing is fixed
 //    @Test
 //    public void onBrowserSwitchResult_sends_the_correct_value_of_hasUserLocationConsent_to_getClientMetadataId() throws JSONException {
 //        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
