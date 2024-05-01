@@ -4,6 +4,7 @@ import com.braintreepayments.api.EligiblePaymentsApiRequest.Companion.toJson
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 
+@UnstableApi
 class EligiblePaymentsApiRequestUnitTest {
 
     @Test

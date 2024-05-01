@@ -7,7 +7,7 @@ package com.braintreepayments.api
  * @property nationalNumber The national segment of the shopper's phone number
  * (excluding the country code).
  */
-
+@UnstableApi
 data class ShopperInsightsBuyerPhone(
     var countryCode: String,
     var nationalNumber: String

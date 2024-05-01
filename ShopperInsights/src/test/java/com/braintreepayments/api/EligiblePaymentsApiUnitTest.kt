@@ -8,6 +8,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 
+@UnstableApi
 class EligiblePaymentsApiUnitTest {
 
     private lateinit var sut: EligiblePaymentsApi
