@@ -22,6 +22,7 @@ import com.braintreepayments.api.card.CardResult;
 import com.braintreepayments.api.core.PaymentMethodNonce;
 import com.braintreepayments.api.core.UserCanceledException;
 import com.braintreepayments.api.datacollector.DataCollector;
+import com.braintreepayments.api.datacollector.DataCollectorRequest;
 import com.braintreepayments.api.datacollector.DataCollectorResult;
 import com.braintreepayments.api.threedsecure.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.threedsecure.ThreeDSecureClient;
@@ -149,7 +150,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                 .setup(activity);
 
         if (getArguments().getBoolean(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
-            dataCollector.collectDeviceData(activity, dataCollectorResult -> {
+            dataCollector.collectDeviceData(activity, new DataCollectorRequest(true), dataCollectorResult -> {
                 if (dataCollectorResult instanceof DataCollectorResult.Success) {
                     deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
                 }

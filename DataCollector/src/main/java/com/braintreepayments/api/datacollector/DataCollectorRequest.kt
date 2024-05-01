@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.datacollector
 
 /**
  * Parameters needed when the SDK collects data for fraud identification purposes
@@ -13,7 +13,7 @@ package com.braintreepayments.api
  *
  * @property riskCorrelationId Optional client metadata id
  */
-data class PayPalDataCollectorRequest(
+data class DataCollectorRequest @JvmOverloads constructor(
     val hasUserLocationConsent: Boolean,
     val riskCorrelationId: String? = null
 )

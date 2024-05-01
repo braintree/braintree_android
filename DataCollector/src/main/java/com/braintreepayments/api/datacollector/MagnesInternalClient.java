@@ -29,7 +29,7 @@ class MagnesInternalClient {
     }
 
     @MainThread
-    String getClientMetadataId(Context context, Configuration configuration, DataCollectorRequest request) {
+    String getClientMetadataId(Context context, Configuration configuration, DataCollectorInternalRequest request) {
         if (context == null) {
             return "";
         }

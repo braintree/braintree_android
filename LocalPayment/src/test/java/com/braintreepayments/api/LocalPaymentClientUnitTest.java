@@ -524,7 +524,7 @@ public class LocalPaymentClientUnitTest {
                 .tokenizeError(postError)
                 .build();
 
-        when(dataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn(
+        when(dataCollector.getClientMetadataId(activity, payPalEnabledConfig, false)).thenReturn(
                 "sample-correlation-id");
 
         LocalPaymentClient sut =
@@ -563,7 +563,7 @@ public class LocalPaymentClientUnitTest {
                 .sessionId("sample-session-id")
                 .integration("sample-integration-type")
                 .build();
-        when(dataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn(
+        when(dataCollector.getClientMetadataId(activity, payPalEnabledConfig, false)).thenReturn(
                 "sample-correlation-id");
 
         LocalPaymentClient sut =
@@ -596,7 +596,7 @@ public class LocalPaymentClientUnitTest {
                 .sessionId("session-id")
                 .build();
         when(dataCollector.getClientMetadataId(any(Context.class),
-                same(payPalEnabledConfig))).thenReturn("client-metadata-id");
+                same(payPalEnabledConfig), eq(false))).thenReturn("client-metadata-id");
 
         LocalPaymentNonce successNonce = LocalPaymentNonce.fromJSON(
                 new JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE));
@@ -643,7 +643,7 @@ public class LocalPaymentClientUnitTest {
                 .build();
 
         when(dataCollector.getClientMetadataId(any(Context.class),
-                same(payPalEnabledConfig))).thenReturn("client-metadata-id");
+                same(payPalEnabledConfig), eq(false))).thenReturn("client-metadata-id");
 
 
         LocalPaymentClient sut =
@@ -675,7 +675,7 @@ public class LocalPaymentClientUnitTest {
                 .sessionId("sample-session-id")
                 .integration("sample-integration-type")
                 .build();
-        when(dataCollector.getClientMetadataId(activity, payPalEnabledConfig)).thenReturn(
+        when(dataCollector.getClientMetadataId(activity, payPalEnabledConfig, true)).thenReturn(
                 "sample-correlation-id");
 
         LocalPaymentClient sut =

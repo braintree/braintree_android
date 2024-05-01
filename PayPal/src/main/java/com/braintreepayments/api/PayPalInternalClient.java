@@ -85,7 +85,8 @@ class PayPalInternalClient {
                                                         ?
                                                         payPalRequest.getRiskCorrelationId() :
                                                         dataCollector.getClientMetadataId(
-                                                                context, configuration);
+                                                                context, configuration,
+                                                                payPalRequest.hasUserLocationConsent());
 
                                         if (pairingId != null) {
                                             paymentAuthRequest

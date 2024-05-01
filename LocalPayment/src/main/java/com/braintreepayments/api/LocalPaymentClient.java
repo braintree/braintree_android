@@ -37,9 +37,6 @@ public class LocalPaymentClient {
 
     private boolean hasUserLocationConsent;
 
-    @VisibleForTesting
-    BrowserSwitchResult pendingBrowserSwitchResult;
-
     /**
      * Initializes a new {@link LocalPaymentClient} instance
      *
@@ -120,6 +117,7 @@ public class LocalPaymentClient {
                                             "local payment method."),
                                         callback
                                     );
+                                    // TODO: confirm that hasUserLocationConsent is propagated after browser switch
                                     hasUserLocationConsent = request.hasUserLocationConsent();
                                 }
                             });
@@ -200,7 +198,7 @@ public class LocalPaymentClient {
         braintreeClient.getConfiguration((configuration, error) -> {
             if (configuration != null) {
                 localPaymentApi.tokenize(merchantAccountId, responseString,
-                        dataCollector.getClientMetadataId(context, configuration),
+                        dataCollector.getClientMetadataId(context, configuration, hasUserLocationConsent),
                         (localPaymentNonce, localPaymentError) -> {
                             if (localPaymentNonce != null) {
                                 braintreeClient.sendAnalyticsEvent(

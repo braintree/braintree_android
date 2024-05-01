@@ -11,8 +11,6 @@ import android.content.Context;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.braintreepayments.api.core.Configuration;
-import com.braintreepayments.api.datacollector.DataCollectorRequest;
-import com.braintreepayments.api.datacollector.MagnesInternalClient;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +41,7 @@ public class MagnesInternalClientUnitTest {
     private MagnesResult magnesResult;
 
     private HashMap<String, String> additionalData;
-    private DataCollectorRequest dataCollectorRequest;
+    private DataCollectorInternalRequest dataCollectorInternalRequest;
 
     private boolean hasUserLocationConsent = true;
 
@@ -66,7 +64,7 @@ public class MagnesInternalClientUnitTest {
 
         additionalData = new HashMap<>();
 
-        dataCollectorRequest = new DataCollectorRequest()
+        dataCollectorInternalRequest = new DataCollectorInternalRequest(hasUserLocationConsent)
                 .setRiskCorrelationId("sample-client-metadata-id")
                 .setDisableBeacon(true)
                 .setAdditionalData(additionalData)
@@ -76,7 +74,8 @@ public class MagnesInternalClientUnitTest {
     @Test
     public void getClientMetaDataId_returnsEmptyStringWhenContextIsNull() {
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
-        String result = sut.getClientMetadataId(null, sandboxConfiguration, dataCollectorRequest);
+        String result = sut.getClientMetadataId(null, sandboxConfiguration,
+                dataCollectorInternalRequest);
 
         assertEquals("", result);
     }
@@ -86,7 +85,7 @@ public class MagnesInternalClientUnitTest {
         when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenReturn(magnesResult);
 
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
-        sut.getClientMetadataId(context, sandboxConfiguration, dataCollectorRequest);
+        sut.getClientMetadataId(context, sandboxConfiguration, dataCollectorInternalRequest);
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
         verify(magnesSDK).setUp(captor.capture());
@@ -100,7 +99,7 @@ public class MagnesInternalClientUnitTest {
         when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenReturn(magnesResult);
 
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
-        sut.getClientMetadataId(context, sandboxConfiguration, dataCollectorRequest);
+        sut.getClientMetadataId(context, sandboxConfiguration, dataCollectorInternalRequest);
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
         verify(magnesSDK).setUp(captor.capture());
@@ -114,7 +113,7 @@ public class MagnesInternalClientUnitTest {
         when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenReturn(magnesResult);
 
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
-        sut.getClientMetadataId(context, prodConfiguration, dataCollectorRequest);
+        sut.getClientMetadataId(context, prodConfiguration, dataCollectorInternalRequest);
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
         verify(magnesSDK).setUp(captor.capture());
@@ -128,7 +127,7 @@ public class MagnesInternalClientUnitTest {
         when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenReturn(magnesResult);
 
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
-        sut.getClientMetadataId(context, prodConfiguration, dataCollectorRequest);
+        sut.getClientMetadataId(context, prodConfiguration, dataCollectorInternalRequest);
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
         verify(magnesSDK).setUp(captor.capture());
@@ -142,7 +141,7 @@ public class MagnesInternalClientUnitTest {
         when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenReturn(magnesResult);
 
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
-        sut.getClientMetadataId(context, prodConfiguration, dataCollectorRequest);
+        sut.getClientMetadataId(context, prodConfiguration, dataCollectorInternalRequest);
 
         ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
         verify(magnesSDK).setUp(captor.capture());
@@ -151,23 +150,23 @@ public class MagnesInternalClientUnitTest {
         assertEquals(validApplicationGUID, magnesSettings.getAppGuid());
     }
 
-//    @Test
-//    public void getClientMetaDataId_setsHasUserLocationConsent() throws InvalidInputException {
-//        when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenReturn(magnesResult);
-//
-//        MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
-//        sut.getClientMetadataId(context, prodConfiguration, payPalDataCollectorInternalRequest);
-//
-//        ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
-//        verify(magnesSDK).setUp(captor.capture());
-//
-//        MagnesSettings magnesSettings = captor.getValue();
-//        assertEquals(hasUserLocationConsent, magnesSettings.hasUserLocationConsent());
-//    }
+    @Test
+    public void getClientMetaDataId_setsHasUserLocationConsent() throws InvalidInputException {
+        when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenReturn(magnesResult);
+
+        MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
+        sut.getClientMetadataId(context, prodConfiguration, dataCollectorInternalRequest);
+
+        ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
+        verify(magnesSDK).setUp(captor.capture());
+
+        MagnesSettings magnesSettings = captor.getValue();
+        assertEquals(hasUserLocationConsent, magnesSettings.hasUserLocationConsent());
+    }
 
     @Test
     public void getClientMetaDataId_returnsAnEmptyStringWhenApplicationGUIDIsInvalid() {
-        DataCollectorRequest requestWithInvalidGUID = new DataCollectorRequest()
+        DataCollectorInternalRequest requestWithInvalidGUID = new DataCollectorInternalRequest(hasUserLocationConsent)
                 .setApplicationGuid("invalid guid");
 
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
@@ -181,7 +180,8 @@ public class MagnesInternalClientUnitTest {
         when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenReturn(magnesResult);
 
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
-        String result = sut.getClientMetadataId(context, prodConfiguration, dataCollectorRequest);
+        String result = sut.getClientMetadataId(context, prodConfiguration,
+                dataCollectorInternalRequest);
 
         assertEquals("magnes-client-metadata-id", result);
     }
@@ -192,7 +192,8 @@ public class MagnesInternalClientUnitTest {
         when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenThrow(new InvalidInputException("invalid input"));
 
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
-        String result = sut.getClientMetadataId(context, prodConfiguration, dataCollectorRequest);
+        String result = sut.getClientMetadataId(context, prodConfiguration,
+                dataCollectorInternalRequest);
 
         assertEquals("", result);
     }

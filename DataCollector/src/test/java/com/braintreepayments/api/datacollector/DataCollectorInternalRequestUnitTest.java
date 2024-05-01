@@ -4,11 +4,12 @@ import static junit.framework.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class DataCollectorRequestUnitTest {
+public class DataCollectorInternalRequestUnitTest {
 
     @Test
     public void setClientMetadataId_trimsId_to_32characters() {
-        DataCollectorRequest request = new DataCollectorRequest();
+        DataCollectorInternalRequest request = new DataCollectorInternalRequest(true)
+                .setRiskCorrelationId("pairing-id-pairing-id-pairing-idXXX");
 
         assertEquals("pairing-id-pairing-id-pairing-id", request.getClientMetadataId());
         assertEquals(32, request.getClientMetadataId().length());

@@ -438,7 +438,7 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_whenRiskCorrelationIdNotNull_setsClientMetadataIdToRiskCorrelationId() {
-        when(dataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
+        when(dataCollector.getClientMetadataId(context, configuration, true)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
@@ -463,7 +463,7 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_whenRiskCorrelationIdNull_setsClientMetadataIdFromPayPalDataCollector() {
-        when(dataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
+        when(dataCollector.getClientMetadataId(context, configuration, true)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
@@ -514,7 +514,7 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess() {
-        when(dataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
+        when(dataCollector.getClientMetadataId(context, configuration, true)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
@@ -547,7 +547,7 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_withPayPalCheckoutRequest_callsBackPayPalResponseOnSuccess() {
-        when(dataCollector.getClientMetadataId(context, configuration)).thenReturn("sample-client-metadata-id");
+        when(dataCollector.getClientMetadataId(context, configuration, true)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
@@ -684,25 +684,25 @@ public class PayPalInternalClientUnitTest {
 
         verify(callback).onResult((PayPalAccountNonce) isNull(), same(error));
     }
-//
-//    @Test
-//    public void payPalDataCollector_passes_correct_arguments_to_getClientMetadataId() throws Exception {
-//        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL);
-//        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-//            .configuration(configuration)
-//            .authorizationSuccess(clientToken)
-//            .returnUrlScheme("sample-scheme")
-//            .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-//            .build();
-//
-//        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector, apiClient);
-//
-//        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
-//        payPalRequest.setIntent("authorize");
-//        payPalRequest.setMerchantAccountId("sample-merchant-account-id");
-//
-//        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
-//
-//        verify(payPalDataCollector).getClientMetadataId(context, configuration, true);
-//    }
+
+    @Test
+    public void payPalDataCollector_passes_correct_arguments_to_getClientMetadataId() throws Exception {
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL);
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+            .configuration(configuration)
+            .authorizationSuccess(clientToken)
+            .returnUrlScheme("sample-scheme")
+            .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
+            .build();
+
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
+
+        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
+        payPalRequest.setIntent("authorize");
+        payPalRequest.setMerchantAccountId("sample-merchant-account-id");
+
+        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+
+        verify(dataCollector).getClientMetadataId(context, configuration, true);
+    }
 }

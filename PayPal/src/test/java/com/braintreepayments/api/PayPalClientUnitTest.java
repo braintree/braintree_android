@@ -49,7 +49,7 @@ public class PayPalClientUnitTest {
 
     @Test
     public void createPaymentAuthRequest_callsBackPayPalResponse_sendsStartedAnalytics() throws JSONException {
-        PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest();
+        PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest(true);
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
 
         PayPalPaymentAuthRequestParams paymentAuthRequest =
@@ -96,7 +96,7 @@ public class PayPalClientUnitTest {
 
     @Test
     public void createPaymentAuthRequest_whenLaunchesBrowserSwitchAsNewTaskEnabled_setsNewTaskOption() {
-        PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest();
+        PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest(true);
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
 
         PayPalPaymentAuthRequestParams paymentAuthRequest =
@@ -133,7 +133,7 @@ public class PayPalClientUnitTest {
                 new MockBraintreeClientBuilder().configuration(payPalDisabledConfig).build();
 
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
-        sut.createPaymentAuthRequest(activity, new PayPalCheckoutRequest("1.00"),
+        sut.createPaymentAuthRequest(activity, new PayPalCheckoutRequest("1.00", true),
                 paymentAuthCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequest> captor =
@@ -159,7 +159,7 @@ public class PayPalClientUnitTest {
                 .build();
 
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
-        sut.createPaymentAuthRequest(activity, new PayPalCheckoutRequest("1.00"), paymentAuthCallback);
+        sut.createPaymentAuthRequest(activity, new PayPalCheckoutRequest("1.00", true), paymentAuthCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequest> captor =
                 ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
@@ -181,7 +181,7 @@ public class PayPalClientUnitTest {
                 .build();
 
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
-        sut.createPaymentAuthRequest(activity, new PayPalVaultRequest(), paymentAuthCallback);
+        sut.createPaymentAuthRequest(activity, new PayPalVaultRequest(true), paymentAuthCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequest> captor =
                 ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
@@ -201,7 +201,7 @@ public class PayPalClientUnitTest {
         BraintreeClient braintreeClient =
                 new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
 
-        PayPalVaultRequest payPalRequest = new PayPalVaultRequest();
+        PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
 
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
         sut.createPaymentAuthRequest(activity, payPalRequest, paymentAuthCallback);
@@ -217,7 +217,7 @@ public class PayPalClientUnitTest {
         BraintreeClient braintreeClient =
                 new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
 
-        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
+        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
 
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
         sut.createPaymentAuthRequest(activity, payPalRequest, paymentAuthCallback);
