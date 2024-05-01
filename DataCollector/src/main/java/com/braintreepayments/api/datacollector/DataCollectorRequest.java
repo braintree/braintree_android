@@ -14,7 +14,9 @@ public class DataCollectorRequest {
     private String applicationGuid;
     private String clientMetadataId;
     private boolean disableBeacon;
+    private boolean hasUserLocationConsent;
     private HashMap<String,String> additionalData;
+
 
     /**
      * @param additionalData Additional data that should be associated with the data collection.
@@ -63,6 +65,10 @@ public class DataCollectorRequest {
 
     String getClientMetadataId() {
         return clientMetadataId;
+    }
+
+    public boolean getHasUserLocationConsent() {
+        return hasUserLocationConsent;
     }
 
     boolean isDisableBeacon() {

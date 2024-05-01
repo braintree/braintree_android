@@ -44,7 +44,8 @@ class MagnesInternalClient {
                     .setMagnesSource(MagnesSource.BRAINTREE)
                     .disableBeacon(request.isDisableBeacon())
                     .setMagnesEnvironment(magnesEnvironment)
-                    .setAppGuid(request.getApplicationGuid());
+                    .setAppGuid(request.getApplicationGuid())
+                    .setHasUserLocationConsent(request.getHasUserLocationConsent());
 
             magnesSDK.setUp(magnesSettingsBuilder.build());
 

@@ -1,6 +1,7 @@
 package com.braintreepayments.api.datacollector;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
@@ -12,6 +13,7 @@ import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import com.braintreepayments.api.PayPalDataCollectorRequest;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.Fixtures;
@@ -38,12 +40,17 @@ public class DataCollectorUnitTest {
     private BraintreeClient braintreeClient;
     private MagnesInternalClient magnesInternalClient;
 
+    private PayPalDataCollectorRequest payPalDataCollectorRequest;
+    private String riskCorrelationId = "risk_correlation_id";
+
     @Before
     public void beforeEach() throws JSONException {
         uuidHelper = mock(UUIDHelper.class);
         magnesInternalClient = mock(MagnesInternalClient.class);
 
         context = ApplicationProvider.getApplicationContext();
+
+        payPalDataCollectorRequest = new PayPalDataCollectorRequest(true, riskCorrelationId);
 
         configuration = mock(Configuration.class);
 
@@ -66,6 +73,8 @@ public class DataCollectorUnitTest {
 
     @Test
     public void getClientMetadataId_configuresMagnesWithDefaultRequest() {
+        boolean hasUserLocationConsent = true;
+
         when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
 
         when(magnesInternalClient.getClientMetadataId(same(context), same(configuration), any(
@@ -78,7 +87,9 @@ public class DataCollectorUnitTest {
         verify(magnesInternalClient).getClientMetadataId(same(context), same(configuration), captor.capture());
 
         DataCollectorRequest request = captor.getValue();
+
         assertEquals(sampleInstallationGUID, request.getApplicationGuid());
+        assertEquals(hasUserLocationConsent, request.getHasUserLocationConsent());
     }
 
     @Test
@@ -86,6 +97,7 @@ public class DataCollectorUnitTest {
         when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
 
         DataCollectorRequest customRequest = new DataCollectorRequest();
+
         when(magnesInternalClient.getClientMetadataId(context, configuration, customRequest)).thenReturn("paypal-clientmetadata-id");
 
         DataCollector sut = new DataCollector(braintreeClient, magnesInternalClient, uuidHelper);
@@ -103,6 +115,7 @@ public class DataCollectorUnitTest {
 
         DataCollector sut = new DataCollector(braintreeClient, magnesInternalClient, uuidHelper);
         String result = sut.getClientMetadataId(context, configuration);
+
 
         assertEquals("paypal-clientmetadata-id", result);
     }
@@ -147,7 +160,31 @@ public class DataCollectorUnitTest {
 
         DataCollectorRequest request = captor.getValue();
         assertEquals(sampleInstallationGUID, request.getApplicationGuid());
+        assertFalse(request.getHasUserLocationConsent());
     }
+
+//    @Test
+//    public void collectDeviceData_with_request_configuresMagnesWithDefaultRequest() {
+//        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+//            .configuration(configuration)
+//            .build();
+//
+//        when(uuidHelper.getInstallationGUID(context)).thenReturn(sampleInstallationGUID);
+//        when(magnesInternalClient.getClientMetadataId(same(context), same(configuration), any(PayPalDataCollectorInternalRequest.class))).thenReturn("paypal-clientmetadata-id");
+//
+//        PayPalDataCollector sut = new PayPalDataCollector(braintreeClient, magnesInternalClient, uuidHelper);
+//
+//        PayPalDataCollectorCallback callback = mock(PayPalDataCollectorCallback.class);
+//        sut.collectDeviceData(context, payPalDataCollectorRequest, callback);
+//
+//        ArgumentCaptor<PayPalDataCollectorInternalRequest> captor = ArgumentCaptor.forClass(PayPalDataCollectorInternalRequest.class);
+//        verify(magnesInternalClient).getClientMetadataId(same(context), same(configuration), captor.capture());
+//
+//        PayPalDataCollectorInternalRequest request = captor.getValue();
+//        assertEquals(sampleInstallationGUID, request.getApplicationGuid());
+//        assertEquals(riskCorrelationId, request.getClientMetadataId());
+//        assertTrue(request.getHasUserLocationConsent());
+//    }
 
     @Test
     public void collectDeviceData_configuresMagnesWithClientId() {
@@ -170,6 +207,7 @@ public class DataCollectorUnitTest {
         DataCollectorRequest request = captor.getValue();
         assertEquals(sampleInstallationGUID, request.getApplicationGuid());
         assertEquals("custom-client-metadata-id", request.getClientMetadataId());
+        assertFalse( request.getHasUserLocationConsent());
     }
 
     @Test

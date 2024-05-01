@@ -14,8 +14,6 @@ import androidx.work.testing.TestDriver;
 import androidx.work.testing.WorkManagerTestInitHelper;
 
 import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.core.AnalyticsClient;
-import com.braintreepayments.api.core.Configuration;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +42,7 @@ public class AnalyticsClientTest {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT);
 
-        AnalyticsEvent event = new AnalyticsEvent("event.started", null, 123);
+        AnalyticsEvent event = new AnalyticsEvent("event.started", null, null, 123);
 
         AnalyticsClient sut = new AnalyticsClient(context);
         UUID workSpecId = sut.sendEvent(configuration, event, "sessionId", "custom", authorization);

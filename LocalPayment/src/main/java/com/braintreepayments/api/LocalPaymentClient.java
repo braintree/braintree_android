@@ -35,6 +35,11 @@ public class LocalPaymentClient {
      */
     private String payPalContextId = null;
 
+    private boolean hasUserLocationConsent;
+
+    @VisibleForTesting
+    BrowserSwitchResult pendingBrowserSwitchResult;
+
     /**
      * Initializes a new {@link LocalPaymentClient} instance
      *
@@ -115,6 +120,7 @@ public class LocalPaymentClient {
                                             "local payment method."),
                                         callback
                                     );
+                                    hasUserLocationConsent = request.hasUserLocationConsent();
                                 }
                             });
                 } else if (error != null) {

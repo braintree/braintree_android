@@ -21,8 +21,7 @@ public class DataCollectorTest {
     @Test
     public void getClientMetadataId_returnsClientMetadataId() throws JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL);
-        BraintreeClient braintreeClient = new BraintreeClient(ApplicationProvider.getApplicationContext(), Fixtures.TOKENIZATION_KEY);
-        DataCollector sut = new DataCollector(braintreeClient);
+        DataCollector sut = new DataCollector(ApplicationProvider.getApplicationContext(), Fixtures.TOKENIZATION_KEY);
         String clientMetadataId = sut.getClientMetadataId(ApplicationProvider.getApplicationContext(), configuration);
 
         assertFalse(TextUtils.isEmpty(clientMetadataId));

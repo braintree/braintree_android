@@ -26,7 +26,7 @@ public class PayPalVaultRequestUnitTest {
 
     @Test
     public void newPayPalVaultRequest_setsDefaultValues() {
-        PayPalVaultRequest request = new PayPalVaultRequest();
+        PayPalVaultRequest request = new PayPalVaultRequest(false);
 
         assertNull(request.getLocaleCode());
         assertFalse(request.isShippingAddressRequired());
@@ -34,12 +34,13 @@ public class PayPalVaultRequestUnitTest {
         assertNull(request.getDisplayName());
         assertNull(request.getLandingPageType());
         assertFalse(request.getShouldOfferCredit());
+        assertFalse(request.hasUserLocationConsent());
     }
 
     @Test
     public void setsValuesCorrectly() {
         PostalAddress postalAddress = new PostalAddress();
-        PayPalVaultRequest request = new PayPalVaultRequest();
+        PayPalVaultRequest request = new PayPalVaultRequest(true);
         request.setLocaleCode("US");
         request.setBillingAgreementDescription("Billing Agreement Description");
         request.setShippingAddressRequired(true);
@@ -57,11 +58,12 @@ public class PayPalVaultRequestUnitTest {
         assertEquals("123-correlation", request.getRiskCorrelationId());
         assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
         assertTrue(request.getShouldOfferCredit());
+        assertTrue(request.hasUserLocationConsent());
     }
 
     @Test
     public void parcelsCorrectly() {
-        PayPalVaultRequest request = new PayPalVaultRequest();
+        PayPalVaultRequest request = new PayPalVaultRequest(true);
         request.setLocaleCode("en-US");
         request.setBillingAgreementDescription("Billing Agreement Description");
         request.setShippingAddressRequired(true);
@@ -100,6 +102,7 @@ public class PayPalVaultRequestUnitTest {
         assertEquals("merchant_account_id", result.getMerchantAccountId());
         assertEquals(1, result.getLineItems().size());
         assertEquals("An Item", result.getLineItems().get(0).getName());
+        assertTrue(result.hasUserLocationConsent());
     }
 
     @Test

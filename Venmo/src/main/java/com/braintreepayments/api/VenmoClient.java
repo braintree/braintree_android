@@ -127,6 +127,7 @@ public class VenmoClient {
                             }
                         } else {
                             callbackPaymentAuthFailure(callback, new VenmoPaymentAuthRequest.Failure(exception));
+
                         }
                     });
         });

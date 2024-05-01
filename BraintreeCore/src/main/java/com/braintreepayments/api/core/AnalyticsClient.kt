@@ -46,6 +46,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(WORK_INPUT_KEY_EVENT_NAME, "android.${event.name}")
+            .putString(WORK_INPUT_KEY_PAYPAL_CONTEXT_ID, event.payPalContextId)
+            .putString(WORK_INPUT_KEY_LINK_TYPE, event.linkType)
             .putLong(WORK_INPUT_KEY_TIMESTAMP, event.timestamp)
             .build()
 
@@ -61,12 +63,13 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     fun writeAnalytics(inputData: Data): ListenableWorker.Result {
         val eventName = inputData.getString(WORK_INPUT_KEY_EVENT_NAME)
         val payPalContextId = inputData.getString(WORK_INPUT_KEY_PAYPAL_CONTEXT_ID)
+        val linkType = inputData.getString(WORK_INPUT_KEY_LINK_TYPE)
         val timestamp = inputData.getLong(WORK_INPUT_KEY_TIMESTAMP, INVALID_TIMESTAMP)
 
         return if (eventName == null || timestamp == INVALID_TIMESTAMP) {
             ListenableWorker.Result.failure()
         } else {
-            val event = AnalyticsEvent(eventName, payPalContextId, timestamp)
+            val event = AnalyticsEvent(eventName, payPalContextId, linkType, timestamp)
             val analyticsEventDao = analyticsDatabase.analyticsEventDao()
             analyticsEventDao.insertEvent(event)
             ListenableWorker.Result.success()
@@ -151,7 +154,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             return
         }
         val metadata = deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
-        val event = AnalyticsEvent("android.crash", null, timestamp)
+        val event = AnalyticsEvent("android.crash", null, null, timestamp)
         val events = listOf(event)
         try {
             val analyticsRequest = serializeEvents(authorization, events, metadata)
@@ -190,6 +193,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 .put(EVENT_NAME_KEY, analyticsEvent.name)
 
                 .putOpt(PAYPAL_CONTEXT_ID_KEY, analyticsEvent.payPalContextId)
+                .putOpt(LINK_TYPE_KEY, analyticsEvent.linkType)
                 .put(TIMESTAMP_KEY, analyticsEvent.timestamp)
                 .put(TENANT_NAME_KEY, "Braintree")
             eventParamsJSON.put(singleEventJSON)
@@ -204,6 +208,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     companion object {
         private const val FPTI_ANALYTICS_URL = "https://api-m.paypal.com/v1/tracking/batch/events"
         private const val PAYPAL_CONTEXT_ID_KEY = "paypal_context_id"
+        private const val LINK_TYPE_KEY = "link_type"
         private const val TOKENIZATION_KEY = "tokenization_key"
 
         private const val AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint"
@@ -224,6 +229,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         const val WORK_INPUT_KEY_SESSION_ID = "sessionId"
         const val WORK_INPUT_KEY_TIMESTAMP = "timestamp"
         const val WORK_INPUT_KEY_PAYPAL_CONTEXT_ID = "payPalContextId"
+        const val WORK_INPUT_KEY_LINK_TYPE = "linkType"
         private const val DELAY_TIME_SECONDS = 30L
 
         private fun getAuthorizationFromData(inputData: Data?): Authorization? =

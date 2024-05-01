@@ -17,6 +17,9 @@ open class AnalyticsEvent internal constructor(
     @ColumnInfo(name = "paypal_context_id")
     open val payPalContextId: String? = null,
 
+    @ColumnInfo(name = "link_type")
+    open val linkType: String? = null,
+
     open val timestamp: Long = System.currentTimeMillis()
 ) {
     @JvmField

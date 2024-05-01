@@ -1,6 +1,11 @@
 package com.braintreepayments.api.googlepay;
 
 import android.content.Context;
+<<<<<<< HEAD:GooglePay/src/main/java/com/braintreepayments/api/googlepay/GooglePayInternalClient.java
+=======
+
+import androidx.annotation.NonNull;
+>>>>>>> main:GooglePay/src/main/java/com/braintreepayments/api/GooglePayInternalClient.java
 
 import com.braintreepayments.api.core.Configuration;
 import com.google.android.gms.common.api.ApiException;

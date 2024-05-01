@@ -45,6 +45,8 @@ public class MagnesInternalClientUnitTest {
     private HashMap<String, String> additionalData;
     private DataCollectorRequest dataCollectorRequest;
 
+    private boolean hasUserLocationConsent = true;
+
     @Before
     public void beforeEach() {
         magnesSDK = mock(MagnesSDK.class);
@@ -75,6 +77,7 @@ public class MagnesInternalClientUnitTest {
     public void getClientMetaDataId_returnsEmptyStringWhenContextIsNull() {
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
         String result = sut.getClientMetadataId(null, sandboxConfiguration, dataCollectorRequest);
+
         assertEquals("", result);
     }
 
@@ -147,6 +150,20 @@ public class MagnesInternalClientUnitTest {
         MagnesSettings magnesSettings = captor.getValue();
         assertEquals(validApplicationGUID, magnesSettings.getAppGuid());
     }
+
+//    @Test
+//    public void getClientMetaDataId_setsHasUserLocationConsent() throws InvalidInputException {
+//        when(magnesSDK.collectAndSubmit(context, "sample-client-metadata-id", additionalData)).thenReturn(magnesResult);
+//
+//        MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
+//        sut.getClientMetadataId(context, prodConfiguration, payPalDataCollectorInternalRequest);
+//
+//        ArgumentCaptor<MagnesSettings> captor = ArgumentCaptor.forClass(MagnesSettings.class);
+//        verify(magnesSDK).setUp(captor.capture());
+//
+//        MagnesSettings magnesSettings = captor.getValue();
+//        assertEquals(hasUserLocationConsent, magnesSettings.hasUserLocationConsent());
+//    }
 
     @Test
     public void getClientMetaDataId_returnsAnEmptyStringWhenApplicationGUIDIsInvalid() {
