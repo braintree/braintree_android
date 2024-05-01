@@ -32,6 +32,7 @@ import java.util.Objects;
  */
 public class VenmoClient {
 
+    private static final String LINK_TYPE = "universal";
     private final BraintreeClient braintreeClient;
     private final VenmoApi venmoApi;
     private final VenmoSharedPrefsWriter sharedPrefsWriter;
@@ -293,22 +294,22 @@ public class VenmoClient {
     }
 
     private void callbackPaymentAuthFailure(VenmoPaymentAuthRequestCallback callback, VenmoPaymentAuthRequest request) {
-        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, payPalContextId);
+        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, payPalContextId, LINK_TYPE);
         callback.onVenmoPaymentAuthRequest(request);
     }
 
     private void callbackSuccess(VenmoTokenizeCallback callback, VenmoResult venmoResult) {
-        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_SUCCEEDED, payPalContextId);
+        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_SUCCEEDED, payPalContextId, LINK_TYPE);
         callback.onVenmoResult(venmoResult);
     }
 
     private void callbackTokenizeCancel(VenmoTokenizeCallback callback) {
-        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_CANCELED, payPalContextId);
+        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_CANCELED, payPalContextId, LINK_TYPE);
         callback.onVenmoResult(VenmoResult.Cancel.INSTANCE);
     }
     
     private void callbackTokenizeFailure(VenmoTokenizeCallback callback, VenmoResult venmoResult) {
-        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, payPalContextId);
+        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, payPalContextId, LINK_TYPE);
         callback.onVenmoResult(venmoResult);
     }
 }
