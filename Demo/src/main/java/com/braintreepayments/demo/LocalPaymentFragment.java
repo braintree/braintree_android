@@ -71,7 +71,7 @@ public class LocalPaymentFragment extends BaseFragment {
         address.setLocality("Amsterdam");
         address.setPostalCode("1072 AE");
 
-        LocalPaymentRequest request = new LocalPaymentRequest();
+        LocalPaymentRequest request = new LocalPaymentRequest(true);
         request.setPaymentType("ideal");
         request.setAmount("1.10");
         request.setAddress(address);

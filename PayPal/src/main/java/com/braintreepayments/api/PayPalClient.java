@@ -275,25 +275,25 @@ public class PayPalClient {
 
     private void callbackCreatePaymentAuthFailure(PayPalPaymentAuthCallback callback,
                                                   PayPalPaymentAuthRequest.Failure failure) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, payPalContextId);
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, payPalContextId, null);
         callback.onPayPalPaymentAuthRequest(failure);
     }
 
     private void callbackBrowserSwitchCancel(PayPalTokenizeCallback callback,
                                              PayPalResult.Cancel cancel) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, payPalContextId);
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, payPalContextId, null);
         callback.onPayPalResult(cancel);
     }
 
     private void callbackTokenizeFailure(PayPalTokenizeCallback callback,
                                          PayPalResult.Failure failure) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, payPalContextId);
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, payPalContextId, null);
         callback.onPayPalResult(failure);
     }
 
     private void callbackTokenizeSuccess(PayPalTokenizeCallback callback,
                                          PayPalResult.Success success) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, payPalContextId);
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, payPalContextId, null);
         callback.onPayPalResult(success);
     }
 }
