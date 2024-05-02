@@ -75,7 +75,8 @@ class PayPalInternalClient {
                                                     String clientMetadataId = payPalRequest.getRiskCorrelationId();
                                                     if (clientMetadataId == null) {
                                                         PayPalDataCollectorInternalRequest dataCollectorRequest =
-                                                                new PayPalDataCollectorInternalRequest(payPalRequest.hasUserLocationConsent());
+                                                                new PayPalDataCollectorInternalRequest(payPalRequest.hasUserLocationConsent())
+                                                                        .setApplicationGuid(payPalDataCollector.getPayPalInstallationGUID(context));
                                                         dataCollectorRequest.setRiskCorrelationId(pairingId);
 
                                                         clientMetadataId = payPalDataCollector.getClientMetadataId(context, dataCollectorRequest, configuration);
