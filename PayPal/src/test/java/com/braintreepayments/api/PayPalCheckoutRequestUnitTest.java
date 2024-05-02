@@ -21,7 +21,7 @@ public class PayPalCheckoutRequestUnitTest {
 
     @Test
     public void newPayPalCheckoutRequest_setsDefaultValues() {
-        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00");
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", false);
 
         assertNotNull(request.getAmount());
         assertNull(request.getCurrencyCode());
@@ -33,12 +33,13 @@ public class PayPalCheckoutRequestUnitTest {
         assertNull(request.getLandingPageType());
         assertNull(request.getBillingAgreementDescription());
         assertFalse(request.getShouldOfferPayLater());
+        assertFalse(request.hasUserLocationConsent());
     }
 
     @Test
     public void setsValuesCorrectly() {
         PostalAddress postalAddress = new PostalAddress();
-        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00");
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
         request.setCurrencyCode("USD");
         request.setShouldOfferPayLater(true);
         request.setIntent(PayPalPaymentIntent.SALE);
@@ -66,11 +67,12 @@ public class PayPalCheckoutRequestUnitTest {
         assertEquals("123-correlation", request.getRiskCorrelationId());
         assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
         assertTrue(request.getShouldOfferPayLater());
+        assertTrue(request.hasUserLocationConsent());
     }
 
     @Test
     public void parcelsCorrectly() {
-        PayPalCheckoutRequest request = new PayPalCheckoutRequest("12.34");
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("12.34", true);
         request.setCurrencyCode("USD");
         request.setLocaleCode("en-US");
         request.setBillingAgreementDescription("Billing Agreement Description");
@@ -114,5 +116,6 @@ public class PayPalCheckoutRequestUnitTest {
         assertEquals("merchant_account_id", result.getMerchantAccountId());
         assertEquals(1, result.getLineItems().size());
         assertEquals("An Item", result.getLineItems().get(0).getName());
+        assertTrue(result.hasUserLocationConsent());
     }
 }

@@ -11,10 +11,17 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class LocalPaymentRequestUnitTest {
+
+    @Test
+    public void constructor_without_hasUserLocationConsent_defaults_to_false() {
+        LocalPaymentRequest request = new LocalPaymentRequest();
+        assertFalse(request.hasUserLocationConsent());
+    }
     
     @Test
     public void build_setsAllParams() throws JSONException {
@@ -26,7 +33,7 @@ public class LocalPaymentRequestUnitTest {
         address.setRegion("CA");
         address.setPostalCode("2585 GJ");
 
-        LocalPaymentRequest request = new LocalPaymentRequest();
+        LocalPaymentRequest request = new LocalPaymentRequest(true);
         request.setPaymentType("ideal");
         request.setAmount("1.10");
         request.setAddress(address);
@@ -40,6 +47,8 @@ public class LocalPaymentRequestUnitTest {
         request.setPaymentTypeCountryCode("NL");
         request.setBic("bank-id-code");
         request.setDisplayName("My Brand!");
+
+        assertTrue(request.hasUserLocationConsent());
 
         JSONObject json = new JSONObject(request.build("http://success-url.com", "http://cancel-url.com"));
 

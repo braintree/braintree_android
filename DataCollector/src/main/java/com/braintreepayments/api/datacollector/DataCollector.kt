@@ -48,36 +48,21 @@ class DataCollector @VisibleForTesting internal constructor(
     }
 
     /**
-     * Gets a Client Metadata ID at the time of payment activity. Once a user initiates a PayPal payment
-     * from their device, PayPal uses the Client Metadata ID to verify that the payment is
-     * originating from a valid, user-consented device and application. This helps reduce fraud and
-     * decrease declines. This method MUST be called prior to initiating a pre-consented payment (a
-     * "future payment") from a mobile device. Pass the result to your server, to include in the
-     * payment request sent to PayPal. Do not otherwise cache or store this value.
-     *
-     * @param context       Android Context
-     * @param configuration The merchant configuration
+     * @suppress
      */
     @MainThread
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun getClientMetadataId(context: Context?, configuration: Configuration?): String {
-        val request = DataCollectorRequest()
+    fun getClientMetadataId(
+        context: Context?,
+        configuration: Configuration?,
+        hasUserLocationConsent: Boolean
+    ): String {
+        val request = DataCollectorInternalRequest(hasUserLocationConsent)
             .setApplicationGuid(getPayPalInstallationGUID(context))
         return getClientMetadataId(context, request, configuration)
     }
 
     /**
-     * Gets a Client Metadata ID at the time of payment activity. Once a user initiates a PayPal payment
-     * from their device, PayPal uses the Client Metadata ID to verify that the payment is
-     * originating from a valid, user-consented device and application. This helps reduce fraud and
-     * decrease declines. This method MUST be called prior to initiating a pre-consented payment (a
-     * "future payment") from a mobile device. Pass the result to your server, to include in the
-     * payment request sent to PayPal. Do not otherwise cache or store this value.
-     *
-     * @param context       Android Context.
-     * @param request       configures what data to collect.
-     * @param configuration the merchant configuration
-     *
      * @suppress
      */
     @MainThread
@@ -85,27 +70,10 @@ class DataCollector @VisibleForTesting internal constructor(
     @VisibleForTesting
     fun getClientMetadataId(
         context: Context?,
-        request: DataCollectorRequest?,
+        request: DataCollectorInternalRequest?,
         configuration: Configuration?
     ): String {
         return magnesInternalClient.getClientMetadataId(context, configuration, request)
-    }
-
-    /**
-     * Collects device data based on your merchant configuration.
-     *
-     *
-     * We recommend that you call this method as early as possible, e.g. at app launch. If that's too early,
-     * call it at the beginning of customer checkout.
-     *
-     *
-     * Use the return value on your server, e.g. with `Transaction.sale`.
-     *
-     * @param context  Android Context
-     * @param callback [DataCollectorCallback]
-     */
-    fun collectDeviceData(context: Context, callback: DataCollectorCallback) {
-        collectDeviceData(context, null, callback)
     }
 
     /**
@@ -119,25 +87,25 @@ class DataCollector @VisibleForTesting internal constructor(
      * Use the return value on your server, e.g. with `Transaction.sale`.
      *
      * @param context           Android Context
-     * @param riskCorrelationId Optional client metadata id
+     * @param request Optional client metadata id
      * @param callback          [DataCollectorCallback]
      */
     fun collectDeviceData(
         context: Context,
-        riskCorrelationId: String?,
+        request: DataCollectorRequest,
         callback: DataCollectorCallback
     ) {
         braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
             if (configuration != null) {
                 val deviceData = JSONObject()
                 try {
-                    val request = DataCollectorRequest()
+                    val internalRequest = DataCollectorInternalRequest(request.hasUserLocationConsent)
                         .setApplicationGuid(getPayPalInstallationGUID(context))
-                    if (riskCorrelationId != null) {
-                        request.setRiskCorrelationId(riskCorrelationId)
+                    if (request.riskCorrelationId != null) {
+                        internalRequest.setRiskCorrelationId(request.riskCorrelationId)
                     }
                     val correlationId =
-                        magnesInternalClient.getClientMetadataId(context, configuration, request)
+                        magnesInternalClient.getClientMetadataId(context, configuration, internalRequest)
                     if (!TextUtils.isEmpty(correlationId)) {
                         deviceData.put(CORRELATION_ID_KEY, correlationId)
                     }

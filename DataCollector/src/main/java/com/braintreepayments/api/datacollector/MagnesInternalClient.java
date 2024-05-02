@@ -29,7 +29,7 @@ class MagnesInternalClient {
     }
 
     @MainThread
-    String getClientMetadataId(Context context, Configuration configuration, DataCollectorRequest request) {
+    String getClientMetadataId(Context context, Configuration configuration, DataCollectorInternalRequest request) {
         if (context == null) {
             return "";
         }
@@ -44,7 +44,8 @@ class MagnesInternalClient {
                     .setMagnesSource(MagnesSource.BRAINTREE)
                     .disableBeacon(request.isDisableBeacon())
                     .setMagnesEnvironment(magnesEnvironment)
-                    .setAppGuid(request.getApplicationGuid());
+                    .setAppGuid(request.getApplicationGuid())
+                    .setHasUserLocationConsent(request.getHasUserLocationConsent());
 
             magnesSDK.setUp(magnesSettingsBuilder.build());
 

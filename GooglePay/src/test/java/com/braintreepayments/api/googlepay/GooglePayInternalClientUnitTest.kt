@@ -87,8 +87,7 @@ class GooglePayInternalClientUnitTest {
         every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns Tasks.forResult(true)
 
         val walletOptionsSlot = slot<Wallet.WalletOptions>()
-        every { Wallet.getPaymentsClient(any(Context::class), capture(walletOptionsSlot)) } returns
-                paymentsClient
+        every { Wallet.getPaymentsClient(any<Context>(), capture(walletOptionsSlot)) } returns paymentsClient
 
         val sut = GooglePayInternalClient()
         sut.isReadyToPay(context, configuration, isReadyToPayRequest, isReadyToPayCallback)
@@ -103,8 +102,7 @@ class GooglePayInternalClientUnitTest {
         every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns Tasks.forResult(true)
 
         val walletOptionsSlot = slot<Wallet.WalletOptions>()
-        every { Wallet.getPaymentsClient(any(Context::class), capture(walletOptionsSlot)) } returns
-                paymentsClient
+        every { Wallet.getPaymentsClient(any<Context>(), capture(walletOptionsSlot)) } returns paymentsClient
 
         val sut = GooglePayInternalClient()
         sut.isReadyToPay(context, configuration, isReadyToPayRequest, isReadyToPayCallback)
@@ -115,9 +113,11 @@ class GooglePayInternalClientUnitTest {
     @Test
     fun `isReadyToPay forwards success result to callback`() {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY)
-        every { Wallet.getPaymentsClient(any(Context::class), any()) } returns paymentsClient
+        every { Wallet.getPaymentsClient(any<Context>(), any()) } returns paymentsClient
 
-        every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns SuccessfulBooleanTask(true)
+        every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns SuccessfulBooleanTask(
+            true
+        )
 
         val sut = GooglePayInternalClient()
         sut.isReadyToPay(context, configuration, isReadyToPayRequest) { readyToPayResult ->
@@ -128,7 +128,7 @@ class GooglePayInternalClientUnitTest {
     @Test
     fun `isReadyToPay forwards failure result to callback`() {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY)
-        every { Wallet.getPaymentsClient(any(Context::class), any()) } returns paymentsClient
+        every { Wallet.getPaymentsClient(any<Context>(), any()) } returns paymentsClient
 
         val expectedError = ApiException(Status.RESULT_INTERNAL_ERROR)
         val failedTask: Task<Boolean> = FailingBooleanTask(expectedError)

@@ -247,7 +247,7 @@ public class LocalPaymentApiUnitTest {
         address.setRegion("CA");
         address.setPostalCode("2585 GJ");
 
-        LocalPaymentRequest request = new LocalPaymentRequest();
+        LocalPaymentRequest request = new LocalPaymentRequest(true);
         request.setPaymentType("ideal");
         request.setAmount("1.10");
         request.setAddress(address);

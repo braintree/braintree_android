@@ -35,6 +35,8 @@ public class LocalPaymentClient {
      */
     private String payPalContextId = null;
 
+    private boolean hasUserLocationConsent;
+
     /**
      * Initializes a new {@link LocalPaymentClient} instance
      *
@@ -115,6 +117,8 @@ public class LocalPaymentClient {
                                             "local payment method."),
                                         callback
                                     );
+                                    // TODO: hasUserLocationConsent is not propagated after browser switch - pass via browser switch metadata to use value in tokenize after browser switch
+                                    hasUserLocationConsent = request.hasUserLocationConsent();
                                 }
                             });
                 } else if (error != null) {
@@ -148,11 +152,11 @@ public class LocalPaymentClient {
 
         localPaymentAuthRequestParams.setBrowserSwitchOptions(browserSwitchOptions);
         callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.ReadyToLaunch(localPaymentAuthRequestParams));
-        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED, payPalContextId);
+        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED, payPalContextId, null);
     }
 
     private void authRequestFailure(Exception error, LocalPaymentAuthCallback callback) {
-        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, payPalContextId);
+        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, payPalContextId, null);
         callback.onLocalPaymentAuthRequest(new LocalPaymentAuthRequest.Failure(error));
     }
 
@@ -194,11 +198,11 @@ public class LocalPaymentClient {
         braintreeClient.getConfiguration((configuration, error) -> {
             if (configuration != null) {
                 localPaymentApi.tokenize(merchantAccountId, responseString,
-                        dataCollector.getClientMetadataId(context, configuration),
+                        dataCollector.getClientMetadataId(context, configuration, hasUserLocationConsent),
                         (localPaymentNonce, localPaymentError) -> {
                             if (localPaymentNonce != null) {
                                 braintreeClient.sendAnalyticsEvent(
-                                    LocalPaymentAnalytics.PAYMENT_SUCCEEDED, payPalContextId
+                                    LocalPaymentAnalytics.PAYMENT_SUCCEEDED, payPalContextId, null
                                 );
                                 callback.onLocalPaymentResult(new LocalPaymentResult.Success(localPaymentNonce));
                             } else if (localPaymentError != null) {
@@ -212,11 +216,11 @@ public class LocalPaymentClient {
     }
 
     private void callbackCancel(LocalPaymentTokenizeCallback callback){
-        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_CANCELED, payPalContextId);
+        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_CANCELED, payPalContextId, null);
         callback.onLocalPaymentResult(LocalPaymentResult.Cancel.INSTANCE);
     }
     private void tokenizeFailure(Exception error, LocalPaymentTokenizeCallback callback) {
-        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, payPalContextId);
+        braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, payPalContextId, null);
         callback.onLocalPaymentResult(new LocalPaymentResult.Failure(error));
     }
 }

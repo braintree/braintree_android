@@ -136,6 +136,50 @@
     * Remove entire PayPal Native Checkout module
   * SharedUtils
     * Update package name to `com.braintreepayments.api.sharedutils`
+    
+## unreleased (v4)
+
+* Venmo
+  * Send `link_type` in `event_params` to PayPal's analytics service (FPTI)
+  
+## 4.45.0 (2024-04-16)
+
+* BraintreeCore
+  * Updated expiring pinned vendor SSL certificates
+* GooglePay
+  * Add `GooglePayClient#tokenize(PaymentData, GooglePayOnActivityResultCallback)` to be invoked after direct Google Play Services integration
+* PayPalNativeCheckout
+  * Bump native-checkout version to `1.3.2`
+  * Fixes Google Play Store Rejection
+    * Add `hasUserLocationConsent` property to `PayPalNativeCheckoutRequest`, `PayPalNativeCheckoutVaultRequest` and `PayPalNativeRequest`
+    * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
+* PayPalDataCollector
+  * Bump Magnes version to `5.5.1`
+
+## 4.44.0 (2024-04-05)
+
+* Local Payment
+  * Fixes Google Play Store Rejection
+    * Add `hasUserLocationConsent` property to `LocalPaymentRequest`
+    * Deprecate existing constructor that does not pass in `hasUserLocationConsent`
+* PayPal
+  * Fixes Google Play Store Rejection
+    * Add `hasUserLocationConsent` property to `PayPalCheckoutRequest`, `PayPalVaultRequest` and `PayPalRequest`
+    * Deprecate existing constructors that do not pass in `hasUserLocationConsent`
+* BraintreeDataCollector
+  * Bump Magnes SDK to version 5.5.0
+  * Fixes Google Play Store Rejection
+    * Add `DataCollectorRequest` to pass in `hasUserLocationConsent`
+    * Update `DataCollector.collectDeviceData()` to take in `DataCollectorRequest`
+    * Deprecate existing `DataCollector.collectDeviceData()`
+* PayPalDataCollector
+  * Fixes Google Play Store Rejection
+    * Add `PayPalDataCollectorRequest` to pass in `hasUserLocationConsent`
+    * Update `PayPalDataCollector.collectDeviceData()` to take in `PayPalDataCollectorRequest`
+    * Deprecate existing `PayPalDataCollector.collectDeviceData()`
+* GooglePay
+  * Add `GooglePayClient#isReadyToPay(Context, ReadyForGooglePayRequest, GooglePayIsReadyToPayCallback)` method
+  * Deprecate  `GooglePayClient#isReadyToPay(FragmentActivity, ReadyForGooglePayRequest, GooglePayIsReadyToPayCallback)` method
 
 ## 4.43.0 (2024-03-19)
 

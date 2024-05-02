@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;
@@ -232,6 +233,15 @@ public class GooglePayClient {
 
     }
 
+    /**
+     * Call this method when you've received a successful {@link PaymentData} response from a
+     * direct Google Play Services integration to get a {@link GooglePayCardNonce} or
+     * {@link PayPalAccountNonce}.
+     *
+     * @param paymentData {@link PaymentData} retrieved from directly integrating with Google Play
+     *                                       Services through {@link PaymentsClient#loadPaymentData(PaymentDataRequest)}
+     * @param callback    {@link GooglePayTokenizeCallback}
+     */
     void tokenize(PaymentData paymentData, GooglePayTokenizeCallback callback) {
         try {
             JSONObject result = new JSONObject(paymentData.toJson());

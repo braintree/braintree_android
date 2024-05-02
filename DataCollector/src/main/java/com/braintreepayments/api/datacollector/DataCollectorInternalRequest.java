@@ -9,17 +9,22 @@ import androidx.annotation.RestrictTo;
  * Used to configuration the PayPalDataCollector request
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-public class DataCollectorRequest {
+public class DataCollectorInternalRequest {
 
     private String applicationGuid;
     private String clientMetadataId;
     private boolean disableBeacon;
+    private boolean hasUserLocationConsent;
     private HashMap<String,String> additionalData;
+
+    DataCollectorInternalRequest(boolean hasUserLocationConsent) {
+        this.hasUserLocationConsent = hasUserLocationConsent;
+    }
 
     /**
      * @param additionalData Additional data that should be associated with the data collection.
      */
-    DataCollectorRequest setAdditionalData(HashMap<String, String> additionalData) {
+    DataCollectorInternalRequest setAdditionalData(HashMap<String, String> additionalData) {
         this.additionalData = additionalData;
 
         return this;
@@ -29,7 +34,7 @@ public class DataCollectorRequest {
      * @param applicationGuid The application global unique identifier.
      *                        There is a 36 character length limit on this value.
      */
-    DataCollectorRequest setApplicationGuid(String applicationGuid) {
+    DataCollectorInternalRequest setApplicationGuid(String applicationGuid) {
         this.applicationGuid = applicationGuid;
 
         return this;
@@ -38,7 +43,7 @@ public class DataCollectorRequest {
     /**
      * @param riskCorrelationId The desired pairing ID, trimmed to 32 characters.
      */
-    DataCollectorRequest setRiskCorrelationId(@NonNull String riskCorrelationId) {
+    DataCollectorInternalRequest setRiskCorrelationId(@NonNull String riskCorrelationId) {
         this.clientMetadataId = riskCorrelationId.substring(0, Math.min(riskCorrelationId.length(), 32));
 
         return this;
@@ -47,7 +52,7 @@ public class DataCollectorRequest {
     /**
      * @param disableBeacon Indicates if the beacon feature should be disabled.
      */
-    DataCollectorRequest setDisableBeacon(boolean disableBeacon) {
+    DataCollectorInternalRequest setDisableBeacon(boolean disableBeacon) {
         this.disableBeacon = disableBeacon;
 
         return this;
@@ -63,6 +68,10 @@ public class DataCollectorRequest {
 
     String getClientMetadataId() {
         return clientMetadataId;
+    }
+
+    public boolean getHasUserLocationConsent() {
+        return hasUserLocationConsent;
     }
 
     boolean isDisableBeacon() {

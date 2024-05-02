@@ -12,7 +12,7 @@ public class PayPalRequestFactory {
 
     public static PayPalVaultRequest createPayPalVaultRequest(Context context) {
 
-        PayPalVaultRequest request = new PayPalVaultRequest();
+        PayPalVaultRequest request = new PayPalVaultRequest(true);
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
 
@@ -43,7 +43,7 @@ public class PayPalRequestFactory {
     }
 
     public static PayPalCheckoutRequest createPayPalCheckoutRequest(Context context, String amount) {
-        PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount);
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
 
