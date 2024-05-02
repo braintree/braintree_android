@@ -8,36 +8,36 @@ class PayPalMessagingPageTypeUnitTest {
 
     @Test
     fun `test home placement returns message type value home`() {
-        assertEquals(PayPalMessagePageType.HOME, PayPalMessagingPageType.HOME.rawValue)
+        assertEquals(PayPalMessagePageType.HOME, PayPalMessagingPageType.HOME.internalValue)
     }
 
     @Test
     fun `test category placement returns message type value product details`() {
-        assertEquals(PayPalMessagePageType.PRODUCT_DETAILS, PayPalMessagingPageType.PRODUCT_DETAILS.rawValue)
+        assertEquals(PayPalMessagePageType.PRODUCT_DETAILS, PayPalMessagingPageType.PRODUCT_DETAILS.internalValue)
     }
 
     @Test
     fun `test product placement returns message type value product listing`() {
-        assertEquals(PayPalMessagePageType.PRODUCT_LISTING, PayPalMessagingPageType.PRODUCT_LISTING.rawValue)
+        assertEquals(PayPalMessagePageType.PRODUCT_LISTING, PayPalMessagingPageType.PRODUCT_LISTING.internalValue)
     }
 
     @Test
     fun `test cart placement returns message type value cart`() {
-        assertEquals(PayPalMessagePageType.CART, PayPalMessagingPageType.CART.rawValue)
+        assertEquals(PayPalMessagePageType.CART, PayPalMessagingPageType.CART.internalValue)
     }
 
     @Test
     fun `test cart placement returns message type value mini cart`() {
-        assertEquals(PayPalMessagePageType.MINI_CART, PayPalMessagingPageType.MINI_CART.rawValue)
+        assertEquals(PayPalMessagePageType.MINI_CART, PayPalMessagingPageType.MINI_CART.internalValue)
     }
 
     @Test
     fun `test payment placement returns message type value checkout`() {
-        assertEquals(PayPalMessagePageType.CHECKOUT, PayPalMessagingPageType.CHECKOUT.rawValue)
+        assertEquals(PayPalMessagePageType.CHECKOUT, PayPalMessagingPageType.CHECKOUT.internalValue)
     }
 
     @Test
     fun `test payment placement returns message type value search results`() {
-        assertEquals(PayPalMessagePageType.SEARCH_RESULTS, PayPalMessagingPageType.SEARCH_RESULTS.rawValue)
+        assertEquals(PayPalMessagePageType.SEARCH_RESULTS, PayPalMessagingPageType.SEARCH_RESULTS.internalValue)
     }
 }

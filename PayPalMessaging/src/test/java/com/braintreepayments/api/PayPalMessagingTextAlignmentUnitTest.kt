@@ -8,16 +8,16 @@ class PayPalMessagingTextAlignmentUnitTest {
 
     @Test
     fun `test left text alignment returns raw value left align`() {
-        assertEquals(PayPalMessageAlign.LEFT, PayPalMessagingTextAlignment.LEFT.textAlignmentRawValue)
+        assertEquals(PayPalMessageAlign.LEFT, PayPalMessagingTextAlignment.LEFT.internalValue)
     }
 
     @Test
     fun `test right text alignment returns raw value right align`() {
-        assertEquals(PayPalMessageAlign.RIGHT, PayPalMessagingTextAlignment.RIGHT.textAlignmentRawValue)
+        assertEquals(PayPalMessageAlign.RIGHT, PayPalMessagingTextAlignment.RIGHT.internalValue)
     }
 
     @Test
     fun `test center text alignment returns raw value center align`() {
-        assertEquals(PayPalMessageAlign.CENTER, PayPalMessagingTextAlignment.CENTER.textAlignmentRawValue)
+        assertEquals(PayPalMessageAlign.CENTER, PayPalMessagingTextAlignment.CENTER.internalValue)
     }
 }

@@ -23,7 +23,7 @@ enum class PayPalMessagingTextAlignment {
      */
     RIGHT;
 
-    internal val textAlignmentRawValue: PayPalMessageAlign
+    internal val internalValue: PayPalMessageAlign
         get() = when (this) {
             LEFT -> PayPalMessageAlign.LEFT
             CENTER -> PayPalMessageAlign.CENTER

@@ -27,7 +27,7 @@ enum class PayPalMessagingLogoType {
      */
     NONE;
 
-    internal val logoTypeRawValue: PayPalMessageLogoType
+    internal val internalValue: PayPalMessageLogoType
         get() = when (this) {
             PRIMARY -> PayPalMessageLogoType.PRIMARY
             ALTERNATIVE -> PayPalMessageLogoType.ALTERNATIVE

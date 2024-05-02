@@ -80,15 +80,15 @@ class PayPalMessagingView(
             clientID = clientId,
             amount = request.amount,
             buyerCountry = request.buyerCountry,
-            offerType = request.offerType?.offerTypeRawValue,
-            pageType = request.pageType?.rawValue,
+            offerType = request.offerType?.internalValue,
+            pageType = request.pageType?.internalValue,
             environment = environment
         )
 
         val messageStyle = PayPalMessageStyle(
-            color = request.color.messageColorRawValue,
-            logoType = request.logoType.logoTypeRawValue,
-            textAlign = request.textAlignment.textAlignmentRawValue
+            color = request.color.internalValue,
+            logoType = request.logoType.internalValue,
+            textAlign = request.textAlignment.internalValue
         )
 
         val viewStateCallbacks = PayPalMessageViewStateCallbacks(

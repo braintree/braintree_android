@@ -43,7 +43,7 @@ enum class PayPalMessagingPageType {
      */
     SEARCH_RESULTS;
 
-    internal val rawValue: PayPalMessagePageType
+    internal val internalValue: PayPalMessagePageType
         get() = when (this) {
             HOME -> PayPalMessagePageType.HOME
             PRODUCT_DETAILS -> PayPalMessagePageType.PRODUCT_DETAILS
