@@ -20,7 +20,7 @@ data class PayPalMessagingRequest(
     var pageType: PayPalMessagingPageType? = null,
     var offerType: PayPalMessagingOfferType? = null,
     var buyerCountry: String? = null,
-    var logoType: PayPalMessagingLogoType = PayPalMessagingLogoType.PRIMARY,
-    var textAlignment: PayPalMessagingTextAlignment = PayPalMessagingTextAlignment.LEFT,
+    var logoType: PayPalMessagingLogoType = PayPalMessagingLogoType.INLINE,
+    var textAlignment: PayPalMessagingTextAlignment = PayPalMessagingTextAlignment.RIGHT,
     var color: PayPalMessagingColor = PayPalMessagingColor.BLACK
 )
