@@ -3,6 +3,7 @@ package com.braintreepayments.demo;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,7 +50,13 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         if (braintreeClient == null) {
             if (Settings.useTokenizationKey(this)) {
                 String tokenizationKey = Settings.getTokenizationKey(this);
-                braintreeClient = new BraintreeClient(this, tokenizationKey);
+
+                boolean useAppLink = Settings.getPayPalLinkType(this).equals(getString(R.string.paypal_app_link));
+                Uri appLinkUri = null;
+                if (useAppLink) {
+                    appLinkUri = Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/");
+                }
+                braintreeClient = new BraintreeClient(this, tokenizationKey, null, appLinkUri);
             } else {
                 braintreeClient =
                     BraintreeClientFactory.createBraintreeClientWithAuthorizationProvider(this);

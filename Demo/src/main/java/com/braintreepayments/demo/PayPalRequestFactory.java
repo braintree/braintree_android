@@ -14,6 +14,9 @@ public class PayPalRequestFactory {
 
         PayPalVaultRequest request = new PayPalVaultRequest();
 
+        boolean useAppLink = Settings.getPayPalLinkType(context).equals(context.getString(R.string.paypal_app_link));
+        request.setAppLinkEnabled(useAppLink);
+
         request.setDisplayName(Settings.getPayPalDisplayName(context));
 
         String landingPageType = Settings.getPayPalLandingPageType(context);
@@ -44,6 +47,9 @@ public class PayPalRequestFactory {
 
     public static PayPalCheckoutRequest createPayPalCheckoutRequest(Context context, String amount) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount);
+
+        boolean useAppLink = Settings.getPayPalLinkType(context).equals(context.getString(R.string.paypal_app_link));
+        request.setAppLinkEnabled(useAppLink);
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
 
