@@ -26,24 +26,6 @@ class VisaCheckoutAccountUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun build_withNullVisaPaymentSummary_buildsEmptyPaymentMethod() {
-        val expectedBase = JSONObject()
-            .put("visaCheckoutCard", JSONObject())
-            .put(
-                "_meta", JSONObject()
-                    .put("source", "form")
-                    .put("integration", "custom")
-                    .put("sessionId", "1234")
-                    .put("platform", "android")
-            )
-        val visaCheckoutAccount = VisaCheckoutAccount(null)
-        visaCheckoutAccount.setSessionId("1234")
-        val json = visaCheckoutAccount.buildJSON()
-        JSONAssert.assertEquals(expectedBase, json, JSONCompareMode.STRICT)
-    }
-
-    @Test
-    @Throws(JSONException::class)
     fun build_withVisaPaymentSummary_buildsExpectedPaymentMethod() {
         every { visaPaymentSummary.callId } returns "stubbedCallId"
         every { visaPaymentSummary.encKey } returns "stubbedEncKey"
@@ -69,6 +51,6 @@ class VisaCheckoutAccountUnitTest {
 
     @Test
     fun apiPath_returnsCorrectApiPath() {
-        assertEquals("visa_checkout_cards", VisaCheckoutAccount(null).apiPath)
+        assertEquals("visa_checkout_cards", VisaCheckoutAccount(mockk()).apiPath)
     }
 }

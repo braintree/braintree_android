@@ -9,7 +9,7 @@ import java.lang.Exception
  * @suppress
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-interface TokenizeCallback {
+fun interface TokenizeCallback {
 
     /**
      * @param tokenizationResponse JSON object created from the tokenization response.

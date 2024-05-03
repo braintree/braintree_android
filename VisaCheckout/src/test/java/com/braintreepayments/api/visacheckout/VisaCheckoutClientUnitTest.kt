@@ -7,6 +7,8 @@ import com.braintreepayments.api.MockkApiClientBuilder
 import com.braintreepayments.api.MockkBraintreeClientBuilder
 import com.braintreepayments.api.TestConfigurationBuilder
 import com.braintreepayments.api.TestConfigurationBuilder.TestVisaCheckoutConfigurationBuilder
+import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.core.ConfigurationException
 import com.visa.checkout.Profile.CardBrand
 import com.visa.checkout.VisaPaymentSummary
 import io.mockk.every
@@ -56,7 +58,13 @@ class VisaCheckoutClientUnitTest {
         sut.createProfileBuilder(listener)
 
         val configurationExceptionSlot = slot<VisaCheckoutProfileBuilderResult>()
-        verify(exactly = 1) { listener.onVisaCheckoutProfileBuilderResult(capture(configurationExceptionSlot)) }
+        verify(exactly = 1) {
+            listener.onVisaCheckoutProfileBuilderResult(
+                capture(
+                    configurationExceptionSlot
+                )
+            )
+        }
 
         val profileBuilderResult = configurationExceptionSlot.captured
         assertTrue(profileBuilderResult is VisaCheckoutProfileBuilderResult.Failure)
@@ -88,7 +96,7 @@ class VisaCheckoutClientUnitTest {
         sut.createProfileBuilder { profileBuilderResult ->
             assertTrue(profileBuilderResult is VisaCheckoutProfileBuilderResult.Success)
             val profileBuilder = (profileBuilderResult as VisaCheckoutProfileBuilderResult
-                .Success).profileBuilder
+            .Success).profileBuilder
             val profile = profileBuilder.build()
             assertNotNull(profile)
             assertTrue(profile.acceptedCardBrands.contains(CardBrand.VISA))
@@ -129,6 +137,44 @@ class VisaCheckoutClientUnitTest {
             lock.countDown()
         }
         lock.await()
+    }
+
+    @Test
+    fun `when createProfileBuilder is called and configuration is null, exception is returned as a failure`() {
+        val exception = Exception()
+        val callback = mockk<VisaCheckoutCreateProfileBuilderCallback>(relaxed = true)
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationError(exception)
+            .build()
+        val sut = VisaCheckoutClient(braintreeClient, mockk())
+
+        sut.createProfileBuilder(callback)
+
+        verify {
+            callback.onVisaCheckoutProfileBuilderResult(withArg { failure ->
+                assertTrue(failure is VisaCheckoutProfileBuilderResult.Failure)
+                assertEquals(exception, (failure as VisaCheckoutProfileBuilderResult.Failure).error)
+            })
+        }
+    }
+
+    @Test
+    fun `when createProfileBuilder is called and configuration and exception are null, a failure is returned`() {
+        val exception = ConfigurationException("Error getting configuration.")
+        val callback = mockk<VisaCheckoutCreateProfileBuilderCallback>(relaxed = true)
+        val braintreeClient = MockkBraintreeClientBuilder().build()
+        val sut = VisaCheckoutClient(braintreeClient, mockk())
+
+        sut.createProfileBuilder(callback)
+
+        verify {
+            callback.onVisaCheckoutProfileBuilderResult(withArg { failure ->
+                assertTrue(failure is VisaCheckoutProfileBuilderResult.Failure)
+                val error = (failure as VisaCheckoutProfileBuilderResult.Failure).error
+                assertTrue(error is ConfigurationException)
+                assertEquals("Error getting configuration.", error.message)
+            })
+        }
     }
 
     @Test
