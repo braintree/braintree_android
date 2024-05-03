@@ -17,7 +17,7 @@ import org.json.JSONObject
  * [merchantId] [currencyCode] [countryCode] are needed for Venmo recommended results
  *
  */
-@UnstableApi
+@ExperimentalBetaApi
 internal data class EligiblePaymentsApiRequest(
     val request: ShopperInsightsRequest,
     val merchantId: String,

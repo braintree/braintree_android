@@ -18,7 +18,7 @@ import kotlin.test.assertTrue
  * It focuses on testing how the client handles different scenarios when fetching recommended
  * payment methods.
  */
-@OptIn(UnstableApi::class)
+@OptIn(ExperimentalBetaApi::class)
 class ShopperInsightsClientUnitTest {
 
     private lateinit var sut: ShopperInsightsClient

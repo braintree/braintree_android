@@ -17,7 +17,7 @@ import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_SELECTED
  *
  * Note: **This feature is in beta. It's public API may change in future releases.**
  */
-@UnstableApi
+@ExperimentalBetaApi
 class ShopperInsightsClient @VisibleForTesting internal constructor(
     private val api: ShopperInsightsApi,
     private val braintreeClient: BraintreeClient

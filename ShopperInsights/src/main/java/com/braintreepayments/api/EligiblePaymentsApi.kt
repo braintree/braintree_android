@@ -3,7 +3,7 @@ package com.braintreepayments.api
 import com.braintreepayments.api.EligiblePaymentsApiRequest.Companion.toJson
 import org.json.JSONException
 
-@UnstableApi
+@ExperimentalBetaApi
 internal class EligiblePaymentsApi(
     private val braintreeClient: BraintreeClient
 ) {
