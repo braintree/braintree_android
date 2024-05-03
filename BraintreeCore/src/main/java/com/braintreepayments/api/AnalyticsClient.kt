@@ -19,13 +19,15 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     private val httpClient: BraintreeHttpClient,
     private val analyticsDatabase: AnalyticsDatabase,
     private val workManager: WorkManager,
-    private val deviceInspector: DeviceInspector
+    private val deviceInspector: DeviceInspector,
+    private val isVenmoInstalled: Boolean
 ) {
     constructor(context: Context) : this(
         BraintreeHttpClient(),
         getInstance(context.applicationContext),
         WorkManager.getInstance(context.applicationContext),
-        DeviceInspector()
+        DeviceInspector(),
+        DeviceInspector().isVenmoInstalled(context.applicationContext)
     )
 
     fun sendEvent(
@@ -35,7 +37,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         integration: String?,
         authorization: Authorization
     ): UUID {
-        scheduleAnalyticsWrite(event, authorization)
+        val updatedEvent = AnalyticsEvent(event.name, event.payPalContextId, event.linkType, event.timestamp, isVenmoInstalled)
+        scheduleAnalyticsWrite(updatedEvent, authorization)
         return scheduleAnalyticsUpload(configuration, authorization, sessionId, integration)
     }
 
@@ -68,7 +71,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         return if (eventName == null || timestamp == INVALID_TIMESTAMP) {
             ListenableWorker.Result.failure()
         } else {
-            val event = AnalyticsEvent(eventName, payPalContextId, linkType, timestamp)
+            val event = AnalyticsEvent(eventName, payPalContextId, linkType, timestamp, venmoInstalled = isVenmoInstalled)
             val analyticsEventDao = analyticsDatabase.analyticsEventDao()
             analyticsEventDao.insertEvent(event)
             ListenableWorker.Result.success()

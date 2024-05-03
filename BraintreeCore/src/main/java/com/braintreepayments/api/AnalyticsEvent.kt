@@ -20,7 +20,10 @@ open class AnalyticsEvent internal constructor(
     @ColumnInfo(name = "link_type")
     open val linkType: String? = null,
 
-    open val timestamp: Long = System.currentTimeMillis()
+    open val timestamp: Long = System.currentTimeMillis(),
+
+    @ColumnInfo(name = "venmo_installed", defaultValue = "0")
+    open val venmoInstalled: Boolean = false
 ) {
     @JvmField
     @PrimaryKey(autoGenerate = true)

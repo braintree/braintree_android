@@ -40,7 +40,7 @@ public class AnalyticsClientTest {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT);
         
-        AnalyticsEvent event = new AnalyticsEvent("event.started", null, null, 123);
+        AnalyticsEvent event = new AnalyticsEvent("event.started", null, null, 123, false);
 
         AnalyticsClient sut = new AnalyticsClient(context);
         UUID workSpecId = sut.sendEvent(configuration, event, "sessionId", "custom", authorization);
