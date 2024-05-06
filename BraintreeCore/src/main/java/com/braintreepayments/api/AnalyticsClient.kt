@@ -37,7 +37,13 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         integration: String?,
         authorization: Authorization
     ): UUID {
-        val updatedEvent = AnalyticsEvent(event.name, event.payPalContextId, event.linkType, event.timestamp, isVenmoInstalled)
+        val updatedEvent = AnalyticsEvent(
+            event.name,
+            event.payPalContextId,
+            event.linkType,
+            event.timestamp,
+            isVenmoInstalled
+        )
         scheduleAnalyticsWrite(updatedEvent, authorization)
         return scheduleAnalyticsUpload(configuration, authorization, sessionId, integration)
     }
