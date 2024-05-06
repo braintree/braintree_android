@@ -4,7 +4,7 @@ import com.braintreepayments.api.EligiblePaymentsApiRequest.Companion.toJson
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 
-@ExperimentalBetaApi
+@OptIn(ExperimentalBetaApi::class)
 class EligiblePaymentsApiRequestUnitTest {
 
     @Test

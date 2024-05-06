@@ -8,7 +8,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 
-@ExperimentalBetaApi
+@OptIn(ExperimentalBetaApi::class)
 class EligiblePaymentsApiUnitTest {
 
     private lateinit var sut: EligiblePaymentsApi
