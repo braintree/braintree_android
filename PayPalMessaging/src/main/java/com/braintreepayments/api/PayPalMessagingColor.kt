@@ -27,7 +27,7 @@ enum class PayPalMessagingColor {
      */
     GRAYSCALE;
 
-    internal val messageColorRawValue: PayPalMessageColor
+    internal val internalValue: PayPalMessageColor
         get() = when (this) {
             BLACK -> PayPalMessageColor.BLACK
             WHITE -> PayPalMessageColor.WHITE

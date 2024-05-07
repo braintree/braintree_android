@@ -8,21 +8,21 @@ class PayPalMessagingLogoTypeUnitTest {
 
     @Test
     fun `test inline logo returns raw value inline`() {
-        assertEquals(PayPalMessageLogoType.INLINE, PayPalMessagingLogoType.INLINE.logoTypeRawValue)
+        assertEquals(PayPalMessageLogoType.INLINE, PayPalMessagingLogoType.INLINE.internalValue)
     }
 
     @Test
     fun `test primary logo returns raw value primary`() {
-        assertEquals(PayPalMessageLogoType.PRIMARY, PayPalMessagingLogoType.PRIMARY.logoTypeRawValue)
+        assertEquals(PayPalMessageLogoType.PRIMARY, PayPalMessagingLogoType.PRIMARY.internalValue)
     }
 
     @Test
     fun `test alternative logo returns raw value alternative`() {
-        assertEquals(PayPalMessageLogoType.ALTERNATIVE, PayPalMessagingLogoType.ALTERNATIVE.logoTypeRawValue)
+        assertEquals(PayPalMessageLogoType.ALTERNATIVE, PayPalMessagingLogoType.ALTERNATIVE.internalValue)
     }
 
     @Test
     fun `test simple logo returns raw value none`() {
-        assertEquals(PayPalMessageLogoType.NONE, PayPalMessagingLogoType.SIMPLE.logoTypeRawValue)
+        assertEquals(PayPalMessageLogoType.NONE, PayPalMessagingLogoType.NONE.internalValue)
     }
 }

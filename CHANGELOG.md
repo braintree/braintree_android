@@ -3,7 +3,7 @@
 ## unreleased
 
 * PayPalMessaging (BETA)
-  * Add `PayPalMessagingRequest`, `PayPalMessagingColor`, `PayPalMessagingLogoType`, `PayPalMessagingOfferType`, `PayPalMessagingPlacement`, `PayPalMessagingTextAlignment`, and `PayPalMessagingListener`
+  * Add `PayPalMessagingRequest`, `PayPalMessagingColor`, `PayPalMessagingLogoType`, `PayPalMessagingOfferType`, `PayPalMessagingPageType`, `PayPalMessagingTextAlignment`, and `PayPalMessagingListener`
   * Add `PayPalMessagingView(BraintreeClient, Context)` to display PayPal messages to promote offers such as Pay Later and PayPal Credit to customers.
     * To get started call `PayPalMessagingView#start()` with an optional `PayPalMessagingRequest`
 * Venmo

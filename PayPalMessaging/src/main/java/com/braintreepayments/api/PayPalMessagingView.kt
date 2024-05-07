@@ -4,9 +4,9 @@ import android.content.Context
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.paypal.messages.PayPalMessageView
-import com.paypal.messages.config.message.PayPalMessageData
 import com.paypal.messages.config.PayPalEnvironment
 import com.paypal.messages.config.message.PayPalMessageConfig
+import com.paypal.messages.config.message.PayPalMessageData
 import com.paypal.messages.config.message.PayPalMessageEventsCallbacks
 import com.paypal.messages.config.message.PayPalMessageStyle
 import com.paypal.messages.config.message.PayPalMessageViewStateCallbacks
@@ -80,15 +80,15 @@ class PayPalMessagingView(
             clientID = clientId,
             amount = request.amount,
             buyerCountry = request.buyerCountry,
-            offerType = request.offerType?.offerTypeRawValue,
-            placement = request.placement?.rawValue,
+            offerType = request.offerType?.internalValue,
+            pageType = request.pageType?.internalValue,
             environment = environment
         )
 
         val messageStyle = PayPalMessageStyle(
-            color = request.color?.messageColorRawValue,
-            logoType = request.logoType?.logoTypeRawValue,
-            textAlign = request.textAlignment?.textAlignmentRawValue
+            color = request.color.internalValue,
+            logoType = request.logoType.internalValue,
+            textAlign = request.textAlignment.internalValue
         )
 
         val viewStateCallbacks = PayPalMessageViewStateCallbacks(
@@ -117,6 +117,11 @@ class PayPalMessagingView(
             style = messageStyle,
             viewStateCallbacks = viewStateCallbacks,
             eventsCallbacks = eventsCallbacks
+        )
+
+        PayPalMessageConfig.setGlobalAnalytics(
+            integrationName = "BT_SDK",
+            integrationVersion = BuildConfig.VERSION_NAME
         )
 
         return PayPalMessageView(context = context, config = messageConfig)

@@ -12,6 +12,8 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "VERSION_NAME", "\"${rootProject.versionName}\""
     }
 
     testOptions {
@@ -42,7 +44,7 @@ dependencies {
     implementation deps.coreKtx
     implementation deps.kotlinStdLib
     implementation deps.appCompat
-    implementation('com.paypal.messages:paypal-messages:1.0.0-alpha.00')
+    implementation('com.paypal.messages:paypal-messages:1.0.0-develop.2')
 
     testImplementation deps.robolectric
     testImplementation deps.jsonAssert
