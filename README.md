@@ -12,8 +12,7 @@ The Braintree SDK requires Java 8 as of version 4.24.0. See the [CHANGELOG](http
 
 ## 📣 Announcements
 
-- A new major version of the SDK is now available. See the [v4.9.0+ migration guide](v4.9.0+_MIGRATION_GUIDE.md) for details.
-- **Upgrade your integration to continue accepting Braintree payments** The SSL certificates for the Android SDK are set to expire by June 31, 2025. Upgrade to v4.45.0+ to continue using the Braintree SDK. ![Click here for more details](https://github.com/braintree/braintree_android/issues/993)
+**Upgrade your integration to continue accepting Braintree payments** The SSL certificates for the Android SDK are set to expire by June 31, 2025. Upgrade to v4.45.0+ to continue using the Braintree SDK. ![Click here for more details](https://github.com/braintree/braintree_android/issues/993)
 
 ## Adding It To Your Project
 
