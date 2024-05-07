@@ -92,7 +92,7 @@
         android:title="@string/paypal">
 
         <CheckBoxPreference
-            android:key="enable_manual_browser_switching"
+            android:key="show_checkout_experience"
             android:title="@string/paypal_checkout_experience"
             android:summary="@string/paypal_checkout_experience_summary"
             android:defaultValue="false" />
