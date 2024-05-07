@@ -83,6 +83,8 @@
     <string name="enable_manual_browser_switching_summary">Use alternate integration pattern to give the Demo app more control over browser switching</string>
     <string name="require_three_d_secure">Require 3D Secure</string>
     <string name="require_three_d_secure_summary">Requires a successful authentication for 3D Secure transactions</string>
+    <string name="paypal_checkout_experience">PayPal Checkout Experience</string>
+    <string name="paypal_checkout_experience_summary">Show new PayPal checkout experience</string>
     <string name="paypal_disable_signature_verification">Disable app switch signature verification</string>
     <string name="paypal_disable_signature_verification_summary">Allows app switch with a PayPal Wallet app that is not signed</string>
     <string name="paypal_buyer_email_address">Buyer Email Address</string>

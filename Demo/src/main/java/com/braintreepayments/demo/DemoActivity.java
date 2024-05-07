@@ -47,7 +47,10 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
     public BraintreeClient getBraintreeClient() {
         // lazily instantiate braintree client in case the demo has been reset
         if (braintreeClient == null) {
-            if (Settings.useTokenizationKey(this)) {
+            if (Settings.useTokenizationKey(this) && Settings.showCheckoutExperience(this)) {
+                String tokenizationKey = Settings.getPayPalCheckoutTokenizationKey(this);
+                braintreeClient = new BraintreeClient(this, tokenizationKey);
+            } else if (Settings.useTokenizationKey(this)) {
                 String tokenizationKey = Settings.getTokenizationKey(this);
                 braintreeClient = new BraintreeClient(this, tokenizationKey);
             } else {
