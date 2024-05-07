@@ -6,7 +6,7 @@ Welcome to Braintree's Android SDK. This library will help you accept card and a
 
 :mega:&nbsp;&nbsp;A new major version of the SDK is now available. See the [v4.9.0+ migration guide](v4.9.0+_MIGRATION_GUIDE.md) for details.
 
-📣 **Upgrade your integration to continue accepting Braintree payments** The SSL certificates for the Android SDK are set to expire by June 31, 2025. Upgrade to v4.45.0+ to continue using the Braintree SDK. ![Click here for more details](https://github.com/braintree/braintree_ios/issues/1277)
+📣 **Upgrade your integration to continue accepting Braintree payments** The SSL certificates for the Android SDK are set to expire by June 31, 2025. Upgrade to v4.45.0+ to continue using the Braintree SDK. ![Click here for more details](https://github.com/braintree/braintree_android/issues/993)
 
 **The Braintree SDK supports Android API 21 and above.**
 
