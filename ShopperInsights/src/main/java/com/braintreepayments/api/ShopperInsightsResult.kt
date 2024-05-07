@@ -3,12 +3,12 @@ package com.braintreepayments.api
 /**
  * The result object returned when insights about a shopper is requested.
  */
-@ExperimentalBetaApi
 sealed class ShopperInsightsResult {
 
     /**
      * @property response The response object describing the shopper's insights.
      */
+    @OptIn(ExperimentalBetaApi::class)
     class Success(val response: ShopperInsightsInfo) : ShopperInsightsResult()
 
     /**

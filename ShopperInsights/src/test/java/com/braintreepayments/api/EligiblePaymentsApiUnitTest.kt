@@ -8,7 +8,6 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 
-@OptIn(ExperimentalBetaApi::class)
 class EligiblePaymentsApiUnitTest {
 
     private lateinit var sut: EligiblePaymentsApi
@@ -144,6 +143,7 @@ class EligiblePaymentsApiUnitTest {
         }
     }
 
+    @OptIn(ExperimentalBetaApi::class)
     private fun createEmptyRequest(): EligiblePaymentsApiRequest {
         return EligiblePaymentsApiRequest(
             ShopperInsightsRequest(
