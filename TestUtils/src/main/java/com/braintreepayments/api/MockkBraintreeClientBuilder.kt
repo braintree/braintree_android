@@ -16,9 +16,15 @@ class MockkBraintreeClientBuilder {
     private var sendGraphQLPOSTError: ErrorWithResponse? = null
 
     private var configurationSuccess: Configuration? = null
+    private var configurationException: Exception? = null
 
     fun configurationSuccess(configurationSuccess: Configuration): MockkBraintreeClientBuilder {
         this.configurationSuccess = configurationSuccess
+        return this
+    }
+
+    fun configurationError(error: Exception): MockkBraintreeClientBuilder {
+        this.configurationException = error
         return this
     }
 
@@ -33,7 +39,7 @@ class MockkBraintreeClientBuilder {
 
         every { braintreeClient.getConfiguration(any()) } answers { call ->
             val callback = call.invocation.args[0] as ConfigurationCallback
-            configurationSuccess?.let { callback.onResult(it, null) }
+            callback.onResult(configurationSuccess, configurationException)
         }
 
         every { braintreeClient.sendGraphQLPOST(any(), any()) } answers { call ->
