@@ -15,6 +15,7 @@ import com.braintreepayments.api.ShopperInsightsBuyerPhone
 import com.braintreepayments.api.ShopperInsightsClient
 import com.braintreepayments.api.ShopperInsightsRequest
 import com.braintreepayments.api.ShopperInsightsResult
+import com.braintreepayments.api.ExperimentalBetaApi
 import com.braintreepayments.api.VenmoAccountNonce
 import com.braintreepayments.api.VenmoClient
 import com.braintreepayments.api.VenmoListener
@@ -26,6 +27,7 @@ import com.google.android.material.textfield.TextInputLayout
 /**
  * Fragment for handling shopping insights.
  */
+@OptIn(ExperimentalBetaApi::class)
 class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
 
     private lateinit var responseTextView: TextView

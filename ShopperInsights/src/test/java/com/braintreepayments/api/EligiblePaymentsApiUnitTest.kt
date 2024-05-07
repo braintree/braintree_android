@@ -143,6 +143,7 @@ class EligiblePaymentsApiUnitTest {
         }
     }
 
+    @OptIn(ExperimentalBetaApi::class)
     private fun createEmptyRequest(): EligiblePaymentsApiRequest {
         return EligiblePaymentsApiRequest(
             ShopperInsightsRequest(
