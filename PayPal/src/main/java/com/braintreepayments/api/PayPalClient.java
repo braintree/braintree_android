@@ -32,6 +32,8 @@ public class PayPalClient {
      */
     private String payPalContextId = null;
 
+    private boolean appLinkReturn = false;
+
     @VisibleForTesting
     BrowserSwitchResult pendingBrowserSwitchResult;
 
@@ -206,6 +208,14 @@ public class PayPalClient {
         tokenizePayPalAccount(activity, payPalVaultRequest, callback);
     }
 
+    public boolean isAppLinkReturn() {
+        return appLinkReturn;
+    }
+
+    public void setAppLinkReturn(boolean appLinkReturn) {
+        this.appLinkReturn = appLinkReturn;
+    }
+
     private void sendCheckoutRequest(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected", payPalContextId);
         if (payPalCheckoutRequest.getShouldOfferPayLater()) {
@@ -316,6 +326,9 @@ public class PayPalClient {
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                 .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
                 .metadata(metadata);
+        if (isAppLinkReturn()) {
+            browserSwitchOptions.appLinkUri(braintreeClient.getAppLinkReturnUri());
+        }
         braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
     }
 
