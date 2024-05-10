@@ -32,8 +32,6 @@ public class PayPalClient {
      */
     private String payPalContextId = null;
 
-    private boolean appLinkReturn = false;
-
     @VisibleForTesting
     BrowserSwitchResult pendingBrowserSwitchResult;
 
@@ -208,14 +206,6 @@ public class PayPalClient {
         tokenizePayPalAccount(activity, payPalVaultRequest, callback);
     }
 
-    public boolean isAppLinkReturn() {
-        return appLinkReturn;
-    }
-
-    public void setAppLinkReturn(boolean appLinkReturn) {
-        this.appLinkReturn = appLinkReturn;
-    }
-
     private void sendCheckoutRequest(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
         braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected", payPalContextId);
         if (payPalCheckoutRequest.getShouldOfferPayLater()) {
@@ -286,27 +276,28 @@ public class PayPalClient {
     }
 
     private void sendPayPalRequest(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
-        internalPayPalClient.sendRequest(activity, payPalRequest, new PayPalInternalClientCallback() {
-            @Override
-            public void onResult(PayPalResponse payPalResponse, Exception error) {
-                if (payPalResponse != null) {
-                    String analyticsPrefix = getAnalyticsEventPrefix(payPalRequest);
-                    braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.started", analyticsPrefix), payPalContextId);
+        internalPayPalClient.sendRequest(activity, payPalRequest, (payPalResponse, error) -> {
+            if (payPalResponse != null) {
+                String analyticsPrefix = getAnalyticsEventPrefix(payPalRequest);
+                braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.started", analyticsPrefix), payPalContextId);
 
-                    try {
-                        startBrowserSwitch(activity, payPalResponse);
-                        callback.onResult(null);
-                    } catch (JSONException | BrowserSwitchException exception) {
-                        callback.onResult(exception);
-                    }
-                } else {
-                    callback.onResult(error);
+                try {
+                    startBrowserSwitch(activity, payPalResponse, payPalRequest.isAppLinkEnabled());
+                    callback.onResult(null);
+                } catch (JSONException | BrowserSwitchException exception) {
+                    callback.onResult(exception);
                 }
+            } else {
+                callback.onResult(error);
             }
         });
     }
 
-    private void startBrowserSwitch(FragmentActivity activity, PayPalResponse payPalResponse) throws JSONException, BrowserSwitchException {
+    private void startBrowserSwitch(
+            FragmentActivity activity,
+            PayPalResponse payPalResponse,
+            boolean isAppLinkEnabled
+    ) throws JSONException, BrowserSwitchException {
         JSONObject metadata = new JSONObject();
         metadata.put("approval-url", payPalResponse.getApprovalUrl());
         metadata.put("success-url", payPalResponse.getSuccessUrl());
@@ -326,7 +317,7 @@ public class PayPalClient {
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                 .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
                 .metadata(metadata);
-        if (isAppLinkReturn()) {
+        if (isAppLinkEnabled) {
             browserSwitchOptions.appLinkUri(braintreeClient.getAppLinkReturnUri());
         }
         braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
