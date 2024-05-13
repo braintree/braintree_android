@@ -90,6 +90,7 @@ public class PayPalRequestFactory {
             shippingAddress.setLocality("San Francisco");
             shippingAddress.setRegion("CA");
             shippingAddress.setCountryCodeAlpha2("US");
+            shippingAddress.setPostalCode("94103");
 
             request.setShippingAddressOverride(shippingAddress);
         }

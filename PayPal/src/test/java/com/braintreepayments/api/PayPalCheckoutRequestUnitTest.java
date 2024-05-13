@@ -140,4 +140,20 @@ public class PayPalCheckoutRequestUnitTest {
 
         assertTrue(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
     }
+
+    @Test
+    public void createRequestBody_does_not_set_userAuthenticationEmail_when_email_is_empty() throws JSONException {
+        String payerEmail = "";
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+
+        request.setUserAuthenticationEmail(payerEmail);
+        String requestBody = request.createRequestBody(
+            mock(Configuration.class),
+            mock(Authorization.class),
+            "success_url",
+            "cancel_url"
+        );
+
+        assertFalse(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
+    }
 }
