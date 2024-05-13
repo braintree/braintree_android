@@ -48,6 +48,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             .putString(WORK_INPUT_KEY_PAYPAL_CONTEXT_ID, event.payPalContextId)
             .putString(WORK_INPUT_KEY_LINK_TYPE, event.linkType)
             .putLong(WORK_INPUT_KEY_TIMESTAMP, event.timestamp)
+            .putBoolean(WORK_INPUT_KEY_VENMO_INSTALLED, event.venmoInstalled)
             .build()
 
         val analyticsWorkRequest =
