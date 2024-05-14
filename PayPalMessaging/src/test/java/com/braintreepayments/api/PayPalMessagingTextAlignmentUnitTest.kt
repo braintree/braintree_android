@@ -1,6 +1,6 @@
 package com.braintreepayments.api
 
-import com.paypal.messages.config.message.style.PayPalMessageAlign
+import com.paypal.messages.config.message.style.PayPalMessageAlignment
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 
@@ -8,16 +8,16 @@ class PayPalMessagingTextAlignmentUnitTest {
 
     @Test
     fun `test left text alignment returns raw value left align`() {
-        assertEquals(PayPalMessageAlign.LEFT, PayPalMessagingTextAlignment.LEFT.internalValue)
+        assertEquals(PayPalMessageAlignment.LEFT, PayPalMessagingTextAlignment.LEFT.internalValue)
     }
 
     @Test
     fun `test right text alignment returns raw value right align`() {
-        assertEquals(PayPalMessageAlign.RIGHT, PayPalMessagingTextAlignment.RIGHT.internalValue)
+        assertEquals(PayPalMessageAlignment.RIGHT, PayPalMessagingTextAlignment.RIGHT.internalValue)
     }
 
     @Test
     fun `test center text alignment returns raw value center align`() {
-        assertEquals(PayPalMessageAlign.CENTER, PayPalMessagingTextAlignment.CENTER.internalValue)
+        assertEquals(PayPalMessageAlignment.CENTER, PayPalMessagingTextAlignment.CENTER.internalValue)
     }
 }
