@@ -1,6 +1,6 @@
 package com.braintreepayments.api
 
-import com.paypal.messages.config.message.style.PayPalMessageAlign
+import com.paypal.messages.config.message.style.PayPalMessageAlignment
 
 /**
  * Text alignment option for a PayPal Message
@@ -23,10 +23,10 @@ enum class PayPalMessagingTextAlignment {
      */
     RIGHT;
 
-    internal val internalValue: PayPalMessageAlign
+    internal val internalValue: PayPalMessageAlignment
         get() = when (this) {
-            LEFT -> PayPalMessageAlign.LEFT
-            CENTER -> PayPalMessageAlign.CENTER
-            RIGHT -> PayPalMessageAlign.RIGHT
+            LEFT -> PayPalMessageAlignment.LEFT
+            CENTER -> PayPalMessageAlignment.CENTER
+            RIGHT -> PayPalMessageAlignment.RIGHT
         }
 }

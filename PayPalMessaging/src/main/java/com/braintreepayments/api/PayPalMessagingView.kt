@@ -88,7 +88,7 @@ class PayPalMessagingView(
         val messageStyle = PayPalMessageStyle(
             color = request.color.internalValue,
             logoType = request.logoType.internalValue,
-            textAlign = request.textAlignment.internalValue
+            textAlignment = request.textAlignment.internalValue
         )
 
         val viewStateCallbacks = PayPalMessageViewStateCallbacks(
