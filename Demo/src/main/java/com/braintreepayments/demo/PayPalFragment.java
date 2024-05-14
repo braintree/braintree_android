@@ -41,14 +41,22 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_paypal, container, false);
         TextInputEditText buyerEmailEditText = view.findViewById(R.id.buyer_email_edit_text);
+        TextInputEditText buyerPhoneEditText = view.findViewById(R.id.buyer_phone_edit_text);
         Button billingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
 
         singlePaymentButton.setOnClickListener(v -> {
-            launchPayPal(false, buyerEmailEditText.getText().toString());
+            launchPayPal(
+                false,
+                buyerEmailEditText.getText().toString(),
+                buyerPhoneEditText.getText().toString()
+            );
         });
         billingAgreementButton.setOnClickListener(v -> {
-            launchPayPal(true, buyerEmailEditText.getText().toString());
+            launchPayPal(true,
+                buyerEmailEditText.getText().toString(),
+                buyerPhoneEditText.getText().toString()
+            );
         });
 
         braintreeClient = getBraintreeClient();
@@ -89,7 +97,11 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
         payPalClient.clearActiveBrowserSwitchRequests(requireContext());
     }
 
-    private void launchPayPal(boolean isBillingAgreement, String buyerEmailAddress) {
+    private void launchPayPal(
+        boolean isBillingAgreement,
+        String buyerEmailAddress,
+        String buyerPhoneNumber
+    ) {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
@@ -102,16 +114,16 @@ public class PayPalFragment extends BaseFragment implements PayPalListener {
                         deviceData = deviceDataResult;
                     }
                     if (isBillingAgreement) {
-                        payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity, buyerEmailAddress));
+                        payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity, buyerEmailAddress, buyerPhoneNumber));
                     } else {
-                        payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, amount, buyerEmailAddress));
+                        payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, amount, buyerEmailAddress, buyerPhoneNumber));
                     }
                 });
             } else {
                 if (isBillingAgreement) {
-                    payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity, buyerEmailAddress));
+                    payPalClient.tokenizePayPalAccount(activity, createPayPalVaultRequest(activity, buyerEmailAddress, buyerPhoneNumber));
                 } else {
-                    payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, amount, buyerEmailAddress));
+                    payPalClient.tokenizePayPalAccount(activity, createPayPalCheckoutRequest(activity, amount, buyerEmailAddress, buyerPhoneNumber));
                 }
             }
         });

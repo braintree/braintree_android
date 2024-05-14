@@ -12,13 +12,18 @@ public class PayPalRequestFactory {
 
     public static PayPalVaultRequest createPayPalVaultRequest(
         Context context,
-        String buyerEmailAddress
+        String buyerEmailAddress,
+        String buyerPhoneNumber
     ) {
 
         PayPalVaultRequest request = new PayPalVaultRequest();
 
         if (!buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
+        }
+
+        if (!buyerPhoneNumber.isEmpty()) {
+            request.setUserPhoneNumber(buyerPhoneNumber);
         }
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
@@ -52,12 +57,17 @@ public class PayPalRequestFactory {
     public static PayPalCheckoutRequest createPayPalCheckoutRequest(
         Context context,
         String amount,
-        String buyerEmailAddress
+        String buyerEmailAddress,
+        String buyerPhoneNumber
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount);
 
         if (!buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
+        }
+
+        if (!buyerPhoneNumber.isEmpty()) {
+            request.setUserPhoneNumber(buyerPhoneNumber);
         }
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));

@@ -88,6 +88,7 @@
     <string name="paypal_disable_signature_verification">Disable app switch signature verification</string>
     <string name="paypal_disable_signature_verification_summary">Allows app switch with a PayPal Wallet app that is not signed</string>
     <string name="paypal_buyer_email_address">Buyer Email Address</string>
+    <string name="paypal_buyer_phone_number">Buyer Phone Number</string>
     <string name="paypal_single_payment">Single Payment</string>
     <string name="paypal_billing_agreement">Billing Agreement</string>
     <string name="paypal_deferred_billing_agreement">Deferred Billing Agreement</string>

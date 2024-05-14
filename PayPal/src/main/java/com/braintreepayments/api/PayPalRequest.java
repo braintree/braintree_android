@@ -27,6 +27,7 @@ public abstract class PayPalRequest implements Parcelable {
     static final String BILLING_AGREEMENT_DETAILS_KEY = "billing_agreement_details";
     static final String DESCRIPTION_KEY = "description";
     static final String PAYER_EMAIL_KEY = "payer_email";
+    static final String PHONE = "phone";
     static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
     static final String TOKENIZATION_KEY = "client_key";
     static final String RETURN_URL_KEY = "return_url";
@@ -72,6 +73,7 @@ public abstract class PayPalRequest implements Parcelable {
     private final ArrayList<PayPalLineItem> lineItems;
     private final boolean hasUserLocationConsent;
     protected String userAuthenticationEmail;
+    protected String userPhoneNumber;
 
     /**
      * Deprecated. Use {@link PayPalRequest#PayPalRequest(boolean)} instead.
@@ -295,6 +297,21 @@ public abstract class PayPalRequest implements Parcelable {
     @Nullable
     public String getUserAuthenticationEmail() {
         return this.userAuthenticationEmail;
+    }
+
+    /**
+     * Optional: User phone number to initiate a quicker authentication flow in cases where the user
+     * has a PayPal Account with the same phone number.
+     *
+     * @param userPhoneNumber - phone number of the payer
+     */
+    public void setUserPhoneNumber(@Nullable String userPhoneNumber) {
+        this.userPhoneNumber = userPhoneNumber;
+    }
+
+    @Nullable
+    public String getUserPhoneNumber() {
+        return userPhoneNumber;
     }
 
     abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;
