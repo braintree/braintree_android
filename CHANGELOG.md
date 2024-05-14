@@ -4,6 +4,7 @@
 
 * PayPal
     * Add optional property `PayPalCheckoutRequest.setUserAuthenticationEmail()`
+    * Add optional property `PayPalCheckoutRequest.setUserPhoneNumber()`
 
 ## 4.45.0 (2024-04-16)
 
