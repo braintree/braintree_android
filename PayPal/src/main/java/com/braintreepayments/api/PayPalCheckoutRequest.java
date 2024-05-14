@@ -208,7 +208,7 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
         }
 
         if (userAuthenticationEmail != null && !userAuthenticationEmail.isEmpty()) {
-            parameters.putOpt(PAYER_EMAIL_KEY, userAuthenticationEmail);
+            parameters.put(PAYER_EMAIL_KEY, userAuthenticationEmail);
         }
 
         String currencyCode = getCurrencyCode();
