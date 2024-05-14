@@ -6,6 +6,7 @@ import com.paypal.messages.config.message.style.PayPalMessageLogoType
  * Logo type option for a PayPal Message
  * Note: **This module is in beta. It's public API may change or be removed in future releases.**
  */
+@ExperimentalBetaApi
 enum class PayPalMessagingLogoType {
     /**
      * Primary logo including both the PayPal monogram and logo

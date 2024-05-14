@@ -6,6 +6,7 @@ import com.paypal.messages.config.message.style.PayPalMessageColor
  * Text and logo color option for a PayPal Message
  * Note: **This module is in beta. It's public API may change or be removed in future releases.**
  */
+@ExperimentalBetaApi
 enum class PayPalMessagingColor {
     /**
      * Black text with a color logo

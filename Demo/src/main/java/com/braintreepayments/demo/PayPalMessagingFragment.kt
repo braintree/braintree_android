@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import com.braintreepayments.api.ExperimentalBetaApi
 import com.braintreepayments.api.PayPalMessagingColor
 import com.braintreepayments.api.PayPalMessagingListener
 import com.braintreepayments.api.PayPalMessagingLogoType
@@ -13,6 +14,7 @@ import com.braintreepayments.api.PayPalMessagingRequest
 import com.braintreepayments.api.PayPalMessagingTextAlignment
 import com.braintreepayments.api.PayPalMessagingView
 
+@OptIn(ExperimentalBetaApi::class)
 class PayPalMessagingFragment : BaseFragment(), PayPalMessagingListener {
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -22,6 +24,7 @@ class PayPalMessagingFragment : BaseFragment(), PayPalMessagingListener {
         return inflater.inflate(R.layout.fragment_paypal_messaging, container, false)
     }
 
+    @OptIn(ExperimentalBetaApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

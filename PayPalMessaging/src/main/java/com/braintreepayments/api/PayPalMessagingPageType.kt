@@ -6,6 +6,7 @@ import com.paypal.messages.config.PayPalMessagePageType
  * Message location within an application
  * Note: **This module is in beta. It's public API may change or be removed in future releases.**
  */
+@ExperimentalBetaApi
 enum class PayPalMessagingPageType {
 
     /**
