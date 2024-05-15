@@ -24,7 +24,6 @@ class PayPalMessagingFragment : BaseFragment(), PayPalMessagingListener {
         return inflater.inflate(R.layout.fragment_paypal_messaging, container, false)
     }
 
-    @OptIn(ExperimentalBetaApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
