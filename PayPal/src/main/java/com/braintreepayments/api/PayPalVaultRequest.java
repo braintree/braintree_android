@@ -70,7 +70,7 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
         parameters.putOpt(PAYER_EMAIL_KEY, userAuthenticationEmail);
 
         if (userPhoneNumber!= null && !userPhoneNumber.isEmpty()) {
-            parameters.put(PHONE, userPhoneNumber);
+            parameters.put(PHONE_KEY, userPhoneNumber);
         }
 
         JSONObject experienceProfile = new JSONObject();

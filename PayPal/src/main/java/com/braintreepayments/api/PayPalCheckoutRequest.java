@@ -212,7 +212,7 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
         }
 
         if (userPhoneNumber != null && !userPhoneNumber.isEmpty()) {
-            parameters.put(PHONE, userPhoneNumber);
+            parameters.put(PHONE_KEY, userPhoneNumber);
         }
 
         String currencyCode = getCurrencyCode();
