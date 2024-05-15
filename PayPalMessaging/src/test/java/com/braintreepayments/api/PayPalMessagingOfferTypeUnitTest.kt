@@ -4,6 +4,7 @@ import com.paypal.messages.config.PayPalMessageOfferType
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 
+@OptIn(ExperimentalBetaApi::class)
 class PayPalMessagingOfferTypeUnitTest {
     @Test
     fun `test pay later short term offer type returns raw value pay later short term`() {

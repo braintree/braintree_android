@@ -15,6 +15,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
+@OptIn(ExperimentalBetaApi::class)
 class PayPalMessagingViewUnitTest {
 
     private lateinit var context: Context

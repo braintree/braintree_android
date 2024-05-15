@@ -4,6 +4,7 @@ import com.paypal.messages.config.message.style.PayPalMessageColor
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 
+@OptIn(ExperimentalBetaApi::class)
 class PayPalMessagingColorUnitTest {
 
     @Test
