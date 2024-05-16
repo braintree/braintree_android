@@ -4,6 +4,7 @@ import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import org.junit.Test
 
+@OptIn(ExperimentalBetaApi::class)
 class PayPalMessagingRequestUnitTest {
 
     @Test

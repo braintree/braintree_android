@@ -18,6 +18,8 @@ import com.paypal.messages.config.message.PayPalMessageViewStateCallbacks
  * @property braintreeClient a {@link BraintreeClient}
  * @param context Android Context
  */
+
+@ExperimentalBetaApi
 class PayPalMessagingView(
     private val braintreeClient: BraintreeClient,
     context: Context

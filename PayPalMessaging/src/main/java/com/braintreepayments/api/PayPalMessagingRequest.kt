@@ -15,6 +15,7 @@ package com.braintreepayments.api
  * @property textAlignment Text alignment option for a PayPal Message. Defaults to [PayPalMessagingTextAlignment.RIGHT]
  * @property color Text and logo color option for a PayPal Message. Defaults to [PayPalMessagingColor.BLACK]
  */
+@ExperimentalBetaApi
 data class PayPalMessagingRequest(
     var amount: Double? = null,
     var pageType: PayPalMessagingPageType? = null,
