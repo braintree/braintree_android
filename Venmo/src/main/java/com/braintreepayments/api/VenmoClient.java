@@ -254,8 +254,8 @@ public class VenmoClient {
             @Nullable final String paymentContextId
     ) {
         boolean isClientTokenAuth = (authorization instanceof ClientToken);
-        boolean shouldVault = request.getShouldVault() && isClientTokenAuth;
-        sharedPrefsWriter.persistVenmoVaultOption(activity, shouldVault);
+        isVaultRequest = request.getShouldVault() && isClientTokenAuth;
+        sharedPrefsWriter.persistVenmoVaultOption(activity, isVaultRequest);
         if (observer != null) {
             VenmoIntentData intentData = new VenmoIntentData(configuration, venmoProfileId, paymentContextId, braintreeClient.getSessionId(), braintreeClient.getIntegrationType());
             if (request.getFallbackToWeb()) {
@@ -291,8 +291,8 @@ public class VenmoClient {
                                 @Override
                                 public void onResult(@Nullable VenmoAccountNonce nonce, @Nullable Exception error) {
                                     if (nonce != null) {
-                                        boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(braintreeClient.getApplicationContext());
-                                        if (shouldVault && isClientTokenAuth) {
+                                        isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(braintreeClient.getApplicationContext());
+                                        if (isVaultRequest && isClientTokenAuth) {
                                             vaultVenmoAccountNonce(nonce.getString(), new VenmoOnActivityResultCallback() {
                                                 @Override
                                                 public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
@@ -316,8 +316,8 @@ public class VenmoClient {
                         } else {
                             String nonce = venmoResult.getVenmoAccountNonce();
 
-                            boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(braintreeClient.getApplicationContext());
-                            if (shouldVault && isClientTokenAuth) {
+                            isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(braintreeClient.getApplicationContext());
+                            if (isVaultRequest && isClientTokenAuth) {
                                 vaultVenmoAccountNonce(nonce, new VenmoOnActivityResultCallback() {
                                     @Override
                                     public void onResult(@Nullable VenmoAccountNonce venmoAccountNonce, @Nullable Exception error) {
@@ -387,8 +387,8 @@ public class VenmoClient {
                                 @Override
                                 public void onResult(@Nullable VenmoAccountNonce nonce, @Nullable Exception error) {
                                     if (nonce != null) {
-                                        boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(context);
-                                        if (shouldVault && isClientTokenAuth) {
+                                        isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(context);
+                                        if (isVaultRequest && isClientTokenAuth) {
                                             vaultVenmoAccountNonce(nonce.getString(), callback);
                                         } else {
                                             braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failure", payPalContextId, linkType, isVaultRequest);
@@ -404,8 +404,8 @@ public class VenmoClient {
                         } else {
                             String nonce = data.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
 
-                            boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(context);
-                            if (shouldVault && isClientTokenAuth) {
+                            isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(context);
+                            if (isVaultRequest && isClientTokenAuth) {
                                 vaultVenmoAccountNonce(nonce, callback);
                             } else {
                                 String venmoUsername = data.getStringExtra(EXTRA_USERNAME);
@@ -503,8 +503,8 @@ public class VenmoClient {
                                         @Override
                                         public void onResult(@Nullable VenmoAccountNonce nonce, @Nullable Exception error) {
                                             if (nonce != null) {
-                                                boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(context);
-                                                if (shouldVault && isClientTokenAuth) {
+                                                isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(context);
+                                                if (isVaultRequest && isClientTokenAuth) {
                                                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.success", payPalContextId, linkType, isVaultRequest);
                                                     vaultVenmoAccountNonce(nonce.getString(), callback);
                                                 } else {
@@ -518,8 +518,8 @@ public class VenmoClient {
                                         }
                                     });
                                 } else if (paymentMethodNonce != null && username != null) {
-                                    boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(context);
-                                    if (shouldVault && isClientTokenAuth) {
+                                    isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(context);
+                                    if (isVaultRequest && isClientTokenAuth) {
                                         braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-links.success", payPalContextId, linkType, isVaultRequest);
                                         vaultVenmoAccountNonce(paymentMethodNonce, callback);
                                     } else {
