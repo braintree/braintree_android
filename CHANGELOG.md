@@ -1,9 +1,10 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
-
+* PayPal
+  * Send `isVaultRequest` in `event_params` to PayPal's analytics service (FPTI)s
 * Venmo
-  * Send `link_type` in `event_params` to PayPal's analytics service (FPTI)
+  * Send `link_type` and `isVaultRequest` in `event_params` to PayPal's analytics service (FPTI)
   
 ## 4.45.0 (2024-04-16)
 
