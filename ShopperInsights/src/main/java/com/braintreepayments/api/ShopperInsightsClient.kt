@@ -82,10 +82,12 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         error: Exception?,
         callback: ShopperInsightsCallback
     ) {
+        val paypalPaymentMethod = result?.eligibleMethods?.paypal
+        val venmoPaymentMethod = result?.eligibleMethods?.venmo
         when {
             error != null -> callbackFailure(callback, error)
 
-            result?.eligibleMethods?.paypal == null && result?.eligibleMethods?.venmo == null -> {
+            paypalPaymentMethod == null && venmoPaymentMethod == null -> {
                 callbackFailure(
                     callback = callback,
                     error = BraintreeException("Required fields missing from API response body")
@@ -95,8 +97,10 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
             else -> {
                 callbackSuccess(
                     callback = callback,
-                    isPayPalRecommended = isPaymentRecommended(result.eligibleMethods.paypal),
-                    isVenmoRecommended = isPaymentRecommended(result.eligibleMethods.venmo)
+                    isEligibleInPayPalNetwork = paypalPaymentMethod?.eligibleInPayPalNetwork == true ||
+                            venmoPaymentMethod?.eligibleInPayPalNetwork == true,
+                    isPayPalRecommended = paypalPaymentMethod?.recommended == true,
+                    isVenmoRecommended = venmoPaymentMethod?.recommended == true
                 )
             }
         }
@@ -112,19 +116,20 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
 
     private fun callbackSuccess(
         callback: ShopperInsightsCallback,
+        isEligibleInPayPalNetwork: Boolean,
         isPayPalRecommended: Boolean,
         isVenmoRecommended: Boolean,
     ) {
         braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_SUCCEEDED)
         callback.onResult(
             ShopperInsightsResult.Success(
-                ShopperInsightsInfo(isPayPalRecommended, isVenmoRecommended)
+                ShopperInsightsInfo(
+                    isEligibleInPayPalNetwork,
+                    isPayPalRecommended,
+                    isVenmoRecommended
+                )
             )
         )
-    }
-
-    private fun isPaymentRecommended(paymentDetail: EligiblePaymentMethodDetails?): Boolean {
-        return paymentDetail?.eligibleInPayPalNetwork == true && paymentDetail.recommended
     }
 
     /**

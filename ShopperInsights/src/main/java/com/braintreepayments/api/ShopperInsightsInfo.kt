@@ -16,6 +16,7 @@ package com.braintreepayments.api
  */
 @ExperimentalBetaApi
 data class ShopperInsightsInfo(
+    val isEligibleInPayPalNetwork: Boolean,
     val isPayPalRecommended: Boolean,
     val isVenmoRecommended: Boolean
 )
