@@ -4,6 +4,8 @@
 
 * PayPal
     * Add optional property `PayPalCheckoutRequest.setUserAuthenticationEmail()`
+* Add ShopperInsights module (BETA)
+  * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
 
 ## 4.45.0 (2024-04-16)
 
