@@ -156,4 +156,36 @@ public class PayPalCheckoutRequestUnitTest {
 
         assertFalse(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
     }
+
+    @Test
+    public void createRequestBody_sets_userPhoneNumber_when_not_null() throws JSONException {
+        String userPhoneNumber = "1231231234";
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+
+        request.setUserPhoneNumber(userPhoneNumber);
+        String requestBody = request.createRequestBody(
+            mock(Configuration.class),
+            mock(Authorization.class),
+            "success_url",
+            "cancel_url"
+        );
+
+        assertTrue(requestBody.contains("\"phone\":" + "\"" + userPhoneNumber + "\""));
+    }
+
+    @Test
+    public void createRequestBody_does_not_set_userPhoneNumber_when_email_is_empty() throws JSONException {
+        String userPhoneNumber = "";
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+
+        request.setUserPhoneNumber(userPhoneNumber);
+        String requestBody = request.createRequestBody(
+            mock(Configuration.class),
+            mock(Authorization.class),
+            "success_url",
+            "cancel_url"
+        );
+
+        assertFalse(requestBody.contains("\"phone\":" + "\"" + userPhoneNumber + "\""));
+    }
 }
