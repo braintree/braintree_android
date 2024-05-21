@@ -4,18 +4,8 @@
 
 * PayPal
     * Add optional property `PayPalCheckoutRequest.setUserAuthenticationEmail()`
-* ShopperInsights
+* Add ShopperInsights module (BETA)
   * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
-  * Add `ShopperInsightsClient.getRecommendedPaymentMethods()` for returning recommendations based on the buyer
-  * Add `ShopperInsightsClient.sendPayPalPresentedEvent()`
-  * Add `ShopperInsightsClient.sendPayPalSelectedEvent()`
-  * Add `ShopperInsightsClient.sendVenmoPresentedEvent()`
-  * Add `ShopperInsightsClient.sendVenmoSelectedEvent()`
-  * Add `ShopperInsightsRequest`
-  * Add `ShopperInsightsBuyerPhone`
-  * Add `ShopperInsightsCallback`
-  * Add `ShopperInsightsResult`
-  * Add `ShopperInsightsInfo`
 
 ## 4.45.0 (2024-04-16)
 
