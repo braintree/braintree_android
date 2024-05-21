@@ -123,6 +123,7 @@ class ShopperInsightsFragment : BaseFragment(), PayPalListener, VenmoListener {
 
                     responseTextView.text =
                         """
+                            Eligible in PayPal Network: ${result.response.isEligibleInPayPalNetwork}
                             PayPal Recommended: ${result.response.isPayPalRecommended}
                             Venmo Recommended: ${result.response.isVenmoRecommended}
                         """.trimIndent()

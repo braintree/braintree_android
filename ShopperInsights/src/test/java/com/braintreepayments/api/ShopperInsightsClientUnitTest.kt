@@ -9,6 +9,7 @@ import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
@@ -239,6 +240,104 @@ class ShopperInsightsClientUnitTest {
                     assertTrue { result is ShopperInsightsResult.Success }
                     val success = result as ShopperInsightsResult.Success
                     assertEquals(false, success.response.isPayPalRecommended)
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `getRecommendedPaymentMethods paypal's eligibleInPayPalNetwork true, isEligibleInPayPalNetwork is true`() {
+        val callback = mockk<ShopperInsightsCallback>(relaxed = true)
+
+        executeTestForFindEligiblePaymentsApi(
+            result = EligiblePaymentsApiResult(
+                EligiblePaymentMethods(
+                    paypal = EligiblePaymentMethodDetails(
+                        canBeVaulted = true,
+                        eligibleInPayPalNetwork = true,
+                        recommended = false,
+                        recommendedPriority = 1
+                    ),
+                    venmo = null
+                )
+            ),
+            error = null,
+            callback = callback
+        )
+
+        verify {
+            callback.onResult(
+                withArg { result ->
+                    assertTrue { result is ShopperInsightsResult.Success }
+                    val success = result as ShopperInsightsResult.Success
+                    assertTrue(success.response.isEligibleInPayPalNetwork)
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `getRecommendedPaymentMethods venmo's eligibleInPayPalNetwork true, isEligibleInPayPalNetwork is true`() {
+        val callback = mockk<ShopperInsightsCallback>(relaxed = true)
+
+        executeTestForFindEligiblePaymentsApi(
+            result = EligiblePaymentsApiResult(
+                EligiblePaymentMethods(
+                    paypal = null,
+                    venmo = EligiblePaymentMethodDetails(
+                        canBeVaulted = true,
+                        eligibleInPayPalNetwork = true,
+                        recommended = false,
+                        recommendedPriority = 1
+                    )
+                )
+            ),
+            error = null,
+            callback = callback
+        )
+
+        verify {
+            callback.onResult(
+                withArg { result ->
+                    assertTrue { result is ShopperInsightsResult.Success }
+                    val success = result as ShopperInsightsResult.Success
+                    assertTrue(success.response.isEligibleInPayPalNetwork)
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `getRecommendedPaymentMethods both eligibleInPayPalNetwork false, isEligibleInPayPalNetwork is false`() {
+        val callback = mockk<ShopperInsightsCallback>(relaxed = true)
+
+        executeTestForFindEligiblePaymentsApi(
+            result = EligiblePaymentsApiResult(
+                EligiblePaymentMethods(
+                    paypal = EligiblePaymentMethodDetails(
+                        canBeVaulted = true,
+                        eligibleInPayPalNetwork = false,
+                        recommended = false,
+                        recommendedPriority = 1
+                    ),
+                    venmo = EligiblePaymentMethodDetails(
+                        canBeVaulted = true,
+                        eligibleInPayPalNetwork = false,
+                        recommended = false,
+                        recommendedPriority = 1
+                    )
+                )
+            ),
+            error = null,
+            callback = callback
+        )
+
+        verify {
+            callback.onResult(
+                withArg { result ->
+                    assertTrue { result is ShopperInsightsResult.Success }
+                    val success = result as ShopperInsightsResult.Success
+                    assertFalse(success.response.isEligibleInPayPalNetwork)
                 }
             )
         }
