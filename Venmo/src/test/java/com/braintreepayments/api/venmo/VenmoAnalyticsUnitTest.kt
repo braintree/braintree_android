@@ -1,6 +1,5 @@
 package com.braintreepayments.api.venmo
 
-import com.braintreepayments.api.venmo.VenmoAnalytics
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
