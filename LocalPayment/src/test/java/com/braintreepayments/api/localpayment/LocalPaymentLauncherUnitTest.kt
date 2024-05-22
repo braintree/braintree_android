@@ -1,7 +1,12 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.localpayment
 
 import android.content.Intent
 import androidx.activity.ComponentActivity
+import com.braintreepayments.api.localpayment.LocalPaymentAuthRequest
+import com.braintreepayments.api.localpayment.LocalPaymentAuthRequestParams
+import com.braintreepayments.api.localpayment.LocalPaymentAuthResult
+import com.braintreepayments.api.localpayment.LocalPaymentLauncher
+import com.braintreepayments.api.localpayment.LocalPaymentPendingRequest
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert.assertEquals

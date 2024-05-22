@@ -1,9 +1,9 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.localpayment;
 
 import com.braintreepayments.api.core.BraintreeClient;
 
-import static com.braintreepayments.api.LocalPaymentClient.LOCAL_PAYMENT_CANCEL;
-import static com.braintreepayments.api.LocalPaymentClient.LOCAL_PAYMENT_SUCCESS;
+import static com.braintreepayments.api.localpayment.LocalPaymentClient.LOCAL_PAYMENT_CANCEL;
+import static com.braintreepayments.api.localpayment.LocalPaymentClient.LOCAL_PAYMENT_SUCCESS;
 
 import org.json.JSONException;
 import org.json.JSONObject;

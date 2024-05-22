@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.localpayment;
 
 import android.os.Parcel;
 

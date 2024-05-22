@@ -7,6 +7,10 @@ import static org.junit.Assert.assertTrue;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
+import com.braintreepayments.api.localpayment.LocalPaymentAuthRequest;
+import com.braintreepayments.api.localpayment.LocalPaymentClient;
+import com.braintreepayments.api.localpayment.LocalPaymentRequest;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

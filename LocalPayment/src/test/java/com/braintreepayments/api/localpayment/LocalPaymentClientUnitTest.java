@@ -1,11 +1,10 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.localpayment;
 
 import static com.ibm.icu.impl.Assert.fail;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
@@ -17,6 +16,8 @@ import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.MockBraintreeClientBuilder;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.BraintreeRequestCodes;

@@ -1,6 +1,8 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.localpayment;
 
 import androidx.annotation.NonNull;
+
+import com.braintreepayments.api.BrowserSwitchOptions;
 
 /**
  * Local payment result information.

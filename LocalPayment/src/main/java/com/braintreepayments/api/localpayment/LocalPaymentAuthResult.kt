@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.localpayment
 
 /**
  * Result of the local payment web flow received from [LocalPaymentLauncher.handleReturnToAppFromBrowser].

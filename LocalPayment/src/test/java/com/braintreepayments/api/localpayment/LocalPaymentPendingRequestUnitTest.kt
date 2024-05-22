@@ -1,6 +1,7 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.localpayment
 
 import android.net.Uri
+import com.braintreepayments.api.localpayment.LocalPaymentPendingRequest
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertEquals

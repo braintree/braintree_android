@@ -101,6 +101,7 @@
       and change parameters
     * Rename `LocalPaymentClient#onBrowserSwithResult` to `LocalPaymentClient#tokenize` and 
       change parameters
+    * Update package name to `com.braintreepayments.api.localpayment`
   * Card
     * Remove `threeDSecureInfo` from `CardNonce`
     * Move `ThreeDSecureInfo` to `three-d-secure` module

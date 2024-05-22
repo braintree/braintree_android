@@ -1,5 +1,6 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.localpayment
 
+import com.braintreepayments.api.BrowserSwitchPendingRequest
 import org.json.JSONException
 
 /**

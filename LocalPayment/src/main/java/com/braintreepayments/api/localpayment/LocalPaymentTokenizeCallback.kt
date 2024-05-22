@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.localpayment
 
 /**
  * Callback for receiving result of [LocalPaymentClient.tokenize].

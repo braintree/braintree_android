@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.localpayment
 
 /**
  * A request used to launch the continuation of the local payment flow.
