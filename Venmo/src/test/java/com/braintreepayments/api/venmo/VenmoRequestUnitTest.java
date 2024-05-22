@@ -5,10 +5,6 @@ import static org.junit.Assert.assertEquals;
 
 import android.os.Parcel;
 
-import com.braintreepayments.api.venmo.VenmoLineItem;
-import com.braintreepayments.api.venmo.VenmoPaymentMethodUsage;
-import com.braintreepayments.api.venmo.VenmoRequest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
