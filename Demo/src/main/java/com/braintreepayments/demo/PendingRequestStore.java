@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import com.braintreepayments.api.LocalPaymentPendingRequest;
 import com.braintreepayments.api.PayPalPendingRequest;
 import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitPendingRequest;
-import com.braintreepayments.api.VenmoPendingRequest;
+import com.braintreepayments.api.venmo.VenmoPendingRequest;
 
 import org.json.JSONException;
 

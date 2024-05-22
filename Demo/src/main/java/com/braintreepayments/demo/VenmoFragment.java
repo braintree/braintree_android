@@ -13,16 +13,16 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.VenmoAccountNonce;
-import com.braintreepayments.api.VenmoClient;
-import com.braintreepayments.api.VenmoLauncher;
-import com.braintreepayments.api.VenmoLineItem;
-import com.braintreepayments.api.VenmoPaymentAuthRequest;
-import com.braintreepayments.api.VenmoPaymentAuthResult;
-import com.braintreepayments.api.VenmoPaymentMethodUsage;
-import com.braintreepayments.api.VenmoPendingRequest;
-import com.braintreepayments.api.VenmoRequest;
-import com.braintreepayments.api.VenmoResult;
+import com.braintreepayments.api.venmo.VenmoAccountNonce;
+import com.braintreepayments.api.venmo.VenmoClient;
+import com.braintreepayments.api.venmo.VenmoLauncher;
+import com.braintreepayments.api.venmo.VenmoLineItem;
+import com.braintreepayments.api.venmo.VenmoPaymentAuthRequest;
+import com.braintreepayments.api.venmo.VenmoPaymentAuthResult;
+import com.braintreepayments.api.venmo.VenmoPaymentMethodUsage;
+import com.braintreepayments.api.venmo.VenmoPendingRequest;
+import com.braintreepayments.api.venmo.VenmoRequest;
+import com.braintreepayments.api.venmo.VenmoResult;
 import com.braintreepayments.api.core.UserCanceledException;
 
 import java.util.ArrayList;
