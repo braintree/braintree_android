@@ -42,6 +42,7 @@
     * Add `VenmoClient#createPaymentAuthRequest`
     * Move `showVenmoInGooglePlayStore` to `VenmoLauncher`
     * Remove `isVenmoAppSwitchAvailable` and `isReadyToPay` (no longer required as Venmo flow will fallback to web if app is not installed)
+    * Update package name to `com.braintreepayments.api.venmo`
   * GooglePay
     * Remove `GooglePayListener` and `GooglePayRequestPaymentCallback`
     * Add `GooglePayLauncher`, `GooglePayPaymentAuthRequest`, 
