@@ -1,6 +1,5 @@
 package com.braintreepayments.api.localpayment
 
-import com.braintreepayments.api.localpayment.LocalPaymentAnalytics
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

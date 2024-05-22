@@ -1,6 +1,8 @@
 package com.braintreepayments.api.localpayment
 
 import android.net.Uri
+import com.braintreepayments.api.BrowserSwitchPendingRequest
+import com.braintreepayments.api.BrowserSwitchRequest
 import com.braintreepayments.api.localpayment.LocalPaymentPendingRequest
 import org.json.JSONException
 import org.json.JSONObject

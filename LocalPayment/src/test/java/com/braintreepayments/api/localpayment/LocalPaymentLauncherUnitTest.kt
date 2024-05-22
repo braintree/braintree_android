@@ -2,6 +2,13 @@ package com.braintreepayments.api.localpayment
 
 import android.content.Intent
 import androidx.activity.ComponentActivity
+import com.braintreepayments.api.BrowserSwitchClient
+import com.braintreepayments.api.BrowserSwitchException
+import com.braintreepayments.api.BrowserSwitchOptions
+import com.braintreepayments.api.BrowserSwitchPendingRequest
+import com.braintreepayments.api.BrowserSwitchRequest
+import com.braintreepayments.api.BrowserSwitchResult
+import com.braintreepayments.api.BrowserSwitchResultInfo
 import com.braintreepayments.api.localpayment.LocalPaymentAuthRequest
 import com.braintreepayments.api.localpayment.LocalPaymentAuthRequestParams
 import com.braintreepayments.api.localpayment.LocalPaymentAuthResult

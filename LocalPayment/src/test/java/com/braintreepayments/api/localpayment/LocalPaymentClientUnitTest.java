@@ -16,6 +16,8 @@ import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.braintreepayments.api.BrowserSwitchOptions;
+import com.braintreepayments.api.BrowserSwitchResultInfo;
 import com.braintreepayments.api.Fixtures;
 import com.braintreepayments.api.MockBraintreeClientBuilder;
 import com.braintreepayments.api.core.BraintreeClient;
