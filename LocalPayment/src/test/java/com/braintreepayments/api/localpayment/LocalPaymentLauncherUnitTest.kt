@@ -9,11 +9,6 @@ import com.braintreepayments.api.BrowserSwitchPendingRequest
 import com.braintreepayments.api.BrowserSwitchRequest
 import com.braintreepayments.api.BrowserSwitchResult
 import com.braintreepayments.api.BrowserSwitchResultInfo
-import com.braintreepayments.api.localpayment.LocalPaymentAuthRequest
-import com.braintreepayments.api.localpayment.LocalPaymentAuthRequestParams
-import com.braintreepayments.api.localpayment.LocalPaymentAuthResult
-import com.braintreepayments.api.localpayment.LocalPaymentLauncher
-import com.braintreepayments.api.localpayment.LocalPaymentPendingRequest
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert.assertEquals
