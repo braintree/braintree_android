@@ -41,7 +41,6 @@ class PayPalMessagingView(
      * Note: **This module is in beta. It's public API may change or be removed in future releases.**
      */
     fun start(request: PayPalMessagingRequest = PayPalMessagingRequest()) {
-
         PayPalMessageConfig.setGlobalAnalytics(
             integrationName = "BT_SDK",
             integrationVersion = BuildConfig.VERSION_NAME
