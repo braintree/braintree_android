@@ -9,6 +9,7 @@
     * Upgrade Kotlin version to 1.9.10
     * Upgrade to Android Gradle Plugin 8
   * BraintreeCore
+    * Update package name to `com.braintreepayments.api.core`
     * Remove `BraintreeClient` public constructors
     * Remove `deliverBrowserSwitchResult` and `deliverBrowserSwitchResultFromNewTask` from `BraintreeClient`
     * Remove `ClientTokenProvider`
@@ -17,18 +18,18 @@
     * Remove `BraintreeSharedPreferencesException`
     * Convert `PostalAddress` to data class
     * Remove `open` modifier on `Configuration`
-    * Update package name to `com.braintreepayments.api.core`
   * UnionPay
     * Remove `union-pay` module
       * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover
   * BraintreeDataCollector
+    * Update package name to `com.braintreepayments.api.datacollector`
     * Replace `DataCollector#collectDeviceData(context, merchantId, callback)` with 
       `DataCollector#collectDeviceData(context, riskCorrelationId, callback)`
     * Add `DataCollectorResult` and update `DataCollectorCallback` parameters
-    * Update package name to `com.braintreepayments.api.datacollector`
   * PayPalDataCollector
     * Remove `paypal-data-collector` module (use `data-collector`)
   * Venmo
+    * Update package name to `com.braintreepayments.api.venmo`
     * Remove `setFallbackToWeb()` from `VenmoRequest` - fallback to web is default behavior now
     * Remove `VenmoListener`, `VenmoTokenizeAccountCallback`, and `VenmoResultCallback`
     * Add `VenmoLauncher`, `VenmoPaymentAuthRequest`, `VenmoPaymentAuthRequestCallback`, 
@@ -43,6 +44,7 @@
     * Move `showVenmoInGooglePlayStore` to `VenmoLauncher`
     * Remove `isVenmoAppSwitchAvailable` and `isReadyToPay` (no longer required as Venmo flow will fallback to web if app is not installed)
   * GooglePay
+    * Update package name to `com.braintreepayments.api.googlepay`
     * Remove `GooglePayListener` and `GooglePayRequestPaymentCallback`
     * Add `GooglePayLauncher`, `GooglePayPaymentAuthRequest`, 
       `GooglePayPaymentAuthRequestCallback`, `GooglePayPaymentAuthResult`, 
@@ -56,7 +58,6 @@
     * Change `GooglePayGetTokenizationParametersCallback` parameters
     * Rename `GooglePayLauncherCallback#onResult` to 
       `GooglePayLauncherCallback#onGooglePayLauncherResult`
-    * Update package name to `com.braintreepayments.api.googlepay`
   * ThreeDSecure
     * Remove `ThreeDSecureListener`
     * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`, 
@@ -77,7 +78,6 @@
     * Remove `ThreeDSecureV2BaseCustomization`
     * Remove `CardinalValidateReceiver` from `ThreeDSecureActivity`
     * Make empty `ThreeDSecureLookup` constructor package-private
-    * Update package name to `com.braintreepayments.api.threedsecure`
   * PayPal
     * Remove `PayPalListener`
     * Add `PayPalLauncher`, `PayPalPaymentAuthRequest`, `PayPalPendingRequest`, `PayPalPaymentAuthResult`, 
@@ -103,12 +103,13 @@
       change parameters
     * Update package name to `com.braintreepayments.api.localpayment`
   * Card
+    * Update package name to `com.braintreepayments.api.card`
     * Remove `threeDSecureInfo` from `CardNonce`
     * Move `ThreeDSecureInfo` to `three-d-secure` module
     * Add `CardResult` object
     * Change `CardTokenizeCallback` parameters
-    * Update package name to `com.braintreepayments.api.card`
   * SEPA Direct Debit
+    * Update package name to `com.braintreepayments.api.sepadirectdebit`
     * Remove `SEPADirectDebitLifecycleObserver` and `SEPADirectDebitListener`
     * Add `SEPADirectDebitLauncher`, `SEPADirectDebitPendingRequest`, 
       `SEPADirectDebitPaymentAuthRequestCallback`, `SEPADirectDebitPaymentAuthRequest`, 
@@ -121,16 +122,15 @@
       and modify parameters
     * Rename `SEPADirectDebitPaymentAuthRequestCallback#onResult` to
      `SEPADirectDebitPaymentAuthRequestCallback#onSEPADirectDebitPaymentAuthResult`
-    * Update package name to `com.braintreepayments.api.sepadirectdebit`
   * Visa Checkout
     * Update package name to `com.braintreepayments.api.visacheckout`
     * Change parameters of `VisaCheckoutCreateProfileBuilderCallback` and
       `VisaCheckoutTokenizeCallback`
     * Add `VisaCheckoutProfileBuilderResult` and `VisaCheckoutTokenizeResult`
   * American Express
+    * Update package name to `com.braintreepayments.api.americanexpress`
     * Change parameters of `AmericanExpressGetRewardsBalanceCallback`
     * Add `AmericanExpressResult`
-    * Update package name to `com.braintreepayments.api.americanexpress`
   * Samsung Pay
     * Remove entire Samsung Pay module
   * PayPal Native Checkout

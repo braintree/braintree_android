@@ -8,7 +8,7 @@ import com.braintreepayments.api.googlepay.GooglePayCardNonce;
 import com.braintreepayments.api.localpayment.LocalPaymentNonce;
 import com.braintreepayments.api.PayPalAccountNonce;
 import com.braintreepayments.api.threedsecure.ThreeDSecureNonce;
-import com.braintreepayments.api.VenmoAccountNonce;
+import com.braintreepayments.api.venmo.VenmoAccountNonce;
 import com.braintreepayments.api.visacheckout.VisaCheckoutAddress;
 import com.braintreepayments.api.visacheckout.VisaCheckoutNonce;
 
