@@ -65,12 +65,12 @@ class LocalPaymentLauncher internal constructor(private val browserSwitchClient:
      * completing the authentication flow.
      */
     fun handleReturnToAppFromBrowser(
-            pendingRequest: LocalPaymentPendingRequest.Started,
-            intent: Intent
+        pendingRequest: LocalPaymentPendingRequest.Started,
+        intent: Intent
     ): LocalPaymentAuthResult {
         return when (val result = browserSwitchClient.parseResult(pendingRequest.request, intent)) {
             is BrowserSwitchResult.Success -> LocalPaymentAuthResult.Success(
-                    LocalPaymentAuthResultInfo(result.resultInfo)
+                LocalPaymentAuthResultInfo(result.resultInfo)
             )
 
             is BrowserSwitchResult.NoResult -> LocalPaymentAuthResult.NoResult
