@@ -1,5 +1,7 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.localpayment;
 
+
+import com.braintreepayments.api.BrowserSwitchResultInfo;
 
 /**
  * Details of a {@link LocalPaymentAuthResult.Success}

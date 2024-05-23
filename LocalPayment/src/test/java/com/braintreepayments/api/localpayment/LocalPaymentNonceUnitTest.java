@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.localpayment;
 
 import android.os.Parcel;
 
@@ -10,6 +10,9 @@ import org.robolectric.RobolectricTestRunner;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+
+import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.localpayment.LocalPaymentNonce;
 
 @RunWith(RobolectricTestRunner.class)
 public class LocalPaymentNonceUnitTest {

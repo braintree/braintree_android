@@ -3,7 +3,7 @@ package com.braintreepayments.demo;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.braintreepayments.api.LocalPaymentPendingRequest;
+import com.braintreepayments.api.localpayment.LocalPaymentPendingRequest;
 import com.braintreepayments.api.PayPalPendingRequest;
 import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitPendingRequest;
 import com.braintreepayments.api.VenmoPendingRequest;

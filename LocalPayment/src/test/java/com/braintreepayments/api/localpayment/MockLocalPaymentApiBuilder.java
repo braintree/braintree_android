@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.localpayment;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;

@@ -1,7 +1,10 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.localpayment
 
 import android.content.Intent
 import androidx.activity.ComponentActivity
+import com.braintreepayments.api.BrowserSwitchClient
+import com.braintreepayments.api.BrowserSwitchPendingRequest
+import com.braintreepayments.api.BrowserSwitchResult
 
 /**
  * Responsible for launching local payment user authentication in a web browser
