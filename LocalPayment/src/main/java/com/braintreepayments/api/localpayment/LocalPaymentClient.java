@@ -37,8 +37,6 @@ public class LocalPaymentClient {
      */
     private String payPalContextId = null;
 
-    private boolean hasUserLocationConsent;
-
     /**
      * Initializes a new {@link LocalPaymentClient} instance
      *
@@ -112,15 +110,13 @@ public class LocalPaymentClient {
                                     if (pairingId != null && !pairingId.isEmpty()) {
                                         payPalContextId = pairingId;
                                     }
-                                    buildBrowserSwitchOptions(localPaymentResult, callback);
+                                    buildBrowserSwitchOptions(localPaymentResult, request.hasUserLocationConsent(), callback);
                                 } else if (createPaymentMethodError != null) {
                                     authRequestFailure(
                                         new BraintreeException("An error occurred creating the " +
                                             "local payment method."),
                                         callback
                                     );
-                                    // TODO: hasUserLocationConsent is not propagated after browser switch - pass via browser switch metadata to use value in tokenize after browser switch
-                                    hasUserLocationConsent = request.hasUserLocationConsent();
                                 }
                             });
                 } else if (error != null) {
@@ -130,9 +126,11 @@ public class LocalPaymentClient {
         }
     }
 
-    void buildBrowserSwitchOptions(@NonNull
-                                   LocalPaymentAuthRequestParams localPaymentAuthRequestParams,
-                                   @NonNull LocalPaymentAuthCallback callback) {
+    void buildBrowserSwitchOptions(
+            @NonNull LocalPaymentAuthRequestParams localPaymentAuthRequestParams,
+            @NonNull boolean hasUserLocationConsent,
+            @NonNull LocalPaymentAuthCallback callback
+    ) {
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
                 .requestCode(BraintreeRequestCodes.LOCAL_PAYMENT)
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
@@ -141,9 +139,11 @@ public class LocalPaymentClient {
 
         try {
             browserSwitchOptions.metadata(new JSONObject()
-                    .put("merchant-account-id",
-                            localPaymentAuthRequestParams.getRequest().getMerchantAccountId())
-                    .put("payment-type", localPaymentAuthRequestParams.getRequest().getPaymentType()));
+                .put("merchant-account-id",
+                    localPaymentAuthRequestParams.getRequest().getMerchantAccountId())
+                .put("payment-type", localPaymentAuthRequestParams.getRequest().getPaymentType())
+                .put("has-user-location-consent", hasUserLocationConsent)
+            );
         } catch (JSONException e) {
             authRequestFailure(
                 new BraintreeException("Error parsing local payment request"),
@@ -181,6 +181,7 @@ public class LocalPaymentClient {
 
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
         final String merchantAccountId = Json.optString(metadata, "merchant-account-id", null);
+        final boolean hasUserLocationConsent = Json.optBoolean(metadata, "has-user-location-consent", false);
 
         Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
         if (deepLinkUri == null) {
