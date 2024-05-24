@@ -77,18 +77,6 @@ public abstract class PayPalRequest implements Parcelable {
     private final boolean hasUserLocationConsent;
 
     /**
-     * Deprecated. Use {@link PayPalRequest#PayPalRequest(boolean)} instead.
-     *
-     * Constructs a request for PayPal Checkout and Vault flows.
-     */
-    @Deprecated
-    public PayPalRequest() {
-        shippingAddressRequired = false;
-        lineItems = new ArrayList<>();
-        hasUserLocationConsent = false;
-    }
-
-    /**
      * Constructs a request for PayPal Checkout and Vault flows.
      *
      * @param hasUserLocationConsent is an optional parameter that informs the SDK
@@ -291,7 +279,6 @@ public abstract class PayPalRequest implements Parcelable {
     public boolean hasUserLocationConsent() {
         return hasUserLocationConsent;
     }
-
 
     protected PayPalRequest(Parcel in) {
         localeCode = in.readString();
