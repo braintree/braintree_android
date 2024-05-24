@@ -62,10 +62,9 @@ class PayPalNativeCheckoutInternalClient {
                                         String clientMetadataId = payPalRequest.getRiskCorrelationId() != null
                                                 ? payPalRequest.getRiskCorrelationId() : payPalDataCollector.getClientMetadataId(context, configuration, payPalRequest.hasUserLocationConsent());
 
+                                        payPalResponse.clientMetadataId(clientMetadataId);
                                         if (pairingId != null) {
-                                            payPalResponse
-                                                    .pairingId(pairingId)
-                                                    .clientMetadataId(clientMetadataId);
+                                            payPalResponse.pairingId(pairingId);
                                         }
                                     }
                                     callback.onResult(payPalResponse, null);
