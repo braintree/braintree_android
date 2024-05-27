@@ -26,7 +26,7 @@ class PayPalMessagingView(
 ) : FrameLayout(context) {
     private var listener: PayPalMessagingListener? = null
 
-    private var messagingView: PayPalMessageView? = null
+    private var messageView: PayPalMessageView? = null
 
     /**
      * Add a {@link PayPalMessagingListener} to your client to receive results or errors from the PayPal Messaging flow.
@@ -64,8 +64,8 @@ class PayPalMessagingView(
 
                     val messageConfig = constructPayPalMessageViewConfig(clientId, configuration, request)
 
-                    if (messagingView != null) {
-                        messagingView?.setConfig(messageConfig)
+                    if (messageView != null) {
+                        messageView?.setConfig(messageConfig)
                     } else {
                         val payPalMessageView = PayPalMessageView(context = context, config = messageConfig)
                         payPalMessageView.layoutParams = ViewGroup.LayoutParams(
@@ -74,7 +74,7 @@ class PayPalMessagingView(
                         )
 
                         addView(payPalMessageView)
-                        messagingView = payPalMessageView
+                        messageView = payPalMessageView
                     }
                 }
             }
