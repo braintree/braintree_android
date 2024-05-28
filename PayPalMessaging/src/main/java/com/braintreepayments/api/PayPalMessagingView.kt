@@ -26,6 +26,8 @@ class PayPalMessagingView(
 ) : FrameLayout(context) {
     private var listener: PayPalMessagingListener? = null
 
+    private var messageView: PayPalMessageView? = null
+
     /**
      * Add a {@link PayPalMessagingListener} to your client to receive results or errors from the PayPal Messaging flow.
      *
@@ -59,25 +61,31 @@ class PayPalMessagingView(
                     )
                     notifyFailure(error = clientIdError)
                 } else {
-                    val payPalMessageView =
-                        constructPayPalMessageView(context, clientId, configuration, request)
-                    payPalMessageView.layoutParams = ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                    )
 
-                    addView(payPalMessageView)
+                    val messageConfig = constructPayPalMessageViewConfig(clientId, configuration, request)
+
+                    if (messageView != null) {
+                        messageView?.setConfig(messageConfig)
+                    } else {
+                        val payPalMessageView = PayPalMessageView(context = context, config = messageConfig)
+                        payPalMessageView.layoutParams = ViewGroup.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT
+                        )
+
+                        addView(payPalMessageView)
+                        messageView = payPalMessageView
+                    }
                 }
             }
         }
     }
 
-    private fun constructPayPalMessageView(
-        context: Context,
+    private fun constructPayPalMessageViewConfig(
         clientId: String,
         configuration: Configuration,
         request: PayPalMessagingRequest
-    ): PayPalMessageView {
+    ): PayPalMessageConfig {
         val environment = if (configuration.environment == "production") {
             PayPalEnvironment.LIVE
         } else {
@@ -119,14 +127,12 @@ class PayPalMessagingView(
             }
         )
 
-        val messageConfig = PayPalMessageConfig(
+        return PayPalMessageConfig(
             data = messageData,
             style = messageStyle,
             viewStateCallbacks = viewStateCallbacks,
             eventsCallbacks = eventsCallbacks
         )
-
-        return PayPalMessageView(context = context, config = messageConfig)
     }
 
     private fun notifySuccess() {
