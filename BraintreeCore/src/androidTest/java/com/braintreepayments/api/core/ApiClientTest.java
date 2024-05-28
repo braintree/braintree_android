@@ -10,8 +10,7 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.api.Fixtures;
 import com.braintreepayments.api.PayPalAccount;
-import com.braintreepayments.api.PayPalAccountNonce;
-import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.paypal.PayPalAccountNonce;
 
 import org.json.JSONException;
 import org.json.JSONObject;

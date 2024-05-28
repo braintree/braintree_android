@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.PayPalAccountNonce;
+import com.braintreepayments.api.paypal.PayPalAccountNonce;
 import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;

@@ -24,7 +24,7 @@ import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.Fixtures;
 import com.braintreepayments.api.MockBraintreeClientBuilder;
-import com.braintreepayments.api.PayPalAccountNonce;
+import com.braintreepayments.api.paypal.PayPalAccountNonce;
 import com.braintreepayments.api.TestConfigurationBuilder;
 import com.braintreepayments.api.core.PaymentMethodNonce;
 import com.braintreepayments.api.core.UserCanceledException;
