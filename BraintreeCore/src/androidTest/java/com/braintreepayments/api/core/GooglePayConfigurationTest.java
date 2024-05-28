@@ -9,9 +9,7 @@ import static org.junit.Assume.assumeTrue;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.core.Configuration;
-import com.braintreepayments.api.core.GooglePayConfiguration;
+import com.braintreepayments.api.testutils.Fixtures;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 

@@ -2,12 +2,11 @@ package com.braintreepayments.api.visacheckout
 
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
-import com.braintreepayments.api.Fixtures
-import com.braintreepayments.api.MockkApiClientBuilder
-import com.braintreepayments.api.MockkBraintreeClientBuilder
-import com.braintreepayments.api.TestConfigurationBuilder
-import com.braintreepayments.api.TestConfigurationBuilder.TestVisaCheckoutConfigurationBuilder
-import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.testutils.Fixtures
+import com.braintreepayments.api.testutils.MockkApiClientBuilder
+import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
+import com.braintreepayments.api.testutils.TestConfigurationBuilder
+import com.braintreepayments.api.testutils.TestConfigurationBuilder.TestVisaCheckoutConfigurationBuilder
 import com.braintreepayments.api.core.ConfigurationException
 import com.visa.checkout.Profile.CardBrand
 import com.visa.checkout.VisaPaymentSummary

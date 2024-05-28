@@ -1,13 +1,12 @@
 package com.braintreepayments.api.core
 
 import android.text.TextUtils
-import com.braintreepayments.api.Fixtures
+import com.braintreepayments.api.testutils.Fixtures
 import org.json.JSONException
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.util.*
 
 @RunWith(RobolectricTestRunner::class)
 class ConfigurationUnitTest {

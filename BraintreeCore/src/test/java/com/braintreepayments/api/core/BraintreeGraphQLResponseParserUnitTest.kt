@@ -1,6 +1,6 @@
 package com.braintreepayments.api.core
 
-import com.braintreepayments.api.Fixtures
+import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.sharedutils.AuthorizationException
 import com.braintreepayments.api.sharedutils.BaseHttpResponseParser
 import com.braintreepayments.api.sharedutils.UnexpectedException

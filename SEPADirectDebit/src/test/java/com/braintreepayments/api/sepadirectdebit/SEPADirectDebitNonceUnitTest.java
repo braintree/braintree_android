@@ -4,9 +4,7 @@ import static junit.framework.TestCase.assertEquals;
 
 import android.os.Parcel;
 
-import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitMandateType;
-import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitNonce;
+import com.braintreepayments.api.testutils.Fixtures;
 
 import org.json.JSONException;
 import org.json.JSONObject;

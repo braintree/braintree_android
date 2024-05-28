@@ -3,7 +3,7 @@ package com.braintreepayments.api.core
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.*
-import com.braintreepayments.api.Fixtures
+import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.core.Authorization.Companion.fromString
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
 import io.mockk.*

@@ -2,8 +2,7 @@ package com.braintreepayments.api.googlepay;
 
 import android.os.Parcel;
 
-import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.googlepay.GooglePayRequest;
+import com.braintreepayments.api.testutils.Fixtures;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;

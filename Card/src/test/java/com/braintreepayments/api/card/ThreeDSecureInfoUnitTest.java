@@ -8,7 +8,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
-import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.threedsecure.ThreeDSecureInfo;
 
 public class ThreeDSecureInfoUnitTest {

@@ -11,8 +11,7 @@ import org.robolectric.RobolectricTestRunner;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 
-import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.localpayment.LocalPaymentNonce;
+import com.braintreepayments.api.testutils.Fixtures;
 
 @RunWith(RobolectricTestRunner.class)
 public class LocalPaymentNonceUnitTest {

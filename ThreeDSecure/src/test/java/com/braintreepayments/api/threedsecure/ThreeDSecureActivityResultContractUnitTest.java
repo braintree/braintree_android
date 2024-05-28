@@ -14,7 +14,7 @@ import android.content.Intent;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.UserCanceledException;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;

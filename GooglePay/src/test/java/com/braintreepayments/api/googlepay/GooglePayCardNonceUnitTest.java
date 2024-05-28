@@ -8,11 +8,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import static com.braintreepayments.api.Assertions.assertBinDataEqual;
+import static com.braintreepayments.api.testutils.Assertions.assertBinDataEqual;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
-import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.sharedutils.Json;
 

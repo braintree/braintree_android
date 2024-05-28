@@ -1,6 +1,6 @@
 package com.braintreepayments.api.core
 
-import com.braintreepayments.api.Fixtures
+import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
 import com.braintreepayments.api.sharedutils.BraintreeSharedPreferences
 import org.robolectric.RobolectricTestRunner

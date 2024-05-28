@@ -7,7 +7,7 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.core.Configuration;
-import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.testutils.Fixtures;
 
 import org.json.JSONException;
 import org.junit.Test;

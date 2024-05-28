@@ -1,7 +1,7 @@
 package com.braintreepayments.api.card;
 
-import static com.braintreepayments.api.CardNumber.VISA;
-import static com.braintreepayments.api.Fixtures.TOKENIZATION_KEY;
+import static com.braintreepayments.api.testutils.CardNumber.VISA;
+import static com.braintreepayments.api.testutils.Fixtures.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -16,9 +16,9 @@ import com.braintreepayments.api.sharedutils.AuthorizationException;
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.ErrorWithResponse;
-import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.SharedPreferencesHelper;
-import com.braintreepayments.api.TestClientTokenBuilder;
+import com.braintreepayments.api.testutils.Fixtures;
+import com.braintreepayments.api.testutils.SharedPreferencesHelper;
+import com.braintreepayments.api.testutils.TestClientTokenBuilder;
 
 import org.json.JSONException;
 import org.junit.Ignore;

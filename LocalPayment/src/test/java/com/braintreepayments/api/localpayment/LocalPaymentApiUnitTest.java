@@ -13,16 +13,10 @@ import static org.mockito.Mockito.verify;
 
 import android.net.Uri;
 
-import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.MockBraintreeClientBuilder;
+import com.braintreepayments.api.testutils.Fixtures;
+import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.PostalAddress;
-import com.braintreepayments.api.localpayment.LocalPaymentApi;
-import com.braintreepayments.api.localpayment.LocalPaymentAuthRequestParams;
-import com.braintreepayments.api.localpayment.LocalPaymentInternalAuthRequestCallback;
-import com.braintreepayments.api.localpayment.LocalPaymentInternalTokenizeCallback;
-import com.braintreepayments.api.localpayment.LocalPaymentNonce;
-import com.braintreepayments.api.localpayment.LocalPaymentRequest;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
 
 import org.json.JSONException;

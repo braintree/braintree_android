@@ -1,6 +1,6 @@
 package com.braintreepayments.api.core
 
-import com.braintreepayments.api.FixturesHelper
+import com.braintreepayments.api.testutils.FixturesHelper
 import com.braintreepayments.api.core.StreamHelper.getString
 import org.junit.Assert.assertEquals
 import org.robolectric.RobolectricTestRunner

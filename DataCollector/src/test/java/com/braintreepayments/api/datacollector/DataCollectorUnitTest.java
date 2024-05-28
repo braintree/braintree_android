@@ -15,8 +15,8 @@ import androidx.test.core.app.ApplicationProvider;
 
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.Configuration;
-import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.MockBraintreeClientBuilder;
+import com.braintreepayments.api.testutils.Fixtures;
+import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 import com.braintreepayments.api.core.UUIDHelper;
 
 import org.json.JSONException;

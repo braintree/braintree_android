@@ -1,7 +1,7 @@
 package com.braintreepayments.api.core
 
 import android.os.Parcel
-import com.braintreepayments.api.Fixtures
+import com.braintreepayments.api.testutils.Fixtures
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
