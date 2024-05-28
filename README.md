@@ -4,13 +4,15 @@
 
 Welcome to Braintree's Android SDK. This library will help you accept card and alternative payments in your Android app.
 
-:mega:&nbsp;&nbsp;A new major version of the SDK is now available. See the [v4.9.0+ migration guide](v4.9.0+_MIGRATION_GUIDE.md) for details.
-
 **The Braintree SDK supports Android API 21 and above.**
 
 > The PayPalNativeCheckout module supports Android API 23 and above.
 
 The Braintree SDK requires Java 8 as of version 4.24.0. See the [CHANGELOG](https://github.com/braintree/braintree_android/blob/main/CHANGELOG.md#4240) for more details. The Braintree SDK uses Kotlin 1.7. 
+
+## 📣 Announcements
+
+**Upgrade your integration to continue accepting Braintree payments** The SSL certificates for the Android SDK are set to expire by June 31, 2025. Upgrade to v4.45.0+ to continue using the Braintree SDK. ![Click here for more details](https://github.com/braintree/braintree_android/issues/993)
 
 ## Adding It To Your Project
 

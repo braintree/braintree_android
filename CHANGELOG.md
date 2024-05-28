@@ -2,12 +2,14 @@
 
 ## unreleased
 
+* PayPal
+  * Send `is_vault` in `event_params` analytics
+* Venmo
+  * Send `link_type` and `is_vault` in `event_params` analytics
 * PayPalMessaging (BETA)
   * Add `PayPalMessagingRequest`, `PayPalMessagingColor`, `PayPalMessagingLogoType`, `PayPalMessagingOfferType`, `PayPalMessagingPageType`, `PayPalMessagingTextAlignment`, and `PayPalMessagingListener`
   * Add `PayPalMessagingView(BraintreeClient, Context)` to display PayPal messages to promote offers such as Pay Later and PayPal Credit to customers.
     * To get started call `PayPalMessagingView#start()` with an optional `PayPalMessagingRequest`
-* Venmo
-  * Send `link_type` in `event_params` to PayPal's analytics service (FPTI)
   
 ## 4.45.0 (2024-04-16)
 
