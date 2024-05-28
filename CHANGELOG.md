@@ -2,6 +2,7 @@
 
 ## unreleased
 * PayPal
+  * Update `PayPalInternalClient` to use pairing ID as client metadata ID by default.
   * Send `is_vault` in `event_params` analytics
 * Venmo
   * Send `link_type` and `is_vault` in `event_params` analytics
