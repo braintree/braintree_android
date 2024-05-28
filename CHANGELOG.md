@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.45.1 (2024-05-28)
 * PayPal
   * Update `PayPalInternalClient` to use pairing ID as client metadata ID by default.
   * Send `is_vault` in `event_params` analytics
