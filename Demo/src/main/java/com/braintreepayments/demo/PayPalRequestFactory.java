@@ -2,10 +2,10 @@ package com.braintreepayments.demo;
 
 import android.content.Context;
 
-import com.braintreepayments.api.PayPalCheckoutRequest;
-import com.braintreepayments.api.PayPalPaymentIntent;
-import com.braintreepayments.api.PayPalRequest;
-import com.braintreepayments.api.PayPalVaultRequest;
+import com.braintreepayments.api.paypal.PayPalCheckoutRequest;
+import com.braintreepayments.api.paypal.PayPalPaymentIntent;
+import com.braintreepayments.api.paypal.PayPalRequest;
+import com.braintreepayments.api.paypal.PayPalVaultRequest;
 import com.braintreepayments.api.core.PostalAddress;
 
 public class PayPalRequestFactory {

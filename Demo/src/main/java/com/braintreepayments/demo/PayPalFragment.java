@@ -18,13 +18,13 @@ import com.braintreepayments.api.core.PaymentMethodNonce;
 import com.braintreepayments.api.datacollector.DataCollector;
 import com.braintreepayments.api.datacollector.DataCollectorRequest;
 import com.braintreepayments.api.datacollector.DataCollectorResult;
-import com.braintreepayments.api.PayPalClient;
-import com.braintreepayments.api.PayPalLauncher;
-import com.braintreepayments.api.PayPalPaymentAuthRequest;
-import com.braintreepayments.api.PayPalPaymentAuthResult;
-import com.braintreepayments.api.PayPalPendingRequest;
-import com.braintreepayments.api.PayPalRequest;
-import com.braintreepayments.api.PayPalResult;
+import com.braintreepayments.api.paypal.PayPalClient;
+import com.braintreepayments.api.paypal.PayPalLauncher;
+import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest;
+import com.braintreepayments.api.paypal.PayPalPaymentAuthResult;
+import com.braintreepayments.api.paypal.PayPalPendingRequest;
+import com.braintreepayments.api.paypal.PayPalRequest;
+import com.braintreepayments.api.paypal.PayPalResult;
 
 public class PayPalFragment extends BaseFragment {
 
