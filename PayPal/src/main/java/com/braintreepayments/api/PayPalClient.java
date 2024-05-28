@@ -288,6 +288,7 @@ public class PayPalClient {
             public void onResult(PayPalResponse payPalResponse, Exception error) {
                 if (payPalResponse != null) {
                     String analyticsPrefix = getAnalyticsEventPrefix(payPalRequest);
+                    payPalContextId = payPalResponse.getPairingId();
                     braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.started", analyticsPrefix), payPalContextId, null, isVaultRequest);
 
                     try {
