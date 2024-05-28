@@ -73,6 +73,9 @@ class PayPalMessagingViewUnitTest {
 
         val payPalMessageView = PayPalMessagingView(braintreeClient, context)
         payPalMessageView.setListener(listener)
+
+        assertEquals(payPalMessageView.childCount, 0)
+
         payPalMessageView.start()
 
         verify { listener.onPayPalMessagingLoading() }
@@ -81,5 +84,35 @@ class PayPalMessagingViewUnitTest {
                 integrationName = "BT_SDK",
                 integrationVersion = BuildConfig.VERSION_NAME
         ) }
+
+        assertEquals(payPalMessageView.childCount, 1)
+    }
+
+    @Test
+    fun `test start with valid configuration multiple times does not increase number of subviews`() {
+        val payPalConfiguration: Configuration = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
+        mockkObject(PayPalMessageConfig)
+        val braintreeClient = MockkBraintreeClientBuilder()
+                .configurationSuccess(payPalConfiguration)
+                .build()
+
+        val payPalMessageView = PayPalMessagingView(braintreeClient, context)
+        payPalMessageView.setListener(listener)
+
+        assertEquals(payPalMessageView.childCount, 0)
+
+        payPalMessageView.start()
+
+        assertEquals(payPalMessageView.childCount, 1)
+        verify { listener.onPayPalMessagingLoading() }
+        verify { braintreeClient.sendAnalyticsEvent("paypal-messaging:create-view:started") }
+        verify { PayPalMessageConfig.setGlobalAnalytics(
+                integrationName = "BT_SDK",
+                integrationVersion = BuildConfig.VERSION_NAME
+        ) }
+
+        payPalMessageView.start()
+
+        assertEquals(payPalMessageView.childCount, 1)
     }
 }
