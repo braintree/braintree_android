@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.testutils;
 
 import android.content.Context;
 import android.content.SharedPreferences;

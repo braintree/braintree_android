@@ -1,6 +1,6 @@
 package com.braintreepayments.api.card;
 
-import static com.braintreepayments.api.Assertions.assertBinDataEqual;
+import static com.braintreepayments.api.testutils.Assertions.assertBinDataEqual;
 import static com.braintreepayments.api.card.BinData.NO;
 import static com.braintreepayments.api.card.BinData.UNKNOWN;
 import static com.braintreepayments.api.card.BinData.YES;
@@ -12,7 +12,7 @@ import static org.junit.Assert.assertNull;
 
 import android.os.Parcel;
 
-import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.testutils.Fixtures;
 
 import org.json.JSONException;
 import org.json.JSONObject;

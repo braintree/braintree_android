@@ -14,8 +14,7 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
-import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.threedsecure.ThreeDSecureLookup;
+import com.braintreepayments.api.testutils.Fixtures;
 
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureLookupUnitTest {

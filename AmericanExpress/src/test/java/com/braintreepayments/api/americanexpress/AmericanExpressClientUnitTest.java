@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.americanexpress;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -8,11 +8,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.braintreepayments.api.americanexpress.AmericanExpressAnalytics;
-import com.braintreepayments.api.americanexpress.AmericanExpressClient;
-import com.braintreepayments.api.americanexpress.AmericanExpressGetRewardsBalanceCallback;
-import com.braintreepayments.api.americanexpress.AmericanExpressResult;
-import com.braintreepayments.api.americanexpress.AmericanExpressRewardsBalance;
+import com.braintreepayments.api.testutils.Fixtures;
+import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.sharedutils.AuthorizationException;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;

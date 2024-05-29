@@ -5,8 +5,7 @@ import static junit.framework.Assert.assertTrue;
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.core.BraintreeHttpClient;
+import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.sharedutils.AuthorizationException;
 
 import org.junit.Before;

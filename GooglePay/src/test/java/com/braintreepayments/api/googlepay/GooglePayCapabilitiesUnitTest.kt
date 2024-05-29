@@ -2,8 +2,8 @@ package com.braintreepayments.api.googlepay
 
 import androidx.fragment.app.FragmentActivity
 import com.braintreepayments.api.core.Configuration
-import com.braintreepayments.api.TestConfigurationBuilder
-import com.braintreepayments.api.TestConfigurationBuilder.TestGooglePayConfigurationBuilder
+import com.braintreepayments.api.testutils.TestConfigurationBuilder
+import com.braintreepayments.api.testutils.TestConfigurationBuilder.TestGooglePayConfigurationBuilder
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import io.mockk.every

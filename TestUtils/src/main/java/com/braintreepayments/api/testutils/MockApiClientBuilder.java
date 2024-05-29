@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.testutils;
 
 import com.braintreepayments.api.core.ApiClient;
 import com.braintreepayments.api.core.PaymentMethod;

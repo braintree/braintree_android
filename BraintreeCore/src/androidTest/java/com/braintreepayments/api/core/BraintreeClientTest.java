@@ -4,13 +4,11 @@ import static junit.framework.Assert.assertNotNull;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.TestClientTokenBuilder;
-import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.testutils.Fixtures;
+import com.braintreepayments.api.testutils.TestClientTokenBuilder;
 
 import org.junit.Before;
 import org.junit.Test;

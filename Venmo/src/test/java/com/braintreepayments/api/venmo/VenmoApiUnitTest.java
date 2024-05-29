@@ -10,22 +10,14 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.MockApiClientBuilder;
-import com.braintreepayments.api.MockBraintreeClientBuilder;
+import com.braintreepayments.api.testutils.Fixtures;
+import com.braintreepayments.api.testutils.MockApiClientBuilder;
+import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 import com.braintreepayments.api.core.ApiClient;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.TokenizeCallback;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
-import com.braintreepayments.api.venmo.VenmoAccount;
-import com.braintreepayments.api.venmo.VenmoAccountNonce;
-import com.braintreepayments.api.venmo.VenmoApi;
-import com.braintreepayments.api.venmo.VenmoApiCallback;
-import com.braintreepayments.api.venmo.VenmoInternalCallback;
-import com.braintreepayments.api.venmo.VenmoLineItem;
-import com.braintreepayments.api.venmo.VenmoPaymentMethodUsage;
-import com.braintreepayments.api.venmo.VenmoRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;

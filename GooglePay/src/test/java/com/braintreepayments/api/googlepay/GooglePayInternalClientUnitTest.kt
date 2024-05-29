@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.core.Configuration
-import com.braintreepayments.api.Fixtures
+import com.braintreepayments.api.testutils.Fixtures
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.tasks.*

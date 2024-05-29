@@ -1,6 +1,6 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.testutils;
 
-import static com.braintreepayments.api.SharedPreferencesHelper.getSharedPreferences;
+import static com.braintreepayments.api.testutils.SharedPreferencesHelper.getSharedPreferences;
 
 import android.annotation.SuppressLint;
 import android.app.KeyguardManager;

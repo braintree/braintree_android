@@ -18,8 +18,8 @@ import androidx.test.core.app.ApplicationProvider;
 
 import com.braintreepayments.api.BrowserSwitchOptions;
 import com.braintreepayments.api.BrowserSwitchResultInfo;
-import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.MockBraintreeClientBuilder;
+import com.braintreepayments.api.testutils.Fixtures;
+import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;

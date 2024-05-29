@@ -1,7 +1,7 @@
 package com.braintreepayments.api.core
 
-import com.braintreepayments.api.Fixtures
-import com.braintreepayments.api.FixturesHelper
+import com.braintreepayments.api.testutils.Fixtures
+import com.braintreepayments.api.testutils.FixturesHelper
 import com.braintreepayments.api.core.Authorization.Companion.fromString
 import org.junit.Assert.*
 import org.junit.Test

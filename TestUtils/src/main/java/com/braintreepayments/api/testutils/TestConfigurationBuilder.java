@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.testutils;
 
 import com.braintreepayments.api.core.GraphQLConstants.Features;
 
@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.List;
 
 public class TestConfigurationBuilder extends JSONBuilder {
 

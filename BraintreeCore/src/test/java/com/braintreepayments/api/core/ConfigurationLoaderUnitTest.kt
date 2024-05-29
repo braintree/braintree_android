@@ -1,7 +1,7 @@
 package com.braintreepayments.api.core
 
 import android.util.Base64
-import com.braintreepayments.api.Fixtures
+import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import io.mockk.*

@@ -1,7 +1,7 @@
 package com.braintreepayments.api.core
 
 import android.os.Bundle
-import com.braintreepayments.api.Fixtures
+import com.braintreepayments.api.testutils.Fixtures
 import org.robolectric.RobolectricTestRunner
 import org.json.JSONException
 import org.json.JSONObject

@@ -1,6 +1,6 @@
 package com.braintreepayments.api.core;
 
-import static com.braintreepayments.api.Assertions.assertIsANonce;
+import static com.braintreepayments.api.testutils.Assertions.assertIsANonce;
 import static junit.framework.Assert.fail;
 
 import android.content.Context;
@@ -8,7 +8,7 @@ import android.content.Context;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.PayPalAccount;
 import com.braintreepayments.api.paypal.PayPalAccountNonce;
 

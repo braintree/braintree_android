@@ -13,8 +13,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 
-import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.venmo.VenmoAccountNonce;
+import com.braintreepayments.api.testutils.Fixtures;
 
 @RunWith(RobolectricTestRunner.class)
 public class VenmoAccountNonceUnitTest {

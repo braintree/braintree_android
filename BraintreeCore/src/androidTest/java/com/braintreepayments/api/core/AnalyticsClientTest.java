@@ -13,7 +13,7 @@ import androidx.work.testing.SynchronousExecutor;
 import androidx.work.testing.TestDriver;
 import androidx.work.testing.WorkManagerTestInitHelper;
 
-import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.testutils.Fixtures;
 
 import org.junit.Before;
 import org.junit.Test;

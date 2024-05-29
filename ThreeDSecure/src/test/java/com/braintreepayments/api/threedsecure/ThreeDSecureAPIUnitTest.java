@@ -13,10 +13,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.braintreepayments.api.Fixtures;
+import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
-import com.braintreepayments.api.MockBraintreeClientBuilder;
+import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;

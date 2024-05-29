@@ -1,7 +1,7 @@
 package com.braintreepayments.api.card
 
 import android.os.Parcel
-import com.braintreepayments.api.CardNumber.VISA
+import com.braintreepayments.api.testutils.CardNumber.VISA
 import com.braintreepayments.api.core.GraphQLConstants
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.MetadataBuilder

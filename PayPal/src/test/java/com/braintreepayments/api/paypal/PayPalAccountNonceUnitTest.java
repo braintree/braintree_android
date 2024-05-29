@@ -14,8 +14,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
-import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.paypal.PayPalAccountNonce;
+import com.braintreepayments.api.testutils.Fixtures;
 
 @RunWith(RobolectricTestRunner.class)
 public class PayPalAccountNonceUnitTest {

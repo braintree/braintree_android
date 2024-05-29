@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.americanexpress;
 
 import android.os.Parcel;
 
@@ -10,7 +10,7 @@ import org.robolectric.RobolectricTestRunner;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 
-import com.braintreepayments.api.americanexpress.AmericanExpressRewardsBalance;
+import com.braintreepayments.api.testutils.Fixtures;
 
 @RunWith(RobolectricTestRunner.class)
 public class AmericanExpressRewardsBalanceUnitTest {

@@ -5,8 +5,7 @@ import android.content.Context;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.testutils.Fixtures;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -15,9 +15,9 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
-import com.braintreepayments.api.Fixtures;
-import com.braintreepayments.api.MockApiClientBuilder;
-import com.braintreepayments.api.MockBraintreeClientBuilder;
+import com.braintreepayments.api.testutils.Fixtures;
+import com.braintreepayments.api.testutils.MockApiClientBuilder;
+import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 import com.braintreepayments.api.core.ApiClient;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.ClientToken;
@@ -26,15 +26,6 @@ import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.core.TokenizationKey;
 import com.braintreepayments.api.core.TokenizeCallback;
 import com.braintreepayments.api.datacollector.DataCollector;
-import com.braintreepayments.api.paypal.PayPalAccount;
-import com.braintreepayments.api.paypal.PayPalAccountNonce;
-import com.braintreepayments.api.paypal.PayPalCheckoutRequest;
-import com.braintreepayments.api.paypal.PayPalInternalClient;
-import com.braintreepayments.api.paypal.PayPalInternalClientCallback;
-import com.braintreepayments.api.paypal.PayPalInternalTokenizeCallback;
-import com.braintreepayments.api.paypal.PayPalLineItem;
-import com.braintreepayments.api.paypal.PayPalPaymentAuthRequestParams;
-import com.braintreepayments.api.paypal.PayPalVaultRequest;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
 
 import org.json.JSONArray;
