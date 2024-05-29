@@ -65,7 +65,7 @@ class SEPADirectDebitLauncher internal constructor(private val browserSwitchClie
         pendingRequest: SEPADirectDebitPendingRequest.Started,
         intent: Intent
     ): SEPADirectDebitPaymentAuthResult {
-        return when (val result = browserSwitchClient.parseResult(pendingRequest.request, intent)) {
+        return when (val result = browserSwitchClient.completeRequest(pendingRequest.request, intent)) {
             is BrowserSwitchResult.Success -> SEPADirectDebitPaymentAuthResult.Success(
                 SEPADirectDebitPaymentAuthResultInfo(result.resultInfo)
             )
