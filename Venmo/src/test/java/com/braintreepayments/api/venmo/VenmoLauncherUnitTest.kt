@@ -108,7 +108,7 @@ class VenmoLauncherUnitTest {
         val result: BrowserSwitchResultInfo = mockk(relaxed = true)
         val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         every {
-            browserSwitchClient.parseResult(
+            browserSwitchClient.completeRequest(
                 browserSwitchPendingRequest,
                 intent
             )
@@ -130,7 +130,7 @@ class VenmoLauncherUnitTest {
     fun `handleReturnToAppFromBrowser when result does not exist returns null`() {
         val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         every {
-            browserSwitchClient.parseResult(
+            browserSwitchClient.completeRequest(
                 browserSwitchPendingRequest,
                 intent
             )
