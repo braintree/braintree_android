@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.46.0 (2024-05-30)
 
 * PayPalMessaging (BETA)
   * Add `PayPalMessagingRequest`, `PayPalMessagingColor`, `PayPalMessagingLogoType`, `PayPalMessagingOfferType`, `PayPalMessagingPageType`, `PayPalMessagingTextAlignment`, and `PayPalMessagingListener`
