@@ -76,7 +76,7 @@ class LocalPaymentLauncherUnitTest {
         val pendingRequest: LocalPaymentPendingRequest.Started =
             LocalPaymentPendingRequest.Started(browserSwitchPendingRequest)
         every {
-            browserSwitchClient.parseResult(eq(browserSwitchPendingRequest), eq(intent))
+            browserSwitchClient.completeRequest(eq(browserSwitchPendingRequest), eq(intent))
         } returns BrowserSwitchResult.Success(browserSwitchResultInfo)
 
         val paymentAuthResult = sut.handleReturnToAppFromBrowser(pendingRequest, intent)
@@ -94,7 +94,7 @@ class LocalPaymentLauncherUnitTest {
         val pendingRequest: LocalPaymentPendingRequest.Started =
             LocalPaymentPendingRequest.Started(browserSwitchPendingRequest)
         every {
-            browserSwitchClient.parseResult(eq(browserSwitchPendingRequest), eq(intent))
+            browserSwitchClient.completeRequest(eq(browserSwitchPendingRequest), eq(intent))
         } returns BrowserSwitchResult.NoResult
 
         val paymentAuthResult = sut.handleReturnToAppFromBrowser(pendingRequest, intent)

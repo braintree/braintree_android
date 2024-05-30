@@ -105,7 +105,7 @@ class PayPalLauncherUnitTest {
         val result: BrowserSwitchResultInfo = mockk(relaxed = true)
         val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         every {
-            browserSwitchClient.parseResult(
+            browserSwitchClient.completeRequest(
                 browserSwitchPendingRequest,
                 intent
             )
@@ -127,7 +127,7 @@ class PayPalLauncherUnitTest {
     fun `handleReturnToAppFromBrowser when result does not exist returns null`() {
         val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         every {
-            browserSwitchClient.parseResult(
+            browserSwitchClient.completeRequest(
                 browserSwitchPendingRequest,
                 intent
             )
