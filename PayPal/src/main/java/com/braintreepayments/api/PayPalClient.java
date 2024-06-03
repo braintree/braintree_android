@@ -276,19 +276,22 @@ public class PayPalClient {
     }
 
     private void sendPayPalRequest(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
-        internalPayPalClient.sendRequest(activity, payPalRequest, (payPalResponse, error) -> {
-            if (payPalResponse != null) {
-                String analyticsPrefix = getAnalyticsEventPrefix(payPalRequest);
-                braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.started", analyticsPrefix), payPalContextId);
+        internalPayPalClient.sendRequest(activity, payPalRequest, new PayPalInternalClientCallback() {
+            @Override
+            public void onResult(@Nullable PayPalResponse payPalResponse, @Nullable Exception error) {
+                if (payPalResponse != null) {
+                    String analyticsPrefix = getAnalyticsEventPrefix(payPalRequest);
+                    braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.started", analyticsPrefix), payPalContextId);
 
-                try {
-                    startBrowserSwitch(activity, payPalResponse, payPalRequest.isAppLinkEnabled());
-                    callback.onResult(null);
-                } catch (JSONException | BrowserSwitchException exception) {
-                    callback.onResult(exception);
+                    try {
+                        PayPalClient.this.startBrowserSwitch(activity, payPalResponse, payPalRequest.isAppLinkEnabled());
+                        callback.onResult(null);
+                    } catch (JSONException | BrowserSwitchException exception) {
+                        callback.onResult(exception);
+                    }
+                } else {
+                    callback.onResult(error);
                 }
-            } else {
-                callback.onResult(error);
             }
         });
     }
