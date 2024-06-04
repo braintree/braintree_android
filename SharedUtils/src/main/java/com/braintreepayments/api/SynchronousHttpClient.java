@@ -35,11 +35,13 @@ class SynchronousHttpClient {
         this.socketFactory = socketFactory;
     }
 
-    String request(HttpRequest httpRequest) throws Exception {
+    BTHTTPResponse request(HttpRequest httpRequest) throws Exception {
         if (httpRequest.getPath() == null) {
             throw new IllegalArgumentException("Path cannot be null");
         }
         URL url = httpRequest.getURL();
+
+        long startTime = System.currentTimeMillis();
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         if (connection instanceof HttpsURLConnection) {
@@ -57,7 +59,7 @@ class SynchronousHttpClient {
 
         // apply request headers
         Map<String, String> headers = httpRequest.getHeaders();
-        for (Map.Entry<String,String> entry : headers.entrySet()) {
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
             connection.setRequestProperty(entry.getKey(), entry.getValue());
         }
 
@@ -75,7 +77,16 @@ class SynchronousHttpClient {
 
         try {
             int responseCode = connection.getResponseCode();
-            return parser.parse(responseCode, connection);
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+
+            System.out.println("Start Time : " + startTime);
+            System.out.println("End Time : " + endTime);
+            System.out.println("Duration : " + (duration) + " ms");
+
+            String responseBody = parser.parse(responseCode, connection);
+
+            return new BTHTTPResponse(startTime, endTime, responseBody);
         } finally {
             connection.disconnect();
         }

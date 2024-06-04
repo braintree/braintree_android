@@ -42,7 +42,7 @@ class HttpClient {
     }
 
     String sendRequest(HttpRequest request) throws Exception {
-        return syncHttpClient.request(request);
+        return syncHttpClient.request(request).body;
     }
 
     void sendRequest(HttpRequest request, HttpResponseCallback callback) {
@@ -60,8 +60,8 @@ class HttpClient {
             @Override
             public void run() {
                 try {
-                    String responseBody = syncHttpClient.request(request);
-                    notifySuccessOnMainThread(callback, responseBody);
+                    BTHTTPResponse httpResponse = syncHttpClient.request(request);
+                    notifySuccessOnMainThread(callback, httpResponse.body);
                 } catch (Exception e) {
                     switch (retryStrategy) {
                         case HttpClient.NO_RETRY:
