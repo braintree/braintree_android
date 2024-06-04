@@ -583,7 +583,7 @@
 
 **Note:** Includes all changes in [4.0.0-beta1](#400-beta1), [4.0.0-beta2](#400-beta2), and [4.0.0-beta3](#400-beta3)
 
-## 4.0.0-beta3
+## 4.0.0-beta3 (2021-05-13)
 
 * Add `PaymentMethodType` enum
 * Add `PaymentMethodNonce#getType()` method
@@ -634,7 +634,7 @@
   * Remove `getResponsePaymentMethodType()` method from `PaymentMethod` base class and subclasses
   * Make `BaseCard` class package-private
 
-## 4.0.0-beta2
+## 4.0.0-beta2 (2021-03-31)
 
 * Add `setCountryCode` to `GooglePayRequest`
 * Add Google Pay support for Elo cards. 
@@ -791,7 +791,7 @@
 
 * Add Venmo to `queries` element in `AndroidManifest.xml` (fixes issue in Android 11 not properly detecting if Venmo app is installed)
 
-## 4.0.0-beta1
+## 4.0.0-beta1 (2021-03-08)
 
 * Add a `client` for each feature:
   * `AmericanExpressClient`
@@ -1761,7 +1761,7 @@
 * Packaging
   * Set Braintree package to default to AAR instead of ZIP
 
-## 1.0.4 - Gradle and Maven will incorrectly download the ZIP instead of AAR, use 1.0.5+
+## 1.0.4 (2014-08-01) - Gradle and Maven will incorrectly download the ZIP instead of AAR, use 1.0.5+
 
 * Improvements
   * Added assets for a wider range of resolutions
@@ -1778,7 +1778,7 @@
   * Fix crash on Android SDK < 19
 * Add PayPal `correlationId` to PayPal account creation
 
-## 1.0.2 - crash on Android SDK < 19, do not use
+## 1.0.2 (2014-07-16) - crash on Android SDK < 19, do not use
 
 * Fixes
   * Improved packaging for non-Gradle uses of SDK
