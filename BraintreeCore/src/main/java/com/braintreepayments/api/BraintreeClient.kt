@@ -378,6 +378,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         val returnUrlScheme = getReturnUrlScheme()
         val browserSwitchOptions = BrowserSwitchOptions()
             .url(url)
+            .appLinkUri(appLinkReturnUri)
             .returnUrlScheme(returnUrlScheme)
             .requestCode(requestCode)
         browserSwitchClient.assertCanPerformBrowserSwitch(activity, browserSwitchOptions)

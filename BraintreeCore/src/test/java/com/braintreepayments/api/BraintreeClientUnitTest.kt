@@ -685,8 +685,9 @@ class BraintreeClientUnitTest {
             val requestCode = 123
             val url = Uri.parse("www.example.com")
             val returnUrlScheme = "sample-scheme"
+            val appLinkUri = Uri.parse("sample-scheme")
             val browserSwitchRequest = BrowserSwitchRequest(
-                requestCode, url, JSONObject(), returnUrlScheme, true
+                requestCode, url, JSONObject(), returnUrlScheme, appLinkUri, true
             )
             return BrowserSwitchResult(BrowserSwitchStatus.SUCCESS, browserSwitchRequest)
         }

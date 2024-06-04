@@ -3,7 +3,8 @@
 ## unreleased
 
 * BraintreeCore
-  * Add 'appLinkReturnUri' to `BraintreeClient` constructors for Android App Link support
+  * Add `appLinkReturnUri` to `BraintreeClient` constructors for Android App Link support (for PayPal web flows only)
+  * Bump `browser-switch` version to `2.7.0`
 * Venmo
   * Send `link_type` in `event_params` to PayPal's analytics service (FPTI)
 * PayPal
