@@ -284,7 +284,7 @@ public class PayPalClient {
                     braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.started", analyticsPrefix), payPalContextId);
 
                     try {
-                        PayPalClient.this.startBrowserSwitch(activity, payPalResponse, payPalRequest.isAppLinkEnabled());
+                        startBrowserSwitch(activity, payPalResponse, payPalRequest.isAppLinkEnabled());
                         callback.onResult(null);
                     } catch (JSONException | BrowserSwitchException exception) {
                         callback.onResult(exception);
