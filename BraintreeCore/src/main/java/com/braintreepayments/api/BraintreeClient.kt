@@ -46,6 +46,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
 
     private val crashReporter: CrashReporter
     private var launchesBrowserSwitchAsNewTask: Boolean = false
+    private val deviceInspector: DeviceInspector
 
     // NOTE: this constructor is used to make dependency injection easy
     internal constructor(params: BraintreeClientParams) : this(
@@ -175,6 +176,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         // statistics access via the sdk console
         crashReporter = CrashReporter(this)
         crashReporter.start()
+        deviceInspector = DeviceInspector()
     }
 
     /**
@@ -211,11 +213,23 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @JvmOverloads
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun sendAnalyticsEvent(eventName: String, payPalContextId: String? = null) {
+    fun sendAnalyticsEvent(
+            eventName: String,
+            payPalContextId: String? = null,
+            linkType: String? = null,
+            isVaultRequest: Boolean = false
+    ) {
         getAuthorization { authorization, _ ->
             if (authorization != null) {
                 getConfiguration { configuration, _ ->
-                    val event = AnalyticsEvent(eventName, payPalContextId)
+                    val isVenmoInstalled = deviceInspector.isVenmoInstalled(applicationContext)
+                    val event = AnalyticsEvent(
+                            eventName,
+                            payPalContextId,
+                            linkType,
+                            venmoInstalled = isVenmoInstalled,
+                            isVaultRequest = isVaultRequest
+                    )
                     sendAnalyticsEvent(event, configuration, authorization)
                 }
             }

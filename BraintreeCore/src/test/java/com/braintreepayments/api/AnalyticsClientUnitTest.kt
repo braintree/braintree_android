@@ -29,6 +29,7 @@ class AnalyticsClientUnitTest {
     private lateinit var eventName: String
     private lateinit var sessionId: String
     private lateinit var payPalContextId: String
+    private lateinit var linkType: String
     private lateinit var integration: String
     private lateinit var workManager: WorkManager
     private lateinit var analyticsDatabase: AnalyticsDatabase
@@ -43,6 +44,7 @@ class AnalyticsClientUnitTest {
         eventName = "sample-event-name"
         sessionId = "sample-session-id"
         payPalContextId = "sample-paypal-context-id"
+        linkType = "sample-link-type"
         integration = "sample-integration"
         authorization = fromString(Fixtures.TOKENIZATION_KEY)
         context = ApplicationProvider.getApplicationContext()
@@ -68,7 +70,7 @@ class AnalyticsClientUnitTest {
             )
         } returns mockk()
 
-        var event = AnalyticsEvent(eventName, null, 123)
+        var event = AnalyticsEvent(eventName, null, null, 123)
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
         sut.sendEvent(configuration, event, sessionId, integration, authorization)
 
@@ -188,8 +190,10 @@ class AnalyticsClientUnitTest {
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", null, 123))
-        events.add(AnalyticsEvent("event1", payPalContextId, 456))
+        events.add(AnalyticsEvent("event0", null, null, 123))
+        events.add(AnalyticsEvent("event1", payPalContextId, null, 456))
+        events.add(AnalyticsEvent("event2", null, linkType, 789))
+        events.add(AnalyticsEvent("event3", payPalContextId, linkType, 987))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val analyticsJSONSlot = slot<String>()
@@ -214,7 +218,7 @@ class AnalyticsClientUnitTest {
         verifyBatchParams(eventJSON["batch_params"] as JSONObject)
 
         val eventParams = eventJSON.getJSONArray("event_params")
-        assertEquals(2, eventParams.length())
+        assertEquals(4, eventParams.length())
 
         val eventOne = eventParams.getJSONObject(0)
         assertEquals("event0", eventOne.getString("event_name"))
@@ -223,6 +227,14 @@ class AnalyticsClientUnitTest {
         val eventTwo = eventParams.getJSONObject(1)
         assertEquals("event1", eventTwo.getString("event_name"))
         assertEquals(456, eventTwo.getString("t").toLong())
+
+        val eventThree = eventParams.getJSONObject(2)
+        assertEquals("event2", eventThree.getString("event_name"))
+        assertEquals(789, eventThree.getString("t").toLong())
+
+        val eventFour = eventParams.getJSONObject(3)
+        assertEquals("event3", eventFour.getString("event_name"))
+        assertEquals(987, eventFour.getString("t").toLong())
     }
 
     @Test
@@ -339,8 +351,10 @@ class AnalyticsClientUnitTest {
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", null, 123))
-        events.add(AnalyticsEvent("event1", payPalContextId, 456))
+        events.add(AnalyticsEvent("event0", null, null, 123))
+        events.add(AnalyticsEvent("event1", payPalContextId, null, 456))
+        events.add(AnalyticsEvent("event2", null, linkType, 789))
+        events.add(AnalyticsEvent("event3", payPalContextId, linkType, 987))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
@@ -364,8 +378,10 @@ class AnalyticsClientUnitTest {
         } returns createSampleDeviceMetadata()
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", null, 123))
-        events.add(AnalyticsEvent("event1", payPalContextId, 456))
+        events.add(AnalyticsEvent("event0", null, null, 123))
+        events.add(AnalyticsEvent("event1", payPalContextId, null, 456))
+        events.add(AnalyticsEvent("event0", null, linkType, 789))
+        events.add(AnalyticsEvent("event1", payPalContextId, linkType, 987))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val httpError = Exception("error")

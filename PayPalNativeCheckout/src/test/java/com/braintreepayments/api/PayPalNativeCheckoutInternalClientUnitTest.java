@@ -450,7 +450,7 @@ public class PayPalNativeCheckoutInternalClientUnitTest {
         assertFalse(payPalResponse.isBillingAgreement());
         assertEquals("authorize", payPalResponse.getIntent());
         assertEquals("sample-merchant-account-id", payPalResponse.getMerchantAccountId());
-        assertEquals("EC-HERMES-SANDBOX-EC-TOKEN", payPalResponse.getPairingId());
+        assertNull(payPalResponse.getPairingId());
         assertEquals("sample-client-metadata-id", payPalResponse.getClientMetadataId());
     }
 

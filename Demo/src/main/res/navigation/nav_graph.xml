@@ -41,6 +41,9 @@
             android:id="@+id/action_mainFragment_to_payPalNativeCheckoutFragment"
             app:destination="@id/payPalNativeCheckoutFragment" />
         <action
+            android:id="@+id/action_mainFragment_to_payPalMessagingFragment"
+            app:destination="@id/payPalMessagingFragment" />
+        <action
             android:id="@+id/action_mainFragment_to_shoppingInsightsFragment"
             app:destination="@id/shopperInsightsFragment" />
     </fragment>
@@ -185,6 +188,12 @@
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="false" />
     </fragment>
+    <fragment
+        android:id="@+id/payPalMessagingFragment"
+        android:name="com.braintreepayments.demo.PayPalMessagingFragment"
+        tools:layout="fragment_paypal_messaging">
+    </fragment>
+
     <fragment
         android:id="@+id/shopperInsightsFragment"
         android:name="com.braintreepayments.demo.ShopperInsightsFragment"

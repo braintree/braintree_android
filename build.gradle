@@ -85,12 +85,13 @@ allprojects {
     }
 }
 
-version '4.45.1-SNAPSHOT'
+version '4.46.1-SNAPSHOT'
 group 'com.braintreepayments'
 ext {
     compileSdkVersion = 34
     minSdkVersion = 21
-    versionCode = 190
+    minSdkVersionPayPalMessaging = 23
+    versionCode = 192
     targetSdkVersion = 34
     versionName = version
 }
@@ -129,6 +130,7 @@ detekt {
             "LocalPayment/src",
             "PayPal/src",
             "PayPalDataCollector/src",
+            "PayPalMessaging/src",
             "PayPalNativeCheckout/src",
             "SEPADirectDebit/src",
             "SharedUtils/src",

@@ -5,7 +5,22 @@
 * PayPal
     * Add optional property `PayPalCheckoutRequest.setUserAuthenticationEmail()`
 * Add ShopperInsights module (BETA)
-  * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
+    * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
+
+## 4.46.0 (2024-05-30)
+
+* PayPalMessaging (BETA)
+  * Add `PayPalMessagingRequest`, `PayPalMessagingColor`, `PayPalMessagingLogoType`, `PayPalMessagingOfferType`, `PayPalMessagingPageType`, `PayPalMessagingTextAlignment`, and `PayPalMessagingListener`
+  * Add `PayPalMessagingView(BraintreeClient, Context)` to display PayPal messages to promote offers such as Pay Later and PayPal Credit to customers.
+    * To get started call `PayPalMessagingView#start()` with an optional `PayPalMessagingRequest`
+
+## 4.45.1 (2024-05-28)
+
+* PayPal
+  * Update `PayPalInternalClient` to use pairing ID as client metadata ID by default.
+  * Send `is_vault` in `event_params` analytics
+* Venmo
+  * Send `link_type` and `is_vault` in `event_params` analytics
 
 ## 4.45.0 (2024-04-16)
 
