@@ -7,20 +7,17 @@ import org.json.JSONObject
  * Data class representing a request for find eligible payments api.
  *
  * @property request The request given to us by the merchant
- * @property merchantId The merchant's ID
  * @property currencyCode The currency code
  * @property countryCode The country code
  * @property accountDetails Include account details
  * @property constraintType The constraint type
  * @property paymentSources Payment sources, ie. PAYPAL VENMO
  *
- * [merchantId] [currencyCode] [countryCode] are needed for Venmo recommended results
- *
+ * [currencyCode] [countryCode] are needed for Venmo recommended results
  */
 @OptIn(ExperimentalBetaApi::class)
 internal data class EligiblePaymentsApiRequest(
     val request: ShopperInsightsRequest,
-    val merchantId: String,
     val currencyCode: String,
     val countryCode: String,
     val accountDetails: Boolean,
