@@ -53,7 +53,10 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
             if (useAppLink) {
                 appLinkUri = Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/");
             }
-            if (Settings.useTokenizationKey(this)) {
+            if (Settings.useTokenizationKey(this) && Settings.showCheckoutExperience(this)) {
+                String tokenizationKey = Settings.getPayPalCheckoutTokenizationKey(this);
+                braintreeClient = new BraintreeClient(this, tokenizationKey);
+            } else if (Settings.useTokenizationKey(this)) {
                 String tokenizationKey = Settings.getTokenizationKey(this);
                 braintreeClient = new BraintreeClient(this, tokenizationKey, null, appLinkUri);
             } else {

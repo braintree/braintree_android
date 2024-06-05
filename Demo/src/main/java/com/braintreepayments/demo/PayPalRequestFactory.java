@@ -10,12 +10,18 @@ import com.braintreepayments.api.PostalAddress;
 
 public class PayPalRequestFactory {
 
-    public static PayPalVaultRequest createPayPalVaultRequest(Context context) {
+    public static PayPalVaultRequest createPayPalVaultRequest(
+        Context context,
+        String buyerEmailAddress
+    ) {
 
         PayPalVaultRequest request = new PayPalVaultRequest();
 
         boolean useAppLink = Settings.getPayPalLinkType(context).equals(context.getString(R.string.paypal_app_link));
         request.setAppLinkEnabled(useAppLink);
+        if (!buyerEmailAddress.isEmpty()) {
+            request.setUserAuthenticationEmail(buyerEmailAddress);
+        }
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
 
@@ -45,11 +51,18 @@ public class PayPalRequestFactory {
         return request;
     }
 
-    public static PayPalCheckoutRequest createPayPalCheckoutRequest(Context context, String amount) {
+    public static PayPalCheckoutRequest createPayPalCheckoutRequest(
+        Context context,
+        String amount,
+        String buyerEmailAddress
+    ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount);
 
         boolean useAppLink = Settings.getPayPalLinkType(context).equals(context.getString(R.string.paypal_app_link));
         request.setAppLinkEnabled(useAppLink);
+        if (!buyerEmailAddress.isEmpty()) {
+            request.setUserAuthenticationEmail(buyerEmailAddress);
+        }
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
 
@@ -81,6 +94,7 @@ public class PayPalRequestFactory {
             shippingAddress.setLocality("San Francisco");
             shippingAddress.setRegion("CA");
             shippingAddress.setCountryCodeAlpha2("US");
+            shippingAddress.setPostalCode("94103");
 
             request.setShippingAddressOverride(shippingAddress);
         }

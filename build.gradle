@@ -13,7 +13,7 @@ buildscript {
             "kotlin"         : "1.7.10",
             "androidxTest"   : "1.4.0",
             "room"           : "2.4.0",
-            "playServices"   : "19.2.1",
+            "playServices"   : "19.3.0",
             "javaSourceCompatibility": sdkTargetJavaVersion,
             "javaTargetCompatibility": sdkTargetJavaVersion,
     ]
@@ -63,13 +63,13 @@ buildscript {
         classpath 'de.marcphilipp.gradle:nexus-publish-plugin:0.4.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.4.1'
-        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.7.20'
-        classpath 'org.jetbrains.dokka:android-documentation-plugin:1.7.20'
+        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.9.10'
+        classpath 'org.jetbrains.dokka:android-documentation-plugin:1.9.10'
     }
 }
 
 plugins {
-    id 'org.jetbrains.dokka' version '1.7.10'
+    id 'org.jetbrains.dokka' version '1.9.10'
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
     id 'io.gitlab.arturbosch.detekt' version '1.23.6'
 }
@@ -85,12 +85,13 @@ allprojects {
     }
 }
 
-version '4.45.1-SNAPSHOT'
+version '4.46.1-SNAPSHOT'
 group 'com.braintreepayments'
 ext {
     compileSdkVersion = 34
     minSdkVersion = 21
-    versionCode = 190
+    minSdkVersionPayPalMessaging = 23
+    versionCode = 192
     targetSdkVersion = 34
     versionName = version
 }
@@ -129,12 +130,14 @@ detekt {
             "LocalPayment/src",
             "PayPal/src",
             "PayPalDataCollector/src",
+            "PayPalMessaging/src",
             "PayPalNativeCheckout/src",
             "SEPADirectDebit/src",
             "SharedUtils/src",
             "TestUtils/src",
             "ThreeDSecure/src",
             "Venmo/src",
+            "ShopperInsights/src"
     )
     autoCorrect = project.hasProperty('detektAutoCorrect')
     reports {

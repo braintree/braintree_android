@@ -46,7 +46,6 @@ class MagnesInternalClient {
                     .setHasUserLocationConsent(request.getHasUserLocationConsent());
 
             magnesSDK.setUp(magnesSettingsBuilder.build());
-
             MagnesResult result = magnesSDK.collectAndSubmit(context.getApplicationContext(), request.getClientMetadataId(), request.getAdditionalData());
             return result.getPaypalClientMetaDataId();
         } catch (InvalidInputException e) {

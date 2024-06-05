@@ -410,8 +410,6 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_whenRiskCorrelationIdNotNull_setsClientMetadataIdToRiskCorrelationId() {
-        when(payPalDataCollector.getClientMetadataId(context, configuration, false)).thenReturn("sample-client-metadata-id");
-
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
                 .authorizationSuccess(clientToken)
@@ -433,8 +431,62 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_whenRiskCorrelationIdNull_setsClientMetadataIdFromPayPalDataCollector() {
-        when(payPalDataCollector.getClientMetadataId(context, configuration, false)).thenReturn("sample-client-metadata-id");
+    public void sendRequest_whenRiskCorrelationIdNull_setsClientMetadataIdToBATokenParamFromApprovalURL() {
+        when(
+                payPalDataCollector.getClientMetadataId(same(context), any(PayPalDataCollectorInternalRequest.class), same(configuration))
+        ).thenReturn("ba-token-cmid");
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .authorizationSuccess(clientToken)
+                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_BA_TOKEN_PARAM)
+                .build();
+
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector, apiClient);
+
+        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
+
+        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+
+        ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
+        verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
+
+        PayPalResponse payPalResponse = captor.getValue();
+        assertNull(payPalRequest.getRiskCorrelationId());
+        assertEquals("ba-token-cmid", payPalResponse.getClientMetadataId());
+    }
+
+    @Test
+    public void sendRequest_whenRiskCorrelationIdNullAndBATokenParamDoesNotExist_setsClientMetadataIdToTokenParamFromApprovalURL() {
+        when(
+                payPalDataCollector.getClientMetadataId(same(context), any(PayPalDataCollectorInternalRequest.class), same(configuration))
+        ).thenReturn("token-cmid");
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .authorizationSuccess(clientToken)
+                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM)
+                .build();
+
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector, apiClient);
+
+        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00");
+
+        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+
+        ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
+        verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
+
+        PayPalResponse payPalResponse = captor.getValue();
+        assertNull(payPalRequest.getRiskCorrelationId());
+        assertEquals("token-cmid", payPalResponse.getClientMetadataId());
+    }
+
+    @Test
+    public void sendRequest_whenRiskCorrelationIdNullAndBATokenAndTokenParamDoNotExist_setsClientMetadataIdFromPayPalDataCollector() {
+        when(
+                payPalDataCollector.getClientMetadataId(same(context), any(PayPalDataCollectorInternalRequest.class), same(configuration))
+        ).thenReturn("magnes-generated-cmid");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
@@ -453,7 +505,7 @@ public class PayPalInternalClientUnitTest {
 
         PayPalResponse payPalResponse = captor.getValue();
         assertNull(payPalRequest.getRiskCorrelationId());
-        assertEquals("sample-client-metadata-id", payPalResponse.getClientMetadataId());
+        assertEquals("magnes-generated-cmid", payPalResponse.getClientMetadataId());
     }
 
     @Test
@@ -482,13 +534,15 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess() {
-        when(payPalDataCollector.getClientMetadataId(context, configuration, false)).thenReturn("sample-client-metadata-id");
+        when(
+                payPalDataCollector.getClientMetadataId(same(context), any(PayPalDataCollectorInternalRequest.class), same(configuration))
+        ).thenReturn("ba-token-cmid");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
                 .authorizationSuccess(clientToken)
                 .returnUrlScheme("sample-scheme")
-                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
+                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_BA_TOKEN_PARAM)
                 .build();
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector, apiClient);
@@ -501,24 +555,26 @@ public class PayPalInternalClientUnitTest {
         ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
         verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
 
-        String expectedUrl = "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource&authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel&controller=client_api%2Fpaypal_hermes&experience_profile%5Baddress_override%5D=false&experience_profile%5Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&ba_token=EC-HERMES-SANDBOX-EC-TOKEN&offer_paypal_credit=true&version=1";
+        String expectedUrl = "https://checkout.paypal.com/one-touch-login-sandbox/index.html?ba_token=fake-ba-token\u0026action=create_payment_resource\u0026amount=1.00\u0026authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8\u0026cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel\u0026controller=client_api%2Fpaypal_hermes\u0026currency_iso_code=USD\u0026experience_profile%5Baddress_override%5D=false\u0026experience_profile%5Bno_shipping%5D=false\u0026merchant_id=dcpspy2brwdjr3qn\u0026return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess\u0026offer_paypal_credit=true\u0026version=1";
         PayPalResponse payPalResponse = captor.getValue();
         assertTrue(payPalResponse.isBillingAgreement());
         assertEquals("sample-merchant-account-id", payPalResponse.getMerchantAccountId());
         assertEquals("sample-scheme://onetouch/v1/success", payPalResponse.getSuccessUrl());
-        assertEquals("EC-HERMES-SANDBOX-EC-TOKEN", payPalResponse.getPairingId());
-        assertEquals("sample-client-metadata-id", payPalResponse.getClientMetadataId());
+        assertEquals("fake-ba-token", payPalResponse.getPairingId());
+        assertEquals("ba-token-cmid", payPalResponse.getClientMetadataId());
         assertEquals(expectedUrl, payPalResponse.getApprovalUrl());
     }
 
     @Test
     public void sendRequest_withPayPalCheckoutRequest_callsBackPayPalResponseOnSuccess() {
-        when(payPalDataCollector.getClientMetadataId(context, configuration, false)).thenReturn("sample-client-metadata-id");
+        when(
+                payPalDataCollector.getClientMetadataId(same(context), any(PayPalDataCollectorInternalRequest.class), same(configuration))
+        ).thenReturn("token-cmid");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
                 .authorizationSuccess(clientToken)
-                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
+                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM)
                 .returnUrlScheme("sample-scheme")
                 .build();
 
@@ -534,14 +590,14 @@ public class PayPalInternalClientUnitTest {
         ArgumentCaptor<PayPalResponse> captor = ArgumentCaptor.forClass(PayPalResponse.class);
         verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
 
-        String expectedUrl = "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource&amount=1.00&authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel&controller=client_api%2Fpaypal_hermes&currency_iso_code=USD&experience_profile%5Baddress_override%5D=false&experience_profile%5Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&token=EC-HERMES-SANDBOX-EC-TOKEN&offer_paypal_credit=true&version=1";
+        String expectedUrl = "https://checkout.paypal.com/one-touch-login-sandbox/index.html?token=fake-token\u0026action=create_payment_resource\u0026amount=1.00\u0026authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8\u0026cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel\u0026controller=client_api%2Fpaypal_hermes\u0026currency_iso_code=USD\u0026experience_profile%5Baddress_override%5D=false\u0026experience_profile%5Bno_shipping%5D=false\u0026merchant_id=dcpspy2brwdjr3qn\u0026return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess\u0026offer_paypal_credit=true\u0026version=1";
         PayPalResponse payPalResponse = captor.getValue();
         assertFalse(payPalResponse.isBillingAgreement());
         assertEquals("authorize", payPalResponse.getIntent());
         assertEquals("sample-merchant-account-id", payPalResponse.getMerchantAccountId());
         assertEquals("sample-scheme://onetouch/v1/success", payPalResponse.getSuccessUrl());
-        assertEquals("EC-HERMES-SANDBOX-EC-TOKEN", payPalResponse.getPairingId());
-        assertEquals("sample-client-metadata-id", payPalResponse.getClientMetadataId());
+        assertEquals("fake-token", payPalResponse.getPairingId());
+        assertEquals("token-cmid", payPalResponse.getClientMetadataId());
         assertEquals(expectedUrl, payPalResponse.getApprovalUrl());
     }
 
@@ -664,11 +720,11 @@ public class PayPalInternalClientUnitTest {
     public void payPalDataCollector_passes_correct_arguments_to_getClientMetadataId() throws Exception {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .configuration(configuration)
-            .authorizationSuccess(clientToken)
-            .returnUrlScheme("sample-scheme")
-            .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-            .build();
+                .configuration(configuration)
+                .authorizationSuccess(clientToken)
+                .returnUrlScheme("sample-scheme")
+                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
+                .build();
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector, apiClient);
 
@@ -678,7 +734,12 @@ public class PayPalInternalClientUnitTest {
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
-        verify(payPalDataCollector).getClientMetadataId(context, configuration, true);
+        ArgumentCaptor<PayPalDataCollectorInternalRequest> captor =
+            ArgumentCaptor.forClass(PayPalDataCollectorInternalRequest.class);
+        verify(payPalDataCollector).getClientMetadataId(same(context), captor.capture(), same(configuration));
+
+        PayPalDataCollectorInternalRequest dataCollectorRequest = captor.getValue();
+        assertTrue(dataCollectorRequest.getHasUserLocationConsent());
     }
 
     @Test

@@ -51,6 +51,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
 
     private val crashReporter: CrashReporter
     private var launchesBrowserSwitchAsNewTask: Boolean = false
+    private val deviceInspector: DeviceInspector
 
     // NOTE: this constructor is used to make dependency injection easy
     internal constructor(params: BraintreeClientParams) : this(
@@ -148,6 +149,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         // statistics access via the sdk console
         crashReporter = CrashReporter(this)
         crashReporter.start()
+        deviceInspector = DeviceInspector()
     }
 
     /**
@@ -187,12 +189,20 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     fun sendAnalyticsEvent(
             eventName: String,
             payPalContextId: String? = null,
-            linkType: String? = null
+            linkType: String? = null,
+            isVaultRequest: Boolean = false
     ) {
         getAuthorization { authorization, _ ->
             if (authorization != null) {
                 getConfiguration { configuration, _ ->
-                    val event = AnalyticsEvent(eventName, payPalContextId, linkType)
+                    val isVenmoInstalled = deviceInspector.isVenmoInstalled(applicationContext)
+                    val event = AnalyticsEvent(
+                            eventName,
+                            payPalContextId,
+                            linkType,
+                            venmoInstalled = isVenmoInstalled,
+                            isVaultRequest = isVaultRequest
+                    )
                     sendAnalyticsEvent(event, configuration, authorization)
                 }
             }
@@ -239,17 +249,24 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun sendPOST(url: String, data: String, responseCallback: HttpResponseCallback) {
+    @JvmOverloads
+    fun sendPOST(
+        url: String,
+        data: String,
+        additionalHeaders: Map<String, String> = emptyMap(),
+        responseCallback: HttpResponseCallback,
+    ) {
         getAuthorization { authorization, authError ->
             if (authorization != null) {
                 getConfiguration { configuration, configError ->
                     if (configuration != null) {
                         httpClient.post(
-                            url,
-                            data,
-                            configuration,
-                            authorization,
-                            responseCallback
+                            path = url,
+                            data = data,
+                            configuration = configuration,
+                            authorization = authorization,
+                            additionalHeaders = additionalHeaders,
+                            callback = responseCallback
                         )
                     } else {
                         responseCallback.onResult(null, configError)

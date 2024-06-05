@@ -72,6 +72,7 @@ public abstract class PayPalRequest implements Parcelable {
     private final ArrayList<PayPalLineItem> lineItems;
     private final boolean hasUserLocationConsent;
     private boolean appLinkEnabled;
+    protected String userAuthenticationEmail;
 
     /**
      * Deprecated. Use {@link PayPalRequest#PayPalRequest(boolean)} instead.
@@ -298,6 +299,21 @@ public abstract class PayPalRequest implements Parcelable {
 
     public boolean isAppLinkEnabled() {
         return appLinkEnabled;
+    }
+
+    /**
+     * Optional: User email to initiate a quicker authentication flow in cases where the user has a
+     * PayPal Account with the same email.
+     *
+     * @param userAuthenticationEmail - email address of the payer
+     */
+    public void setUserAuthenticationEmail(@Nullable String userAuthenticationEmail) {
+        this.userAuthenticationEmail = userAuthenticationEmail;
+    }
+
+    @Nullable
+    public String getUserAuthenticationEmail() {
+        return this.userAuthenticationEmail;
     }
 
     abstract String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException;
