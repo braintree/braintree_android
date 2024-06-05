@@ -266,6 +266,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                             override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
                                 response?.let {
                                     try {
+                                        sendAnalyticsEvent(CoreAnalytics.apiRequestLatency)
                                         responseCallback.onResult(it.body, null)
                                     } catch (jsonException: JSONException) {
                                         responseCallback.onResult(null, jsonException)
@@ -306,6 +307,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                                 override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
                                     response?.let {
                                         try {
+                                            sendAnalyticsEvent(CoreAnalytics.apiRequestLatency)
                                             responseCallback.onResult(it.body, null)
                                         } catch (jsonException: JSONException) {
                                             responseCallback.onResult(null, jsonException)
@@ -345,6 +347,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                                     override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
                                         response?.let {
                                             try {
+                                                sendAnalyticsEvent(CoreAnalytics.apiRequestLatency)
                                                 responseCallback.onResult(it.body, null)
                                             } catch (jsonException: JSONException) {
                                                 responseCallback.onResult(null, jsonException)
