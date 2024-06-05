@@ -7,7 +7,6 @@ package com.braintreepayments.api
 internal class ShopperInsightsApi(
     private val eligiblePaymentsApi: EligiblePaymentsApi
 ) {
-
     fun findEligiblePayments(request: EligiblePaymentsApiRequest, callback: EligiblePaymentsCallback) {
         eligiblePaymentsApi.execute(request, callback)
     }
