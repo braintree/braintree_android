@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Ref: https://stackoverflow.com/a/21492572 -->
+    <!-- Ref: https://github.com/aosp-mirror/platform_frameworks_base/blob/dc2cfc8a10b8b74ec2c70f3b2d32aa9bf765de87/core/res/res/values/themes.xml#L678C1-L698C13 -->
     <style name="Theme.Translucent" parent="Theme.AppCompat">
         <item name="android:windowBackground">#00000000</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
