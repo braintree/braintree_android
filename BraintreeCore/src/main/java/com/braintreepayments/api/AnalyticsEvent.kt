@@ -26,7 +26,16 @@ open class AnalyticsEvent internal constructor(
     open val venmoInstalled: Boolean = false,
 
     @ColumnInfo(name = "is_vault", defaultValue = "0")
-    open val isVaultRequest: Boolean = false
+    open val isVaultRequest: Boolean = false,
+
+    @ColumnInfo(name = "start_time", defaultValue = "-1")
+    open val startTime: Long = -1,
+
+    @ColumnInfo(name = "end_time", defaultValue = "-1")
+    open val endTime: Long = -1,
+
+    @ColumnInfo(name = "endpoint")
+    open val endpoint:  String? = null
 ) {
     @JvmField
     @PrimaryKey(autoGenerate = true)
