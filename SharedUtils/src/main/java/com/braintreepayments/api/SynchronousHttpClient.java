@@ -35,7 +35,7 @@ class SynchronousHttpClient {
         this.socketFactory = socketFactory;
     }
 
-    BTHTTPResponse request(HttpRequest httpRequest) throws Exception {
+    BTHttpResponse request(HttpRequest httpRequest) throws Exception {
         if (httpRequest.getPath() == null) {
             throw new IllegalArgumentException("Path cannot be null");
         }
@@ -86,7 +86,7 @@ class SynchronousHttpClient {
 
             String responseBody = parser.parse(responseCode, connection);
 
-            return new BTHTTPResponse(startTime, endTime, responseBody);
+            return new BTHttpResponse(startTime, endTime, responseBody);
         } finally {
             connection.disconnect();
         }
