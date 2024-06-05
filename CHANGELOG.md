@@ -1,5 +1,13 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+    * Add optional property `PayPalCheckoutRequest.setUserAuthenticationEmail()`
+* ShopperInsights (BETA)
+    * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
+    * Add `ShopperInsightsClient.getRecommendedPaymentMethods()` for returning recommendations based on the buyer
+
 ## 4.46.0 (2024-05-30)
 
 * PayPalMessaging (BETA)
@@ -14,7 +22,7 @@
   * Send `is_vault` in `event_params` analytics
 * Venmo
   * Send `link_type` and `is_vault` in `event_params` analytics
-  
+
 ## 4.45.0 (2024-04-16)
 
 * BraintreeCore

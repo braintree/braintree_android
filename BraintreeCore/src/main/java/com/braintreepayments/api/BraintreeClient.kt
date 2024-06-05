@@ -276,17 +276,24 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun sendPOST(url: String, data: String, responseCallback: HttpResponseCallback) {
+    @JvmOverloads
+    fun sendPOST(
+        url: String,
+        data: String,
+        additionalHeaders: Map<String, String> = emptyMap(),
+        responseCallback: HttpResponseCallback,
+    ) {
         getAuthorization { authorization, authError ->
             if (authorization != null) {
                 getConfiguration { configuration, configError ->
                     if (configuration != null) {
                         httpClient.post(
-                            url,
-                            data,
-                            configuration,
-                            authorization,
-                            responseCallback
+                            path = url,
+                            data = data,
+                            configuration = configuration,
+                            authorization = authorization,
+                            additionalHeaders = additionalHeaders,
+                            callback = responseCallback
                         )
                     } else {
                         responseCallback.onResult(null, configError)

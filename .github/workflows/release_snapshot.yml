@@ -150,6 +150,18 @@ jobs:
         uses: ./.github/actions/unit_test_module
         with:
           module: SamsungPay
+  unit_test_shopper_insights:
+    name: Shopper Insights Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Java 8
+        uses: ./.github/actions/setup
+      - name: Run Unit Tests
+        uses: ./.github/actions/unit_test_module
+        with:
+          module: ShopperInsights
   unit_test_three_d_secure:
     name: ThreeDSecure Unit Tests
     runs-on: ubuntu-latest
@@ -236,6 +248,7 @@ jobs:
       unit_test_paypal,
       unit_test_paypal_messaging,
       unit_test_samsung_pay,
+      unit_test_shopper_insights,
       unit_test_three_d_secure,
       unit_test_union_pay,
       unit_test_venmo,

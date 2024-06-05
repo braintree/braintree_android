@@ -27,6 +27,8 @@ public class Settings {
 
     static final String LOCAL_PAYMENTS_TOKENIZATION_KEY = "sandbox_f252zhq7_hh4cpc39zq4rgjcg";
 
+    private static final String XO_SANDBOX_TOKENIZATION_KEY = "sandbox_rz48bqvw_jcyycfw6f9j4nj9c";
+
     private static SharedPreferences sharedPreferences;
 
     public static SharedPreferences getPreferences(Context context) {
@@ -110,6 +112,18 @@ public class Settings {
             return SANDBOX_TOKENIZATION_KEY;
         } else if (MOCKED_PAY_PAL_ENV_NAME.equals(environment)) {
             return MOCKED_PAY_PAL_SANDBOX_TOKENIZATION_KEY;
+        } else if (PRODUCTION_ENV_NAME.equals(environment)) {
+            return PRODUCTION_TOKENIZATION_KEY;
+        } else {
+            return null;
+        }
+    }
+
+    public static String getPayPalCheckoutTokenizationKey(Context context) {
+        String environment = getEnvironment(context);
+
+        if (SANDBOX_ENV_NAME.equals(environment)) {
+            return XO_SANDBOX_TOKENIZATION_KEY;
         } else if (PRODUCTION_ENV_NAME.equals(environment)) {
             return PRODUCTION_TOKENIZATION_KEY;
         } else {
@@ -220,5 +234,9 @@ public class Settings {
 
     public static boolean isManualBrowserSwitchingEnabled(Context context) {
         return getPreferences(context).getBoolean("enable_manual_browser_switching", false);
+    }
+
+    public static boolean showCheckoutExperience(Context context) {
+        return getPreferences(context).getBoolean("show_checkout_experience", false);
     }
 }
