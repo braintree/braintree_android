@@ -82,12 +82,12 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 eventName,
                 payPalContextId,
                 linkType,
-                timestamp,
                 venmoInstalled,
                 isVaultRequest,
                 startTime,
                 endTime,
-                endpoint
+                endpoint,
+                timestamp
             )
             val analyticsEventDao = analyticsDatabase.analyticsEventDao()
             analyticsEventDao.insertEvent(event)
@@ -173,7 +173,13 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             return
         }
         val metadata = deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
-        val event = AnalyticsEvent("android.crash", null, null, timestamp)
+        val event = AnalyticsEvent(
+                "android.crash",
+                null,
+                null,
+                false,
+                false,
+                timestamp)
         val events = listOf(event)
         try {
             val analyticsRequest = serializeEvents(authorization, events, metadata)

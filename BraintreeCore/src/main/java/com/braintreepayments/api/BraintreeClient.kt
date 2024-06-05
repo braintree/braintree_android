@@ -218,7 +218,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
             eventName: String,
             payPalContextId: String? = null,
             linkType: String? = null,
-            isVaultRequest: Boolean = false
+            isVaultRequest: Boolean = false,
+            startTime: Long = -1,
+            endTime: Long = -1,
+            endpoint: String? = null
     ) {
         getAuthorization { authorization, _ ->
             if (authorization != null) {
@@ -228,8 +231,11 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                             eventName,
                             payPalContextId,
                             linkType,
-                            venmoInstalled = isVenmoInstalled,
-                            isVaultRequest = isVaultRequest
+                            isVenmoInstalled,
+                            isVaultRequest,
+                            startTime,
+                            endTime,
+                            endpoint
                     )
                     sendAnalyticsEvent(event, configuration, authorization)
                 }
