@@ -65,7 +65,6 @@ class ShopperInsightsClientUnitTest {
             api.findEligiblePayments(
                 request = EligiblePaymentsApiRequest(
                     request,
-                    merchantId = "MXSJ4F5BADVNS",
                     currencyCode = "USD",
                     countryCode = "US",
                     accountDetails = true,

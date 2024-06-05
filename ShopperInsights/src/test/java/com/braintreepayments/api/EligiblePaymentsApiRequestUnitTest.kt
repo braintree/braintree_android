@@ -21,7 +21,6 @@ class EligiblePaymentsApiRequestUnitTest {
                 )
             ),
             currencyCode = "USD",
-            merchantId = "MXSJ4F5BADVNS",
             countryCode = "US",
             accountDetails = true,
             constraintType = "INCLUDE",

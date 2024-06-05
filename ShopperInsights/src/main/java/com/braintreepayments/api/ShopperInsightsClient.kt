@@ -54,13 +54,9 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
             return
         }
 
-        // TODO: get correct merchant ID from SDK
-        val merchantId = "MXSJ4F5BADVNS"
-
         api.findEligiblePayments(
             EligiblePaymentsApiRequest(
                 request,
-                merchantId = merchantId,
                 currencyCode = currencyCode,
                 countryCode = countryCode,
                 accountDetails = includeAccountDetails,

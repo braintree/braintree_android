@@ -28,7 +28,6 @@ public class Settings {
     static final String LOCAL_PAYMENTS_TOKENIZATION_KEY = "sandbox_f252zhq7_hh4cpc39zq4rgjcg";
 
     private static final String XO_SANDBOX_TOKENIZATION_KEY = "sandbox_rz48bqvw_jcyycfw6f9j4nj9c";
-    private static final String XO_PRODUCTION_TOKENIZATION_KEY = "";
 
     private static SharedPreferences sharedPreferences;
 
@@ -126,7 +125,7 @@ public class Settings {
         if (SANDBOX_ENV_NAME.equals(environment)) {
             return XO_SANDBOX_TOKENIZATION_KEY;
         } else if (PRODUCTION_ENV_NAME.equals(environment)) {
-            return XO_PRODUCTION_TOKENIZATION_KEY;
+            return PRODUCTION_TOKENIZATION_KEY;
         } else {
             return null;
         }

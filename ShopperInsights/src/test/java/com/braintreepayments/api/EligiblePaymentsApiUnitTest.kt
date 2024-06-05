@@ -152,7 +152,6 @@ class EligiblePaymentsApiUnitTest {
             ),
             "",
             "",
-            "",
             true,
             "",
             emptyList()
