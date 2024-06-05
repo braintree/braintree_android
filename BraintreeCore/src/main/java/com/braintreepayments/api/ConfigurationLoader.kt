@@ -30,11 +30,11 @@ internal class ConfigurationLoader internal constructor(
             callback.onResult(cachedConfig, null)
         } ?: run {
             httpClient.get(configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES,
-                object : HttpResponseCallback {
-                    override fun onResult(responseBody: String?, httpError: Exception?) {
-                        responseBody?.let {
+                object : BTHttpResponseCallback {
+                    override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
+                        response?.let {
                             try {
-                                val configuration = Configuration.fromJson(it)
+                                val configuration = Configuration.fromJson(it.body)
                                 saveConfigurationToCache(configuration, authorization, configUrl)
                                 callback.onResult(configuration, null)
                             } catch (jsonException: JSONException) {

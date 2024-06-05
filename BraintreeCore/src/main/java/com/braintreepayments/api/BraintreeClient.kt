@@ -8,6 +8,7 @@ import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.FragmentActivity
 import com.braintreepayments.api.IntegrationType.Integration
+import org.json.JSONException
 
 /**
  * Core Braintree class that handles network requests.
@@ -261,7 +262,22 @@ open class BraintreeClient @VisibleForTesting internal constructor(
             if (authorization != null) {
                 getConfiguration { configuration, configError ->
                     if (configuration != null) {
-                        httpClient.get(url, configuration, authorization, responseCallback)
+                        httpClient.get(url, configuration, authorization, object : BTHttpResponseCallback {
+                            override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
+                                response?.let {
+                                    try {
+                                        responseCallback.onResult(it.body, null)
+                                    } catch (jsonException: JSONException) {
+                                        responseCallback.onResult(null, jsonException)
+                                    }
+                                } ?: httpError?.let { error ->
+                                    val errorMessageFormat = "Request has failed: %s"
+                                    val errorMessage = String.format(errorMessageFormat, error.message)
+                                    val configurationException = ConfigurationException(errorMessage, error)
+                                    responseCallback.onResult(null, configurationException)
+                                }
+                            }
+                        })
                     } else {
                         responseCallback.onResult(null, configError)
                     }
@@ -286,8 +302,22 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                             data,
                             configuration,
                             authorization,
-                            responseCallback
-                        )
+                            object : BTHttpResponseCallback {
+                                override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
+                                    response?.let {
+                                        try {
+                                            responseCallback.onResult(it.body, null)
+                                        } catch (jsonException: JSONException) {
+                                            responseCallback.onResult(null, jsonException)
+                                        }
+                                    } ?: httpError?.let { error ->
+                                        val errorMessageFormat = "Request has failed: %s"
+                                        val errorMessage = String.format(errorMessageFormat, error.message)
+                                        val configurationException = ConfigurationException(errorMessage, error)
+                                        responseCallback.onResult(null, configurationException)
+                                    }
+                                }
+                            })
                     } else {
                         responseCallback.onResult(null, configError)
                     }
@@ -311,8 +341,22 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                             payload,
                             configuration,
                             authorization,
-                            responseCallback
-                        )
+                                object : BTHttpResponseCallback {
+                                    override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
+                                        response?.let {
+                                            try {
+                                                responseCallback.onResult(it.body, null)
+                                            } catch (jsonException: JSONException) {
+                                                responseCallback.onResult(null, jsonException)
+                                            }
+                                        } ?: httpError?.let { error ->
+                                            val errorMessageFormat = "Request has failed: %s"
+                                            val errorMessage = String.format(errorMessageFormat, error.message)
+                                            val configurationException = ConfigurationException(errorMessage, error)
+                                            responseCallback.onResult(null, configurationException)
+                                        }
+                                    }
+                                })
                     } else {
                         responseCallback.onResult(null, configError)
                     }

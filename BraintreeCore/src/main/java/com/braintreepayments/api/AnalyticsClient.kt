@@ -173,7 +173,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 analyticsRequest.toString(),
                 null,
                 authorization,
-                HttpNoResponse()
+                BTHttpNoResponse()
             )
         } catch (e: JSONException) { /* ignored */
         }
