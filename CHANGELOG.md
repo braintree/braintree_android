@@ -7,6 +7,8 @@
 * ShopperInsights (BETA)
     * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
     * Add `ShopperInsightsClient.getRecommendedPaymentMethods()` for returning recommendations based on the buyer
+* ThreeDSecure
+  * Fix issue that causes a black screen to display after successful 3DS validation.
 
 ## 4.46.0 (2024-05-30)
 
