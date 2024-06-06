@@ -71,6 +71,7 @@ public abstract class PayPalRequest implements Parcelable {
     private String riskCorrelationId;
     private final ArrayList<PayPalLineItem> lineItems;
     private final boolean hasUserLocationConsent;
+    private boolean appLinkEnabled;
     protected String userAuthenticationEmail;
 
     /**
@@ -229,6 +230,20 @@ public abstract class PayPalRequest implements Parcelable {
         this.lineItems.addAll(lineItems);
     }
 
+    /**
+     * Optional: When set to true, the Android App Link website associated with your application
+     * will be used to return to your app from browser or app switch based payment flows. When set
+     * to false, the default or set deep link return URL will be used.
+     *
+     * Set the App Link value on `appLinkReturnUri` parameter in the {@link BraintreeClient}
+     * constructor.
+     *
+     * @param appLinkEnabled indicates whether to use the set Android App Link
+     */
+    public void setAppLinkEnabled(boolean appLinkEnabled) {
+        this.appLinkEnabled = appLinkEnabled;
+    }
+
     @Nullable
     public String getLocaleCode() {
         return localeCode;
@@ -282,6 +297,10 @@ public abstract class PayPalRequest implements Parcelable {
         return hasUserLocationConsent;
     }
 
+    public boolean isAppLinkEnabled() {
+        return appLinkEnabled;
+    }
+
     /**
      * Optional: User email to initiate a quicker authentication flow in cases where the user has a
      * PayPal Account with the same email.
@@ -311,6 +330,7 @@ public abstract class PayPalRequest implements Parcelable {
         riskCorrelationId = in.readString();
         lineItems = in.createTypedArrayList(PayPalLineItem.CREATOR);
         hasUserLocationConsent = in.readByte() != 0;
+        appLinkEnabled = in.readByte() != 0;
     }
 
     @Override
@@ -331,5 +351,6 @@ public abstract class PayPalRequest implements Parcelable {
         parcel.writeString(riskCorrelationId);
         parcel.writeTypedList(lineItems);
         parcel.writeByte((byte) (hasUserLocationConsent ? 1 : 0));
+        parcel.writeByte((byte) (appLinkEnabled ? 1 : 0));
     }
 }

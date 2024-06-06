@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.pm.ActivityInfo;
+import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
 
@@ -35,6 +36,8 @@ public class MockBraintreeClientBuilder {
     private String sessionId;
     private String integration;
     private String returnUrlScheme;
+
+    private Uri appLinkUri;
 
     private BrowserSwitchResult browserSwitchResult;
     private BrowserSwitchException browserSwitchAssertionError;
@@ -116,6 +119,11 @@ public class MockBraintreeClientBuilder {
          return this;
     }
 
+    public MockBraintreeClientBuilder appLinkUri(Uri appLinkUri) {
+        this.appLinkUri = appLinkUri;
+        return this;
+    }
+
     public MockBraintreeClientBuilder browserSwitchAssertionError(BrowserSwitchException browserSwitchAssertionError) {
         this.browserSwitchAssertionError = browserSwitchAssertionError;
         return this;
@@ -145,6 +153,7 @@ public class MockBraintreeClientBuilder {
         }).when(braintreeClient).getAuthorization(any(AuthorizationCallback.class));
 
         when(braintreeClient.getReturnUrlScheme()).thenReturn(returnUrlScheme);
+        when(braintreeClient.getAppLinkReturnUri()).thenReturn(appLinkUri);
 
         if (browserSwitchAssertionError != null) {
             try {

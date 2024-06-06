@@ -1,6 +1,7 @@
 package com.braintreepayments.api
 
 import android.content.Context
+import android.net.Uri
 import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.IntegrationType.Integration
 
@@ -9,6 +10,7 @@ internal data class BraintreeClientParams @VisibleForTesting constructor(
     val sessionId: String,
     val authorizationLoader: AuthorizationLoader,
     val returnUrlScheme: String,
+    val appLinkReturnUri: Uri?,
     val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
     val graphQLClient: BraintreeGraphQLClient = BraintreeGraphQLClient(),
     val analyticsClient: AnalyticsClient = AnalyticsClient(context),
@@ -26,6 +28,7 @@ internal data class BraintreeClientParams @VisibleForTesting constructor(
         },
         sessionId = options.sessionId ?: createUniqueSessionId(),
         returnUrlScheme = options.returnUrlScheme ?: createDefaultReturnUrlScheme(options.context),
+        appLinkReturnUri = options.appLinkReturnUri,
         integrationType = options.integrationType ?: IntegrationType.CUSTOM
     )
 

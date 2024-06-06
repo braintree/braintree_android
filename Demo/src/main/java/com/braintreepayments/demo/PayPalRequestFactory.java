@@ -17,6 +17,8 @@ public class PayPalRequestFactory {
 
         PayPalVaultRequest request = new PayPalVaultRequest();
 
+        boolean useAppLink = Settings.getPayPalLinkType(context).equals(context.getString(R.string.paypal_app_link));
+        request.setAppLinkEnabled(useAppLink);
         if (!buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
         }
@@ -56,6 +58,8 @@ public class PayPalRequestFactory {
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount);
 
+        boolean useAppLink = Settings.getPayPalLinkType(context).equals(context.getString(R.string.paypal_app_link));
+        request.setAppLinkEnabled(useAppLink);
         if (!buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
         }

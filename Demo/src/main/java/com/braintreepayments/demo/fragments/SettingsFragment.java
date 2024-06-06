@@ -26,6 +26,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         onSharedPreferenceChanged(preferences, "google_pay_currency");
         onSharedPreferenceChanged(preferences, "google_pay_allowed_countries_for_shipping");
         onSharedPreferenceChanged(preferences, "tokenization_key_type");
+        onSharedPreferenceChanged(preferences, "paypal_link_type");
         onSharedPreferenceChanged(preferences, "show_checkout_experience");
         preferences.registerOnSharedPreferenceChangeListener(this);
     }

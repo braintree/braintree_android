@@ -7,7 +7,6 @@ import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.FragmentActivity
-import com.braintreepayments.api.IntegrationType.Integration
 
 /**
  * Core Braintree class that handles network requests.
@@ -42,6 +41,12 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     private val manifestValidator: ManifestValidator,
     private val returnUrlScheme: String,
     private val braintreeDeepLinkReturnUrlScheme: String,
+
+    /**
+     * @suppress
+     */
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val appLinkReturnUri: Uri?,
 ) {
 
     private val crashReporter: CrashReporter
@@ -61,7 +66,8 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         configurationLoader = params.configurationLoader,
         manifestValidator = params.manifestValidator,
         returnUrlScheme = params.returnUrlScheme,
-        braintreeDeepLinkReturnUrlScheme = params.braintreeReturnUrlScheme
+        braintreeDeepLinkReturnUrlScheme = params.braintreeReturnUrlScheme,
+        appLinkReturnUri = params.appLinkReturnUri
     )
 
     /**
@@ -69,26 +75,6 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     constructor(options: BraintreeOptions) : this(BraintreeClientParams(options))
-
-    /**
-     * Create a new instance of [BraintreeClient] using a tokenization key or client token.
-     *
-     * @param context       Android Context
-     * @param authorization The tokenization key or client token to use. If an invalid authorization
-     * is provided, a [BraintreeException] will be returned via callback.
-     */
-    constructor(context: Context, authorization: String) :
-            this(BraintreeOptions(context = context, initialAuthString = authorization))
-
-    /**
-     * Create a new instance of [BraintreeClient] using a [ClientTokenProvider].
-     *
-     * @param context             Android Context
-     * @param clientTokenProvider An implementation of [ClientTokenProvider] that [BraintreeClient]
-     * will use to fetch a client token on demand.
-     */
-    constructor(context: Context, clientTokenProvider: ClientTokenProvider) :
-            this(BraintreeOptions(context = context, clientTokenProvider = clientTokenProvider))
 
     /**
      * Create a new instance of [BraintreeClient] using a tokenization key or client token and a
@@ -104,12 +90,23 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param authorization   The tokenization key or client token to use. If an invalid
      * authorization is provided, a [BraintreeException] will be returned via callback.
      * @param returnUrlScheme A custom return url to use for browser and app switching
+     * @param appLinkReturnUri A [Uri] containing the Android App Link website associated with your
+     * application to be used to return to your app from browser or app switch based payment flows.
+     * This Android App Link will only be used for payment flows where `useAppLinkReturn` is set to
+     * `true`.
      */
-    constructor (context: Context, authorization: String, returnUrlScheme: String) : this(
+    @JvmOverloads
+    constructor (
+        context: Context,
+        authorization: String,
+        returnUrlScheme: String? = null,
+        appLinkReturnUri: Uri? = null,
+    ) : this(
         BraintreeOptions(
             context = context,
             initialAuthString = authorization,
-            returnUrlScheme = returnUrlScheme
+            returnUrlScheme = returnUrlScheme,
+            appLinkReturnUri = appLinkReturnUri
         )
     )
 
@@ -127,44 +124,20 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param clientTokenProvider An implementation of [ClientTokenProvider] that [BraintreeClient]
      * will use to fetch a client token on demand.
      * @param returnUrlScheme     A custom return url to use for browser and app switching
+     * @param appLinkReturnUri    A [Uri] containing the Android App Link to use for app switching
      */
+    @JvmOverloads
     constructor(
         context: Context,
         clientTokenProvider: ClientTokenProvider,
-        returnUrlScheme: String
+        returnUrlScheme: String? = null,
+        appLinkReturnUri: Uri? = null,
     ) : this(
         BraintreeOptions(
             context = context,
             clientTokenProvider = clientTokenProvider,
-            returnUrlScheme = returnUrlScheme
-        )
-    )
-
-    internal constructor(
-        context: Context,
-        clientTokenProvider: ClientTokenProvider,
-        sessionId: String?,
-        @Integration integrationType: String
-    ) : this(
-        BraintreeOptions(
-            context = context,
-            clientTokenProvider = clientTokenProvider,
-            sessionId = sessionId,
-            integrationType = integrationType,
-        )
-    )
-
-    internal constructor(
-        context: Context,
-        authorization: String,
-        sessionId: String?,
-        @Integration integrationType: String
-    ) : this(
-        BraintreeOptions(
-            context = context,
-            initialAuthString = authorization,
-            sessionId = sessionId,
-            integrationType = integrationType,
+            returnUrlScheme = returnUrlScheme,
+            appLinkReturnUri = appLinkReturnUri
         )
     )
 
@@ -422,6 +395,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         val returnUrlScheme = getReturnUrlScheme()
         val browserSwitchOptions = BrowserSwitchOptions()
             .url(url)
+            .appLinkUri(appLinkReturnUri)
             .returnUrlScheme(returnUrlScheme)
             .requestCode(requestCode)
         browserSwitchClient.assertCanPerformBrowserSwitch(activity, browserSwitchOptions)

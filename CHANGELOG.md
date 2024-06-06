@@ -2,13 +2,19 @@
 
 ## unreleased
 
+* BraintreeCore
+  * Add `appLinkReturnUri` to `BraintreeClient` constructors for Android App Link support (for PayPal web flows only)
+  * Bump `browser-switch` version to `2.7.0`
 * PayPal
-    * Add optional property `PayPalCheckoutRequest.setUserAuthenticationEmail()`
+  * Add `appLinkEnabled` property to `PayPalRequest` for Android App Link support
+  * Add optional property `PayPalCheckoutRequest.setUserAuthenticationEmail()`
 * ShopperInsights (BETA)
-    * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
-    * Add `ShopperInsightsClient.getRecommendedPaymentMethods()` for returning recommendations based on the buyer
+  * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
+  * Add `ShopperInsightsClient.getRecommendedPaymentMethods()` for returning recommendations based on the buyer
 * ThreeDSecure
   * Fix issue that causes a black screen to display after successful 3DS validation.
+* Venmo
+  * Send `link_type` in `event_params` to PayPal's analytics service (FPTI)
 
 ## 4.46.0 (2024-05-30)
 

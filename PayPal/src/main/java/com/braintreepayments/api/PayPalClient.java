@@ -285,14 +285,14 @@ public class PayPalClient {
     private void sendPayPalRequest(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
         internalPayPalClient.sendRequest(activity, payPalRequest, new PayPalInternalClientCallback() {
             @Override
-            public void onResult(PayPalResponse payPalResponse, Exception error) {
+            public void onResult(@Nullable PayPalResponse payPalResponse, @Nullable Exception error) {
                 if (payPalResponse != null) {
                     String analyticsPrefix = getAnalyticsEventPrefix(payPalRequest);
                     payPalContextId = payPalResponse.getPairingId();
                     braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.started", analyticsPrefix), payPalContextId, null, isVaultRequest);
 
                     try {
-                        startBrowserSwitch(activity, payPalResponse);
+                        startBrowserSwitch(activity, payPalResponse, payPalRequest.isAppLinkEnabled());
                         callback.onResult(null);
                     } catch (JSONException | BrowserSwitchException exception) {
                         callback.onResult(exception);
@@ -304,7 +304,11 @@ public class PayPalClient {
         });
     }
 
-    private void startBrowserSwitch(FragmentActivity activity, PayPalResponse payPalResponse) throws JSONException, BrowserSwitchException {
+    private void startBrowserSwitch(
+            FragmentActivity activity,
+            PayPalResponse payPalResponse,
+            boolean isAppLinkEnabled
+    ) throws JSONException, BrowserSwitchException {
         JSONObject metadata = new JSONObject();
         metadata.put("approval-url", payPalResponse.getApprovalUrl());
         metadata.put("success-url", payPalResponse.getSuccessUrl());
@@ -324,6 +328,9 @@ public class PayPalClient {
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                 .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
                 .metadata(metadata);
+        if (isAppLinkEnabled) {
+            browserSwitchOptions.appLinkUri(braintreeClient.getAppLinkReturnUri());
+        }
         braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
     }
 

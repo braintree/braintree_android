@@ -14,9 +14,6 @@ class PayPalInternalClient {
     private static final String CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource";
     private static final String SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement";
 
-    private final String cancelUrl;
-    private final String successUrl;
-
     private final BraintreeClient braintreeClient;
     private final PayPalDataCollector payPalDataCollector;
     private final ApiClient apiClient;
@@ -30,9 +27,6 @@ class PayPalInternalClient {
         this.braintreeClient = braintreeClient;
         this.payPalDataCollector = payPalDataCollector;
         this.apiClient = apiClient;
-
-        this.cancelUrl = String.format("%s://onetouch/v1/cancel", braintreeClient.getReturnUrlScheme());
-        this.successUrl = String.format("%s://onetouch/v1/success", braintreeClient.getReturnUrlScheme());
     }
 
     void sendRequest(final Context context, final PayPalRequest payPalRequest, final PayPalInternalClientCallback callback) {
@@ -52,6 +46,17 @@ class PayPalInternalClient {
                                 String endpoint = isBillingAgreement
                                         ? SETUP_BILLING_AGREEMENT_ENDPOINT : CREATE_SINGLE_PAYMENT_ENDPOINT;
                                 String url = String.format("/v1/%s", endpoint);
+
+                                String cancelUrl;
+                                String successUrl;
+                                if (payPalRequest.isAppLinkEnabled() && braintreeClient.getAppLinkReturnUri() != null) {
+                                    String appLink = braintreeClient.getAppLinkReturnUri().toString();
+                                    cancelUrl = String.format("%s/cancel", appLink);
+                                    successUrl = String.format("%s/success", appLink);
+                                } else {
+                                    cancelUrl = String.format("%s://onetouch/v1/cancel", braintreeClient.getReturnUrlScheme());
+                                    successUrl = String.format("%s://onetouch/v1/success", braintreeClient.getReturnUrlScheme());
+                                }
 
                                 String requestBody = payPalRequest.createRequestBody(configuration, authorization, successUrl, cancelUrl);
 
