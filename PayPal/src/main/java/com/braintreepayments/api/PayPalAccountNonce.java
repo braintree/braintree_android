@@ -76,10 +76,10 @@ public class PayPalAccountNonce extends PaymentMethodNonce {
         PayPalCreditFinancing payPalCreditFinancing = null;
         PostalAddress shippingAddress;
         PostalAddress billingAddress;
-        String firstName = null;
-        String lastName = null;
-        String phone = null;
-        String payerId = null;
+        String firstName = "";
+        String lastName = "";
+        String phone = "";
+        String payerId = "";
         try {
             if (details.has(CREDIT_FINANCING_KEY)) {
                 JSONObject creditFinancing = details.getJSONObject(CREDIT_FINANCING_KEY);
