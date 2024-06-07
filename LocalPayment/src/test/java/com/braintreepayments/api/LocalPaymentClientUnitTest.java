@@ -209,13 +209,22 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
                 .createPaymentMethodSuccess(mock(LocalPaymentResult.class))
                 .build();
+        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
+        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.startPayment(request, localPaymentStartCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.start-payment.selected", null);
-        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.create.succeeded", null);
+        verify(braintreeClient).sendAnalyticsEvent(
+                eq("ideal.local-payment.start-payment.selected"),
+                payloadCaptor.capture()
+        );
+        verify(braintreeClient).sendAnalyticsEvent(
+                eq("ideal.local-payment.create.succeeded"),
+                payloadCaptor.capture()
+        );
+        assertEquals(expectedPayload, payloadCaptor.getValue());
     }
 
     @Test
@@ -229,15 +238,23 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
                 .createPaymentMethodSuccess(localPaymentResult)
                 .build();
+        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
+        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.startPayment(request, localPaymentStartCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.start-payment.selected", null);
-        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.create.succeeded", null);
+        verify(braintreeClient).sendAnalyticsEvent(
+                eq("ideal.local-payment.start-payment.selected"),
+                payloadCaptor.capture()
+        );
+        verify(braintreeClient).sendAnalyticsEvent(
+                eq("ideal.local-payment.create.succeeded"),
+                payloadCaptor.capture()
+        );
+        assertEquals(expectedPayload, payloadCaptor.getValue());
     }
-
 
     @Test
     public void startPayment_success__withPaymentId_sendsAnalyticsEvents() {
@@ -250,13 +267,22 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
                 .createPaymentMethodSuccess(localPaymentResult)
                 .build();
+        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().setPayPalContextId("some-paypal-context-id").build();
+        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.startPayment(request, localPaymentStartCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.start-payment.selected", null);
-        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.create.succeeded", "some-paypal-context-id");
+        verify(braintreeClient).sendAnalyticsEvent(
+                eq("ideal.local-payment.start-payment.selected"),
+                payloadCaptor.capture()
+        );
+        verify(braintreeClient).sendAnalyticsEvent(
+                eq("ideal.local-payment.create.succeeded"),
+                payloadCaptor.capture()
+        );
+        assertEquals(expectedPayload, payloadCaptor.getValue());
     }
     @Test
     public void startPayment_configurationFetchError_forwardsErrorToCallback() {
@@ -281,13 +307,22 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
                 .createPaymentMethodError(new Exception("error"))
                 .build();
+        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
+        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.startPayment(request, localPaymentStartCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.start-payment.selected", null);
-        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.initiate.failed", null);
+        verify(braintreeClient).sendAnalyticsEvent(
+                eq("ideal.local-payment.start-payment.selected"),
+                payloadCaptor.capture()
+        );
+        verify(braintreeClient).sendAnalyticsEvent(
+                eq("ideal.local-payment.webswitch.initiate.failed"),
+                payloadCaptor.capture()
+        );
+        assertEquals(expectedPayload, payloadCaptor.getValue());
     }
 
     @Test
@@ -432,9 +467,15 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         String approvalUrl = "https://sample.com/approval?token=sample-token";
         LocalPaymentResult transaction = new LocalPaymentResult(request, approvalUrl, "payment-id");
+        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
+        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
 
         sut.approveLocalPayment(activity, transaction);
-        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.initiate.succeeded", null);
+        verify(braintreeClient).sendAnalyticsEvent(
+                eq("ideal.local-payment.webswitch.initiate.succeeded"),
+                payloadCaptor.capture()
+        );
+        assertEquals(expectedPayload, payloadCaptor.getValue());
     }
 
     @Test
@@ -489,6 +530,8 @@ public class LocalPaymentClientUnitTest {
                 .put("payment-type", "ideal")
                 .put("merchant-account-id", "local-merchant-account-id"));
 
+        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
+        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         sut.setListener(listener);
 
@@ -503,7 +546,11 @@ public class LocalPaymentClientUnitTest {
         String expectedMessage = "LocalPayment encountered an error, return URL is invalid.";
         assertEquals(expectedMessage, exception.getMessage());
 
-        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch-response.invalid", null);
+        verify(braintreeClient).sendAnalyticsEvent(
+                eq("ideal.local-payment.webswitch-response.invalid"),
+                payloadCaptor.capture()
+        );
+        assertEquals(expectedPayload, payloadCaptor.getValue());
     }
 
     @Test
@@ -524,6 +571,8 @@ public class LocalPaymentClientUnitTest {
                 .sessionId("sample-session-id")
                 .integration("sample-integration-type")
                 .build();
+        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
+        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
 
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
                 .tokenizeError(postError)
@@ -537,7 +586,11 @@ public class LocalPaymentClientUnitTest {
         sut.onBrowserSwitchResult(activity, browserSwitchResult);
 
         verify(listener).onLocalPaymentFailure(same(postError));
-        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.tokenize.failed", null);
+        verify(braintreeClient).sendAnalyticsEvent(
+                eq("ideal.local-payment.tokenize.failed"),
+                payloadCaptor.capture()
+        );
+        assertEquals(expectedPayload, payloadCaptor.getValue());
     }
 
     @Test
@@ -619,12 +672,19 @@ public class LocalPaymentClientUnitTest {
 
         when(payPalDataCollector.getClientMetadataId(any(Context.class), same(payPalEnabledConfig), anyBoolean())).thenReturn("client-metadata-id");
 
+        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
+        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
+
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         sut.setListener(listener);
 
         sut.onBrowserSwitchResult(activity, browserSwitchResult);
 
-        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.tokenize.succeeded", null);
+        verify(braintreeClient).sendAnalyticsEvent(
+                eq("ideal.local-payment.tokenize.succeeded"),
+                payloadCaptor.capture()
+        );
+        assertEquals(expectedPayload, payloadCaptor.getValue());
     }
 
     @Test
@@ -671,13 +731,19 @@ public class LocalPaymentClientUnitTest {
 
         sut.onBrowserSwitchResult(activity, browserSwitchResult);
 
+        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
+        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
         ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
         verify(listener).onLocalPaymentFailure(exceptionCaptor.capture());
 
         Exception cancelException = exceptionCaptor.getValue();
         assertTrue(cancelException instanceof UserCanceledException);
         assertEquals("User canceled Local Payment.", cancelException.getMessage());
-        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.canceled", null);
+        verify(braintreeClient).sendAnalyticsEvent(
+                eq("ideal.local-payment.webswitch.canceled"),
+                payloadCaptor.capture()
+        );
+        assertEquals(expectedPayload, payloadCaptor.getValue());
     }
 
     @Test
@@ -694,13 +760,19 @@ public class LocalPaymentClientUnitTest {
 
         sut.onBrowserSwitchResult(activity, browserSwitchResult);
 
+        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
+        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
         ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
         verify(listener).onLocalPaymentFailure(exceptionCaptor.capture());
 
         Exception cancelException = exceptionCaptor.getValue();
         assertTrue(cancelException instanceof UserCanceledException);
         assertEquals("User canceled Local Payment.", cancelException.getMessage());
-        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.canceled", null);
+        verify(braintreeClient).sendAnalyticsEvent(
+                eq("ideal.local-payment.webswitch.canceled"),
+                payloadCaptor.capture()
+        );
+        assertEquals(expectedPayload, payloadCaptor.getValue());
     }
 
     @Test
