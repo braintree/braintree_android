@@ -1,5 +1,12 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+  * Fix `PayPalAccountNonce` Null Pointer Exception by ensuring that all `@NonNull` values are initialized with a non-null value.
+* PayPalNativeCheckout
+  * Fix `PayPalNativeCheckoutAccountNonce` Null Pointer Exception by ensuring that all `@NonNull` values are initialized with a non-null value.
+
 ## 4.47.0 (2024-06-06)
 
 * BraintreeCore
