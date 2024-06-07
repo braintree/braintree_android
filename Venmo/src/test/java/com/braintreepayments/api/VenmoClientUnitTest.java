@@ -15,7 +15,6 @@ import static junit.framework.TestCase.assertSame;
 import static junit.framework.TestCase.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.endsWith;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
@@ -158,7 +157,7 @@ public class VenmoClientUnitTest {
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
 
         verify(activity).startActivity(captor.capture());
-        verify(braintreeClient).sendAnalyticsEvent("android.pay-with-venmo.app-store.invoked", new AnalyticsEventPayload.Builder().build());
+        verify(braintreeClient).sendAnalyticsEvent("android.pay-with-venmo.app-store.invoked", new AnalyticsEventParams.Builder().build());
     }
 
     @Test
@@ -223,7 +222,7 @@ public class VenmoClientUnitTest {
         verify(sharedPrefsWriter).persistVenmoVaultOption(activity, false);
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.app-switch.started",
-                new AnalyticsEventPayload.Builder().setPayPalContextId("venmo-payment-context-id").setLinkType("deeplink").build()
+                new AnalyticsEventParams.Builder().setPayPalContextId("venmo-payment-context-id").setLinkType("deeplink").build()
         );
     }
 
@@ -264,7 +263,7 @@ public class VenmoClientUnitTest {
         verify(sharedPrefsWriter).persistVenmoVaultOption(activity, false);
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.app-switch.started",
-                new AnalyticsEventPayload.Builder().setLinkType("deeplink").build()
+                new AnalyticsEventParams.Builder().setLinkType("deeplink").build()
         );
     }
 
@@ -296,7 +295,7 @@ public class VenmoClientUnitTest {
         verify(listener).onVenmoFailure(captor.capture());
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.app-switch.failed",
-                new AnalyticsEventPayload.Builder().setLinkType("deeplink").build()
+                new AnalyticsEventParams.Builder().setLinkType("deeplink").build()
         );
         assertEquals("Cannot collect customer data when ECD is disabled. Enable this feature in the Control Panel to collect this data.", captor.getValue().getMessage());
     }
@@ -329,7 +328,7 @@ public class VenmoClientUnitTest {
 
         inOrder.verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.app-switch.started",
-                new AnalyticsEventPayload.Builder().setPayPalContextId("venmo-payment-context-id").setLinkType("deeplink").build()
+                new AnalyticsEventParams.Builder().setPayPalContextId("venmo-payment-context-id").setLinkType("deeplink").build()
         );
     }
 
@@ -360,7 +359,7 @@ public class VenmoClientUnitTest {
         InOrder inOrder = Mockito.inOrder(activity, braintreeClient);
         inOrder.verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.app-switch.started",
-                new AnalyticsEventPayload.Builder().setLinkType("deeplink").build()
+                new AnalyticsEventParams.Builder().setLinkType("deeplink").build()
         );
     }
 
@@ -393,7 +392,7 @@ public class VenmoClientUnitTest {
 
         inOrder.verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.app-switch.started",
-                new AnalyticsEventPayload.Builder().setPayPalContextId("venmo-payment-context-id").setLinkType("deeplink").build()
+                new AnalyticsEventParams.Builder().setPayPalContextId("venmo-payment-context-id").setLinkType("deeplink").build()
         );
 
         Intent intent = captor.getValue();
@@ -476,7 +475,7 @@ public class VenmoClientUnitTest {
         assertEquals("Configuration fetching error", captor.getValue().getMessage());
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.app-switch.failed",
-                new AnalyticsEventPayload.Builder().setLinkType("deeplink").build()
+                new AnalyticsEventParams.Builder().setLinkType("deeplink").build()
         );
     }
 
@@ -500,7 +499,7 @@ public class VenmoClientUnitTest {
         assertEquals("Venmo is not enabled", captor.getValue().getMessage());
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.app-switch.failed",
-                new AnalyticsEventPayload.Builder().setLinkType("deeplink").build()
+                new AnalyticsEventParams.Builder().setLinkType("deeplink").build()
         );
     }
 
@@ -527,7 +526,7 @@ public class VenmoClientUnitTest {
         assertEquals("Venmo is not installed", captor.getValue().getMessage());
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.app-switch.failed",
-                new AnalyticsEventPayload.Builder().setLinkType("deeplink").build()
+                new AnalyticsEventParams.Builder().setLinkType("deeplink").build()
         );
     }
 
@@ -724,7 +723,7 @@ public class VenmoClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.selected",
-                new AnalyticsEventPayload.Builder().setLinkType("deeplink").build()
+                new AnalyticsEventParams.Builder().setLinkType("deeplink").build()
         );
     }
 
@@ -751,11 +750,11 @@ public class VenmoClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.selected",
-                new AnalyticsEventPayload.Builder().setLinkType("deeplink").build()
+                new AnalyticsEventParams.Builder().setLinkType("deeplink").build()
         );
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.app-switch.started",
-                new AnalyticsEventPayload.Builder().setPayPalContextId("venmo-payment-context-id").setLinkType("deeplink").build()
+                new AnalyticsEventParams.Builder().setPayPalContextId("venmo-payment-context-id").setLinkType("deeplink").build()
         );
     }
 
@@ -783,11 +782,11 @@ public class VenmoClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.selected",
-                new AnalyticsEventPayload.Builder().setLinkType("universal").build()
+                new AnalyticsEventParams.Builder().setLinkType("universal").build()
         );
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.app-switch.started",
-                new AnalyticsEventPayload.Builder().setPayPalContextId("venmo-payment-context-id").setLinkType("universal").build()
+                new AnalyticsEventParams.Builder().setPayPalContextId("venmo-payment-context-id").setLinkType("universal").build()
         );
     }
 
@@ -967,8 +966,8 @@ public class VenmoClientUnitTest {
         verify(listener).onVenmoFailure(captor.capture());
         assertEquals("Venmo is not installed", captor.getValue().getMessage());
 
-        order.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.selected", new AnalyticsEventPayload.Builder().setLinkType("deeplink").build());
-        order.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed", new AnalyticsEventPayload.Builder().setLinkType("deeplink").build());
+        order.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.selected", new AnalyticsEventParams.Builder().setLinkType("deeplink").build());
+        order.verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failed", new AnalyticsEventParams.Builder().setLinkType("deeplink").build());
     }
 
     @Test
@@ -993,7 +992,7 @@ public class VenmoClientUnitTest {
         verify(listener).onVenmoFailure(graphQLError);
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.app-switch.failed",
-                new AnalyticsEventPayload.Builder().setLinkType("deeplink").build()
+                new AnalyticsEventParams.Builder().setLinkType("deeplink").build()
         );
     }
 
@@ -1037,7 +1036,7 @@ public class VenmoClientUnitTest {
         assertEquals("fake-venmo-nonce", nonce.getString());
         assertEquals("venmojoe", nonce.getUsername());
 
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.success", new AnalyticsEventPayload.Builder().build());
+        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.success", new AnalyticsEventParams.Builder().build());
     }
 
     @Test
@@ -1060,7 +1059,7 @@ public class VenmoClientUnitTest {
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
         verify(onActivityResultCallback).onResult(null, graphQLError);
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failure", new AnalyticsEventPayload.Builder().build());
+        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failure", new AnalyticsEventParams.Builder().build());
     }
 
     @Test
@@ -1122,7 +1121,7 @@ public class VenmoClientUnitTest {
 
         sut.onActivityResult(activity, AppCompatActivity.RESULT_OK, intent, onActivityResultCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.success", new AnalyticsEventPayload.Builder().build());
+        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.success", new AnalyticsEventParams.Builder().build());
     }
 
     @Test
@@ -1130,7 +1129,7 @@ public class VenmoClientUnitTest {
         VenmoClient sut = new VenmoClient(activity, lifecycle, braintreeClient, venmoApi, sharedPrefsWriter, deviceInspector);
         sut.onActivityResult(activity, AppCompatActivity.RESULT_CANCELED, new Intent(), onActivityResultCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.canceled", new AnalyticsEventPayload.Builder().build());
+        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.canceled", new AnalyticsEventParams.Builder().build());
     }
 
     @Test
@@ -1245,7 +1244,7 @@ public class VenmoClientUnitTest {
         verify(onActivityResultCallback).onResult(any(VenmoAccountNonce.class), (Exception) isNull());
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.vault.success",
-                new AnalyticsEventPayload.Builder().setIsVaultRequest(true).build()
+                new AnalyticsEventParams.Builder().setIsVaultRequest(true).build()
         );
     }
 
@@ -1273,7 +1272,7 @@ public class VenmoClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.vault.success",
-                new AnalyticsEventPayload.Builder().setIsVaultRequest(true).build()
+                new AnalyticsEventParams.Builder().setIsVaultRequest(true).build()
         );
     }
 
@@ -1330,7 +1329,7 @@ public class VenmoClientUnitTest {
         verify(onActivityResultCallback).onResult(null, error);
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.vault.failed",
-                new AnalyticsEventPayload.Builder().setIsVaultRequest(true).build()
+                new AnalyticsEventParams.Builder().setIsVaultRequest(true).build()
         );
     }
 
@@ -1359,7 +1358,7 @@ public class VenmoClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.vault.failed",
-                new AnalyticsEventPayload.Builder().setIsVaultRequest(true).build()
+                new AnalyticsEventParams.Builder().setIsVaultRequest(true).build()
         );
     }
 
@@ -1462,7 +1461,7 @@ public class VenmoClientUnitTest {
         assertEquals("fake-venmo-nonce", nonce.getString());
         assertEquals("venmojoe", nonce.getUsername());
 
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.success", new AnalyticsEventPayload.Builder().build());
+        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.success", new AnalyticsEventParams.Builder().build());
     }
 
     @Test
@@ -1485,7 +1484,7 @@ public class VenmoClientUnitTest {
         sut.onVenmoResult(venmoResult);
 
         verify(listener).onVenmoFailure(graphQLError);
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failure", new AnalyticsEventPayload.Builder().build());
+        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.failure", new AnalyticsEventParams.Builder().build());
     }
 
     @Test
@@ -1543,7 +1542,7 @@ public class VenmoClientUnitTest {
         VenmoResult venmoResult = new VenmoResult("payment-context-id", "some-nonce", "venmo-username", null);
         sut.onVenmoResult(venmoResult);
 
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.success", new AnalyticsEventPayload.Builder().build());
+        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.success", new AnalyticsEventParams.Builder().build());
     }
 
     @Test
@@ -1554,7 +1553,7 @@ public class VenmoClientUnitTest {
         VenmoResult venmoResult = new VenmoResult("payment-context-id", null, null, new UserCanceledException("User canceled Venmo."));
         sut.onVenmoResult(venmoResult);
 
-        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.canceled", new AnalyticsEventPayload.Builder().build());
+        verify(braintreeClient).sendAnalyticsEvent("pay-with-venmo.app-switch.canceled", new AnalyticsEventParams.Builder().build());
     }
 
     @Test
@@ -1644,7 +1643,7 @@ public class VenmoClientUnitTest {
         verify(listener).onVenmoSuccess(venmoAccountNonce);
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.vault.success",
-                new AnalyticsEventPayload.Builder().setIsVaultRequest(true).build()
+                new AnalyticsEventParams.Builder().setIsVaultRequest(true).build()
         );
     }
 
@@ -1676,7 +1675,7 @@ public class VenmoClientUnitTest {
         verify(listener).onVenmoSuccess(venmoAccountNonce);
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.vault.success",
-                new AnalyticsEventPayload.Builder().setIsVaultRequest(true).build()
+                new AnalyticsEventParams.Builder().setIsVaultRequest(true).build()
         );
     }
 
@@ -1706,7 +1705,7 @@ public class VenmoClientUnitTest {
         verify(listener).onVenmoFailure(error);
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.vault.failed",
-                new AnalyticsEventPayload.Builder().setIsVaultRequest(true).build()
+                new AnalyticsEventParams.Builder().setIsVaultRequest(true).build()
         );
     }
 
@@ -1739,7 +1738,7 @@ public class VenmoClientUnitTest {
         verify(listener).onVenmoFailure(error);
         verify(braintreeClient).sendAnalyticsEvent(
                 "pay-with-venmo.vault.failed",
-                new AnalyticsEventPayload.Builder().setIsVaultRequest(true).build()
+                new AnalyticsEventParams.Builder().setIsVaultRequest(true).build()
         );
     }
 

@@ -292,11 +292,11 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.billing-agreement.selected",
-                new AnalyticsEventPayload.Builder().setIsVaultRequest(true).build()
+                new AnalyticsEventParams.Builder().setIsVaultRequest(true).build()
         );
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.billing-agreement.browser-switch.started",
-                new AnalyticsEventPayload.Builder().setPayPalContextId("BA-1234").setIsVaultRequest(true).build()
+                new AnalyticsEventParams.Builder().setPayPalContextId("BA-1234").setIsVaultRequest(true).build()
         );
     }
 
@@ -438,11 +438,11 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.single-payment.selected",
-                new AnalyticsEventPayload.Builder().build()
+                new AnalyticsEventParams.Builder().build()
         );
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.single-payment.browser-switch.started",
-                new AnalyticsEventPayload.Builder().setPayPalContextId("EC-1234").build()
+                new AnalyticsEventParams.Builder().setPayPalContextId("EC-1234").build()
         );
     }
 
@@ -458,7 +458,7 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.single-payment.paylater.offered",
-                new AnalyticsEventPayload.Builder().build()
+                new AnalyticsEventParams.Builder().build()
         );
     }
 
@@ -507,7 +507,7 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.billing-agreement.credit.offered",
-                new AnalyticsEventPayload.Builder().setIsVaultRequest(true).build()
+                new AnalyticsEventParams.Builder().setIsVaultRequest(true).build()
         );
     }
 
@@ -638,7 +638,7 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.billing-agreement.browser-switch.succeeded",
-                new AnalyticsEventPayload.Builder().setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN").build()
+                new AnalyticsEventParams.Builder().setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN").build()
         );
     }
 
@@ -672,7 +672,7 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.billing-agreement.browser-switch.succeeded",
-                new AnalyticsEventPayload.Builder().build()
+                new AnalyticsEventParams.Builder().build()
         );
     }
 
@@ -706,7 +706,7 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.single-payment.browser-switch.succeeded",
-                new AnalyticsEventPayload.Builder().setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN").build()
+                new AnalyticsEventParams.Builder().setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN").build()
         );
     }
 
@@ -801,7 +801,7 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.credit.accepted",
-                new AnalyticsEventPayload.Builder().setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN").build()
+                new AnalyticsEventParams.Builder().setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN").build()
         );
     }
 
@@ -836,7 +836,7 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.credit.accepted",
-                new AnalyticsEventPayload.Builder().build()
+                new AnalyticsEventParams.Builder().build()
         );
     }
 
@@ -877,7 +877,7 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.single-payment.browser-switch.canceled",
-                new AnalyticsEventPayload.Builder().build()
+                new AnalyticsEventParams.Builder().build()
         );
     }
 
@@ -918,7 +918,7 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.single-payment.browser-switch.canceled",
-                new AnalyticsEventPayload.Builder().setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN").build()
+                new AnalyticsEventParams.Builder().setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN").build()
         );
     }
 
@@ -959,7 +959,7 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.single-payment.browser-switch.canceled",
-                new AnalyticsEventPayload.Builder().build()
+                new AnalyticsEventParams.Builder().build()
         );
     }
 
@@ -986,7 +986,7 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.single-payment.browser-switch.canceled",
-                new AnalyticsEventPayload.Builder().build()
+                new AnalyticsEventParams.Builder().build()
         );
     }
 
@@ -1017,7 +1017,7 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
                 "paypal.single-payment.browser-switch.canceled",
-                new AnalyticsEventPayload.Builder().build()
+                new AnalyticsEventParams.Builder().build()
         );
     }
 

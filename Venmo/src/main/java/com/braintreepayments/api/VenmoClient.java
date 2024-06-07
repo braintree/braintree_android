@@ -138,7 +138,7 @@ public class VenmoClient {
     public void showVenmoInGooglePlayStore(@NonNull FragmentActivity activity) {
         braintreeClient.sendAnalyticsEvent(
                 "android.pay-with-venmo.app-store.invoked",
-                new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
         );
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(
@@ -181,7 +181,7 @@ public class VenmoClient {
         linkType = request.getFallbackToWeb() ? "universal" : "deeplink";
         braintreeClient.sendAnalyticsEvent(
                 "pay-with-venmo.selected",
-                new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
         );
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
@@ -190,7 +190,7 @@ public class VenmoClient {
                     callback.onResult(error);
                     braintreeClient.sendAnalyticsEvent(
                             "pay-with-venmo.app-switch.failed",
-                            new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                            new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                     );
                     return;
                 }
@@ -210,7 +210,7 @@ public class VenmoClient {
                     callback.onResult(new AppSwitchNotAvailableException(exceptionMessage));
                     braintreeClient.sendAnalyticsEvent(
                             "pay-with-venmo.app-switch.failed",
-                            new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                            new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                     );
                     return;
                 }
@@ -220,7 +220,7 @@ public class VenmoClient {
                     callback.onResult(new BraintreeException("Cannot collect customer data when ECD is disabled. Enable this feature in the Control Panel to collect this data."));
                     braintreeClient.sendAnalyticsEvent(
                             "pay-with-venmo.app-switch.failed",
-                            new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                            new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                     );
                     return;
                 }
@@ -254,7 +254,7 @@ public class VenmoClient {
                             callback.onResult(exception);
                             braintreeClient.sendAnalyticsEvent(
                                     "pay-with-venmo.app-switch.failed",
-                                    new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                                    new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                             );
                         }
                     }
@@ -282,7 +282,7 @@ public class VenmoClient {
                 } catch (JSONException | BrowserSwitchException exception) {
                     braintreeClient.sendAnalyticsEvent(
                             "pay-with-venmo.app-links.failure",
-                            new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                            new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                     );
                     deliverVenmoFailure(exception);
                 }
@@ -295,7 +295,7 @@ public class VenmoClient {
         }
         braintreeClient.sendAnalyticsEvent(
                 "pay-with-venmo.app-switch.started",
-                new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
         );
     }
 
@@ -303,7 +303,7 @@ public class VenmoClient {
         if (venmoResult.getError() == null) {
             braintreeClient.sendAnalyticsEvent(
                     "pay-with-venmo.app-switch.success",
-                    new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                    new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
             );
 
             braintreeClient.getAuthorization(new AuthorizationCallback() {
@@ -333,14 +333,14 @@ public class VenmoClient {
                                         } else {
                                             braintreeClient.sendAnalyticsEvent(
                                                     "pay-with-venmo.app-switch.failure",
-                                                    new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                                                    new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                                             );
                                             deliverVenmoSuccess(nonce);
                                         }
                                     } else {
                                         braintreeClient.sendAnalyticsEvent(
                                                 "pay-with-venmo.app-switch.failure",
-                                                new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                                                new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                                         );
                                         deliverVenmoFailure(error);
                                     }
@@ -378,7 +378,7 @@ public class VenmoClient {
             if (venmoResult.getError() instanceof UserCanceledException) {
                 braintreeClient.sendAnalyticsEvent(
                         "pay-with-venmo.app-switch.canceled",
-                        new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                        new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                 );
             }
             deliverVenmoFailure(venmoResult.getError());
@@ -411,7 +411,7 @@ public class VenmoClient {
         if (resultCode == AppCompatActivity.RESULT_OK) {
             braintreeClient.sendAnalyticsEvent(
                     "pay-with-venmo.app-switch.success",
-                    new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                    new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
             );
 
             braintreeClient.getAuthorization(new AuthorizationCallback() {
@@ -432,7 +432,7 @@ public class VenmoClient {
                                         } else {
                                             braintreeClient.sendAnalyticsEvent(
                                                     "pay-with-venmo.app-switch.failure",
-                                                    new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                                                    new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                                             );
                                             callback.onResult(nonce, null);
                                         }
@@ -440,7 +440,7 @@ public class VenmoClient {
                                     } else {
                                         braintreeClient.sendAnalyticsEvent(
                                                 "pay-with-venmo.app-switch.failure",
-                                                new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                                                new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                                         );
                                         callback.onResult(null, error);
                                     }
@@ -467,7 +467,7 @@ public class VenmoClient {
         } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
             braintreeClient.sendAnalyticsEvent(
                     "pay-with-venmo.app-switch.canceled",
-                    new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                    new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
             );
             callback.onResult(null, new UserCanceledException("User canceled Venmo."));
         }
@@ -480,12 +480,12 @@ public class VenmoClient {
                 if (venmoAccountNonce != null) {
                     braintreeClient.sendAnalyticsEvent(
                             "pay-with-venmo.vault.success",
-                            new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                            new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                     );
                 } else {
                     braintreeClient.sendAnalyticsEvent(
                             "pay-with-venmo.vault.failed",
-                            new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                            new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                     );
                 }
                 callback.onResult(venmoAccountNonce, error);
@@ -536,7 +536,7 @@ public class VenmoClient {
             case BrowserSwitchStatus.CANCELED:
                 braintreeClient.sendAnalyticsEvent(
                         "pay-with-venmo.app-links.canceled",
-                        new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                        new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                 );
                 callback.onResult(null, new UserCanceledException("User canceled Venmo."));
                 break;
@@ -564,20 +564,20 @@ public class VenmoClient {
                                                 if (isVaultRequest && isClientTokenAuth) {
                                                     braintreeClient.sendAnalyticsEvent(
                                                             "pay-with-venmo.app-links.success",
-                                                            new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                                                            new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                                                     );
                                                     vaultVenmoAccountNonce(nonce.getString(), callback);
                                                 } else {
                                                     braintreeClient.sendAnalyticsEvent(
                                                             "pay-with-venmo.app-links.success",
-                                                            new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                                                            new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                                                     );
                                                     callback.onResult(nonce, null);
                                                 }
                                             } else {
                                                 braintreeClient.sendAnalyticsEvent(
                                                         "pay-with-venmo.app-links.failure",
-                                                        new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                                                        new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                                                 );
                                                 callback.onResult(null, error);
                                             }
@@ -588,13 +588,13 @@ public class VenmoClient {
                                     if (isVaultRequest && isClientTokenAuth) {
                                         braintreeClient.sendAnalyticsEvent(
                                                 "pay-with-venmo.app-links.success",
-                                                new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                                                new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                                         );
                                         vaultVenmoAccountNonce(paymentMethodNonce, callback);
                                     } else {
                                         braintreeClient.sendAnalyticsEvent(
                                                 "pay-with-venmo.app-links.success",
-                                                new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                                                new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                                         );
                                         VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(paymentMethodNonce, username, false);
                                         callback.onResult(venmoAccountNonce, null);
@@ -603,7 +603,7 @@ public class VenmoClient {
                             } else if (authError != null) {
                                 braintreeClient.sendAnalyticsEvent(
                                         "pay-with-venmo.app-links.failure",
-                                        new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                                        new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                                 );
                                 callback.onResult(null, authError);
                             }
@@ -612,20 +612,20 @@ public class VenmoClient {
                     } else if (deepLinkUri.getPath().contains("cancel")) {
                         braintreeClient.sendAnalyticsEvent(
                                 "pay-with-venmo.app-links.canceled",
-                                new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                                new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                         );
                         callback.onResult(null, new UserCanceledException("User canceled Venmo."));
                     } else if (deepLinkUri.getPath().contains("error")) {
                         braintreeClient.sendAnalyticsEvent(
                                 "pay-with-venmo.app-links.failure",
-                                new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                                new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                         );
                         callback.onResult(null, new Exception("Error returned from Venmo."));
                     }
                 } else {
                     braintreeClient.sendAnalyticsEvent(
                             "pay-with-venmo.app-links.failure",
-                            new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                            new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
                     );
                     callback.onResult(null, new Exception("Unknown error"));
                 }
@@ -794,7 +794,7 @@ public class VenmoClient {
         braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
         braintreeClient.sendAnalyticsEvent(
                 "pay-with-venmo.app-links.started",
-                new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
+                new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setLinkType(linkType).setIsVaultRequest(isVaultRequest).build()
         );
     }
 

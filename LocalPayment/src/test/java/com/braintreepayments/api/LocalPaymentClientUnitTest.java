@@ -209,8 +209,8 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
                 .createPaymentMethodSuccess(mock(LocalPaymentResult.class))
                 .build();
-        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
-        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
+        AnalyticsEventParams expectedPayload = new AnalyticsEventParams.Builder().build();
+        ArgumentCaptor<AnalyticsEventParams> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
@@ -238,8 +238,8 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
                 .createPaymentMethodSuccess(localPaymentResult)
                 .build();
-        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
-        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
+        AnalyticsEventParams expectedPayload = new AnalyticsEventParams.Builder().build();
+        ArgumentCaptor<AnalyticsEventParams> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
@@ -267,8 +267,8 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
                 .createPaymentMethodSuccess(localPaymentResult)
                 .build();
-        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().setPayPalContextId("some-paypal-context-id").build();
-        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
+        AnalyticsEventParams expectedPayload = new AnalyticsEventParams.Builder().setPayPalContextId("some-paypal-context-id").build();
+        ArgumentCaptor<AnalyticsEventParams> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
@@ -307,8 +307,8 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
                 .createPaymentMethodError(new Exception("error"))
                 .build();
-        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
-        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
+        AnalyticsEventParams expectedPayload = new AnalyticsEventParams.Builder().build();
+        ArgumentCaptor<AnalyticsEventParams> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
@@ -467,8 +467,8 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         String approvalUrl = "https://sample.com/approval?token=sample-token";
         LocalPaymentResult transaction = new LocalPaymentResult(request, approvalUrl, "payment-id");
-        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
-        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
+        AnalyticsEventParams expectedPayload = new AnalyticsEventParams.Builder().build();
+        ArgumentCaptor<AnalyticsEventParams> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
 
         sut.approveLocalPayment(activity, transaction);
         verify(braintreeClient).sendAnalyticsEvent(
@@ -530,8 +530,8 @@ public class LocalPaymentClientUnitTest {
                 .put("payment-type", "ideal")
                 .put("merchant-account-id", "local-merchant-account-id"));
 
-        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
-        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
+        AnalyticsEventParams expectedPayload = new AnalyticsEventParams.Builder().build();
+        ArgumentCaptor<AnalyticsEventParams> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         sut.setListener(listener);
 
@@ -571,8 +571,8 @@ public class LocalPaymentClientUnitTest {
                 .sessionId("sample-session-id")
                 .integration("sample-integration-type")
                 .build();
-        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
-        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
+        AnalyticsEventParams expectedPayload = new AnalyticsEventParams.Builder().build();
+        ArgumentCaptor<AnalyticsEventParams> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
 
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
                 .tokenizeError(postError)
@@ -672,8 +672,8 @@ public class LocalPaymentClientUnitTest {
 
         when(payPalDataCollector.getClientMetadataId(any(Context.class), same(payPalEnabledConfig), anyBoolean())).thenReturn("client-metadata-id");
 
-        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
-        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
+        AnalyticsEventParams expectedPayload = new AnalyticsEventParams.Builder().build();
+        ArgumentCaptor<AnalyticsEventParams> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
 
         LocalPaymentClient sut = new LocalPaymentClient(activity, lifecycle, braintreeClient, payPalDataCollector, localPaymentApi);
         sut.setListener(listener);
@@ -731,8 +731,8 @@ public class LocalPaymentClientUnitTest {
 
         sut.onBrowserSwitchResult(activity, browserSwitchResult);
 
-        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
-        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
+        AnalyticsEventParams expectedPayload = new AnalyticsEventParams.Builder().build();
+        ArgumentCaptor<AnalyticsEventParams> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
         ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
         verify(listener).onLocalPaymentFailure(exceptionCaptor.capture());
 
@@ -760,8 +760,8 @@ public class LocalPaymentClientUnitTest {
 
         sut.onBrowserSwitchResult(activity, browserSwitchResult);
 
-        AnalyticsEventPayload expectedPayload = new AnalyticsEventPayload.Builder().build();
-        ArgumentCaptor<AnalyticsEventPayload> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventPayload.class);
+        AnalyticsEventParams expectedPayload = new AnalyticsEventParams.Builder().build();
+        ArgumentCaptor<AnalyticsEventParams> payloadCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
         ArgumentCaptor<Exception> exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
         verify(listener).onLocalPaymentFailure(exceptionCaptor.capture());
 

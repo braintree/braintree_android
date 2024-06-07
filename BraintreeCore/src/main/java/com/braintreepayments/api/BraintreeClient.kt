@@ -188,7 +188,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendAnalyticsEvent(
             eventName: String,
-            payload: AnalyticsEventPayload = AnalyticsEventPayload.Builder().build()
+            params: AnalyticsEventParams = AnalyticsEventParams.Builder().build()
     ) {
         getAuthorization { authorization, _ ->
             if (authorization != null) {
@@ -196,10 +196,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                     val isVenmoInstalled = deviceInspector.isVenmoInstalled(applicationContext)
                     val event = AnalyticsEvent(
                             eventName,
-                            payload.payPalContextId,
-                            payload.linkType,
+                            params.payPalContextId,
+                            params.linkType,
                             venmoInstalled = isVenmoInstalled,
-                            isVaultRequest = payload.isVaultRequest
+                            isVaultRequest = params.isVaultRequest
                     )
                     sendAnalyticsEvent(event, configuration, authorization)
                 }
