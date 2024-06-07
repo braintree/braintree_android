@@ -86,6 +86,10 @@ public class PayPalRequestFactory {
             request.setUserAction(PayPalCheckoutRequest.USER_ACTION_COMMIT);
         }
 
+        if (Settings.isPayPalPayLaterOffered(context)) {
+            request.setShouldOfferPayLater(true);
+        }
+
         if (Settings.usePayPalAddressOverride(context)) {
             PostalAddress shippingAddress = new PostalAddress();
             shippingAddress.setRecipientName("Brian Tree");
