@@ -403,11 +403,11 @@ class AnalyticsClientUnitTest {
         val analyticsJSONSlot = slot<String>()
         every {
             httpClient.post(
-                "https://api-m.paypal.com/v1/tracking/batch/events",
-                capture(analyticsJSONSlot),
-                any(),
-                authorization,
-                any()
+                path = "https://api-m.paypal.com/v1/tracking/batch/events",
+                data = capture(analyticsJSONSlot),
+                configuration = any(),
+                authorization = authorization,
+                callback = any()
             )
         } returns Unit
 

@@ -184,11 +184,11 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         try {
             val analyticsRequest = serializeEvents(authorization, events, metadata)
             httpClient.post(
-                FPTI_ANALYTICS_URL,
-                analyticsRequest.toString(),
-                null,
-                authorization,
-                BTHttpNoResponse()
+                path = FPTI_ANALYTICS_URL,
+                data = analyticsRequest.toString(),
+                configuration = null,
+                authorization = authorization,
+                callback = BTHttpNoResponse()
             )
         } catch (e: JSONException) { /* ignored */
         }

@@ -4,6 +4,6 @@
     <application>
         <activity
             android:name="com.braintreepayments.api.ThreeDSecureActivity"
-            android:theme="@style/Theme.AppCompat" />
+            android:theme="@style/Theme.Translucent.NoTitleBar.Fullscreen" />
     </application>
 </manifest>

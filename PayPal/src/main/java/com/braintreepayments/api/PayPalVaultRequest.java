@@ -16,8 +16,6 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
 
     private boolean shouldOfferCredit;
 
-    private String userAuthenticationEmail;
-
     /**
      * Deprecated. Use {@link PayPalVaultRequest#PayPalVaultRequest(boolean)} instead.
      */
@@ -50,21 +48,6 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
 
     public boolean getShouldOfferCredit() {
         return shouldOfferCredit;
-    }
-
-    /**
-     * Optional: User email to initiate a quicker authentication flow in cases where the user has a
-     * PayPal Account with the same email.
-     *
-     * @param userAuthenticationEmail - email address of the payer
-     */
-    public void setUserAuthenticationEmail(@Nullable String userAuthenticationEmail) {
-        this.userAuthenticationEmail = userAuthenticationEmail;
-    }
-
-    @Nullable
-    public String getUserAuthenticationEmail() {
-        return this.userAuthenticationEmail;
     }
 
     String createRequestBody(Configuration configuration, Authorization authorization, String successUrl, String cancelUrl) throws JSONException {

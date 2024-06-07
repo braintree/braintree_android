@@ -277,6 +277,7 @@ public class PayPalClientUnitTest {
         PayPalResponse payPalResponse = new PayPalResponse(payPalVaultRequest)
                 .approvalUrl("https://example.com/approval/url")
                 .successUrl("https://example.com/success/url")
+                .pairingId("BA-1234")
                 .clientMetadataId("sample-client-metadata-id");
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
                 .sendRequestSuccess(payPalResponse)
@@ -290,7 +291,7 @@ public class PayPalClientUnitTest {
         sut.tokenizePayPalAccount(activity, payPalVaultRequest);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.selected", null, null, true);
-        verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.browser-switch.started", null, null, true);
+        verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.browser-switch.started", "BA-1234", null, true);
     }
 
     @Test
@@ -416,6 +417,7 @@ public class PayPalClientUnitTest {
         PayPalResponse payPalResponse = new PayPalResponse(payPalCheckoutRequest)
                 .approvalUrl("https://example.com/approval/url")
                 .successUrl("https://example.com/success/url")
+                .pairingId("EC-1234")
                 .clientMetadataId("sample-client-metadata-id");
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
                 .sendRequestSuccess(payPalResponse)
@@ -429,7 +431,7 @@ public class PayPalClientUnitTest {
         sut.tokenizePayPalAccount(activity, payPalCheckoutRequest);
 
         verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.selected", null, null, false);
-        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.browser-switch.started", null, null, false);
+        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.browser-switch.started", "EC-1234", null, false);
     }
 
     @Test

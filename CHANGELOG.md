@@ -1,11 +1,43 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+
 * PayPal
+  * Fix `PayPalAccountNonce` Null Pointer Exception by ensuring that all `@NonNull` values are initialized with a non-null value.
+* PayPalNativeCheckout
+  * Fix `PayPalNativeCheckoutAccountNonce` Null Pointer Exception by ensuring that all `@NonNull` values are initialized with a non-null value.
+
+## 4.47.0 (2024-06-06)
+
+* BraintreeCore
+  * Add `appLinkReturnUri` to `BraintreeClient` constructors for Android App Link support (for PayPal web flows only)
+  * Bump `browser-switch` version to `2.7.0`
+* PayPal
+  * Add `appLinkEnabled` property to `PayPalRequest` for Android App Link support
+  * Add optional property `PayPalCheckoutRequest.setUserAuthenticationEmail()`
+* ShopperInsights (BETA)
+  * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
+  * Add `ShopperInsightsClient.getRecommendedPaymentMethods()` for returning recommendations based on the buyer
+* ThreeDSecure
+  * Fix issue that causes a black screen to display after successful 3DS validation.
+* Venmo
+  * Send `link_type` in `event_params` to PayPal's analytics service (FPTI)
+
+## 4.46.0 (2024-05-30)
+
+* PayPalMessaging (BETA)
+  * Add `PayPalMessagingRequest`, `PayPalMessagingColor`, `PayPalMessagingLogoType`, `PayPalMessagingOfferType`, `PayPalMessagingPageType`, `PayPalMessagingTextAlignment`, and `PayPalMessagingListener`
+  * Add `PayPalMessagingView(BraintreeClient, Context)` to display PayPal messages to promote offers such as Pay Later and PayPal Credit to customers.
+    * To get started call `PayPalMessagingView#start()` with an optional `PayPalMessagingRequest`
+
+## 4.45.1 (2024-05-28)
+
+* PayPal
+  * Update `PayPalInternalClient` to use pairing ID as client metadata ID by default.
   * Send `is_vault` in `event_params` analytics
 * Venmo
   * Send `link_type` and `is_vault` in `event_params` analytics
-  
+
 ## 4.45.0 (2024-04-16)
 
 * BraintreeCore
@@ -129,19 +161,19 @@
   * Bump native-checkout version to release `1.1.0`
   * Fix bug where `PayPalNativeCheckoutVaultRequest` flow in the EU results in failed requests when using the nonce in a server side request
 
-## 4.36.0
+## 4.36.0 (2023-07-18)
 
 * BraintreeCore
   * Bump `browser-switch` version to `2.5.0`
 * All Modules
   * Revert Kotlin version to `1.7.10`
 
-## 4.35.0
+## 4.35.0 (2023-07-12)
 
 * GooglePay
   * Add `GooglePayCardNonce.getCardNetwork()`
 
-## 4.34.0
+## 4.34.0 (2023-07-10)
 
 * GooglePay
   * Add `GooglePayRequest.setAllowCreditCards()`
@@ -149,7 +181,7 @@
   * Bump native-checkout version to release `1.0.0`
   * Fix an issue where the return from web fallback was not returning the correct information
 
-## 4.33.0
+## 4.33.0 (2023-06-27)
 
 * PayPalNativeCheckout (BETA)
   * Fix bug where setting `setUserAction()` does not update button as expected
@@ -158,7 +190,7 @@
 * Venmo
   * Add missing space to Venmo `PaymentContext` GraphQL query (fixes #749)
 
-## 4.32.0
+## 4.32.0 (2023-06-20)
 
 * Bump target Kotlin version to `1.8.0`
 * PayPal
@@ -183,18 +215,18 @@
     * `shippingAmount`
     * `lineItems`
 
-## 4.31.0
+## 4.31.0 (2023-06-08)
 
 * BraintreeDataCollector
   * Remove Kount dependency
   * Kount is no longer supported via Braintree, instead please use our [Fraud Protection Advanced product](https://developer.paypal.com/braintree/articles/guides/fraud-tools/premium/fraud-protection-advanced)
 
-## 4.30.0
+## 4.30.0 (2023-06-07)
 
 * GooglePay
   * Add `GooglePayCardNonce.getBin()`
 
-## 4.29.0
+## 4.29.0 (2023-05-18)
 
 * PayPalNativeCheckout (BETA)
   * Reverting native version upgrade
@@ -202,22 +234,22 @@
   * Bump Cardinal version to `2.2.7-3`
   * Add `setUiType` and `setRenderTypes` to `ThreeDSecureRequest`
 
-## 4.28.0
+## 4.28.0 (2023-04-24)
 
 * PayPalNativeCheckout (BETA)
   * Bump native-checkout version to release `0.112.0`
 
-## 4.27.2
+## 4.27.2 (2023-04-19)
 
 * ThreeDSecure
   * Guard `ThreeDSecureClient` against potential Cardinal SDK runtime exceptions
 
-## 4.27.1
+## 4.27.1 (2023-04-12)
 
 * ThreeDSecure
   * Catch Null Pointer Exception in `ThreeDSecureActivity` to prevent crash (fixes #715)
 
-## 4.27.0
+## 4.27.0 (2023-04-03)
 
 * DataCollector
   * Use `applicationContext` in `DataCollector#collectDeviceData()` callback to prevent potential `Activity` leaks
@@ -227,14 +259,14 @@
   * Catch `TransactionTooLargeException` to prevent crash on large data (fixes #642)
   * Deprecate 3DS v1. Any attempt to use 3DS v1 will now throw an error. See [Migrating to 3D Secure 2](https://developer.paypal.com/braintree/docs/guides/3d-secure/migration) for more information.
 
-## 4.26.1
+## 4.26.1 (2023-02-28)
 
 * BraintreeDataCollector
   * Bump Magnes dependency to version 5.4.0 (fixes #657)
 * PayPal
   * Fix issue that causes a null pointer exception when `PayPalClient` attempts to notify success or failure when the listener is `null`
 
-## 4.26.0
+## 4.26.0 (2023-02-13)
 
 * PayPalNativeCheckout (BETA)
 
@@ -246,19 +278,19 @@
   * Replace EncryptedSharedPreferences with SharedPreferences for internal persistent data storage for all payment flows
   * Deprecate `BraintreeSharedPreferencesException`
 
-## 4.25.2
+## 4.25.2 (2023-02-08)
 
 * BraintreeCore
   * Provide more detailed information for Browser Switch errors for PayPal, PayPalNativeCheckout, and ThreeDSecure payment flows
 * SamsungPay
   * Support legacy `sourceCardLast4` property when parsing Samsung Pay response
 
-## 4.25.1
+## 4.25.1 (2023-02-07)
 
 * SharedUtils
   * Revert androidx `security-crypto` dependency to `1.1.0-alpha03` (`1.1.0-alpha04` requires a compile target of 33)
 
-## 4.25.0
+## 4.25.0 (2023-02-06)
 
 * SharedUtils
   * Bump androidx `security-crypto` dependency to `1.1.0-alpha04`
@@ -273,7 +305,7 @@
 * SamsungPay
   * Support legacy `singleUseToken` property when parsing Samsung Pay response (fixes #668)
 
-## 4.24.0
+## 4.24.0 (2023-01-30)
 
 * BraintreeCore
   * Allow uppercase characters in default return url scheme
@@ -281,22 +313,22 @@
   * Add `setRequestedExemptionType` to `ThreeDSecureRequest`
 * *Please note:* This version is dependent on the Java 8 programming language. Please read [Use Java 8 language features](https://developer.android.com/studio/write/java8-support) in the Android developer guide to learn how to use it in your project. If this causes an issue with your integration, please contact our [support](https://developer.paypal.com/braintree/help) team for further assistance.
   
-## 4.23.1
+## 4.23.1 (2023-01-09)
 
 * ThreeDSecure
   * Defensively guard against `ThreeDSecureActivity` launch without extras (fixes #641)
 
-## 4.23.0
+## 4.23.0 (2022-12-22)
 
 * BraintreeCore
   * Bump `browser-switch` version to `2.3.2`
 
-## 4.22.0
+## 4.22.0 (2022-12-19)
 
 * PayPalNativeCheckout (BETA)
   * Bump native-checkout version to `0.8.7`
 
-## 4.21.1
+## 4.21.1 (2022-12-14)
 
 * PayPal
   * Update exception documentation links to point to valid PayPal Braintree documentation URL
@@ -305,25 +337,25 @@
 * BraintreeCore
   * Update pinned certificates used by `BraintreeGraphQLClient` and `BraintreeHttpClient`
 
-## 4.21.0
+## 4.21.0 (2022-12-07)
 
 * PayPalNativeCheckout (BETA)
   * Pass the risk correlation ID from the Native Checkout SDK if it is not provided in the initial PayPal request
   
-## 4.20.0
+## 4.20.0 (2022-11-07)
 
 * SharedUtils
   * Allow `BraintreeSharedPreferences` to gracefully degrade when `EncryptedSharedPreferences` fails (fix for #619)
   * Add new `BraintreeSharedPreferencesException` to notify when an error occurs while interacting with shared preferences
 
-## 4.19.0
+## 4.19.0 (2022-10-26)
 
 * GooglePay
   * Bump `play-services-wallet` version to `19.1.0`
 * SharedUtils
   * Add explicit key alias for encrypted shared prefs (potential fix for #604)
 
-## 4.18.0
+## 4.18.0 (2022-10-19)
 
 * Android 13 Support
   * Upgrade `targetSdkVersion` and `compileSdkVersion` to API 33
@@ -332,14 +364,14 @@
 * BraintreeCore
   * Bump `browser-switch` version to `2.3.1`
 
-## 4.17.0
+## 4.17.0 (2022-10-05)
 
 * PayPalNativeCheckout (BETA)
   * Bumping native-checkout version to 0.8.2
   * Fixes an issue where merchants with multiple client IDs would fallback to web on subsequent checkout sessions
   * Remove exit survey when canceling Native Checkout flow
 
-## 4.16.0
+## 4.16.0 (2022-09-16)
 
 * PayPalNativeCheckout (BETA)
   * Bumping native-checkout version to 0.8.1 
@@ -348,7 +380,7 @@
   * Add `BraintreeClient#launchesBrowserSwitchAsNewTask()` boolean flag to allow the SDK to capture deep link results on behalf of the host application
   * Create `BraintreeDeepLinkActivity` to capture deep link results on behalf of the host application
 
-## 4.15.0
+## 4.15.0 (2022-08-17)
 
 * BraintreeCore
   * Add BraintreeError `code` read-only property.
@@ -358,14 +390,14 @@
   * Deprecate `PayPalNativeCheckoutClient` constructor that requires both `Fragment` and `BraintreeClient` instances.
   * Deprecate `PayPalNativeCheckoutClient#tokenizePayPalAccount` method that throws an exception.
 
-## 4.14.0
+## 4.14.0 (2022-08-09)
 
 * PayPalDataCollector
   * Create new module to allow for device data collection without Kount.
 * BraintreeSEPADirectDebit
   * Update nonce to pull in ibanLastFour as expected
 
-## 4.13.0
+## 4.13.0 (2022-07-20)
 
 * DataCollector
   * Reference Kount library only when needed to prevent JVM from loading it when it isn't being used by a merchant.
@@ -395,25 +427,25 @@
   * Adds `PayPalNativeRequest` to represent the base items needed for checkout and vault requests
   * Adds `PayPalNativeCheckoutResultCallback` to listen to the result returned from the checkout response
 
-## 4.12.0
+## 4.12.0 (2022-06-10)
 
 * SharedUtils
   * Update `BraintreeSharedPreferences` to no-op when a reference to Android `EncryptedSharedPreferences` cannot be obtained (fixes #561)
 * ThreeDSecure
   * Bump Cardinal version to `2.2.6-2`
 
-## 4.11.0
+## 4.11.0 (2022-05-18)
 
 * Add `invalidateClientToken` method to `BraintreeClient` (thanks @josephyanks)
 * Add `isExplicitCancelation` parameter to `UserCanceledException`
 * Trim tokenization key and client token before parsing
 
-## 4.10.1
+## 4.10.1 (2022-04-14)
 
 * DataCollector
   * Use configuration environment to set Magnes environment correctly
 
-## 4.10.0
+## 4.10.0 (2022-04-01)
 
 * ThreeDSecure  
   * Support AndroidX and remove Jetifier requirement (fixes #315)
@@ -428,7 +460,7 @@
 * PayPal
   * Deliver browser switch result asynchronously on main thread (fixes #500)
 
-## 4.9.0
+## 4.9.0 (2022-03-18)
 
 * Braintree Core
   * Add `ClientTokenProvider` interface for asynchronously fetching client token authorization
@@ -450,17 +482,17 @@
   * Add `LocalPaymentListener` to receive results from the Local Payment flow
   * Deprecate methods requiring a callback in favor of listener pattern
 
-## 4.8.3
+## 4.8.3 (2022-03-01)
 
 * PayPal
   * Fix issue where billing agreement description was not showing (fixes #509)
 
-## 4.8.2
+## 4.8.2 (2022-02-01)
 
 * Venmo
   * Fix issue where null value causes VenmoAccountNonce#fromJSON() to throw.
 
-## 4.8.1
+## 4.8.1 (2022-01-10)
 
 * GooglePay
   * Deprecate `googleMerchantId`
@@ -468,12 +500,12 @@
 * SharedUtils
   * Use byte array to hold `HttpRequest` data. Dispose data immediately after making http request.
 
-## 4.8.0
+## 4.8.0 (2021-11-18)
 
 * BraintreeCore
   * Bump `browser-switch` version to `2.1.1`
 
-## 4.7.0
+## 4.7.0 (2021-10-15)
 
 * SharedPreferences
   * Encrypt shared preferences data stored by SDK (fixes #440)
@@ -490,14 +522,14 @@
 * ThreeDSecure
   * Make `pareq` optional on `ThreeDSecureLookup`
 
-## 4.6.0
+## 4.6.0 (2021-09-07)
 
 * Android 12 Support
   * Upgrade `targetSdkVersion` and `compileSdkVersion` to API 31
   * Bump `browser-switch` version to `2.1.0`
   * Fix issue where Venmo app is not detected on Android 12 devices
 
-## 4.5.0
+## 4.5.0 (2021-08-31)
 
 * BraintreeCore
   * Add `BraintreeClient` constructor to allow a custom return url scheme to be used for browser and app switching
@@ -507,12 +539,12 @@
 * SamsungPay
   * Add additional alias for Amex in `SamsungPay` (fixes #430)
 
-## 4.4.1
+## 4.4.1 (2021-08-12)
 
 * ThreeDSecure
   * Fix issue that causes `ThreeDSecureRequest` to throw a `NullPointerException` when parceling.
 
-## 4.4.0
+## 4.4.0 (2021-08-11)
 
 * Core
   * Bump `browser-switch` version to `2.0.2`
@@ -525,7 +557,7 @@
   * Add `SamsungPayClient#buildCustomSheetPaymentInfo()`
   * Add `SamsungPayClient#updateCustomSheet()`
 
-## 4.3.0
+## 4.3.0 (2021-07-21)
 
 * Core
   * Make `Configuration#getSupportedCardTypes()` public
@@ -534,18 +566,18 @@
   * Bump Cardinal version to `2.2.5-4`
   * Add `cardAddChallengeRequested` to `ThreeDSecureRequest`
 
-## 4.2.0
+## 4.2.0 (2021-06-23)
 
 * Add `VenmoClient#isReadyToPay()` method
 * Bump `browser-switch` to `2.0.1` (fixes #409)
 
-## 4.1.0
+## 4.1.0 (2021-06-08)
 
 * Bump Cardinal version to `2.2.5-3`
 
 **Note:** The credentials for integrating with 3DS have changed. If you are using 3DS please update the credentials in your app-level `build.gradle` see [v4 Migration Guide](/v4_MIGRATION_GUIDE.md#3d-secure) 
 
-## 4.0.0
+## 4.0.0 (2021-06-07)
 
 * Make `PayPalRequest` and subclasses `Parcelable`
 * Add getters to data classes to improve support for Kotlin synthesized properties
@@ -574,7 +606,7 @@
 
 **Note:** Includes all changes in [4.0.0-beta1](#400-beta1), [4.0.0-beta2](#400-beta2), and [4.0.0-beta3](#400-beta3)
 
-## 4.0.0-beta3
+## 4.0.0-beta3 (2021-05-13)
 
 * Add `PaymentMethodType` enum
 * Add `PaymentMethodNonce#getType()` method
@@ -625,7 +657,7 @@
   * Remove `getResponsePaymentMethodType()` method from `PaymentMethod` base class and subclasses
   * Make `BaseCard` class package-private
 
-## 4.0.0-beta2
+## 4.0.0-beta2 (2021-03-31)
 
 * Add `setCountryCode` to `GooglePayRequest`
 * Add Google Pay support for Elo cards. 
@@ -730,42 +762,42 @@
   * Make `ClientToken` package-private
   * Make `PayPalUAT` package-private
 
-## 3.21.1
+## 3.21.1 (2023-08-18)
 
 * LocalPayment
   * Fixed bug where the configuration was not returned the expected result for Local Payment Methods being enabled
 
-## 3.21.0
+## 3.21.0 (2023-06-12)
 
 * BraintreeDataCollector
   * Remove Kount dependency
   * Deprecate `DataCollector#collectDeviceData(BraintreeFragment, String, BraintreeResponseListener<String>)`
   * Kount is no longer supported via Braintree, instead please use our [Fraud Protection Advanced product](https://developer.paypal.com/braintree/articles/guides/fraud-tools/premium/fraud-protection-advanced)
 
-## 3.20.1
+## 3.20.1 (2023-03-28)
 
 * Update paypal-data-collector to 5.4.0
 
-## 3.20.0
+## 3.20.0 (2023-01-12)
 
 * Bump Cardinal version to `2.2.7-2`
 * Update pinned certificates used by `BraintreeGraphQLHttpClient` and `BraintreeHttpClient`
 
-## 3.19.0
+## 3.19.0 (2022-01-31)
 
 * Add `requestBillingAgreement` to `PayPalRequest`
 
-## 3.18.1
+## 3.18.1 (2021-11-10)
 
 * Bump Cardinal version to `2.2.5-4`
 
-## 3.18.0
+## 3.18.0 (2021-09-16)
 
 * Upgrade `targetSdkVersion` and `compileSdkVersion` to API 31
 * Bump `browser-switch` version to `1.2.0`
 * Fix issue where Venmo and PayPal apps are not detected on Android 12 devices
 
-## 3.17.4
+## 3.17.4 (2021-05-03)
 
 * Revert release 3.17.3 (local repository does not propagate MPI aar file)
 
@@ -773,16 +805,16 @@
 
 * ~Remove Bintray dependency for Cardinal SDK (fixes #373 - [Cardinal bintray credentials can now be removed](https://developers.braintreepayments.com/guides/3d-secure/client-side/android/v3#generate-a-client-token))~
 
-## 3.17.2
+## 3.17.2 (2021-03-25)
 
 * Bump Cardinal version to `2.2.5-2`
 * Add PayPal to `queries` element in `AndroidManifest.xml`
 
-## 3.17.1
+## 3.17.1 (2021-03-24)
 
 * Add Venmo to `queries` element in `AndroidManifest.xml` (fixes issue in Android 11 not properly detecting if Venmo app is installed)
 
-## 4.0.0-beta1
+## 4.0.0-beta1 (2021-03-08)
 
 * Add a `client` for each feature:
   * `AmericanExpressClient`
@@ -960,34 +992,34 @@
   * Make `VisaCheckoutConfiguration` package-private
   * Move all classes to `com.braintreepayments.api` package
 
-## 3.17.0
+## 3.17.0 (2021-03-05)
 
 * Add `bic` (Bank Identification Code) to `LocalPaymentRequest`
 
-## 3.16.1
+## 3.16.1 (2021-02-11)
 
 * Bump Cardinal version to `2.2.5-1`
 
-## 3.16.0
+## 3.16.0 (2021-02-04)
 
 * Add `accountType` to `ThreeDSecureRequest`
 * Add `offerPayLater` to `PayPalRequest`
 
-## 3.15.0
+## 3.15.0 (2021-01-08)
 
 * Add `paymentTypeCountryCode` to `LocalPaymentRequest`
 * Upgrade PayPal Data Collector to 5.1.1 (fixes #325)
 
-## 3.14.2
+## 3.14.2 (2020-10-19)
 
 * Bump Cardinal version to `2.2.4-1` (fixes [#305](https://github.com/braintree/braintree_android/issues/305))
 * Bump `browser-switch` to `1.1.3`
 
-## 3.14.1
+## 3.14.1 (2020-09-25)
 
 * Update `compileSdkVersion` and `targetSdkVersion` to 30
 
-## 3.14.0
+## 3.14.0 (2020-08-25)
 
 * Expose cardholder name on `CardNonce`.
 * Expose expiration month and year on `CardNonce`.
@@ -995,26 +1027,26 @@
 * Fix bug where `onError` callback was invoked instead of the `onCancel` callback in the Local Payment Method flow (fixes #299, thanks @vijayantil1)
 * Fix bug where `getReturnUrlScheme` is called and an Activity is no longer attached to the fragment (fixes [#308](https://github.com/braintree/braintree_android/issues/308), thanks @hakanbagci)
 
-## 3.13.0
+## 3.13.0 (2020-07-21)
 
 * Update `browser-switch` module to `1.0.0`
 * Make PayPalUAT::Environment enum public
 * Add Card#tokenize overload to allow a custom `PaymentMethodNonceCallback` to be provided.
 
-## 3.12.0
+## 3.12.0 (2020-06-30)
 
 * Changed `Configuration#isPayPalEnabled` to no longer consider deprecated integration requirements.
 
-## 3.11.1
+## 3.11.1 (2020-06-17)
 
 * Add default `uiCustomization` to `ThreeDSecureRequest` to prevent null pointer exception when interacting with Cardinal SDK
 
-## 3.11.0
+## 3.11.0 (2020-06-16)
 
 * Bump Cardinal version to 2.2.3-2
 * Check if Fragment is active before handling Pay with PayPal result (fixes #295, thanks @brudaswen)
 
-## 3.10.0
+## 3.10.0 (2020-06-08)
 
 * Allow new BraintreeFragment instances to be created using FragmentActivity
 * Add support for authorizing the Braintree SDK with a `PayPalUAT` (universal access token)
@@ -1022,27 +1054,27 @@
 * Add `threeDSecureAuthenticationId` field to `ThreeDSecureInfo`
 * Update `braintree-android-google-payment` module to `3.3.1`
 
-## 3.9.0
+## 3.9.0 (2020-02-20)
 
 * Update Cardinal SDK to `2.2.2-1`
 * Fix bug in 3DS1 browser switch around accented characters in the redirect button and description (fixes #288)
 
-## 3.8.0
+## 3.8.0 (2020-01-15)
 
 * Add support for basic UI customization of 3DS1 flows. See `ThreeDSecureV1UiCustomization`.
 
-## 3.7.2
+## 3.7.2 (2019-12-11)
 
 * Update Cardinal SDK to `2.2.1-2`
 * Use `synchronized` when adding to callback queue in `BraintreeFragment` (thanks @skauss)
 * Update paypal-data-collector to 4.1.2
 
-## 3.7.1
+## 3.7.1 (2019-11-21)
 
 * Update `braintree-android-google-payment` module to `3.1.0`
 * Fix a bug so that `BraintreeFragment.newInstance` returns a new fragment whenever a new authorization string is passed in (Resolves issue #274. Thanks @krunk4ever and @bramley-stride.)
 
-## 3.7.0
+## 3.7.0 (2019-10-02)
 
 * Update 3DS `prepareLookup` method to function asynchronously to wait for Cardinal SDK
 * Add ability to request `AuthenticationInsight` when tokenizing a credit card, which can be used to make a decision about whether to perform 3D Secure verification
@@ -1051,49 +1083,49 @@
 * Add `requiresUserAuthentication` method to `ThreeDSecureLookup`
 * Add support for `PayPalLineItem`
 
-## 3.6.0
+## 3.6.0 (2019-09-06)
 
 * Add authentication and lookup transaction status information to ThreeDSecureInfo
 * Add ability to customize UI for 3D Secure challenge views
 * Fix race condition that caused inconsistent 3DS version flows
 
-## 3.5.0
+## 3.5.0 (2019-08-30)
 
 * Add 3DSecure authentication details to card nonce
 
-## 3.4.2
+## 3.4.2 (2019-08-15)
 
 * Add `acsTransactionId`, `threeDSecureServerTransactionId` and `paresStatus` fields to `ThreeDSecureInfo`
 
-## 3.4.1
+## 3.4.1 (2019-08-09)
 
 * Update Cardinal SDK to 2.1.4-1
 
-## 3.4.0
+## 3.4.0 (2019-07-26)
 
 * Send analytics timestamps in milliseconds
 * Add additional fields to ThreeDSecureInfo
 * Fix potential crash when 3DSecure 2.0 JWT is not available
 
-## 3.3.0
+## 3.3.0 (2019-07-15)
 
 * Correctly includes the 3DSecure 2.0 module
 
-## 3.2.0
+## 3.2.0 (2019-07-10)
 
 * Add 3DS 2 Support
 * Update 3DS redirect to newest version
 
-## 3.1.0
+## 3.1.0 (2019-06-05)
 
 * BraintreeFragment can now attach to a Fragment (fixes [#252](https://github.com/braintree/braintree_android/issues/252))
 
-## 3.0.1
+## 3.0.1 (2019-05-14)
 
 * Update google-payment to 3.0.1
 * Update endpoint for creating local payments
 
-## 3.0.0
+## 3.0.0 (2019-02-02)
 
 * Bump minSdkVersion to 21
 * Convert to AndroidX
@@ -1112,17 +1144,17 @@
 
 
 
-## 2.21.0
+## 2.21.0 (2019-01-30)
 
 * Deprecate PayPal Future Payments, use PayPal Billing Agreements
 * Deprecate AndroidPayConfiguration, use the GooglePaymentConfiguration alias
 
-## 2.20.1
+## 2.20.1 (2019-01-16)
 
 * Fix null address properties on PayPalAccountNonce
   * Those addresses should always be at least an empty PostalAddress
 
-## 2.20.0
+## 2.20.0 (2018-12-17)
 
 * Google Pay
   * Add groundwork for v2 compatibility
@@ -1131,130 +1163,130 @@
   * Add fromUserAddressJsonn to PostalAddressParser
   * Add additional fields
 
-## 2.19.0
+## 2.19.0 (2018-12-10)
 
 * Move Google Payment to a separate module
 * Downgrade browser-switch to 0.1.6
 * Exclude customtabs from browser-switch dependency
 
-## 2.18.1
+## 2.18.1 (2018-10-31)
 
 * Upgrade browser-switch to 0.1.7 fixes Chrome Custom Tab integration when using Jetifier to use AndroidX
 
-## 2.18.0
+## 2.18.0 (2018-10-29)
 
 * Upgrade Android SDK to 28
 * Fix PayPal JavaDoc
 
-## 2.17.0
+## 2.17.0 (2018-10-05)
 
 * Local Payments
 * Upgrade PayPal Data Collector to 4.0.3
 
-## 2.16.0
+## 2.16.0 (2018-09-04)
 
 * Add optional merchant account Id to PayPalRequest
 * Add openVenmoAppPageInGooglePlay method which opens Venmo on the Google Play
 
-## 2.15.2
+## 2.15.2 (2018-08-29)
 
 * Fix NoClassDefFoundError compile error for PayPalDataCollector
 
-## 2.15.1
+## 2.15.1 (2018-08-17)
 
 * Fix InvalidPathException error
 
-## 2.15.0
+## 2.15.0 (2018-08-16)
 
 * Add `PaymentMethod#deletePaymentMethod` which allows customers to remove their vaulted payment methods
 * Fix DataCollector not being available for instant run builds
 
-## 2.14.2
+## 2.14.2 (2018-07-19)
 
 * Fix issue with TLS cipher in API < 21
 
-## 2.14.1
+## 2.14.1 (2018-07-12)
 
 * Removed unused PayPal analytics event
 
-## 2.14.0
+## 2.14.0 (2018-06-15)
 
 * Add shippingAddressEditable to PayPalRequest
 
-## 2.13.2
+## 2.13.2 (2018-06-13)
 
 * Fix issue where address override was not set for PayPal billing agreements
 
-## 2.13.1
+## 2.13.1 (2018-06-04)
 
 * Update 3D Secure redirect URL
 
-## 2.13.0
+## 2.13.0 (2018-05-02)
 
 * 3D Secure
   * Add support for American Express SafeKey params
 * Update PayPalDataCollector library to 3.1.6
 * Catch possible SQLite exceptions
 
-## 2.12.0
+## 2.12.0 (2018-04-03)
 
 * Move Visa Checkout to separate module
 * Update Visa Checkout to 5.5.2
 * Update SDK to 27
 
-## 2.11.0
+## 2.11.0 (2018-03-20)
 
 * Add support for Venmo profiles
 * Update PayPalDataCollector library to 3.1.5
 
-## 2.10.0
+## 2.10.0 (2018-02-06)
 
 * Update GooglePaymentException to be parcelable
 * Add browser switch support to 3D Secure integrations
 
-## 2.9.0
+## 2.9.0 (2018-01-24)
 
 * Internal performance optimizations
 * Deprecate `countryName`, `countryCodeAlpha2`, `countryCodeAlpha3`, and `countryCodeNumeric` in favor of `countryCode` in `CardBuilder` and `UnionPayCardBuilder`.
 
-## 2.8.1
+## 2.8.1 (2018-01-04)
 
 * Support `lastFour` in `GooglePayCardNonce`
 * Add Google Pay branding
 
-## 2.8.0
+## 2.8.0 (2017-12-21)
 
 * Add support for iDEAL payments
 
-## 2.7.3
+## 2.7.3 (2017-11-14)
 
 * Check package name is valid for PayPal Wallet switch
 
-## 2.7.2
+## 2.7.2 (2017-11-07)
 
 * Fix phoneNumberRequired in GooglePayment
 
-## 2.7.1
+## 2.7.1 (2017-11-07)
 
 * Add AmericanExpress support with getRewardsBalance method
 * Use ExecutorService for async database operations
 
-## 2.7.0
+## 2.7.0 (2017-09-29)
 
 * Increase minimum version of Google Play Services Wallet to 11.4.0
 * Add support for the Google Payments API
 * Deprecate Android Pay
 * Add additional billing address params to `CardBuilder`
 
-## 2.6.2
+## 2.6.2 (2017-08-24)
 
 * Fix potential crash due to optional Visa Checkout dependency
 
-## 2.6.1
+## 2.6.1 (2017-08-24)
 
 * Fix potential crash due to optional Google Play Services dependency
 
-## 2.6.0
+## 2.6.0 (2017-08-15)
 
 * Upgrade Kount DataCollector to 3.2
 * Stop using dependency ranges (https://github.com/braintree/android-card-form/pull/29)
@@ -1266,29 +1298,29 @@
 * Update compile and target SDK versions to 26
   * Any support library dependencies must now be 26.0.0 or newer
 
-## 2.5.4
+## 2.5.4 (2017-06-07)
 
 * Use custom task instead of overriding the clean task (fixes [#153](https://github.com/braintree/braintree_android/issues/153))
 * Accept third party cookies in ThreeDSecureWebView for Lollipop and above
 
-## 2.5.3
+## 2.5.3 (2017-05-11)
 
 * Add PayPal Credit for Billing Agreements
 
-## 2.5.2
+## 2.5.2 (2017-04-28)
 
 * Include cause in `ConfigurationException` ([#143](https://github.com/braintree/braintree_android/pull/143))
 * Ignore ProGuard warnings for Visa Checkout (fixes [#144](https://github.com/braintree/braintree_android/issues/144))
 * Fix Android Pay behavior during configuration changes (fixes [#145](https://github.com/braintree/braintree_android/issues/145), [#146](https://github.com/braintree/braintree_android/issues/146), [#147](https://github.com/braintree/braintree_android/issues/147))
 * Fix crash when run in an Android Instant App
 
-## 2.5.1
+## 2.5.1 (2017-03-31)
 
 * Fix non-optional `data-collector` dependency in Braintree
 * Create `BraintreeRequestCodes` for use with `BraintreeCancelListener#onCancel`
 * Move PayPal browser switches to use [browser-switch-android](https://github.com/braintree/browser-switch-android)
 
-## 2.5.0
+## 2.5.0 (2017-03-30)
 
 * Add option to set display name in `PayPalRequest`
 * Add option to set landing page type in `PayPalRequest`
@@ -1296,24 +1328,24 @@
 * Add Visa Checkout as a payment method
 * Prevent dependency resolution of alpha major versions of support libraries
 
-## 2.4.3
+## 2.4.3 (2017-03-23)
 
 * Improve `GoogleApiClientException` to include error type as well as reason code
 * Changes to PayPalDataCollector to make it easier to use
 
-## 2.4.2
+## 2.4.2 (2017-02-10)
 
 * Fix NPE in `AndroidPay#changePaymentMethod` (fixes [#139](https://github.com/braintree/braintree_android/issues/139))
 * `Venmo#authorizeAccount` will now correctly vault the payment method when the vault option is true
 * Fix missing client metadata ids in `PayPalAccountNonce`s
 * Update paypal-data-collector to 3.1.4
 
-## 2.4.1
+## 2.4.1 (2017-01-25)
 
 * Add workaround for [Kount/kount-android-sdk#2](https://github.com/Kount/kount-android-sdk/issues/2)
 * Fix error returned by `AndroidPay#changePaymentMethod`
 
-## 2.4.0
+## 2.4.0 (2017-01-14)
 
 * Fix back button during PayPal browser switch on Samsung devices (fixes [#137](https://github.com/braintree/braintree_android/issues/137))
 * Add new intent option to `PayPalRequest`
@@ -1321,20 +1353,20 @@
 * Increase `minSdkVersion` to 16
   * API 16 is the first version of Android that supports TLSv1.2. For more information on Braintree's upgrade to TLSv1.2 see [the blog post](https://www.braintreepayments.com/blog/updating-your-production-environment-to-support-tlsv1-2/).
 
-## 2.3.12
+## 2.3.12 (2016-11-15)
 
 * Improve PayPal address validations
 * Work around `NullPointerException` in `BraintreeFragment#newInstance` (fixes [#125](https://github.com/braintree/braintree_android/issues/125))
 * Document supported locales for PayPal
 * Fix rare `NullPointerException` ([#128](https://github.com/braintree/braintree_android/pull/128))
 
-## 2.3.11
+## 2.3.11 (2016-10-24)
 
 * Fix ProGuard rules (fixes [#124](https://github.com/braintree/braintree_android/issues/124))
 * Fix `NullPointerException` when using deprecated DataCollector methods
 * Update compile and target SDK versions to 25
 
-## 2.3.10
+## 2.3.10 (2016-10-07)
 
 * Add `BraintreeFragment#getListeners` to get a list of all the registered listeners
 * Upgrade paypal-data-collector to 3.1.3
@@ -1344,11 +1376,11 @@
 * Work around bug in `JSONObject#optString`
 * Use `FragmentTransaction#commitNow` and `FragmentManager#executePendingTransactions` in `BraintreeFragment#newInstance` to synchronously set up `BraintreeFragment` and avoid race conditions caused by asynchronous `Fragment` setup.
 
-## 2.3.9
+## 2.3.9 (2016-09-09)
 
 * Update `AndroidPayCardNonce` description to include card type and last 4
 
-## 2.3.8
+## 2.3.8 (2016-09-09)
 
 * Support changing user call to action in PayPal flows, see `PayPalRequest#userAction`
 * Fix validate option not being sent when set to false in `PaymentMethodBuilder`
@@ -1357,7 +1389,7 @@
 * Update `paypal-data-collector` to 3.1.2
 * Move Drop-In to [it's own repo](https://github.com/braintree/braintree-android-drop-in)
 
-## 2.3.7
+## 2.3.7 (2016-08-26)
 
 * Update exception message when Android Manifest setup is invalid
 * Fix unclosed `InputStream` (fixes [#115](https://github.com/braintree/braintree_android/issues/115))
@@ -1368,13 +1400,13 @@
 * Add support for changing the backing card for Android Pay in Drop-In
 * Call configuration callback whenever a new Activity is attached to `BraintreeFragment`
 
-## 2.3.6
+## 2.3.6 (2016-07-29)
 
 * Allow vaulting of Venmo accounts. See `Venmo#authorizeAccount`.
 * Remove Venmo whitelist check
 * Fix `BraintreeCancelListener#onCancel` being invoked twice for PayPal cancellations (fixes [#112](https://github.com/braintree/braintree_android/issues/112))
 
-## 2.3.5
+## 2.3.5 (2016-07-20)
 
 * Change `UnionPayCallback` to include `smsCodeRequired`
 * Change `UnionPayCapabilities#isUnionPayEnrollmentRequired` to `UnionPayCapabilities#isSupported`
@@ -1384,13 +1416,13 @@
 * Update compile and target API versions to 24
 * Fix `NullPointerException` in `AnalyticsIntentService`
 
-## 2.3.4
+## 2.3.4 (2016-07-07)
 
 * Prevent invalid schemes from being used for browser switching (Packages containing underscores would generate invalid schemes)
 * Fix `NoClassDefFoundError` in `DataCollector`
 * Fix `NullPointerException` in `BraintreeFragment`
 
-## 2.3.3
+## 2.3.3 (2016-06-16)
 
 * Add PayPal Checkout intent option (authorize or sale). See `PayPalRequest#intent`
 * Update UnionPay support in demo app custom integration
@@ -1399,29 +1431,29 @@
 * Fix `IllegalStateException` when creating a `BraintreeFragment` (fixes [#104](https://github.com/braintree/braintree_android/issues/104))
 * Fix `NullPointerException` when `BraintreeFragment` is not attached to an `Activity` (fixes [#105](https://github.com/braintree/braintree_android/issues/105))
 
-## 2.3.2
+## 2.3.2 (2016-06-06)
 
 * Fix `NullPointerException` when handling a PayPal response (fixes [#101](https://github.com/braintree/braintree_android/issues/101))
 
-## 2.3.1
+## 2.3.1 (2016-05-24)
 
 * Fix `NullPointerException`s in `BraintreeFragment` when not attached to an `Activity`
 * Fix Chrome Custom Tabs Intent flags interfering with browser switch
 * Add new `DataCollector#collectDeviceData` methods that use a callback; deprecate synchronous methods
 * Reduce size of assets in Drop-In
 
-## 2.3.0
+## 2.3.0 (2016-05-03)
 
 * UnionPay Beta *Please note*: this API is in beta and subject to change
 * Add support for fetching a customer's payment methods
 * Return a `RateLimitException` when a merchant account is being rate limited
 
-## 2.2.5
+## 2.2.5 (2016-04-13)
 
 * Fixes
   * Update BraintreeHttpClient to support UTF-8 encoding (fixes [#85](https://github.com/braintree/braintree_android/issues/85))
 
-## 2.2.4
+## 2.2.4 (2016-04-11)
 
 * Update PayPalDataCollector to 3.1.1
 * Fixes
@@ -1431,12 +1463,12 @@
   * Add `PaymentRequest#defaultFirst` option
   * Add support for Chrome Custom tabs when browser switching
 
-## 2.2.3
+## 2.2.3 (2016-03-11)
 
 * Fixes
   * Fix incorrect `groupId` of dependencies in pom file for 2.2.2
 
-## 2.2.2
+## 2.2.2 (2016-03-11)
 
 :rotating_light: The `groupId`s in this version's pom files are incorrect and dependencies will not resolve. Do not use. :rotating_light:
 
@@ -1449,12 +1481,12 @@
   * Fix back button not doing anything in Drop-in after an Android Pay error is returned
   * Deprecate `DataCollector#collectDeviceData` and add new signature to prevent a NullPointerException when using a fragment that is not attached to an `Activity`
 
-## 2.2.1
+## 2.2.1 (2016-01-30)
 
 * Fixes
   * Fix support annotations being bundled in PayPalDataCollector jar
 
-## 2.2.0
+## 2.2.0 (2016-01-29)
 
 * Open source PayPal SDK
 * Deprecate `PayPalOneTouchActivity` and remove from Android manifest
@@ -1467,13 +1499,13 @@
   * Fix back button not working in Drop-in after adding a payment method
   * Fix failure to return a payment method nonce after browser switch when the fragment was recreated.
 
-## 2.1.2
+## 2.1.2 (2016-01-11)
 
 * Update Google Play Services Wallet to 8.4.0
 * Use `ENVIRONMENT_TEST` for Android Pay requests in sandbox
 * Add `AndroidPay#isReadyToPay` method
 
-## 2.1.1
+## 2.1.1 (2016-01-08)
 
 * Demo app upgrades
 * Update PayPal SDK to 2.4.3 (fixes [#67](https://github.com/braintree/braintree_android/issues/67))
@@ -1487,7 +1519,7 @@
   * Fix Drop-in crash
   * Fix NPE when there is no active network (fixes [#77](https://github.com/braintree/braintree_android/issues/77))
 
-## 2.1.0
+## 2.1.0 (2015-12-07)
 
 * Pay with Venmo
 * `PaymentButton#newInstance` now accepts a container id to add `PaymentButton` to that container
@@ -1496,7 +1528,7 @@
   * Add `onInflate` method for Android versions < 23
   * PayPal cancel events (fixes [#63](https://github.com/braintree/braintree_android/issues/63))
 
-## 2.0.1
+## 2.0.1 (2015-11-16)
 
 * Make support annotations an optional dependency
 * Cache configuration to prevent unnecessary network requests
@@ -1504,7 +1536,7 @@
   * Fix BraintreeDataCollector as an optional dependency
   * Fix `PaymentRequest` crash when Google Play Services is not present
 
-## 2.0.0
+## 2.0.0 (2015-11-11)
 
 * Increase `minSdkVersion` to 15 (see [Platform Versions](http://developer.android.com/about/dashboards/index.html#Platform) for the current distribution of Android versions)
 * Remove Gson dependency
@@ -1523,26 +1555,26 @@
 * Remove Coinbase
 * Many additional structural and name changes. For more details, see the [migration guide](https://developers.braintreepayments.com/reference/general/client-sdk-migration/android/v2) and the [source code](https://github.com/braintree/braintree_android)
 
-## 1.7.4
+## 1.7.4 (2015-10-29)
 
 * Fixes
   * Increase minimum version of Google Play Services Wallet to 8.0.0 to prevent `VerifyError`
 
-## 1.7.3
+## 1.7.3 (2015-10-23)
 
 * Fixes
   * Fix Android Pay bug caused by shared state between Activities
 
-## 1.7.2
+## 1.7.2 (2015-10-21)
 
 * Update PayPal SDK to 2.11.1 (fixes [#48](https://github.com/braintree/braintree_android/issues/48))
 
-## 1.7.1
+## 1.7.1 (2015-10-06)
 
 * Fixes
   * Fix tokenization failure in Coinbase
 
-## 1.7.0
+## 1.7.0 (2015-10-05)
 
 * Update gradle plugin to 1.3.1
 * Update build tools to 23.0.1
@@ -1558,7 +1590,7 @@
   * Remove use of Apache library ([#43](https://github.com/braintree/braintree_android/issues/43))
   * Remove single line description limitation ([#45](https://github.com/braintree/braintree_android/issues/45))
 
-## 1.6.5
+## 1.6.5 (2015-08-06)
 
 * Update PayPal SDK to 2.9.10
 * Fixes
@@ -1566,21 +1598,21 @@
   * Fix incorrect selected payment method in Drop-in after creating a new payment method
   * Fix `NoClassDefFoundError` crash in Drop-in
 
-## 1.6.4
+## 1.6.4 (2015-07-08)
 
 * Update PayPal SDK to 2.9.8
 * Improvements
   * Follow Android convention around button and text casing in Drop-in
   * Update android-card-form to [2.0.1](https://github.com/braintree/android-card-form/blob/master/CHANGELOG.md#201)
 
-## 1.6.3
+## 1.6.3 (2015-06-24)
 
 * Improvements
   * BraintreeData can now be optionally excluded
 * Fixes
   * Remove optional dependency from full jar
 
-## 1.6.2
+## 1.6.2 (2015-06-23)
 
 * Update PayPal SDK to 2.9.7
 * Add support for additional PayPal scopes to `PaymentButton`
@@ -1588,12 +1620,12 @@
   * Return error instead of silently failing setup with bad client tokens
   * Fix `NoClassDefFoundError` in Drop-in caused by optional dependency
 
-## 1.6.1
+## 1.6.1 (2015-06-15)
 
 * Fixes
   * Fix `NoClassDefFoundError` in Drop-in and `PaymentButton` caused by optional dependency ([#34](https://github.com/braintree/braintree_android/issues/34))
 
-## 1.6.0
+## 1.6.0 (2015-06-12)
 
 * Update PayPal SDK to 2.9.6
 * Update gradle plugin to 1.2.3
@@ -1605,7 +1637,7 @@
     * A `List` of additional scopes may be passed to `Braintree#startPayWithPayPal`
     * `PayPalAccount#getBillingAddress` can be used to retrieve the billing address when the address scope is requested.
 
-## 1.5.1
+## 1.5.1 (2015-05-23)
 
 * Update PayPal SDK to 2.9.5
 * Switch to OkHttp for Demo app
@@ -1617,7 +1649,7 @@
   * Fix ProGuard support and add ProGuard rules ([#29](https://github.com/braintree/braintree_android/issues/29))
   * Fix Drop-in error handling for non-card errors
 
-## 1.5.0
+## 1.5.0 (2015-05-08)
 
 * Update PayPal SDK to 2.9.4
 * Move `CardForm` to [separate repo](https://github.com/braintree/android-card-form)
@@ -1625,7 +1657,7 @@
 * Fixes
   * Remove metadata from assets, fixes [#16](https://github.com/braintree/braintree_android/issues/16)
 
-## 1.4.0
+## 1.4.0 (2015-03-26)
 
 * Update gradle plugin to 1.1.2
 * Update build tools to 22
@@ -1636,7 +1668,7 @@
 * Fixes
   * Fix missing expiration date float label (#21)
 
-## 1.3.0
+## 1.3.0 (2015-02-05)
 
 * Remove Drop-In support for Eclipse
 * Open source [card form](CardForm) separate from Drop-In
@@ -1645,7 +1677,7 @@
 * Update Espresso to 2.0
 * Remove unused PayPal `PROFILE` scope
 
-## 1.2.7
+## 1.2.7 (2014-12-05)
 
 * Update gradle plugin to 0.14.1
 * Update build tools to 21.1.1
@@ -1657,7 +1689,7 @@
   * Add initial right to left language support
   * Add type safety to `Braintree#addListener(Listener)`. Thanks @adstro!
 
-## 1.2.6
+## 1.2.6 (2014-10-31)
 
 * Increase `targetSdkVersion` to 21
 * Increase `buildToolsVersion` to 21.0.2
@@ -1668,17 +1700,17 @@
   * Update PayPal SDK
   * Add first and last name to `CardBuilder`
 
-## 1.2.5
+## 1.2.5 (2014-10-16)
 
 * Fixes
   * Fix incorrectly named language resource directories
 
-## 1.2.4
+## 1.2.4 (2014-10-15)
 
 * Fixes
   * Work around manifest merging issues on newer build plugins
 
-## 1.2.3
+## 1.2.3 (2014-10-10)
 
 * minSdk is now 10
 * Fixes
@@ -1689,7 +1721,7 @@
   * Error messages are now returned from Drop-In
   * Drop-In auto advances to next field now
 
-## 1.2.2
+## 1.2.2 (2014-10-01)
 
 * Fixes
   * Fix crash caused by too large request code in `PaymentButton`
@@ -1699,7 +1731,7 @@
     * email scope is now requested in all PayPal requests
   * `correlationId` is now included in the device data string returned from `BraintreeData#collectDeviceData`
 
-## 1.2.1
+## 1.2.1 (2014-09-12)
 
 * Fixes
   * BraintreeApi release now includes the PayPal SDK again. Sorry!
@@ -1707,7 +1739,7 @@
   * All assets are now namespaced to avoid any conflicts on import.
   * Updated PayPal SDK
 
-## 1.2.0
+## 1.2.0 (2014-09-08)
 
 * Features
   * App switch based payments for PayPal and Venmo (One Touch)
@@ -1719,27 +1751,27 @@
 * Deprecations
   * `PayPalButton` is deprecated in favor of `PaymentButton`
 
-## 1.1.0
+## 1.1.0 (2014-08-25)
 
 * Breaking Change
   * BraintreeData returns `deviceData` instead of `deviceSessionId` on `collectDeviceData`
 * Improvements
   * References `sdk-manager-plugin` from vendor to simplify build process
 
-## 1.0.8
+## 1.0.8 (2014-08-14)
 
 * Improvements
   * CardBuilder now accepts billing address fields other than postal code (credit: @chiuki)
 * Packaging
   * Fixed an issue building Drop-In in Eclipse
 
-## 1.0.7
+## 1.0.7 (2014-08-12)
 
 * Improvements
   * BraintreeApi no longer depends on OkHttp
   * Added localizations for more locales (UK, FR, DE, IT)
 
-## 1.0.6
+## 1.0.6 (2014-08-08)
 
 * Fixes
   * Fixed disabled submit button in landscape
@@ -1747,12 +1779,12 @@
   * Add max length to expiration date and prevent user from typing illegal characters
 * Move to sdk-manager-plugin for CI dependencies
 
-## 1.0.5
+## 1.0.5 (2014-08-05)
 
 * Packaging
   * Set Braintree package to default to AAR instead of ZIP
 
-## 1.0.4 - Gradle and Maven will incorrectly download the ZIP instead of AAR, use 1.0.5+
+## 1.0.4 (2014-08-01) - Gradle and Maven will incorrectly download the ZIP instead of AAR, use 1.0.5+
 
 * Improvements
   * Added assets for a wider range of resolutions
@@ -1763,18 +1795,18 @@
 * Fixes
   * Fixed lint errors
 
-## 1.0.3
+## 1.0.3 (2014-07-18)
 
 * Fixes
   * Fix crash on Android SDK < 19
 * Add PayPal `correlationId` to PayPal account creation
 
-## 1.0.2 - crash on Android SDK < 19, do not use
+## 1.0.2 (2014-07-16) - crash on Android SDK < 19, do not use
 
 * Fixes
   * Improved packaging for non-Gradle uses of SDK
 
-## 1.0.1
+## 1.0.1 (2014-07-11)
 
 * Fixes
   * Attach Javadocs and sources to Maven Central build.

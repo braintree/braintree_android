@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'androidx.navigation.safeargs'
+    id 'kotlin-android'
 }
 
 android {
@@ -75,6 +76,7 @@ android {
 
 dependencies {
     implementation 'androidx.preference:preference:1.1.1'
+    implementation deps.kotlinStdLib
 
     implementation('com.squareup.retrofit:retrofit:1.9.0') {
         exclude module: 'com.google.gson'
@@ -86,8 +88,10 @@ dependencies {
     implementation project(':GooglePay')
     implementation project(':LocalPayment')
     implementation project(':PayPal')
+    implementation project(':PayPalMessaging')
     implementation project(':PayPalNativeCheckout')
     implementation project(':SamsungPay')
+    implementation project(':ShopperInsights')
     implementation project(':SEPADirectDebit')
     implementation project(':ThreeDSecure')
     implementation project(':UnionPay')
@@ -96,7 +100,7 @@ dependencies {
 
     implementation 'com.squareup.okio:okio:1.13.0'
     implementation 'com.squareup.okhttp3:okhttp:3.8.1'
-    implementation 'com.google.code.gson:gson:2.8.1'
+    implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'de.greenrobot:eventbus:2.4.1'
     implementation deps.appCompat
     implementation 'androidx.preference:preference:1.1.1'
@@ -112,6 +116,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.3.5'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
 
     debugImplementation 'com.facebook.stetho:stetho:1.5.0'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'

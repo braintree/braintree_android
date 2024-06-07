@@ -220,15 +220,15 @@ class BraintreeClientUnitTest {
         val sut = BraintreeClient(params)
 
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        sut.sendPOST("sample-url", "{}", httpResponseCallback)
+        sut.sendPOST("sample-url", "{}", emptyMap(), httpResponseCallback)
 
         verify {
             braintreeHttpClient.post(
-                "sample-url",
-                "{}",
-                configuration,
-                authorization,
-                httpResponseCallback
+                path = "sample-url",
+                data = "{}",
+                configuration = configuration,
+                authorization = authorization,
+                callback = httpResponseCallback
             )
         }
     }
@@ -245,7 +245,7 @@ class BraintreeClientUnitTest {
 
         val sut = BraintreeClient(params)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        sut.sendPOST("sample-url", "{}", httpResponseCallback)
+        sut.sendPOST("sample-url", "{}", emptyMap(), httpResponseCallback)
 
         verify { httpResponseCallback.onResult(null, authError) }
     }
@@ -265,8 +265,68 @@ class BraintreeClientUnitTest {
         val sut = BraintreeClient(params)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
 
-        sut.sendPOST("sample-url", "{}", httpResponseCallback)
+        sut.sendPOST("sample-url", "{}", emptyMap(), httpResponseCallback)
         verify { httpResponseCallback.onResult(null, exception) }
+    }
+
+    @Test
+    fun `sendPOST defaults additionalHeaders to an empty map`() {
+        val authorizationLoader = MockkAuthorizationLoaderBuilder()
+            .authorization(authorization)
+            .build()
+        val configurationLoader = MockkConfigurationLoaderBuilder()
+            .configuration(mockk<Configuration>(relaxed = true))
+            .build()
+        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val sut = BraintreeClient(params)
+
+        sut.sendPOST(
+            url = "sample-url",
+            data = "{}",
+            responseCallback = mockk(relaxed = true)
+        )
+
+        verify {
+            braintreeHttpClient.post(
+                path = any(),
+                data = any(),
+                configuration = any(),
+                authorization = any(),
+                additionalHeaders = emptyMap(),
+                callback = any()
+            )
+        }
+    }
+
+    @Test
+    fun `sendPOST sends additionalHeaders to httpClient post`() {
+        val authorizationLoader = MockkAuthorizationLoaderBuilder()
+            .authorization(authorization)
+            .build()
+        val configurationLoader = MockkConfigurationLoaderBuilder()
+            .configuration(mockk<Configuration>(relaxed = true))
+            .build()
+        val params = createDefaultParams(configurationLoader, authorizationLoader)
+        val sut = BraintreeClient(params)
+        val headers = mapOf("name" to "value")
+
+        sut.sendPOST(
+            url = "sample-url",
+            data = "{}",
+            additionalHeaders = headers,
+            responseCallback = mockk(relaxed = true)
+        )
+
+        verify {
+            braintreeHttpClient.post(
+                path = any(),
+                data = any(),
+                configuration = any(),
+                authorization = any(),
+                additionalHeaders = headers,
+                callback = any()
+            )
+        }
     }
 
     @Test
@@ -575,47 +635,11 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sessionId_withAuthString_returnsSessionIdDefinedInConstructor() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val authorization = Fixtures.BASE64_CLIENT_TOKEN
-        val sessionId = "custom-session-id"
-        val sut = BraintreeClient(context, authorization, sessionId, IntegrationType.DROP_IN)
-        assertEquals("custom-session-id", sut.sessionId)
-    }
-
-    @Test
-    fun sessionId_withClientTokenProvider_returnsSessionIdDefinedInConstructor() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val clientTokenProvider = mockk<ClientTokenProvider>(relaxed = true)
-        val sessionId = "custom-session-id"
-        val sut = BraintreeClient(context, clientTokenProvider, sessionId, IntegrationType.DROP_IN)
-        assertEquals("custom-session-id", sut.sessionId)
-    }
-
-    @Test
     fun integrationType_returnsCustomByDefault() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val authorization = Fixtures.BASE64_CLIENT_TOKEN
         val sut = BraintreeClient(context, authorization)
         assertEquals("custom", sut.integrationType)
-    }
-
-    @Test
-    fun integrationType_withAuthString_returnsIntegrationTypeDefinedInConstructor() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val authorization = Fixtures.BASE64_CLIENT_TOKEN
-        val sessionId = "custom-session-id"
-        val sut = BraintreeClient(context, authorization, sessionId, IntegrationType.DROP_IN)
-        assertEquals("dropin", sut.integrationType)
-    }
-
-    @Test
-    fun integrationType_withClientTokenProvider_returnsIntegrationTypeDefinedInConstructor() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val clientTokenProvider = mockk<ClientTokenProvider>(relaxed = true)
-        val sessionId = "custom-session-id"
-        val sut = BraintreeClient(context, clientTokenProvider, sessionId, IntegrationType.DROP_IN)
-        assertEquals("dropin", sut.integrationType)
     }
 
     @Test
@@ -655,6 +679,48 @@ class BraintreeClientUnitTest {
         }
     }
 
+    @Test
+    fun `when client is created with authorization, app link is set on appLinkReturnUri`() {
+        val appLinkUrl = "https://merchant-site.com"
+        val sut: BraintreeClient = BraintreeClient(
+            context = context,
+            authorization = "authorization",
+            returnUrlScheme = "returnUrlScheme",
+            appLinkReturnUri = Uri.parse(appLinkUrl)
+        )
+        assertEquals(appLinkUrl, sut.appLinkReturnUri.toString())
+    }
+
+    @Test
+    fun `when client is created with ClientTokenProvider, app link is set on appLinkReturnUri`() {
+        val appLinkUrl = "https://merchant-site.com"
+        val sut: BraintreeClient = BraintreeClient(
+            context = context,
+            clientTokenProvider = mockk(),
+            returnUrlScheme = "returnUrlScheme",
+            appLinkReturnUri = Uri.parse(appLinkUrl)
+        )
+        assertEquals(appLinkUrl, sut.appLinkReturnUri.toString())
+    }
+
+    @Test
+    fun `when client is created with authorization without an app link, appLinkReturnUri is null`() {
+        val sut: BraintreeClient = BraintreeClient(
+            context = context,
+            authorization = "authorization"
+        )
+        assertNull(sut.appLinkReturnUri)
+    }
+
+    @Test
+    fun `when client is created with ClientTokenProvider without an app link, appLinkReturnUri is null`() {
+        val sut: BraintreeClient = BraintreeClient(
+            context = context,
+            clientTokenProvider = mockk()
+        )
+        assertNull(sut.appLinkReturnUri)
+    }
+
     private fun createDefaultParams(
         configurationLoader: ConfigurationLoader,
         authorizationLoader: AuthorizationLoader
@@ -670,7 +736,8 @@ class BraintreeClientUnitTest {
             browserSwitchClient = browserSwitchClient,
             manifestValidator = manifestValidator,
             configurationLoader = configurationLoader,
-            integrationType = IntegrationType.CUSTOM
+            integrationType = IntegrationType.CUSTOM,
+            appLinkReturnUri = Uri.parse("https://sample-merchant-site.com"),
         )
 
     companion object {
@@ -678,8 +745,9 @@ class BraintreeClientUnitTest {
             val requestCode = 123
             val url = Uri.parse("www.example.com")
             val returnUrlScheme = "sample-scheme"
+            val appLinkUri = Uri.parse("sample-scheme")
             val browserSwitchRequest = BrowserSwitchRequest(
-                requestCode, url, JSONObject(), returnUrlScheme, true
+                requestCode, url, JSONObject(), returnUrlScheme, appLinkUri, true
             )
             return BrowserSwitchResult(BrowserSwitchStatus.SUCCESS, browserSwitchRequest)
         }
