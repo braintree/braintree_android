@@ -80,10 +80,6 @@ class SynchronousHttpClient {
             long endTime = System.currentTimeMillis();
             long duration = endTime - startTime;
 
-            System.out.println("Start Time : " + startTime);
-            System.out.println("End Time : " + endTime);
-            System.out.println("Duration : " + (duration) + " ms");
-
             String responseBody = parser.parse(responseCode, connection);
 
             return new BTHttpResponse(startTime, endTime, responseBody);
