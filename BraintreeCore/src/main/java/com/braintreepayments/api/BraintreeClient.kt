@@ -272,7 +272,12 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                             override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
                                 response?.let {
                                     try {
-                                        sendAnalyticsEvent(CoreAnalytics.apiRequestLatency)
+                                        sendAnalyticsEvent(
+                                            CoreAnalytics.apiRequestLatency,
+                                            startTime = response.startTime,
+                                            endTime = response.endTime,
+                                            endpoint = url
+                                        )
                                         responseCallback.onResult(it.body, null)
                                     } catch (jsonException: JSONException) {
                                         responseCallback.onResult(null, jsonException)
@@ -313,7 +318,12 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                                 override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
                                     response?.let {
                                         try {
-                                            sendAnalyticsEvent(CoreAnalytics.apiRequestLatency)
+                                            sendAnalyticsEvent(
+                                                CoreAnalytics.apiRequestLatency,
+                                                startTime = response.startTime,
+                                                endTime = response.endTime,
+                                                endpoint = url
+                                            )
                                             responseCallback.onResult(it.body, null)
                                         } catch (jsonException: JSONException) {
                                             responseCallback.onResult(null, jsonException)
@@ -353,7 +363,13 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                                     override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
                                         response?.let {
                                             try {
-                                                sendAnalyticsEvent(CoreAnalytics.apiRequestLatency)
+                                                val query = getSubstringAfterKey(payload.toString(), "query")
+                                                sendAnalyticsEvent(
+                                                    CoreAnalytics.apiRequestLatency,
+                                                    startTime = response.startTime,
+                                                    endTime = response.endTime,
+                                                    endpoint = query
+                                                )
                                                 responseCallback.onResult(it.body, null)
                                             } catch (jsonException: JSONException) {
                                                 responseCallback.onResult(null, jsonException)
@@ -539,5 +555,17 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     open fun launchesBrowserSwitchAsNewTask(launchesBrowserSwitchAsNewTask: Boolean) {
         this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask
+    }
+    
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun getSubstringAfterKey(jsonString: String, key: String): String {
+        val keyWithQuotes = "\"$key\":\""
+        val startIndex = jsonString.indexOf(keyWithQuotes) + keyWithQuotes.length
+        val endIndex = jsonString.indexOf("\",", startIndex)
+        return if (startIndex != -1 && endIndex != -1) {
+            jsonString.substring(startIndex, endIndex)
+        } else {
+            ""
+        }
     }
 }
