@@ -556,7 +556,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     open fun launchesBrowserSwitchAsNewTask(launchesBrowserSwitchAsNewTask: Boolean) {
         this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask
     }
-    
+
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun getSubstringAfterKey(jsonString: String, key: String): String {
         val keyWithQuotes = "\"$key\":\""
