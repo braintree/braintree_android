@@ -1,5 +1,7 @@
 package com.braintreepayments.api
 
+import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.core.BraintreeException
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk

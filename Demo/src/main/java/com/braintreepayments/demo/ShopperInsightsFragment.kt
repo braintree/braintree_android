@@ -1,24 +1,12 @@
 package com.braintreepayments.demo
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.navigation.fragment.NavHostFragment
-import com.braintreepayments.api.ShopperInsightsBuyerPhone
 import com.braintreepayments.api.ShopperInsightsClient
-import com.braintreepayments.api.ShopperInsightsRequest
-import com.braintreepayments.api.ShopperInsightsResult
 import com.braintreepayments.api.ExperimentalBetaApi
 import com.braintreepayments.api.core.BraintreeClient
-import com.braintreepayments.api.paypal.PayPalAccountNonce
 import com.braintreepayments.api.paypal.PayPalClient
-import com.braintreepayments.api.venmo.VenmoAccountNonce
 import com.braintreepayments.api.venmo.VenmoClient
-import com.braintreepayments.api.venmo.VenmoPaymentMethodUsage
-import com.braintreepayments.api.venmo.VenmoRequest
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
 

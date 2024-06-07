@@ -2,7 +2,6 @@ package com.braintreepayments.api.googlepay
 
 import android.app.Activity
 import android.content.Context
-import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.testutils.Fixtures
 import com.google.android.gms.common.api.ApiException
@@ -120,10 +119,8 @@ class GooglePayInternalClientUnitTest {
         )
 
         val sut = GooglePayInternalClient()
-        sut.isReadyToPay(context, configuration, isReadyToPayRequest) { isReadyToPay, error ->
-            assertTrue(isReadyToPay)
-            assertNull(error)
-            countDownLatch.countDown()
+        sut.isReadyToPay(context, configuration, isReadyToPayRequest) { googlePayReadinessResult ->
+            assertTrue(googlePayReadinessResult is GooglePayReadinessResult.ReadyToPay)
         }
     }
 
@@ -137,10 +134,9 @@ class GooglePayInternalClientUnitTest {
         every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns failedTask
 
         val sut = GooglePayInternalClient()
-        sut.isReadyToPay(context, configuration, isReadyToPayRequest) { isReadyToPay, error ->
-            assertFalse(isReadyToPay)
-            assertSame(expectedError, error)
-            countDownLatch.countDown()
+        sut.isReadyToPay(context, configuration, isReadyToPayRequest) { googlePayReadinessResult ->
+            assertTrue(googlePayReadinessResult is GooglePayReadinessResult.NotReadyToPay)
+            assertSame((googlePayReadinessResult as GooglePayReadinessResult.NotReadyToPay).error, expectedError)
         }
     }
 }

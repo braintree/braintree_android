@@ -37,6 +37,7 @@ class VenmoLauncherUnitTest {
         Uri.parse("http://"),
         JSONObject().put("test_key", "test_value"),
         "return-url-scheme",
+        Uri.parse("https://example.com"),
         false
     )
     private lateinit var sut: VenmoLauncher

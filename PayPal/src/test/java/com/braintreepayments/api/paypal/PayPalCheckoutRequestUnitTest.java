@@ -2,6 +2,8 @@ package com.braintreepayments.api.paypal;
 
 import android.os.Parcel;
 
+import com.braintreepayments.api.core.Authorization;
+import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest;
 import com.braintreepayments.api.paypal.PayPalLineItem;

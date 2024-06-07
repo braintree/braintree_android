@@ -2,6 +2,7 @@ package com.braintreepayments.api.core
 
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.net.Uri
 import androidx.fragment.app.FragmentActivity
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.testing.WorkManagerTestInitHelper
@@ -474,6 +475,7 @@ class BraintreeClientUnitTest {
             sessionId = "session-id",
             authorization = authorization,
             returnUrlScheme = "sample-return-url-scheme",
+            appLinkReturnUri = Uri.parse("https://example.com"),
             httpClient = braintreeHttpClient,
             graphQLClient = braintreeGraphQLClient,
             analyticsClient = analyticsClient,

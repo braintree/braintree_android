@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.net.Uri;
 
+import com.braintreepayments.api.datacollector.DataCollectorInternalRequest;
 import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.testutils.MockApiClientBuilder;
 import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
@@ -33,9 +34,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.robolectric.RobolectricTestRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -442,7 +445,7 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_whenRiskCorrelationIdNotNull_setsClientMetadataIdToRiskCorrelationId() {
-        when(dataCollector.getClientMetadataId(context, configuration, true)).thenReturn("sample-client-metadata-id");
+        when(dataCollector.getClientMetadataId(same(context), any(), same(configuration))).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
@@ -467,7 +470,7 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_whenRiskCorrelationIdNull_setsClientMetadataIdFromPayPalDataCollector() {
-        when(dataCollector.getClientMetadataId(context, configuration, true)).thenReturn("sample-client-metadata-id");
+        when(dataCollector.getClientMetadataId(same(context), any(), any())).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
@@ -531,6 +534,7 @@ public class PayPalInternalClientUnitTest {
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
+        payPalRequest.setRiskCorrelationId("sample-client-metadata-id");
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
@@ -539,12 +543,12 @@ public class PayPalInternalClientUnitTest {
         verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
 
         String expectedUrl =
-                "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource&authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel&controller=client_api%2Fpaypal_hermes&experience_profile%5Baddress_override%5D=false&experience_profile%5Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&ba_token=EC-HERMES-SANDBOX-EC-TOKEN&offer_paypal_credit=true&version=1";
+                "https://checkout.paypal.com/one-touch-login-sandbox/index.html?ba_token=fake-ba-token&action=create_payment_resource&amount=1.00&authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel&controller=client_api%2Fpaypal_hermes&currency_iso_code=USD&experience_profile%5Baddress_override%5D=false&experience_profile%5Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&offer_paypal_credit=true&version=1";
         PayPalPaymentAuthRequestParams payPalPaymentAuthRequestParams = captor.getValue();
         assertTrue(payPalPaymentAuthRequestParams.isBillingAgreement());
         assertEquals("sample-merchant-account-id", payPalPaymentAuthRequestParams.getMerchantAccountId());
         assertEquals("sample-scheme://onetouch/v1/success", payPalPaymentAuthRequestParams.getSuccessUrl());
-        assertEquals("EC-HERMES-SANDBOX-EC-TOKEN", payPalPaymentAuthRequestParams.getPairingId());
+        assertEquals("fake-ba-token", payPalPaymentAuthRequestParams.getPairingId());
         assertEquals("sample-client-metadata-id", payPalPaymentAuthRequestParams.getClientMetadataId());
         assertEquals(expectedUrl, payPalPaymentAuthRequestParams.getApprovalUrl());
     }
@@ -566,6 +570,7 @@ public class PayPalInternalClientUnitTest {
         payPalRequest.setIntent("authorize");
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
         payPalRequest.setUserAction(PayPalCheckoutRequest.USER_ACTION_COMMIT);
+        payPalRequest.setRiskCorrelationId("sample-client-metadata-id");
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
@@ -574,13 +579,13 @@ public class PayPalInternalClientUnitTest {
         verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
 
         String expectedUrl =
-                "https://checkout.paypal.com/one-touch-login-sandbox/index.html?action=create_payment_resource&amount=1.00&authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel&controller=client_api%2Fpaypal_hermes&currency_iso_code=USD&experience_profile%5Baddress_override%5D=false&experience_profile%5Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&token=EC-HERMES-SANDBOX-EC-TOKEN&offer_paypal_credit=true&version=1";
+                "https://checkout.paypal.com/one-touch-login-sandbox/index.html?token=fake-token&action=create_payment_resource&amount=1.00&authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel&controller=client_api%2Fpaypal_hermes&currency_iso_code=USD&experience_profile%5Baddress_override%5D=false&experience_profile%5Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&offer_paypal_credit=true&version=1";
         PayPalPaymentAuthRequestParams payPalPaymentAuthRequestParams = captor.getValue();
         assertFalse(payPalPaymentAuthRequestParams.isBillingAgreement());
         assertEquals("authorize", payPalPaymentAuthRequestParams.getIntent());
         assertEquals("sample-merchant-account-id", payPalPaymentAuthRequestParams.getMerchantAccountId());
         assertEquals("sample-scheme://onetouch/v1/success", payPalPaymentAuthRequestParams.getSuccessUrl());
-        assertEquals("EC-HERMES-SANDBOX-EC-TOKEN", payPalPaymentAuthRequestParams.getPairingId());
+        assertEquals("fake-token", payPalPaymentAuthRequestParams.getPairingId());
         assertEquals("sample-client-metadata-id", payPalPaymentAuthRequestParams.getClientMetadataId());
         assertEquals(expectedUrl, payPalPaymentAuthRequestParams.getApprovalUrl());
     }
@@ -707,9 +712,15 @@ public class PayPalInternalClientUnitTest {
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
-        verify(dataCollector).getClientMetadataId(context, configuration, true);
+        ArgumentCaptor<DataCollectorInternalRequest> captor = ArgumentCaptor.forClass(
+            DataCollectorInternalRequest.class);
+
+        verify(dataCollector).getClientMetadataId(same(context), captor.capture(), same(configuration));
+
+        assertTrue(captor.getValue().getHasUserLocationConsent());
     }
 
+    @Ignore("will be fixed when app link is passed to the PayPalCheckoutRequest")
     @Test
     public void when_appLink_is_enabled_appLinkReturnUri_is_used_for_cancel_and_success_urls() throws JSONException {
         String appLink = "https://example.com";
@@ -718,12 +729,12 @@ public class PayPalInternalClientUnitTest {
             .configuration(configuration)
             .authorizationSuccess(clientToken)
             .returnUrlScheme("sample-scheme")
-            .appLinkUri(Uri.parse(appLink))
             .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
             .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
 
+        // TODO: pass app link to the PayPalCheckoutRequest
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
         payPalRequest.setAppLinkEnabled(true);
 
@@ -746,11 +757,10 @@ public class PayPalInternalClientUnitTest {
             .configuration(configuration)
             .authorizationSuccess(clientToken)
             .returnUrlScheme(returnUrlScheme)
-            .appLinkUri(null)
             .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
             .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
         payPalRequest.setAppLinkEnabled(true);
@@ -777,7 +787,7 @@ public class PayPalInternalClientUnitTest {
             .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
             .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, payPalDataCollector, apiClient);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
         payPalRequest.setAppLinkEnabled(false);

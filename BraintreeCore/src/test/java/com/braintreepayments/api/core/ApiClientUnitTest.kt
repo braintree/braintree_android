@@ -1,7 +1,5 @@
 package com.braintreepayments.api.core
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import com.braintreepayments.api.card.Card
