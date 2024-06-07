@@ -3,6 +3,10 @@ package com.braintreepayments.api
 import android.content.Context
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.BuildConfig
+import com.braintreepayments.api.core.Configuration
 import com.paypal.messages.PayPalMessageView
 import com.paypal.messages.config.PayPalEnvironment
 import com.paypal.messages.config.message.PayPalMessageConfig

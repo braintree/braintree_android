@@ -37,16 +37,17 @@ class PayPalMessagingFragment : BaseFragment(), PayPalMessagingListener {
             color = PayPalMessagingColor.BLACK
         )
 
-        val payPalMessagingView = PayPalMessagingView(braintreeClient, requireActivity())
-        payPalMessagingView.setListener(this)
-        payPalMessagingView.start(payPalMessagingRequest)
-        payPalMessagingView.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        )
-
-        val messagingView: LinearLayout = view.findViewById(R.id.content)
-        messagingView.addView(payPalMessagingView)
+        // TODO: Refactor BraintreeClient out of PayPalMessagingView
+//        val payPalMessagingView = PayPalMessagingView(braintreeClient, requireActivity())
+//        payPalMessagingView.setListener(this)
+//        payPalMessagingView.start(payPalMessagingRequest)
+//        payPalMessagingView.layoutParams = ViewGroup.LayoutParams(
+//            ViewGroup.LayoutParams.MATCH_PARENT,
+//            ViewGroup.LayoutParams.MATCH_PARENT
+//        )
+//
+//        val messagingView: LinearLayout = view.findViewById(R.id.content)
+//        messagingView.addView(payPalMessagingView)
     }
 
     override fun onPayPalMessagingClick() {

@@ -97,15 +97,19 @@ public class PayPalFragment extends BaseFragment {
                 if (dataCollectorResult instanceof DataCollectorResult.Success) {
                     deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
                 }
-                launchPayPal(activity, isBillingAgreement, amount);
+                launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress);
             });
         } else {
-            launchPayPal(activity, isBillingAgreement, amount);
+            launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress);
         }
     }
 
-    private void launchPayPal(FragmentActivity activity, boolean isBillingAgreement,
-                              String amount) {
+    private void launchPayPal(
+        FragmentActivity activity,
+        boolean isBillingAgreement,
+        String amount,
+        String buyerEmailAddress
+    ) {
         PayPalRequest payPalRequest;
         if (isBillingAgreement) {
             payPalRequest = createPayPalVaultRequest(activity, buyerEmailAddress);

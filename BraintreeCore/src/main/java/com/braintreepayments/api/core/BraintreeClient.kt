@@ -2,7 +2,6 @@ package com.braintreepayments.api.core
 
 import android.content.Context
 import android.content.pm.ActivityInfo
-import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.BrowserSwitchClient
@@ -68,8 +67,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         configurationLoader = params.configurationLoader,
         manifestValidator = params.manifestValidator,
         returnUrlScheme = params.returnUrlScheme,
-        braintreeDeepLinkReturnUrlScheme = params.braintreeReturnUrlScheme,
-        appLinkReturnUri = params.appLinkReturnUri
+        braintreeDeepLinkReturnUrlScheme = params.braintreeReturnUrlScheme
     )
 
     /**

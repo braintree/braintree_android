@@ -17,14 +17,14 @@ public class DataCollectorInternalRequest {
     private boolean hasUserLocationConsent;
     private HashMap<String,String> additionalData;
 
-    DataCollectorInternalRequest(boolean hasUserLocationConsent) {
+    public DataCollectorInternalRequest(boolean hasUserLocationConsent) {
         this.hasUserLocationConsent = hasUserLocationConsent;
     }
 
     /**
      * @param additionalData Additional data that should be associated with the data collection.
      */
-    DataCollectorInternalRequest setAdditionalData(HashMap<String, String> additionalData) {
+    public DataCollectorInternalRequest setAdditionalData(HashMap<String, String> additionalData) {
         this.additionalData = additionalData;
 
         return this;
@@ -34,7 +34,7 @@ public class DataCollectorInternalRequest {
      * @param applicationGuid The application global unique identifier.
      *                        There is a 36 character length limit on this value.
      */
-    DataCollectorInternalRequest setApplicationGuid(String applicationGuid) {
+    public DataCollectorInternalRequest setApplicationGuid(String applicationGuid) {
         this.applicationGuid = applicationGuid;
 
         return this;
@@ -43,7 +43,7 @@ public class DataCollectorInternalRequest {
     /**
      * @param riskCorrelationId The desired pairing ID, trimmed to 32 characters.
      */
-    DataCollectorInternalRequest setRiskCorrelationId(@NonNull String riskCorrelationId) {
+    public DataCollectorInternalRequest setRiskCorrelationId(@NonNull String riskCorrelationId) {
         this.clientMetadataId = riskCorrelationId.substring(0, Math.min(riskCorrelationId.length(), 32));
 
         return this;
@@ -52,7 +52,7 @@ public class DataCollectorInternalRequest {
     /**
      * @param disableBeacon Indicates if the beacon feature should be disabled.
      */
-    DataCollectorInternalRequest setDisableBeacon(boolean disableBeacon) {
+    public DataCollectorInternalRequest setDisableBeacon(boolean disableBeacon) {
         this.disableBeacon = disableBeacon;
 
         return this;
