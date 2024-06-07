@@ -235,4 +235,40 @@ public class DataCollectorUnitTest {
         JSONObject json = new JSONObject(deviceData);
         assertEquals("paypal-clientmetadata-id", json.getString("correlation_id"));
     }
+
+    @Test
+    public void collectDeviceData_without_DataCollectorRequest_sets_hasUserLocationConsent_to_false() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+            .configuration(configuration)
+            .build();
+
+        DataCollectorCallback callback = mock(DataCollectorCallback.class);
+        DataCollector sut = new DataCollector(braintreeClient, payPalDataCollector);
+
+        sut.collectDeviceData(context, callback);
+
+        ArgumentCaptor<String> deviceDataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(callback).onResult(deviceDataCaptor.capture(), (Exception) isNull());
+
+        verify(payPalDataCollector).getClientMetadataId(context, configuration, false);
+    }
+
+    @Test
+    public void collectDeviceData_with_DataCollectorRequest_sets_correct_values_for_getClientMetadataId() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+            .configuration(configuration)
+            .build();
+
+        DataCollectorCallback callback = mock(DataCollectorCallback.class);
+        DataCollector sut = new DataCollector(braintreeClient, payPalDataCollector);
+
+        DataCollectorRequest dataCollectorRequest = new DataCollectorRequest(true);
+
+        sut.collectDeviceData(context, dataCollectorRequest, callback);
+
+        ArgumentCaptor<String> deviceDataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(callback).onResult(deviceDataCaptor.capture(), (Exception) isNull());
+
+        verify(payPalDataCollector).getClientMetadataId(context, configuration, true);
+    }
 }

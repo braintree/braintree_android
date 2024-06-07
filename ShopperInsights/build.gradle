@@ -1,0 +1,56 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.dokka'
+}
+
+android {
+    namespace 'com.braintreepayments.api.shopperinsights'
+    compileSdk rootProject.compileSdkVersion
+
+    defaultConfig {
+        minSdk rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+            all {
+                jvmArgs '-noverify'
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility versions.javaSourceCompatibility
+        targetCompatibility versions.javaTargetCompatibility
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation deps.coreKtx
+
+    api project(':BraintreeCore')
+
+    testImplementation deps.jsonAssert
+    testImplementation deps.kotlinTest
+    testImplementation deps.mockk
+}
+
+// region signing and publishing
+
+project.ext.name = "shopper-insights"
+project.ext.pom_name = "shopper-insights"
+project.ext.group_id = "com.braintreepayments.api"
+project.ext.version = rootProject.version
+project.ext.pom_desc = "Shopper Insights for Braintree Android."
+
+apply from: rootProject.file("gradle/gradle-publish.gradle")
+
+// endregion

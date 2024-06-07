@@ -17,6 +17,12 @@ import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class LocalPaymentRequestUnitTest {
+
+    @Test
+    public void constructor_without_hasUserLocationConsent_defaults_to_false() {
+        LocalPaymentRequest request = new LocalPaymentRequest();
+        assertFalse(request.hasUserLocationConsent());
+    }
     
     @Test
     public void build_setsAllParams() throws JSONException {

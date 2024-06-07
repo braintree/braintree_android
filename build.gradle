@@ -13,7 +13,7 @@ buildscript {
             "kotlin"         : "1.9.10",
             "androidxTest"   : "1.5.0",
             "room"           : "2.6.1",
-            "playServices"   : "19.2.1",
+            "playServices"   : "19.3.0",
             "javaSourceCompatibility": sdkTargetJavaVersion,
             "javaTargetCompatibility": sdkTargetJavaVersion,
     ]
@@ -82,12 +82,13 @@ allprojects {
     }
 }
 
-version '4.45.1-SNAPSHOT'
+version '4.46.1-SNAPSHOT'
 group 'com.braintreepayments'
 ext {
     compileSdkVersion = 34
     minSdkVersion = 23
-    versionCode = 190
+    minSdkVersionPayPalMessaging = 23
+    versionCode = 192
     targetSdkVersion = 34
     versionName = version
 }
@@ -125,11 +126,13 @@ detekt {
             "LocalPayment/src",
             "PayPal/src",
             "DataCollector/src",
+            "PayPalMessaging/src",
             "SEPADirectDebit/src",
             "SharedUtils/src",
             "TestUtils/src",
             "ThreeDSecure/src",
             "Venmo/src",
+            "ShopperInsights/src"
     )
     autoCorrect = project.hasProperty('detektAutoCorrect')
     reports {

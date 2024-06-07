@@ -177,15 +177,15 @@ class BraintreeClientUnitTest {
         val sut = BraintreeClient(params)
 
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        sut.sendPOST("sample-url", "{}", httpResponseCallback)
+        sut.sendPOST("sample-url", "{}", emptyMap(), httpResponseCallback)
 
         verify {
             braintreeHttpClient.post(
-                "sample-url",
-                "{}",
-                configuration,
-                authorization,
-                httpResponseCallback
+                path = "sample-url",
+                data = "{}",
+                configuration = configuration,
+                authorization = authorization,
+                callback = httpResponseCallback
             )
         }
     }
@@ -201,8 +201,62 @@ class BraintreeClientUnitTest {
         val sut = BraintreeClient(params)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
 
-        sut.sendPOST("sample-url", "{}", httpResponseCallback)
+        sut.sendPOST("sample-url", "{}", emptyMap(), httpResponseCallback)
         verify { httpResponseCallback.onResult(null, exception) }
+    }
+
+    @Test
+    fun `sendPOST defaults additionalHeaders to an empty map`() {
+        val configurationLoader = MockkConfigurationLoaderBuilder()
+            .configuration(mockk<Configuration>(relaxed = true))
+            .build()
+        val params = createDefaultParams(configurationLoader)
+        val sut = BraintreeClient(params)
+
+        sut.sendPOST(
+            url = "sample-url",
+            data = "{}",
+            responseCallback = mockk(relaxed = true)
+        )
+
+        verify {
+            braintreeHttpClient.post(
+                path = any(),
+                data = any(),
+                configuration = any(),
+                authorization = any(),
+                additionalHeaders = emptyMap(),
+                callback = any()
+            )
+        }
+    }
+
+    @Test
+    fun `sendPOST sends additionalHeaders to httpClient post`() {
+        val configurationLoader = MockkConfigurationLoaderBuilder()
+            .configuration(mockk<Configuration>(relaxed = true))
+            .build()
+        val params = createDefaultParams(configurationLoader)
+        val sut = BraintreeClient(params)
+        val headers = mapOf("name" to "value")
+
+        sut.sendPOST(
+            url = "sample-url",
+            data = "{}",
+            additionalHeaders = headers,
+            responseCallback = mockk(relaxed = true)
+        )
+
+        verify {
+            braintreeHttpClient.post(
+                path = any(),
+                data = any(),
+                configuration = any(),
+                authorization = any(),
+                additionalHeaders = headers,
+                callback = any()
+            )
+        }
     }
 
     @Test
@@ -210,7 +264,7 @@ class BraintreeClientUnitTest {
         val sut = BraintreeClient(context, "invalid-auth-string")
 
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        sut.sendPOST("sample-url", "{}", httpResponseCallback)
+        sut.sendPOST("sample-url", "{}", emptyMap(), httpResponseCallback)
 
         val authErrorSlot = slot<BraintreeException>()
         verify { httpResponseCallback.onResult(isNull(), capture(authErrorSlot)) }

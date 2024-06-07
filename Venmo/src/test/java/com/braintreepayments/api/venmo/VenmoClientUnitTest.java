@@ -375,6 +375,7 @@ public class VenmoClientUnitTest {
                 .build();
 
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
+        request.setShouldVault(true);
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter);
@@ -386,7 +387,7 @@ public class VenmoClientUnitTest {
         VenmoPaymentAuthRequest paymentAuthRequest = captor.getValue();
         assertTrue(paymentAuthRequest instanceof VenmoPaymentAuthRequest.Failure);
         assertEquals(graphQLError, ((VenmoPaymentAuthRequest.Failure) paymentAuthRequest).getError());
-        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, null, LINK_TYPE);
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, null, LINK_TYPE, true);
     }
 
     @Test
@@ -405,7 +406,7 @@ public class VenmoClientUnitTest {
         verify(venmoApi).createNonceFromPaymentContext(eq("a-resource-id"),
                 any(VenmoInternalCallback.class));
 
-        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED);
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED, null,  LINK_TYPE, false);
     }
 
     @Test
@@ -426,7 +427,7 @@ public class VenmoClientUnitTest {
 
         VenmoResult result = captor.getValue();
         assertTrue(result instanceof VenmoResult.Cancel);
-        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_CANCELED, null, LINK_TYPE);
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_CANCELED, null, LINK_TYPE, false);
 
     }
 
@@ -458,7 +459,7 @@ public class VenmoClientUnitTest {
         assertEquals("fake-venmo-nonce", nonce.getString());
         assertEquals("venmojoe", nonce.getUsername());
 
-        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_SUCCEEDED, null, LINK_TYPE);
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_SUCCEEDED, null, LINK_TYPE, false);
     }
 
     @Test
@@ -486,7 +487,7 @@ public class VenmoClientUnitTest {
         VenmoResult result = captor.getValue();
         assertTrue(result instanceof VenmoResult.Failure);
         assertEquals(graphQLError, ((VenmoResult.Failure) result).getError());
-        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, null, LINK_TYPE);
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, null, LINK_TYPE, false);
     }
 
     @Test

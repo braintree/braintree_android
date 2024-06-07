@@ -523,7 +523,7 @@ public class PayPalInternalClientUnitTest {
                 .configuration(configuration)
                 .authorizationSuccess(clientToken)
                 .returnUrlScheme("sample-scheme")
-                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
+                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_BA_TOKEN_PARAM)
                 .build();
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
@@ -555,7 +555,7 @@ public class PayPalInternalClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
                 .authorizationSuccess(clientToken)
-                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
+                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM)
                 .returnUrlScheme("sample-scheme")
                 .build();
 

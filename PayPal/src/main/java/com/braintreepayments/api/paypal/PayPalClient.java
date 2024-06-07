@@ -37,6 +37,11 @@ public class PayPalClient {
     private String payPalContextId = null;
 
     /**
+     * True if `tokenize()` was called with a Vault request object type
+     */
+    private Boolean isVaultRequest = false;
+
+    /**
      * Initializes a new {@link PayPalClient} instance
      *
      * @param context       an Android Context
@@ -81,8 +86,10 @@ public class PayPalClient {
                                          @NonNull final PayPalPaymentAuthCallback callback) {
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED);
         if (payPalRequest instanceof PayPalCheckoutRequest) {
+            isVaultRequest = false;
             sendCheckoutRequest(context, (PayPalCheckoutRequest) payPalRequest, callback);
         } else if (payPalRequest instanceof PayPalVaultRequest) {
+            isVaultRequest = true;
             sendVaultRequest(context, (PayPalVaultRequest) payPalRequest, callback);
         }
     }
@@ -90,6 +97,11 @@ public class PayPalClient {
     private void sendCheckoutRequest(final Context context,
                                      final PayPalCheckoutRequest payPalCheckoutRequest,
                                      final PayPalPaymentAuthCallback callback) {
+        braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected", null, null, isVaultRequest);
+        if (payPalCheckoutRequest.getShouldOfferPayLater()) {
+            braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered", null, null, isVaultRequest);
+        }
+
         braintreeClient.getConfiguration((configuration, error) -> {
             if (error != null) {
                 callbackCreatePaymentAuthFailure(callback,
@@ -112,6 +124,11 @@ public class PayPalClient {
     private void sendVaultRequest(final Context context,
                                   final PayPalVaultRequest payPalVaultRequest,
                                   final PayPalPaymentAuthCallback callback) {
+        braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected", null, null, isVaultRequest);
+        if (payPalVaultRequest.getShouldOfferCredit()) {
+            braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered", null, null, isVaultRequest);
+        }
+
         braintreeClient.getConfiguration((configuration, error) -> {
             if (error != null) {
                 callbackCreatePaymentAuthFailure(callback,
@@ -134,6 +151,7 @@ public class PayPalClient {
                                    final PayPalPaymentAuthCallback callback) {
         internalPayPalClient.sendRequest(context, payPalRequest, (payPalResponse, error) -> {
             if (payPalResponse != null) {
+                payPalContextId = payPalResponse.getPairingId();
                 try {
                     BrowserSwitchOptions options = buildBrowserSwitchOptions(payPalResponse);
                     payPalResponse.setBrowserSwitchOptions(options);
@@ -277,25 +295,25 @@ public class PayPalClient {
 
     private void callbackCreatePaymentAuthFailure(PayPalPaymentAuthCallback callback,
                                                   PayPalPaymentAuthRequest.Failure failure) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, payPalContextId, null);
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, payPalContextId, null, isVaultRequest);
         callback.onPayPalPaymentAuthRequest(failure);
     }
 
     private void callbackBrowserSwitchCancel(PayPalTokenizeCallback callback,
                                              PayPalResult.Cancel cancel) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, payPalContextId, null);
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, payPalContextId, null, isVaultRequest);
         callback.onPayPalResult(cancel);
     }
 
     private void callbackTokenizeFailure(PayPalTokenizeCallback callback,
                                          PayPalResult.Failure failure) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, payPalContextId, null);
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, payPalContextId, null, isVaultRequest);
         callback.onPayPalResult(failure);
     }
 
     private void callbackTokenizeSuccess(PayPalTokenizeCallback callback,
                                          PayPalResult.Success success) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, payPalContextId, null);
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, payPalContextId, null, isVaultRequest);
         callback.onPayPalResult(success);
     }
 }

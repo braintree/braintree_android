@@ -75,18 +75,20 @@ class PayPalInternalClient {
                                     if (redirectUrl != null) {
                                         Uri parsedRedirectUri = Uri.parse(redirectUrl);
 
-                                        String pairingIdKey =
-                                                isBillingAgreement ? "ba_token" : "token";
-                                        String pairingId =
-                                                parsedRedirectUri.getQueryParameter(
-                                                        pairingIdKey);
-                                        String clientMetadataId =
-                                                payPalRequest.getRiskCorrelationId() != null
-                                                        ?
-                                                        payPalRequest.getRiskCorrelationId() :
-                                                        dataCollector.getClientMetadataId(
-                                                                context, configuration,
-                                                                payPalRequest.hasUserLocationConsent());
+                                        String pairingIdKey = isBillingAgreement ? "ba_token" : "token";
+                                        String pairingId = findPairingId(parsedRedirectUri);
+                                        String clientMetadataId = payPalRequest.getRiskCorrelationId();
+
+                                        if (clientMetadataId == null) {
+                                            DataCollectorInternalRequest dataCollectorRequest =
+                                                new DataCollectorInternalRequest(payPalRequest.hasUserLocationConsent())
+                                                    .setApplicationGuid(dataCollector.getPayPalInstallationGUID(context));
+
+                                            if (pairingId != null) {
+                                                dataCollectorRequest.setRiskCorrelationId(pairingId);
+                                            }
+                                            clientMetadataId = dataCollector.getClientMetadataId(context, dataCollectorRequest, configuration);
+                                        }
 
                                         if (pairingId != null) {
                                             paymentAuthRequest
@@ -127,5 +129,13 @@ class PayPalInternalClient {
                 callback.onResult(null, exception);
             }
         });
+    }
+
+    private String findPairingId(Uri redirectUri) {
+        String pairingId = redirectUri.getQueryParameter("ba_token");
+        if (pairingId == null) {
+            pairingId = redirectUri.getQueryParameter("token");
+        }
+        return pairingId;
     }
 }

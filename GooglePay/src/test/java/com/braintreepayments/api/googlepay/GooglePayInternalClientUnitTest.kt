@@ -75,7 +75,7 @@ class GooglePayInternalClientUnitTest {
     @Before
     fun beforeEach() {
         mockkStatic(Wallet::class)
-        context = ApplicationProvider.getApplicationContext()
+        context = mockk(relaxed = true)
         isReadyToPayCallback = mockk(relaxed = true)
         paymentsClient = mockk()
         isReadyToPayRequest = IsReadyToPayRequest.fromJson("{}")
@@ -120,8 +120,10 @@ class GooglePayInternalClientUnitTest {
         )
 
         val sut = GooglePayInternalClient()
-        sut.isReadyToPay(context, configuration, isReadyToPayRequest) { readyToPayResult ->
-            assertTrue(readyToPayResult is GooglePayReadinessResult.ReadyToPay)
+        sut.isReadyToPay(context, configuration, isReadyToPayRequest) { isReadyToPay, error ->
+            assertTrue(isReadyToPay)
+            assertNull(error)
+            countDownLatch.countDown()
         }
     }
 
@@ -135,10 +137,10 @@ class GooglePayInternalClientUnitTest {
         every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns failedTask
 
         val sut = GooglePayInternalClient()
-        sut.isReadyToPay(context, configuration, isReadyToPayRequest) { readyToPayResult ->
-            assertTrue(readyToPayResult is GooglePayReadinessResult.NotReadyToPay)
-            assertSame(expectedError, (readyToPayResult as GooglePayReadinessResult.NotReadyToPay)
-                .error)
+        sut.isReadyToPay(context, configuration, isReadyToPayRequest) { isReadyToPay, error ->
+            assertFalse(isReadyToPay)
+            assertSame(expectedError, error)
+            countDownLatch.countDown()
         }
     }
 }
