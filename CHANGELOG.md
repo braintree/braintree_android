@@ -3,149 +3,157 @@
 ## unreleased
 
 * Breaking Changes
-  * All Modules
-    * Bump `minSdkVersion` to API 23
-    * Bump target Java version to Java 11
-    * Upgrade Kotlin version to 1.9.10
-    * Upgrade to Android Gradle Plugin 8
-  * BraintreeCore
-    * Update package name to `com.braintreepayments.api.core`
-    * Remove `BraintreeClient` public constructors
-    * Remove `deliverBrowserSwitchResult` and `deliverBrowserSwitchResultFromNewTask` from `BraintreeClient`
-    * Remove `ClientTokenProvider`
-    * Update payment method constructor parameters from `braintreeClient` to `context` and
-      `authorization`
-    * Remove `BraintreeSharedPreferencesException`
-    * Convert `PostalAddress` to data class
-    * Remove `open` modifier on `Configuration`
-  * UnionPay
-    * Remove `union-pay` module
-      * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover
-  * BraintreeDataCollector
-    * Update package name to `com.braintreepayments.api.datacollector`
-    * Replace `DataCollector#collectDeviceData(context, merchantId, callback)` with 
-      `DataCollector#collectDeviceData(context, riskCorrelationId, callback)`
-    * Add `DataCollectorResult` and update `DataCollectorCallback` parameters
-  * PayPalDataCollector
-    * Remove `paypal-data-collector` module (use `data-collector`)
-  * Venmo
-    * Update package name to `com.braintreepayments.api.venmo`
-    * Remove `setFallbackToWeb()` from `VenmoRequest` - fallback to web is default behavior now
-    * Remove `VenmoListener`, `VenmoTokenizeAccountCallback`, and `VenmoResultCallback`
-    * Add `VenmoLauncher`, `VenmoPaymentAuthRequest`, `VenmoPaymentAuthRequestCallback`, 
-      `VenmoPaymentAuthResult`, `VenmoResult`, `VenmoTokenizeCallback`, and 
-      `VenmoLauncherCallback`
-    * Rename `VenmoOnActivityResultCallback` to `VenmoResultCallback`
-    * Remove overload constructors, `setListener`, and `onActivityResult` from `VenmoClient`
-    * Change `VenmoClient#tokenizeVenmoAccount` parameters and rename to 
-      `VenmoClient#tokenize`
-    * Remove `VenmoIsReadyToPayCallback`
-    * Add `VenmoClient#createPaymentAuthRequest`
-    * Move `showVenmoInGooglePlayStore` to `VenmoLauncher`
-    * Remove `isVenmoAppSwitchAvailable` and `isReadyToPay` (no longer required as Venmo flow will fallback to web if app is not installed)
-  * GooglePay
-    * Update package name to `com.braintreepayments.api.googlepay`
-    * Remove `GooglePayListener` and `GooglePayRequestPaymentCallback`
-    * Add `GooglePayLauncher`, `GooglePayPaymentAuthRequest`, 
-      `GooglePayPaymentAuthRequestCallback`, `GooglePayPaymentAuthResult`, 
-      `GooglePayTokenizeCallback`, `GooglePayTokenizationParameters` and `GooglePayLauncherCallback`
-    * Remove overload constructors, `setListener, and `onActivityResult` from `GooglePayClient`
-    * Change `GooglePayClient#requestPayment` parameters and rename to 
-      `GooglePayClient#createPaymentAuthRequest`
-    * Change `GooglePayClient#isReadyToPay` and `GooglePayIsReadyToPayCallback` parameters
-    * Add `GooglePayClient#tokenize` 
-    * Remove `merchantId` from `GooglePayRequest`
-    * Change `GooglePayGetTokenizationParametersCallback` parameters
-    * Rename `GooglePayLauncherCallback#onResult` to 
-      `GooglePayLauncherCallback#onGooglePayLauncherResult`
-  * ThreeDSecure
-    * Remove `ThreeDSecureListener`
-    * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`, 
-      `ThreeDSecureTokenizeCallback`, `ThreeDSecurePaymentAuthRequest`, 
-      `ThreeDSecurePaymentAuthRequestCallback`, `ThreeDSecurePrepareLookupResult`, 
-      `ThreeDSecurePrepareLookupCallback`, and `ThreeDSecureLancherCallback`
-    * Remove overload constructors, `setListener`, `continuePerformVerification`, `onBrowserSwitchResult` and `onActivityResult` from `ThreeDSecureClient`
-    * Change `ThreeDSecureClient#initializeChallengeWithLookupResponse` parameters
-    * Convert `ThreeDSecureResult` into sealed class
-    * Add `ThreeDSecureClient#tokenize`
-    * Rename `ThreeDSecureClient#performVerification` to 
-      `ThreeDSecureClient#createPaymentAuthRequest` and change parameters
-    * Remove `versionRequested` from `ThreeDSecureRequest`
-    * Add `ThreeDSecureNonce` class
-    * Rename `ThreeDSecureResult#tokenizedCard` to `ThreeDSecureResult#threeDSecureNonce`
-    * Remove `ThreeDSecureV1UICustomization`
-    * Remove `versionRequesed` from `ThreeDSecureRequest` as version 1 is no longer supported
-    * Remove `ThreeDSecureV2BaseCustomization`
-    * Remove `CardinalValidateReceiver` from `ThreeDSecureActivity`
-    * Make empty `ThreeDSecureLookup` constructor package-private
-  * PayPal
-    * Update package name to `com.braintreepayments.api.paypal`
-    * Remove `PayPalListener`
-    * Add `PayPalLauncher`, `PayPalPaymentAuthRequest`, `PayPalPendingRequest`, `PayPalPaymentAuthResult`, 
-      `PayPalPaymentAuthCallback`, `PayPalTokenizeCallback`, and `PayPalResult`
-    * Remove`PayPalFlowStartedCallback`
-    * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
-      `clearActiveBrowserSwitchResult`, `requestOneTimePayment`, and `requestBillingAgreement` from 
-      `PayPalClient`
-    * Rename `PayPalClient#tokenizePayPalAccount` to `PayPalClient#createPaymentAuthRequest` and 
-      change parameters
-    * Rename `PayPalClient#onBrowserSwitchResult` to `PayPalCient#tokenize` and change parameters
-  * LocalPayment
-    * Remove `LocalPaymentListener`
-    * Add `LocalPaymentLauncher`, `LocalPaymentPendingRequest`, `LocalPaymentTokenizeCallback`,
-      `LocalPaymentAuthRequest`, `LocalPaymentAuthRequestCallback` and `LocalPaymentAuthResult`
-    * Change `LocalPaymentResult` type 
-    * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
-      `clearActiveBrowserSwitchResult`, `approveLocalPayment`, and `approvePayment` from 
-      `LocalPaymentClient`
-    * Rename `LocalPaymentClient#startPayment` to `LocalPaymentClient#creatPaymentAuthRequest` 
-      and change parameters
-    * Rename `LocalPaymentClient#onBrowserSwithResult` to `LocalPaymentClient#tokenize` and 
-      change parameters
-    * Update package name to `com.braintreepayments.api.localpayment`
-  * Card
-    * Update package name to `com.braintreepayments.api.card`
-    * Remove `threeDSecureInfo` from `CardNonce`
-    * Move `ThreeDSecureInfo` to `three-d-secure` module
-    * Add `CardResult` object
-    * Change `CardTokenizeCallback` parameters
-  * SEPA Direct Debit
-    * Update package name to `com.braintreepayments.api.sepadirectdebit`
-    * Remove `SEPADirectDebitLifecycleObserver` and `SEPADirectDebitListener`
-    * Add `SEPADirectDebitLauncher`, `SEPADirectDebitPendingRequest`, 
-      `SEPADirectDebitPaymentAuthRequestCallback`, `SEPADirectDebitPaymentAuthRequest`, 
-      `SEPADirectDebitResult`, `SEPADirectDebitPaymentAuthRequestParams` and 
-      `SEPADirectDebitTokenizeCallback`
-    * Remove Fragment or Activity requirement from `SEPADirectDebitClient` constructor
-    * Replace `SEPADirectDebitClient#onBrowserSwitchResult` with `SEPADirectDebitClient#tokenize` and 
-      modify parameters
-    * Replace `SEPADirectDebitClient#tokenize` with`SEPADirectDebitClient#createPaymentAuthRequest` 
-      and modify parameters
-    * Rename `SEPADirectDebitPaymentAuthRequestCallback#onResult` to
-     `SEPADirectDebitPaymentAuthRequestCallback#onSEPADirectDebitPaymentAuthResult`
-  * Visa Checkout
-    * Update package name to `com.braintreepayments.api.visacheckout`
-    * Change parameters of `VisaCheckoutCreateProfileBuilderCallback` and
-      `VisaCheckoutTokenizeCallback`
-    * Add `VisaCheckoutProfileBuilderResult` and `VisaCheckoutTokenizeResult`
-  * American Express
-    * Update package name to `com.braintreepayments.api.americanexpress`
-    * Change parameters of `AmericanExpressGetRewardsBalanceCallback`
-    * Add `AmericanExpressResult`
-  * Samsung Pay
-    * Remove entire Samsung Pay module
-  * PayPal Native Checkout
-    * Remove entire PayPal Native Checkout module
-  * SharedUtils
-    * Update package name to `com.braintreepayments.api.sharedutils`
+    * All Modules
+        * Bump `minSdkVersion` to API 23
+        * Bump target Java version to Java 11
+        * Upgrade Kotlin version to 1.9.10
+        * Upgrade to Android Gradle Plugin 8
+    * BraintreeCore
+        * Update package name to `com.braintreepayments.api.core`
+        * Remove `BraintreeClient` public constructors
+        * Remove `deliverBrowserSwitchResult` and `deliverBrowserSwitchResultFromNewTask` from `BraintreeClient`
+        * Remove `ClientTokenProvider`
+        * Update payment method constructor parameters from `braintreeClient` to `context` and
+          `authorization`
+        * Remove `BraintreeSharedPreferencesException`
+        * Convert `PostalAddress` to data class
+        * Remove `open` modifier on `Configuration`
+    * UnionPay
+        * Remove `union-pay` module
+            * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover
+    * BraintreeDataCollector
+        * Update package name to `com.braintreepayments.api.datacollector`
+        * Replace `DataCollector#collectDeviceData(context, merchantId, callback)` with
+          `DataCollector#collectDeviceData(context, riskCorrelationId, callback)`
+        * Add `DataCollectorResult` and update `DataCollectorCallback` parameters
+    * PayPalDataCollector
+        * Remove `paypal-data-collector` module (use `data-collector`)
+    * Venmo
+        * Update package name to `com.braintreepayments.api.venmo`
+        * Remove `setFallbackToWeb()` from `VenmoRequest` - fallback to web is default behavior now
+        * Remove `VenmoListener`, `VenmoTokenizeAccountCallback`, and `VenmoResultCallback`
+        * Add `VenmoLauncher`, `VenmoPaymentAuthRequest`, `VenmoPaymentAuthRequestCallback`,
+          `VenmoPaymentAuthResult`, `VenmoResult`, `VenmoTokenizeCallback`, and
+          `VenmoLauncherCallback`
+        * Rename `VenmoOnActivityResultCallback` to `VenmoResultCallback`
+        * Remove overload constructors, `setListener`, and `onActivityResult` from `VenmoClient`
+        * Change `VenmoClient#tokenizeVenmoAccount` parameters and rename to
+          `VenmoClient#tokenize`
+        * Remove `VenmoIsReadyToPayCallback`
+        * Add `VenmoClient#createPaymentAuthRequest`
+        * Move `showVenmoInGooglePlayStore` to `VenmoLauncher`
+        * Remove `isVenmoAppSwitchAvailable` and `isReadyToPay` (no longer required as Venmo flow will fallback to web if app is not installed)
+    * GooglePay
+        * Update package name to `com.braintreepayments.api.googlepay`
+        * Remove `GooglePayListener` and `GooglePayRequestPaymentCallback`
+        * Add `GooglePayLauncher`, `GooglePayPaymentAuthRequest`,
+          `GooglePayPaymentAuthRequestCallback`, `GooglePayPaymentAuthResult`,
+          `GooglePayTokenizeCallback`, `GooglePayTokenizationParameters` and `GooglePayLauncherCallback`
+        * Remove overload constructors, `setListener, and `onActivityResult` from `GooglePayClient`
+        * Change `GooglePayClient#requestPayment` parameters and rename to
+          `GooglePayClient#createPaymentAuthRequest`
+        * Change `GooglePayClient#isReadyToPay` and `GooglePayIsReadyToPayCallback` parameters
+        * Add `GooglePayClient#tokenize`
+        * Remove `merchantId` from `GooglePayRequest`
+        * Change `GooglePayGetTokenizationParametersCallback` parameters
+        * Rename `GooglePayLauncherCallback#onResult` to
+          `GooglePayLauncherCallback#onGooglePayLauncherResult`
+    * ThreeDSecure
+        * Remove `ThreeDSecureListener`
+        * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`,
+          `ThreeDSecureTokenizeCallback`, `ThreeDSecurePaymentAuthRequest`,
+          `ThreeDSecurePaymentAuthRequestCallback`, `ThreeDSecurePrepareLookupResult`,
+          `ThreeDSecurePrepareLookupCallback`, and `ThreeDSecureLancherCallback`
+        * Remove overload constructors, `setListener`, `continuePerformVerification`, `onBrowserSwitchResult` and `onActivityResult` from `ThreeDSecureClient`
+        * Change `ThreeDSecureClient#initializeChallengeWithLookupResponse` parameters
+        * Convert `ThreeDSecureResult` into sealed class
+        * Add `ThreeDSecureClient#tokenize`
+        * Rename `ThreeDSecureClient#performVerification` to
+          `ThreeDSecureClient#createPaymentAuthRequest` and change parameters
+        * Remove `versionRequested` from `ThreeDSecureRequest`
+        * Add `ThreeDSecureNonce` class
+        * Rename `ThreeDSecureResult#tokenizedCard` to `ThreeDSecureResult#threeDSecureNonce`
+        * Remove `ThreeDSecureV1UICustomization`
+        * Remove `versionRequesed` from `ThreeDSecureRequest` as version 1 is no longer supported
+        * Remove `ThreeDSecureV2BaseCustomization`
+        * Remove `CardinalValidateReceiver` from `ThreeDSecureActivity`
+        * Make empty `ThreeDSecureLookup` constructor package-private
+    * PayPal
+        * Update package name to `com.braintreepayments.api.paypal`
+        * Remove `PayPalListener`
+        * Add `PayPalLauncher`, `PayPalPaymentAuthRequest`, `PayPalPendingRequest`, `PayPalPaymentAuthResult`,
+          `PayPalPaymentAuthCallback`, `PayPalTokenizeCallback`, and `PayPalResult`
+        * Remove`PayPalFlowStartedCallback`
+        * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
+          `clearActiveBrowserSwitchResult`, `requestOneTimePayment`, and `requestBillingAgreement` from
+          `PayPalClient`
+        * Rename `PayPalClient#tokenizePayPalAccount` to `PayPalClient#createPaymentAuthRequest` and
+          change parameters
+        * Rename `PayPalClient#onBrowserSwitchResult` to `PayPalCient#tokenize` and change parameters
+    * LocalPayment
+        * Remove `LocalPaymentListener`
+        * Add `LocalPaymentLauncher`, `LocalPaymentPendingRequest`, `LocalPaymentTokenizeCallback`,
+          `LocalPaymentAuthRequest`, `LocalPaymentAuthRequestCallback` and `LocalPaymentAuthResult`
+        * Change `LocalPaymentResult` type
+        * Remove overload constructors, `setListener`, `parseBrowserSwitchResult`,
+          `clearActiveBrowserSwitchResult`, `approveLocalPayment`, and `approvePayment` from
+          `LocalPaymentClient`
+        * Rename `LocalPaymentClient#startPayment` to `LocalPaymentClient#creatPaymentAuthRequest`
+          and change parameters
+        * Rename `LocalPaymentClient#onBrowserSwithResult` to `LocalPaymentClient#tokenize` and
+          change parameters
+        * Update package name to `com.braintreepayments.api.localpayment`
+    * Card
+        * Update package name to `com.braintreepayments.api.card`
+        * Remove `threeDSecureInfo` from `CardNonce`
+        * Move `ThreeDSecureInfo` to `three-d-secure` module
+        * Add `CardResult` object
+        * Change `CardTokenizeCallback` parameters
+    * SEPA Direct Debit
+        * Update package name to `com.braintreepayments.api.sepadirectdebit`
+        * Remove `SEPADirectDebitLifecycleObserver` and `SEPADirectDebitListener`
+        * Add `SEPADirectDebitLauncher`, `SEPADirectDebitPendingRequest`,
+          `SEPADirectDebitPaymentAuthRequestCallback`, `SEPADirectDebitPaymentAuthRequest`,
+          `SEPADirectDebitResult`, `SEPADirectDebitPaymentAuthRequestParams` and
+          `SEPADirectDebitTokenizeCallback`
+        * Remove Fragment or Activity requirement from `SEPADirectDebitClient` constructor
+        * Replace `SEPADirectDebitClient#onBrowserSwitchResult` with `SEPADirectDebitClient#tokenize` and
+          modify parameters
+        * Replace `SEPADirectDebitClient#tokenize` with`SEPADirectDebitClient#createPaymentAuthRequest`
+          and modify parameters
+        * Rename `SEPADirectDebitPaymentAuthRequestCallback#onResult` to
+          `SEPADirectDebitPaymentAuthRequestCallback#onSEPADirectDebitPaymentAuthResult`
+    * Visa Checkout
+        * Update package name to `com.braintreepayments.api.visacheckout`
+        * Change parameters of `VisaCheckoutCreateProfileBuilderCallback` and
+          `VisaCheckoutTokenizeCallback`
+        * Add `VisaCheckoutProfileBuilderResult` and `VisaCheckoutTokenizeResult`
+    * American Express
+        * Update package name to `com.braintreepayments.api.americanexpress`
+        * Change parameters of `AmericanExpressGetRewardsBalanceCallback`
+        * Add `AmericanExpressResult`
+    * Samsung Pay
+        * Remove entire Samsung Pay module
+    * PayPal Native Checkout
+        * Remove entire PayPal Native Checkout module
+    * SharedUtils
+        * Update package name to `com.braintreepayments.api.sharedutils`
 
-## unreleased (v4)
+## 4.47.0 (2024-06-06)
 
+* BraintreeCore
+  * Add `appLinkReturnUri` to `BraintreeClient` constructors for Android App Link support (for PayPal web flows only)
+  * Bump `browser-switch` version to `2.7.0`
 * PayPal
-    * Add optional property `PayPalCheckoutRequest.setUserAuthenticationEmail()`
+  * Add `appLinkEnabled` property to `PayPalRequest` for Android App Link support
+  * Add optional property `PayPalCheckoutRequest.setUserAuthenticationEmail()`
 * ShopperInsights (BETA)
-    * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
-    * Add `ShopperInsightsClient.getRecommendedPaymentMethods()` for returning recommendations based on the buyer
+  * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
+  * Add `ShopperInsightsClient.getRecommendedPaymentMethods()` for returning recommendations based on the buyer
+* ThreeDSecure
+  * Fix issue that causes a black screen to display after successful 3DS validation.
+* Venmo
+  * Send `link_type` in `event_params` to PayPal's analytics service (FPTI)
 
 ## 4.46.0 (2024-05-30)
 

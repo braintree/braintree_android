@@ -123,7 +123,6 @@ public class PayPalCheckoutRequestUnitTest {
         assertEquals(1, result.getLineItems().size());
         assertEquals("An Item", result.getLineItems().get(0).getName());
         assertTrue(result.hasUserLocationConsent());
-        assertTrue(result.hasUserLocationConsent());
     }
 
     @Test
