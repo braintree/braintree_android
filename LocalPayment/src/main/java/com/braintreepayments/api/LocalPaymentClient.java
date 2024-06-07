@@ -348,6 +348,6 @@ public class LocalPaymentClient {
 
     private void sendAnalyticsEvent(String paymentType, String eventSuffix) {
         String eventPrefix = (paymentType == null) ? "unknown" : paymentType;
-        braintreeClient.sendAnalyticsEvent(String.format("%s.%s", eventPrefix, eventSuffix), payPalContextId);
+        braintreeClient.sendAnalyticsEvent(String.format("%s.%s", eventPrefix, eventSuffix), new AnalyticsEventPayload.Builder().setPayPalContextId(payPalContextId).build());
     }
 }
