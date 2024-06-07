@@ -118,7 +118,7 @@ class TLSSocketFactory extends SSLSocketFactory {
         if (socket instanceof SSLSocket) {
             ArrayList<String> supportedProtocols =
                     new ArrayList<>(Arrays.asList(((SSLSocket) socket).getSupportedProtocols()));
-            supportedProtocols.retainAll(Collections.singletonList("TLSv1.3"));
+            supportedProtocols.retainAll(Arrays.asList("TLSv1.2", "TLSv1.1", "TLSv1"));
 
             ((SSLSocket) socket).setEnabledProtocols(supportedProtocols.toArray(new String[supportedProtocols.size()]));
         }
