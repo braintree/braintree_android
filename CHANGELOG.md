@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+* BraintreeCore
+ * Use TLS 1.3 for all HTTP requests
+
 ## 4.47.0 (2024-06-06)
 
 * BraintreeCore
