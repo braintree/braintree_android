@@ -4,6 +4,7 @@ import android.net.Uri
 import com.braintreepayments.api.HttpClient.RetryStrategy
 import org.json.JSONException
 import org.json.JSONObject
+import javax.net.ssl.SSLException
 
 /**
  * Network request class that handles Braintree request specifics and threading.
@@ -178,6 +179,7 @@ internal class BraintreeHttpClient(
         private const val USER_AGENT_HEADER = "User-Agent"
         private const val CLIENT_KEY_HEADER = "Client-Key"
 
+        @Throws(SSLException::class)
         private fun createDefaultHttpClient(): HttpClient {
             val socketFactory = TLSSocketFactory(TLSCertificatePinning.certInputStream)
             return HttpClient(socketFactory, BraintreeHttpResponseParser())

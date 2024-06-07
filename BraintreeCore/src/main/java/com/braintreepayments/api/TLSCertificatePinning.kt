@@ -714,7 +714,5 @@ CkPa1mnI2g7vVq2d66WZmpsDtY1EwUya7vmZTxw7BFlntV7lrVxPLhUbq1wJGIbT
 uEnXgUGZxnLYZfCNsC/UAQxvKKpxBLWus/n1InM/97HfA31WJsvQ
 -----END CERTIFICATE-----"""
 
-    @get:Throws(SSLException::class)
-    val certInputStream: InputStream
-        get() = ByteArrayInputStream(CERTIFICATES.toByteArray(StandardCharsets.UTF_8))
+    val certInputStream: InputStream = CERTIFICATES.byteInputStream(Charsets.UTF_8)
 }
