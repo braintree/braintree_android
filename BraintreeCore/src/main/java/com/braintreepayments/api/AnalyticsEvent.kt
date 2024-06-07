@@ -33,7 +33,7 @@ open class AnalyticsEvent internal constructor(
     open val endTime: Long = -1,
 
     @ColumnInfo(name = "endpoint")
-    open val endpoint:  String? = null,
+    open val endpoint: String? = null,
 
     open val timestamp: Long = System.currentTimeMillis()
 ) {

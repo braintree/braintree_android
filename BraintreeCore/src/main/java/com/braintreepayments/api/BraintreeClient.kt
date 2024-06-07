@@ -7,7 +7,6 @@ import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.FragmentActivity
-import com.braintreepayments.api.IntegrationType.Integration
 import org.json.JSONException
 
 /**
