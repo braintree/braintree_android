@@ -48,7 +48,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val appLinkReturnUri: Uri?,
-) {
+) : BTAPITimming {
 
     private val crashReporter: CrashReporter
     private var launchesBrowserSwitchAsNewTask: Boolean = false
@@ -161,7 +161,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     open fun getConfiguration(callback: ConfigurationCallback) {
         getAuthorization { authorization, authError ->
             if (authorization != null) {
-                configurationLoader.loadConfiguration(authorization) { configuration, configError ->
+                configurationLoader.loadConfiguration(authorization, this) { configuration, configError ->
                     if (configuration != null) {
                         callback.onResult(configuration, null)
                     } else {
@@ -548,5 +548,9 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         } else {
             ""
         }
+    }
+
+    override fun sendEvent(startTime: Long, endTime: Long, endpoint: String) {
+        sendAnalyticsEvent(CoreAnalytics.apiRequestLatency, startTime = startTime, endTime = endTime, endpoint = endpoint)
     }
 }

@@ -13,7 +13,7 @@ internal class ConfigurationLoader internal constructor(
         httpClient, ConfigurationCache.getInstance(context)
     )
 
-    fun loadConfiguration(authorization: Authorization, callback: ConfigurationLoaderCallback) {
+    fun loadConfiguration(authorization: Authorization, apiTimming: BTAPITimming? = null, callback: ConfigurationLoaderCallback) {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
             callback.onResult(null, BraintreeException(message))
@@ -36,6 +36,7 @@ internal class ConfigurationLoader internal constructor(
                             try {
                                 val configuration = Configuration.fromJson(it.body)
                                 saveConfigurationToCache(configuration, authorization, configUrl)
+                                apiTimming?.sendEvent(response.startTime, response.endTime, configUrl)
                                 callback.onResult(configuration, null)
                             } catch (jsonException: JSONException) {
                                 callback.onResult(null, jsonException)
