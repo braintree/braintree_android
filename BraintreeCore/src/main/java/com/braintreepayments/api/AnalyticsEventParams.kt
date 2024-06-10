@@ -3,19 +3,10 @@ package com.braintreepayments.api
 import androidx.annotation.RestrictTo
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-data class AnalyticsEventParams private constructor(
-    val payPalContextId: String?,
-    val linkType: String?,
-    val isVaultRequest: Boolean,
+data class AnalyticsEventParams constructor(
+    var payPalContextId: String?,
+    var linkType: String?,
+    var isVaultRequest: Boolean,
 ) {
-    class Builder {
-        private var payPalContextId: String? = null
-        private var linkType: String? = null
-        private var isVaultRequest: Boolean = false
-
-        fun setPayPalContextId(payPalContextId: String?) = apply { this.payPalContextId = payPalContextId }
-        fun setLinkType(linkType: String?) = apply { this.linkType = linkType }
-        fun setIsVaultRequest(isVaultRequest: Boolean) = apply { this.isVaultRequest = isVaultRequest }
-        fun build() = AnalyticsEventParams(payPalContextId, linkType, isVaultRequest)
-    }
+  constructor() : this(null, null, false)
 }
