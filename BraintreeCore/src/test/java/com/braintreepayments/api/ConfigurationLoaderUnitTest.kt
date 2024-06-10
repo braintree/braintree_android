@@ -22,10 +22,10 @@ class ConfigurationLoaderUnitTest {
         every { authorization.configUrl } returns "https://example.com/config"
 
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, callback)
+        sut.loadConfiguration(authorization, null, callback)
 
         val expectedConfigUrl = "https://example.com/config?configVersion=3"
-        val callbackSlot = slot<HttpResponseCallback>()
+        val callbackSlot = slot<BTHttpResponseCallback>()
         verify {
             braintreeHttpClient.get(
                     expectedConfigUrl,
@@ -37,7 +37,7 @@ class ConfigurationLoaderUnitTest {
         }
 
         val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, null)
+        httpResponseCallback.onResult(BTHttpResponse(body = Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN), null)
 
         verify { callback.onResult(ofType(Configuration::class), null) }
     }
@@ -48,10 +48,10 @@ class ConfigurationLoaderUnitTest {
         every { authorization.bearer } returns "bearer"
 
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, callback)
+        sut.loadConfiguration(authorization, null, callback)
 
         val expectedConfigUrl = "https://example.com/config?configVersion=3"
-        val callbackSlot = slot<HttpResponseCallback>()
+        val callbackSlot = slot<BTHttpResponseCallback>()
         verify {
             braintreeHttpClient.get(
                     expectedConfigUrl,
@@ -63,7 +63,7 @@ class ConfigurationLoaderUnitTest {
         }
 
         val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, null)
+        httpResponseCallback.onResult(BTHttpResponse(body = Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN), null)
         val cacheKey = Base64.encodeToString(
             "https://example.com/config?configVersion=3bearer".toByteArray(),
             0
@@ -78,9 +78,9 @@ class ConfigurationLoaderUnitTest {
     fun loadConfiguration_onJSONParsingError_forwardsExceptionToErrorResponseListener() {
         every { authorization.configUrl } returns "https://example.com/config"
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, callback)
+        sut.loadConfiguration(authorization, null, callback)
 
-        val callbackSlot = slot<HttpResponseCallback>()
+        val callbackSlot = slot<BTHttpResponseCallback>()
         verify {
             braintreeHttpClient.get(
                     ofType(String::class),
@@ -91,7 +91,7 @@ class ConfigurationLoaderUnitTest {
             )
         }
         val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult("not json", null)
+        httpResponseCallback.onResult(BTHttpResponse(body = "not json"), null)
         verify {
             callback.onResult(null, ofType(JSONException::class))
         }
@@ -101,9 +101,9 @@ class ConfigurationLoaderUnitTest {
     fun loadConfiguration_onHttpError_forwardsExceptionToErrorResponseListener() {
         every { authorization.configUrl } returns "https://example.com/config"
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, callback)
+        sut.loadConfiguration(authorization, null, callback)
 
-        val callbackSlot = slot<HttpResponseCallback>()
+        val callbackSlot = slot<BTHttpResponseCallback>()
 
         verify {
             braintreeHttpClient.get(
@@ -134,7 +134,7 @@ class ConfigurationLoaderUnitTest {
     fun loadConfiguration_whenInvalidToken_forwardsExceptionToCallback() {
         val authorization: Authorization = InvalidAuthorization("invalid", "token invalid")
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, callback)
+        sut.loadConfiguration(authorization, null, callback)
         val errorSlot = slot<BraintreeException>()
         verify {
             callback.onResult(null, capture(errorSlot))
@@ -155,7 +155,7 @@ class ConfigurationLoaderUnitTest {
         every { configurationCache.getConfiguration(cacheKey) } returns Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN
 
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, callback)
+        sut.loadConfiguration(authorization, null, callback)
 
         verify(exactly = 0) {
             braintreeHttpClient.get(
@@ -163,7 +163,7 @@ class ConfigurationLoaderUnitTest {
                     null,
                     authorization,
                     ofType(Int::class),
-                    ofType(HttpResponseCallback::class)
+                    ofType(BTHttpResponseCallback::class)
             )
         }
         verify { callback.onResult(ofType(Configuration::class), null) }
