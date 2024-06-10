@@ -36,7 +36,7 @@ internal class ConfigurationLoader internal constructor(
                             try {
                                 val configuration = Configuration.fromJson(it.body)
                                 saveConfigurationToCache(configuration, authorization, configUrl)
-                                apiTimming?.sendEvent(response.startTime, response.endTime, configUrl)
+                                apiTimming?.sendEvent(response.startTime, response.endTime, "v1/configuration")
                                 callback.onResult(configuration, null)
                             } catch (jsonException: JSONException) {
                                 callback.onResult(null, jsonException)
