@@ -216,12 +216,12 @@ public class PayPalClient {
     private void sendCheckoutRequest(final FragmentActivity activity, final PayPalCheckoutRequest payPalCheckoutRequest, final PayPalFlowStartedCallback callback) {
         braintreeClient.sendAnalyticsEvent(
                 "paypal.single-payment.selected",
-                new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setIsVaultRequest(isVaultRequest).build()
+                getAnalyticsParams()
         );
         if (payPalCheckoutRequest.getShouldOfferPayLater()) {
             braintreeClient.sendAnalyticsEvent(
                     "paypal.single-payment.paylater.offered",
-                    new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setIsVaultRequest(isVaultRequest).build()
+                    getAnalyticsParams()
             );
         }
 
@@ -244,7 +244,7 @@ public class PayPalClient {
                 } catch (BrowserSwitchException browserSwitchException) {
                     braintreeClient.sendAnalyticsEvent(
                             "paypal.invalid-manifest",
-                            new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setIsVaultRequest(isVaultRequest).build()
+                            getAnalyticsParams()
                     );
                     Exception manifestInvalidError =
                             createBrowserSwitchError(browserSwitchException);
@@ -260,12 +260,12 @@ public class PayPalClient {
     private void sendVaultRequest(final FragmentActivity activity, final PayPalVaultRequest payPalVaultRequest, final PayPalFlowStartedCallback callback) {
         braintreeClient.sendAnalyticsEvent(
                 "paypal.billing-agreement.selected",
-                new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setIsVaultRequest(isVaultRequest).build()
+                getAnalyticsParams()
         );
         if (payPalVaultRequest.getShouldOfferCredit()) {
             braintreeClient.sendAnalyticsEvent(
                     "paypal.billing-agreement.credit.offered",
-                    new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setIsVaultRequest(isVaultRequest).build()
+                    getAnalyticsParams()
             );
         }
 
@@ -288,7 +288,7 @@ public class PayPalClient {
                 } catch (BrowserSwitchException browserSwitchException) {
                     braintreeClient.sendAnalyticsEvent(
                             "paypal.invalid-manifest",
-                            new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setIsVaultRequest(isVaultRequest).build()
+                            getAnalyticsParams()
                     );
                     Exception manifestInvalidError =
                             createBrowserSwitchError(browserSwitchException);
@@ -309,7 +309,7 @@ public class PayPalClient {
                     payPalContextId = payPalResponse.getPairingId();
                     braintreeClient.sendAnalyticsEvent(
                             String.format("%s.browser-switch.started", analyticsPrefix),
-                            new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setIsVaultRequest(isVaultRequest).build()
+                            getAnalyticsParams()
                     );
 
                     try {
@@ -437,7 +437,7 @@ public class PayPalClient {
                 callback.onResult(null, new UserCanceledException("User canceled PayPal."));
                 braintreeClient.sendAnalyticsEvent(
                         String.format("%s.browser-switch.canceled", analyticsPrefix),
-                        new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setIsVaultRequest(isVaultRequest).build()
+                        getAnalyticsParams()
                 );
                 break;
             case BrowserSwitchStatus.SUCCESS:
@@ -466,16 +466,16 @@ public class PayPalClient {
                                 if (payPalAccountNonce != null && payPalAccountNonce.getCreditFinancing() != null) {
                                     braintreeClient.sendAnalyticsEvent(
                                             "paypal.credit.accepted",
-                                            new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setIsVaultRequest(isVaultRequest).build()
+                                            getAnalyticsParams()
                                     );
                                 }
                                 callback.onResult(payPalAccountNonce, error);
                             }
                         });
-
+                        
                         braintreeClient.sendAnalyticsEvent(
                                 String.format("%s.browser-switch.succeeded", analyticsPrefix),
-                                new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setIsVaultRequest(isVaultRequest).build()
+                                getAnalyticsParams()
                         );
                     } else {
                         callback.onResult(null, new BraintreeException("Unknown error"));
@@ -484,13 +484,13 @@ public class PayPalClient {
                     callback.onResult(null, e);
                     braintreeClient.sendAnalyticsEvent(
                             String.format("%s.browser-switch.canceled", analyticsPrefix),
-                            new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setIsVaultRequest(isVaultRequest).build()
+                            getAnalyticsParams()
                     );
                 } catch (JSONException | PayPalBrowserSwitchException e) {
                     callback.onResult(null, e);
                     braintreeClient.sendAnalyticsEvent(
                             String.format("%s.browser-switch.failed", analyticsPrefix),
-                            new AnalyticsEventParams.Builder().setPayPalContextId(payPalContextId).setIsVaultRequest(isVaultRequest).build()
+                            getAnalyticsParams()
                     );
                 }
                 break;
@@ -523,5 +523,12 @@ public class PayPalClient {
         } else {
             throw new PayPalBrowserSwitchException("The response contained inconsistent data.");
         }
+    }
+
+    private AnalyticsEventParams getAnalyticsParams() {
+        AnalyticsEventParams eventParameters = new AnalyticsEventParams();
+        eventParameters.setPayPalContextId(payPalContextId);
+        eventParameters.setVaultRequest(isVaultRequest);
+        return eventParameters;
     }
 }

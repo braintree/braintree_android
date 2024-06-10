@@ -188,7 +188,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendAnalyticsEvent(
             eventName: String,
-            params: AnalyticsEventParams = AnalyticsEventParams.Builder().build()
+            params: AnalyticsEventParams = AnalyticsEventParams()
     ) {
         getAuthorization { authorization, _ ->
             if (authorization != null) {
