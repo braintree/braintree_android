@@ -78,7 +78,6 @@ class SynchronousHttpClient {
         try {
             int responseCode = connection.getResponseCode();
             long endTime = System.currentTimeMillis();
-            long duration = endTime - startTime;
 
             String responseBody = parser.parse(responseCode, connection);
 

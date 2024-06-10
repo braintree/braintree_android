@@ -42,7 +42,7 @@ class HttpClient {
     }
 
     String sendRequest(HttpRequest request) throws Exception {
-        return syncHttpClient.request(request).body;
+        return syncHttpClient.request(request).getBody();
     }
 
     void sendRequest(HttpRequest request, BTHttpResponseCallback callback) {
