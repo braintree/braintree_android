@@ -1,6 +1,9 @@
 package com.braintreepayments.api
 
-public data class AnalyticsEventParams private constructor(
+import androidx.annotation.RestrictTo
+
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+data class AnalyticsEventParams private constructor(
     val payPalContextId: String?,
     val linkType: String?,
     val isVaultRequest: Boolean,
