@@ -13,7 +13,11 @@ internal class ConfigurationLoader internal constructor(
         httpClient, ConfigurationCache.getInstance(context)
     )
 
-    fun loadConfiguration(authorization: Authorization, apiTimming: BTAPITimming? = null, callback: ConfigurationLoaderCallback) {
+    fun loadConfiguration(
+            authorization: Authorization,
+            apiTimming: BTAPITimming? = null,
+            callback: ConfigurationLoaderCallback
+    ) {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
             callback.onResult(null, BraintreeException(message))

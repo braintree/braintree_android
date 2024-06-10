@@ -551,6 +551,11 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     }
 
     override fun sendEvent(startTime: Long, endTime: Long, endpoint: String) {
-        sendAnalyticsEvent(CoreAnalytics.apiRequestLatency, startTime = startTime, endTime = endTime, endpoint = endpoint)
+        sendAnalyticsEvent(
+                CoreAnalytics.apiRequestLatency,
+                startTime = startTime,
+                endTime = endTime,
+                endpoint = endpoint
+        )
     }
 }
