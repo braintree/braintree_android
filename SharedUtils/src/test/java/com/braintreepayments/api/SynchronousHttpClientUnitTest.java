@@ -241,7 +241,7 @@ public class SynchronousHttpClientUnitTest {
         when(httpResponseParser.parse(200, connection)).thenReturn("http_ok");
 
         SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
-        String result = sut.request(httpRequest);
+        String result = sut.request(httpRequest).getBody();
         assertEquals("http_ok", result);
     }
 

@@ -18,7 +18,7 @@ import java.nio.charset.StandardCharsets
 class BraintreeGraphQLClientUnitTest {
 
     private lateinit var httpClient: HttpClient
-    private lateinit var httpResponseCallback: HttpResponseCallback
+    private lateinit var httpResponseCallback: BTHttpResponseCallback
     private lateinit var configuration: Configuration
     private lateinit var authorization: Authorization
 

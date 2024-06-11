@@ -30,10 +30,10 @@ public class HttpClientTest {
                 .baseUrl("https://bad.endpoint")
                 .path("bad/path");
 
-        sut.sendRequest(httpRequest, new HttpResponseCallback() {
+        sut.sendRequest(httpRequest, new BTHttpResponseCallback() {
             @Override
-            public void onResult(String responseBody, Exception httpError) {
-                assertNull(responseBody);
+            public void onResult(BTHttpResponse response, Exception httpError) {
+                assertNull(response);
                 assertNotNull(httpError);
                 countDownLatch.countDown();
             }
