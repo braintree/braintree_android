@@ -1,5 +1,5 @@
 package com.braintreepayments.api
 
-interface BTAPITimming {
+interface BTAPITiming {
     fun sendEvent(startTime: Long, endTime: Long, endpoint: String)
 }

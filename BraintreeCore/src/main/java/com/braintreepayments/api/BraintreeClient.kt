@@ -48,7 +48,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val appLinkReturnUri: Uri?,
-) : BTAPITimming {
+) : BTAPITiming {
 
     private val crashReporter: CrashReporter
     private var launchesBrowserSwitchAsNewTask: Boolean = false
