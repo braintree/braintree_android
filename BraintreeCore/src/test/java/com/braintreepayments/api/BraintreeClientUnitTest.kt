@@ -16,6 +16,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
+
 @RunWith(RobolectricTestRunner::class)
 class BraintreeClientUnitTest {
 
@@ -156,6 +157,7 @@ class BraintreeClientUnitTest {
         val params = createDefaultParams(configurationLoader, authorizationLoader)
         val sut = BraintreeClient(params)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
+        val btHttpResponseCallbackSlot = slot<BTHttpResponseCallback>()
 
         sut.sendGET("sample-url", httpResponseCallback)
         verify {
@@ -163,9 +165,11 @@ class BraintreeClientUnitTest {
                 "sample-url",
                 configuration,
                 authorization,
-                httpResponseCallback
+                capture(btHttpResponseCallbackSlot)
             )
         }
+
+        assertTrue(btHttpResponseCallbackSlot.isCaptured)
     }
 
     @Test
@@ -219,6 +223,7 @@ class BraintreeClientUnitTest {
         val params = createDefaultParams(configurationLoader, authorizationLoader)
         val sut = BraintreeClient(params)
 
+        val btHttpResponseCallbackSlot = slot<BTHttpResponseCallback>()
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
         sut.sendPOST("sample-url", "{}", emptyMap(), httpResponseCallback)
 
@@ -228,9 +233,11 @@ class BraintreeClientUnitTest {
                 data = "{}",
                 configuration = configuration,
                 authorization = authorization,
-                callback = httpResponseCallback
+                callback = capture(btHttpResponseCallbackSlot)
             )
         }
+
+        assertTrue(btHttpResponseCallbackSlot.isCaptured)
     }
 
     @Test
@@ -343,6 +350,7 @@ class BraintreeClientUnitTest {
         val params = createDefaultParams(configurationLoader, authorizationLoader)
         val sut = BraintreeClient(params)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
+        val btHttpResponseCallbackSlot = slot<BTHttpResponseCallback>()
 
         sut.sendGraphQLPOST("{}", httpResponseCallback)
         verify {
@@ -350,9 +358,11 @@ class BraintreeClientUnitTest {
                 "{}",
                 configuration,
                 authorization,
-                httpResponseCallback
+                capture(btHttpResponseCallbackSlot)
             )
         }
+
+        assertTrue(btHttpResponseCallbackSlot.isCaptured)
     }
 
     @Test
@@ -661,10 +671,13 @@ class BraintreeClientUnitTest {
         }
         authCallbackSlot.captured.onAuthorizationResult(authorization, null)
 
+        val apiTimingSlot = slot<BTAPITiming>()
         val callbackSlot = slot<ConfigurationLoaderCallback>()
         verify {
-            configurationLoader.loadConfiguration(authorization, capture(callbackSlot))
+            configurationLoader.loadConfiguration(authorization, capture(apiTimingSlot), capture(callbackSlot))
         }
+
+        assertEquals(sut, apiTimingSlot.captured)
 
         callbackSlot.captured.onResult(configuration, null)
 
