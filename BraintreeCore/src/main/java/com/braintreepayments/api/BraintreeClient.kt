@@ -240,7 +240,11 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                             override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
                                 response?.let {
                                     try {
-                                        val params = AnalyticsEventParams(startTime = response.startTime, endTime = response.endTime, endpoint = url)
+                                        val params = AnalyticsEventParams(
+                                                startTime = response.startTime,
+                                                endTime = response.endTime,
+                                                endpoint = url
+                                        )
                                         sendAnalyticsEvent(
                                             CoreAnalytics.apiRequestLatency,
                                             params
@@ -292,7 +296,11 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                                 override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
                                     response?.let {
                                         try {
-                                            val params = AnalyticsEventParams(startTime = response.startTime, endTime = response.endTime, endpoint = url)
+                                            val params = AnalyticsEventParams(
+                                                    startTime = response.startTime,
+                                                    endTime = response.endTime,
+                                                    endpoint = url
+                                            )
                                             sendAnalyticsEvent(
                                                 CoreAnalytics.apiRequestLatency,
                                                 params
@@ -337,7 +345,11 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                                         response?.let {
                                             try {
                                                 val query = getSubstringAfterKey(payload.toString(), "query")
-                                                val params = AnalyticsEventParams(startTime = response.startTime, endTime = response.endTime, endpoint = query)
+                                                val params = AnalyticsEventParams(
+                                                        startTime = response.startTime,
+                                                        endTime = response.endTime,
+                                                        endpoint = query
+                                                )
                                                 sendAnalyticsEvent(
                                                     CoreAnalytics.apiRequestLatency,
                                                     params
