@@ -168,4 +168,36 @@ class ConfigurationLoaderUnitTest {
         }
         verify { callback.onResult(ofType(Configuration::class), null) }
     }
+
+    @Test
+    fun loadConfiguration_withoutCachedConfiguration_sendAnalyticsEvent() {
+        every { authorization.configUrl } returns "https://example.com/config"
+        every { authorization.bearer } returns "bearer"
+
+        val apiTiming = mockk<BTAPITiming>()
+
+        every {
+            apiTiming.sendEvent(0, 0, "v1/configuration")
+        } returns Unit
+
+        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
+        sut.loadConfiguration(authorization, apiTiming, callback)
+
+        val expectedConfigUrl = "https://example.com/config?configVersion=3"
+        val callbackSlot = slot<BTHttpResponseCallback>()
+        verify {
+            braintreeHttpClient.get(
+                    expectedConfigUrl,
+                    null,
+                    authorization,
+                    HttpClient.RETRY_MAX_3_TIMES,
+                    capture(callbackSlot)
+            )
+        }
+
+        val httpResponseCallback = callbackSlot.captured
+        httpResponseCallback.onResult(BTHttpResponse(body = Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN), null)
+
+        verify { callback.onResult(ofType(Configuration::class), null) }
+    }
 }

@@ -33,26 +33,24 @@ internal class ConfigurationLoader internal constructor(
         cachedConfig?.let {
             callback.onResult(cachedConfig, null)
         } ?: run {
-            httpClient.get(configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES,
-                object : BTHttpResponseCallback {
-                    override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
-                        response?.let {
-                            try {
-                                val configuration = Configuration.fromJson(it.body)
-                                saveConfigurationToCache(configuration, authorization, configUrl)
-                                apiTiming?.sendEvent(response.startTime, response.endTime, "v1/configuration")
-                                callback.onResult(configuration, null)
-                            } catch (jsonException: JSONException) {
-                                callback.onResult(null, jsonException)
-                            }
-                        } ?: httpError?.let { error ->
-                            val errorMessageFormat = "Request for configuration has failed: %s"
-                            val errorMessage = String.format(errorMessageFormat, error.message)
-                            val configurationException = ConfigurationException(errorMessage, error)
-                            callback.onResult(null, configurationException)
-                        }
+            httpClient.get(configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES
+            ) { response, httpError ->
+                response?.let {
+                    try {
+                        val configuration = Configuration.fromJson(it.body)
+                        saveConfigurationToCache(configuration, authorization, configUrl)
+                        apiTiming?.sendEvent(it.startTime, it.endTime, "v1/configuration")
+                        callback.onResult(configuration, null)
+                    } catch (jsonException: JSONException) {
+                        callback.onResult(null, jsonException)
                     }
-                })
+                } ?: httpError?.let { error ->
+                    val errorMessageFormat = "Request for configuration has failed: %s"
+                    val errorMessage = String.format(errorMessageFormat, error.message)
+                    val configurationException = ConfigurationException(errorMessage, error)
+                    callback.onResult(null, configurationException)
+                }
+            }
         }
     }
 
