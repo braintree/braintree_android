@@ -81,7 +81,8 @@ internal class BraintreeGraphQLClient(
 
         @Throws(SSLException::class)
         private fun createDefaultHttpClient(): HttpClient {
-            val socketFactory = TLSSocketFactory(TLSCertificatePinning.certInputStream)
+            val socketFactory =
+                TLSSocketFactory(TLSCertificatePinning.createCertificateInputStream())
             return HttpClient(socketFactory, BraintreeGraphQLResponseParser())
         }
     }
