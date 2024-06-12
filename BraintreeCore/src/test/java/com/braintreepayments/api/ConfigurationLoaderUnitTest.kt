@@ -170,7 +170,7 @@ class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    fun loadConfiguration_withoutCachedConfiguration_sendAnalyticsEvent() {
+    fun loadConfiguration_withoutCachedConfiguration_sendsAnalyticsEvent() {
         every { authorization.configUrl } returns "https://example.com/config"
         every { authorization.bearer } returns "bearer"
 
