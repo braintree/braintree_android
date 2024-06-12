@@ -236,31 +236,29 @@ open class BraintreeClient @VisibleForTesting internal constructor(
             if (authorization != null) {
                 getConfiguration { configuration, configError ->
                     if (configuration != null) {
-                        httpClient.get(url, configuration, authorization, object : BTHttpResponseCallback {
-                            override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
-                                response?.let {
-                                    try {
-                                        val params = AnalyticsEventParams(
-                                            startTime = response.startTime,
-                                            endTime = response.endTime,
-                                            endpoint = url
-                                        )
-                                        sendAnalyticsEvent(
-                                            CoreAnalytics.apiRequestLatency,
-                                            params
-                                        )
-                                        responseCallback.onResult(it.body, null)
-                                    } catch (jsonException: JSONException) {
-                                        responseCallback.onResult(null, jsonException)
-                                    }
-                                } ?: httpError?.let { error ->
-                                    val errorMessageFormat = "Request has failed: %s"
-                                    val errorMessage = String.format(errorMessageFormat, error.message)
-                                    val configurationException = ConfigurationException(errorMessage, error)
-                                    responseCallback.onResult(null, configurationException)
+                        httpClient.get(url, configuration, authorization) { response, httpError ->
+                            response?.let {
+                                try {
+                                    val params = AnalyticsEventParams(
+                                        startTime = it.startTime,
+                                        endTime = it.endTime,
+                                        endpoint = url
+                                    )
+                                    sendAnalyticsEvent(
+                                        CoreAnalytics.apiRequestLatency,
+                                        params
+                                    )
+                                    responseCallback.onResult(it.body, null)
+                                } catch (jsonException: JSONException) {
+                                    responseCallback.onResult(null, jsonException)
                                 }
+                            } ?: httpError?.let { error ->
+                                val errorMessageFormat = "Request has failed: %s"
+                                val errorMessage = String.format(errorMessageFormat, error.message)
+                                val exception = BraintreeException(errorMessage, error)
+                                responseCallback.onResult(null, exception)
                             }
-                        })
+                        }
                     } else {
                         responseCallback.onResult(null, configError)
                     }
@@ -291,32 +289,30 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                             data = data,
                             configuration = configuration,
                             authorization = authorization,
-                            additionalHeaders = additionalHeaders,
-                            object : BTHttpResponseCallback {
-                                override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
-                                    response?.let {
-                                        try {
-                                            val params = AnalyticsEventParams(
-                                                startTime = response.startTime,
-                                                endTime = response.endTime,
-                                                endpoint = url
-                                            )
-                                            sendAnalyticsEvent(
-                                                CoreAnalytics.apiRequestLatency,
-                                                params
-                                            )
-                                            responseCallback.onResult(it.body, null)
-                                        } catch (jsonException: JSONException) {
-                                            responseCallback.onResult(null, jsonException)
-                                        }
-                                    } ?: httpError?.let { error ->
-                                        val errorMessageFormat = "Request has failed: %s"
-                                        val errorMessage = String.format(errorMessageFormat, error.message)
-                                        val configurationException = ConfigurationException(errorMessage, error)
-                                        responseCallback.onResult(null, configurationException)
-                                    }
+                            additionalHeaders = additionalHeaders
+                        ) { response, httpError ->
+                            response?.let {
+                                try {
+                                    val params = AnalyticsEventParams(
+                                        startTime = it.startTime,
+                                        endTime = it.endTime,
+                                        endpoint = url
+                                    )
+                                    sendAnalyticsEvent(
+                                        CoreAnalytics.apiRequestLatency,
+                                        params
+                                    )
+                                    responseCallback.onResult(it.body, null)
+                                } catch (jsonException: JSONException) {
+                                    responseCallback.onResult(null, jsonException)
                                 }
-                            })
+                            } ?: httpError?.let { error ->
+                                val errorMessageFormat = "Request has failed: %s"
+                                val errorMessage = String.format(errorMessageFormat, error.message)
+                                val exception = BraintreeException(errorMessage, error)
+                                responseCallback.onResult(null, exception)
+                            }
+                        }
                     } else {
                         responseCallback.onResult(null, configError)
                     }
@@ -339,33 +335,31 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                         graphQLClient.post(
                             payload,
                             configuration,
-                            authorization,
-                                object : BTHttpResponseCallback {
-                                    override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
-                                        response?.let {
-                                            try {
-                                                val query = getSubstringAfterKey(payload.toString(), "query")
-                                                val params = AnalyticsEventParams(
-                                                    startTime = response.startTime,
-                                                    endTime = response.endTime,
-                                                    endpoint = query
-                                                )
-                                                sendAnalyticsEvent(
-                                                    CoreAnalytics.apiRequestLatency,
-                                                    params
-                                                )
-                                                responseCallback.onResult(it.body, null)
-                                            } catch (jsonException: JSONException) {
-                                                responseCallback.onResult(null, jsonException)
-                                            }
-                                        } ?: httpError?.let { error ->
-                                            val errorMessageFormat = "Request has failed: %s"
-                                            val errorMessage = String.format(errorMessageFormat, error.message)
-                                            val configurationException = ConfigurationException(errorMessage, error)
-                                            responseCallback.onResult(null, configurationException)
-                                        }
-                                    }
-                                })
+                            authorization
+                        ) { response, httpError ->
+                            response?.let {
+                                try {
+                                    val query = getSubstringAfterKey(payload.toString(), "query")
+                                    val params = AnalyticsEventParams(
+                                        startTime = it.startTime,
+                                        endTime = it.endTime,
+                                        endpoint = query
+                                    )
+                                    sendAnalyticsEvent(
+                                        CoreAnalytics.apiRequestLatency,
+                                        params
+                                    )
+                                    responseCallback.onResult(it.body, null)
+                                } catch (jsonException: JSONException) {
+                                    responseCallback.onResult(null, jsonException)
+                                }
+                            } ?: httpError?.let { error ->
+                                val errorMessageFormat = "Request has failed: %s"
+                                val errorMessage = String.format(errorMessageFormat, error.message)
+                                val exception = BraintreeException(errorMessage, error)
+                                responseCallback.onResult(null, exception)
+                            }
+                        }
                     } else {
                         responseCallback.onResult(null, configError)
                     }
