@@ -241,9 +241,9 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                                 response?.let {
                                     try {
                                         val params = AnalyticsEventParams(
-                                                startTime = response.startTime,
-                                                endTime = response.endTime,
-                                                endpoint = url
+                                            startTime = response.startTime,
+                                            endTime = response.endTime,
+                                            endpoint = url
                                         )
                                         sendAnalyticsEvent(
                                             CoreAnalytics.apiRequestLatency,
@@ -297,9 +297,9 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                                     response?.let {
                                         try {
                                             val params = AnalyticsEventParams(
-                                                    startTime = response.startTime,
-                                                    endTime = response.endTime,
-                                                    endpoint = url
+                                                startTime = response.startTime,
+                                                endTime = response.endTime,
+                                                endpoint = url
                                             )
                                             sendAnalyticsEvent(
                                                 CoreAnalytics.apiRequestLatency,
@@ -346,9 +346,9 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                                             try {
                                                 val query = getSubstringAfterKey(payload.toString(), "query")
                                                 val params = AnalyticsEventParams(
-                                                        startTime = response.startTime,
-                                                        endTime = response.endTime,
-                                                        endpoint = query
+                                                    startTime = response.startTime,
+                                                    endTime = response.endTime,
+                                                    endpoint = query
                                                 )
                                                 sendAnalyticsEvent(
                                                     CoreAnalytics.apiRequestLatency,
