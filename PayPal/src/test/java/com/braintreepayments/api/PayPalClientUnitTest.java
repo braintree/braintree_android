@@ -290,8 +290,20 @@ public class PayPalClientUnitTest {
         PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
         sut.tokenizePayPalAccount(activity, payPalVaultRequest);
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.selected", null, null, true);
-        verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.browser-switch.started", "BA-1234", null, true);
+        AnalyticsEventParams eventParams = new AnalyticsEventParams();
+        eventParams.setVaultRequest(true);
+
+        verify(braintreeClient).sendAnalyticsEvent(
+                "paypal.billing-agreement.selected",
+                eventParams
+        );
+
+        eventParams.setPayPalContextId("BA-1234");
+
+        verify(braintreeClient).sendAnalyticsEvent(
+                "paypal.billing-agreement.browser-switch.started",
+                eventParams
+        );
     }
 
     @Test
@@ -430,8 +442,19 @@ public class PayPalClientUnitTest {
         PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
         sut.tokenizePayPalAccount(activity, payPalCheckoutRequest);
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.selected", null, null, false);
-        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.browser-switch.started", "EC-1234", null, false);
+        AnalyticsEventParams eventParams = new AnalyticsEventParams();
+
+        verify(braintreeClient).sendAnalyticsEvent(
+                "paypal.single-payment.selected",
+                eventParams
+        );
+
+        eventParams.setPayPalContextId("EC-1234");
+
+        verify(braintreeClient).sendAnalyticsEvent(
+                "paypal.single-payment.browser-switch.started",
+                eventParams
+        );
     }
 
     @Test
@@ -444,7 +467,10 @@ public class PayPalClientUnitTest {
         request.setShouldOfferPayLater(true);
         sut.tokenizePayPalAccount(activity, request);
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.paylater.offered", null, null, false);
+        verify(braintreeClient).sendAnalyticsEvent(
+                "paypal.single-payment.paylater.offered",
+                new AnalyticsEventParams()
+        );
     }
 
     @Test
@@ -490,7 +516,13 @@ public class PayPalClientUnitTest {
         PayPalClient sut = new PayPalClient(activity, lifecycle, braintreeClient, payPalInternalClient);
         sut.tokenizePayPalAccount(activity, payPalRequest);
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.credit.offered", null, null, true);
+        AnalyticsEventParams eventParams = new AnalyticsEventParams();
+        eventParams.setVaultRequest(true);
+
+        verify(braintreeClient).sendAnalyticsEvent(
+                "paypal.billing-agreement.credit.offered",
+                eventParams
+        );
     }
 
     @Test
@@ -618,7 +650,13 @@ public class PayPalClientUnitTest {
 
         sut.onBrowserSwitchResult(browserSwitchResult);
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.browser-switch.succeeded", "EC-HERMES-SANDBOX-EC-TOKEN", null, false);
+        AnalyticsEventParams eventParams = new AnalyticsEventParams();
+        eventParams.setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN");
+
+        verify(braintreeClient).sendAnalyticsEvent(
+                "paypal.billing-agreement.browser-switch.succeeded",
+                eventParams
+        );
     }
 
     @Test
@@ -649,7 +687,10 @@ public class PayPalClientUnitTest {
 
         sut.onBrowserSwitchResult(browserSwitchResult);
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.browser-switch.succeeded", null, null, false);
+        verify(braintreeClient).sendAnalyticsEvent(
+                "paypal.billing-agreement.browser-switch.succeeded",
+                new AnalyticsEventParams()
+        );
     }
 
     @Test
@@ -680,7 +721,13 @@ public class PayPalClientUnitTest {
 
         sut.onBrowserSwitchResult(browserSwitchResult);
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.browser-switch.succeeded", "EC-HERMES-SANDBOX-EC-TOKEN", null, false);
+        AnalyticsEventParams eventParams = new AnalyticsEventParams();
+        eventParams.setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN");
+
+        verify(braintreeClient).sendAnalyticsEvent(
+                "paypal.single-payment.browser-switch.succeeded",
+                eventParams
+        );
     }
 
     public void onBrowserSwitchResult_oneTimePayment_whenTokenIsNull_sendsAnalyticsEvents() throws JSONException {
@@ -772,7 +819,13 @@ public class PayPalClientUnitTest {
 
         sut.onBrowserSwitchResult(browserSwitchResult);
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.credit.accepted", "EC-HERMES-SANDBOX-EC-TOKEN", null, false);
+        AnalyticsEventParams eventParams = new AnalyticsEventParams();
+        eventParams.setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN");
+
+        verify(braintreeClient).sendAnalyticsEvent(
+                "paypal.credit.accepted",
+                eventParams
+        );
     }
 
     @Test
@@ -804,7 +857,10 @@ public class PayPalClientUnitTest {
 
         sut.onBrowserSwitchResult(browserSwitchResult);
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.credit.accepted", null, null, false);
+        verify(braintreeClient).sendAnalyticsEvent(
+                "paypal.credit.accepted",
+                new AnalyticsEventParams()
+        );
     }
 
     @Test
@@ -842,7 +898,10 @@ public class PayPalClientUnitTest {
         assertEquals("User canceled PayPal.", exception.getMessage());
         assertTrue(((UserCanceledException) exception).isExplicitCancelation());
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.browser-switch.canceled", null, null, false);
+        verify(braintreeClient).sendAnalyticsEvent(
+                "paypal.single-payment.browser-switch.canceled",
+                new AnalyticsEventParams()
+        );
     }
 
     @Test
@@ -880,7 +939,13 @@ public class PayPalClientUnitTest {
         assertEquals("User canceled PayPal.", exception.getMessage());
         assertTrue(((UserCanceledException) exception).isExplicitCancelation());
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.browser-switch.canceled", "EC-HERMES-SANDBOX-EC-TOKEN", null, false);
+        AnalyticsEventParams eventParams = new AnalyticsEventParams();
+        eventParams.setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN");
+
+        verify(braintreeClient).sendAnalyticsEvent(
+                "paypal.single-payment.browser-switch.canceled",
+                eventParams
+        );
     }
 
     @Test
@@ -918,7 +983,10 @@ public class PayPalClientUnitTest {
         assertEquals("User canceled PayPal.", exception.getMessage());
         assertTrue(((UserCanceledException) exception).isExplicitCancelation());
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.browser-switch.canceled", null, null, false);
+        verify(braintreeClient).sendAnalyticsEvent(
+                "paypal.single-payment.browser-switch.canceled",
+                new AnalyticsEventParams()
+        );
     }
 
     @Test
@@ -942,7 +1010,10 @@ public class PayPalClientUnitTest {
         assertEquals("User canceled PayPal.", exception.getMessage());
         assertFalse(((UserCanceledException) exception).isExplicitCancelation());
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.browser-switch.canceled", null, null, false);
+        verify(braintreeClient).sendAnalyticsEvent(
+                "paypal.single-payment.browser-switch.canceled",
+                new AnalyticsEventParams()
+        );
     }
 
     @Test
@@ -970,7 +1041,10 @@ public class PayPalClientUnitTest {
         assertEquals("User canceled PayPal.", exception.getMessage());
         assertFalse(((UserCanceledException) exception).isExplicitCancelation());
 
-        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.browser-switch.canceled", null, null, false);
+        verify(braintreeClient).sendAnalyticsEvent(
+                "paypal.single-payment.browser-switch.canceled",
+                new AnalyticsEventParams()
+        );
     }
 
     @Test

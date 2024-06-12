@@ -108,13 +108,13 @@ public class VisaCheckoutClient {
                     try {
                         VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJSON(tokenizationResponse);
                         callback.onResult(visaCheckoutNonce, null);
-                        braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.succeeded", null, null, false, -1, -1, null);
+                        braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.succeeded", new AnalyticsEventParams());
                     } catch (JSONException e) {
                         callback.onResult(null, e);
                     }
                 } else {
                     callback.onResult(null, exception);
-                    braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.failed", null, null, false, -1, -1, null);
+                    braintreeClient.sendAnalyticsEvent("visacheckout.tokenize.failed", new AnalyticsEventParams());
                 }
             }
         });

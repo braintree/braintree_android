@@ -189,12 +189,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendAnalyticsEvent(
             eventName: String,
-            payPalContextId: String? = null,
-            linkType: String? = null,
-            isVaultRequest: Boolean = false,
-            startTime: Long = -1,
-            endTime: Long = -1,
-            endpoint: String? = null
+            params: AnalyticsEventParams = AnalyticsEventParams()
     ) {
         getAuthorization { authorization, _ ->
             if (authorization != null) {
@@ -202,13 +197,13 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                     val isVenmoInstalled = deviceInspector.isVenmoInstalled(applicationContext)
                     val event = AnalyticsEvent(
                             eventName,
-                            payPalContextId,
-                            linkType,
+                            params.payPalContextId,
+                            params.linkType,
                             isVenmoInstalled,
-                            isVaultRequest,
-                            startTime,
-                            endTime,
-                            endpoint
+                            params.isVaultRequest,
+                            params.startTime,
+                            params.endTime,
+                            params.endpoint
                     )
                     sendAnalyticsEvent(event, configuration, authorization)
                 }
@@ -245,11 +240,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                             override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
                                 response?.let {
                                     try {
+                                        val params = AnalyticsEventParams(startTime = response.startTime, endTime = response.endTime, endpoint = url)
                                         sendAnalyticsEvent(
                                             CoreAnalytics.apiRequestLatency,
-                                            startTime = response.startTime,
-                                            endTime = response.endTime,
-                                            endpoint = url
+                                            params
                                         )
                                         responseCallback.onResult(it.body, null)
                                     } catch (jsonException: JSONException) {
@@ -298,11 +292,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                                 override fun onResult(response: BTHttpResponse?, httpError: Exception?) {
                                     response?.let {
                                         try {
+                                            val params = AnalyticsEventParams(startTime = response.startTime, endTime = response.endTime, endpoint = url)
                                             sendAnalyticsEvent(
                                                 CoreAnalytics.apiRequestLatency,
-                                                startTime = response.startTime,
-                                                endTime = response.endTime,
-                                                endpoint = url
+                                                params
                                             )
                                             responseCallback.onResult(it.body, null)
                                         } catch (jsonException: JSONException) {
@@ -344,11 +337,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                                         response?.let {
                                             try {
                                                 val query = getSubstringAfterKey(payload.toString(), "query")
+                                                val params = AnalyticsEventParams(startTime = response.startTime, endTime = response.endTime, endpoint = query)
                                                 sendAnalyticsEvent(
                                                     CoreAnalytics.apiRequestLatency,
-                                                    startTime = response.startTime,
-                                                    endTime = response.endTime,
-                                                    endpoint = query
+                                                    params
                                                 )
                                                 responseCallback.onResult(it.body, null)
                                             } catch (jsonException: JSONException) {
@@ -552,10 +544,8 @@ open class BraintreeClient @VisibleForTesting internal constructor(
 
     override fun sendEvent(startTime: Long, endTime: Long, endpoint: String) {
         sendAnalyticsEvent(
-                CoreAnalytics.apiRequestLatency,
-                startTime = startTime,
-                endTime = endTime,
-                endpoint = endpoint
+            CoreAnalytics.apiRequestLatency,
+            AnalyticsEventParams(startTime = startTime, endTime = endTime, endpoint = endpoint)
         )
     }
 }

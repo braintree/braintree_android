@@ -6,6 +6,8 @@
   * Fix `PayPalAccountNonce` Null Pointer Exception by ensuring that all `@NonNull` values are initialized with a non-null value.
 * PayPalNativeCheckout
   * Fix `PayPalNativeCheckoutAccountNonce` Null Pointer Exception by ensuring that all `@NonNull` values are initialized with a non-null value.
+* BraintreeCore
+  * Use TLS 1.3 for all HTTP requests, when available
 
 ## 4.47.0 (2024-06-06)
 
