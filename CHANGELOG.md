@@ -1,5 +1,5 @@
 # Braintree Android SDK Release Notes
-
+ 
 ## unreleased
 
 * Breaking Changes
