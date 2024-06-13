@@ -5,6 +5,7 @@ import com.braintreepayments.api.sharedutils.HttpRequest
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.TLSSocketFactory
 import java.util.Locale
+import javax.net.ssl.SSLException
 
 internal class BraintreeGraphQLClient(
     private val httpClient: HttpClient = createDefaultHttpClient()
@@ -82,8 +83,10 @@ internal class BraintreeGraphQLClient(
 
     companion object {
 
+        @Throws(SSLException::class)
         private fun createDefaultHttpClient(): HttpClient {
-            val socketFactory = TLSSocketFactory(TLSCertificatePinning.certInputStream)
+            val socketFactory =
+                TLSSocketFactory(TLSCertificatePinning.createCertificateInputStream())
             return HttpClient(socketFactory, BraintreeGraphQLResponseParser())
         }
     }

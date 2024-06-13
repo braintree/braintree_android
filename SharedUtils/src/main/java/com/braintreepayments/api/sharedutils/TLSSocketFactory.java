@@ -15,7 +15,6 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;

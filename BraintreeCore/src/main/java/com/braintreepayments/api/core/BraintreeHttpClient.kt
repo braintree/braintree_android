@@ -8,6 +8,7 @@ import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.TLSSocketFactory
 import org.json.JSONException
 import org.json.JSONObject
+import javax.net.ssl.SSLException
 
 /**
  * Network request class that handles Braintree request specifics and threading.
@@ -182,8 +183,10 @@ internal class BraintreeHttpClient(
         private const val USER_AGENT_HEADER = "User-Agent"
         private const val CLIENT_KEY_HEADER = "Client-Key"
 
+        @Throws(SSLException::class)
         private fun createDefaultHttpClient(): HttpClient {
-            val socketFactory = TLSSocketFactory(TLSCertificatePinning.certInputStream)
+            val socketFactory =
+                TLSSocketFactory(TLSCertificatePinning.createCertificateInputStream())
             return HttpClient(socketFactory, BraintreeHttpResponseParser())
         }
     }
