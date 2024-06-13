@@ -10,6 +10,10 @@ Welcome to Braintree's Android SDK. This library will help you accept card and a
 
 The Braintree SDK requires Java 11 and uses Kotlin 1.7. 
 
+## 📣 Announcements
+
+**Upgrade your integration to continue accepting Braintree payments** The SSL certificates for the Android SDK are set to expire by June 31, 2025. Upgrade to v4.45.0+ to continue using the Braintree SDK. ![Click here for more details](https://github.com/braintree/braintree_android/issues/993)
+
 ## Adding It To Your Project
 
 The features of the Braintree SDK are organized into modules that can be imported as dependencies in your `build.gradle` file.

@@ -3,6 +3,6 @@
     <application>
         <activity
             android:name=".ThreeDSecureActivity"
-            android:theme="@style/Theme.AppCompat" />
+            android:theme="@style/Theme.Translucent.NoTitleBar.Fullscreen" />
     </application>
 </manifest>

@@ -2,12 +2,15 @@ package com.braintreepayments.api.paypal;
 
 import android.os.Parcel;
 
+import com.braintreepayments.api.core.Authorization;
+import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest;
 import com.braintreepayments.api.paypal.PayPalLineItem;
 import com.braintreepayments.api.paypal.PayPalPaymentIntent;
 import com.braintreepayments.api.paypal.PayPalRequest;
 
+import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -19,6 +22,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricTestRunner.class)
 public class PayPalCheckoutRequestUnitTest {
@@ -121,5 +125,37 @@ public class PayPalCheckoutRequestUnitTest {
         assertEquals(1, result.getLineItems().size());
         assertEquals("An Item", result.getLineItems().get(0).getName());
         assertTrue(result.hasUserLocationConsent());
+    }
+
+    @Test
+    public void createRequestBody_sets_userAuthenticationEmail_when_not_null() throws JSONException {
+        String payerEmail = "payer_email@example.com";
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+
+        request.setUserAuthenticationEmail(payerEmail);
+        String requestBody = request.createRequestBody(
+            mock(Configuration.class),
+            mock(Authorization.class),
+            "success_url",
+            "cancel_url"
+        );
+
+        assertTrue(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
+    }
+
+    @Test
+    public void createRequestBody_does_not_set_userAuthenticationEmail_when_email_is_empty() throws JSONException {
+        String payerEmail = "";
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+
+        request.setUserAuthenticationEmail(payerEmail);
+        String requestBody = request.createRequestBody(
+            mock(Configuration.class),
+            mock(Authorization.class),
+            "success_url",
+            "cancel_url"
+        );
+
+        assertFalse(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
     }
 }

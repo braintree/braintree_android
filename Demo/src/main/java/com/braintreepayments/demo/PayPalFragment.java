@@ -25,6 +25,7 @@ import com.braintreepayments.api.paypal.PayPalPaymentAuthResult;
 import com.braintreepayments.api.paypal.PayPalPendingRequest;
 import com.braintreepayments.api.paypal.PayPalRequest;
 import com.braintreepayments.api.paypal.PayPalResult;
+import com.google.android.material.textfield.TextInputEditText;
 
 public class PayPalFragment extends BaseFragment {
 
@@ -41,11 +42,16 @@ public class PayPalFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_paypal, container, false);
+        TextInputEditText buyerEmailEditText = view.findViewById(R.id.buyer_email_edit_text);
         Button billingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
 
-        billingAgreementButton.setOnClickListener(this::launchBillingAgreement);
-        singlePaymentButton.setOnClickListener(this::launchSinglePayment);
+        singlePaymentButton.setOnClickListener(v -> {
+            launchPayPal(false, buyerEmailEditText.getText().toString());
+        });
+        billingAgreementButton.setOnClickListener(v -> {
+            launchPayPal(true, buyerEmailEditText.getText().toString());
+        });
 
         payPalClient = new PayPalClient(requireContext(), super.getAuthStringArg());
         payPalLauncher = new PayPalLauncher();
@@ -80,15 +86,7 @@ public class PayPalFragment extends BaseFragment {
         PendingRequestStore.getInstance().clearPayPalPendingRequest(requireContext());
     }
 
-    public void launchSinglePayment(View v) {
-        launchPayPal(false);
-    }
-
-    public void launchBillingAgreement(View v) {
-        launchPayPal(true);
-    }
-
-    private void launchPayPal(boolean isBillingAgreement) {
+    private void launchPayPal(boolean isBillingAgreement, String buyerEmailAddress) {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
@@ -99,20 +97,24 @@ public class PayPalFragment extends BaseFragment {
                 if (dataCollectorResult instanceof DataCollectorResult.Success) {
                     deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
                 }
-                launchPayPal(activity, isBillingAgreement, amount);
+                launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress);
             });
         } else {
-            launchPayPal(activity, isBillingAgreement, amount);
+            launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress);
         }
     }
 
-    private void launchPayPal(FragmentActivity activity, boolean isBillingAgreement,
-                              String amount) {
+    private void launchPayPal(
+        FragmentActivity activity,
+        boolean isBillingAgreement,
+        String amount,
+        String buyerEmailAddress
+    ) {
         PayPalRequest payPalRequest;
         if (isBillingAgreement) {
-            payPalRequest = createPayPalVaultRequest(activity);
+            payPalRequest = createPayPalVaultRequest(activity, buyerEmailAddress);
         } else {
-            payPalRequest = createPayPalCheckoutRequest(activity, amount);
+            payPalRequest = createPayPalCheckoutRequest(activity, amount, buyerEmailAddress);
         }
         payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest,
                 (paymentAuthRequest) -> {
@@ -145,8 +147,7 @@ public class PayPalFragment extends BaseFragment {
             super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
             PayPalFragmentDirections.ActionPayPalFragmentToDisplayNonceFragment action =
-                    PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(
-                            paymentMethodNonce);
+                PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
             action.setTransactionAmount(amount);
             action.setDeviceData(deviceData);
 

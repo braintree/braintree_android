@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 import com.braintreepayments.api.core.ApiClient;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.datacollector.DataCollector;
+import com.braintreepayments.api.datacollector.DataCollectorInternalRequest;
 
 import org.json.JSONException;
 
@@ -75,27 +76,27 @@ class PayPalInternalClient {
                                     if (redirectUrl != null) {
                                         Uri parsedRedirectUri = Uri.parse(redirectUrl);
 
-                                        String pairingIdKey =
-                                                isBillingAgreement ? "ba_token" : "token";
-                                        String pairingId =
-                                                parsedRedirectUri.getQueryParameter(
-                                                        pairingIdKey);
-                                        String clientMetadataId =
-                                                payPalRequest.getRiskCorrelationId() != null
-                                                        ?
-                                                        payPalRequest.getRiskCorrelationId() :
-                                                        dataCollector.getClientMetadataId(
-                                                                context, configuration,
-                                                                payPalRequest.hasUserLocationConsent());
+                                        String pairingId = findPairingId(parsedRedirectUri);
+                                        String clientMetadataId = payPalRequest.getRiskCorrelationId();
 
-                                        if (pairingId != null) {
-                                            paymentAuthRequest
-                                                    .pairingId(pairingId)
-                                                    .clientMetadataId(clientMetadataId);
+                                        if (clientMetadataId == null) {
+                                            DataCollectorInternalRequest dataCollectorRequest =
+                                                new DataCollectorInternalRequest(payPalRequest.hasUserLocationConsent())
+                                                    .setApplicationGuid(dataCollector.getPayPalInstallationGUID(context));
+
+                                            if (pairingId != null) {
+                                                dataCollectorRequest.setRiskCorrelationId(pairingId);
+                                            }
+                                            clientMetadataId = dataCollector.getClientMetadataId(context, dataCollectorRequest, configuration);
                                         }
 
-                                        paymentAuthRequest.approvalUrl(
-                                                parsedRedirectUri.toString());
+                                        if (pairingId != null) {
+                                            paymentAuthRequest.pairingId(pairingId);
+                                        }
+
+                                        paymentAuthRequest
+                                            .clientMetadataId(clientMetadataId)
+                                            .approvalUrl(parsedRedirectUri.toString());
                                     }
                                     callback.onResult(paymentAuthRequest, null);
 
@@ -127,5 +128,13 @@ class PayPalInternalClient {
                 callback.onResult(null, exception);
             }
         });
+    }
+
+    private String findPairingId(Uri redirectUri) {
+        String pairingId = redirectUri.getQueryParameter("ba_token");
+        if (pairingId == null) {
+            pairingId = redirectUri.getQueryParameter("token");
+        }
+        return pairingId;
     }
 }

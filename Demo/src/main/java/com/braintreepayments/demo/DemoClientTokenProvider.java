@@ -5,6 +5,8 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
+import com.braintreepayments.api.core.BraintreeClient;
+
 public class DemoClientTokenProvider  {
 
     private final Merchant merchant;
@@ -26,7 +28,13 @@ public class DemoClientTokenProvider  {
                 }
             });
         } else {
-            callback.onResult(Settings.getTokenizationKey(appContext));
+            String key;
+            if (Settings.showCheckoutExperience(appContext)) {
+                key = Settings.getPayPalCheckoutTokenizationKey(appContext);
+            } else {
+                key = Settings.getTokenizationKey(appContext);
+            }
+            callback.onResult(key);
         }
     }
 

@@ -21,6 +21,8 @@ module:SamsungPay
 com.braintreepayments.api
 module:SEPADirectDebit
 com.braintreepayments.api
+module:ShopperInsights
+com.braintreepayments.api
 module:ThreeDSecure
 com.braintreepayments.api
 module:Venmo
