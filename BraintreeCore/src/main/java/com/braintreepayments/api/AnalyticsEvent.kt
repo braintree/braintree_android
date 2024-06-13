@@ -2,7 +2,9 @@ package com.braintreepayments.api
 
 import androidx.room.PrimaryKey
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
+import kotlinx.serialization.Serializable
 
 // NEXT MAJOR VERSION: Convert to data class, we're unable to do so now because the
 // counterpart Java class is technically extendable, and making this a data class would
@@ -11,22 +13,25 @@ import androidx.room.Entity
 // NEXT MAJOR VERSION: remove open modifiers
 
 @Entity(tableName = "analytics_event")
-open class AnalyticsEvent internal constructor(
-    open val name: String,
+data class AnalyticsEvent internal constructor(
+    val name: String,
 
-    @ColumnInfo(name = "paypal_context_id")
-    open val payPalContextId: String? = null,
+//    @ColumnInfo(name = "paypal_context_id")
+//    val payPalContextId: String? = null,
+//
+//    @ColumnInfo(name = "link_type")
+//    val linkType: String? = null,
 
-    @ColumnInfo(name = "link_type")
-    open val linkType: String? = null,
+    val timestamp: Long = System.currentTimeMillis(),
 
-    open val timestamp: Long = System.currentTimeMillis(),
+//    @ColumnInfo(name = "venmo_installed", defaultValue = "0")
+//    val venmoInstalled: Boolean = false,
 
-    @ColumnInfo(name = "venmo_installed", defaultValue = "0")
-    open val venmoInstalled: Boolean = false,
+    @Embedded
+    val payload: AnalyticsEventParams
 
-    @ColumnInfo(name = "is_vault", defaultValue = "0")
-    open val isVaultRequest: Boolean = false
+//    @ColumnInfo(name = "is_vault", defaultValue = "0")
+//    val isVaultRequest: Boolean = false
 ) {
     @JvmField
     @PrimaryKey(autoGenerate = true)

@@ -73,26 +73,26 @@ open class Configuration internal constructor(configurationString: String?) {
     }
 
     // region Public Properties
-    open val assetsUrl: String
-    open val cardinalAuthenticationJwt: String?
-    open val clientApiUrl: String
-    open val environment: String
-    open val isCvvChallengePresent: Boolean
-    open val isGooglePayEnabled: Boolean
-    open val isLocalPaymentEnabled: Boolean
-    open val isPayPalEnabled: Boolean
-    open val isPostalCodeChallengePresent: Boolean
-    open val isSamsungPayEnabled: Boolean
-    open val isThreeDSecureEnabled: Boolean
-    open val isUnionPayEnabled: Boolean
-    open val isVenmoEnabled: Boolean
-    open val isVisaCheckoutEnabled: Boolean
-    open val merchantAccountId: String?
-    open val merchantId: String
-    open val payPalDirectBaseUrl: String?
-    open val payPalPrivacyUrl: String?
-    open val payPalUserAgreementUrl: String?
-    open val supportedCardTypes: List<String>
+    val assetsUrl: String
+    val cardinalAuthenticationJwt: String?
+    val clientApiUrl: String
+    val environment: String
+    val isCvvChallengePresent: Boolean
+    val isGooglePayEnabled: Boolean
+    val isLocalPaymentEnabled: Boolean
+    val isPayPalEnabled: Boolean
+    val isPostalCodeChallengePresent: Boolean
+    val isSamsungPayEnabled: Boolean
+    val isThreeDSecureEnabled: Boolean
+    val isUnionPayEnabled: Boolean
+    val isVenmoEnabled: Boolean
+    val isVisaCheckoutEnabled: Boolean
+    val merchantAccountId: String?
+    val merchantId: String
+    val payPalDirectBaseUrl: String?
+    val payPalPrivacyUrl: String?
+    val payPalUserAgreementUrl: String?
+    val supportedCardTypes: List<String>
     // endregion
 
     // region Internal Properties

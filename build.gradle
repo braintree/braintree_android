@@ -28,6 +28,7 @@ buildscript {
 
             "kotlinStdLib"               : "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}",
             "kotlinTest"                 : "org.jetbrains.kotlin:kotlin-test-junit:${versions.kotlin}",
+            "kotlinSerialization"        : "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.0",
             // This library doesn't seem to follow the versioning pattern of the other jetbrains
             // kotlin libraries. Make sure to keep this dependency in line with the kotlin version used.
             "kotlinCoroutinesCore"       : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2",
@@ -72,6 +73,7 @@ plugins {
     id 'org.jetbrains.dokka' version '1.9.10'
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
     id 'io.gitlab.arturbosch.detekt' version '1.23.6'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '2.0.0'
 }
 
 ext["signing.keyId"] = System.getenv('SIGNING_KEY_ID') ?: ''

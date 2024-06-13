@@ -5,10 +5,15 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
+import kotlinx.serialization.json.Json.Default.decodeFromString
+import kotlinx.serialization.json.Json.Default.encodeToString
+import kotlinx.serialization.serializer
 
 // Ref: https://developer.android.com/training/data-storage/room/migrating-db-versions
 @Database(
-        version = 5,
+        version = 6,
         entities = [AnalyticsEvent::class],
         autoMigrations = [
             AutoMigration(from = 1, to = 2),
@@ -17,6 +22,7 @@ import androidx.room.RoomDatabase
             AutoMigration(from = 4, to = 5)
         ]
 )
+@TypeConverters(MyTypeConverters::class)
 internal abstract class AnalyticsDatabase : RoomDatabase() {
 
     abstract fun analyticsEventDao(): AnalyticsEventDao
@@ -40,4 +46,12 @@ internal abstract class AnalyticsDatabase : RoomDatabase() {
                 instance
             }
     }
+}
+
+class MyTypeConverters {
+    @TypeConverter
+    fun analyticsEventToString(event: AnalyticsEvent): String = encodeToString(serializer(), event)
+
+    @TypeConverter
+    fun stringToEvent(string: String): AnalyticsEvent = decodeFromString(string)
 }

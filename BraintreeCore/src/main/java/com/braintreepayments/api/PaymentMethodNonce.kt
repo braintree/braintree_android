@@ -24,8 +24,8 @@ open class PaymentMethodNonce : Parcelable {
         }
     }
 
-    open val string: String
-    open val isDefault: Boolean
+    val string: String
+    val isDefault: Boolean
 
     /**
      * @suppress
