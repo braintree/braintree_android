@@ -109,8 +109,8 @@ class ShopperInsightsFragment : BaseFragment() {
     }
 
     private fun handlePayPalReturnToApp() {
-        if(this::paypalPendingRequest.isInitialized) {
-            when(val request = paypalPendingRequest) {
+        if (this::paypalPendingRequest.isInitialized) {
+            when (val request = paypalPendingRequest) {
                 is PayPalPendingRequest.Started -> {
                     val paypalPaymentAuthResult =
                         paypalLauncher.handleReturnToAppFromBrowser(request, Intent())
@@ -118,30 +118,36 @@ class ShopperInsightsFragment : BaseFragment() {
                         payPalClient.tokenize(paypalPaymentAuthResult) {
                             when (it) {
                                 is PayPalResult.Success -> {
-                                    val action = ShopperInsightsFragmentDirections.actionShopperInsightsFragmentToDisplayNonceFragment(
-                                        it.nonce
-                                    )
+                                    val action =
+                                        ShopperInsightsFragmentDirections
+                                            .actionShopperInsightsFragmentToDisplayNonceFragment(
+                                            it.nonce
+                                        )
                                     NavHostFragment.findNavController(this).navigate(action)
                                 }
+
                                 is PayPalResult.Failure -> {}
                                 is PayPalResult.Cancel -> {}
                             }
                         }
                     } else {
                         // No PayPal result i.e. not auth'd in
-                        Toast.makeText(requireContext(), "Failed to authenticate user.", Toast.LENGTH_LONG)
+                        Toast.makeText(
+                            requireContext(),
+                            "Failed to authenticate user.",
+                            Toast.LENGTH_LONG
+                        )
                             .show()
                     }
                 }
-                is PayPalPendingRequest.Failure -> {
 
-                }
+                is PayPalPendingRequest.Failure -> {}
             }
         }
     }
 
     private fun handleVenmoReturnToApp() {
-        if(this::venmoPendingRequest.isInitialized) {
+        if (this::venmoPendingRequest.isInitialized) {
             when (val request = venmoPendingRequest) {
                 is VenmoPendingRequest.Started -> {
                     val venmoPaymentAuthResult = venmoLauncher.handleReturnToApp(request, Intent())
@@ -149,18 +155,25 @@ class ShopperInsightsFragment : BaseFragment() {
                         venmoClient.tokenize(venmoPaymentAuthResult) {
                             when (it) {
                                 is VenmoResult.Success -> {
-                                    val action = ShopperInsightsFragmentDirections.actionShopperInsightsFragmentToDisplayNonceFragment(
-                                        it.nonce
-                                    )
+                                    val action =
+                                        ShopperInsightsFragmentDirections
+                                            .actionShopperInsightsFragmentToDisplayNonceFragment(
+                                            it.nonce
+                                        )
                                     NavHostFragment.findNavController(this).navigate(action)
                                 }
+
                                 is VenmoResult.Failure -> {}
                                 is VenmoResult.Cancel -> {}
                             }
                         }
                     } else {
                         // No venmo result i.e. not auth'd in
-                        Toast.makeText(requireContext(), "Failed to authenticate user.", Toast.LENGTH_LONG)
+                        Toast.makeText(
+                            requireContext(),
+                            "Failed to authenticate user.",
+                            Toast.LENGTH_LONG
+                        )
                             .show()
                     }
                 }
@@ -224,9 +237,12 @@ class ShopperInsightsFragment : BaseFragment() {
                 emailInput.editText?.text.toString()
             )
         ) {
-            if (it==null) return@createPaymentAuthRequest
-            when(it) {
-                is PayPalPaymentAuthRequest.Failure -> { handleError(it.error) }
+            if (it == null) return@createPaymentAuthRequest
+            when (it) {
+                is PayPalPaymentAuthRequest.Failure -> {
+                    handleError(it.error)
+                }
+
                 is PayPalPaymentAuthRequest.ReadyToLaunch -> {
                     paypalPendingRequest = paypalLauncher.launch(requireActivity(), it)
                 }
@@ -246,10 +262,11 @@ class ShopperInsightsFragment : BaseFragment() {
         venmoRequest.taxAmount = "1"
 
         venmoClient.createPaymentAuthRequest(requireContext(), venmoRequest) {
-            when(it) {
+            when (it) {
                 is VenmoPaymentAuthRequest.ReadyToLaunch -> {
                     venmoPendingRequest = venmoLauncher.launch(requireActivity(), it)
                 }
+
                 is VenmoPaymentAuthRequest.Failure -> {
                     handleError(it.error)
                 }
