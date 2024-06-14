@@ -58,6 +58,8 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
     private boolean shouldOfferPayLater;
 
     /**
+     * Deprecated. Use {@link PayPalCheckoutRequest#PayPalCheckoutRequest(String, boolean)} instead.
+     *
      * @param amount The transaction amount in currency units (as * determined by setCurrencyCode).
      * For example, "1.20" corresponds to one dollar and twenty cents. Amount must be a non-negative
      * number, may optionally contain exactly 2 decimal places separated by '.' and is
@@ -203,6 +205,10 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
             JSONObject details = new JSONObject()
                     .put(DESCRIPTION_KEY, billingAgreementDescription);
             parameters.put(BILLING_AGREEMENT_DETAILS_KEY, details);
+        }
+
+        if (userAuthenticationEmail != null && !userAuthenticationEmail.isEmpty()) {
+            parameters.put(PAYER_EMAIL_KEY, userAuthenticationEmail);
         }
 
         String currencyCode = getCurrencyCode();

@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'androidx.navigation.safeargs'
+    id 'kotlin-android'
 }
 
 android {
@@ -69,11 +70,23 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+
+    kotlin {
+        jvmToolchain {
+            languageVersion.set(JavaLanguageVersion.of("11"))
+        }
+    }
+
     namespace 'com.braintreepayments.demo'
 }
 
 dependencies {
     implementation 'androidx.preference:preference:1.2.1'
+    implementation deps.kotlinStdLib
 
     implementation('com.squareup.retrofit:retrofit:1.9.0') {
         exclude module: 'com.google.gson'
@@ -85,12 +98,14 @@ dependencies {
     implementation project(':LocalPayment')
     implementation project(':PayPal')
     implementation project(':DataCollector')
+    implementation project(':PayPalMessaging')
+    implementation project(':ShopperInsights')
     implementation project(':SEPADirectDebit')
     implementation project(':ThreeDSecure')
     implementation project(':Venmo')
     implementation project(':VisaCheckout')
 
-    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'de.greenrobot:eventbus:2.4.1'
     implementation deps.appCompat
     implementation 'androidx.preference:preference:1.2.1'
@@ -106,6 +121,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.7.5'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
 

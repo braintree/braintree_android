@@ -6,8 +6,11 @@ import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpRequest
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import io.mockk.slot
+import io.mockk.verify
 import org.json.JSONException
 import org.junit.Assert.*
 import org.junit.Before
@@ -19,6 +22,7 @@ import java.net.URISyntaxException
 import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.Locale
+import java.util.UUID
 
 @RunWith(RobolectricTestRunner::class)
 class BraintreeHttpClientUnitTest {
@@ -28,7 +32,7 @@ class BraintreeHttpClientUnitTest {
 
     @Before
     fun beforeEach() {
-        httpClient = mockk()
+        httpClient = mockk(relaxed = true)
         httpResponseCallback = mockk()
     }
 
@@ -257,7 +261,13 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot), callback) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.post("sample/path", "{}", configuration, tokenizationKey, callback)
+        sut.post(
+            path = "sample/path",
+            data = "{}",
+            configuration = configuration,
+            authorization = tokenizationKey,
+            callback = callback
+        )
 
         val httpRequest = httpRequestSlot.captured
         val headers = httpRequest.headers
@@ -283,7 +293,13 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot), callback) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.post("sample/path", "{}", configuration, clientToken, callback)
+        sut.post(
+            path = "sample/path",
+            data = "{}",
+            configuration = configuration,
+            authorization = clientToken,
+            callback = callback
+        )
 
         val httpRequest = httpRequestSlot.captured
         val headers = httpRequest.headers
@@ -307,7 +323,13 @@ class BraintreeHttpClientUnitTest {
         every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.post("sample/path", "{}", null, clientToken, callback)
+        sut.post(
+            path = "sample/path",
+            data = "{}",
+            configuration = null,
+            authorization = clientToken,
+            callback = callback
+        )
 
         val exception = exceptionSlot.captured
         assertEquals(
@@ -328,7 +350,13 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot), callback) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.post("https://example.com/sample/path", "{}", null, clientToken, callback)
+        sut.post(
+            path = "https://example.com/sample/path",
+            data = "{}",
+            configuration = null,
+            authorization = clientToken,
+            callback = callback
+        )
 
         val httpRequest = httpRequestSlot.captured
         assertEquals(URL("https://example.com/sample/path"), httpRequest.url)
@@ -347,7 +375,13 @@ class BraintreeHttpClientUnitTest {
         every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.post("sample/path", "not json", configuration, clientToken, callback)
+        sut.post(
+            path = "sample/path",
+            data = "not json",
+            configuration = configuration,
+            authorization = clientToken,
+            callback = callback
+        )
 
         val exception = exceptionSlot.captured
         assertEquals(
@@ -367,9 +401,81 @@ class BraintreeHttpClientUnitTest {
         every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.post("sample/path", "{}", configuration, authorization, callback)
+        sut.post(
+            path = "sample/path",
+            data = "{}",
+            configuration = configuration,
+            authorization = authorization,
+            callback = callback
+        )
 
         val exception = exceptionSlot.captured
         assertEquals("token invalid", exception.message)
+    }
+
+    @Test
+    fun `when post is called with authorization bearer, Authorization header is added to the request`() {
+        val token: String = UUID.randomUUID().toString()
+        val tokenizationKey = mockk<Authorization>()
+        every { tokenizationKey.bearer } returns token
+
+        val httpRequestSlot = slot<HttpRequest>()
+        every { httpClient.sendRequest(capture(httpRequestSlot), any()) } just runs
+
+        val sut = BraintreeHttpClient(httpClient)
+        sut.post(
+            path = "sample/path",
+            data = "{}",
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = tokenizationKey,
+            callback = mockk<HttpResponseCallback>()
+        )
+
+        val headers = httpRequestSlot.captured.headers
+        assertEquals(headers["Authorization"], "Bearer $token")
+    }
+
+    @Test
+    fun `when post is called with null bearer, Authorization header is not added to the request`() {
+        val tokenizationKey = mockk<Authorization>()
+        every { tokenizationKey.bearer } returns null
+
+        val httpRequestSlot = slot<HttpRequest>()
+        every { httpClient.sendRequest(capture(httpRequestSlot), any()) } just runs
+
+        val sut = BraintreeHttpClient(httpClient)
+        sut.post(
+            path = "sample/path",
+            data = "{}",
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = tokenizationKey,
+            callback = mockk<HttpResponseCallback>()
+        )
+
+        val headers = httpRequestSlot.captured.headers
+        assertNull(headers["Authorization"])
+    }
+
+    @Test
+    fun `when post is called with additional headers, headers are added to the request`() {
+        val headers = mapOf("name1" to "value1", "name2" to "value2")
+        val callback = mockk<HttpResponseCallback>()
+        val sut = BraintreeHttpClient(httpClient)
+
+        sut.post(
+            path = "sample/path",
+            data = "{}",
+            configuration = mockk(relaxed = true),
+            authorization = mockk(relaxed = true),
+            additionalHeaders = headers,
+            callback = callback
+        )
+
+        verify {
+            httpClient.sendRequest(withArg {
+                assertEquals(it.headers["name1"], "value1")
+                assertEquals(it.headers["name2"], "value2")
+            }, callback)
+        }
     }
 }

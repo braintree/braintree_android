@@ -22,7 +22,7 @@ public class DataCollectorTest {
     public void getClientMetadataId_returnsClientMetadataId() throws JSONException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL);
         DataCollector sut = new DataCollector(ApplicationProvider.getApplicationContext(), Fixtures.TOKENIZATION_KEY);
-        String clientMetadataId = sut.getClientMetadataId(ApplicationProvider.getApplicationContext(), configuration, );
+        String clientMetadataId = sut.getClientMetadataId(ApplicationProvider.getApplicationContext(), configuration, true);
 
         assertFalse(TextUtils.isEmpty(clientMetadataId));
     }

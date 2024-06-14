@@ -1,7 +1,5 @@
 package com.braintreepayments.api.core
 
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import com.braintreepayments.api.card.Card
@@ -17,7 +15,6 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class ApiClientUnitTest {
 
-    private lateinit var context: Context
     private lateinit var tokenizeCallback: TokenizeCallback
 
     private lateinit var graphQLEnabledConfig: Configuration
@@ -26,7 +23,6 @@ class ApiClientUnitTest {
     @Before
     @Throws(JSONException::class)
     fun beforeEach() {
-        context = ApplicationProvider.getApplicationContext()
         tokenizeCallback = mockk(relaxed = true)
 
         graphQLEnabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL)
@@ -42,7 +38,7 @@ class ApiClientUnitTest {
             .build()
 
         val bodySlot = slot<String>()
-        every { braintreeClient.sendPOST(any(), capture(bodySlot), any()) } returns Unit
+        every { braintreeClient.sendPOST(any(), capture(bodySlot), any(), any()) } returns Unit
 
         val sut = ApiClient(braintreeClient)
         val card = spyk(Card())
@@ -50,7 +46,7 @@ class ApiClientUnitTest {
 
         verifyOrder {
             card.setSessionId("session-id")
-            braintreeClient.sendPOST(any(), any(), any())
+            braintreeClient.sendPOST(any(), any(), any(), any())
         }
 
         val data = JSONObject(bodySlot.captured).getJSONObject("_meta")
@@ -71,7 +67,7 @@ class ApiClientUnitTest {
         val card = Card()
         sut.tokenizeGraphQL(card.buildJSONForGraphQL(), tokenizeCallback)
 
-        verify(inverse = true) { braintreeClient.sendPOST(any(), any(), any()) }
+        verify(inverse = true) { braintreeClient.sendPOST(any(), any(), any(), any()) }
         assertEquals(card.buildJSONForGraphQL().toString(), graphQLBodySlot.captured)
     }
 
@@ -127,6 +123,16 @@ class ApiClientUnitTest {
         val sut = ApiClient(braintreeClient)
         sut.tokenizeGraphQL(card.buildJSONForGraphQL(), tokenizeCallback)
         verify { braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure") }
+    }
+
+    @Test
+    fun `when tokenizeREST is called, braintreeClient sendPOST is called with empty headers`() {
+        val braintreeClient = MockkBraintreeClientBuilder().build()
+        val sut = ApiClient(braintreeClient)
+
+        sut.tokenizeREST(mockk(relaxed = true), mockk(relaxed = true))
+
+        verify { braintreeClient.sendPOST(any(), any(), emptyMap(), any()) }
     }
 
     @Test
