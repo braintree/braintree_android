@@ -193,12 +193,20 @@
         android:id="@+id/payPalMessagingFragment"
         android:name="com.braintreepayments.demo.PayPalMessagingFragment"
         tools:layout="fragment_paypal_messaging">
+        <argument
+            android:name="authString"
+            android:defaultValue=""
+            app:argType="string" />
     </fragment>
 
     <fragment
         android:id="@+id/shopperInsightsFragment"
         android:name="com.braintreepayments.demo.ShopperInsightsFragment"
         tools:layout="@layout/fragment_shopping_insights" >
+        <argument
+            android:name="authString"
+            android:defaultValue=""
+            app:argType="string" />
         <action
             android:id="@+id/action_shopperInsightsFragment_to_displayNonceFragment"
             app:destination="@id/displayNonceFragment"
