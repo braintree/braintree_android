@@ -239,15 +239,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                         httpClient.get(url, configuration, authorization) { response, httpError ->
                             response?.let {
                                 try {
-                                    val params = AnalyticsEventParams(
-                                        startTime = it.startTime,
-                                        endTime = it.endTime,
-                                        endpoint = url
-                                    )
-                                    sendAnalyticsEvent(
-                                        CoreAnalytics.apiRequestLatency,
-                                        params
-                                    )
+                                    sendEvent(it.startTime, it.endTime, url)
                                     responseCallback.onResult(it.body, null)
                                 } catch (jsonException: JSONException) {
                                     responseCallback.onResult(null, jsonException)
@@ -290,15 +282,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                         ) { response, httpError ->
                             response?.let {
                                 try {
-                                    val params = AnalyticsEventParams(
-                                        startTime = it.startTime,
-                                        endTime = it.endTime,
-                                        endpoint = url
-                                    )
-                                    sendAnalyticsEvent(
-                                        CoreAnalytics.apiRequestLatency,
-                                        params
-                                    )
+                                    sendEvent(it.startTime, it.endTime, url)
                                     responseCallback.onResult(it.body, null)
                                 } catch (jsonException: JSONException) {
                                     responseCallback.onResult(null, jsonException)
@@ -540,9 +524,10 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     }
 
     override fun sendEvent(startTime: Long, endTime: Long, endpoint: String) {
+        val cleanedPath = endpoint.replace(Regex("/merchants/([A-Za-z0-9]+)/client_api"), "")
         sendAnalyticsEvent(
             CoreAnalytics.apiRequestLatency,
-            AnalyticsEventParams(startTime = startTime, endTime = endTime, endpoint = endpoint)
+            AnalyticsEventParams(startTime = startTime, endTime = endTime, endpoint = cleanedPath)
         )
     }
 }
