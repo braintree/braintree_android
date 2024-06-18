@@ -37,7 +37,7 @@ class ConfigurationLoaderUnitTest {
         }
 
         val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(BTHttpResponse(body = Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN), null)
+        httpResponseCallback.onResult(HttpTimingResponse(body = Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN), null)
 
         verify { callback.onResult(ofType(Configuration::class), null) }
     }
@@ -63,7 +63,7 @@ class ConfigurationLoaderUnitTest {
         }
 
         val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(BTHttpResponse(body = Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN), null)
+        httpResponseCallback.onResult(HttpTimingResponse(body = Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN), null)
         val cacheKey = Base64.encodeToString(
             "https://example.com/config?configVersion=3bearer".toByteArray(),
             0
@@ -91,7 +91,7 @@ class ConfigurationLoaderUnitTest {
             )
         }
         val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(BTHttpResponse(body = "not json"), null)
+        httpResponseCallback.onResult(HttpTimingResponse(body = "not json"), null)
         verify {
             callback.onResult(null, ofType(JSONException::class))
         }
@@ -196,7 +196,7 @@ class ConfigurationLoaderUnitTest {
         }
 
         val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(BTHttpResponse(body = Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN), null)
+        httpResponseCallback.onResult(HttpTimingResponse(body = Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN), null)
 
         verify { callback.onResult(ofType(Configuration::class), null) }
     }

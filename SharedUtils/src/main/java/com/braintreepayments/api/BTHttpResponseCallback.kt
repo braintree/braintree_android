@@ -9,5 +9,5 @@ import androidx.annotation.RestrictTo
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 fun interface BTHttpResponseCallback {
     @MainThread
-    fun onResult(response: BTHttpResponse?, httpError: Exception?)
+    fun onResult(response: HttpTimingResponse?, httpError: Exception?)
 }

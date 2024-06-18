@@ -32,7 +32,7 @@ public class HttpClientTest {
 
         sut.sendRequest(httpRequest, new BTHttpResponseCallback() {
             @Override
-            public void onResult(BTHttpResponse response, Exception httpError) {
+            public void onResult(HttpTimingResponse response, Exception httpError) {
                 assertNull(response);
                 assertNotNull(httpError);
                 countDownLatch.countDown();
