@@ -37,6 +37,7 @@ internal class ConfigurationLoader internal constructor(
             ) { response, httpError ->
                 response?.let {
                     try {
+                        println("Calling v1/configuration")
                         val configuration = Configuration.fromJson(it.body)
                         saveConfigurationToCache(configuration, authorization, configUrl)
                         apiTiming?.sendEvent(it.startTime, it.endTime, "v1/configuration")
