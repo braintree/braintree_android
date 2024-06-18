@@ -253,10 +253,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                                     responseCallback.onResult(null, jsonException)
                                 }
                             } ?: httpError?.let { error ->
-                                val errorMessageFormat = "Request has failed: %s"
-                                val errorMessage = String.format(errorMessageFormat, error.message)
-                                val exception = BraintreeException(errorMessage, error)
-                                responseCallback.onResult(null, exception)
+                                responseCallback.onResult(null, error)
                             }
                         }
                     } else {
@@ -307,10 +304,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                                     responseCallback.onResult(null, jsonException)
                                 }
                             } ?: httpError?.let { error ->
-                                val errorMessageFormat = "Request has failed: %s"
-                                val errorMessage = String.format(errorMessageFormat, error.message)
-                                val exception = BraintreeException(errorMessage, error)
-                                responseCallback.onResult(null, exception)
+                                responseCallback.onResult(null, error)
                             }
                         }
                     } else {
@@ -354,10 +348,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                                     responseCallback.onResult(null, jsonException)
                                 }
                             } ?: httpError?.let { error ->
-                                val errorMessageFormat = "Request has failed: %s"
-                                val errorMessage = String.format(errorMessageFormat, error.message)
-                                val exception = BraintreeException(errorMessage, error)
-                                responseCallback.onResult(null, exception)
+                                responseCallback.onResult(null, error)
                             }
                         }
                     } else {
