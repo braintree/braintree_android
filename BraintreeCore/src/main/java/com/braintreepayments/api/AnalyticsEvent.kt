@@ -27,10 +27,10 @@ open class AnalyticsEvent internal constructor(
     open val isVaultRequest: Boolean = false,
 
     @ColumnInfo(name = "start_time", defaultValue = "-1")
-    open val startTime: Long = -1,
+    open val startTime: Long? = -1,
 
     @ColumnInfo(name = "end_time", defaultValue = "-1")
-    open val endTime: Long = -1,
+    open val endTime: Long? = -1,
 
     @ColumnInfo(name = "endpoint")
     open val endpoint: String? = null,

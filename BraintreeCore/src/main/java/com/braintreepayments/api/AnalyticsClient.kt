@@ -50,8 +50,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             .putLong(WORK_INPUT_KEY_TIMESTAMP, event.timestamp)
             .putBoolean(WORK_INPUT_KEY_VENMO_INSTALLED, event.venmoInstalled)
             .putBoolean(WORK_INPUT_KEY_IS_VAULT_REQUEST, event.isVaultRequest)
-            .putLong(WORK_INPUT_KEY_START_TIME, event.startTime)
-            .putLong(WORK_INPUT_KEY_END_TIME, event.endTime)
+            .putLong(WORK_INPUT_KEY_START_TIME, event.startTime ?: INVALID_TIMESTAMP)
+            .putLong(WORK_INPUT_KEY_END_TIME, event.endTime ?: INVALID_TIMESTAMP)
             .putString(WORK_INPUT_KEY_ENDPOINT, event.endpoint)
             .build()
 
