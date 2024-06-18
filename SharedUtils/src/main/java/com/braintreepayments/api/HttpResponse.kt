@@ -1,6 +1,6 @@
 package com.braintreepayments.api
 
-class HttpTimingResponse constructor(
+class HttpResponse constructor(
     var startTime: Long,
     var endTime: Long,
     var body: String? = null

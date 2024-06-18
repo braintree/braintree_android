@@ -60,7 +60,7 @@ class HttpClient {
             @Override
             public void run() {
                 try {
-                    HttpTimingResponse httpResponse = syncHttpClient.request(request);
+                    HttpResponse httpResponse = syncHttpClient.request(request);
                     notifySuccessOnMainThread(callback, httpResponse);
                 } catch (Exception e) {
                     switch (retryStrategy) {
@@ -115,7 +115,7 @@ class HttpClient {
         }
     }
 
-    private void notifySuccessOnMainThread(final HttpTimingResponseCallback callback, final HttpTimingResponse response) {
+    private void notifySuccessOnMainThread(final HttpTimingResponseCallback callback, final HttpResponse response) {
         if (callback != null) {
             scheduler.runOnMain(new Runnable() {
                 @Override

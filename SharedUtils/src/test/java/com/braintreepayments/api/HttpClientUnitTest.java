@@ -64,7 +64,7 @@ public class HttpClientUnitTest {
     @Test
     public void sendRequest_onBaseHttpClientRequestSuccess_notifiesSuccessViaCallbackOnMainThread() throws Exception {
         HttpClient sut = new HttpClient(syncHttpClient, threadScheduler);
-        HttpTimingResponse response = new HttpTimingResponse(123, 456, "response body");
+        HttpResponse response = new HttpResponse(123, 456, "response body");
 
         when(syncHttpClient.request(httpRequest)).thenReturn(response);
 
@@ -81,7 +81,7 @@ public class HttpClientUnitTest {
     @Test
     public void sendRequest_whenCallbackIsNull_doesNotNotifySuccess() throws Exception {
         HttpClient sut = new HttpClient(syncHttpClient, threadScheduler);
-        HttpTimingResponse response = new HttpTimingResponse(123, 456, "response body");
+        HttpResponse response = new HttpResponse(123, 456, "response body");
 
         when(syncHttpClient.request(httpRequest)).thenReturn(response);
         sut.sendRequest(httpRequest, null);
@@ -128,12 +128,12 @@ public class HttpClientUnitTest {
         sut.sendRequest(httpRequest, HttpClient.RETRY_MAX_3_TIMES, callback);
 
         threadScheduler.flushBackgroundThread();
-        verify(callback, never()).onResult((HttpTimingResponse) isNull(), any(Exception.class));
+        verify(callback, never()).onResult((HttpResponse) isNull(), any(Exception.class));
 
         threadScheduler.flushMainThread();
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(callback).onResult((HttpTimingResponse) isNull(), captor.capture());
+        verify(callback).onResult((HttpResponse) isNull(), captor.capture());
 
         HttpClientException httpClientException = (HttpClientException) captor.getValue();
         String expectedMessage = "Retry limit has been exceeded. Try again later.";
@@ -143,7 +143,7 @@ public class HttpClientUnitTest {
     @Test
     public void sendRequest_whenRetryMax3TimesEnabled_futureRequestsAreAllowed() throws Exception {
         HttpClient sut = new HttpClient(syncHttpClient, threadScheduler);
-        HttpTimingResponse response = new HttpTimingResponse(123, 456, "response body");
+        HttpResponse response = new HttpResponse(123, 456, "response body");
 
         Exception exception = new Exception("error");
         when(syncHttpClient.request(httpRequest)).thenThrow(exception);
@@ -168,7 +168,7 @@ public class HttpClientUnitTest {
     @Test
     public void sendRequestSynchronous_sendsHttpRequest() throws Exception {
         HttpClient sut = new HttpClient(syncHttpClient, threadScheduler);
-        HttpTimingResponse response = new HttpTimingResponse(123, 456, "response body");
+        HttpResponse response = new HttpResponse(123, 456, "response body");
 
         when(syncHttpClient.request(httpRequest)).thenReturn(response);
 

@@ -9,5 +9,5 @@ import androidx.annotation.RestrictTo
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 fun interface HttpTimingResponseCallback {
     @MainThread
-    fun onResult(response: HttpTimingResponse?, httpError: Exception?)
+    fun onResult(response: HttpResponse?, httpError: Exception?)
 }
