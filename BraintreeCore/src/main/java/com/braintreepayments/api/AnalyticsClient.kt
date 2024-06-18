@@ -179,7 +179,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 null,
                 false,
                 false,
-                timestamp = timestamp)
+                timestamp = timestamp
+        )
         val events = listOf(event)
         try {
             val analyticsRequest = serializeEvents(authorization, events, metadata)
