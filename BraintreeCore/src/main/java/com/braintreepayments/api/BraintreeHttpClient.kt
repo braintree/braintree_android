@@ -18,7 +18,7 @@ internal class BraintreeHttpClient(
      * @param path The path or url to request from the server via GET
      * @param configuration configuration for the Braintree Android SDK.
      * @param authorization
-     * @param callback [HttpResponseCallback]
+     * @param callback [HttpTimingResponseCallback]
      */
     operator fun get(
         path: String,
@@ -34,7 +34,7 @@ internal class BraintreeHttpClient(
      * @param configuration configuration for the Braintree Android SDK.
      * @param authorization
      * @param retryStrategy retry strategy
-     * @param callback [HttpResponseCallback]
+     * @param callback [HttpTimingResponseCallback]
      */
     operator fun get(
         path: String,
@@ -81,7 +81,7 @@ internal class BraintreeHttpClient(
      * @param data The body of the POST request
      * @param configuration configuration for the Braintree Android SDK.
      * @param authorization
-     * @param callback [HttpResponseCallback]
+     * @param callback [HttpTimingResponseCallback]
      */
     @Suppress("CyclomaticComplexMethod")
     fun post(
