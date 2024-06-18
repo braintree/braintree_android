@@ -11,7 +11,7 @@ internal class BraintreeGraphQLClient(
         data: String?,
         configuration: Configuration,
         authorization: Authorization,
-        callback: BTHttpResponseCallback
+        callback: HttpTimingResponseCallback
     ) {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
@@ -34,7 +34,7 @@ internal class BraintreeGraphQLClient(
         data: String?,
         configuration: Configuration,
         authorization: Authorization,
-        callback: BTHttpResponseCallback
+        callback: HttpTimingResponseCallback
     ) {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage

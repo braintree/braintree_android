@@ -45,15 +45,15 @@ class HttpClient {
         return syncHttpClient.request(request).getBody();
     }
 
-    void sendRequest(HttpRequest request, BTHttpResponseCallback callback) {
+    void sendRequest(HttpRequest request, HttpTimingResponseCallback callback) {
         sendRequest(request, HttpClient.NO_RETRY, callback);
     }
 
-    void sendRequest(HttpRequest request, @RetryStrategy int retryStrategy, BTHttpResponseCallback callback) {
+    void sendRequest(HttpRequest request, @RetryStrategy int retryStrategy, HttpTimingResponseCallback callback) {
         scheduleRequest(request, retryStrategy, callback);
     }
 
-    private void scheduleRequest(final HttpRequest request, @RetryStrategy final int retryStrategy, final BTHttpResponseCallback callback) {
+    private void scheduleRequest(final HttpRequest request, @RetryStrategy final int retryStrategy, final HttpTimingResponseCallback callback) {
         resetRetryCount(request);
 
         scheduler.runOnBackground(new Runnable() {
@@ -76,7 +76,7 @@ class HttpClient {
         });
     }
 
-    private void retryGet(final HttpRequest request, @RetryStrategy final int retryStrategy, final BTHttpResponseCallback callback) {
+    private void retryGet(final HttpRequest request, @RetryStrategy final int retryStrategy, final HttpTimingResponseCallback callback) {
         URL url = null;
         try {
             url = request.getURL();
@@ -115,7 +115,7 @@ class HttpClient {
         }
     }
 
-    private void notifySuccessOnMainThread(final BTHttpResponseCallback callback, final HttpTimingResponse response) {
+    private void notifySuccessOnMainThread(final HttpTimingResponseCallback callback, final HttpTimingResponse response) {
         if (callback != null) {
             scheduler.runOnMain(new Runnable() {
                 @Override
@@ -126,7 +126,7 @@ class HttpClient {
         }
     }
 
-    private void notifyErrorOnMainThread(final BTHttpResponseCallback callback, final Exception e) {
+    private void notifyErrorOnMainThread(final HttpTimingResponseCallback callback, final Exception e) {
         if (callback != null) {
             scheduler.runOnMain(new Runnable() {
                 @Override

@@ -24,7 +24,7 @@ internal class BraintreeHttpClient(
         path: String,
         configuration: Configuration?,
         authorization: Authorization?,
-        callback: BTHttpResponseCallback
+        callback: HttpTimingResponseCallback
     ) = get(path, configuration, authorization, HttpClient.NO_RETRY, callback)
 
     /**
@@ -41,7 +41,7 @@ internal class BraintreeHttpClient(
         configuration: Configuration?,
         authorization: Authorization?,
         @RetryStrategy retryStrategy: Int,
-        callback: BTHttpResponseCallback
+        callback: HttpTimingResponseCallback
     ) {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
@@ -90,7 +90,7 @@ internal class BraintreeHttpClient(
         configuration: Configuration?,
         authorization: Authorization?,
         additionalHeaders: Map<String, String> = emptyMap(),
-        callback: BTHttpResponseCallback
+        callback: HttpTimingResponseCallback
     ) {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage

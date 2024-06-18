@@ -25,7 +25,7 @@ class ConfigurationLoaderUnitTest {
         sut.loadConfiguration(authorization, null, callback)
 
         val expectedConfigUrl = "https://example.com/config?configVersion=3"
-        val callbackSlot = slot<BTHttpResponseCallback>()
+        val callbackSlot = slot<HttpTimingResponseCallback>()
         verify {
             braintreeHttpClient.get(
                     expectedConfigUrl,
@@ -51,7 +51,7 @@ class ConfigurationLoaderUnitTest {
         sut.loadConfiguration(authorization, null, callback)
 
         val expectedConfigUrl = "https://example.com/config?configVersion=3"
-        val callbackSlot = slot<BTHttpResponseCallback>()
+        val callbackSlot = slot<HttpTimingResponseCallback>()
         verify {
             braintreeHttpClient.get(
                     expectedConfigUrl,
@@ -80,7 +80,7 @@ class ConfigurationLoaderUnitTest {
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
         sut.loadConfiguration(authorization, null, callback)
 
-        val callbackSlot = slot<BTHttpResponseCallback>()
+        val callbackSlot = slot<HttpTimingResponseCallback>()
         verify {
             braintreeHttpClient.get(
                     ofType(String::class),
@@ -103,7 +103,7 @@ class ConfigurationLoaderUnitTest {
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
         sut.loadConfiguration(authorization, null, callback)
 
-        val callbackSlot = slot<BTHttpResponseCallback>()
+        val callbackSlot = slot<HttpTimingResponseCallback>()
 
         verify {
             braintreeHttpClient.get(
@@ -163,7 +163,7 @@ class ConfigurationLoaderUnitTest {
                     null,
                     authorization,
                     ofType(Int::class),
-                    ofType(BTHttpResponseCallback::class)
+                    ofType(HttpTimingResponseCallback::class)
             )
         }
         verify { callback.onResult(ofType(Configuration::class), null) }
@@ -184,7 +184,7 @@ class ConfigurationLoaderUnitTest {
         sut.loadConfiguration(authorization, apiTiming, callback)
 
         val expectedConfigUrl = "https://example.com/config?configVersion=3"
-        val callbackSlot = slot<BTHttpResponseCallback>()
+        val callbackSlot = slot<HttpTimingResponseCallback>()
         verify {
             braintreeHttpClient.get(
                     expectedConfigUrl,

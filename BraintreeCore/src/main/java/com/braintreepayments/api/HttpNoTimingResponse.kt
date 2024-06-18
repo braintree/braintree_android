@@ -1,6 +1,6 @@
 package com.braintreepayments.api
 
-internal class BTHttpNoResponse : BTHttpResponseCallback {
+internal class HttpNoTimingResponse : HttpTimingResponseCallback {
     override fun onResult(response: HttpTimingResponse?, httpError: Exception?) {
         // No-op
     }

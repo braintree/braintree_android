@@ -23,7 +23,7 @@ import java.util.UUID
 class BraintreeHttpClientUnitTest {
 
     private lateinit var httpClient: HttpClient
-    private lateinit var httpResponseCallback: BTHttpResponseCallback
+    private lateinit var httpResponseCallback: HttpTimingResponseCallback
 
     @Before
     fun beforeEach() {
@@ -34,7 +34,7 @@ class BraintreeHttpClientUnitTest {
     @Test
     fun get_withNullConfiguration_requiresRequiresRequestToHaveAnAbsolutePath() {
         val tokenizationKey = mockk<Authorization>()
-        val callback = mockk<BTHttpResponseCallback>()
+        val callback = mockk<HttpTimingResponseCallback>()
 
         val exceptionSlot = slot<BraintreeException>()
         every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
@@ -53,7 +53,7 @@ class BraintreeHttpClientUnitTest {
     @Throws(Exception::class)
     fun get_withNullConfigurationAndAbsoluteURL_doesNotSetABaseURLOnTheRequest() {
         val tokenizationKey: Authorization = TokenizationKey(Fixtures.TOKENIZATION_KEY)
-        val callback = mockk<BTHttpResponseCallback>()
+        val callback = mockk<HttpTimingResponseCallback>()
 
         val httpRequestSlot = slot<HttpRequest>()
         every {
@@ -75,7 +75,7 @@ class BraintreeHttpClientUnitTest {
         every { configuration.clientApiUrl } returns "https://example.com"
 
         val httpRequestSlot = slot<HttpRequest>()
-        val callback = mockk<BTHttpResponseCallback>()
+        val callback = mockk<HttpTimingResponseCallback>()
         every {
             httpClient.sendRequest(capture(httpRequestSlot), HttpClient.NO_RETRY, callback)
         } returns Unit
@@ -100,7 +100,7 @@ class BraintreeHttpClientUnitTest {
         every { configuration.clientApiUrl } returns "https://example.com"
 
         val httpRequestSlot = slot<HttpRequest>()
-        val callback = mockk<BTHttpResponseCallback>()
+        val callback = mockk<HttpTimingResponseCallback>()
         every {
             httpClient.sendRequest(capture(httpRequestSlot), HttpClient.NO_RETRY, callback)
         } returns Unit
@@ -128,7 +128,7 @@ class BraintreeHttpClientUnitTest {
         val configuration = mockk<Configuration>()
 
         val exceptionSlot = slot<BraintreeException>()
-        val callback = mockk<BTHttpResponseCallback>()
+        val callback = mockk<HttpTimingResponseCallback>()
         every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
@@ -251,7 +251,7 @@ class BraintreeHttpClientUnitTest {
         val configuration = mockk<Configuration>()
         every { configuration.clientApiUrl } returns "https://example.com"
 
-        val callback = mockk<BTHttpResponseCallback>()
+        val callback = mockk<HttpTimingResponseCallback>()
         val httpRequestSlot = slot<HttpRequest>()
         every { httpClient.sendRequest(capture(httpRequestSlot), callback) } returns Unit
 
@@ -283,7 +283,7 @@ class BraintreeHttpClientUnitTest {
         val configuration = mockk<Configuration>()
         every { configuration.clientApiUrl } returns "https://example.com"
 
-        val callback = mockk<BTHttpResponseCallback>()
+        val callback = mockk<HttpTimingResponseCallback>()
         val httpRequestSlot = slot<HttpRequest>()
         every { httpClient.sendRequest(capture(httpRequestSlot), callback) } returns Unit
 
@@ -314,7 +314,7 @@ class BraintreeHttpClientUnitTest {
         ) as ClientToken
 
         val exceptionSlot = slot<BraintreeException>()
-        val callback = mockk<BTHttpResponseCallback>()
+        val callback = mockk<HttpTimingResponseCallback>()
         every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
@@ -341,7 +341,7 @@ class BraintreeHttpClientUnitTest {
         ) as ClientToken
 
         val httpRequestSlot = slot<HttpRequest>()
-        val callback = mockk<BTHttpResponseCallback>()
+        val callback = mockk<HttpTimingResponseCallback>()
         every { httpClient.sendRequest(capture(httpRequestSlot), callback) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
@@ -366,7 +366,7 @@ class BraintreeHttpClientUnitTest {
             Authorization.fromString(FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN))
 
         val exceptionSlot = slot<JSONException>()
-        val callback = mockk<BTHttpResponseCallback>()
+        val callback = mockk<HttpTimingResponseCallback>()
         every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
@@ -392,7 +392,7 @@ class BraintreeHttpClientUnitTest {
             InvalidAuthorization("invalid", "token invalid")
 
         val exceptionSlot = slot<BraintreeException>()
-        val callback = mockk<BTHttpResponseCallback>()
+        val callback = mockk<HttpTimingResponseCallback>()
         every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
@@ -423,7 +423,7 @@ class BraintreeHttpClientUnitTest {
             data = "{}",
             configuration = mockk<Configuration>(relaxed = true),
             authorization = tokenizationKey,
-            callback = mockk<BTHttpResponseCallback>()
+            callback = mockk<HttpTimingResponseCallback>()
         )
 
         val headers = httpRequestSlot.captured.headers
@@ -444,7 +444,7 @@ class BraintreeHttpClientUnitTest {
             data = "{}",
             configuration = mockk<Configuration>(relaxed = true),
             authorization = tokenizationKey,
-            callback = mockk<BTHttpResponseCallback>()
+            callback = mockk<HttpTimingResponseCallback>()
         )
 
         val headers = httpRequestSlot.captured.headers
@@ -454,7 +454,7 @@ class BraintreeHttpClientUnitTest {
     @Test
     fun `when post is called with additional headers, headers are added to the request`() {
         val headers = mapOf("name1" to "value1", "name2" to "value2")
-        val callback = mockk<BTHttpResponseCallback>()
+        val callback = mockk<HttpTimingResponseCallback>()
         val sut = BraintreeHttpClient(httpClient)
 
         sut.post(
