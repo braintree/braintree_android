@@ -670,7 +670,7 @@ class BraintreeClientUnitTest {
         }
         authCallbackSlot.captured.onAuthorizationResult(authorization, null)
 
-        val apiTimingSlot = slot<BTAPITiming>()
+        val apiTimingSlot = slot<APITiming>()
         val callbackSlot = slot<ConfigurationLoaderCallback>()
         verify {
             configurationLoader.loadConfiguration(authorization, capture(apiTimingSlot), capture(callbackSlot))

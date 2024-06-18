@@ -174,7 +174,7 @@ class ConfigurationLoaderUnitTest {
         every { authorization.configUrl } returns "https://example.com/config"
         every { authorization.bearer } returns "bearer"
 
-        val apiTiming = mockk<BTAPITiming>()
+        val apiTiming = mockk<APITiming>()
 
         every {
             apiTiming.sendEvent(0, 0, "v1/configuration")

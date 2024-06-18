@@ -15,7 +15,7 @@ internal class ConfigurationLoader internal constructor(
 
     fun loadConfiguration(
             authorization: Authorization,
-            apiTiming: BTAPITiming? = null,
+            apiTiming: APITiming? = null,
             callback: ConfigurationLoaderCallback
     ) {
         if (authorization is InvalidAuthorization) {
