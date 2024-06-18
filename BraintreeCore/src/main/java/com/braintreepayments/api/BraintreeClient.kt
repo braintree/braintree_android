@@ -317,7 +317,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                         ) { response, httpError ->
                             response?.let {
                                 try {
-                                    val query = getSubstringAfterKey(payload.toString(), "query")
+                                    val query = getGraphQLMutationName(payload.toString())
                                     val params = AnalyticsEventParams(
                                         startTime = it.startTime,
                                         endTime = it.endTime,
@@ -512,12 +512,19 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun getSubstringAfterKey(jsonString: String, key: String): String {
-        val keyWithQuotes = "\"$key\":\""
-        val startIndex = jsonString.indexOf(keyWithQuotes) + keyWithQuotes.length
-        val endIndex = jsonString.indexOf("\",", startIndex)
-        return if (startIndex != -1 && endIndex != -1) {
-            jsonString.substring(startIndex, endIndex)
+    fun getGraphQLMutationName(jsonString: String): String {
+        val regex = """"query"\s*:\s*"(.*?)"""".toRegex()
+        val matchResult = regex.find(jsonString)
+
+        return if (matchResult != null) {
+            val queryContent = matchResult.groupValues[1]
+            val endIndex = queryContent.indexOf("(")
+            val trimmedContent = if (endIndex != -1) {
+                queryContent.substring(0, endIndex).trim()
+            } else {
+                queryContent
+            }
+            trimmedContent
         } else {
             ""
         }
