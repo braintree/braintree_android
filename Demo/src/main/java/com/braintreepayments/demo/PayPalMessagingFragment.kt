@@ -38,6 +38,7 @@ class PayPalMessagingFragment : BaseFragment(), PayPalMessagingListener {
             color = PayPalMessagingColor.BLACK
         )
 
+        // TODO: Refactor BraintreeClient out of PayPalMessagingView
         val braintreeClient = BraintreeClient(requireContext(), authStringArg)
         val payPalMessagingView = PayPalMessagingView(braintreeClient, requireContext())
         payPalMessagingView.setListener(this)

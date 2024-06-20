@@ -56,8 +56,8 @@ class ShopperInsightsFragment : BaseFragment() {
     private val venmoLauncher: VenmoLauncher = VenmoLauncher()
     private val paypalLauncher: PayPalLauncher = PayPalLauncher()
 
-    private lateinit var venmoPendingRequest: VenmoPendingRequest
-    private lateinit var paypalPendingRequest: PayPalPendingRequest
+    private lateinit var venmoStartedPendingRequest: VenmoPendingRequest.Started
+    private lateinit var paypalStartedPendingRequest: PayPalPendingRequest.Started
 
     // TODO: Refactor Shopper Insights to remove BraintreeClient
     override fun onCreateView(
@@ -109,76 +109,63 @@ class ShopperInsightsFragment : BaseFragment() {
     }
 
     private fun handlePayPalReturnToApp() {
-        if (this::paypalPendingRequest.isInitialized) {
-            when (val request = paypalPendingRequest) {
-                is PayPalPendingRequest.Started -> {
-                    val paypalPaymentAuthResult =
-                        paypalLauncher.handleReturnToAppFromBrowser(request, Intent())
-                    if (paypalPaymentAuthResult is PayPalPaymentAuthResult.Success) {
-                        payPalClient.tokenize(paypalPaymentAuthResult) {
-                            when (it) {
-                                is PayPalResult.Success -> {
-                                    val action =
-                                        ShopperInsightsFragmentDirections
-                                            .actionShopperInsightsFragmentToDisplayNonceFragment(
-                                            it.nonce
-                                        )
-                                    NavHostFragment.findNavController(this).navigate(action)
-                                }
-
-                                is PayPalResult.Failure -> {}
-                                is PayPalResult.Cancel -> {}
-                            }
+        if (this::paypalStartedPendingRequest.isInitialized) {
+            val paypalPaymentAuthResult =
+                paypalLauncher.handleReturnToAppFromBrowser(paypalStartedPendingRequest, Intent())
+            if (paypalPaymentAuthResult is PayPalPaymentAuthResult.Success) {
+                payPalClient.tokenize(paypalPaymentAuthResult) {
+                    when (it) {
+                        is PayPalResult.Success -> {
+                            val action =
+                                ShopperInsightsFragmentDirections
+                                    .actionShopperInsightsFragmentToDisplayNonceFragment(
+                                        it.nonce
+                                    )
+                            NavHostFragment.findNavController(this).navigate(action)
                         }
-                    } else {
-                        // No PayPal result i.e. not auth'd in
-                        Toast.makeText(
-                            requireContext(),
-                            "Failed to authenticate user.",
-                            Toast.LENGTH_LONG
-                        )
-                            .show()
+
+                        is PayPalResult.Failure -> {}
+                        is PayPalResult.Cancel -> {}
                     }
                 }
-
-                is PayPalPendingRequest.Failure -> {}
+            } else {
+                // No PayPal result i.e. not auth'd in
+                Toast.makeText(
+                    requireContext(),
+                    "Failed to authenticate user.",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
 
     private fun handleVenmoReturnToApp() {
-        if (this::venmoPendingRequest.isInitialized) {
-            when (val request = venmoPendingRequest) {
-                is VenmoPendingRequest.Started -> {
-                    val venmoPaymentAuthResult = venmoLauncher.handleReturnToApp(request, Intent())
-                    if (venmoPaymentAuthResult is VenmoPaymentAuthResult.Success) {
-                        venmoClient.tokenize(venmoPaymentAuthResult) {
-                            when (it) {
-                                is VenmoResult.Success -> {
-                                    val action =
-                                        ShopperInsightsFragmentDirections
-                                            .actionShopperInsightsFragmentToDisplayNonceFragment(
-                                            it.nonce
-                                        )
-                                    NavHostFragment.findNavController(this).navigate(action)
-                                }
-
-                                is VenmoResult.Failure -> {}
-                                is VenmoResult.Cancel -> {}
-                            }
+        if (this::venmoStartedPendingRequest.isInitialized) {
+            val venmoPaymentAuthResult =
+                venmoLauncher.handleReturnToApp(venmoStartedPendingRequest, Intent())
+            if (venmoPaymentAuthResult is VenmoPaymentAuthResult.Success) {
+                venmoClient.tokenize(venmoPaymentAuthResult) {
+                    when (it) {
+                        is VenmoResult.Success -> {
+                            val action =
+                                ShopperInsightsFragmentDirections
+                                    .actionShopperInsightsFragmentToDisplayNonceFragment(
+                                        it.nonce
+                                    )
+                            NavHostFragment.findNavController(this).navigate(action)
                         }
-                    } else {
-                        // No venmo result i.e. not auth'd in
-                        Toast.makeText(
-                            requireContext(),
-                            "Failed to authenticate user.",
-                            Toast.LENGTH_LONG
-                        )
-                            .show()
+
+                        is VenmoResult.Failure -> {}
+                        is VenmoResult.Cancel -> {}
                     }
                 }
-
-                is VenmoPendingRequest.Failure -> {}
+            } else {
+                // No venmo result i.e. not auth'd in
+                Toast.makeText(
+                    requireContext(),
+                    "Failed to authenticate user.",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -244,7 +231,18 @@ class ShopperInsightsFragment : BaseFragment() {
                 }
 
                 is PayPalPaymentAuthRequest.ReadyToLaunch -> {
-                    paypalPendingRequest = paypalLauncher.launch(requireActivity(), it)
+                    when (val paypalPendingRequest = paypalLauncher.launch(requireActivity(), it)) {
+                        is PayPalPendingRequest.Started -> {
+                            paypalStartedPendingRequest = paypalPendingRequest
+                        }
+                        is PayPalPendingRequest.Failure -> {
+                            Toast.makeText(
+                                requireContext(),
+                                paypalPendingRequest.error.message,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
                 }
             }
         }
@@ -264,7 +262,18 @@ class ShopperInsightsFragment : BaseFragment() {
         venmoClient.createPaymentAuthRequest(requireContext(), venmoRequest) {
             when (it) {
                 is VenmoPaymentAuthRequest.ReadyToLaunch -> {
-                    venmoPendingRequest = venmoLauncher.launch(requireActivity(), it)
+                    when (val venmoPendingRequest = venmoLauncher.launch(requireActivity(), it)) {
+                        is VenmoPendingRequest.Started -> {
+                            venmoStartedPendingRequest = venmoPendingRequest
+                        }
+                        is VenmoPendingRequest.Failure -> {
+                            Toast.makeText(
+                                requireContext(),
+                                venmoPendingRequest.error.message,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
                 }
 
                 is VenmoPaymentAuthRequest.Failure -> {
