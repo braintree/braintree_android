@@ -355,7 +355,8 @@ before the `OnResume` method of your Activity or Fragment.
 `BraintreeClient` and `PayPalClient` no longer require references to Fragment or Activity and
 do not need to be instantiated in `OnCreate`.
 
-The PayPal integration now requires the use of Android App links.
+The PayPal integration now requires an Android App link be configured to return to your app from the 
+PayPal flow. 
 
 ```diff
 class MyActivity : FragmentActivity() {
