@@ -5,7 +5,6 @@ import android.content.pm.ActivityInfo
 import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
-import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.core.IntegrationType.Integration
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.ManifestValidator
