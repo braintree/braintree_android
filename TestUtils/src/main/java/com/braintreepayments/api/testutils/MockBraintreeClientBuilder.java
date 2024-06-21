@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.pm.ActivityInfo;
+import android.net.Uri;
 
 import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.BraintreeClient;
@@ -35,6 +36,7 @@ public class MockBraintreeClientBuilder {
     private String sessionId;
     private String integration;
     private String returnUrlScheme;
+    private Uri appLinkReturnUri;
 
 
     private ActivityInfo activityInfo;
@@ -111,6 +113,12 @@ public class MockBraintreeClientBuilder {
         return this;
     }
 
+    public MockBraintreeClientBuilder appLinkReturnUri(
+            Uri appLinkReturnUri) {
+        this.appLinkReturnUri = appLinkReturnUri;
+        return this;
+    }
+
     public BraintreeClient build() {
         BraintreeClient braintreeClient = mock(BraintreeClient.class);
         when(braintreeClient.getSessionId()).thenReturn(sessionId);
@@ -120,6 +128,7 @@ public class MockBraintreeClientBuilder {
         when(braintreeClient.getManifestActivityInfo(any())).thenReturn(activityInfo);
         when(braintreeClient.launchesBrowserSwitchAsNewTask()).thenReturn(
                 launchesBrowserSwitchAsNewTask);
+        when(braintreeClient.getAppLinkReturnUri()).thenReturn(appLinkReturnUri);
 
         doAnswer((Answer<Void>) invocation -> {
             ConfigurationCallback callback = (ConfigurationCallback) invocation.getArguments()[0];
