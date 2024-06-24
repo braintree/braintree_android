@@ -1,12 +1,34 @@
 package com.braintreepayments.demo
 
+import android.net.Uri
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import com.braintreepayments.api.ShopperInsightsClient
+import android.widget.Toast
+import androidx.navigation.fragment.NavHostFragment
 import com.braintreepayments.api.ExperimentalBetaApi
-import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.ShopperInsightsBuyerPhone
+import com.braintreepayments.api.ShopperInsightsClient
+import com.braintreepayments.api.ShopperInsightsRequest
+import com.braintreepayments.api.ShopperInsightsResult
+import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalClient
+import com.braintreepayments.api.paypal.PayPalLauncher
+import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
+import com.braintreepayments.api.paypal.PayPalPaymentAuthResult
+import com.braintreepayments.api.paypal.PayPalPendingRequest
+import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.venmo.VenmoClient
+import com.braintreepayments.api.venmo.VenmoLauncher
+import com.braintreepayments.api.venmo.VenmoPaymentAuthRequest
+import com.braintreepayments.api.venmo.VenmoPaymentAuthResult
+import com.braintreepayments.api.venmo.VenmoPaymentMethodUsage
+import com.braintreepayments.api.venmo.VenmoPendingRequest
+import com.braintreepayments.api.venmo.VenmoRequest
+import com.braintreepayments.api.venmo.VenmoResult
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
 
@@ -26,147 +48,223 @@ class ShopperInsightsFragment : BaseFragment() {
     private lateinit var emailNullSwitch: SwitchMaterial
     private lateinit var phoneNullSwitch: SwitchMaterial
 
-    private lateinit var braintreeClient: BraintreeClient
     private lateinit var shopperInsightsClient: ShopperInsightsClient
     private lateinit var payPalClient: PayPalClient
     private lateinit var venmoClient: VenmoClient
 
-    // TODO: Refactor Shopper Insights to remove BraintreeClient
-//    override fun onCreateView(
-//        inflater: LayoutInflater,
-//        container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View? {
-//        braintreeClient = getBraintreeClient()
-//        shopperInsightsClient = ShopperInsightsClient(braintreeClient)
-//
-//        venmoClient = VenmoClient(this, braintreeClient)
-//        venmoClient.setListener(this)
-//
-//        val useManualBrowserSwitch = Settings.isManualBrowserSwitchingEnabled(requireActivity())
-//        if (useManualBrowserSwitch) {
-//            payPalClient = PayPalClient(braintreeClient)
-//        } else {
-//            payPalClient = PayPalClient(this, braintreeClient)
-//            payPalClient.setListener(this)
-//        }
-//
-//        return inflater.inflate(R.layout.fragment_shopping_insights, container, false)
-//    }
-//
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        super.onViewCreated(view, savedInstanceState)
-//        initializeViews(view)
-//
-//        actionButton.setOnClickListener { fetchShopperInsights() }
-//        venmoButton.setOnClickListener { launchVenmo() }
-//        payPalVaultButton.setOnClickListener { launchPayPalVault() }
-//    }
-//
-//    private fun initializeViews(view: View) {
-//        responseTextView = view.findViewById(R.id.responseTextView)
-//        actionButton = view.findViewById(R.id.actionButton)
-//        payPalVaultButton = view.findViewById(R.id.payPalVaultButton)
-//        venmoButton = view.findViewById(R.id.venmoButton)
-//        emailInput = view.findViewById(R.id.emailInput)
-//        countryCodeInput = view.findViewById(R.id.countryCodeInput)
-//        nationalNumberInput = view.findViewById(R.id.nationalNumberInput)
-//        emailNullSwitch = view.findViewById(R.id.emailNullSwitch)
-//        phoneNullSwitch = view.findViewById(R.id.phoneNullSwitch)
-//
-//        emailInput.editText?.setText("PR1_merchantname@personal.example.com")
-//        nationalNumberInput.editText?.setText("4082321001")
-//        countryCodeInput.editText?.setText("1")
-//    }
-//
-//    private fun fetchShopperInsights() {
-//        val email =
-//            if (emailNullSwitch.isChecked) null else emailInput.editText?.text.toString()
-//        val countryCode =
-//            if (phoneNullSwitch.isChecked) null else countryCodeInput.editText?.text.toString()
-//        val nationalNumber =
-//            if (phoneNullSwitch.isChecked) null else nationalNumberInput.editText?.text.toString()
-//
-//        val request = if (countryCode != null && nationalNumber != null) {
-//            ShopperInsightsRequest(email, ShopperInsightsBuyerPhone(countryCode, nationalNumber))
-//        } else {
-//            ShopperInsightsRequest(email, null)
-//        }
-//
-//        shopperInsightsClient.getRecommendedPaymentMethods(
-//            request
-//        ) { result ->
-//            when (result) {
-//                is ShopperInsightsResult.Success -> {
-//                    if (result.response.isPayPalRecommended) {
-//                        payPalVaultButton.isEnabled = true
-//                        shopperInsightsClient.sendPayPalPresentedEvent()
-//                    }
-//
-//                    if (result.response.isVenmoRecommended) {
-//                        venmoButton.isEnabled = true
-//                        shopperInsightsClient.sendVenmoPresentedEvent()
-//                    }
-//
-//                    responseTextView.text =
-//                        """
-//                            Eligible in PayPal Network: ${result.response.isEligibleInPayPalNetwork}
-//                            PayPal Recommended: ${result.response.isPayPalRecommended}
-//                            Venmo Recommended: ${result.response.isVenmoRecommended}
-//                        """.trimIndent()
-//                }
-//
-//                is ShopperInsightsResult.Failure -> {
-//                    responseTextView.text = result.error.toString()
-//                }
-//            }
-//        }
-//    }
-//
-//    private fun launchPayPalVault() {
-//        shopperInsightsClient.sendPayPalSelectedEvent()
-//        payPalClient.tokenizePayPalAccount(
-//            requireActivity(),
-//            PayPalRequestFactory.createPayPalVaultRequest(activity, emailInput.editText?.text.toString())
-//        )
-//    }
-//
-//    private fun launchVenmo() {
-//        shopperInsightsClient.sendVenmoSelectedEvent()
-//
-//        val venmoRequest = VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE)
-//        venmoRequest.profileId = null
-//        venmoRequest.collectCustomerBillingAddress = true
-//        venmoRequest.collectCustomerShippingAddress = true
-//        venmoRequest.totalAmount = "20"
-//        venmoRequest.subTotalAmount = "18"
-//        venmoRequest.taxAmount = "1"
-//
-//        venmoClient.tokenizeVenmoAccount(requireActivity(), venmoRequest)
-//    }
-//
-//    override fun onPayPalSuccess(payPalAccountNonce: PayPalAccountNonce) {
-//        super.onPaymentMethodNonceCreated(payPalAccountNonce)
-//        val action = ShopperInsightsFragmentDirections.actionShopperInsightsFragmentToDisplayNonceFragment(
-//            payPalAccountNonce
-//        )
-//        NavHostFragment.findNavController(this).navigate(action)
-//    }
-//
-//    override fun onPayPalFailure(error: Exception) {
-//        handleError(error)
-//    }
-//
-//    override fun onVenmoSuccess(venmoAccountNonce: VenmoAccountNonce) {
-//        super.onPaymentMethodNonceCreated(venmoAccountNonce)
-//
-//        val action = ShopperInsightsFragmentDirections.actionShopperInsightsFragmentToDisplayNonceFragment(
-//            venmoAccountNonce
-//        )
-//        NavHostFragment.findNavController(this).navigate(action)
-//    }
-//
-//    override fun onVenmoFailure(error: Exception) {
-//        handleError(error)
-//    }
+    private val venmoLauncher: VenmoLauncher = VenmoLauncher()
+    private val paypalLauncher: PayPalLauncher = PayPalLauncher()
+
+    private lateinit var venmoStartedPendingRequest: VenmoPendingRequest.Started
+    private lateinit var paypalStartedPendingRequest: PayPalPendingRequest.Started
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        shopperInsightsClient = ShopperInsightsClient(requireContext(), authStringArg)
+
+        venmoClient = VenmoClient(requireContext(), super.getAuthStringArg())
+        payPalClient = PayPalClient(requireContext(), super.getAuthStringArg(),
+            Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/"))
+
+        return inflater.inflate(R.layout.fragment_shopping_insights, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initializeViews(view)
+
+        actionButton.setOnClickListener { fetchShopperInsights() }
+        venmoButton.setOnClickListener { launchVenmo() }
+        payPalVaultButton.setOnClickListener { launchPayPalVault() }
+    }
+
+    private fun initializeViews(view: View) {
+        responseTextView = view.findViewById(R.id.responseTextView)
+        actionButton = view.findViewById(R.id.actionButton)
+        payPalVaultButton = view.findViewById(R.id.payPalVaultButton)
+        venmoButton = view.findViewById(R.id.venmoButton)
+        emailInput = view.findViewById(R.id.emailInput)
+        countryCodeInput = view.findViewById(R.id.countryCodeInput)
+        nationalNumberInput = view.findViewById(R.id.nationalNumberInput)
+        emailNullSwitch = view.findViewById(R.id.emailNullSwitch)
+        phoneNullSwitch = view.findViewById(R.id.phoneNullSwitch)
+
+        emailInput.editText?.setText("PR1_merchantname@personal.example.com")
+        nationalNumberInput.editText?.setText("4082321001")
+        countryCodeInput.editText?.setText("1")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        handleVenmoReturnToApp()
+        handlePayPalReturnToApp()
+    }
+
+    private fun handlePayPalReturnToApp() {
+        if (this::paypalStartedPendingRequest.isInitialized) {
+            val paypalPaymentAuthResult =
+                paypalLauncher.handleReturnToAppFromBrowser(paypalStartedPendingRequest, requireActivity().intent)
+            if (paypalPaymentAuthResult is PayPalPaymentAuthResult.Success) {
+                payPalClient.tokenize(paypalPaymentAuthResult) {
+                    when (it) {
+                        is PayPalResult.Success -> {
+                            val action =
+                                ShopperInsightsFragmentDirections
+                                    .actionShopperInsightsFragmentToDisplayNonceFragment(
+                                        it.nonce
+                                    )
+                            NavHostFragment.findNavController(this).navigate(action)
+                        }
+
+                        is PayPalResult.Failure -> { handleError(it.error) }
+                        is PayPalResult.Cancel -> { handleError(UserCanceledException("User canceled PayPal")) }
+                    }
+                }
+            } else {
+                handleError(Exception("User did not complete payment flow"))
+            }
+        }
+    }
+
+    private fun handleVenmoReturnToApp() {
+        if (this::venmoStartedPendingRequest.isInitialized) {
+            val venmoPaymentAuthResult =
+                venmoLauncher.handleReturnToApp(venmoStartedPendingRequest, requireActivity().intent)
+            if (venmoPaymentAuthResult is VenmoPaymentAuthResult.Success) {
+                venmoClient.tokenize(venmoPaymentAuthResult) {
+                    when (it) {
+                        is VenmoResult.Success -> {
+                            val action =
+                                ShopperInsightsFragmentDirections
+                                    .actionShopperInsightsFragmentToDisplayNonceFragment(
+                                        it.nonce
+                                    )
+                            NavHostFragment.findNavController(this).navigate(action)
+                        }
+
+                        is VenmoResult.Failure -> { handleError(it.error) }
+                        is VenmoResult.Cancel -> { handleError(UserCanceledException("User canceled Venmo")) }
+                    }
+                }
+            } else {
+                handleError(Exception("User did not complete payment flow"))
+            }
+        }
+    }
+
+    private fun fetchShopperInsights() {
+        val email =
+            if (emailNullSwitch.isChecked) null else emailInput.editText?.text.toString()
+        val countryCode =
+            if (phoneNullSwitch.isChecked) null else countryCodeInput.editText?.text.toString()
+        val nationalNumber =
+            if (phoneNullSwitch.isChecked) null else nationalNumberInput.editText?.text.toString()
+
+        val request = if (countryCode != null && nationalNumber != null) {
+            ShopperInsightsRequest(email, ShopperInsightsBuyerPhone(countryCode, nationalNumber))
+        } else {
+            ShopperInsightsRequest(email, null)
+        }
+
+        shopperInsightsClient.getRecommendedPaymentMethods(
+            request
+        ) { result ->
+            when (result) {
+                is ShopperInsightsResult.Success -> {
+                    if (result.response.isPayPalRecommended) {
+                        payPalVaultButton.isEnabled = true
+                        shopperInsightsClient.sendPayPalPresentedEvent()
+                    }
+
+                    if (result.response.isVenmoRecommended) {
+                        venmoButton.isEnabled = true
+                        shopperInsightsClient.sendVenmoPresentedEvent()
+                    }
+
+                    responseTextView.text =
+                        """
+                            Eligible in PayPal Network: ${result.response.isEligibleInPayPalNetwork}
+                            PayPal Recommended: ${result.response.isPayPalRecommended}
+                            Venmo Recommended: ${result.response.isVenmoRecommended}
+                        """.trimIndent()
+                }
+
+                is ShopperInsightsResult.Failure -> {
+                    responseTextView.text = result.error.toString()
+                }
+            }
+        }
+    }
+
+    private fun launchPayPalVault() {
+        shopperInsightsClient.sendPayPalSelectedEvent()
+
+        payPalClient.createPaymentAuthRequest(
+            requireContext(),
+            PayPalRequestFactory.createPayPalVaultRequest(
+                activity,
+                emailInput.editText?.text.toString()
+            )
+        ) {
+            if (it == null) return@createPaymentAuthRequest
+            when (it) {
+                is PayPalPaymentAuthRequest.Failure -> {
+                    handleError(it.error)
+                }
+
+                is PayPalPaymentAuthRequest.ReadyToLaunch -> {
+                    when (val paypalPendingRequest = paypalLauncher.launch(requireActivity(), it)) {
+                        is PayPalPendingRequest.Started -> {
+                            paypalStartedPendingRequest = paypalPendingRequest
+                        }
+                        is PayPalPendingRequest.Failure -> {
+                            Toast.makeText(
+                                requireContext(),
+                                paypalPendingRequest.error.message,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun launchVenmo() {
+        shopperInsightsClient.sendVenmoSelectedEvent()
+
+        val venmoRequest = VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE)
+        venmoRequest.profileId = null
+        venmoRequest.collectCustomerBillingAddress = true
+        venmoRequest.collectCustomerShippingAddress = true
+        venmoRequest.totalAmount = "20"
+        venmoRequest.subTotalAmount = "18"
+        venmoRequest.taxAmount = "1"
+
+        venmoClient.createPaymentAuthRequest(requireContext(), venmoRequest) {
+            when (it) {
+                is VenmoPaymentAuthRequest.ReadyToLaunch -> {
+                    when (val venmoPendingRequest = venmoLauncher.launch(requireActivity(), it)) {
+                        is VenmoPendingRequest.Started -> {
+                            venmoStartedPendingRequest = venmoPendingRequest
+                        }
+                        is VenmoPendingRequest.Failure -> {
+                            Toast.makeText(
+                                requireContext(),
+                                venmoPendingRequest.error.message,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
+
+                is VenmoPaymentAuthRequest.Failure -> {
+                    handleError(it.error)
+                }
+            }
+        }
+    }
 }

@@ -137,14 +137,20 @@ public class MainFragment extends BaseFragment {
     }
 
     public void launchPayPalMessaging(View v) {
-        NavDirections action =
-                MainFragmentDirections.actionMainFragmentToPayPalMessagingFragment();
-        Navigation.findNavController(v).navigate(action);
+        fetchAuthorization(authString -> {
+            NavDirections action =
+                    MainFragmentDirections.actionMainFragmentToPayPalMessagingFragment()
+                            .setAuthString(authString);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 
     public void launchShoppingInsights(View v) {
-        NavDirections action =
-                MainFragmentDirections.actionMainFragmentToShoppingInsightsFragment();
-        Navigation.findNavController(v).navigate(action);
+        fetchAuthorization(authString -> {
+            NavDirections action =
+                    MainFragmentDirections.actionMainFragmentToShoppingInsightsFragment()
+                            .setAuthString(authString);
+            Navigation.findNavController(v).navigate(action);
+        });
     }
 }

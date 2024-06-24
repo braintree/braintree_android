@@ -19,15 +19,19 @@ import com.paypal.messages.config.message.PayPalMessageViewStateCallbacks
  *  Use [PayPalMessagingView] to display PayPal messages to promote offers such as Pay Later
  *  and PayPal Credit to customers.
  * Note: **This module is in beta. It's public API may change or be removed in future releases.**
- * @property braintreeClient a {@link BraintreeClient}
- * @param context Android Context
  */
-
 @ExperimentalBetaApi
-class PayPalMessagingView(
+class PayPalMessagingView internal constructor(
     private val braintreeClient: BraintreeClient,
     context: Context
 ) : FrameLayout(context) {
+
+    /**
+     * @param context: an Android context
+     * @param authorization: a Tokenization Key or Client Token used to authenticate
+     */
+    constructor(context: Context, authorization: String) : this(BraintreeClient(context, authorization), context)
+
     private var listener: PayPalMessagingListener? = null
 
     private var messageView: PayPalMessageView? = null

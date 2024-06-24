@@ -139,6 +139,10 @@
         * Remove entire PayPal Native Checkout module
     * SharedUtils
         * Update package name to `com.braintreepayments.api.sharedutils`
+    * PayPal Messaging (BETA) 
+        * Remove `BraintreeClient` from constructor
+    * Shopper Insights (BETA)
+        * Remove `BraintreeClient` from constructor
 
 ## 4.47.0 (2024-06-06)
 
