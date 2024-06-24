@@ -13,7 +13,6 @@ import com.braintreepayments.api.PayPalMessagingOfferType
 import com.braintreepayments.api.PayPalMessagingRequest
 import com.braintreepayments.api.PayPalMessagingTextAlignment
 import com.braintreepayments.api.PayPalMessagingView
-import com.braintreepayments.api.core.BraintreeClient
 
 @OptIn(ExperimentalBetaApi::class)
 class PayPalMessagingFragment : BaseFragment(), PayPalMessagingListener {
@@ -38,9 +37,7 @@ class PayPalMessagingFragment : BaseFragment(), PayPalMessagingListener {
             color = PayPalMessagingColor.BLACK
         )
 
-        // TODO: Refactor BraintreeClient out of PayPalMessagingView
-        val braintreeClient = BraintreeClient(requireContext(), authStringArg)
-        val payPalMessagingView = PayPalMessagingView(braintreeClient, requireContext())
+        val payPalMessagingView = PayPalMessagingView(requireContext(), authStringArg)
         payPalMessagingView.setListener(this)
         payPalMessagingView.start(payPalMessagingRequest)
         payPalMessagingView.layoutParams = ViewGroup.LayoutParams(

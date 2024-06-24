@@ -24,10 +24,13 @@ import com.paypal.messages.config.message.PayPalMessageViewStateCallbacks
  */
 
 @ExperimentalBetaApi
-class PayPalMessagingView(
+class PayPalMessagingView internal constructor(
     private val braintreeClient: BraintreeClient,
     context: Context
 ) : FrameLayout(context) {
+
+    constructor(context: Context, authorization: String) : this(BraintreeClient(context, authorization), context)
+
     private var listener: PayPalMessagingListener? = null
 
     private var messageView: PayPalMessageView? = null
