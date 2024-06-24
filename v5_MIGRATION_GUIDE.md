@@ -360,6 +360,9 @@ before the `OnResume` method of your Activity or Fragment.
 `BraintreeClient` and `PayPalClient` no longer require references to Fragment or Activity and
 do not need to be instantiated in `OnCreate`.
 
+The PayPal integration now requires an Android App link be configured to return to your app from the 
+PayPal flow. 
+
 ```diff
 class MyActivity : FragmentActivity() {
 
@@ -399,7 +402,11 @@ class MyActivity : FragmentActivity() {
     fun initializeClients() {
 -       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       payPalClient = PayPalClient(this, braintreeClient)
-+       payPalClient = PayPalClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
++       payPalClient = PayPalClient(
++            context, 
++            "TOKENIZATION_KEY_OR_CLIENT_TOKEN", 
++            Uri.parse("https://merchant-app.com") // Merchant App Link
++       )
 -       payPalClient.setListener(this)
     }
     

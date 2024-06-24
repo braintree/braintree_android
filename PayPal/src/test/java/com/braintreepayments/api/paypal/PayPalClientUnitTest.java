@@ -3,6 +3,7 @@ package com.braintreepayments.api.paypal;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
@@ -127,6 +128,39 @@ public class PayPalClientUnitTest {
         assertTrue(request instanceof PayPalPaymentAuthRequest.ReadyToLaunch);
         assertTrue(((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams()
                 .getBrowserSwitchOptions().isLaunchAsNewTask());
+    }
+
+    @Test
+    public void createPaymentAuthRequest_setsAppLinkReturnUrl() {
+        PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest(true);
+        payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
+
+        PayPalPaymentAuthRequestParams paymentAuthRequest =
+                new PayPalPaymentAuthRequestParams(payPalVaultRequest).approvalUrl(
+                                "https://example.com/approval/url")
+                        .successUrl("https://example.com/success/url")
+                        .clientMetadataId("sample-client-metadata-id");
+        PayPalInternalClient payPalInternalClient =
+                new MockPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest)
+                        .build();
+
+        BraintreeClient braintreeClient =
+                new MockBraintreeClientBuilder().configuration(payPalEnabledConfig)
+                        .appLinkReturnUri(Uri.parse("www.example.com"))
+                        .build();
+
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
+        sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback);
+
+        ArgumentCaptor<PayPalPaymentAuthRequest> captor =
+                ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
+        verify(paymentAuthCallback).onPayPalPaymentAuthRequest(captor.capture());
+
+        PayPalPaymentAuthRequest request = captor.getValue();
+        assertTrue(request instanceof PayPalPaymentAuthRequest.ReadyToLaunch);
+        assertEquals(braintreeClient.getAppLinkReturnUri(),
+                ((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams()
+                .getBrowserSwitchOptions().getAppLinkUri());
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.braintreepayments.demo;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,7 +54,11 @@ public class PayPalFragment extends BaseFragment {
             launchPayPal(true, buyerEmailEditText.getText().toString());
         });
 
-        payPalClient = new PayPalClient(requireContext(), super.getAuthStringArg());
+        payPalClient = new PayPalClient(
+                requireContext(),
+                super.getAuthStringArg(),
+                Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/")
+        );
         payPalLauncher = new PayPalLauncher();
 
         amount = RandomDollarAmount.getNext();
