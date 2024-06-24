@@ -15,6 +15,7 @@ import com.braintreepayments.api.ShopperInsightsClient
 import com.braintreepayments.api.ShopperInsightsRequest
 import com.braintreepayments.api.ShopperInsightsResult
 import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
@@ -48,7 +49,6 @@ class ShopperInsightsFragment : BaseFragment() {
     private lateinit var emailNullSwitch: SwitchMaterial
     private lateinit var phoneNullSwitch: SwitchMaterial
 
-    private lateinit var braintreeClient: BraintreeClient
     private lateinit var shopperInsightsClient: ShopperInsightsClient
     private lateinit var payPalClient: PayPalClient
     private lateinit var venmoClient: VenmoClient
@@ -59,19 +59,14 @@ class ShopperInsightsFragment : BaseFragment() {
     private lateinit var venmoStartedPendingRequest: VenmoPendingRequest.Started
     private lateinit var paypalStartedPendingRequest: PayPalPendingRequest.Started
 
-    // TODO: Refactor Shopper Insights to remove BraintreeClient
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        braintreeClient = BraintreeClient(requireContext(), authStringArg)
-        shopperInsightsClient = ShopperInsightsClient(braintreeClient)
+        shopperInsightsClient = ShopperInsightsClient(requireContext(), authStringArg)
 
         venmoClient = VenmoClient(requireContext(), super.getAuthStringArg())
-
-        // TODO: What does manual browser switch do?
-//        val useManualBrowserSwitch = Settings.isManualBrowserSwitchingEnabled(requireActivity())
         payPalClient = PayPalClient(requireContext(), super.getAuthStringArg())
 
         return inflater.inflate(R.layout.fragment_shopping_insights, container, false)
@@ -124,17 +119,12 @@ class ShopperInsightsFragment : BaseFragment() {
                             NavHostFragment.findNavController(this).navigate(action)
                         }
 
-                        is PayPalResult.Failure -> {}
-                        is PayPalResult.Cancel -> {}
+                        is PayPalResult.Failure -> { handleError(it.error) }
+                        is PayPalResult.Cancel -> { handleError(UserCanceledException("User canceled PayPal")) }
                     }
                 }
             } else {
-                // No PayPal result i.e. not auth'd in
-                Toast.makeText(
-                    requireContext(),
-                    "Failed to authenticate user.",
-                    Toast.LENGTH_LONG
-                ).show()
+                handleError(Exception("User did not complete payment flow"));
             }
         }
     }
@@ -155,17 +145,12 @@ class ShopperInsightsFragment : BaseFragment() {
                             NavHostFragment.findNavController(this).navigate(action)
                         }
 
-                        is VenmoResult.Failure -> {}
-                        is VenmoResult.Cancel -> {}
+                        is VenmoResult.Failure -> { handleError(it.error)}
+                        is VenmoResult.Cancel -> { handleError(UserCanceledException("User canceled Venmo")) }
                     }
                 }
             } else {
-                // No venmo result i.e. not auth'd in
-                Toast.makeText(
-                    requireContext(),
-                    "Failed to authenticate user.",
-                    Toast.LENGTH_LONG
-                ).show()
+                handleError(Exception("User did not complete payment flow"));
             }
         }
     }

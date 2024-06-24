@@ -1,5 +1,6 @@
 package com.braintreepayments.api
 
+import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_FAILED
 import com.braintreepayments.api.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_STARTED
@@ -8,6 +9,7 @@ import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_PRESENTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.PAYPAL_SELECTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_PRESENTED
 import com.braintreepayments.api.ShopperInsightsAnalytics.VENMO_SELECTED
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 
@@ -24,7 +26,8 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
     private val api: ShopperInsightsApi,
     private val braintreeClient: BraintreeClient
 ) {
-    constructor(braintreeClient: BraintreeClient) : this(
+    constructor(context: Context, authorization: String) : this (BraintreeClient(context, authorization))
+    @VisibleForTesting internal constructor(braintreeClient: BraintreeClient) : this(
         ShopperInsightsApi(EligiblePaymentsApi(braintreeClient)),
         braintreeClient,
     )
