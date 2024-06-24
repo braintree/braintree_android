@@ -1,7 +1,5 @@
 package com.braintreepayments.demo
 
-import android.content.Intent
-import android.content.Intent.getIntent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
