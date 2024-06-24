@@ -39,12 +39,12 @@
             android:textSize="12sp" />
 
         <Button
-            android:id="@+id/paypal_messaging"
+            android:id="@+id/paypal"
             style="?android:attr/buttonStyle"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/paypal_messaging_button"
+            android:text="@string/paypal_button"
             android:textSize="12sp" />
 
     </TableRow>
@@ -86,12 +86,12 @@
             android:textSize="12sp" />
 
         <Button
-            android:id="@+id/paypal"
+            android:id="@+id/paypal_messaging"
             style="?android:attr/buttonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/paypal_button"
+            android:text="@string/paypal_messaging_button"
             android:textSize="12sp" />
 
     </TableRow>
