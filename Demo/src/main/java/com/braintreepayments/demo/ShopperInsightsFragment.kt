@@ -1,6 +1,7 @@
 package com.braintreepayments.demo
 
 import android.content.Intent
+import android.content.Intent.getIntent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -107,7 +108,7 @@ class ShopperInsightsFragment : BaseFragment() {
     private fun handlePayPalReturnToApp() {
         if (this::paypalStartedPendingRequest.isInitialized) {
             val paypalPaymentAuthResult =
-                paypalLauncher.handleReturnToAppFromBrowser(paypalStartedPendingRequest, Intent())
+                paypalLauncher.handleReturnToAppFromBrowser(paypalStartedPendingRequest, requireActivity().intent)
             if (paypalPaymentAuthResult is PayPalPaymentAuthResult.Success) {
                 payPalClient.tokenize(paypalPaymentAuthResult) {
                     when (it) {
@@ -133,7 +134,7 @@ class ShopperInsightsFragment : BaseFragment() {
     private fun handleVenmoReturnToApp() {
         if (this::venmoStartedPendingRequest.isInitialized) {
             val venmoPaymentAuthResult =
-                venmoLauncher.handleReturnToApp(venmoStartedPendingRequest, Intent())
+                venmoLauncher.handleReturnToApp(venmoStartedPendingRequest, requireActivity().intent)
             if (venmoPaymentAuthResult is VenmoPaymentAuthResult.Success) {
                 venmoClient.tokenize(venmoPaymentAuthResult) {
                     when (it) {
