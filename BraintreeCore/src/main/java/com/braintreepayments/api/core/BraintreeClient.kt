@@ -2,9 +2,9 @@ package com.braintreepayments.api.core
 
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
-import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.core.IntegrationType.Integration
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.ManifestValidator
@@ -43,11 +43,15 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     private val analyticsClient: AnalyticsClient,
     private val httpClient: BraintreeHttpClient,
     private val graphQLClient: BraintreeGraphQLClient,
-    private val browserSwitchClient: BrowserSwitchClient,
     private val configurationLoader: ConfigurationLoader,
     private val manifestValidator: ManifestValidator,
     private val returnUrlScheme: String,
     private val braintreeDeepLinkReturnUrlScheme: String,
+    /**
+     * @suppress
+     */
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val appLinkReturnUri: Uri?,
 ) {
 
     private val crashReporter: CrashReporter
@@ -63,24 +67,31 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         analyticsClient = params.analyticsClient,
         httpClient = params.httpClient,
         graphQLClient = params.graphQLClient,
-        browserSwitchClient = params.browserSwitchClient,
         configurationLoader = params.configurationLoader,
         manifestValidator = params.manifestValidator,
         returnUrlScheme = params.returnUrlScheme,
-        braintreeDeepLinkReturnUrlScheme = params.braintreeReturnUrlScheme
+        braintreeDeepLinkReturnUrlScheme = params.braintreeReturnUrlScheme,
+        appLinkReturnUri = params.appLinkReturnUri
     )
 
     /**
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    constructor(context: Context, authorization: String) :
-        this(
-            BraintreeOptions(
-                context = context,
-                authorization = Authorization.fromString(authorization)
-            )
+    @JvmOverloads
+    constructor (
+        context: Context,
+        authorization: String,
+        returnUrlScheme: String? = null,
+        appLinkReturnUri: Uri? = null,
+    ) : this(
+        BraintreeOptions(
+            context = context,
+            authorization = Authorization.fromString(authorization),
+            returnUrlScheme = returnUrlScheme,
+            appLinkReturnUri = appLinkReturnUri
         )
+    )
 
     /**
      * @suppress

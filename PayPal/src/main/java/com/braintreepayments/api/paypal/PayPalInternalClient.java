@@ -37,9 +37,9 @@ class PayPalInternalClient {
         this.apiClient = apiClient;
 
         this.cancelUrl =
-                String.format("%s://onetouch/v1/cancel", braintreeClient.getReturnUrlScheme());
+                String.format("%s://onetouch/v1/cancel", braintreeClient.getAppLinkReturnUri());
         this.successUrl =
-                String.format("%s://onetouch/v1/success", braintreeClient.getReturnUrlScheme());
+                String.format("%s://onetouch/v1/success", braintreeClient.getAppLinkReturnUri());
     }
 
     void sendRequest(final Context context, final PayPalRequest payPalRequest,

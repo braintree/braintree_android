@@ -5,7 +5,7 @@ basics for updating your Braintree integration from v4 to v5.
 
 ## Table of Contents
 
-1. [Android API](#android-api)
+1. [Supported Versions](#supported-versions)
 1. [Gradle Dependencies](#gradle-dependencies)
 1. [Braintree Client](#braintree-client)
 1. [American Express](#american-express)
@@ -22,9 +22,14 @@ basics for updating your Braintree integration from v4 to v5.
 1. [Samsung Pay](#samsung-pay)
 1. [PayPal Native Checkout](#paypal-native-checkout)
 
-## Android API
+## Supported Versions
 
-The minimum supported Android API level for v5 of this SDK has increased to 23.
+V5 of the Braintree Android SDK bumps the following supported versions:
+
+* Minimum supported Android API 23
+* Requires Gradle JDK 17+
+* Requires Kotlin 1.9.10+
+* Requires Android Gradle Plugin 8.1.4+ (Giraffe or higher)
 
 ## Gradle Dependencies
 
@@ -355,6 +360,9 @@ before the `OnResume` method of your Activity or Fragment.
 `BraintreeClient` and `PayPalClient` no longer require references to Fragment or Activity and
 do not need to be instantiated in `OnCreate`.
 
+The PayPal integration now requires an Android App link be configured to return to your app from the 
+PayPal flow. 
+
 ```diff
 class MyActivity : FragmentActivity() {
 
@@ -394,7 +402,11 @@ class MyActivity : FragmentActivity() {
     fun initializeClients() {
 -       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       payPalClient = PayPalClient(this, braintreeClient)
-+       payPalClient = PayPalClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
++       payPalClient = PayPalClient(
++            context, 
++            "TOKENIZATION_KEY_OR_CLIENT_TOKEN", 
++            Uri.parse("https://merchant-app.com") // Merchant App Link
++       )
 -       payPalClient.setListener(this)
     }
     

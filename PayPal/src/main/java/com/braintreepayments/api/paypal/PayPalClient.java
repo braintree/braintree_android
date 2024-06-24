@@ -44,11 +44,16 @@ public class PayPalClient {
     /**
      * Initializes a new {@link PayPalClient} instance
      *
-     * @param context       an Android Context
-     * @param authorization a Tokenization Key or Client Token used to authenticate
+     * @param context          an Android Context
+     * @param authorization    a Tokenization Key or Client Token used to authenticate
+     * @param appLinkReturnUrl A {@link Uri} containing the Android App Link website associated with
+     *                         your application to be used to return to your app from the PayPal
+     *                         payment flows.
      */
-    public PayPalClient(@NonNull Context context, @NonNull String authorization) {
-        this(new BraintreeClient(context, authorization));
+    public PayPalClient(@NonNull Context context,
+                        @NonNull String authorization,
+                        @NonNull Uri appLinkReturnUrl) {
+        this(new BraintreeClient(context, authorization, null, appLinkReturnUrl));
     }
 
     @VisibleForTesting
@@ -184,8 +189,8 @@ public class PayPalClient {
         metadata.put("intent", paymentAuthRequest.getIntent());
 
         return new BrowserSwitchOptions().requestCode(BraintreeRequestCodes.PAYPAL)
+                .appLinkUri(braintreeClient.getAppLinkReturnUri())
                 .url(Uri.parse(paymentAuthRequest.getApprovalUrl()))
-                .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                 .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
                 .metadata(metadata);
     }

@@ -16,10 +16,6 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.net.Uri;
 
-import com.braintreepayments.api.datacollector.DataCollectorInternalRequest;
-import com.braintreepayments.api.testutils.Fixtures;
-import com.braintreepayments.api.testutils.MockApiClientBuilder;
-import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 import com.braintreepayments.api.core.ApiClient;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.ClientToken;
@@ -28,17 +24,19 @@ import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.core.TokenizationKey;
 import com.braintreepayments.api.core.TokenizeCallback;
 import com.braintreepayments.api.datacollector.DataCollector;
+import com.braintreepayments.api.datacollector.DataCollectorInternalRequest;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
+import com.braintreepayments.api.testutils.Fixtures;
+import com.braintreepayments.api.testutils.MockApiClientBuilder;
+import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.robolectric.RobolectricTestRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -76,7 +74,7 @@ public class PayPalInternalClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
                 .authorizationSuccess(clientToken)
-                .returnUrlScheme("sample-scheme")
+                .appLinkReturnUri(Uri.parse("https://example.com"))
                 .build();
         when(clientToken.getBearer()).thenReturn("client-token-bearer");
 
@@ -113,8 +111,8 @@ public class PayPalInternalClientUnitTest {
 
         JSONObject expected = new JSONObject()
                 .put("authorization_fingerprint", "client-token-bearer")
-                .put("return_url", "sample-scheme://onetouch/v1/success")
-                .put("cancel_url", "sample-scheme://onetouch/v1/cancel")
+                .put("return_url", "https://example.com://onetouch/v1/success")
+                .put("cancel_url", "https://example.com://onetouch/v1/cancel")
                 .put("offer_paypal_credit", true)
                 .put("description", "Billing Agreement Description")
                 .put("experience_profile", new JSONObject()
@@ -141,7 +139,7 @@ public class PayPalInternalClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
                 .authorizationSuccess(clientToken)
-                .returnUrlScheme("sample-scheme")
+                .appLinkReturnUri(Uri.parse("https://example.com"))
                 .build();
         when(clientToken.getBearer()).thenReturn("client-token-bearer");
 
@@ -191,8 +189,8 @@ public class PayPalInternalClientUnitTest {
                 .put("currency_iso_code", "USD")
                 .put("intent", "authorize")
                 .put("authorization_fingerprint", "client-token-bearer")
-                .put("return_url", "sample-scheme://onetouch/v1/success")
-                .put("cancel_url", "sample-scheme://onetouch/v1/cancel")
+                .put("return_url", "https://example.com://onetouch/v1/success")
+                .put("cancel_url", "https://example.com://onetouch/v1/cancel")
                 .put("offer_pay_later", true)
                 .put("request_billing_agreement", true)
                 .put("billing_agreement_details", new JSONObject()
@@ -526,7 +524,7 @@ public class PayPalInternalClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
                 .authorizationSuccess(clientToken)
-                .returnUrlScheme("sample-scheme")
+                .appLinkReturnUri(Uri.parse("https://example.com"))
                 .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_BA_TOKEN_PARAM)
                 .build();
 
@@ -547,7 +545,7 @@ public class PayPalInternalClientUnitTest {
         PayPalPaymentAuthRequestParams payPalPaymentAuthRequestParams = captor.getValue();
         assertTrue(payPalPaymentAuthRequestParams.isBillingAgreement());
         assertEquals("sample-merchant-account-id", payPalPaymentAuthRequestParams.getMerchantAccountId());
-        assertEquals("sample-scheme://onetouch/v1/success", payPalPaymentAuthRequestParams.getSuccessUrl());
+        assertEquals("https://example.com://onetouch/v1/success", payPalPaymentAuthRequestParams.getSuccessUrl());
         assertEquals("fake-ba-token", payPalPaymentAuthRequestParams.getPairingId());
         assertEquals("sample-client-metadata-id", payPalPaymentAuthRequestParams.getClientMetadataId());
         assertEquals(expectedUrl, payPalPaymentAuthRequestParams.getApprovalUrl());
@@ -561,7 +559,7 @@ public class PayPalInternalClientUnitTest {
                 .configuration(configuration)
                 .authorizationSuccess(clientToken)
                 .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM)
-                .returnUrlScheme("sample-scheme")
+                .appLinkReturnUri(Uri.parse("https://example.com"))
                 .build();
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
@@ -584,7 +582,7 @@ public class PayPalInternalClientUnitTest {
         assertFalse(payPalPaymentAuthRequestParams.isBillingAgreement());
         assertEquals("authorize", payPalPaymentAuthRequestParams.getIntent());
         assertEquals("sample-merchant-account-id", payPalPaymentAuthRequestParams.getMerchantAccountId());
-        assertEquals("sample-scheme://onetouch/v1/success", payPalPaymentAuthRequestParams.getSuccessUrl());
+        assertEquals("https://example.com://onetouch/v1/success", payPalPaymentAuthRequestParams.getSuccessUrl());
         assertEquals("fake-token", payPalPaymentAuthRequestParams.getPairingId());
         assertEquals("sample-client-metadata-id", payPalPaymentAuthRequestParams.getClientMetadataId());
         assertEquals(expectedUrl, payPalPaymentAuthRequestParams.getApprovalUrl());
@@ -718,88 +716,5 @@ public class PayPalInternalClientUnitTest {
         verify(dataCollector).getClientMetadataId(same(context), captor.capture(), same(configuration));
 
         assertTrue(captor.getValue().getHasUserLocationConsent());
-    }
-
-    @Ignore("will be fixed when app link is passed to the PayPalCheckoutRequest")
-    @Test
-    public void when_appLink_is_enabled_appLinkReturnUri_is_used_for_cancel_and_success_urls() throws JSONException {
-        String appLink = "https://example.com";
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .configuration(configuration)
-            .authorizationSuccess(clientToken)
-            .returnUrlScheme("sample-scheme")
-            .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-            .build();
-
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
-
-        // TODO: pass app link to the PayPalCheckoutRequest
-        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
-        payPalRequest.setAppLinkEnabled(true);
-
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
-
-        ArgumentCaptor<String> requestCaptor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(any(), requestCaptor.capture(), any(HttpResponseCallback.class));
-
-        JSONObject request = new JSONObject(requestCaptor.getValue());
-
-        assertEquals(appLink + "/success", request.get("return_url"));
-        assertEquals(appLink + "/cancel", request.get("cancel_url"));
-    }
-
-    @Test
-    public void when_appLink_is_enabled_with_null_appLinkReturnUri_returnUrlScheme_is_used_for_cancel_and_success_urls() throws JSONException {
-        String returnUrlScheme = "sample-scheme";
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .configuration(configuration)
-            .authorizationSuccess(clientToken)
-            .returnUrlScheme(returnUrlScheme)
-            .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-            .build();
-
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
-
-        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
-        payPalRequest.setAppLinkEnabled(true);
-
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
-
-        ArgumentCaptor<String> requestCaptor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(any(), requestCaptor.capture(), any(HttpResponseCallback.class));
-
-        JSONObject request = new JSONObject(requestCaptor.getValue());
-
-        assertEquals(returnUrlScheme + "://onetouch/v1/success", request.get("return_url"));
-        assertEquals(returnUrlScheme + "://onetouch/v1/cancel", request.get("cancel_url"));
-    }
-
-    @Test
-    public void when_appLink_is_disabled_returnUrlScheme_is_used_for_cancel_and_success_urls() throws JSONException {
-        String returnUrlScheme = "sample-scheme";
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .configuration(configuration)
-            .authorizationSuccess(clientToken)
-            .returnUrlScheme(returnUrlScheme)
-            .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-            .build();
-
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
-
-        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
-        payPalRequest.setAppLinkEnabled(false);
-
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
-
-        ArgumentCaptor<String> requestCaptor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(any(), requestCaptor.capture(), any(HttpResponseCallback.class));
-
-        JSONObject request = new JSONObject(requestCaptor.getValue());
-
-        assertEquals(returnUrlScheme + "://onetouch/v1/success", request.get("return_url"));
-        assertEquals(returnUrlScheme + "://onetouch/v1/cancel", request.get("cancel_url"));
     }
 }

@@ -80,6 +80,7 @@
         * Make empty `ThreeDSecureLookup` constructor package-private
     * PayPal
         * Update package name to `com.braintreepayments.api.paypal`
+        * Require Android App Links to return to merchant app from PayPal flows
         * Remove `PayPalListener`
         * Add `PayPalLauncher`, `PayPalPaymentAuthRequest`, `PayPalPendingRequest`, `PayPalPaymentAuthResult`,
           `PayPalPaymentAuthCallback`, `PayPalTokenizeCallback`, and `PayPalResult`
