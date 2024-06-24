@@ -1,6 +1,7 @@
 package com.braintreepayments.demo
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -66,7 +67,8 @@ class ShopperInsightsFragment : BaseFragment() {
         shopperInsightsClient = ShopperInsightsClient(requireContext(), authStringArg)
 
         venmoClient = VenmoClient(requireContext(), super.getAuthStringArg())
-        payPalClient = PayPalClient(requireContext(), super.getAuthStringArg())
+        payPalClient = PayPalClient(requireContext(), super.getAuthStringArg(),
+            Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/"))
 
         return inflater.inflate(R.layout.fragment_shopping_insights, container, false)
     }
