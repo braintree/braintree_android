@@ -25,6 +25,10 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
     private val api: ShopperInsightsApi,
     private val braintreeClient: BraintreeClient
 ) {
+    /**
+     * @param context: an Android context
+     * @param authorization: a Tokenization Key or Client Token used to authenticate
+     */
     constructor(context: Context, authorization: String) : this (BraintreeClient(context, authorization))
     @VisibleForTesting internal constructor(braintreeClient: BraintreeClient) : this(
         ShopperInsightsApi(EligiblePaymentsApi(braintreeClient)),
@@ -34,7 +38,6 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
     /**
      * Retrieves recommended payment methods based on the provided shopper insights request.
      *
-     * @param context Android context
      * @param request The [ShopperInsightsRequest] containing information about the shopper.
      * @return A [ShopperInsightsResult] object indicating the recommended payment methods.
      * Note: This feature is in beta. Its public API may change or be removed in future releases
