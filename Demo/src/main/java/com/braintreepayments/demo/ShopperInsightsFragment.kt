@@ -14,7 +14,6 @@ import com.braintreepayments.api.ShopperInsightsBuyerPhone
 import com.braintreepayments.api.ShopperInsightsClient
 import com.braintreepayments.api.ShopperInsightsRequest
 import com.braintreepayments.api.ShopperInsightsResult
-import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
@@ -124,7 +123,7 @@ class ShopperInsightsFragment : BaseFragment() {
                     }
                 }
             } else {
-                handleError(Exception("User did not complete payment flow"));
+                handleError(Exception("User did not complete payment flow"))
             }
         }
     }
@@ -145,12 +144,12 @@ class ShopperInsightsFragment : BaseFragment() {
                             NavHostFragment.findNavController(this).navigate(action)
                         }
 
-                        is VenmoResult.Failure -> { handleError(it.error)}
+                        is VenmoResult.Failure -> { handleError(it.error) }
                         is VenmoResult.Cancel -> { handleError(UserCanceledException("User canceled Venmo")) }
                     }
                 }
             } else {
-                handleError(Exception("User did not complete payment flow"));
+                handleError(Exception("User did not complete payment flow"))
             }
         }
     }
