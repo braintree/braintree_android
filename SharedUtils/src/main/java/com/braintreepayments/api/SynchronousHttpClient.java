@@ -81,7 +81,8 @@ class SynchronousHttpClient {
 
             String responseBody = parser.parse(responseCode, connection);
 
-            return new HttpResponse(startTime, endTime, responseBody);
+            HttpResponseTiming timing = new HttpResponseTiming(startTime, endTime);
+            return new HttpResponse(responseBody, timing);
         } finally {
             connection.disconnect();
         }

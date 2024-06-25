@@ -13,14 +13,10 @@ internal class ConfigurationLoader internal constructor(
         httpClient, ConfigurationCache.getInstance(context)
     )
 
-    fun loadConfiguration(
-            authorization: Authorization,
-            apiTiming: APITiming? = null,
-            callback: ConfigurationLoaderCallback
-    ) {
+    fun loadConfiguration(authorization: Authorization, callback: ConfigurationLoaderCallback) {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
-            callback.onResult(null, BraintreeException(message))
+            callback.onResult(null, BraintreeException(message), null)
             return
         }
         val configUrl = Uri.parse(authorization.configUrl)
@@ -31,24 +27,24 @@ internal class ConfigurationLoader internal constructor(
         val cachedConfig = getCachedConfiguration(authorization, configUrl)
 
         cachedConfig?.let {
-            callback.onResult(cachedConfig, null)
+            callback.onResult(cachedConfig, null, null)
         } ?: run {
-            httpClient.get(configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES
+            httpClient.get(
+                configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES
             ) { response, httpError ->
                 response?.let {
                     try {
                         val configuration = Configuration.fromJson(it.body)
                         saveConfigurationToCache(configuration, authorization, configUrl)
-                        apiTiming?.sendEvent(it.startTime, it.endTime, "v1/configuration")
-                        callback.onResult(configuration, null)
+                        callback.onResult(configuration, null, it.timing)
                     } catch (jsonException: JSONException) {
-                        callback.onResult(null, jsonException)
+                        callback.onResult(null, jsonException, null)
                     }
                 } ?: httpError?.let { error ->
                     val errorMessageFormat = "Request for configuration has failed: %s"
                     val errorMessage = String.format(errorMessageFormat, error.message)
                     val configurationException = ConfigurationException(errorMessage, error)
-                    callback.onResult(null, configurationException)
+                    callback.onResult(null, configurationException, null)
                 }
             }
         }
@@ -63,7 +59,10 @@ internal class ConfigurationLoader internal constructor(
         configurationCache.saveConfiguration(configuration, cacheKey)
     }
 
-    private fun getCachedConfiguration(authorization: Authorization, configUrl: String): Configuration? {
+    private fun getCachedConfiguration(
+        authorization: Authorization,
+        configUrl: String
+    ): Configuration? {
         val cacheKey = createCacheKey(authorization, configUrl)
         val cachedConfigResponse = configurationCache.getConfiguration(cacheKey)
         return try {

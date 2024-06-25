@@ -678,7 +678,7 @@ class BraintreeClientUnitTest {
 
         assertEquals(sut, apiTimingSlot.captured)
 
-        callbackSlot.captured.onResult(configuration, null)
+        callbackSlot.captured.onResult(configuration, null,)
 
         verify {
             analyticsClient.reportCrash(
