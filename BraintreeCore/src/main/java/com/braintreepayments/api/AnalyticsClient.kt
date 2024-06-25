@@ -15,7 +15,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Suppress("SwallowedException", "TooGenericExceptionCaught")
-internal class AnalyticsClient @VisibleForTesting constructor(
+internal class AnalyticsClient @VisibleForTesting private constructor(
     private val httpClient: BraintreeHttpClient,
     private val analyticsDatabase: AnalyticsDatabase,
     private val workManager: WorkManager,
@@ -23,7 +23,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
 ) {
     constructor(context: Context) : this(
         BraintreeHttpClient(),
-        getInstance(context.applicationContext),
+        AnalyticsDatabase.getInstance(context.applicationContext),
         WorkManager.getInstance(context.applicationContext),
         DeviceInspector()
     )
@@ -132,7 +132,12 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 val analyticsEventDao = analyticsDatabase.analyticsEventDao()
                 val events = analyticsEventDao.getAllEvents()
                 if (events.isNotEmpty()) {
-                    val metadata = deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
+                    val metadata = deviceInspector.getDeviceMetadata(
+                        context,
+                        configuration,
+                        sessionId,
+                        integration
+                    )
                     val analyticsRequest = serializeEvents(authorization, events, metadata)
 
                     httpClient.post(
@@ -157,7 +162,14 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         integration: String?,
         authorization: Authorization?
     ) {
-        reportCrash(context, configuration, sessionId, integration, System.currentTimeMillis(), authorization)
+        reportCrash(
+            context,
+            configuration,
+            sessionId,
+            integration,
+            System.currentTimeMillis(),
+            authorization
+        )
     }
 
     @VisibleForTesting
@@ -172,14 +184,15 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         if (authorization == null) {
             return
         }
-        val metadata = deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
+        val metadata =
+            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         val event = AnalyticsEvent(
-                "android.crash",
-                null,
-                null,
-                false,
-                false,
-                timestamp = timestamp
+            "android.crash",
+            null,
+            null,
+            false,
+            false,
+            timestamp = timestamp
         )
         val events = listOf(event)
         try {
@@ -282,6 +295,21 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 } catch (ignored: JSONException) {
                     null
                 }
+            }
+
+
+        @Volatile
+        private var INSTANCE: AnalyticsClient? = null
+
+        @JvmStatic
+        fun getInstance(context: Context): AnalyticsClient =
+            INSTANCE ?: synchronized(this) {
+                // Ref: https://developer.android.com/reference/android/app/Application
+                // ^ See NOTE about singletons and application context
+                val instance = AnalyticsClient(context.applicationContext)
+                INSTANCE = instance
+                // return instance
+                instance
             }
     }
 }
