@@ -39,7 +39,7 @@ class ConfigurationLoaderUnitTest {
         val httpResponseCallback = callbackSlot.captured
         httpResponseCallback.onResult(HttpResponse(0, 0, Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN), null)
 
-        verify { callback.onResult(ofType(Configuration::class), null) }
+        verify { callback.onResult(ofType(Configuration::class), null,) }
     }
 
     @Test
@@ -93,7 +93,7 @@ class ConfigurationLoaderUnitTest {
         val httpResponseCallback = callbackSlot.captured
         httpResponseCallback.onResult(HttpResponse(0, 0, "not json"), null)
         verify {
-            callback.onResult(null, ofType(JSONException::class))
+            callback.onResult(null, ofType(JSONException::class),)
         }
     }
 
@@ -120,7 +120,7 @@ class ConfigurationLoaderUnitTest {
         httpResponseCallback.onResult(null, httpError)
         val errorSlot = slot<Exception>()
         verify {
-            callback.onResult(null, capture(errorSlot))
+            callback.onResult(null, capture(errorSlot),)
         }
 
         val error = errorSlot.captured as ConfigurationException
@@ -137,7 +137,7 @@ class ConfigurationLoaderUnitTest {
         sut.loadConfiguration(authorization, null, callback)
         val errorSlot = slot<BraintreeException>()
         verify {
-            callback.onResult(null, capture(errorSlot))
+            callback.onResult(null, capture(errorSlot),)
         }
 
         val exception = errorSlot.captured
@@ -166,7 +166,7 @@ class ConfigurationLoaderUnitTest {
                     ofType(HttpTimingResponseCallback::class)
             )
         }
-        verify { callback.onResult(ofType(Configuration::class), null) }
+        verify { callback.onResult(ofType(Configuration::class), null,) }
     }
 
     @Test
@@ -198,6 +198,6 @@ class ConfigurationLoaderUnitTest {
         val httpResponseCallback = callbackSlot.captured
         httpResponseCallback.onResult(HttpResponse(0, 0, Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN), null)
 
-        verify { callback.onResult(ofType(Configuration::class), null) }
+        verify { callback.onResult(ofType(Configuration::class), null,) }
     }
 }
