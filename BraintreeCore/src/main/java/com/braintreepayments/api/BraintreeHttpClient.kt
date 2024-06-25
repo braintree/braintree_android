@@ -91,11 +91,11 @@ internal class BraintreeHttpClient(
         configuration: Configuration?,
         authorization: Authorization?,
         additionalHeaders: Map<String, String> = emptyMap(),
-        callback: HttpTimingResponseCallback
+        callback: HttpTimingResponseCallback?
     ) {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
-            callback.onResult(null, BraintreeException(message))
+            callback?.onResult(null, BraintreeException(message))
             return
         }
         val isRelativeURL = !path.startsWith("http")
@@ -103,7 +103,7 @@ internal class BraintreeHttpClient(
             val message =
                 "Braintree HTTP GET request without configuration cannot have a relative path."
             val relativeURLNotAllowedError = BraintreeException(message)
-            callback.onResult(null, relativeURLNotAllowedError)
+            callback?.onResult(null, relativeURLNotAllowedError)
             return
         }
         val requestData = if (authorization is ClientToken) {
@@ -113,7 +113,7 @@ internal class BraintreeHttpClient(
                     authorization.authorizationFingerprint
                 ).toString()
             } catch (e: JSONException) {
-                callback.onResult(null, e)
+                callback?.onResult(null, e)
                 return
             }
         } else {

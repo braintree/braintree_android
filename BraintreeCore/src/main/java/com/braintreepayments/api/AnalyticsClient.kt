@@ -189,7 +189,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 data = analyticsRequest.toString(),
                 configuration = null,
                 authorization = authorization,
-                callback = HttpNoTimingResponse()
+                callback = null
             )
         } catch (e: JSONException) { /* ignored */
         }
