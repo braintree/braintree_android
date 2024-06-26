@@ -1,7 +1,7 @@
 package com.braintreepayments.api.paypal
 
 /**
- * A request used to launch the Venmo app for continuation of the PayPal payment flow.
+ * A request used to launch the continuation of the PayPal payment flow.
  */
 sealed class PayPalPaymentAuthRequest {
 

@@ -1,7 +1,7 @@
 package com.braintreepayments.api.googlepay
 
 /**
- * A request used to launch the Venmo app for continuation of the Google Pay flow.
+ * A request used to launch the continuation of the Google Pay flow.
  */
 sealed class GooglePayPaymentAuthRequest {
 
