@@ -37,7 +37,9 @@ class ConfigurationLoaderUnitTest {
         }
 
         val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0)), null)
+        httpResponseCallback.onResult(
+                HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0)), null
+        )
 
         verify { callback.onResult(ofType(Configuration::class), null, HttpResponseTiming(0, 0)) }
     }
@@ -63,7 +65,9 @@ class ConfigurationLoaderUnitTest {
         }
 
         val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0)), null)
+        httpResponseCallback.onResult(
+                HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0)), null
+        )
         val cacheKey = Base64.encodeToString(
             "https://example.com/config?configVersion=3bearer".toByteArray(),
             0
