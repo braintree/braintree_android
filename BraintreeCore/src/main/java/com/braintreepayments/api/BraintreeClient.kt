@@ -8,6 +8,7 @@ import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.FragmentActivity
 import org.json.JSONException
+import org.json.JSONObject
 
 /**
  * Core Braintree class that handles network requests.
@@ -306,28 +307,29 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun sendGraphQLPOST(payload: String?, responseCallback: HttpResponseCallback) {
+    fun sendGraphQLPOST(json: JSONObject?, responseCallback: HttpResponseCallback) {
         getAuthorization { authorization, authError ->
             if (authorization != null) {
                 getConfiguration { configuration, configError ->
                     if (configuration != null) {
                         graphQLClient.post(
-                            payload,
+                            json.toString(),
                             configuration,
                             authorization
                         ) { response, httpError ->
                             response?.let {
                                 try {
-                                    val query = getGraphQLMutationName(payload.toString())
-                                    val params = AnalyticsEventParams(
-                                        startTime = it.timing.startTime,
-                                        endTime = it.timing.endTime,
-                                        endpoint = query
-                                    )
-                                    sendAnalyticsEvent(
-                                        CoreAnalytics.apiRequestLatency,
-                                        params
-                                    )
+                                    json?.optString(GraphQLConstants.Keys.OPERATION_NAME)?.let { query ->
+                                        val params = AnalyticsEventParams(
+                                            startTime = it.timing.startTime,
+                                            endTime = it.timing.endTime,
+                                            endpoint = query
+                                        )
+                                        sendAnalyticsEvent(
+                                            CoreAnalytics.apiRequestLatency,
+                                            params
+                                        )
+                                    }
                                     responseCallback.onResult(it.body, null)
                                 } catch (jsonException: JSONException) {
                                     responseCallback.onResult(null, jsonException)
