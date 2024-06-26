@@ -20,12 +20,12 @@ internal class MockkConfigurationLoaderBuilder {
 
     fun build(): ConfigurationLoader {
         val configurationLoader = mockk<ConfigurationLoader>(relaxed = true)
-        every { configurationLoader.loadConfiguration(any(), any(), any()) } answers {
-            val callback = thirdArg<ConfigurationLoaderCallback>()
+        every { configurationLoader.loadConfiguration(any(), any()) } answers {
+            val callback = secondArg<ConfigurationLoaderCallback>()
             if (configuration != null) {
-                callback.onResult(configuration, null,)
+                callback.onResult(configuration, null, null)
             } else if (configurationError != null) {
-                callback.onResult(null, configurationError,)
+                callback.onResult(null, configurationError, null)
             }
         }
         return configurationLoader

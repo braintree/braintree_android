@@ -22,7 +22,7 @@ class ConfigurationLoaderUnitTest {
         every { authorization.configUrl } returns "https://example.com/config"
 
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, null, callback)
+        sut.loadConfiguration(authorization, callback)
 
         val expectedConfigUrl = "https://example.com/config?configVersion=3"
         val callbackSlot = slot<HttpTimingResponseCallback>()
@@ -37,9 +37,9 @@ class ConfigurationLoaderUnitTest {
         }
 
         val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(HttpResponse(0, 0, Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN), null)
+        httpResponseCallback.onResult(HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0)), null)
 
-        verify { callback.onResult(ofType(Configuration::class), null,) }
+        verify { callback.onResult(ofType(Configuration::class), null, HttpResponseTiming(0, 0)) }
     }
 
     @Test
@@ -48,7 +48,7 @@ class ConfigurationLoaderUnitTest {
         every { authorization.bearer } returns "bearer"
 
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, null, callback)
+        sut.loadConfiguration(authorization, callback)
 
         val expectedConfigUrl = "https://example.com/config?configVersion=3"
         val callbackSlot = slot<HttpTimingResponseCallback>()
@@ -63,7 +63,7 @@ class ConfigurationLoaderUnitTest {
         }
 
         val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(HttpResponse(0, 0, Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN), null)
+        httpResponseCallback.onResult(HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0)), null)
         val cacheKey = Base64.encodeToString(
             "https://example.com/config?configVersion=3bearer".toByteArray(),
             0
@@ -78,7 +78,7 @@ class ConfigurationLoaderUnitTest {
     fun loadConfiguration_onJSONParsingError_forwardsExceptionToErrorResponseListener() {
         every { authorization.configUrl } returns "https://example.com/config"
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, null, callback)
+        sut.loadConfiguration(authorization, callback)
 
         val callbackSlot = slot<HttpTimingResponseCallback>()
         verify {
@@ -91,9 +91,9 @@ class ConfigurationLoaderUnitTest {
             )
         }
         val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(HttpResponse(0, 0, "not json"), null)
+        httpResponseCallback.onResult(HttpResponse("not json", HttpResponseTiming(0, 0)), null)
         verify {
-            callback.onResult(null, ofType(JSONException::class),)
+            callback.onResult(null, ofType(JSONException::class), null)
         }
     }
 
@@ -101,7 +101,7 @@ class ConfigurationLoaderUnitTest {
     fun loadConfiguration_onHttpError_forwardsExceptionToErrorResponseListener() {
         every { authorization.configUrl } returns "https://example.com/config"
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, null, callback)
+        sut.loadConfiguration(authorization, callback)
 
         val callbackSlot = slot<HttpTimingResponseCallback>()
 
@@ -120,7 +120,7 @@ class ConfigurationLoaderUnitTest {
         httpResponseCallback.onResult(null, httpError)
         val errorSlot = slot<Exception>()
         verify {
-            callback.onResult(null, capture(errorSlot),)
+            callback.onResult(null, capture(errorSlot), null)
         }
 
         val error = errorSlot.captured as ConfigurationException
@@ -134,10 +134,10 @@ class ConfigurationLoaderUnitTest {
     fun loadConfiguration_whenInvalidToken_forwardsExceptionToCallback() {
         val authorization: Authorization = InvalidAuthorization("invalid", "token invalid")
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, null, callback)
+        sut.loadConfiguration(authorization, callback)
         val errorSlot = slot<BraintreeException>()
         verify {
-            callback.onResult(null, capture(errorSlot),)
+            callback.onResult(null, capture(errorSlot), null)
         }
 
         val exception = errorSlot.captured
@@ -155,7 +155,7 @@ class ConfigurationLoaderUnitTest {
         every { configurationCache.getConfiguration(cacheKey) } returns Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN
 
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, null, callback)
+        sut.loadConfiguration(authorization, callback)
 
         verify(exactly = 0) {
             braintreeHttpClient.get(
@@ -166,38 +166,6 @@ class ConfigurationLoaderUnitTest {
                     ofType(HttpTimingResponseCallback::class)
             )
         }
-        verify { callback.onResult(ofType(Configuration::class), null,) }
-    }
-
-    @Test
-    fun loadConfiguration_withoutCachedConfiguration_sendsAnalyticsEvent() {
-        every { authorization.configUrl } returns "https://example.com/config"
-        every { authorization.bearer } returns "bearer"
-
-        val apiTiming = mockk<APITiming>()
-
-        every {
-            apiTiming.sendEvent(0, 0, "v1/configuration")
-        } returns Unit
-
-        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, apiTiming, callback)
-
-        val expectedConfigUrl = "https://example.com/config?configVersion=3"
-        val callbackSlot = slot<HttpTimingResponseCallback>()
-        verify {
-            braintreeHttpClient.get(
-                    expectedConfigUrl,
-                    null,
-                    authorization,
-                    HttpClient.RETRY_MAX_3_TIMES,
-                    capture(callbackSlot)
-            )
-        }
-
-        val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(HttpResponse(0, 0, Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN), null)
-
-        verify { callback.onResult(ofType(Configuration::class), null,) }
+        verify { callback.onResult(ofType(Configuration::class), null, null) }
     }
 }

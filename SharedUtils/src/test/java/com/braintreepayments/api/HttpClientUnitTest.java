@@ -64,7 +64,7 @@ public class HttpClientUnitTest {
     @Test
     public void sendRequest_onBaseHttpClientRequestSuccess_notifiesSuccessViaCallbackOnMainThread() throws Exception {
         HttpClient sut = new HttpClient(syncHttpClient, threadScheduler);
-        HttpResponse response = new HttpResponse(123, 456, "response body");
+        HttpResponse response = new HttpResponse("response body", new HttpResponseTiming(123, 456));
 
         when(syncHttpClient.request(httpRequest)).thenReturn(response);
 
@@ -81,7 +81,7 @@ public class HttpClientUnitTest {
     @Test
     public void sendRequest_whenCallbackIsNull_doesNotNotifySuccess() throws Exception {
         HttpClient sut = new HttpClient(syncHttpClient, threadScheduler);
-        HttpResponse response = new HttpResponse(123, 456, "response body");
+        HttpResponse response = new HttpResponse("response body", new HttpResponseTiming(123, 456));
 
         when(syncHttpClient.request(httpRequest)).thenReturn(response);
         sut.sendRequest(httpRequest, null);
@@ -143,7 +143,7 @@ public class HttpClientUnitTest {
     @Test
     public void sendRequest_whenRetryMax3TimesEnabled_futureRequestsAreAllowed() throws Exception {
         HttpClient sut = new HttpClient(syncHttpClient, threadScheduler);
-        HttpResponse response = new HttpResponse(123, 456, "response body");
+        HttpResponse response = new HttpResponse("response body", new HttpResponseTiming(123, 456));
 
         Exception exception = new Exception("error");
         when(syncHttpClient.request(httpRequest)).thenThrow(exception);
@@ -168,7 +168,7 @@ public class HttpClientUnitTest {
     @Test
     public void sendRequestSynchronous_sendsHttpRequest() throws Exception {
         HttpClient sut = new HttpClient(syncHttpClient, threadScheduler);
-        HttpResponse response = new HttpResponse(123, 456, "response body");
+        HttpResponse response = new HttpResponse("response body", new HttpResponseTiming(123, 456));
 
         when(syncHttpClient.request(httpRequest)).thenReturn(response);
 
