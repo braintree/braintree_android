@@ -156,7 +156,7 @@ class BraintreeClientUnitTest {
         val params = createDefaultParams(configurationLoader, authorizationLoader)
         val sut = BraintreeClient(params)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        val httpTimingResponseCallbackSlot = slot<HttpTimingResponseCallback>()
+        val networkResponseCallbackSlot = slot<NetworkResponseCallback>()
 
         sut.sendGET("sample-url", httpResponseCallback)
         verify {
@@ -164,11 +164,11 @@ class BraintreeClientUnitTest {
                 "sample-url",
                 configuration,
                 authorization,
-                capture(httpTimingResponseCallbackSlot)
+                capture(networkResponseCallbackSlot)
             )
         }
 
-        assertTrue(httpTimingResponseCallbackSlot.isCaptured)
+        assertTrue(networkResponseCallbackSlot.isCaptured)
     }
 
     @Test
@@ -222,7 +222,7 @@ class BraintreeClientUnitTest {
         val params = createDefaultParams(configurationLoader, authorizationLoader)
         val sut = BraintreeClient(params)
 
-        val httpTimingResponseCallbackSlot = slot<HttpTimingResponseCallback>()
+        val networkResponseCallbackSlot = slot<NetworkResponseCallback>()
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
         sut.sendPOST("sample-url", "{}", emptyMap(), httpResponseCallback)
 
@@ -232,11 +232,11 @@ class BraintreeClientUnitTest {
                 data = "{}",
                 configuration = configuration,
                 authorization = authorization,
-                callback = capture(httpTimingResponseCallbackSlot)
+                callback = capture(networkResponseCallbackSlot)
             )
         }
 
-        assertTrue(httpTimingResponseCallbackSlot.isCaptured)
+        assertTrue(networkResponseCallbackSlot.isCaptured)
     }
 
     @Test
@@ -349,7 +349,7 @@ class BraintreeClientUnitTest {
         val params = createDefaultParams(configurationLoader, authorizationLoader)
         val sut = BraintreeClient(params)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        val httpTimingResponseCallbackSlot = slot<HttpTimingResponseCallback>()
+        val networkResponseCallbackSlot = slot<NetworkResponseCallback>()
 
         sut.sendGraphQLPOST("{}", httpResponseCallback)
         verify {
@@ -357,11 +357,11 @@ class BraintreeClientUnitTest {
                 "{}",
                 configuration,
                 authorization,
-                capture(httpTimingResponseCallbackSlot)
+                capture(networkResponseCallbackSlot)
             )
         }
 
-        assertTrue(httpTimingResponseCallbackSlot.isCaptured)
+        assertTrue(networkResponseCallbackSlot.isCaptured)
     }
 
     @Test

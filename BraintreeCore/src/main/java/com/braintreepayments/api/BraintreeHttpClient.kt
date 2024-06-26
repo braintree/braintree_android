@@ -19,13 +19,13 @@ internal class BraintreeHttpClient(
      * @param path The path or url to request from the server via GET
      * @param configuration configuration for the Braintree Android SDK.
      * @param authorization
-     * @param callback [HttpTimingResponseCallback]
+     * @param callback [NetworkResponseCallback]
      */
     operator fun get(
         path: String,
         configuration: Configuration?,
         authorization: Authorization?,
-        callback: HttpTimingResponseCallback
+        callback: NetworkResponseCallback
     ) = get(path, configuration, authorization, HttpClient.NO_RETRY, callback)
 
     /**
@@ -35,14 +35,14 @@ internal class BraintreeHttpClient(
      * @param configuration configuration for the Braintree Android SDK.
      * @param authorization
      * @param retryStrategy retry strategy
-     * @param callback [HttpTimingResponseCallback]
+     * @param callback [NetworkResponseCallback]
      */
     operator fun get(
         path: String,
         configuration: Configuration?,
         authorization: Authorization?,
         @RetryStrategy retryStrategy: Int,
-        callback: HttpTimingResponseCallback
+        callback: NetworkResponseCallback
     ) {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
@@ -82,7 +82,7 @@ internal class BraintreeHttpClient(
      * @param data The body of the POST request
      * @param configuration configuration for the Braintree Android SDK.
      * @param authorization
-     * @param callback [HttpTimingResponseCallback]
+     * @param callback [NetworkResponseCallback]
      */
     @Suppress("CyclomaticComplexMethod")
     fun post(
@@ -91,7 +91,7 @@ internal class BraintreeHttpClient(
         configuration: Configuration?,
         authorization: Authorization?,
         additionalHeaders: Map<String, String> = emptyMap(),
-        callback: HttpTimingResponseCallback?
+        callback: NetworkResponseCallback?
     ) {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage

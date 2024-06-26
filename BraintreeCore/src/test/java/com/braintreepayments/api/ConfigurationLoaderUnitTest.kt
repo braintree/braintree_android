@@ -25,7 +25,7 @@ class ConfigurationLoaderUnitTest {
         sut.loadConfiguration(authorization, callback)
 
         val expectedConfigUrl = "https://example.com/config?configVersion=3"
-        val callbackSlot = slot<HttpTimingResponseCallback>()
+        val callbackSlot = slot<NetworkResponseCallback>()
         verify {
             braintreeHttpClient.get(
                     expectedConfigUrl,
@@ -53,7 +53,7 @@ class ConfigurationLoaderUnitTest {
         sut.loadConfiguration(authorization, callback)
 
         val expectedConfigUrl = "https://example.com/config?configVersion=3"
-        val callbackSlot = slot<HttpTimingResponseCallback>()
+        val callbackSlot = slot<NetworkResponseCallback>()
         verify {
             braintreeHttpClient.get(
                     expectedConfigUrl,
@@ -84,7 +84,7 @@ class ConfigurationLoaderUnitTest {
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
         sut.loadConfiguration(authorization, callback)
 
-        val callbackSlot = slot<HttpTimingResponseCallback>()
+        val callbackSlot = slot<NetworkResponseCallback>()
         verify {
             braintreeHttpClient.get(
                     ofType(String::class),
@@ -107,7 +107,7 @@ class ConfigurationLoaderUnitTest {
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
         sut.loadConfiguration(authorization, callback)
 
-        val callbackSlot = slot<HttpTimingResponseCallback>()
+        val callbackSlot = slot<NetworkResponseCallback>()
 
         verify {
             braintreeHttpClient.get(
@@ -167,7 +167,7 @@ class ConfigurationLoaderUnitTest {
                     null,
                     authorization,
                     ofType(Int::class),
-                    ofType(HttpTimingResponseCallback::class)
+                    ofType(NetworkResponseCallback::class)
             )
         }
         verify { callback.onResult(ofType(Configuration::class), null, null) }
