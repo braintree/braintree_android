@@ -58,7 +58,7 @@ class ApiClientUnitTest {
             .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
             .build()
 
-        val graphQLBodySlot = slot<String>()
+        val graphQLBodySlot = slot<JSONObject>()
         every { braintreeClient.sendGraphQLPOST(capture(graphQLBodySlot), any()) } returns Unit
 
         val sut = ApiClient(braintreeClient)
@@ -66,7 +66,7 @@ class ApiClientUnitTest {
         sut.tokenizeGraphQL(card.buildJSONForGraphQL(), tokenizeCallback)
 
         verify(inverse = true) { braintreeClient.sendPOST(any(), any(), any(), any()) }
-        assertEquals(card.buildJSONForGraphQL().toString(), graphQLBodySlot.captured)
+        assertEquals(card.buildJSONForGraphQL().toString(), graphQLBodySlot.captured.toString())
     }
 
     @Test
