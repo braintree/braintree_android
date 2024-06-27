@@ -243,8 +243,6 @@ class CardinalClientUnitTest {
                 cardinalChallengeObserver
             )
         }
-
-        verify { cardinalInstance.cleanup() }
     }
 
     @Test
@@ -269,5 +267,14 @@ class CardinalClientUnitTest {
             assertEquals("Cardinal SDK cca_continue Error.", e.message)
             assertSame(runtimeException, e.cause)
         }
+    }
+
+    @Test
+    fun cleanup_cleansUpCardinalInstance() {
+        every { Cardinal.getInstance() } returns cardinalInstance
+
+        val sut = CardinalClient()
+        sut.cleanup()
+        verify { cardinalInstance.cleanup() }
     }
 }

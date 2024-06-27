@@ -33,7 +33,7 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         challengeObserver = new CardinalChallengeObserver(
-                this, (context, validateResponse, s) -> handleValidated(validateResponse, s));
+                this, (context, validateResponse, s) -> handleValidated(cardinalClient, validateResponse, s));
 
         /*
             Here, we schedule the 3DS auth challenge launch to run immediately after onCreate() is
@@ -84,10 +84,13 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
     // TODO: NEXT_MAJOR_VERSION remove implementation of CardinalValidateReceiver
     @Override
     public void onValidated(Context context, ValidateResponse validateResponse, String jwt) {
-        handleValidated(validateResponse, jwt);
+        handleValidated(cardinalClient, validateResponse, jwt);
     }
 
-    private void handleValidated(ValidateResponse validateResponse, String jwt) {
+    @VisibleForTesting
+    void handleValidated(CardinalClient cardinalClient, ValidateResponse validateResponse, String jwt) {
+        cardinalClient.cleanup();
+
         Intent result = new Intent();
         result.putExtra(EXTRA_JWT, jwt);
         result.putExtra(EXTRA_THREE_D_SECURE_RESULT, (ThreeDSecureResult) getIntent().getExtras()
