@@ -144,7 +144,7 @@ class MyActivity : FragmentActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize Venmo classes outside of onCreate if desired
-       initializeVenmo()
+        initializeVenmo()
     }
     
     fun initializeVenmo() {
