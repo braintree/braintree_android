@@ -9,6 +9,8 @@
 * BraintreeCore
   * Use TLS 1.3 for all HTTP requests, when available
   * Refactor TLSCertificatePinning `certInputStream` property to initialize a `ByteArrayInputStream` once instead of every time the property is accessed.
+* ThreeDSecure
+  * Move Cardinal cleanup from SDK internals into `ThreeDSecureActivity`.
 
 ## 4.47.0 (2024-06-06)
 
