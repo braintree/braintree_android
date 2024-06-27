@@ -514,25 +514,6 @@ open class BraintreeClient @VisibleForTesting internal constructor(
         this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun getGraphQLMutationName(jsonString: String): String {
-        val regex = """"query"\s*:\s*"(.*?)"""".toRegex()
-        val matchResult = regex.find(jsonString)
-
-        return if (matchResult != null) {
-            val queryContent = matchResult.groupValues[1]
-            val endIndex = queryContent.indexOf("(")
-            val trimmedContent = if (endIndex != -1) {
-                queryContent.substring(0, endIndex).trim()
-            } else {
-                queryContent
-            }
-            trimmedContent
-        } else {
-            ""
-        }
-    }
-
     private fun sendAnalyticsTimingEvent(endpoint: String, timing: HttpResponseTiming) {
         val cleanedPath = endpoint.replace(Regex("/merchants/([A-Za-z0-9]+)/client_api"), "")
         sendAnalyticsEvent(
