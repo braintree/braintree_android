@@ -106,7 +106,7 @@ public class ThreeDSecureActivityUnitTest {
     }
 
     @Test
-    public void onValidated_returnsValidationResults() throws JSONException {
+    public void handleValidated_returnsValidationResults() throws JSONException {
         ThreeDSecureResult threeDSecureResult =
                 ThreeDSecureResult.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
 
@@ -121,11 +121,14 @@ public class ThreeDSecureActivityUnitTest {
 
         ValidateResponse cardinalValidateResponse = mock(ValidateResponse.class);
         when(cardinalValidateResponse.getActionCode()).thenReturn(CardinalActionCode.SUCCESS);
-        sut.onValidated(null, cardinalValidateResponse, "jwt");
+
+        CardinalClient cardinalClient = mock(CardinalClient.class);
+        sut.handleValidated(cardinalClient, cardinalValidateResponse, "jwt");
         verify(sut).finish();
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(sut).setResult(eq(RESULT_OK), captor.capture());
+        verify(cardinalClient).cleanup();
 
         Intent intentForResult = captor.getValue();
         ValidateResponse activityResult = (ValidateResponse) (intentForResult.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE));
