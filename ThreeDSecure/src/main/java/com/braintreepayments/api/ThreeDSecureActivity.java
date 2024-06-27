@@ -88,6 +88,8 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
     }
 
     private void handleValidated(ValidateResponse validateResponse, String jwt) {
+        cardinalClient.cleanup();
+
         Intent result = new Intent();
         result.putExtra(EXTRA_JWT, jwt);
         result.putExtra(EXTRA_THREE_D_SECURE_RESULT, (ThreeDSecureResult) getIntent().getExtras()
