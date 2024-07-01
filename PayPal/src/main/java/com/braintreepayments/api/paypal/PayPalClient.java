@@ -299,7 +299,7 @@ public class PayPalClient {
     }
 
     private void callbackCreatePaymentAuthFailure(PayPalPaymentAuthCallback callback,
-                                                  PayPalPaymentAuthRequest.Failure failure) {
+                                                  @NonNull PayPalPaymentAuthRequest.Failure failure) {
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, payPalContextId, null, isVaultRequest);
         callback.onPayPalPaymentAuthRequest(failure);
     }

@@ -8,5 +8,5 @@ fun interface GooglePayTokenizeCallback {
     /**
      * @param googlePayResult [PaymentMethodNonce]
      */
-    fun onGooglePayResult(googlePayResult: GooglePayResult?)
+    fun onGooglePayResult(googlePayResult: GooglePayResult)
 }

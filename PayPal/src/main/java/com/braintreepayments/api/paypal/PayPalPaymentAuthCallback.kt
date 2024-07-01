@@ -8,5 +8,5 @@ fun interface PayPalPaymentAuthCallback {
     /**
      * @param paymentAuthRequest a request used to launch the PayPal web authentication flow
      */
-    fun onPayPalPaymentAuthRequest(paymentAuthRequest: PayPalPaymentAuthRequest?)
+    fun onPayPalPaymentAuthRequest(paymentAuthRequest: PayPalPaymentAuthRequest)
 }

@@ -64,10 +64,12 @@ callback)`, where `riskCorrelationId` is an optional client metadata ID.
 
 ```kotlin
 val dataCollector = DataCollector(context, authorization)
-dataCollector.collectDeviceData(context) { result ->
+val dataCollectorRequest = DataCollectorRequest(hasUserLocationConsent)
+
+dataCollector.collectDeviceData(context, dataCollectoRequest) { result ->
     if (result is DataCollectorResult.Success) {
         // send result.deviceData to your server
-    } 
+    }
 }
 ```
 
@@ -92,6 +94,8 @@ The result handling of fetching American Express rewards balance has been update
 `AmericanExpressGetRewardsBalanceCallback` returns a single `AmericanExpressResult` object
 
 ```kotlin
+val americanExpressClient = AmericanExpressClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+
 americanExpressClient.getRewardsBalance(nonce, currencyCode) { result ->
     when(result) {
         is AmericanExpressResult.Success -> { /* handle result.rewardsBalance */ }
@@ -108,7 +112,16 @@ via SMS authorization.
 
 Now, you can tokenize with just the card details:
 
-// TODO: code snippet of card integration in v5
+```kotlin
+val cardClient = CardClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
+
+cardClient.tokenize(unionPayCard) { cardResult ->
+    when (cardResult) {
+        is CardResult.Success -> { /* handle cardResult.nonce */ }
+        is CardResult.Failure -> { /* handle cardResult.error */ }
+    }
+}
+```
 
 ## Venmo
 
@@ -130,16 +143,18 @@ class MyActivity : FragmentActivity() {
     private lateinit var venmoClient: VenmoClient
     
     override fun onCreate(savedInstanceState: Bundle?) {
-+       // can initialize clients outside of onCreate if desired
--       initializeClients()
-+       venmoLauncher = VenmoLauncher()  
++       // can initialize Venmo classes outside of onCreate if desired
+        initializeVenmo()
+
++       // VenmoLauncher must be initialized in onCreate 
++       venmoLauncher = VenmoLauncher()
     }
     
-    fun initializeClients() {
+    fun initializeVenmo() {
 -       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       venmoClient = VenmoClient(this, braintreeClient)
-+       venmoClient = VenmoClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       venmoClient.setListener(this)
++       venmoClient = VenmoClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
     }
     
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
@@ -149,41 +164,43 @@ class MyActivity : FragmentActivity() {
     
     // ALL OTHER ACTIVITY LAUNCH MODES 
     override fun onResume() {
-+       handleReturnToAppFromBrowser(requireActivity().intent)
++       handleReturnToAppFromBrowser(intent)
     }
     
-    fun handleReturnToAppFromBrowser(intent: Intent) {
+    private fun handleReturnToAppFromBrowser(intent: Intent) {
        // fetch stored VenmoPendingRequest.Success 
 +       fetchPendingRequestFromPersistantStore()?.let {
-+          when (val paymentAuthResult = venmoLauncher.handleReturnToAppFromBrowser(it, intent)) {
-+               is VenmoPaymentAuthResult.Success - > {
++          when (val paymentAuthResult = venmoLauncher.handleReturnToApp(VenmoPendingRequest.Started(it), intent)) {
++               is VenmoPaymentAuthResult.Success -> {
 +                   completeVenmoFlow(paymentAuthResult)
 +                   // clear stored VenmoPendingRequest.Success
 +               }
-+               is VenmoPaymentAuthResult.NoResult -> // user returned to app without completing Venmo flow, handle accordingly
++               is VenmoPaymentAuthResult.NoResult -> {
++                   // user returned to app without completing Venmo flow, handle accordingly
++               }
 +          }
 +       }   
     }
     
-    fun onVenmoButtonClick() {
+    private fun onVenmoButtonClick() {
 -       venmoClient.tokenizeVenmoAccount(activity, request)
 +       venmoClient.createPaymentAuthRequest(this, venmoRequest) { paymentAuthRequest ->
-+           when(paymentAuthRequest) {
++           when (paymentAuthRequest) {
 +               is VenmoPaymentAuthRequest.ReadyToLaunch -> {
-+                   val pendingRequest = venmoLauncher.launch(this@MyActivity, paymentAuthRequet)
-+                   when(pendingRequest) {
-+                       is (VenmoPendingRequest.Success) { /* store pending request */ }
-+                       is (VenmoPendingRequest.Failure) { /* handle error */ }
++                   val pendingRequest = venmoLauncher.launch(this, paymentAuthRequest)
++                   when (pendingRequest) {
++                       is VenmoPendingRequest.Started -> { /* store pending request */ }
++                       is VenmoPendingRequest.Failure -> { /* handle error */ }
 +                   }
 +               }
-+               is VenmoPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error +/ }
++               is VenmoPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error */ }
 +           }
 +       }
     }
     
-    fun completeVenmoFlow(paymentAuthResult: VenmoPaymentAuthResult) {
+    private fun completeVenmoFlow(paymentAuthResult: VenmoPaymentAuthResult.Success) {
 +       venmoClient.tokenize(paymentAuthResult) { result ->
-+           when(result) {
++           when (result) {
 +               is VenmoResult.Success -> { /* handle result.nonce */ }
 +               is VenmoResult.Failure -> { /* handle result.error */ }
 +               is VenmoResult.Cancel -> { /* handle user canceled */ }
@@ -195,7 +212,7 @@ class MyActivity : FragmentActivity() {
 -        // handle Venmo account nonce
 -   }
       
--   override fun onVenmoFailure(error: java.lang.Exception) {
+-   override fun onVenmoFailure(error: Exception) {
 -        // handle error
 -   }
 }
@@ -222,16 +239,10 @@ class MyActivity : FragmentActivity() {
     private lateinit var googlePayClient: GooglePayClient
     
     override fun onCreate(savedInstanceState: Bundle?) {
-+       // can initialize clients outside of onCreate if desired
--       initializeClients()
-
--       googlePayClient.isReadyToPay(this) { isReadyToPay, error ->
-+       googlePayClient.isReadyToPay(this) { readinessResult ->
-+           if (readinessResult is GooglePayReadinessResult.ReadyToPay) {
-+                // show Google Pay button 
-+           }
-+        }
++       // can initialize the GooglePayClient outside of onCreate if desired
+-       initializeGooglePayClient()
         
++       // GooglePayLauncher must be initialized in onCreate 
 +       googlePayLauncher = GooglePayLauncher(this) { paymentAuthResult ->
 +            googlePayClient.tokenize(paymentAuthResult) { googlePayResult ->
 +               when (googlePayResult) {
@@ -243,20 +254,27 @@ class MyActivity : FragmentActivity() {
 +       }
     }
     
-    fun initializeClients() {
+    private fun initializeGooglePayClient() {
 -       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       goolePayClient = GooglePayClient(this, braintreeClient)
-+       googlePayClient = GooglePayClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
++       googlePayClient = GooglePayClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       googlePayClient.setListener(this)
+
+-       googlePayClient.isReadyToPay(this) { isReadyToPay, error ->
++       googlePayClient.isReadyToPay(this) { readinessResult ->
++           if (readinessResult is GooglePayReadinessResult.ReadyToPay) {
++                // show Google Pay button 
++           }
++        }
     }
     
-    fun onGooglePayButtonClick() {
+    private fun onGooglePayButtonClick() {
 -       googlePayClient.requestPayment(activity, request)
-+       googlePayClient.createPaymentAuthRequest(this, request) { paymentAuthRequest ->
++       googlePayClient.createPaymentAuthRequest(request) { paymentAuthRequest ->
 +           when (paymentAuthRequest) {
 +            is GooglePayPaymentAuthRequest.Failure -> { /* handle error */ }
 +            is GooglePayPaymentAuthRequest.ReadyToLaunch -> { 
-+               googlePayLauncher.launch(paymentAuthRequest.params) 
++               googlePayLauncher.launch(paymentAuthRequest.requestParams) 
 +            }
 +       }
     }
@@ -291,11 +309,13 @@ class MyActivity : FragmentActivity() {
     
 +   private lateinit var threeDSecureLauncher: ThreeDSecureLauncher
 -    private lateinit var braintreeClient: BraintreeClient
-    private lateinit var threeDSecureClient: VenmoClient
+    private lateinit var threeDSecureClient: ThreeDSecureClient
     
     override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
--       initializeClients()
+-       initializeThreeDSecure()
+
++       // ThreeDSecureLauncher must be initialized in onCreate
 +       threeDSecureLauncher = ThreeDSecureLauncher(this) { paymentAuthResult ->
 +            threeDSecureClient.tokenize(paymentAuthResult) { result ->
 +               when (result) {
@@ -306,10 +326,10 @@ class MyActivity : FragmentActivity() {
 +       }
     }
     
-    fun initializeClients() {
+    private fun initializeThreeDSecure() {
 -       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       threeDSecureClient = ThreeDSecureClient(this, braintreeClient)
-+       threeDSecureClient = ThreeDSecureClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
++       threeDSecureClient = ThreeDSecureClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       threeDSecureClient.setListener(this)
     }
     
@@ -322,13 +342,12 @@ class MyActivity : FragmentActivity() {
 -                   threeDSecureClient.continuePerformVerification(MyActivity@this, request, it)
 -                else { /* no additional user authentication needed, handle threeDSecureResult */ }
 -              }
-+       threeDSecureClient.createPaymentAuthRequest(requireContext(), threeDSecureRequest) { 
-+          paymentAuthRequest -> {
++       threeDSecureClient.createPaymentAuthRequest(this, threeDSecureRequest) { paymentAuthRequest -> 
 +             when (paymentAuthRequest) {
 +                is ThreeDSecurePaymentAuthRequest.ReadyToLaunch -> {
 +                    threeDSecureLauncher.launch(paymentAuthRequest) 
 +                }
-+                is ThreeDSecurePaymentAuthRequest.LaunchNotRequired - > {
++                is ThreeDSecurePaymentAuthRequest.LaunchNotRequired -> {
 +                    // no additional authentication challenge needed
 +                    // send paymentAuthRequest.nonce to server
 +                }
@@ -341,7 +360,7 @@ class MyActivity : FragmentActivity() {
 -        // handle threeDSecureParams.tokenizedCard
 -   }
       
--   override fun onThreeDSecureFailure(error: java.lang.Exception) {
+-   override fun onThreeDSecureFailure(error: Exception) {
 -        // handle error
 -   }
 }
@@ -366,14 +385,16 @@ PayPal flow.
 ```diff
 class MyActivity : FragmentActivity() {
 
-+   private lateinit var payPalLauncher: payPalLauncher
++   private lateinit var payPalLauncher: PayPalLauncher
 -   private lateinit var braintreeClient: BraintreeClient
     private lateinit var payPalClient: PayPalClient
     
     override fun onCreate(savedInstanceState: Bundle?) {
-+       // can initialize clients outside of onCreate if desired
--       initializeClients()
-+       payPalLauncher = PayPalLauncher() 
++       // can initialize client outside of onCreate if desired
+-       initializePayPal()
+
++       // PayPalLauncher must be initialized in onCreate
++       payPalLauncher = PayPalLauncher()
     }
     
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
@@ -383,27 +404,29 @@ class MyActivity : FragmentActivity() {
     
     // ALL OTHER ACTIVITY LAUNCH MODES 
     override fun onResume() {
-+       handleReturnToAppFromBrowser(requireActivity().intent)
++       handleReturnToAppFromBrowser(intent)
     }
     
-    fun handleReturnToAppFromBrowser(intent: Intent) {
+    private fun handleReturnToAppFromBrowser(intent: Intent) {
        // fetch stored PayPalPendingRequest.Success 
 +       fetchPendingRequestFromPersistantStore()?.let {
-+          when (val paymentAuthResult = payPalLauncher.handleReturnToAppFromBrowser(it, intent)) {
-+               is PayPalPaymentAuthResult.Success - > {
++          when (val paymentAuthResult = payPalLauncher.handleReturnToAppFromBrowser(PayPalPendingRequest.Started(it), intent)) {
++               is PayPalPaymentAuthResult.Success -> {
 +                   completePayPalFlow(paymentAuthResult)
 +                   // clear stored PayPalPendingRequest.Success
 +               }
-+               is PayPalPaymentAuthResult.NoResult -> // user returned to app without completing PayPal flow, handle accordingly
++               is PayPalPaymentAuthResult.NoResult -> {
++                   // user returned to app without completing PayPal flow, handle accordingly
++               }
 +          }
 +       }   
     }
     
-    fun initializeClients() {
+    private fun initializePayPal() {
 -       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       payPalClient = PayPalClient(this, braintreeClient)
 +       payPalClient = PayPalClient(
-+            context, 
++            this, 
 +            "TOKENIZATION_KEY_OR_CLIENT_TOKEN", 
 +            Uri.parse("https://merchant-app.com") // Merchant App Link
 +       )
@@ -413,12 +436,12 @@ class MyActivity : FragmentActivity() {
     fun onPayPalButtonClick() {
 -       payPalClient.tokenizePayPalAccount(activity, request)
 +       payPalClient.createPaymentAuthRequest(this, request) { paymentAuthRequest ->
-+           when(paymentAuthRequest) {
++           when (paymentAuthRequest) {
 +               is PayPalPaymentAuthRequest.ReadyToLaunch -> {
-+                   val pendingRequest = payPalLauncher.launch(this@MyActivity, paymentAuthRequet)
-+                   when(pendingRequest) {
-+                       is (PayPalPendingRequest.Success) { /* store pending request */ }
-+                       is (PayPalPendingRequest.Failure) { /* handle error */ }
++                   val pendingRequest = payPalLauncher.launch(this, paymentAuthRequest)
++                   when (pendingRequest) {
++                       is PayPalPendingRequest.Started -> { /* store pending request */ }
++                       is PayPalPendingRequest.Failure -> { /* handle error */ }
 +                   }
 +               }
 +               is PayPalPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error */ }
@@ -426,9 +449,9 @@ class MyActivity : FragmentActivity() {
 +       }
     }
     
-    fun completePayPalFlow(paymentAuthResult: PayPalPaymentAuthResult) {
+    private fun completePayPalFlow(paymentAuthResult: PayPalPaymentAuthResult.Success) {
 +       payPalClient.tokenize(paymentAuthResult) { result ->
-+           when(result) {
++           when (result) {
 +               is PayPalResult.Success -> { /* handle result.nonce */ }
 +               is PayPalResult.Failure -> { /* handle result.error */ }
 +               is PayPalResult.Cancel -> { /* handle user canceled */ }
@@ -462,13 +485,16 @@ do not need to be instantiated in `OnCreate`.
 ```diff
 class MyActivity : FragmentActivity() {
 
-+   private val localPaymentLauncher = localPaymentLauncher()
++   private lateinit var localPaymentLauncher: LocalPaymentLauncher
 -   private lateinit var braintreeClient: BraintreeClient
     private lateinit var localPaymentClient: LocalPaymentClient
 
-    @override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
--       initializeClients()
+-       initializeLocalPayment()
+
++       // LocalPaymentLauncher must be initialized in onCreate
++       localPaymentLauncher = LocalPaymentLauncher()
     }
 
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
@@ -478,44 +504,46 @@ class MyActivity : FragmentActivity() {
     
     // ALL OTHER ACTIVITY LAUNCH MODES 
     override fun onResume() {
-+       handleReturnToAppFromBrowser(requireActivity().intent)
++       handleReturnToAppFromBrowser(intent)
     }
     
-    fun handleReturnToAppFromBrowser(intent: Intent) {
+    private fun handleReturnToAppFromBrowser(intent: Intent) {
        // fetch stored LocalPaymentPendingRequest.Success 
 +       fetchPendingRequestFromPersistantStore()?.let {
-+          when (val paymentAuthResult = localPaymentLauncher.handleReturnToAppFromBrowser(it, intent)) {
-+               is LocalPaymentAuthResult.Success - > {
++          when (val paymentAuthResult = localPaymentLauncher.handleReturnToAppFromBrowser(LocalPaymentPendingRequest.Started(it), intent)) {
++               is LocalPaymentAuthResult.Success -> {
 +                   completeLocalPaymentFlow(paymentAuthResult)
 +                   // clear stored LocalPaymentPendingRequest.Success
 +               }
-+               is LocalPaymentAuthResult.NoResult -> // user returned to app without completing Local Payment flow, handle accordingly
++               is LocalPaymentAuthResult.NoResult -> {
++                   // user returned to app without completing Local Payment flow, handle accordingly
++               }
 +          }
 +       }   
     }
 
-    fun initializeClients() {
+    private fun initializeClients() {
 -       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       localPaymentClient = LocalPaymentClient(this, braintreeClient)
-+       localPaymentClient = LocalPaymentClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
++       localPaymentClient = LocalPaymentClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       localPaymentClient.setListener(this)
     }
 
-    fun onPaymentButtonClick() {
+    private fun onPaymentButtonClick() {
 -       localPaymentClient.startPayment(activity, request)
-+       localPaymentClient.createPaymentAuthRequest(this, request) { paymentAuthRequest ->
-+           when(paymentAuthRequest) {
++       localPaymentClient.createPaymentAuthRequest(request) { paymentAuthRequest ->
++           when (paymentAuthRequest) {
 +               is LocalPaymentAuthRequest.ReadyToLaunch -> {
-+                   lacalPaymentLauncher.launch(this@MyActivity, paymentAuthRequet)
++                   localPaymentLauncher.launch(this, paymentAuthRequest)
 +               }
 +               is LocalPaymentAuthRequest.Failure -> { /* handle paymentAuthRequest.error */ }
 +           }
 +       }
     }
     
-    fun completeLocalPaymentFlow(paymentAuthResult: PayPalPaymentAuthResult) {
-+       localPaymentClient.tokenize(paymentAuthResult) { result ->
-+            when(result) {
+    private fun completeLocalPaymentFlow(paymentAuthResult: LocalPaymentAuthResult.Success) {
++       localPaymentClient.tokenize(this, paymentAuthResult) { result ->
++            when (result) {
 +                is LocalPaymentResult.Success -> { /* handle result.nonce */ }
 +                is LocalPaymentResult.Failure -> { /* handle result.error */ }
 +                is LocalPaymentResult.Cancel -> { /* handle user canceled */ }
@@ -549,13 +577,16 @@ do not need to be instantiated in `OnCreate`.
 ```diff
 class MyActivity : FragmentActivity() {
 
-+   private val sepaDirectDebitLauncher = SEPADirectDebitLauncher() 
++   private lateinit var sepaDirectDebitLauncher: SEPADirectDebitLauncher
 -   private lateinit var braintreeClient: BraintreeClient
     private lateinit var sepaDirectDebitClient: SEPADirectDebitClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
--       initializeClients()
+-       initializeSEPA()
+
++       // SEPADirectDebitLauncher must be initialized in onCreate
++       sepaDirectDebitLauncher = SEPADirectDebitLauncher() 
     }
 
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
@@ -565,52 +596,56 @@ class MyActivity : FragmentActivity() {
 
     // ALL OTHER ACTIVITY LAUNCH MODES 
     override fun onResume() {
-+       handleReturnToAppFromBrowser(requireActivity().intent)
++       handleReturnToAppFromBrowser(intent)
     }
     
-    fun handleReturnToAppFromBrowser(intent: Intent) {
+    private fun handleReturnToAppFromBrowser(intent: Intent) {
        // fetch stored SEPADirectDebitPendingRequest.Success 
 +       fetchPendingRequestFromPersistantStore()?.let {
-+          when (val paymentAuthResult = sepaDirectDebitLauncher.handleReturnToAppFromBrowser(it, intent)) {
-+               is SEPADirectDebitPaymentAuthResult.Success - > {
++          when (val paymentAuthResult = sepaDirectDebitLauncher.handleReturnToAppFromBrowser(SEPADirectDebitPendingRequest.Started(it), intent)) {
++               is SEPADirectDebitPaymentAuthResult.Success -> {
 +                   completSEPAFlow(paymentAuthResult)
 +                   // clear stored SEPADirectDebitPendingRequest.Success
 +               }
-+               is SEPADirectDebitPaymentAuthResult.NoResult -> // user returned to app without completing flow, handle accordingly
++               is SEPADirectDebitPaymentAuthResult.NoResult -> {
++                   // user returned to app without completing flow, handle accordingly
++               }
 +          }
 +       }   
     }
 
-    fun initializeClients() {
+    private fun initializeSEPA() {
 -        braintreeClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       sepaDirectDebitClient = SEPADirectDebitClient(this, braintreeClient)
-+       sepaDirectDebitClient = sepaDirectDebitClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
++       sepaDirectDebitClient = SEPADirectDebitClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       sepaDirectDebitClient.setListener(this)
     }
 
-    fun onPaymentButtonClick() {
--       sepaDirectDebitClient.tokenize(activity, request)
-+       sepaDirectDebitClient.tokenize(activity, request) { paymentAuthRequest ->
-+           when(paymentAuthRequest) {
-+               is (SEPADirectDebitPaymentAuthRequest.Failure) -> { 
+    private fun onPaymentButtonClick() {
+-       sepaDirectDebitClient.createPaymentAuthRequest(activity, request)
++       sepaDirectDebitClient.createPaymentAuthRequest(request) { paymentAuthRequest ->
++           when (paymentAuthRequest) {
++               is SEPADirectDebitPaymentAuthRequest.Failure -> { 
 +                   // handle paymentAuthRequest.error
-+               is (SEPADirectDebitPaymentAuthRequest.LaunchNotRequired) -> {      
++               }
++               is SEPADirectDebitPaymentAuthRequest.LaunchNotRequired -> {      
 +                   // web-flow mandate not required, handle paymentAuthRequest.nonce
-+               is (SEPADirectDebitPaymentAuthRequest.ReadyToLaunch) -> {
++               }
++               is SEPADirectDebitPaymentAuthRequest.ReadyToLaunch -> {
 +                    // web-flow mandate required
-+                   val pendingRequest = sepaDirectDebitLauncher.launch(this@MyActivity, paymentAuthRequet)
-+                   when(pendingRequest) {
-+                       is (SEPADirectDebitPendingRequest.Success) { /* store pending request */ }
-+                       is (SEPADirectDebitPendingRequest.Failure) { /* handle error */ }
++                   val pendingRequest = sepaDirectDebitLauncher.launch(this, paymentAuthRequest)
++                   when (pendingRequest) {
++                       is SEPADirectDebitPendingRequest.Started -> { /* store pending request */ }
++                       is SEPADirectDebitPendingRequest.Failure -> { /* handle error */ }
 +                   }              
 +               }
 +           }
 +       }
     }
     
-    fun completeSEPAFlow(paymentAuthResult: SEPADirectDebitPaymentAuthResult) {
+    private fun completeSEPAFlow(paymentAuthResult: SEPADirectDebitPaymentAuthResult.Success) {
 +       sepaDirectDebitClient.tokenize(paymentAuthResult) { result -> 
-+            when(result) {
++            when (result) {
 +               is SEPADirectDebitResult.Success -> { /* handle result.nonce */ }
 +               is SEPADirectDebitResult.Failure -> { /* handle result.error */ }
 +               is SEPADirectDebitResult.Cancel -> { /* handle user canceled */ }
@@ -638,21 +673,18 @@ class MyActivity : FragmentActivity() {
 -   private lateinit var braintreeClient: BraintreeClient
     private lateinit var visaCheckoutClient: VisaCheckoutClient
 
-    fun initializeClients() {
+    private fun initializeVisa() {
 -       braintreeClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       visaCheckoutClient = VisaCheckoutClient(braintreeClient)
-+       visaCheckoutClient = visaCheckoutClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
++       visaCheckoutClient = VisaCheckoutClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
     }
 
-    fun onPaymentButtonClick() {
+    private fun onPaymentButtonClick() {
 -       visaCheckoutClient.tokenize(request)
-+       sepaDirectDebitClient.tokenize(request) { visaCheckoutResult ->
++       visaCheckoutClient.tokenize(request) { visaCheckoutResult ->
 +           when (visaCheckoutResult) {
-+               is VisaCheckoutResult.Failure -> { 
-+                   // handle visaCheckoutResult.error
-+               is VisaCheckoutResult.Success -> {      
-+                   // handle visaCheckoutResult.nonce
-+               }
++               is VisaCheckoutResult.Success -> { /* handle visaCheckoutResult.nonce */ }
++               is VisaCheckoutResult.Failure -> { /* handle visaCheckoutResult.error */ }
 +           }
 +       }
     }
