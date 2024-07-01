@@ -39,6 +39,11 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         return scheduleAnalyticsUpload(configuration, authorization, sessionId, integration)
     }
 
+    private fun serializeAnalyticsEventToString(event: AnalyticsEvent) : String {
+        // TODO: implement
+        return "";
+    }
+
     private fun scheduleAnalyticsWrite(
         event: AnalyticsEvent, authorization: Authorization
     ) {
