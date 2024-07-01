@@ -22,7 +22,7 @@ import androidx.room.migration.AutoMigrationSpec
 )
 internal abstract class AnalyticsDatabase : RoomDatabase() {
 
-    abstract fun analyticsBlobDao(): AnalyticsEventBlobDao
+    abstract fun analyticsEventBlobDao(): AnalyticsEventBlobDao
 
     @DeleteTable(tableName = "analytics_event")
     class DeleteAnalyticsEventTableAutoMigration: AutoMigrationSpec

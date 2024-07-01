@@ -1,7 +1,5 @@
 package com.braintreepayments.api
 
-import androidx.annotation.RestrictTo
-
 internal data class AnalyticsEvent constructor(
     val name: String,
     val payPalContextId: String? = null,

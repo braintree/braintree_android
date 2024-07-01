@@ -43,7 +43,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     private fun scheduleAnalyticsWrite(
         event: AnalyticsEvent, authorization: Authorization
     ) {
-        val json = serializeAnalyticsEventToString(event)
+        val json = mapAnalyticsEventToFPTIEventJSON(event)
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(WORK_INPUT_KEY_ANALYTICS_JSON, json)
@@ -64,7 +64,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             ListenableWorker.Result.failure()
         } else {
             val eventBlob = AnalyticsEventBlob(analyticsJSON)
-            val analyticsBlobDao = analyticsDatabase.analyticsBlobDao()
+            val analyticsBlobDao = analyticsDatabase.analyticsEventBlobDao()
             analyticsBlobDao.insertBlob(eventBlob)
             ListenableWorker.Result.success()
         }
@@ -104,7 +104,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             ListenableWorker.Result.failure()
         } else {
             try {
-                val analyticsBlobDao = analyticsDatabase.analyticsBlobDao()
+                val analyticsBlobDao = analyticsDatabase.analyticsEventBlobDao()
                 val blobs = analyticsBlobDao.getAllBlobs()
                 if (blobs.isNotEmpty()) {
                     val metadata = deviceInspector.getDeviceMetadata(
@@ -113,7 +113,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                         sessionId,
                         integration
                     )
-                    val analyticsRequest = serializeEvents(authorization, blobs, metadata)
+                    val analyticsRequest = createFPTIPayload(authorization, blobs, metadata)
                     httpClient.post(
                         FPTI_ANALYTICS_URL,
                         analyticsRequest.toString(),
@@ -160,12 +160,12 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         }
         val metadata =
             deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
-        val event = AnalyticsEvent("android.crash", null, null, timestamp)
-        val eventJSON = serializeAnalyticsEventToString(event)
+        val event = AnalyticsEvent(name = "crash", timestamp = timestamp)
+        val eventJSON = mapAnalyticsEventToFPTIEventJSON(event)
         val eventBlob = AnalyticsEventBlob(eventJSON)
         val blobs = listOf(eventBlob)
         try {
-            val analyticsRequest = serializeEvents(authorization, blobs, metadata)
+            val analyticsRequest = createFPTIPayload(authorization, blobs, metadata)
             httpClient.post(
                 path = FPTI_ANALYTICS_URL,
                 data = analyticsRequest.toString(),
@@ -178,7 +178,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     }
 
     @Throws(JSONException::class)
-    private fun serializeEvents(
+    private fun createFPTIPayload(
         authorization: Authorization?,
         blobs: List<AnalyticsEventBlob>,
         metadata: DeviceMetadata
@@ -197,7 +197,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
 
         val eventParamsJSON = JSONArray()
         for (analyticsBlob in blobs) {
-            eventParamsJSON.put(analyticsBlob.json)
+            eventParamsJSON.put(JSONObject(analyticsBlob.json))
         }
         eventsContainerJSON.put(EVENT_PARAMS_KEY, eventParamsJSON)
 
@@ -206,7 +206,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         return JSONObject().put(EVENTS_CONTAINER_KEY, eventsArray)
     }
 
-    private fun serializeAnalyticsEventToString(event: AnalyticsEvent): String {
+    private fun mapAnalyticsEventToFPTIEventJSON(event: AnalyticsEvent): String {
         val json = JSONObject()
             .put(EVENT_NAME_KEY, "android.${event.name}")
             .putOpt(PAYPAL_CONTEXT_ID_KEY, event.payPalContextId)
