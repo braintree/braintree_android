@@ -64,7 +64,7 @@ callback)`, where `riskCorrelationId` is an optional client metadata ID.
 
 ```kotlin
 val dataCollector = DataCollector(context, authorization)
-val dataCollectoRequest = DataCollectorRequest(hasUserLocationConsent)
+val dataCollectorRequest = DataCollectorRequest(hasUserLocationConsent)
 
 dataCollector.collectDeviceData(context, dataCollectoRequest) { result ->
     if (result is DataCollectorResult.Success) {
@@ -144,14 +144,15 @@ class MyActivity : FragmentActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize Venmo classes outside of onCreate if desired
-       initializeVenmo()
+        initializeVenmo()
+
++       venmoLauncher = VenmoLauncher()
     }
     
     fun initializeVenmo() {
 -       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       venmoClient = VenmoClient(this, braintreeClient)
 -       venmoClient.setListener(this)
-+       venmoLauncher = VenmoLauncher()
 +       venmoClient = VenmoClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
     }
     
@@ -237,15 +238,8 @@ class MyActivity : FragmentActivity() {
     private lateinit var googlePayClient: GooglePayClient
     
     override fun onCreate(savedInstanceState: Bundle?) {
-+       // can initialize clients outside of onCreate if desired
--       initializeGooglePay()
-
--       googlePayClient.isReadyToPay(this) { isReadyToPay, error ->
-+       googlePayClient.isReadyToPay(this) { readinessResult ->
-+           if (readinessResult is GooglePayReadinessResult.ReadyToPay) {
-+                // show Google Pay button 
-+           }
-+        }
++       // can initialize the GooglePayClient outside of onCreate if desired
+-       initializeGooglePayClient()
         
 +       googlePayLauncher = GooglePayLauncher(this) { paymentAuthResult ->
 +            googlePayClient.tokenize(paymentAuthResult) { googlePayResult ->
@@ -258,11 +252,18 @@ class MyActivity : FragmentActivity() {
 +       }
     }
     
-    private fun initializeGooglePay() {
+    private fun initializeGooglePayClient() {
 -       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       goolePayClient = GooglePayClient(this, braintreeClient)
 +       googlePayClient = GooglePayClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       googlePayClient.setListener(this)
+
+-       googlePayClient.isReadyToPay(this) { isReadyToPay, error ->
++       googlePayClient.isReadyToPay(this) { readinessResult ->
++           if (readinessResult is GooglePayReadinessResult.ReadyToPay) {
++                // show Google Pay button 
++           }
++        }
     }
     
     private fun onGooglePayButtonClick() {
