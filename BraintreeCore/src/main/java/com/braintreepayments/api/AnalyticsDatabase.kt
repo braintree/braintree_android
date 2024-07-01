@@ -8,18 +8,19 @@ import androidx.room.RoomDatabase
 
 // Ref: https://developer.android.com/training/data-storage/room/migrating-db-versions
 @Database(
-        version = 5,
-        entities = [AnalyticsEvent::class],
-        autoMigrations = [
-            AutoMigration(from = 1, to = 2),
-            AutoMigration(from = 2, to = 3),
-            AutoMigration(from = 3, to = 4),
-            AutoMigration(from = 4, to = 5)
-        ]
+    version = 6,
+    entities = [AnalyticsEvent::class, AnalyticsEventBlob::class],
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 3, to = 4),
+        AutoMigration(from = 4, to = 5),
+        AutoMigration(from = 5, to = 6)
+    ]
 )
 internal abstract class AnalyticsDatabase : RoomDatabase() {
 
-    abstract fun analyticsEventDao(): AnalyticsEventDao
+    abstract fun analyticsBlobDao(): AnalyticsEventBlobDao
 
     companion object {
 
