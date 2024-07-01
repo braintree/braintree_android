@@ -15,7 +15,7 @@ open class AnalyticsUploadWorker(
 ) : AnalyticsBaseWorker(context, params) {
 
     override fun doWork(): Result {
-        val analyticsClient = createAnalyticsClientFromInputData()
-        return analyticsClient.uploadAnalytics(applicationContext, inputData)
+        val analyticsClient = AnalyticsClient(applicationContext)
+        return analyticsClient.performAnalyticsUpload(inputData)
     }
 }
