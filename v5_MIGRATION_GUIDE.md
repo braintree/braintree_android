@@ -146,6 +146,7 @@ class MyActivity : FragmentActivity() {
 +       // can initialize Venmo classes outside of onCreate if desired
         initializeVenmo()
 
++       // VenmoLauncher must be initialized in onCreate 
 +       venmoLauncher = VenmoLauncher()
     }
     
@@ -241,6 +242,7 @@ class MyActivity : FragmentActivity() {
 +       // can initialize the GooglePayClient outside of onCreate if desired
 -       initializeGooglePayClient()
         
++       // GooglePayLauncher must be initialized in onCreate 
 +       googlePayLauncher = GooglePayLauncher(this) { paymentAuthResult ->
 +            googlePayClient.tokenize(paymentAuthResult) { googlePayResult ->
 +               when (googlePayResult) {
@@ -312,6 +314,8 @@ class MyActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeThreeDSecure()
+
++       // ThreeDSecureLauncher must be initialized in onCreate
 +       threeDSecureLauncher = ThreeDSecureLauncher(this) { paymentAuthResult ->
 +            threeDSecureClient.tokenize(paymentAuthResult) { result ->
 +               when (result) {
@@ -388,6 +392,8 @@ class MyActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize client outside of onCreate if desired
 -       initializePayPal()
+
++       // PayPalLauncher must be initialized in onCreate
 +       payPalLauncher = PayPalLauncher()
     }
     
@@ -479,13 +485,16 @@ do not need to be instantiated in `OnCreate`.
 ```diff
 class MyActivity : FragmentActivity() {
 
-+   private val localPaymentLauncher = LocalPaymentLauncher()
++   private lateinit var localPaymentLauncher: LocalPaymentLauncher
 -   private lateinit var braintreeClient: BraintreeClient
     private lateinit var localPaymentClient: LocalPaymentClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
 -       initializeLocalPayment()
+
++       // LocalPaymentLauncher must be initialized in onCreate
++       localPaymentLauncher = LocalPaymentLauncher()
     }
 
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
@@ -568,13 +577,16 @@ do not need to be instantiated in `OnCreate`.
 ```diff
 class MyActivity : FragmentActivity() {
 
-+   private val sepaDirectDebitLauncher = SEPADirectDebitLauncher() 
++   private lateinit var sepaDirectDebitLauncher: SEPADirectDebitLauncher
 -   private lateinit var braintreeClient: BraintreeClient
     private lateinit var sepaDirectDebitClient: SEPADirectDebitClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
 +       // can initialize clients outside of onCreate if desired
--       initializeClients()
+-       initializeSEPA()
+
++       // SEPADirectDebitLauncher must be initialized in onCreate
++       sepaDirectDebitLauncher = SEPADirectDebitLauncher() 
     }
 
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
