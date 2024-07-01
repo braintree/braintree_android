@@ -135,13 +135,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         integration: String?,
         authorization: Authorization?
     ) {
-        reportCrash(
-            configuration,
-            sessionId,
-            integration,
-            System.currentTimeMillis(),
-            authorization
-        )
+        val timestamp = System.currentTimeMillis()
+        reportCrash(configuration, sessionId, integration, timestamp, authorization)
     }
 
     @VisibleForTesting
