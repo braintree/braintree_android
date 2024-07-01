@@ -261,7 +261,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
         return returnUrl;
     }
 
-    Deprecated. Use PayPal module instead.
+    @Deprecated
     @Nullable
     public String getLocaleCode() {
         return localeCode;
