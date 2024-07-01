@@ -262,13 +262,13 @@ class AnalyticsClientUnitTest {
                 "device_manufacturer": "fake-device-manufacturer",
                 "mobile_device_model": "fake-mobile-device-model",
                 "event_source": "fake-event-source",
-                "merchant_sdk_env": "fake-environment",
-                "api_integration_type": "fake-integration",
+                "merchant_sdk_env": "test",
+                "api_integration_type": "sample-integration",
                 "is_simulator": false,
                 "mapv": "fake-merchant-app-version",
-                "merchant_id": "fake-merchant-id",
+                "merchant_id": "integration_merchant_id",
                 "platform": "fake-platform",
-                "session_id": "fake-session-id",
+                "session_id": "sample-session-id",
                 "tokenization_key": "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
               },
               "event_params": [
@@ -475,13 +475,13 @@ class AnalyticsClientUnitTest {
                 "device_manufacturer": "fake-device-manufacturer",
                 "mobile_device_model": "fake-mobile-device-model",
                 "event_source": "fake-event-source",
-                "merchant_sdk_env": "fake-environment",
-                "api_integration_type": "fake-integration",
+                "merchant_sdk_env": "test",
+                "api_integration_type": "sample-integration",
                 "is_simulator": false,
                 "mapv": "fake-merchant-app-version",
-                "merchant_id": "fake-merchant-id",
+                "merchant_id": "integration_merchant_id",
                 "platform": "fake-platform",
-                "session_id": "fake-session-id",
+                "session_id": "sample-session-id",
                 "tokenization_key": "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
               },
               "event_params": [
@@ -529,14 +529,10 @@ class AnalyticsClientUnitTest {
             component = "fake-component",
             deviceManufacturer = "fake-device-manufacturer",
             deviceModel = "fake-mobile-device-model",
-            environment = "fake-environment",
             eventSource = "fake-event-source",
-            integrationType = "fake-integration",
             isSimulator = false,
             merchantAppVersion = "fake-merchant-app-version",
-            merchantId = "fake-merchant-id",
             platform = "fake-platform",
-            sessionId = "fake-session-id"
         )
     }
 }
