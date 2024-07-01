@@ -186,52 +186,53 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         val batchParamsJSON = metadata.toJSON()
         authorization?.let {
             if (it is ClientToken) {
-                batchParamsJSON.put(AUTHORIZATION_FINGERPRINT_KEY, it.bearer)
+                batchParamsJSON.put(FPTI_KEY_AUTH_FINGERPRINT, it.bearer)
             } else {
-                batchParamsJSON.put(TOKENIZATION_KEY, it.bearer)
+                batchParamsJSON.put(FPTI_KEY_TOKENIZATION_KEY, it.bearer)
             }
         }
 
         val eventsContainerJSON = JSONObject()
-        eventsContainerJSON.put(BATCH_PARAMS_KEY, batchParamsJSON)
+        eventsContainerJSON.put(FPTI_KEY_BATCH_PARAMS, batchParamsJSON)
 
         val eventParamsJSON = JSONArray()
         for (analyticsBlob in blobs) {
             eventParamsJSON.put(JSONObject(analyticsBlob.json))
         }
-        eventsContainerJSON.put(EVENT_PARAMS_KEY, eventParamsJSON)
+        eventsContainerJSON.put(FPTI_KEY_EVENT_PARAMS, eventParamsJSON)
 
         // Single-element "events" array required by FPTI formatting
         val eventsArray = JSONArray(arrayOf(eventsContainerJSON))
-        return JSONObject().put(EVENTS_CONTAINER_KEY, eventsArray)
+        return JSONObject().put(FPTI_KEY_EVENTS, eventsArray)
     }
 
     private fun mapAnalyticsEventToFPTIEventJSON(event: AnalyticsEvent): String {
         val json = JSONObject()
-            .put(EVENT_NAME_KEY, "android.${event.name}")
-            .putOpt(PAYPAL_CONTEXT_ID_KEY, event.payPalContextId)
-            .putOpt(LINK_TYPE_KEY, event.linkType)
-            .put(TIMESTAMP_KEY, event.timestamp)
-            .put(VENMO_INSTALLED_KEY, event.venmoInstalled)
-            .put(IS_VAULT_REQUEST_KEY, event.isVaultRequest)
-            .put(TENANT_NAME_KEY, "Braintree")
+            .put(FPTI_KEY_EVENT_NAME, "android.${event.name}")
+            .put(FPTI_KEY_TIMESTAMP, event.timestamp)
+            .put(FPTI_KEY_VENMO_INSTALLED, event.venmoInstalled)
+            .put(FPTI_KEY_IS_VAULT, event.isVaultRequest)
+            .put(FPTI_KEY_TENANT_NAME, "Braintree")
+            .putOpt(FPTI_KEY_PAYPAL_CONTEXT_ID, event.payPalContextId)
+            .putOpt(FPTI_KEY_LINK_TYPE, event.linkType)
         return json.toString()
     }
 
     companion object {
         private const val FPTI_ANALYTICS_URL = "https://api-m.paypal.com/v1/tracking/batch/events"
-        private const val PAYPAL_CONTEXT_ID_KEY = "paypal_context_id"
-        private const val VENMO_INSTALLED_KEY = "venmo_installed"
-        private const val IS_VAULT_REQUEST_KEY = "is_vault"
-        private const val LINK_TYPE_KEY = "link_type"
-        private const val TOKENIZATION_KEY = "tokenization_key"
-        private const val AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint"
-        private const val EVENTS_CONTAINER_KEY = "events"
-        private const val BATCH_PARAMS_KEY = "batch_params"
-        private const val EVENT_PARAMS_KEY = "event_params"
-        private const val EVENT_NAME_KEY = "event_name"
-        private const val TIMESTAMP_KEY = "t"
-        private const val TENANT_NAME_KEY = "tenant_name"
+
+        private const val FPTI_KEY_PAYPAL_CONTEXT_ID = "paypal_context_id"
+        private const val FPTI_KEY_VENMO_INSTALLED = "venmo_installed"
+        private const val FPTI_KEY_IS_VAULT = "is_vault"
+        private const val FPTI_KEY_LINK_TYPE = "link_type"
+        private const val FPTI_KEY_TOKENIZATION_KEY = "tokenization_key"
+        private const val FPTI_KEY_AUTH_FINGERPRINT = "authorization_fingerprint"
+        private const val FPTI_KEY_EVENTS = "events"
+        private const val FPTI_KEY_BATCH_PARAMS = "batch_params"
+        private const val FPTI_KEY_EVENT_PARAMS = "event_params"
+        private const val FPTI_KEY_EVENT_NAME = "event_name"
+        private const val FPTI_KEY_TIMESTAMP = "t"
+        private const val FPTI_KEY_TENANT_NAME = "tenant_name"
 
         const val WORK_NAME_ANALYTICS_UPLOAD = "uploadAnalytics"
         const val WORK_NAME_ANALYTICS_WRITE = "writeAnalyticsToDb"
