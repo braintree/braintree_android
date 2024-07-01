@@ -148,9 +148,9 @@ class PayPalNativeCheckoutAccount extends PaymentMethod {
      * Deprecated. Use PayPal module instead.
      * @hide
      */
+    @Deprecated
     @Override
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    @Deprecated
     public String getApiPath() {
         return "paypal_accounts";
     }
