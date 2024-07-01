@@ -189,8 +189,6 @@ class AnalyticsClientUnitTest {
         val json = JSONObject().put("fake", "json").toString()
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_ANALYTICS_JSON, json)
-            .putString(AnalyticsClient.WORK_INPUT_KEY_PAYPAL_CONTEXT_ID, payPalContextId)
-            .putLong(AnalyticsClient.WORK_INPUT_KEY_TIMESTAMP, timestamp)
             .build()
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)

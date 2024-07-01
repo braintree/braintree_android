@@ -226,26 +226,22 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         private const val LINK_TYPE_KEY = "link_type"
         private const val TOKENIZATION_KEY = "tokenization_key"
         private const val AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint"
-        private const val INVALID_TIMESTAMP: Long = -1
         private const val EVENTS_CONTAINER_KEY = "events"
         private const val BATCH_PARAMS_KEY = "batch_params"
         private const val EVENT_PARAMS_KEY = "event_params"
         private const val EVENT_NAME_KEY = "event_name"
         private const val TIMESTAMP_KEY = "t"
         private const val TENANT_NAME_KEY = "tenant_name"
+
         const val WORK_NAME_ANALYTICS_UPLOAD = "uploadAnalytics"
         const val WORK_NAME_ANALYTICS_WRITE = "writeAnalyticsToDb"
+
         const val WORK_INPUT_KEY_AUTHORIZATION = "authorization"
         const val WORK_INPUT_KEY_CONFIGURATION = "configuration"
-        const val WORK_INPUT_KEY_EVENT_NAME = "eventName"
         const val WORK_INPUT_KEY_INTEGRATION = "integration"
         const val WORK_INPUT_KEY_SESSION_ID = "sessionId"
-        const val WORK_INPUT_KEY_TIMESTAMP = "timestamp"
-        const val WORK_INPUT_KEY_PAYPAL_CONTEXT_ID = "payPalContextId"
-        const val WORK_INPUT_KEY_VENMO_INSTALLED = "venmoInstalled"
-        const val WORK_INPUT_KEY_IS_VAULT_REQUEST = "isVaultRequest"
-        const val WORK_INPUT_KEY_LINK_TYPE = "linkType"
         const val WORK_INPUT_KEY_ANALYTICS_JSON = "analyticsJson"
+
         private const val DELAY_TIME_SECONDS = 30L
 
         private fun getAuthorizationFromData(inputData: Data?): Authorization? =
