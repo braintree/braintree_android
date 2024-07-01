@@ -205,6 +205,11 @@ public class ThreeDSecureClient {
                                 .put("clientMetadata", new JSONObject()
                                         .put("requestedThreeDSecureVersion", "2")
                                         .put("sdkVersion", "Android/" + BuildConfig.VERSION_NAME));
+                        if (request.getCustomFields() != null) {
+                            JSOBJECT customFieldsJSON = new JSONObject(request.getCustomFields());
+                            lookupJSON
+                                    .put("customFields", customFieldsJSON);
+                        }
                     } catch (JSONException ignored) {
                     }
 

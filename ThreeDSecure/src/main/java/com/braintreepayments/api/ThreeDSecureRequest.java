@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 /**
@@ -57,7 +58,7 @@ public class ThreeDSecureRequest implements Parcelable {
 
     private String nonce;
     private String amount;
-    private HashMap<String,Object> customFields;
+    private Map<String,Object> customFields;
     private String mobilePhoneNumber;
     private String email;
     private @ThreeDSecureShippingMethod int shippingMethod;
@@ -89,7 +90,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param customFields /// Object where each key is the name of a custom field which has been configured in the Control Panel. In the Control Panel you can configure 3D Secure Rules which trigger on certain values.
      */
-    public void setCustomFields(@Nullable HashMap<String, Object> customFields) {
+    public void setCustomFields(@Nullable Map<String, Object> customFields) {
         this.customFields = customFields;
     }
 
