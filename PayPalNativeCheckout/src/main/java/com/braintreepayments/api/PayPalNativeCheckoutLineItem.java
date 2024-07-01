@@ -13,6 +13,10 @@ import org.json.JSONObject;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Deprecated. Use PayPal module instead.
+ */
+@Deprecated
 public class PayPalNativeCheckoutLineItem implements Parcelable {
 
     /**
@@ -26,7 +30,9 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
     @interface PayPalLineItemKind {
     }
 
+    @Deprecated
     public static final String KIND_CREDIT = "credit";
+    @Deprecated
     public static final String KIND_DEBIT = "debit";
 
     /**
@@ -37,12 +43,19 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
     @interface PayPalLineItemUpcType {
     }
 
+    @Deprecated
     public static final String UPC_TYPE_A = "UPC-A";
+    @Deprecated
     public static final String UPC_TYPE_B = "UPC-B";
+    @Deprecated
     public static final String UPC_TYPE_C = "UPC-C";
+    @Deprecated
     public static final String UPC_TYPE_D = "UPC-D";
+    @Deprecated
     public static final String UPC_TYPE_E = "UPC-E";
+    @Deprecated
     public static final String UPC_TYPE_2 = "UPC-2";
+    @Deprecated
     public static final String UPC_TYPE_5 = "UPC-5";
 
     private static final String DESCRIPTION_KEY = "description";
@@ -70,6 +83,7 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
     private String url;
 
     /**
+     * Deprecated. Use PayPal module instead.
      * Constructs a line item for PayPal checkout flows. All parameters are required.
      *
      * @param kind       The {@link PayPalLineItemKind} kind.
@@ -77,6 +91,7 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
      * @param quantity   The quantity of the item.
      * @param unitAmount The unit amount.
      */
+    @Deprecated
     public PayPalNativeCheckoutLineItem(@NonNull @PayPalLineItemKind String kind,
                                         @NonNull String name,
                                         @NonNull String quantity,
@@ -88,19 +103,23 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * Item description. Maximum 127 characters.
      *
      * @param description The description to display.
      */
+   @Deprecated
     public void setDescription(@NonNull String description) {
         this.description = description;
     }
 
     /**
      * The image URL to product information.
+     * Deprecated. Use PayPal module instead.
      *
      * @param imageUrl The image URL with additional information.
      */
+    @Deprecated
     public void setImageUrl(@Nullable String imageUrl) {
         this.imageUrl = imageUrl;
     }
@@ -108,8 +127,10 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
     /**
      * Indicates whether the line item is a debit (sale) or credit (refund) to the customer.
      *
+     * Deprecated. Use PayPal module instead.
      * @param kind The {@link PayPalLineItemKind} kind.
      */
+    @Deprecated
     public void setKind(@NonNull @PayPalLineItemKind String kind) {
         this.kind = kind;
     }
@@ -117,8 +138,10 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
     /**
      * Item name. Maximum 127 characters.
      *
+     * Deprecated. Use PayPal module instead.
      * @param name The name to display
      */
+    @Deprecated
     public void setName(@NonNull String name) {
         this.name = name;
     }
@@ -126,8 +149,10 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
     /**
      * Product or UPC code for the item. Maximum 127 characters.
      *
+     * Deprecated. Use PayPal module instead.
      * @param productCode The product code.
      */
+    @Deprecated
     public void setProductCode(@NonNull String productCode) {
         this.productCode = productCode;
     }
@@ -135,8 +160,10 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
     /**
      * Number of units of the item purchased. This value must be a whole number and can't be negative or zero.
      *
+     * Deprecated. Use PayPal module instead.
      * @param quantity The quantity.
      */
+    @Deprecated
     public void setQuantity(@NonNull String quantity) {
         this.quantity = quantity;
     }
@@ -151,10 +178,12 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * Per-unit tax price of the item. Can include up to 2 decimal places. This value can't be negative or zero.
      *
      * @param unitTaxAmount The unit tax amount.
      */
+    @Deprecated
     public void setUnitTaxAmount(@NonNull String unitTaxAmount) {
         this.unitTaxAmount = unitTaxAmount;
     }
@@ -162,87 +191,105 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
     /**
      * UPC code of the item.
      *
+     * Deprecated. Use PayPal module instead.
      * @param upcCode The UPC code.
      */
+    @Deprecated
     public void setUpcCode(@Nullable String upcCode) {
         this.upcCode = upcCode;
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * UPC type of the item.
      *
      * @param upcType The UPC type.
      */
+    @Deprecated
     public void setUpcType(@Nullable @PayPalLineItemUpcType String upcType) {
         this.upcType = upcType;
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * The URL to product information.
      *
      * @param url The URL with additional information.
      */
+    @Deprecated
     public void setUrl(@NonNull String url) {
         this.url = url;
     }
 
+    @Deprecated
     @Nullable
     public String getDescription() {
         return description;
     }
 
+    @Deprecated
     @Nullable
     public String getImageUrl() {
         return imageUrl;
     }
 
+    @Deprecated
     @PayPalLineItemKind
     @Nullable
     public String getKind() {
         return kind;
     }
 
+    @Deprecated
     @Nullable
     public String getName() {
         return name;
     }
 
+   @Deprecated
     @Nullable
     public String getProductCode() {
         return productCode;
     }
 
+    @Deprecated
     @Nullable
     public String getQuantity() {
         return quantity;
     }
 
+    @Deprecated
     @Nullable
     public String getUnitAmount() {
         return unitAmount;
     }
 
+    @Deprecated
     @Nullable
     public String getUnitTaxAmount() {
         return unitTaxAmount;
     }
 
+    @Deprecated
     @Nullable
     public String getUpcCode() {
         return upcCode;
     }
 
+    @Deprecated
     @PayPalLineItemUpcType
     @Nullable
     public String getUpcType() {
         return upcType;
     }
 
+    @Deprecated
     @Nullable
     public String getUrl() {
         return url;
     }
 
+    @Deprecated
     public JSONObject toJson() {
         try {
             return new JSONObject()
@@ -277,23 +324,28 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
         url = in.readString();
     }
 
+    @Deprecated
     public static final Creator<PayPalNativeCheckoutLineItem> CREATOR = new Creator<PayPalNativeCheckoutLineItem>() {
+        @Deprecated
         @Override
         public PayPalNativeCheckoutLineItem createFromParcel(Parcel in) {
             return new PayPalNativeCheckoutLineItem(in);
         }
 
+        @Deprecated
         @Override
         public PayPalNativeCheckoutLineItem[] newArray(int size) {
             return new PayPalNativeCheckoutLineItem[size];
         }
     };
 
+    @Deprecated
     @Override
     public int describeContents() {
         return 0;
     }
 
+    @Deprecated
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(description);

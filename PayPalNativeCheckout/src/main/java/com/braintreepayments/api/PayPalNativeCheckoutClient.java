@@ -19,9 +19,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * Deprecated. Use PayPal module instead.
  * Used to tokenize PayPal accounts. For more information see the
  * <a href="https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4">documentation</a>
  */
+@Deprecated
 public class PayPalNativeCheckoutClient {
 
     private final BraintreeClient braintreeClient;
@@ -36,6 +38,7 @@ public class PayPalNativeCheckoutClient {
     private String payPalContextId = null;
 
     /**
+     * Deprecated. Use PayPal module instead.
      * @param fragment        a {@link Fragment
      * @param braintreeClient a {@link BraintreeClient}
      * @deprecated see {@link PayPalNativeCheckoutClient#PayPalNativeCheckoutClient(BraintreeClient)}
@@ -48,10 +51,12 @@ public class PayPalNativeCheckoutClient {
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * Create a new instance of {@link PayPalNativeCheckoutClient} using a {@link BraintreeClient}.
      *
      * @param braintreeClient a {@link BraintreeClient}
      */
+   @Deprecated
     public PayPalNativeCheckoutClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new PayPalNativeCheckoutInternalClient(braintreeClient));
     }
@@ -63,12 +68,14 @@ public class PayPalNativeCheckoutClient {
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * Add a {@link PayPalNativeCheckoutListener} to your client to receive results or errors from the PayPal flow.
      * This method must be invoked on a {@link PayPalNativeCheckoutClient (Fragment, BraintreeClient)} or
      * {@link PayPalNativeCheckoutClient (FragmentActivity, BraintreeClient)} in order to receive results.
      *
      * @param listener a {@link PayPalNativeCheckoutListener}
      */
+    @Deprecated
     public void setListener(PayPalNativeCheckoutListener listener) {
         this.listener = listener;
     }
@@ -108,6 +115,7 @@ public class PayPalNativeCheckoutClient {
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * Tokenize a PayPal account for vault or checkout.
      * <p>
      * This method must be invoked on a {@link PayPalNativeCheckoutClient (Fragment, BraintreeClient)} or
@@ -116,6 +124,7 @@ public class PayPalNativeCheckoutClient {
      * @param activity      Android FragmentActivity
      * @param payPalRequest a {@link PayPalNativeRequest} used to customize the request.
      */
+    @Deprecated
     public void launchNativeCheckout(@NonNull final FragmentActivity activity, @NonNull final PayPalNativeRequest payPalRequest) {
         braintreeClient.sendAnalyticsEvent(
                 "paypal-native.tokenize.started",

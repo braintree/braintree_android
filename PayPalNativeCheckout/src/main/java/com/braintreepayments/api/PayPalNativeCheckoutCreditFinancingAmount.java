@@ -8,8 +8,10 @@ import androidx.annotation.Nullable;
 import org.json.JSONObject;
 
 /**
+ * Deprecated. Use PayPal module instead.
  * The currency and amount in a PayPal credit financing response
  */
+@Deprecated
 public class PayPalNativeCheckoutCreditFinancingAmount implements Parcelable {
 
     private static final String CURRENCY_KEY = "currency";
@@ -34,31 +36,38 @@ public class PayPalNativeCheckoutCreditFinancingAmount implements Parcelable {
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * @return 3 letter currency code as defined by <a href="http://www.iso.org/iso/home/standards/currency_codes.htm">ISO 4217</a>.
      */
+   @Deprecated
     @Nullable
     public String getCurrency() {
         return currency;
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * @return An amount defined by <a href="http://www.iso.org/iso/home/standards/currency_codes.htm">ISO 4217</a> for the given currency.
      */
+   @Deprecated
     @Nullable
     public String getValue() {
         return value;
     }
 
+    @Deprecated
     @Override
     public String toString() {
         return String.format("%s %s", value, currency);
     }
 
+    @Deprecated
     @Override
     public int describeContents() {
         return 0;
     }
 
+    @Deprecated
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(currency);
@@ -70,11 +79,14 @@ public class PayPalNativeCheckoutCreditFinancingAmount implements Parcelable {
         value = in.readString();
     }
 
+    @Deprecated
     public static final Creator<PayPalNativeCheckoutCreditFinancingAmount> CREATOR = new Creator<PayPalNativeCheckoutCreditFinancingAmount>() {
-        public PayPalNativeCheckoutCreditFinancingAmount createFromParcel(Parcel source) {
+        @Deprecated
+       public PayPalNativeCheckoutCreditFinancingAmount createFromParcel(Parcel source) {
             return new PayPalNativeCheckoutCreditFinancingAmount(source);
         }
 
+        @Deprecated
         public PayPalNativeCheckoutCreditFinancingAmount[] newArray(int size) {
             return new PayPalNativeCheckoutCreditFinancingAmount[size];
         }

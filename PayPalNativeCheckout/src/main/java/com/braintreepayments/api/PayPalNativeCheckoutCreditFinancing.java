@@ -9,8 +9,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * Deprecated. Use PayPal module instead.
  * Represents the PayPal credit financing response.
  */
+@Deprecated
 public class PayPalNativeCheckoutCreditFinancing implements Parcelable {
 
     private static final String CARD_AMOUNT_IMMUTABLE_KEY = "cardAmountImmutable";
@@ -47,43 +49,54 @@ public class PayPalNativeCheckoutCreditFinancing implements Parcelable {
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * @return Length of financing terms in months.
      */
+    @Deprecated
     public int getTerm() {
         return term;
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * @return Indicates whether the card amount is editable after payer's acceptance on PayPal side.
      */
+    @Deprecated
     public boolean isCardAmountImmutable() {
         return cardAmountImmutable;
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * @return Estimated amount per month that the customer will need to pay including fees and interest.
      */
+    @Deprecated
     @NonNull
     public PayPalNativeCheckoutCreditFinancingAmount getMonthlyPayment() {
         return monthlyPayment;
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * @return Status of whether the customer ultimately was approved for and chose to make the payment using the approved installment credit.
      */
+    @Deprecated
     public boolean hasPayerAcceptance() {
         return payerAcceptance;
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * @return Estimated total payment amount including interest and fees the user will pay during the lifetime of the loan.
      */
+   @Deprecated
     @NonNull
     public PayPalNativeCheckoutCreditFinancingAmount getTotalCost() {
         return totalCost;
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * @return Estimated interest or fees amount the payer will have to pay during the lifetime of the loan.
      */
     @NonNull
@@ -91,11 +104,13 @@ public class PayPalNativeCheckoutCreditFinancing implements Parcelable {
         return totalInterest;
     }
 
+    @Deprecated
     @Override
     public int describeContents() {
         return 0;
     }
 
+   @Deprecated
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte(cardAmountImmutable ? (byte) 1:0);
@@ -115,11 +130,13 @@ public class PayPalNativeCheckoutCreditFinancing implements Parcelable {
         totalInterest = in.readParcelable(PayPalNativeCheckoutCreditFinancingAmount.class.getClassLoader());
     }
 
+   @Deprecated
     public static final Creator<PayPalNativeCheckoutCreditFinancing> CREATOR = new Creator<PayPalNativeCheckoutCreditFinancing>() {
         public PayPalNativeCheckoutCreditFinancing createFromParcel(Parcel source) {
             return new PayPalNativeCheckoutCreditFinancing(source);
         }
 
+       @Deprecated
         public PayPalNativeCheckoutCreditFinancing[] newArray(int size) {
             return new PayPalNativeCheckoutCreditFinancing[size];
         }

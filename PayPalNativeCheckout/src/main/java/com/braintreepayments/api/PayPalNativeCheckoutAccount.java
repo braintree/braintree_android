@@ -10,8 +10,10 @@ import org.json.JSONObject;
 import java.util.Iterator;
 
 /**
+ * Deprecated. Use PayPal module instead
  * Use to construct a PayPal account tokenization request
  */
+@Deprecated
 class PayPalNativeCheckoutAccount extends PaymentMethod {
 
     private static final String PAYPAL_ACCOUNT_KEY = "paypalAccount";
@@ -121,28 +123,34 @@ class PayPalNativeCheckoutAccount extends PaymentMethod {
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * Grabs the client meta data id
      *
      * @return clientMetadataId
      */
+    @Deprecated
     public String getClientMetadataId() {
         return clientMetadataId;
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * Grabs the mechant id associated with the account
      *
      * @return merchant id
      */
+   @Deprecated
     public String getMerchantAccountId() {
         return merchantAccountId;
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * @hide
      */
     @Override
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    @Deprecated
     public String getApiPath() {
         return "paypal_accounts";
     }
