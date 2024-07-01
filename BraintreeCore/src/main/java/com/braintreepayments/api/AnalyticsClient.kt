@@ -107,13 +107,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 val analyticsBlobDao = analyticsDatabase.analyticsEventBlobDao()
                 val blobs = analyticsBlobDao.getAllBlobs()
                 if (blobs.isNotEmpty()) {
-                    val metadata = deviceInspector.getDeviceMetadata(
-                        applicationContext,
-                        configuration,
-                        sessionId,
-                        integration
-                    )
-                    val analyticsRequest = createFPTIPayload(authorization, blobs, metadata)
+                    val analyticsRequest =
+                        createFPTIPayload(blobs, authorization, configuration, sessionId, integration)
                     httpClient.post(
                         FPTI_ANALYTICS_URL,
                         analyticsRequest.toString(),
@@ -158,14 +153,13 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         if (authorization == null) {
             return
         }
-        val metadata =
-            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         val event = AnalyticsEvent(name = "crash", timestamp = timestamp)
         val eventJSON = mapAnalyticsEventToFPTIEventJSON(event)
         val eventBlob = AnalyticsEventBlob(eventJSON)
         val blobs = listOf(eventBlob)
         try {
-            val analyticsRequest = createFPTIPayload(authorization, blobs, metadata)
+            val analyticsRequest =
+                createFPTIPayload(blobs, authorization, configuration, sessionId, integration)
             httpClient.post(
                 path = FPTI_ANALYTICS_URL,
                 data = analyticsRequest.toString(),
@@ -179,10 +173,18 @@ internal class AnalyticsClient @VisibleForTesting constructor(
 
     @Throws(JSONException::class)
     private fun createFPTIPayload(
-        authorization: Authorization?,
         blobs: List<AnalyticsEventBlob>,
-        metadata: DeviceMetadata
+        authorization: Authorization?,
+        configuration: Configuration?,
+        sessionId: String?,
+        integrationType: String?
     ): JSONObject {
+        val metadata = deviceInspector.getDeviceMetadata(
+            applicationContext,
+            configuration,
+            sessionId,
+            integrationType
+        )
         val batchParamsJSON = mapDeviceMetadataToFPTIBatchJSON(metadata)
         authorization?.let {
             if (it is ClientToken) {
