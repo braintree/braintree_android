@@ -205,7 +205,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         return JSONObject().put(EVENTS_CONTAINER_KEY, eventsArray)
     }
 
-    private fun serializeAnalyticsEventToString(event: AnalyticsEvent) : String {
+    private fun serializeAnalyticsEventToString(event: AnalyticsEvent): String {
         val json = JSONObject()
             .put(EVENT_NAME_KEY, "android.${event.name}")
             .putOpt(PAYPAL_CONTEXT_ID_KEY, event.payPalContextId)
