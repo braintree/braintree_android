@@ -310,6 +310,11 @@ public class ThreeDSecureRequest implements Parcelable {
         return email;
     }
 
+    @Nullable
+    public Map<String, Object> getCustomFields() {
+        return customFields;
+    }
+
     /**
      * @return The shipping method to use for 3D Secure verification
      */

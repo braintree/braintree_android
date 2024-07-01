@@ -206,7 +206,7 @@ public class ThreeDSecureClient {
                                         .put("requestedThreeDSecureVersion", "2")
                                         .put("sdkVersion", "Android/" + BuildConfig.VERSION_NAME));
                         if (request.getCustomFields() != null) {
-                            JSOBJECT customFieldsJSON = new JSONObject(request.getCustomFields());
+                            JSONObject customFieldsJSON = new JSONObject(request.getCustomFields());
                             lookupJSON
                                     .put("customFields", customFieldsJSON);
                         }
