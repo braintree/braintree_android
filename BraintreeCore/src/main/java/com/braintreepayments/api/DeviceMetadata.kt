@@ -4,7 +4,7 @@ internal class DeviceMetadata internal constructor(
     var appId: String? = null,
     var appName: String? = null,
     var clientSDKVersion: String? = null,
-    var clientOs: String? = null,
+    var clientOS: String? = null,
     var component: String? = null,
     var deviceManufacturer: String? = null,
     var deviceModel: String? = null,

@@ -22,14 +22,12 @@ class DeviceInspector @VisibleForTesting internal constructor(
         SignatureVerifier(),
     )
 
-    internal fun getDeviceMetadata(
-        context: Context?
-    ): DeviceMetadata {
+    internal fun getDeviceMetadata(context: Context): DeviceMetadata {
         return DeviceMetadata(
             appId = context?.packageName,
             appName = getAppName(context),
             clientSDKVersion = BuildConfig.VERSION_NAME,
-            clientOs = getAPIVersion(),
+            clientOS = getAPIVersion(),
             component = "braintreeclientsdk",
             deviceManufacturer = Build.MANUFACTURER,
             deviceModel = Build.MODEL,

@@ -226,7 +226,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         .put(BATCH_KEY_APP_ID, deviceMetadata.appId)
         .put(BATCH_KEY_APP_NAME, deviceMetadata.appName)
         .put(BATCH_KEY_CLIENT_SDK_VERSION, deviceMetadata.clientSDKVersion)
-        .put(BATCH_KEY_CLIENT_OS, deviceMetadata.clientOs)
+        .put(BATCH_KEY_CLIENT_OS, deviceMetadata.clientOS)
         .put(BATCH_KEY_COMPONENT, deviceMetadata.component)
         .put(BATCH_KEY_DEVICE_MANUFACTURER, deviceMetadata.deviceManufacturer)
         .put(BATCH_KEY_DEVICE_MODEL, deviceMetadata.deviceModel)

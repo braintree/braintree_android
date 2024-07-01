@@ -525,7 +525,7 @@ class AnalyticsClientUnitTest {
             appId = "fake-app-id",
             appName = "fake-app-name",
             clientSDKVersion = "fake-sdk-version",
-            clientOs = "fake-os",
+            clientOS = "fake-os",
             component = "fake-component",
             deviceManufacturer = "fake-device-manufacturer",
             deviceModel = "fake-mobile-device-model",
