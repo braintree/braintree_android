@@ -183,7 +183,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         blobs: List<AnalyticsEventBlob>,
         metadata: DeviceMetadata
     ): JSONObject {
-        val batchParamsJSON = metadata.toJSON()
+        val batchParamsJSON = mapDeviceMetadataToFPTIBatchJSON(metadata)
         authorization?.let {
             if (it is ClientToken) {
                 batchParamsJSON.put(FPTI_KEY_AUTH_FINGERPRINT, it.bearer)
@@ -218,6 +218,27 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         return json.toString()
     }
 
+    @Throws(JSONException::class)
+    fun mapDeviceMetadataToFPTIBatchJSON(deviceMetadata: DeviceMetadata): JSONObject {
+        return JSONObject()
+            .put(BATCH_KEY_APP_ID, deviceMetadata.appId)
+            .put(BATCH_KEY_APP_NAME, deviceMetadata.appName)
+            .put(BATCH_KEY_CLIENT_SDK_VERSION, deviceMetadata.clientSDKVersion)
+            .put(BATCH_KEY_CLIENT_OS, deviceMetadata.clientOs)
+            .put(BATCH_KEY_COMPONENT, deviceMetadata.component)
+            .put(BATCH_KEY_DEVICE_MANUFACTURER, deviceMetadata.deviceManufacturer)
+            .put(BATCH_KEY_DEVICE_MODEL, deviceMetadata.deviceModel)
+            .put(BATCH_KEY_DROP_IN_SDK_VERSION, deviceMetadata.dropInSDKVersion)
+            .put(BATCH_KEY_EVENT_SOURCE, deviceMetadata.eventSource)
+            .put(BATCH_KEY_ENVIRONMENT, deviceMetadata.environment)
+            .put(BATCH_KEY_INTEGRATION_TYPE, deviceMetadata.integrationType)
+            .put(BATCH_KEY_IS_SIMULATOR, deviceMetadata.isSimulator)
+            .put(BATCH_KEY_MERCHANT_APP_VERSION, deviceMetadata.merchantAppVersion)
+            .put(BATCH_KEY_MERCHANT_ID, deviceMetadata.merchantId)
+            .put(BATCH_KEY_PLATFORM, deviceMetadata.platform)
+            .put(BATCH_KEY_SESSION_ID, deviceMetadata.sessionId)
+    }
+
     companion object {
         private const val FPTI_ANALYTICS_URL = "https://api-m.paypal.com/v1/tracking/batch/events"
 
@@ -233,6 +254,23 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         private const val FPTI_KEY_EVENT_NAME = "event_name"
         private const val FPTI_KEY_TIMESTAMP = "t"
         private const val FPTI_KEY_TENANT_NAME = "tenant_name"
+
+        private const val BATCH_KEY_APP_ID = "app_id"
+        private const val BATCH_KEY_APP_NAME = "app_name"
+        private const val BATCH_KEY_CLIENT_SDK_VERSION = "c_sdk_ver"
+        private const val BATCH_KEY_CLIENT_OS = "client_os"
+        private const val BATCH_KEY_COMPONENT = "comp"
+        private const val BATCH_KEY_DEVICE_MANUFACTURER = "device_manufacturer"
+        private const val BATCH_KEY_DEVICE_MODEL = "mobile_device_model"
+        private const val BATCH_KEY_DROP_IN_SDK_VERSION = "drop_in_sdk_ver"
+        private const val BATCH_KEY_EVENT_SOURCE = "event_source"
+        private const val BATCH_KEY_ENVIRONMENT = "merchant_sdk_env"
+        private const val BATCH_KEY_INTEGRATION_TYPE = "api_integration_type"
+        private const val BATCH_KEY_IS_SIMULATOR = "is_simulator"
+        private const val BATCH_KEY_MERCHANT_APP_VERSION = "mapv"
+        private const val BATCH_KEY_MERCHANT_ID = "merchant_id"
+        private const val BATCH_KEY_PLATFORM = "platform"
+        private const val BATCH_KEY_SESSION_ID = "session_id"
 
         const val WORK_NAME_ANALYTICS_UPLOAD = "uploadAnalytics"
         const val WORK_NAME_ANALYTICS_WRITE = "writeAnalyticsToDb"
