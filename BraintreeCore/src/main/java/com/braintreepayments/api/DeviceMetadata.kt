@@ -9,12 +9,8 @@ internal class DeviceMetadata internal constructor(
     var deviceManufacturer: String? = null,
     var deviceModel: String? = null,
     var dropInSDKVersion: String? = null,
-    var environment: String? = null,
     var eventSource: String? = null,
-    var integrationType: String? = null,
     var isSimulator: Boolean = false,
     var merchantAppVersion: String? = null,
-    var merchantId: String? = null,
     var platform: String? = null,
-    var sessionId: String? = null,
 )

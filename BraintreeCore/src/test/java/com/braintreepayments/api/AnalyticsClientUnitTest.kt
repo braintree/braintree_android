@@ -227,7 +227,7 @@ class AnalyticsClientUnitTest {
         val metadata = createSampleDeviceMetadata()
 
         every {
-            deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
+            deviceInspector.getDeviceMetadata(context)
         } returns metadata
 
         val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
@@ -328,7 +328,7 @@ class AnalyticsClientUnitTest {
             .build()
 
         every {
-            deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
+            deviceInspector.getDeviceMetadata(context)
         } returns createSampleDeviceMetadata()
 
         val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
@@ -397,7 +397,7 @@ class AnalyticsClientUnitTest {
 
         val metadata = createSampleDeviceMetadata()
         every {
-            deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
+            deviceInspector.getDeviceMetadata(context)
         } returns metadata
 
         val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
@@ -422,7 +422,7 @@ class AnalyticsClientUnitTest {
             .build()
 
         every {
-            deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
+            deviceInspector.getDeviceMetadata(context)
         } returns createSampleDeviceMetadata()
 
         val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
@@ -443,7 +443,7 @@ class AnalyticsClientUnitTest {
     fun reportCrash_sendsCrashAnalyticsEvent() {
         val metadata = createSampleDeviceMetadata()
         every {
-            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
+            deviceInspector.getDeviceMetadata(context)
         } returns metadata
 
         val analyticsJSONSlot = slot<String>()
@@ -506,7 +506,7 @@ class AnalyticsClientUnitTest {
     fun reportCrash_whenAuthorizationIsNull_doesNothing() {
         val metadata = createSampleDeviceMetadata()
         every {
-            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
+            deviceInspector.getDeviceMetadata(context)
         } returns metadata
 
         val sut =
