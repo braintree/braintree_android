@@ -125,14 +125,12 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     }
 
     fun reportCrash(
-        context: Context?,
         configuration: Configuration?,
         sessionId: String?,
         integration: String?,
         authorization: Authorization?
     ) {
         reportCrash(
-            context,
             configuration,
             sessionId,
             integration,
@@ -143,7 +141,6 @@ internal class AnalyticsClient @VisibleForTesting constructor(
 
     @VisibleForTesting
     fun reportCrash(
-        context: Context?,
         configuration: Configuration?,
         sessionId: String?,
         integration: String?,

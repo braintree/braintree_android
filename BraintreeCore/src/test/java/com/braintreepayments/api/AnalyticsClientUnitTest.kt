@@ -459,7 +459,7 @@ class AnalyticsClientUnitTest {
 
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
-        sut.reportCrash(context, configuration, sessionId, integration, 123, authorization)
+        sut.reportCrash(configuration, sessionId, integration, 123, authorization)
 
         // language=JSON
         val expectedJSON = """
@@ -514,7 +514,7 @@ class AnalyticsClientUnitTest {
         val event = AnalyticsEvent(eventName)
         sut.sendEvent(configuration, event, sessionId, integration, authorization)
 
-        sut.reportCrash(context, configuration, sessionId, integration, 123, null)
+        sut.reportCrash(configuration, sessionId, integration, 123, null)
 
         // or confirmVerified(httpClient)
         verify { httpClient wasNot Called }

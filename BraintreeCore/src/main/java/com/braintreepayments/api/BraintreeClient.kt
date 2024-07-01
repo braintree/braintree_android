@@ -426,7 +426,6 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     fun reportCrash() = authorizationLoader.authorizationFromCache?.let { authorization ->
         getConfiguration { configuration, _ ->
             analyticsClient.reportCrash(
-                applicationContext,
                 configuration,
                 sessionId,
                 integrationType,
