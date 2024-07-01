@@ -15,7 +15,7 @@ open class AnalyticsWriteToDbWorker(
 ) : AnalyticsBaseWorker(context, params) {
 
     override fun doWork(): Result {
-        val analyticsClient = createAnalyticsClientFromInputData()
+        val analyticsClient = AnalyticsClient(applicationContext)
         return analyticsClient.writeAnalytics(inputData)
     }
 }

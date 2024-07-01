@@ -7,7 +7,6 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import com.braintreepayments.api.AnalyticsDatabase.Companion.getInstance
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -16,14 +15,16 @@ import java.util.concurrent.TimeUnit
 
 @Suppress("SwallowedException", "TooGenericExceptionCaught")
 internal class AnalyticsClient @VisibleForTesting constructor(
+    private val applicationContext: Context,
     private val httpClient: BraintreeHttpClient,
     private val analyticsDatabase: AnalyticsDatabase,
     private val workManager: WorkManager,
     private val deviceInspector: DeviceInspector
 ) {
     constructor(context: Context) : this(
+        context.applicationContext,
         BraintreeHttpClient(),
-        getInstance(context.applicationContext),
+        AnalyticsDatabase.getInstance(context.applicationContext),
         WorkManager.getInstance(context.applicationContext),
         DeviceInspector()
     )
@@ -92,7 +93,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         return analyticsWorkRequest.id
     }
 
-    fun uploadAnalytics(context: Context?, inputData: Data): ListenableWorker.Result {
+    fun uploadAnalytics(inputData: Data): ListenableWorker.Result {
         val configuration = getConfigurationFromData(inputData)
         val authorization = getAuthorizationFromData(inputData)
         val sessionId = inputData.getString(WORK_INPUT_KEY_SESSION_ID)
@@ -107,7 +108,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 val blobs = analyticsBlobDao.getAllBlobs()
                 if (blobs.isNotEmpty()) {
                     val metadata = deviceInspector.getDeviceMetadata(
-                        context,
+                        applicationContext,
                         configuration,
                         sessionId,
                         integration
