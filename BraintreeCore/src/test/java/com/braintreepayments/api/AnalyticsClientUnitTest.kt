@@ -230,7 +230,7 @@ class AnalyticsClientUnitTest {
         val metadata = createSampleDeviceMetadata()
 
         every {
-            deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
+            deviceInspector.getDeviceMetadata(context)
         } returns metadata
 
         val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
@@ -265,13 +265,13 @@ class AnalyticsClientUnitTest {
                 "device_manufacturer": "fake-device-manufacturer",
                 "mobile_device_model": "fake-mobile-device-model",
                 "event_source": "fake-event-source",
-                "merchant_sdk_env": "fake-environment",
-                "api_integration_type": "fake-integration",
+                "merchant_sdk_env": "test",
+                "api_integration_type": "sample-integration",
                 "is_simulator": false,
                 "mapv": "fake-merchant-app-version",
-                "merchant_id": "fake-merchant-id",
+                "merchant_id": "integration_merchant_id",
                 "platform": "fake-platform",
-                "session_id": "fake-session-id",
+                "session_id": "sample-session-id",
                 "tokenization_key": "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
               },
               "event_params": [
@@ -331,7 +331,7 @@ class AnalyticsClientUnitTest {
             .build()
 
         every {
-            deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
+            deviceInspector.getDeviceMetadata(context)
         } returns createSampleDeviceMetadata()
 
         val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
@@ -400,7 +400,7 @@ class AnalyticsClientUnitTest {
 
         val metadata = createSampleDeviceMetadata()
         every {
-            deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
+            deviceInspector.getDeviceMetadata(context)
         } returns metadata
 
         val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
@@ -425,7 +425,7 @@ class AnalyticsClientUnitTest {
             .build()
 
         every {
-            deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
+            deviceInspector.getDeviceMetadata(context)
         } returns createSampleDeviceMetadata()
 
         val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
@@ -446,7 +446,7 @@ class AnalyticsClientUnitTest {
     fun reportCrash_sendsCrashAnalyticsEvent() {
         val metadata = createSampleDeviceMetadata()
         every {
-            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
+            deviceInspector.getDeviceMetadata(context)
         } returns metadata
 
         val analyticsJSONSlot = slot<String>()
@@ -462,7 +462,7 @@ class AnalyticsClientUnitTest {
 
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
-        sut.reportCrash(context, configuration, sessionId, integration, 123, authorization)
+        sut.reportCrash(configuration, sessionId, integration, 123, authorization)
 
         // language=JSON
         val expectedJSON = """
@@ -478,13 +478,13 @@ class AnalyticsClientUnitTest {
                 "device_manufacturer": "fake-device-manufacturer",
                 "mobile_device_model": "fake-mobile-device-model",
                 "event_source": "fake-event-source",
-                "merchant_sdk_env": "fake-environment",
-                "api_integration_type": "fake-integration",
+                "merchant_sdk_env": "test",
+                "api_integration_type": "sample-integration",
                 "is_simulator": false,
                 "mapv": "fake-merchant-app-version",
-                "merchant_id": "fake-merchant-id",
+                "merchant_id": "integration_merchant_id",
                 "platform": "fake-platform",
-                "session_id": "fake-session-id",
+                "session_id": "sample-session-id",
                 "tokenization_key": "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
               },
               "event_params": [
@@ -509,7 +509,7 @@ class AnalyticsClientUnitTest {
     fun reportCrash_whenAuthorizationIsNull_doesNothing() {
         val metadata = createSampleDeviceMetadata()
         every {
-            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
+            deviceInspector.getDeviceMetadata(context)
         } returns metadata
 
         val sut =
@@ -517,7 +517,7 @@ class AnalyticsClientUnitTest {
         val event = AnalyticsEvent(eventName)
         sut.sendEvent(configuration, event, sessionId, integration, authorization)
 
-        sut.reportCrash(context, configuration, sessionId, integration, 123, null)
+        sut.reportCrash(configuration, sessionId, integration, 123, null)
 
         // or confirmVerified(httpClient)
         verify { httpClient wasNot Called }
@@ -528,18 +528,14 @@ class AnalyticsClientUnitTest {
             appId = "fake-app-id",
             appName = "fake-app-name",
             clientSDKVersion = "fake-sdk-version",
-            clientOs = "fake-os",
+            clientOS = "fake-os",
             component = "fake-component",
             deviceManufacturer = "fake-device-manufacturer",
             deviceModel = "fake-mobile-device-model",
-            environment = "fake-environment",
             eventSource = "fake-event-source",
-            integrationType = "fake-integration",
             isSimulator = false,
             merchantAppVersion = "fake-merchant-app-version",
-            merchantId = "fake-merchant-id",
             platform = "fake-platform",
-            sessionId = "fake-session-id"
         )
     }
 }

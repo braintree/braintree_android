@@ -43,10 +43,10 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     private fun scheduleAnalyticsWriteInBackground(
         event: AnalyticsEvent, authorization: Authorization
     ) {
-        val json = mapAnalyticsEventToFPTIEventJSON(event)
+        val eventParamsJSON = createFPTIEventParams(event)
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
-            .putString(WORK_INPUT_KEY_ANALYTICS_JSON, json)
+            .putString(WORK_INPUT_KEY_ANALYTICS_JSON, eventParamsJSON.toString())
             .build()
 
         val analyticsWorkRequest =
@@ -107,13 +107,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 val analyticsEventBlobDao = analyticsDatabase.analyticsEventBlobDao()
                 val eventBlobs = analyticsEventBlobDao.getAllEventBlobs()
                 if (eventBlobs.isNotEmpty()) {
-                    val metadata = deviceInspector.getDeviceMetadata(
-                        applicationContext,
-                        configuration,
-                        sessionId,
-                        integration
-                    )
-                    val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
+                    val analyticsRequest = createFPTIPayload(
+                        eventBlobs, authorization, configuration, sessionId, integration)
                     httpClient.post(
                         FPTI_ANALYTICS_URL,
                         analyticsRequest.toString(),
@@ -130,25 +125,17 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     }
 
     fun reportCrash(
-        context: Context?,
         configuration: Configuration?,
         sessionId: String?,
         integration: String?,
         authorization: Authorization?
     ) {
-        reportCrash(
-            context,
-            configuration,
-            sessionId,
-            integration,
-            System.currentTimeMillis(),
-            authorization
-        )
+        val timestamp = System.currentTimeMillis()
+        reportCrash(configuration, sessionId, integration, timestamp, authorization)
     }
 
     @VisibleForTesting
     fun reportCrash(
-        context: Context?,
         configuration: Configuration?,
         sessionId: String?,
         integration: String?,
@@ -158,13 +145,12 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         if (authorization == null) {
             return
         }
-        val metadata =
-            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         val event = AnalyticsEvent(name = "crash", timestamp = timestamp)
-        val eventJSON = mapAnalyticsEventToFPTIEventJSON(event)
-        val eventBlobs = listOf(AnalyticsEventBlob(eventJSON))
+        val eventJSON = createFPTIEventParams(event)
+        val eventBlobs = listOf(AnalyticsEventBlob(eventJSON.toString()))
         try {
-            val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
+            val analyticsRequest = createFPTIPayload(
+                eventBlobs, authorization, configuration, sessionId, integration)
             httpClient.post(
                 path = FPTI_ANALYTICS_URL,
                 data = analyticsRequest.toString(),
@@ -178,11 +164,15 @@ internal class AnalyticsClient @VisibleForTesting constructor(
 
     @Throws(JSONException::class)
     private fun createFPTIPayload(
-        authorization: Authorization?,
         eventBlobs: List<AnalyticsEventBlob>,
-        metadata: DeviceMetadata
+        authorization: Authorization?,
+        configuration: Configuration?,
+        sessionId: String?,
+        integrationType: String?
     ): JSONObject {
-        val batchParamsJSON = metadata.toJSON()
+        val metadata = deviceInspector.getDeviceMetadata(applicationContext)
+        val batchParamsJSON =
+            createFPTIBatchEventParams(metadata, configuration, sessionId, integrationType)
         authorization?.let {
             if (it is ClientToken) {
                 batchParamsJSON.put(FPTI_KEY_AUTH_FINGERPRINT, it.bearer)
@@ -205,8 +195,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         return JSONObject().put(FPTI_KEY_EVENTS, eventsArray)
     }
 
-    private fun mapAnalyticsEventToFPTIEventJSON(event: AnalyticsEvent): String {
-        val json = JSONObject()
+    private fun createFPTIEventParams(event: AnalyticsEvent) =
+        JSONObject()
             .put(FPTI_KEY_EVENT_NAME, "android.${event.name}")
             .put(FPTI_KEY_TIMESTAMP, event.timestamp)
             .put(FPTI_KEY_VENMO_INSTALLED, event.venmoInstalled)
@@ -217,8 +207,30 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             .putOpt(FPTI_KEY_START_TIME, event.startTime)
             .putOpt(FPTI_KEY_END_TIME, event.endTime)
             .putOpt(FPTI_KEY_ENDPOINT, event.endpoint)
-        return json.toString()
-    }
+
+    @Throws(JSONException::class)
+    private fun createFPTIBatchEventParams(
+        deviceMetadata: DeviceMetadata,
+        configuration: Configuration?,
+        sessionId: String?,
+        integrationType: String?
+    ): JSONObject = JSONObject()
+        .put(BATCH_KEY_APP_ID, deviceMetadata.appId)
+        .put(BATCH_KEY_APP_NAME, deviceMetadata.appName)
+        .put(BATCH_KEY_CLIENT_SDK_VERSION, deviceMetadata.clientSDKVersion)
+        .put(BATCH_KEY_CLIENT_OS, deviceMetadata.clientOS)
+        .put(BATCH_KEY_COMPONENT, deviceMetadata.component)
+        .put(BATCH_KEY_DEVICE_MANUFACTURER, deviceMetadata.deviceManufacturer)
+        .put(BATCH_KEY_DEVICE_MODEL, deviceMetadata.deviceModel)
+        .put(BATCH_KEY_DROP_IN_SDK_VERSION, deviceMetadata.dropInSDKVersion)
+        .put(BATCH_KEY_EVENT_SOURCE, deviceMetadata.eventSource)
+        .put(BATCH_KEY_ENVIRONMENT, configuration?.environment)
+        .put(BATCH_KEY_INTEGRATION_TYPE, integrationType)
+        .put(BATCH_KEY_IS_SIMULATOR, deviceMetadata.isSimulator)
+        .put(BATCH_KEY_MERCHANT_APP_VERSION, deviceMetadata.merchantAppVersion)
+        .put(BATCH_KEY_MERCHANT_ID, configuration?.merchantId)
+        .put(BATCH_KEY_PLATFORM, deviceMetadata.platform)
+        .put(BATCH_KEY_SESSION_ID, sessionId)
 
     companion object {
         private const val FPTI_ANALYTICS_URL = "https://api-m.paypal.com/v1/tracking/batch/events"
@@ -238,6 +250,23 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         private const val FPTI_KEY_START_TIME = "start_time"
         private const val FPTI_KEY_END_TIME = "end_time"
         private const val FPTI_KEY_ENDPOINT = "endpoint"
+
+        private const val BATCH_KEY_APP_ID = "app_id"
+        private const val BATCH_KEY_APP_NAME = "app_name"
+        private const val BATCH_KEY_CLIENT_SDK_VERSION = "c_sdk_ver"
+        private const val BATCH_KEY_CLIENT_OS = "client_os"
+        private const val BATCH_KEY_COMPONENT = "comp"
+        private const val BATCH_KEY_DEVICE_MANUFACTURER = "device_manufacturer"
+        private const val BATCH_KEY_DEVICE_MODEL = "mobile_device_model"
+        private const val BATCH_KEY_DROP_IN_SDK_VERSION = "drop_in_sdk_ver"
+        private const val BATCH_KEY_EVENT_SOURCE = "event_source"
+        private const val BATCH_KEY_ENVIRONMENT = "merchant_sdk_env"
+        private const val BATCH_KEY_INTEGRATION_TYPE = "api_integration_type"
+        private const val BATCH_KEY_IS_SIMULATOR = "is_simulator"
+        private const val BATCH_KEY_MERCHANT_APP_VERSION = "mapv"
+        private const val BATCH_KEY_MERCHANT_ID = "merchant_id"
+        private const val BATCH_KEY_PLATFORM = "platform"
+        private const val BATCH_KEY_SESSION_ID = "session_id"
 
         const val WORK_NAME_ANALYTICS_UPLOAD = "uploadAnalytics"
         const val WORK_NAME_ANALYTICS_WRITE = "writeAnalyticsToDb"

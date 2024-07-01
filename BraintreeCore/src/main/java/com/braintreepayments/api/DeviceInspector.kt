@@ -22,29 +22,20 @@ class DeviceInspector @VisibleForTesting internal constructor(
         SignatureVerifier(),
     )
 
-    internal fun getDeviceMetadata(
-        context: Context?,
-        configuration: Configuration?,
-        sessionId: String?,
-        integration: String?
-    ): DeviceMetadata {
+    internal fun getDeviceMetadata(context: Context): DeviceMetadata {
         return DeviceMetadata(
             appId = context?.packageName,
             appName = getAppName(context),
             clientSDKVersion = BuildConfig.VERSION_NAME,
-            clientOs = getAPIVersion(),
+            clientOS = getAPIVersion(),
             component = "braintreeclientsdk",
             deviceManufacturer = Build.MANUFACTURER,
             deviceModel = Build.MODEL,
             dropInSDKVersion = dropInVersion,
-            environment = configuration?.environment,
             eventSource = "mobile-native",
-            integrationType = integration,
             isSimulator = isDeviceEmulator,
             merchantAppVersion = getAppVersion(context),
-            merchantId = configuration?.merchantId,
             platform = "Android",
-            sessionId = sessionId
         )
     }
 
@@ -76,7 +67,7 @@ class DeviceInspector @VisibleForTesting internal constructor(
 
     private fun getAppName(context: Context?): String =
         getApplicationInfo(context)?.let { appInfo ->
-                context?.packageManager?.getApplicationLabel(appInfo).toString()
+            context?.packageManager?.getApplicationLabel(appInfo).toString()
         } ?: "ApplicationNameUnknown"
 
     @Suppress("SwallowedException")
@@ -87,14 +78,17 @@ class DeviceInspector @VisibleForTesting internal constructor(
             null
         }
 
-    private fun getAppVersion(context: Context?): String = getPackageInfo(context) ?: "VersionUnknown"
+    private fun getAppVersion(context: Context?): String =
+        getPackageInfo(context) ?: "VersionUnknown"
 
     private fun getPackageInfo(context: Context?) =
         context?.let {
             try {
                 val packageInfo = it.packageManager.getPackageInfo(it.packageName, 0)
                 packageInfo?.versionName
-            } catch (ignored: PackageManager.NameNotFoundException) { null }
+            } catch (ignored: PackageManager.NameNotFoundException) {
+                null
+            }
         }
 
     private fun getAPIVersion(): String {
@@ -125,9 +119,11 @@ class DeviceInspector @VisibleForTesting internal constructor(
                     "$VENMO_APP_PACKAGE.$VENMO_APP_SWITCH_ACTIVITY"
                 )
             )
+
         internal fun getDropInVersion(): String? {
             try {
-                val dropInBuildConfigClass = Class.forName("com.braintreepayments.api.dropin.BuildConfig")
+                val dropInBuildConfigClass =
+                    Class.forName("com.braintreepayments.api.dropin.BuildConfig")
                 val versionNameField = dropInBuildConfigClass.getField("VERSION_NAME")
                 versionNameField.isAccessible = true
                 return versionNameField[String::class] as String?
