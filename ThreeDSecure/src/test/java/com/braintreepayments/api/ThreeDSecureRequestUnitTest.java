@@ -7,6 +7,8 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import java.util.Map;
+import java.util.HashMap;
 
 import static com.braintreepayments.api.ThreeDSecureRequest.VERSION_1;
 import static com.braintreepayments.api.ThreeDSecureRequest.VERSION_2;
@@ -178,6 +180,11 @@ public class ThreeDSecureRequestUnitTest {
         request.setCardAddChallengeRequested(true);
         request.setAccountType(ThreeDSecureRequest.CREDIT);
 
+        Map<String, Object> customFields = new HashMap<>();
+        customFields.put("custom_key1", "vustom_value1");
+        customFields.put("custom_key2", "123");
+        request.setCustomFields(customFields);
+
         JSONObject json = new JSONObject(request.build("df-reference-id"));
         JSONObject additionalInfoJson = json.getJSONObject("additional_info");
 
@@ -205,6 +212,10 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals("01", additionalInfoJson.get("shipping_method"));
 
         assertEquals("account-id", additionalInfoJson.get("account_id"));
+
+        JSONObject customFieldsJson = json.getJSONObject("custom_fields");
+        assertEquals("custom_value1", customFieldsJson.getString("custom_key1"));
+        assertEquals("123",customFieldsJson.getString("custom_key2"));
     }
 
     @Test
