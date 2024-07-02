@@ -47,9 +47,6 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(WORK_INPUT_KEY_ANALYTICS_JSON, json)
-            //.putLong(WORK_INPUT_KEY_START_TIME, event.startTime ?: INVALID_TIMESTAMP)
-            //.putLong(WORK_INPUT_KEY_END_TIME, event.endTime ?: INVALID_TIMESTAMP)
-            //.putString(WORK_INPUT_KEY_ENDPOINT, event.endpoint)
             .build()
 
         val analyticsWorkRequest =
@@ -217,6 +214,9 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             .put(FPTI_KEY_TENANT_NAME, "Braintree")
             .putOpt(FPTI_KEY_PAYPAL_CONTEXT_ID, event.payPalContextId)
             .putOpt(FPTI_KEY_LINK_TYPE, event.linkType)
+            .putOpt(FPTI_KEY_START_TIME, event.startTime)
+            .putOpt(FPTI_KEY_END_TIME, event.endTime)
+            .putOpt(FPTI_KEY_ENDPOINT, event.endpoint)
         return json.toString()
     }
 
@@ -235,9 +235,9 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         private const val FPTI_KEY_EVENT_NAME = "event_name"
         private const val FPTI_KEY_TIMESTAMP = "t"
         private const val FPTI_KEY_TENANT_NAME = "tenant_name"
-        private const val START_TIME_KEY = "start_time"
-        private const val END_TIME_KEY = "end_time"
-        private const val ENDPOINT_KEY = "endpoint"
+        private const val FPTI_KEY_START_TIME = "start_time"
+        private const val FPTI_KEY_END_TIME = "end_time"
+        private const val FPTI_KEY_ENDPOINT = "endpoint"
 
         const val WORK_NAME_ANALYTICS_UPLOAD = "uploadAnalytics"
         const val WORK_NAME_ANALYTICS_WRITE = "writeAnalyticsToDb"

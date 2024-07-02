@@ -6,8 +6,8 @@ internal data class AnalyticsEvent constructor(
     val linkType: String? = null,
     val venmoInstalled: Boolean = false,
     val isVaultRequest: Boolean = false,
-    val startTime: Long? = -1,
-    val endTime: Long? = -1,
+    val startTime: Long? = null,
+    val endTime: Long? = null,
     val endpoint: String? = null,
     val timestamp: Long = System.currentTimeMillis(),
 )

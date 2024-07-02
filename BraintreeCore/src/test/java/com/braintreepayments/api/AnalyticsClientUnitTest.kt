@@ -90,7 +90,7 @@ class AnalyticsClientUnitTest {
         }
         """
         val actualJSON = workSpec.input.getString(WORK_INPUT_KEY_ANALYTICS_JSON)!!
-        JSONAssert.assertEquals(JSONObject(expectedJSON), JSONObject(actualJSON), false)
+        JSONAssert.assertEquals(JSONObject(expectedJSON), JSONObject(actualJSON), true)
     }
 
     fun sendEvent_convertsAnalyticsEventWithOptionalParamsToJSONAndEnqueuesItForWriteToDbWorker() {
@@ -128,11 +128,14 @@ class AnalyticsClientUnitTest {
           "t": 456,
           "venmo_installed": true,
           "is_vault": true,
-          "tenant_name": "Braintree"
+          "tenant_name": "Braintree",
+          "start_time": 789,
+          "end_time": 987,
+          "endpoint": "fake-endpoint"
         }
         """
         val actualJSON = workSpec.input.getString(WORK_INPUT_KEY_ANALYTICS_JSON)!!
-        JSONAssert.assertEquals(JSONObject(expectedJSON), JSONObject(actualJSON), false)
+        JSONAssert.assertEquals(JSONObject(expectedJSON), JSONObject(actualJSON), true)
     }
 
     @Test
@@ -279,7 +282,7 @@ class AnalyticsClientUnitTest {
         }
         """
         val actualJSON = JSONObject(analyticsJSONSlot.captured)
-        JSONAssert.assertEquals(JSONObject(expectedJSON), actualJSON, false)
+        JSONAssert.assertEquals(JSONObject(expectedJSON), actualJSON, true)
     }
 
     @Test
@@ -498,7 +501,7 @@ class AnalyticsClientUnitTest {
         }
         """
         val actualJSON = JSONObject(analyticsJSONSlot.captured)
-        JSONAssert.assertEquals(JSONObject(expectedJSON), actualJSON, false)
+        JSONAssert.assertEquals(JSONObject(expectedJSON), actualJSON, true)
     }
 
     @Test
