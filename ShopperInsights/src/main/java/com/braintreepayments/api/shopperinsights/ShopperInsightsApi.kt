@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.shopperinsights
 
 /**
  * [ShopperInsightsApi] is a wrapper class for all api related classes that

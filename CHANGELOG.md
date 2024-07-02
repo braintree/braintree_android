@@ -144,6 +144,7 @@
         * Update package name to `com.braintreepayments.api.paypalmessaging`
     * Shopper Insights (BETA)
         * Remove `BraintreeClient` from constructor
+        * Update package name to `com.braintreepayments.api.shopperinsights`
 
 ## 4.47.0 (2024-06-06)
 

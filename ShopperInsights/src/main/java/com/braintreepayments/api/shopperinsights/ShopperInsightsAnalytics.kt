@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.shopperinsights
 
 internal object ShopperInsightsAnalytics {
     const val PAYPAL_PRESENTED = "shopper-insights:paypal-presented"

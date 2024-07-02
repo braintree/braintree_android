@@ -1,4 +1,6 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.shopperinsights
+
+import com.braintreepayments.api.ExperimentalBetaApi
 
 /**
  * Representation of a user phone number.

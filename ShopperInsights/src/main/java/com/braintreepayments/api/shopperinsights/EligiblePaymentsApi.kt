@@ -1,6 +1,6 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.shopperinsights
 
-import com.braintreepayments.api.EligiblePaymentsApiRequest.Companion.toJson
+import com.braintreepayments.api.shopperinsights.EligiblePaymentsApiRequest.Companion.toJson
 import com.braintreepayments.api.core.BraintreeClient
 import org.json.JSONException
 

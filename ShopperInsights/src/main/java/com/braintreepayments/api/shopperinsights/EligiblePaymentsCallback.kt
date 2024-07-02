@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.shopperinsights
 
 import java.lang.Exception
 

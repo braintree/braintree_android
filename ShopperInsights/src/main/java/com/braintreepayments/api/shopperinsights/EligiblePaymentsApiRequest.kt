@@ -1,5 +1,6 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.shopperinsights
 
+import com.braintreepayments.api.ExperimentalBetaApi
 import org.json.JSONArray
 import org.json.JSONObject
 

@@ -1,6 +1,7 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.shopperinsights
 
-import com.braintreepayments.api.EligiblePaymentsApiRequest.Companion.toJson
+import com.braintreepayments.api.ExperimentalBetaApi
+import com.braintreepayments.api.shopperinsights.EligiblePaymentsApiRequest.Companion.toJson
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 

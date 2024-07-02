@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.shopperinsights
 
 /**
  * A callback that returns information on whether someone is a PayPal or a Venmo shopper.

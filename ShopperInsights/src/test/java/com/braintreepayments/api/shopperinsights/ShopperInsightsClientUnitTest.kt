@@ -1,5 +1,6 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.shopperinsights
 
+import com.braintreepayments.api.ExperimentalBetaApi
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import io.mockk.every
