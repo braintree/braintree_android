@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.48.0 (2024-07-02)
 
 * PayPal
   * Fix `PayPalAccountNonce` Null Pointer Exception by ensuring that all `@NonNull` values are initialized with a non-null value.
