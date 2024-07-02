@@ -12,6 +12,8 @@ import org.json.JSONObject;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 /**
@@ -56,6 +58,7 @@ public class ThreeDSecureRequest implements Parcelable {
 
     private String nonce;
     private String amount;
+    private Map<String,Object> customFields;
     private String mobilePhoneNumber;
     private String email;
     private @ThreeDSecureShippingMethod int shippingMethod;
@@ -80,6 +83,15 @@ public class ThreeDSecureRequest implements Parcelable {
      */
     public void setNonce(@Nullable String nonce) {
         this.nonce = nonce;
+    }
+
+    /**
+     * Set Custom Fields
+     *
+     * @param customFields /// Object where each key is the name of a custom field which has been configured in the Control Panel. In the Control Panel you can configure 3D Secure Rules which trigger on certain values.
+     */
+    public void setCustomFields(@Nullable Map<String, Object> customFields) {
+        this.customFields = customFields;
     }
 
     /**
@@ -298,6 +310,11 @@ public class ThreeDSecureRequest implements Parcelable {
         return email;
     }
 
+    @Nullable
+    public Map<String, Object> getCustomFields() {
+        return customFields;
+    }
+
     /**
      * @return The shipping method to use for 3D Secure verification
      */
@@ -481,6 +498,11 @@ public class ThreeDSecureRequest implements Parcelable {
 
             if (cardAddChallengeRequested != null) {
                base.put("card_add", cardAddChallengeRequested);
+            }
+
+            if (customFields != null && !customFields.isEmpty()) {
+                JSONObject customFieldsJson = new JSONObject(customFields);
+                base.put("custom_fields", customFieldsJson);
             }
 
             additionalInfo.putOpt("mobile_phone_number", getMobilePhoneNumber());
