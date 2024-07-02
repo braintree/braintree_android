@@ -181,7 +181,7 @@ public class ThreeDSecureRequestUnitTest {
         request.setAccountType(ThreeDSecureRequest.CREDIT);
 
         Map<String, Object> customFields = new HashMap<>();
-        customFields.put("custom_key1", "vustom_value1");
+        customFields.put("custom_key1", "custom_value1");
         customFields.put("custom_key2", "123");
         request.setCustomFields(customFields);
 
