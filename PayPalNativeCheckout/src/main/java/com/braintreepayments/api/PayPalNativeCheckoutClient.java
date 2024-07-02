@@ -84,6 +84,7 @@ public class PayPalNativeCheckoutClient {
      * This method must be invoked on a {@link PayPalNativeCheckoutClient (Fragment, BraintreeClient)} or
      * {@link PayPalNativeCheckoutClient (FragmentActivity, BraintreeClient)} in order to receive results.
      */
+   @Deprecated
     public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalNativeRequest payPalRequest) throws Exception {
         braintreeClient.sendAnalyticsEvent(
                 "paypal-native.tokenize.started",

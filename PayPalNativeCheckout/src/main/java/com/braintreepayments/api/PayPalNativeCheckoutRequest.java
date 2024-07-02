@@ -62,6 +62,7 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
      *               for mismatches between this client-side amount and the final amount in the Transaction
      *               are determined by the gateway.
      **/
+    @Deprecated
     public PayPalNativeCheckoutRequest(@NonNull String amount) {
         this(amount, false);
     }

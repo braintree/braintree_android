@@ -81,7 +81,6 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
      * @param quantity   The quantity of the item.
      * @param unitAmount The unit amount.
      */
-
     public PayPalNativeCheckoutLineItem(@NonNull @PayPalLineItemKind String kind,
                                         @NonNull String name,
                                         @NonNull String quantity,
