@@ -26,18 +26,14 @@ public class PendingRequestStore {
     }
 
     public void putVenmoPendingRequest(Context context,
-                                        VenmoPendingRequest.Started pendingRequest) {
-        put(VENMO_PENDING_REQUEST_KEY, pendingRequest.toJsonString(), context);
+                                       VenmoPendingRequest.Started pendingRequest) {
+        put(VENMO_PENDING_REQUEST_KEY, pendingRequest.getPendingRequestString(), context);
     }
 
     public VenmoPendingRequest.Started getVenmoPendingRequest(Context context) {
         String requestString = get(VENMO_PENDING_REQUEST_KEY, context);
         if (requestString != null) {
-            try {
-                return new VenmoPendingRequest.Started(requestString);
-            } catch (JSONException e) {
-                return null;
-            }
+            return new VenmoPendingRequest.Started(requestString);
         }
         return null;
     }
@@ -47,18 +43,14 @@ public class PendingRequestStore {
     }
 
     public void putPayPalPendingRequest(Context context,
-                                               PayPalPendingRequest.Started pendingRequest) {
-        put(PAYPAL_PENDING_REQUEST_KEY, pendingRequest.toJsonString(), context);
+                                        PayPalPendingRequest.Started pendingRequest) {
+        put(PAYPAL_PENDING_REQUEST_KEY, pendingRequest.getPendingRequestString(), context);
     }
 
     public PayPalPendingRequest.Started getPayPalPendingRequest(Context context) {
         String requestString = get(PAYPAL_PENDING_REQUEST_KEY, context);
         if (requestString != null) {
-            try {
-                return new PayPalPendingRequest.Started(requestString);
-            } catch (JSONException e) {
-                return null;
-            }
+            return new PayPalPendingRequest.Started(requestString);
         }
         return null;
     }
@@ -68,18 +60,14 @@ public class PendingRequestStore {
     }
 
     public void putLocalPaymentPendingRequest(Context context,
-                                               LocalPaymentPendingRequest.Started pendingRequest) {
-        put(LOCAL_PAYMENT_PENDING_REQUEST_KEY, pendingRequest.toJsonString(), context);
+                                              LocalPaymentPendingRequest.Started pendingRequest) {
+        put(LOCAL_PAYMENT_PENDING_REQUEST_KEY, pendingRequest.getPendingRequestString(), context);
     }
 
     public LocalPaymentPendingRequest.Started getLocalPaymentPendingRequest(Context context) {
         String requestString = get(LOCAL_PAYMENT_PENDING_REQUEST_KEY, context);
         if (requestString != null) {
-            try {
-                return new LocalPaymentPendingRequest.Started(requestString);
-            } catch (JSONException e) {
-                return null;
-            }
+            return new LocalPaymentPendingRequest.Started(requestString);
         }
         return null;
     }
@@ -89,18 +77,14 @@ public class PendingRequestStore {
     }
 
     public void putSEPADirectDebitPendingRequest(Context context,
-                                              SEPADirectDebitPendingRequest.Started pendingRequest) {
-        put(SEPA_DIRECT_DEBIT_PENDING_REQUEST_KEY, pendingRequest.toJsonString(), context);
+                                                 SEPADirectDebitPendingRequest.Started pendingRequest) {
+        put(SEPA_DIRECT_DEBIT_PENDING_REQUEST_KEY, pendingRequest.getPendingRequestString(), context);
     }
 
     public SEPADirectDebitPendingRequest.Started getSEPADirectDebitPendingRequest(Context context) {
         String requestString = get(SEPA_DIRECT_DEBIT_PENDING_REQUEST_KEY, context);
         if (requestString != null) {
-            try {
-                return new SEPADirectDebitPendingRequest.Started(requestString);
-            } catch (JSONException e) {
-                return null;
-            }
+            return new SEPADirectDebitPendingRequest.Started(requestString);
         }
         return null;
     }
@@ -112,21 +96,21 @@ public class PendingRequestStore {
     static void put(String key, String value, Context context) {
         Context applicationContext = context.getApplicationContext();
         SharedPreferences sharedPreferences =
-                applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE);
+            applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE);
         sharedPreferences.edit().putString(key, value).apply();
     }
 
     static String get(String key, Context context) {
         Context applicationContext = context.getApplicationContext();
         SharedPreferences sharedPreferences =
-                applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE);
+            applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE);
         return sharedPreferences.getString(key, null);
     }
 
     static void remove(String key, Context context) {
         Context applicationContext = context.getApplicationContext();
         SharedPreferences sharedPreferences =
-                applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE);
+            applicationContext.getSharedPreferences(PREFERENCES_KEY, Context.MODE_PRIVATE);
         sharedPreferences.edit().remove(key).apply();
     }
 

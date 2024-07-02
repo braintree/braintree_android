@@ -7,8 +7,8 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.BrowserSwitchFinalResult;
 import com.braintreepayments.api.BrowserSwitchOptions;
-import com.braintreepayments.api.BrowserSwitchResultInfo;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.BraintreeRequestCodes;
@@ -177,13 +177,14 @@ public class LocalPaymentClient {
                          @NonNull LocalPaymentAuthResult.Success localPaymentAuthResult,
                          @NonNull final LocalPaymentTokenizeCallback callback) {
 
-        BrowserSwitchResultInfo browserSwitchResult = localPaymentAuthResult.getPaymentAuthInfo().getBrowserSwitchResultInfo();
+        BrowserSwitchFinalResult.Success browserSwitchResult = localPaymentAuthResult
+            .getPaymentAuthInfo().getBrowserSwitchResultInfo();
 
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
         final String merchantAccountId = Json.optString(metadata, "merchant-account-id", null);
         final boolean hasUserLocationConsent = Json.optBoolean(metadata, "has-user-location-consent", false);
 
-        Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
+        Uri deepLinkUri = browserSwitchResult.getReturnUrl();
         if (deepLinkUri == null) {
             tokenizeFailure(
                 new BraintreeException("LocalPayment encountered an error, return URL is " +
