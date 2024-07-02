@@ -216,7 +216,7 @@ public class MockBraintreeClientBuilder {
                 }
                 return null;
             }
-        }).when(braintreeClient).sendGraphQLPOST(anyString(), any(HttpResponseCallback.class));
+        }).when(braintreeClient).sendGraphQLPOST(any(), any(HttpResponseCallback.class));
 
         return braintreeClient;
     }

@@ -42,26 +42,26 @@ class HttpClient {
     }
 
     String sendRequest(HttpRequest request) throws Exception {
-        return syncHttpClient.request(request);
+        return syncHttpClient.request(request).getBody();
     }
 
-    void sendRequest(HttpRequest request, HttpResponseCallback callback) {
+    void sendRequest(HttpRequest request, NetworkResponseCallback callback) {
         sendRequest(request, HttpClient.NO_RETRY, callback);
     }
 
-    void sendRequest(HttpRequest request, @RetryStrategy int retryStrategy, HttpResponseCallback callback) {
+    void sendRequest(HttpRequest request, @RetryStrategy int retryStrategy, NetworkResponseCallback callback) {
         scheduleRequest(request, retryStrategy, callback);
     }
 
-    private void scheduleRequest(final HttpRequest request, @RetryStrategy final int retryStrategy, final HttpResponseCallback callback) {
+    private void scheduleRequest(final HttpRequest request, @RetryStrategy final int retryStrategy, final NetworkResponseCallback callback) {
         resetRetryCount(request);
 
         scheduler.runOnBackground(new Runnable() {
             @Override
             public void run() {
                 try {
-                    String responseBody = syncHttpClient.request(request);
-                    notifySuccessOnMainThread(callback, responseBody);
+                    HttpResponse httpResponse = syncHttpClient.request(request);
+                    notifySuccessOnMainThread(callback, httpResponse);
                 } catch (Exception e) {
                     switch (retryStrategy) {
                         case HttpClient.NO_RETRY:
@@ -76,7 +76,7 @@ class HttpClient {
         });
     }
 
-    private void retryGet(final HttpRequest request, @RetryStrategy final int retryStrategy, final HttpResponseCallback callback) {
+    private void retryGet(final HttpRequest request, @RetryStrategy final int retryStrategy, final NetworkResponseCallback callback) {
         URL url = null;
         try {
             url = request.getURL();
@@ -115,18 +115,18 @@ class HttpClient {
         }
     }
 
-    private void notifySuccessOnMainThread(final HttpResponseCallback callback, final String responseBody) {
+    private void notifySuccessOnMainThread(final NetworkResponseCallback callback, final HttpResponse response) {
         if (callback != null) {
             scheduler.runOnMain(new Runnable() {
                 @Override
                 public void run() {
-                    callback.onResult(responseBody, null);
+                    callback.onResult(response, null);
                 }
             });
         }
     }
 
-    private void notifyErrorOnMainThread(final HttpResponseCallback callback, final Exception e) {
+    private void notifyErrorOnMainThread(final NetworkResponseCallback callback, final Exception e) {
         if (callback != null) {
             scheduler.runOnMain(new Runnable() {
                 @Override

@@ -156,6 +156,7 @@ class BraintreeClientUnitTest {
         val params = createDefaultParams(configurationLoader, authorizationLoader)
         val sut = BraintreeClient(params)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
+        val networkResponseCallbackSlot = slot<NetworkResponseCallback>()
 
         sut.sendGET("sample-url", httpResponseCallback)
         verify {
@@ -163,9 +164,11 @@ class BraintreeClientUnitTest {
                 "sample-url",
                 configuration,
                 authorization,
-                httpResponseCallback
+                capture(networkResponseCallbackSlot)
             )
         }
+
+        assertTrue(networkResponseCallbackSlot.isCaptured)
     }
 
     @Test
@@ -219,6 +222,7 @@ class BraintreeClientUnitTest {
         val params = createDefaultParams(configurationLoader, authorizationLoader)
         val sut = BraintreeClient(params)
 
+        val networkResponseCallbackSlot = slot<NetworkResponseCallback>()
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
         sut.sendPOST("sample-url", "{}", emptyMap(), httpResponseCallback)
 
@@ -228,9 +232,11 @@ class BraintreeClientUnitTest {
                 data = "{}",
                 configuration = configuration,
                 authorization = authorization,
-                callback = httpResponseCallback
+                callback = capture(networkResponseCallbackSlot)
             )
         }
+
+        assertTrue(networkResponseCallbackSlot.isCaptured)
     }
 
     @Test
@@ -343,16 +349,19 @@ class BraintreeClientUnitTest {
         val params = createDefaultParams(configurationLoader, authorizationLoader)
         val sut = BraintreeClient(params)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
+        val networkResponseCallbackSlot = slot<NetworkResponseCallback>()
 
-        sut.sendGraphQLPOST("{}", httpResponseCallback)
+        sut.sendGraphQLPOST(JSONObject(), httpResponseCallback)
         verify {
             braintreeGraphQLClient.post(
                 "{}",
                 configuration,
                 authorization,
-                httpResponseCallback
+                capture(networkResponseCallbackSlot)
             )
         }
+
+        assertTrue(networkResponseCallbackSlot.isCaptured)
     }
 
     @Test
@@ -367,7 +376,7 @@ class BraintreeClientUnitTest {
         val sut = BraintreeClient(params)
 
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        sut.sendGraphQLPOST("{}", httpResponseCallback)
+        sut.sendGraphQLPOST(JSONObject(), httpResponseCallback)
 
         verify { httpResponseCallback.onResult(null, authError) }
     }
@@ -387,7 +396,7 @@ class BraintreeClientUnitTest {
         val sut = BraintreeClient(params)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
 
-        sut.sendGraphQLPOST("{}", httpResponseCallback)
+        sut.sendGraphQLPOST(JSONObject(), httpResponseCallback)
         verify { httpResponseCallback.onResult(null, exception) }
     }
 
@@ -666,7 +675,7 @@ class BraintreeClientUnitTest {
             configurationLoader.loadConfiguration(authorization, capture(callbackSlot))
         }
 
-        callbackSlot.captured.onResult(configuration, null)
+        callbackSlot.captured.onResult(configuration, null, null)
 
         verify {
             analyticsClient.reportCrash(
