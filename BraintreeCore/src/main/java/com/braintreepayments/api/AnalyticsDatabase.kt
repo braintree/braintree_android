@@ -25,7 +25,7 @@ internal abstract class AnalyticsDatabase : RoomDatabase() {
     abstract fun analyticsEventBlobDao(): AnalyticsEventBlobDao
 
     @DeleteTable(tableName = "analytics_event")
-    class DeleteAnalyticsEventTableAutoMigration: AutoMigrationSpec
+    class DeleteAnalyticsEventTableAutoMigration : AutoMigrationSpec
 
     companion object {
 
