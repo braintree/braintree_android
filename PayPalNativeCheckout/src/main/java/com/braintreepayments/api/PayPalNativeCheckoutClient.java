@@ -38,25 +38,21 @@ public class PayPalNativeCheckoutClient {
     private String payPalContextId = null;
 
     /**
-     * Deprecated. Use PayPal module instead.
      * @param fragment        a {@link Fragment
      * @param braintreeClient a {@link BraintreeClient}
      * @deprecated see {@link PayPalNativeCheckoutClient#PayPalNativeCheckoutClient(BraintreeClient)}
      * <p>
      * Create a new instance of {@link PayPalNativeCheckoutClient} from within a Fragment using a {@link BraintreeClient}.
      */
-    @Deprecated
     public PayPalNativeCheckoutClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new PayPalNativeCheckoutInternalClient(braintreeClient));
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Create a new instance of {@link PayPalNativeCheckoutClient} using a {@link BraintreeClient}.
      *
      * @param braintreeClient a {@link BraintreeClient}
      */
-   @Deprecated
     public PayPalNativeCheckoutClient(@NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new PayPalNativeCheckoutInternalClient(braintreeClient));
     }

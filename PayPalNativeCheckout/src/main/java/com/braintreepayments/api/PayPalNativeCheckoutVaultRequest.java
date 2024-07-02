@@ -25,7 +25,6 @@ public class PayPalNativeCheckoutVaultRequest extends PayPalNativeRequest implem
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * @param hasUserLocationConsent informs the SDK
      * if your application has obtained consent from the user to collect location data in compliance with
      * <a href="https://support.google.com/googleplay/android-developer/answer/10144311#personal-sensitive">Google Play Developer Program policies</a>

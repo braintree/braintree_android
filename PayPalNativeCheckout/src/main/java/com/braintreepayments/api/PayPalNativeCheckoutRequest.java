@@ -67,7 +67,6 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * @param amount The transaction amount in currency units (as * determined by setCurrencyCode).
      * For example, "1.20" corresponds to one dollar and twenty cents. Amount must be a non-negative
      * number, may optionally contain exactly 2 decimal places separated by '.' and is
@@ -297,13 +296,11 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
     }
 
     public static final Creator<PayPalNativeCheckoutRequest> CREATOR = new Creator<PayPalNativeCheckoutRequest>() {
-        @Deprecated
         @Override
         public PayPalNativeCheckoutRequest createFromParcel(Parcel in) {
             return new PayPalNativeCheckoutRequest(in);
         }
 
-        @Deprecated
         @Override
         public PayPalNativeCheckoutRequest[] newArray(int size) {
             return new PayPalNativeCheckoutRequest[size];

@@ -1,9 +1,5 @@
 package com.braintreepayments.api;
 
-/**
- * Deprecated. Use PayPal module instead.
- */
-@Deprecated
 class PayPalNativeCheckoutResponse {
 
     private String clientMetadataId;
