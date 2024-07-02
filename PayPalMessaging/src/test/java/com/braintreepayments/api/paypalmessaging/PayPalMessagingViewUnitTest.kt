@@ -1,8 +1,8 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.paypalmessaging
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.braintreepayments.api.core.BuildConfig
+import com.braintreepayments.api.ExperimentalBetaApi
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
 import com.braintreepayments.api.testutils.Fixtures

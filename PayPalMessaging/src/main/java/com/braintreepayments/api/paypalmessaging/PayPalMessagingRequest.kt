@@ -1,4 +1,6 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.paypalmessaging
+
+import com.braintreepayments.api.ExperimentalBetaApi
 
 /**
  * Used to initialize a [PayPalMessagingView]

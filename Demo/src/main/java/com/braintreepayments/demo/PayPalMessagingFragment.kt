@@ -6,13 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.braintreepayments.api.ExperimentalBetaApi
-import com.braintreepayments.api.PayPalMessagingColor
-import com.braintreepayments.api.PayPalMessagingListener
-import com.braintreepayments.api.PayPalMessagingLogoType
-import com.braintreepayments.api.PayPalMessagingOfferType
-import com.braintreepayments.api.PayPalMessagingRequest
-import com.braintreepayments.api.PayPalMessagingTextAlignment
-import com.braintreepayments.api.PayPalMessagingView
+import com.braintreepayments.api.paypalmessaging.PayPalMessagingColor
+import com.braintreepayments.api.paypalmessaging.PayPalMessagingListener
+import com.braintreepayments.api.paypalmessaging.PayPalMessagingLogoType
+import com.braintreepayments.api.paypalmessaging.PayPalMessagingOfferType
+import com.braintreepayments.api.paypalmessaging.PayPalMessagingRequest
+import com.braintreepayments.api.paypalmessaging.PayPalMessagingTextAlignment
+import com.braintreepayments.api.paypalmessaging.PayPalMessagingView
 
 @OptIn(ExperimentalBetaApi::class)
 class PayPalMessagingFragment : BaseFragment(), PayPalMessagingListener {

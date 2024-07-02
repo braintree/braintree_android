@@ -1,5 +1,6 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.paypalmessaging
 
+import com.braintreepayments.api.ExperimentalBetaApi
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import org.junit.Test

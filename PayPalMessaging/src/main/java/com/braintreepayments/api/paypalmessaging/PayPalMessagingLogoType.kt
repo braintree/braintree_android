@@ -1,5 +1,6 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.paypalmessaging
 
+import com.braintreepayments.api.ExperimentalBetaApi
 import com.paypal.messages.config.message.style.PayPalMessageLogoType
 
 /**
