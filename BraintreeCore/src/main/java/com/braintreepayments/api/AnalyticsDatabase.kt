@@ -10,7 +10,7 @@ import androidx.room.migration.AutoMigrationSpec
 
 // Ref: https://developer.android.com/training/data-storage/room/migrating-db-versions
 @Database(
-    version = 6,
+    version = 7,
     entities = [AnalyticsEventBlob::class],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
