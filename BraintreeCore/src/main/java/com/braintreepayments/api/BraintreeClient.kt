@@ -313,7 +313,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                 getConfiguration { configuration, configError ->
                     if (configuration != null) {
                         graphQLClient.post(
-                            json.toString(),
+                            json?.toString(),
                             configuration,
                             authorization
                         ) { response, httpError ->
