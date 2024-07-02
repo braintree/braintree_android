@@ -34,23 +34,19 @@ public class PayPalNativeCheckoutVaultRequest extends PayPalNativeRequest implem
      * @see <a href="https://support.google.com/googleplay/android-developer/answer/10144311#personal-sensitive">User Data policies for the Google Play Developer Program </a>
      * @see <a href="https://support.google.com/googleplay/android-developer/answer/9799150?hl=en#Prominent%20in-app%20disclosure">Examples of prominent in-app disclosures</a>
      */
-    @Deprecated
     public PayPalNativeCheckoutVaultRequest(boolean hasUserLocationConsent) {
         super(hasUserLocationConsent);
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Optional: Offers PayPal Credit if the customer qualifies. Defaults to false.
      *
      * @param shouldOfferCredit Whether to offer PayPal Credit.
      */
-    @Deprecated
     public void setShouldOfferCredit(boolean shouldOfferCredit) {
         this.shouldOfferCredit = shouldOfferCredit;
     }
 
-    @Deprecated
     public boolean getShouldOfferCredit() {
         return shouldOfferCredit;
     }
@@ -102,28 +98,23 @@ public class PayPalNativeCheckoutVaultRequest extends PayPalNativeRequest implem
         shouldOfferCredit = in.readByte() != 0;
     }
 
-    @Deprecated
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeByte((byte) (shouldOfferCredit ? 1 : 0));
     }
 
-    @Deprecated
     @Override
     public int describeContents() {
         return 0;
     }
 
-    @Deprecated
     public static final Creator<PayPalNativeCheckoutVaultRequest> CREATOR = new Creator<>() {
-        @Deprecated
         @Override
         public PayPalNativeCheckoutVaultRequest createFromParcel(Parcel in) {
             return new PayPalNativeCheckoutVaultRequest(in);
         }
 
-        @Deprecated
         @Override
         public PayPalNativeCheckoutVaultRequest[] newArray(int size) {
             return new PayPalNativeCheckoutVaultRequest[size];

@@ -123,32 +123,26 @@ class PayPalNativeCheckoutAccount extends PaymentMethod {
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Grabs the client meta data id
      *
      * @return clientMetadataId
      */
-    @Deprecated
     public String getClientMetadataId() {
         return clientMetadataId;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Grabs the mechant id associated with the account
      *
      * @return merchant id
      */
-   @Deprecated
     public String getMerchantAccountId() {
         return merchantAccountId;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * @hide
      */
-    @Deprecated
     @Override
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public String getApiPath() {

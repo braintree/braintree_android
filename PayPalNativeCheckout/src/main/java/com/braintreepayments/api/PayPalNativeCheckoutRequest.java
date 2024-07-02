@@ -31,20 +31,16 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Shows the default call-to-action text on the PayPal Express Checkout page. This option indicates that a final
      * confirmation will be shown on the merchant checkout site before the user's payment method is charged.
      */
-    @Deprecated
     public static final String USER_ACTION_DEFAULT = "";
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Shows a deterministic call-to-action. This option indicates to the user that their payment method will be charged
      * when they click the call-to-action button on the PayPal Checkout page, and that no final confirmation page will
      * be shown on the merchant's checkout page. This option works for both checkout and vault flows.
      */
-    @Deprecated
     public static final String USER_ACTION_COMMIT = "commit";
 
     private String intent = PayPalNativeCheckoutPaymentIntent.AUTHORIZE;
@@ -66,7 +62,6 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
      *               for mismatches between this client-side amount and the final amount in the Transaction
      *               are determined by the gateway.
      **/
-    @Deprecated
     public PayPalNativeCheckoutRequest(@NonNull String amount) {
         this(amount, false);
     }
@@ -89,14 +84,12 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
      * @see <a href="https://support.google.com/googleplay/android-developer/answer/10144311#personal-sensitive">User Data policies for the Google Play Developer Program </a>
      * @see <a href="https://support.google.com/googleplay/android-developer/answer/9799150?hl=en#Prominent%20in-app%20disclosure">Examples of prominent in-app disclosures</a>
      **/
-    @Deprecated
     public PayPalNativeCheckoutRequest(@NonNull String amount, boolean hasUserLocationConsent) {
         super(hasUserLocationConsent);
         this.amount = amount;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Optional: A valid ISO currency code to use for the transaction. Defaults to merchant currency
      * code if not set.
      * <p>
@@ -105,13 +98,11 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
      *
      * @param currencyCode A currency code, such as "USD"
      */
-    @Deprecated
     public void setCurrencyCode(@Nullable String currencyCode) {
         this.currencyCode = currencyCode;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Optional: Payment intent. Must be set to {@link PayPalNativeCheckoutPaymentIntent#SALE} for immediate payment,
      * {@link PayPalNativeCheckoutPaymentIntent#AUTHORIZE} to authorize a payment for capture later, or
      * {@link PayPalNativeCheckoutPaymentIntent#ORDER} to create an order.
@@ -123,13 +114,11 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
      * @see <a href="https://developer.paypal.com/docs/integration/direct/payments/create-process-order/">Create and process orders</a>
      * for more information
      */
-    @Deprecated
     public void setIntent(@NonNull @PayPalNativeCheckoutPaymentIntent String intent) {
         this.intent = intent;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Optional: The call-to-action in the PayPal Checkout flow.
      * <p>
      * By default the final button will show the localized word for "Continue" and implies that the
@@ -144,66 +133,55 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
      *                   </ul>
      * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "user_action" under the "application_context" definition</a>
      */
-    @Deprecated
     public void setUserAction(@NonNull @PayPalPaymentUserAction String userAction) {
         this.userAction = userAction;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Optional: Offers PayPal Pay Later if the customer qualifies. Defaults to false.
      *
      * @param shouldOfferPayLater Whether to offer PayPal Pay Later.
      */
-    @Deprecated
     public void setShouldOfferPayLater(boolean shouldOfferPayLater) {
         this.shouldOfferPayLater = shouldOfferPayLater;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Optional: If set to true, this enables the Checkout with Vault flow, where the customer will be
      * prompted to consent to a billing agreement during checkout.
      *
      * @param shouldRequestBillingAgreement Whether to request billing agreement during checkout.
      */
-    @Deprecated
     public void setShouldRequestBillingAgreement(boolean shouldRequestBillingAgreement) {
         this.shouldRequestBillingAgreement = shouldRequestBillingAgreement;
     }
 
-    @Deprecated
     @NonNull
     public String getAmount() {
         return amount;
     }
 
-    @Deprecated
     @Nullable
     public String getCurrencyCode() {
         return currencyCode;
     }
 
-   @Deprecated
     @PayPalNativeCheckoutPaymentIntent
     @NonNull
     public String getIntent() {
         return intent;
     }
 
-    @Deprecated
     @PayPalPaymentUserAction
     @NonNull
     public String getUserAction() {
         return userAction;
     }
 
-    @Deprecated
     public boolean getShouldOfferPayLater() {
         return shouldOfferPayLater;
     }
 
-    @Deprecated
     public boolean getShouldRequestBillingAgreement() {
         return shouldRequestBillingAgreement;
     }
@@ -302,7 +280,6 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
         shouldOfferPayLater = in.readByte() != 0;
     }
 
-    @Deprecated
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
@@ -314,13 +291,11 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
         dest.writeByte((byte) (shouldOfferPayLater ? 1 : 0));
     }
 
-    @Deprecated
     @Override
     public int describeContents() {
         return 0;
     }
 
-    @Deprecated
     public static final Creator<PayPalNativeCheckoutRequest> CREATOR = new Creator<PayPalNativeCheckoutRequest>() {
         @Deprecated
         @Override

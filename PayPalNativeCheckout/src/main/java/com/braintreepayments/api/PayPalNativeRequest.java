@@ -73,42 +73,35 @@ public abstract class PayPalNativeRequest implements Parcelable {
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Defaults to false. When set to true, the shipping address selector will be displayed.
      *
      * @param shippingAddressRequired Whether to hide the shipping address in the flow.
      */
-    @Deprecated
     public void setShippingAddressRequired(boolean shippingAddressRequired) {
         this.shippingAddressRequired = shippingAddressRequired;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Defaults to false. Set to true to enable user editing of the shipping address.
      * Only applies when {@link PayPalNativeRequest#setShippingAddressOverride(PostalAddress)} is set
      * with a {@link PostalAddress}.
      *
      * @param shippingAddressEditable Whether to allow the the shipping address to be editable.
      */
-    @Deprecated
     public void setShippingAddressEditable(boolean shippingAddressEditable) {
         this.shippingAddressEditable = shippingAddressEditable;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Grabs the shipping address editable field
      *
      * @return shippingAddressEditable if the shipping address is editable
      */
-    @Deprecated
     public boolean isShippingAddressEditable() {
         return shippingAddressEditable;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Optional: A locale code to use for the transaction.
      * <br>
      * Supported locales are:
@@ -143,166 +136,137 @@ public abstract class PayPalNativeRequest implements Parcelable {
      *
      * @param localeCode A locale code to use for the transaction.
      */
-    @Deprecated
     public void setLocaleCode(@Nullable String localeCode) {
         this.localeCode = localeCode;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Optional: The merchant name displayed in the PayPal flow; defaults to the company name on your Braintree account.
      *
      * @param displayName The name to be displayed in the PayPal flow.
      */
-    @Deprecated
     public void setDisplayName(@Nullable String displayName) {
         this.displayName = displayName;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Optional: Display a custom description to the user for a billing agreement.
      *
      * @param description The description to display.
      */
-    @Deprecated
     public void setBillingAgreementDescription(@Nullable String description) {
         billingAgreementDescription = description;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Optional: A valid shipping address to be displayed in the transaction flow. An error will occur if this address is not valid
      *
      * @param shippingAddressOverride a custom {@link PostalAddress}
      */
-    @Deprecated
     public void setShippingAddressOverride(@Nullable PostalAddress shippingAddressOverride) {
         this.shippingAddressOverride = shippingAddressOverride;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Grabs the override for the shipping address
      *
      * @return shippingAddressOverride the shipping address for the order
      */
-    @Deprecated
     public PostalAddress getShippingAddressOverride() {
         return shippingAddressOverride;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Optional: Specify a merchant account Id other than the default to use during tokenization.
      *
      * @param merchantAccountId the non-default merchant account Id.
      */
-    @Deprecated
     public void setMerchantAccountId(@Nullable String merchantAccountId) {
         this.merchantAccountId = merchantAccountId;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Optional: A risk correlation ID created with Set Transaction Context on your server.
      *
      * @param riskCorrelationId the correlation ID.
      */
-    @Deprecated
     public void setRiskCorrelationId(@Nullable String riskCorrelationId) {
         this.riskCorrelationId = riskCorrelationId;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Optional: The line items for this transaction. It can include up to 249 line items.
      *
      * @param lineItems a collection of {@link PayPalNativeCheckoutLineItem}
      */
-    @Deprecated
     public void setLineItems(@NonNull Collection<PayPalNativeCheckoutLineItem> lineItems) {
         this.lineItems.clear();
         this.lineItems.addAll(lineItems);
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Required: This is required in order for your app to redirect after authentication to the correct
      * application
      *
      * @param returnUrl the client application redirect link
      * More info: https://developer.paypal.com/limited-release/paypal-mobile-checkout/android/#link-enablethesdk
      */
-    @Deprecated
     public void setReturnUrl(@NonNull String returnUrl) {
         this.returnUrl = returnUrl;
     }
 
-    @Deprecated
     @Nullable
     public String getUserAuthenticationEmail() {
         return userAuthenticationEmail;
     }
 
     /**
-     * Deprecated. Use PayPal module instead.
      * Optional: User email to initiate a quicker authentication flow in cases where the user has a PayPal Account with the same email.
      *
      * @param userAuthenticationEmail the users email address
      */
-    @Deprecated
     public void setUserAuthenticationEmail(@Nullable String userAuthenticationEmail) {
         this.userAuthenticationEmail = userAuthenticationEmail;
     }
 
-    @Deprecated
     public String getReturnUrl() {
         return returnUrl;
     }
 
-    @Deprecated
     @Nullable
     public String getLocaleCode() {
         return localeCode;
     }
 
-    @Deprecated
     @Nullable
     public String getBillingAgreementDescription() {
         return billingAgreementDescription;
     }
 
-    @Deprecated
     public boolean isShippingAddressRequired() {
         return shippingAddressRequired;
     }
 
-    @Deprecated
     @Nullable
     public String getDisplayName() {
         return displayName;
     }
 
-    @Deprecated
     @Nullable
     public String getMerchantAccountId() {
         return merchantAccountId;
     }
 
-    @Deprecated
     @Nullable
     public String getRiskCorrelationId() {
         return riskCorrelationId;
     }
 
-    @Deprecated
     @NonNull
     public ArrayList<PayPalNativeCheckoutLineItem> getLineItems() {
         return lineItems;
     }
 
-    @Deprecated
     public boolean hasUserLocationConsent() {
         return hasUserLocationConsent;
     }
@@ -325,13 +289,11 @@ public abstract class PayPalNativeRequest implements Parcelable {
         hasUserLocationConsent = in.readByte() != 0;
     }
 
-    @Deprecated
     @Override
     public int describeContents() {
         return 0;
     }
-
-    @Deprecated
+    
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(localeCode);
