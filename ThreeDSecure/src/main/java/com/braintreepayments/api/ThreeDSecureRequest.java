@@ -500,6 +500,11 @@ public class ThreeDSecureRequest implements Parcelable {
                base.put("card_add", cardAddChallengeRequested);
             }
 
+            if (customFields != null && !customFields.isEmpty()) {
+                JSONObject customFieldsJson = new JSONObject(customFields);
+                base.put("custom_fields", customFieldsJson);
+            }
+
             additionalInfo.putOpt("mobile_phone_number", getMobilePhoneNumber());
             additionalInfo.putOpt("shipping_method", getShippingMethodAsString());
             additionalInfo.putOpt("email", getEmail());
