@@ -73,7 +73,7 @@ public class PayPalNativeCheckoutCreditFinancingAmount implements Parcelable {
     }
 
     public static final Creator<PayPalNativeCheckoutCreditFinancingAmount> CREATOR = new Creator<PayPalNativeCheckoutCreditFinancingAmount>() {
-       public PayPalNativeCheckoutCreditFinancingAmount createFromParcel(Parcel source) {
+        public PayPalNativeCheckoutCreditFinancingAmount createFromParcel(Parcel source) {
             return new PayPalNativeCheckoutCreditFinancingAmount(source);
         }
 
