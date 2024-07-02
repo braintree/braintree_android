@@ -88,7 +88,7 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * Set Custom Fields
      *
-     * @param customFields /// Object where each key is the name of a custom field which has been configured in the Control Panel. In the Control Panel you can configure 3D Secure Rules which trigger on certain values.
+     * @param customFields Object where each key is the name of a custom field which has been configured in the Control Panel. In the Control Panel you can configure 3D Secure Rules which trigger on certain values.
      */
     public void setCustomFields(@Nullable Map<String, Object> customFields) {
         this.customFields = customFields;
