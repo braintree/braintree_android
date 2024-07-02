@@ -9,10 +9,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * Deprecated. Use PayPal module instead.
  * {@link PaymentMethodNonce} representing a PayPal account.
  *
  * @see PaymentMethodNonce
  */
+@Deprecated
 public class PayPalNativeCheckoutAccountNonce extends PaymentMethodNonce {
 
     static final String API_RESOURCE_KEY = "paypalAccounts";

@@ -3,8 +3,10 @@ package com.braintreepayments.api;
 import androidx.annotation.Nullable;
 
 /**
+ * Deprecated. Use PayPal module instead.
  * Callback for receiving result of the checkout result
  */
+@Deprecated
 public interface PayPalNativeCheckoutResultCallback {
 
     /**

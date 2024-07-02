@@ -16,8 +16,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
+ * Deprecated. Use PayPal module instead.
  * Represents the parameters that are needed to start the PayPal Checkout flow
  */
+@Deprecated
 public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements Parcelable {
 
     /**
@@ -60,12 +62,12 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
      *               for mismatches between this client-side amount and the final amount in the Transaction
      *               are determined by the gateway.
      **/
-    @Deprecated
     public PayPalNativeCheckoutRequest(@NonNull String amount) {
         this(amount, false);
     }
 
     /**
+     * Deprecated. Use PayPal module instead.
      * @param amount The transaction amount in currency units (as * determined by setCurrencyCode).
      * For example, "1.20" corresponds to one dollar and twenty cents. Amount must be a non-negative
      * number, may optionally contain exactly 2 decimal places separated by '.' and is
@@ -295,11 +297,13 @@ public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements 
     }
 
     public static final Creator<PayPalNativeCheckoutRequest> CREATOR = new Creator<PayPalNativeCheckoutRequest>() {
+        @Deprecated
         @Override
         public PayPalNativeCheckoutRequest createFromParcel(Parcel in) {
             return new PayPalNativeCheckoutRequest(in);
         }
 
+        @Deprecated
         @Override
         public PayPalNativeCheckoutRequest[] newArray(int size) {
             return new PayPalNativeCheckoutRequest[size];

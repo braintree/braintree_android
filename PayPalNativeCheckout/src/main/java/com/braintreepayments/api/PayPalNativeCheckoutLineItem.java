@@ -13,6 +13,10 @@ import org.json.JSONObject;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Deprecated. Use PayPal module instead.
+ */
+@Deprecated
 public class PayPalNativeCheckoutLineItem implements Parcelable {
 
     /**
@@ -77,6 +81,7 @@ public class PayPalNativeCheckoutLineItem implements Parcelable {
      * @param quantity   The quantity of the item.
      * @param unitAmount The unit amount.
      */
+
     public PayPalNativeCheckoutLineItem(@NonNull @PayPalLineItemKind String kind,
                                         @NonNull String name,
                                         @NonNull String quantity,

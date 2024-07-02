@@ -7,6 +7,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
 
+/**
+* Deprecated. Use PayPal module instead.
+ */
+@Deprecated
 class PayPalNativeCheckoutInternalClient {
 
     private static final String CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource";

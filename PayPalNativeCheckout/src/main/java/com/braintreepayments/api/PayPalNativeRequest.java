@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
+ * Deprecated. Use PayPal module instead.
  * Represents the parameters that are needed to tokenize a PayPal account.
  * See {@link PayPalNativeCheckoutRequest} and {@link PayPalNativeCheckoutVaultRequest}.
  */
+@Deprecated
 public abstract class PayPalNativeRequest implements Parcelable {
 
     static final String NO_SHIPPING_KEY = "no_shipping";
@@ -291,7 +293,7 @@ public abstract class PayPalNativeRequest implements Parcelable {
     public int describeContents() {
         return 0;
     }
-
+    
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(localeCode);

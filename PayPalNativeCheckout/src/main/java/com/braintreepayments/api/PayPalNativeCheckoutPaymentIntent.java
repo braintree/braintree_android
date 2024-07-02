@@ -6,8 +6,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
+ * Deprecated. Use PayPal module instead.
  * The payment intent in the PayPal Checkout flow
  */
+@Deprecated
 @Retention(RetentionPolicy.SOURCE)
 @StringDef({PayPalNativeCheckoutPaymentIntent.ORDER, PayPalNativeCheckoutPaymentIntent.SALE, PayPalNativeCheckoutPaymentIntent.AUTHORIZE})
 public @interface PayPalNativeCheckoutPaymentIntent {

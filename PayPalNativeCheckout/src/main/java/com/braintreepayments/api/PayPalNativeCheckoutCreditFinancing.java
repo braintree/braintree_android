@@ -9,8 +9,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * Deprecated. Use PayPal module instead.
  * Represents the PayPal credit financing response.
  */
+@Deprecated
 public class PayPalNativeCheckoutCreditFinancing implements Parcelable {
 
     private static final String CARD_AMOUNT_IMMUTABLE_KEY = "cardAmountImmutable";

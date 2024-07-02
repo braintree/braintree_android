@@ -4,8 +4,10 @@
 
 * PayPal
   * Fix `PayPalAccountNonce` Null Pointer Exception by ensuring that all `@NonNull` values are initialized with a non-null value.
-* PayPalNativeCheckout
+* PayPalNativeCheckout (DEPRECATED)
   * Fix `PayPalNativeCheckoutAccountNonce` Null Pointer Exception by ensuring that all `@NonNull` values are initialized with a non-null value.
+  * **NOTE:** This module is being deprecated and will be removed in the future version of the SDK
+  * Add deprecated warning message to all public classes and methods
 * BraintreeCore
   * Use TLS 1.3 for all HTTP requests, when available
   * Refactor TLSCertificatePinning `certInputStream` property to initialize a `ByteArrayInputStream` once instead of every time the property is accessed.

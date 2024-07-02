@@ -8,8 +8,10 @@ import androidx.annotation.Nullable;
 import org.json.JSONObject;
 
 /**
+ * Deprecated. Use PayPal module instead.
  * The currency and amount in a PayPal credit financing response
  */
+@Deprecated
 public class PayPalNativeCheckoutCreditFinancingAmount implements Parcelable {
 
     private static final String CURRENCY_KEY = "currency";

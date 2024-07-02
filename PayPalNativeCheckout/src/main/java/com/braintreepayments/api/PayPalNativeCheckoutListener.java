@@ -3,8 +3,10 @@ package com.braintreepayments.api;
 import androidx.annotation.NonNull;
 
 /**
+ * Deprecated. Use PayPal module instead.
  * Implement this interface to receive PayPal result notifications.
  */
+@Deprecated
 public interface PayPalNativeCheckoutListener {
 
     /**
