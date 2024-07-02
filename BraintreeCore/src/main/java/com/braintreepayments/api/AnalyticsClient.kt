@@ -36,11 +36,11 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         integration: String?,
         authorization: Authorization
     ): UUID {
-        scheduleAnalyticsWrite(event, authorization)
-        return scheduleAnalyticsUpload(configuration, authorization, sessionId, integration)
+        scheduleAnalyticsWriteInBackground(event, authorization)
+        return scheduleAnalyticsUploadInBackground(configuration, authorization, sessionId, integration)
     }
 
-    private fun scheduleAnalyticsWrite(
+    private fun scheduleAnalyticsWriteInBackground(
         event: AnalyticsEvent, authorization: Authorization
     ) {
         val json = mapAnalyticsEventToFPTIEventJSON(event)
@@ -58,19 +58,19 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         )
     }
 
-    fun writeAnalytics(inputData: Data): ListenableWorker.Result {
+    fun performAnalyticsWrite(inputData: Data): ListenableWorker.Result {
         val analyticsJSON = inputData.getString(WORK_INPUT_KEY_ANALYTICS_JSON)
         return if (analyticsJSON == null) {
             ListenableWorker.Result.failure()
         } else {
             val eventBlob = AnalyticsEventBlob(analyticsJSON)
             val analyticsBlobDao = analyticsDatabase.analyticsEventBlobDao()
-            analyticsBlobDao.insertBlob(eventBlob)
+            analyticsBlobDao.insertEventBlob(eventBlob)
             ListenableWorker.Result.success()
         }
     }
 
-    private fun scheduleAnalyticsUpload(
+    private fun scheduleAnalyticsUploadInBackground(
         configuration: Configuration,
         authorization: Authorization,
         sessionId: String?,
@@ -93,7 +93,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         return analyticsWorkRequest.id
     }
 
-    fun uploadAnalytics(inputData: Data): ListenableWorker.Result {
+    fun performAnalyticsUpload(inputData: Data): ListenableWorker.Result {
         val configuration = getConfigurationFromData(inputData)
         val authorization = getAuthorizationFromData(inputData)
         val sessionId = inputData.getString(WORK_INPUT_KEY_SESSION_ID)
@@ -104,23 +104,23 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             ListenableWorker.Result.failure()
         } else {
             try {
-                val analyticsBlobDao = analyticsDatabase.analyticsEventBlobDao()
-                val blobs = analyticsBlobDao.getAllBlobs()
-                if (blobs.isNotEmpty()) {
+                val analyticsEventBlobDao = analyticsDatabase.analyticsEventBlobDao()
+                val eventBlobs = analyticsEventBlobDao.getAllEventBlobs()
+                if (eventBlobs.isNotEmpty()) {
                     val metadata = deviceInspector.getDeviceMetadata(
                         applicationContext,
                         configuration,
                         sessionId,
                         integration
                     )
-                    val analyticsRequest = createFPTIPayload(authorization, blobs, metadata)
+                    val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
                     httpClient.post(
                         FPTI_ANALYTICS_URL,
                         analyticsRequest.toString(),
                         configuration,
                         authorization
                     )
-                    analyticsBlobDao.deleteBlobs(blobs)
+                    analyticsEventBlobDao.deleteEventBlobs(eventBlobs)
                 }
                 ListenableWorker.Result.success()
             } catch (e: Exception) {
@@ -162,10 +162,9 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         val event = AnalyticsEvent(name = "crash", timestamp = timestamp)
         val eventJSON = mapAnalyticsEventToFPTIEventJSON(event)
-        val eventBlob = AnalyticsEventBlob(eventJSON)
-        val blobs = listOf(eventBlob)
+        val eventBlobs = listOf(AnalyticsEventBlob(eventJSON))
         try {
-            val analyticsRequest = createFPTIPayload(authorization, blobs, metadata)
+            val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
             httpClient.post(
                 path = FPTI_ANALYTICS_URL,
                 data = analyticsRequest.toString(),
@@ -180,7 +179,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     @Throws(JSONException::class)
     private fun createFPTIPayload(
         authorization: Authorization?,
-        blobs: List<AnalyticsEventBlob>,
+        eventBlobs: List<AnalyticsEventBlob>,
         metadata: DeviceMetadata
     ): JSONObject {
         val batchParamsJSON = metadata.toJSON()
@@ -196,8 +195,8 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         eventsContainerJSON.put(FPTI_KEY_BATCH_PARAMS, batchParamsJSON)
 
         val eventParamsJSON = JSONArray()
-        for (analyticsBlob in blobs) {
-            eventParamsJSON.put(JSONObject(analyticsBlob.json))
+        for (blob in eventBlobs) {
+            eventParamsJSON.put(JSONObject(blob.jsonString))
         }
         eventsContainerJSON.put(FPTI_KEY_EVENT_PARAMS, eventParamsJSON)
 

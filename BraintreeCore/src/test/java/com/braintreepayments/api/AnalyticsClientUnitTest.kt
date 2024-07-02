@@ -168,7 +168,7 @@ class AnalyticsClientUnitTest {
             .build()
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
-        val result = sut.writeAnalytics(inputData)
+        val result = sut.performAnalyticsWrite(inputData)
         assertTrue(result is ListenableWorker.Result.Success)
     }
 
@@ -177,14 +177,14 @@ class AnalyticsClientUnitTest {
         val inputData = Data.Builder().build()
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
-        val result = sut.writeAnalytics(inputData)
+        val result = sut.performAnalyticsWrite(inputData)
         assertTrue(result is ListenableWorker.Result.Failure)
     }
 
     @Test
     fun writeAnalytics_addsEventToAnalyticsDatabaseAndReturnsSuccess() {
         val analyticsEventBlobSlot = slot<AnalyticsEventBlob>()
-        every { analyticsEventBlobDao.insertBlob(capture(analyticsEventBlobSlot)) } returns Unit
+        every { analyticsEventBlobDao.insertEventBlob(capture(analyticsEventBlobSlot)) } returns Unit
 
         val json = JSONObject().put("fake", "json").toString()
         val inputData = Data.Builder()
@@ -192,10 +192,10 @@ class AnalyticsClientUnitTest {
             .build()
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
-        sut.writeAnalytics(inputData)
+        sut.performAnalyticsWrite(inputData)
 
         val blob = analyticsEventBlobSlot.captured
-        assertEquals(json, blob.json)
+        assertEquals(json, blob.jsonString)
     }
 
     @Test
@@ -209,7 +209,7 @@ class AnalyticsClientUnitTest {
             .build()
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
-        sut.uploadAnalytics(inputData)
+        sut.performAnalyticsUpload(inputData)
 
         // or confirmVerified(httpClient)
         verify { httpClient wasNot Called }
@@ -232,7 +232,7 @@ class AnalyticsClientUnitTest {
 
         val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
         blobs.add(AnalyticsEventBlob("""{ "fake": "json" }"""))
-        every { analyticsEventBlobDao.getAllBlobs() } returns blobs
+        every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
 
         val analyticsJSONSlot = slot<String>()
         every {
@@ -246,7 +246,7 @@ class AnalyticsClientUnitTest {
 
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
-        sut.uploadAnalytics(inputData)
+        sut.performAnalyticsUpload(inputData)
 
         // language=JSON
         val expectedJSON = """
@@ -292,7 +292,7 @@ class AnalyticsClientUnitTest {
 
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
-        val result = sut.uploadAnalytics(inputData)
+        val result = sut.performAnalyticsUpload(inputData)
         assertTrue(result is ListenableWorker.Result.Failure)
 
         // or confirmVerified(httpClient)
@@ -310,7 +310,7 @@ class AnalyticsClientUnitTest {
 
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
-        val result = sut.uploadAnalytics(inputData)
+        val result = sut.performAnalyticsUpload(inputData)
         assertTrue(result is ListenableWorker.Result.Failure)
 
         // or confirmVerified(httpClient)
@@ -333,14 +333,14 @@ class AnalyticsClientUnitTest {
 
         val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
         blobs.add(AnalyticsEventBlob("""{ "fake": "json" }"""))
-        every { analyticsEventBlobDao.getAllBlobs() } returns blobs
+        every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
 
         val analyticsJSONSlot = slot<String>()
         every { httpClient.post(any(), capture(analyticsJSONSlot), any(), any()) }
 
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
-        sut.uploadAnalytics(inputData)
+        sut.performAnalyticsUpload(inputData)
 
         val analyticsJson = JSONObject(analyticsJSONSlot.captured)
 
@@ -360,7 +360,7 @@ class AnalyticsClientUnitTest {
 
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
-        val result = sut.uploadAnalytics(inputData)
+        val result = sut.performAnalyticsUpload(inputData)
         assertTrue(result is ListenableWorker.Result.Failure)
 
         // or confirmVerified(httpClient)
@@ -378,7 +378,7 @@ class AnalyticsClientUnitTest {
 
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
-        val result = sut.uploadAnalytics(inputData)
+        val result = sut.performAnalyticsUpload(inputData)
         assertTrue(result is ListenableWorker.Result.Failure)
 
         // or confirmVerified(httpClient)
@@ -402,13 +402,13 @@ class AnalyticsClientUnitTest {
 
         val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
         blobs.add(AnalyticsEventBlob("""{ "fake": "json" }"""))
-        every { analyticsEventBlobDao.getAllBlobs() } returns blobs
+        every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
 
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
-        sut.uploadAnalytics(inputData)
+        sut.performAnalyticsUpload(inputData)
 
-        verify { analyticsEventBlobDao.deleteBlobs(blobs) }
+        verify { analyticsEventBlobDao.deleteEventBlobs(blobs) }
     }
 
     @Test
@@ -427,14 +427,14 @@ class AnalyticsClientUnitTest {
 
         val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
         blobs.add(AnalyticsEventBlob("""{ "fake": "json" }"""))
-        every { analyticsEventBlobDao.getAllBlobs() } returns blobs
+        every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
 
         val httpError = Exception("error")
         every { httpClient.post(any(), any(), any(), any()) } throws httpError
 
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
-        val result = sut.uploadAnalytics(inputData)
+        val result = sut.performAnalyticsUpload(inputData)
         assertTrue(result is ListenableWorker.Result.Failure)
     }
 

@@ -9,11 +9,11 @@ import androidx.room.Query
 internal interface AnalyticsEventBlobDao {
 
     @Insert
-    fun insertBlob(blob: AnalyticsEventBlob)
+    fun insertEventBlob(eventBlob: AnalyticsEventBlob)
 
     @Query("SELECT * FROM analytics_event_blob")
-    fun getAllBlobs(): List<AnalyticsEventBlob>
+    fun getAllEventBlobs(): List<AnalyticsEventBlob>
 
     @Delete
-    fun deleteBlobs(blobs: List<AnalyticsEventBlob>)
+    fun deleteEventBlobs(blobs: List<AnalyticsEventBlob>)
 }
