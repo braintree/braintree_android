@@ -2,21 +2,21 @@ package com.braintreepayments.api.paypal;
 
 import androidx.annotation.NonNull;
 
-import com.braintreepayments.api.BrowserSwitchResultInfo;
+import com.braintreepayments.api.BrowserSwitchFinalResult;
 
 /**
  * Details of a {@link PayPalPaymentAuthResult.Success}
  */
 public class PayPalPaymentAuthResultInfo {
 
-    private final BrowserSwitchResultInfo browserSwitchResultInfo;
+    private final BrowserSwitchFinalResult.Success browserSwitchSuccess;
 
-    PayPalPaymentAuthResultInfo(@NonNull BrowserSwitchResultInfo browserSwitchResultInfo) {
-        this.browserSwitchResultInfo = browserSwitchResultInfo;
+    PayPalPaymentAuthResultInfo(@NonNull BrowserSwitchFinalResult.Success browserSwitchSuccess) {
+        this.browserSwitchSuccess = browserSwitchSuccess;
     }
 
     @NonNull
-    BrowserSwitchResultInfo getBrowserSwitchResult() {
-        return browserSwitchResultInfo;
+    BrowserSwitchFinalResult.Success getBrowserSwitchResult() {
+        return browserSwitchSuccess;
     }
 }

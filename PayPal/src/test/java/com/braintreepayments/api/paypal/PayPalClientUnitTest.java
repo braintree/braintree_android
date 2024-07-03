@@ -3,7 +3,6 @@ package com.braintreepayments.api.paypal;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
@@ -14,13 +13,13 @@ import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.braintreepayments.api.BrowserSwitchFinalResult;
 import com.braintreepayments.api.BrowserSwitchOptions;
-import com.braintreepayments.api.BrowserSwitchResultInfo;
-import com.braintreepayments.api.testutils.Fixtures;
-import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeRequestCodes;
 import com.braintreepayments.api.core.Configuration;
+import com.braintreepayments.api.testutils.Fixtures;
+import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,31 +57,31 @@ public class PayPalClientUnitTest {
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
 
         PayPalPaymentAuthRequestParams paymentAuthRequest =
-                new PayPalPaymentAuthRequestParams(payPalVaultRequest).approvalUrl(
-                                "https://example.com/approval/url")
-                        .successUrl("https://example.com/success/url")
-                        .clientMetadataId("sample-client-metadata-id");
+            new PayPalPaymentAuthRequestParams(payPalVaultRequest).approvalUrl(
+                    "https://example.com/approval/url")
+                .successUrl("https://example.com/success/url")
+                .clientMetadataId("sample-client-metadata-id");
         PayPalInternalClient payPalInternalClient =
-                new MockPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest)
-                        .build();
+            new MockPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest)
+                .build();
 
         BraintreeClient braintreeClient =
-                new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
+            new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
 
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
         sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequest> captor =
-                ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
+            ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
         verify(paymentAuthCallback).onPayPalPaymentAuthRequest(captor.capture());
 
         PayPalPaymentAuthRequest request = captor.getValue();
         assertTrue(request instanceof PayPalPaymentAuthRequest.ReadyToLaunch);
         PayPalPaymentAuthRequestParams paymentAuthRequestCaptured =
-                ((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams();
+            ((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams();
 
         BrowserSwitchOptions browserSwitchOptions =
-                paymentAuthRequestCaptured.getBrowserSwitchOptions();
+            paymentAuthRequestCaptured.getBrowserSwitchOptions();
         assertEquals(BraintreeRequestCodes.PAYPAL, browserSwitchOptions.getRequestCode());
         assertFalse(browserSwitchOptions.isLaunchAsNewTask());
 
@@ -105,29 +104,29 @@ public class PayPalClientUnitTest {
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
 
         PayPalPaymentAuthRequestParams paymentAuthRequest =
-                new PayPalPaymentAuthRequestParams(payPalVaultRequest).approvalUrl(
-                                "https://example.com/approval/url")
-                        .successUrl("https://example.com/success/url")
-                        .clientMetadataId("sample-client-metadata-id");
+            new PayPalPaymentAuthRequestParams(payPalVaultRequest).approvalUrl(
+                    "https://example.com/approval/url")
+                .successUrl("https://example.com/success/url")
+                .clientMetadataId("sample-client-metadata-id");
         PayPalInternalClient payPalInternalClient =
-                new MockPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest)
-                        .build();
+            new MockPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest)
+                .build();
 
         BraintreeClient braintreeClient =
-                new MockBraintreeClientBuilder().configuration(payPalEnabledConfig)
-                        .launchesBrowserSwitchAsNewTask(true).build();
+            new MockBraintreeClientBuilder().configuration(payPalEnabledConfig)
+                .launchesBrowserSwitchAsNewTask(true).build();
 
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
         sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequest> captor =
-                ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
+            ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
         verify(paymentAuthCallback).onPayPalPaymentAuthRequest(captor.capture());
 
         PayPalPaymentAuthRequest request = captor.getValue();
         assertTrue(request instanceof PayPalPaymentAuthRequest.ReadyToLaunch);
         assertTrue(((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams()
-                .getBrowserSwitchOptions().isLaunchAsNewTask());
+            .getBrowserSwitchOptions().isLaunchAsNewTask());
     }
 
     @Test
@@ -136,30 +135,30 @@ public class PayPalClientUnitTest {
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
 
         PayPalPaymentAuthRequestParams paymentAuthRequest =
-                new PayPalPaymentAuthRequestParams(payPalVaultRequest).approvalUrl(
-                                "https://example.com/approval/url")
-                        .successUrl("https://example.com/success/url")
-                        .clientMetadataId("sample-client-metadata-id");
+            new PayPalPaymentAuthRequestParams(payPalVaultRequest).approvalUrl(
+                    "https://example.com/approval/url")
+                .successUrl("https://example.com/success/url")
+                .clientMetadataId("sample-client-metadata-id");
         PayPalInternalClient payPalInternalClient =
-                new MockPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest)
-                        .build();
+            new MockPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest)
+                .build();
 
         BraintreeClient braintreeClient =
-                new MockBraintreeClientBuilder().configuration(payPalEnabledConfig)
-                        .appLinkReturnUri(Uri.parse("www.example.com"))
-                        .build();
+            new MockBraintreeClientBuilder().configuration(payPalEnabledConfig)
+                .appLinkReturnUri(Uri.parse("www.example.com"))
+                .build();
 
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
         sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequest> captor =
-                ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
+            ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
         verify(paymentAuthCallback).onPayPalPaymentAuthRequest(captor.capture());
 
         PayPalPaymentAuthRequest request = captor.getValue();
         assertTrue(request instanceof PayPalPaymentAuthRequest.ReadyToLaunch);
         assertEquals(braintreeClient.getAppLinkReturnUri(),
-                ((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams()
+            ((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams()
                 .getBrowserSwitchOptions().getAppLinkUri());
     }
 
@@ -168,22 +167,22 @@ public class PayPalClientUnitTest {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         BraintreeClient braintreeClient =
-                new MockBraintreeClientBuilder().configuration(payPalDisabledConfig).build();
+            new MockBraintreeClientBuilder().configuration(payPalDisabledConfig).build();
 
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
         sut.createPaymentAuthRequest(activity, new PayPalCheckoutRequest("1.00", true),
-                paymentAuthCallback);
+            paymentAuthCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequest> captor =
-                ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
+            ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
         verify(paymentAuthCallback).onPayPalPaymentAuthRequest(captor.capture());
 
         PayPalPaymentAuthRequest request = captor.getValue();
         assertTrue(request instanceof PayPalPaymentAuthRequest.Failure);
         assertEquals("PayPal is not enabled. " +
-                        "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
-                        "for more information.",
-                ((PayPalPaymentAuthRequest.Failure) request).getError().getMessage());
+                "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
+                "for more information.",
+            ((PayPalPaymentAuthRequest.Failure) request).getError().getMessage());
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, null, null, false);
     }
 
@@ -193,14 +192,14 @@ public class PayPalClientUnitTest {
 
         Exception authError = new Exception("Error fetching auth");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configurationError(authError)
-                .build();
+            .configurationError(authError)
+            .build();
 
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
         sut.createPaymentAuthRequest(activity, new PayPalCheckoutRequest("1.00", true), paymentAuthCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequest> captor =
-                ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
+            ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
         verify(paymentAuthCallback).onPayPalPaymentAuthRequest(captor.capture());
 
         PayPalPaymentAuthRequest request = captor.getValue();
@@ -215,14 +214,14 @@ public class PayPalClientUnitTest {
 
         Exception authError = new Exception("Error fetching auth");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configurationError(authError)
-                .build();
+            .configurationError(authError)
+            .build();
 
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
         sut.createPaymentAuthRequest(activity, new PayPalVaultRequest(true), paymentAuthCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequest> captor =
-                ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
+            ArgumentCaptor.forClass(PayPalPaymentAuthRequest.class);
         verify(paymentAuthCallback).onPayPalPaymentAuthRequest(captor.capture());
 
         PayPalPaymentAuthRequest request = captor.getValue();
@@ -237,7 +236,7 @@ public class PayPalClientUnitTest {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         BraintreeClient braintreeClient =
-                new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
+            new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
 
@@ -245,7 +244,7 @@ public class PayPalClientUnitTest {
         sut.createPaymentAuthRequest(activity, payPalRequest, paymentAuthCallback);
 
         verify(payPalInternalClient).sendRequest(same(activity), same(payPalRequest),
-                any(PayPalInternalClientCallback.class));
+            any(PayPalInternalClientCallback.class));
     }
 
     @Test
@@ -253,7 +252,7 @@ public class PayPalClientUnitTest {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         BraintreeClient braintreeClient =
-                new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
+            new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
 
@@ -261,7 +260,7 @@ public class PayPalClientUnitTest {
         sut.createPaymentAuthRequest(activity, payPalRequest, paymentAuthCallback);
 
         verify(payPalInternalClient).sendRequest(same(activity), same(payPalRequest),
-                any(PayPalInternalClientCallback.class));
+            any(PayPalInternalClientCallback.class));
     }
 
     @Test
@@ -269,22 +268,22 @@ public class PayPalClientUnitTest {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         String approvalUrl =
-                "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&ba_token=EC-HERMES-SANDBOX-EC-TOKEN";
+            "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&ba_token=EC-HERMES-SANDBOX-EC-TOKEN";
 
-        BrowserSwitchResultInfo browserSwitchResult = mock(BrowserSwitchResultInfo.class);
+        BrowserSwitchFinalResult.Success browserSwitchResult = mock(BrowserSwitchFinalResult.Success.class);
 
         when(browserSwitchResult.getRequestMetadata()).thenReturn(
-                new JSONObject().put("client-metadata-id", "sample-client-metadata-id")
-                        .put("merchant-account-id", "sample-merchant-account-id")
-                        .put("intent", "authorize").put("approval-url", approvalUrl)
-                        .put("success-url", "https://example.com/success")
-                        .put("payment-type", "billing-agreement"));
+            new JSONObject().put("client-metadata-id", "sample-client-metadata-id")
+                .put("merchant-account-id", "sample-merchant-account-id")
+                .put("intent", "authorize").put("approval-url", approvalUrl)
+                .put("success-url", "https://example.com/success")
+                .put("payment-type", "billing-agreement"));
 
         Uri uri = Uri.parse(approvalUrl);
-        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(uri);
+        when(browserSwitchResult.getReturnUrl()).thenReturn(uri);
 
         PayPalPaymentAuthResult.Success payPalPaymentAuthResult = new PayPalPaymentAuthResult.Success(
-                new PayPalPaymentAuthResultInfo(browserSwitchResult));
+            new PayPalPaymentAuthResultInfo(browserSwitchResult));
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
 
@@ -292,7 +291,7 @@ public class PayPalClientUnitTest {
 
         ArgumentCaptor<PayPalAccount> captor = ArgumentCaptor.forClass(PayPalAccount.class);
         verify(payPalInternalClient).tokenize(captor.capture(),
-                any(PayPalInternalTokenizeCallback.class));
+            any(PayPalInternalTokenizeCallback.class));
 
         PayPalAccount payPalAccount = captor.getValue();
         JSONObject tokenizePayload = payPalAccount.buildJSON();
@@ -300,10 +299,10 @@ public class PayPalClientUnitTest {
 
         JSONObject payPalTokenizePayload = tokenizePayload.getJSONObject("paypalAccount");
         JSONObject expectedPayPalTokenizePayload =
-                new JSONObject().put("correlationId", "sample-client-metadata-id")
-                        .put("client", new JSONObject())
-                        .put("response", new JSONObject().put("webURL", approvalUrl))
-                        .put("intent", "authorize").put("response_type", "web");
+            new JSONObject().put("correlationId", "sample-client-metadata-id")
+                .put("client", new JSONObject())
+                .put("response", new JSONObject().put("webURL", approvalUrl))
+                .put("intent", "authorize").put("response_type", "web");
 
         JSONAssert.assertEquals(expectedPayPalTokenizePayload, payPalTokenizePayload, true);
     }
@@ -313,22 +312,22 @@ public class PayPalClientUnitTest {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         String approvalUrl =
-                "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN";
+            "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN";
 
-        BrowserSwitchResultInfo browserSwitchResult = mock(BrowserSwitchResultInfo.class);
+        BrowserSwitchFinalResult.Success browserSwitchResult = mock(BrowserSwitchFinalResult.Success.class);
 
         when(browserSwitchResult.getRequestMetadata()).thenReturn(
-                new JSONObject().put("client-metadata-id", "sample-client-metadata-id")
-                        .put("merchant-account-id", "sample-merchant-account-id")
-                        .put("intent", "authorize").put("approval-url", approvalUrl)
-                        .put("success-url", "https://example.com/success")
-                        .put("payment-type", "single-payment"));
+            new JSONObject().put("client-metadata-id", "sample-client-metadata-id")
+                .put("merchant-account-id", "sample-merchant-account-id")
+                .put("intent", "authorize").put("approval-url", approvalUrl)
+                .put("success-url", "https://example.com/success")
+                .put("payment-type", "single-payment"));
 
         Uri uri = Uri.parse(approvalUrl);
-        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(uri);
+        when(browserSwitchResult.getReturnUrl()).thenReturn(uri);
 
         PayPalPaymentAuthResult.Success payPalPaymentAuthResult = new PayPalPaymentAuthResult.Success(
-                new PayPalPaymentAuthResultInfo(browserSwitchResult));
+            new PayPalPaymentAuthResultInfo(browserSwitchResult));
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
 
@@ -336,7 +335,7 @@ public class PayPalClientUnitTest {
 
         ArgumentCaptor<PayPalAccount> captor = ArgumentCaptor.forClass(PayPalAccount.class);
         verify(payPalInternalClient).tokenize(captor.capture(),
-                any(PayPalInternalTokenizeCallback.class));
+            any(PayPalInternalTokenizeCallback.class));
 
         PayPalAccount payPalAccount = captor.getValue();
         JSONObject tokenizePayload = payPalAccount.buildJSON();
@@ -344,36 +343,36 @@ public class PayPalClientUnitTest {
 
         JSONObject payPalTokenizePayload = tokenizePayload.getJSONObject("paypalAccount");
         JSONObject expectedPayPalTokenizePayload =
-                new JSONObject().put("correlationId", "sample-client-metadata-id")
-                        .put("client", new JSONObject())
-                        .put("response", new JSONObject().put("webURL", approvalUrl))
-                        .put("intent", "authorize").put("response_type", "web")
-                        .put("options", new JSONObject().put("validate", false));
+            new JSONObject().put("correlationId", "sample-client-metadata-id")
+                .put("client", new JSONObject())
+                .put("response", new JSONObject().put("webURL", approvalUrl))
+                .put("intent", "authorize").put("response_type", "web")
+                .put("options", new JSONObject().put("validate", false));
 
         JSONAssert.assertEquals(expectedPayPalTokenizePayload, payPalTokenizePayload, true);
     }
 
     @Test
     public void tokenize_whenCancelUriReceived_notifiesCancellationAndSendsAnalyticsEvent()
-            throws JSONException {
+        throws JSONException {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         String approvalUrl = "sample-scheme://onetouch/v1/cancel";
 
-        BrowserSwitchResultInfo browserSwitchResult = mock(BrowserSwitchResultInfo.class);
+        BrowserSwitchFinalResult.Success browserSwitchResult = mock(BrowserSwitchFinalResult.Success.class);
 
         when(browserSwitchResult.getRequestMetadata()).thenReturn(
-                new JSONObject().put("client-metadata-id", "sample-client-metadata-id")
-                        .put("merchant-account-id", "sample-merchant-account-id")
-                        .put("intent", "authorize").put("approval-url", approvalUrl)
-                        .put("success-url", "https://example.com/success")
-                        .put("payment-type", "single-payment"));
+            new JSONObject().put("client-metadata-id", "sample-client-metadata-id")
+                .put("merchant-account-id", "sample-merchant-account-id")
+                .put("intent", "authorize").put("approval-url", approvalUrl)
+                .put("success-url", "https://example.com/success")
+                .put("payment-type", "single-payment"));
 
         Uri uri = Uri.parse(approvalUrl);
-        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(uri);
+        when(browserSwitchResult.getReturnUrl()).thenReturn(uri);
 
         PayPalPaymentAuthResult.Success payPalPaymentAuthResult = new PayPalPaymentAuthResult.Success(
-                new PayPalPaymentAuthResultInfo(browserSwitchResult));
+            new PayPalPaymentAuthResultInfo(browserSwitchResult));
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
 
@@ -390,28 +389,28 @@ public class PayPalClientUnitTest {
 
     @Test
     public void tokenize_whenPayPalInternalClientTokenizeResult_callsBackResult()
-            throws JSONException {
+        throws JSONException {
         PayPalAccountNonce payPalAccountNonce = mock(PayPalAccountNonce.class);
         PayPalInternalClient payPalInternalClient =
-                new MockPayPalInternalClientBuilder().tokenizeSuccess(payPalAccountNonce).build();
+            new MockPayPalInternalClientBuilder().tokenizeSuccess(payPalAccountNonce).build();
 
         String approvalUrl =
-                "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN";
+            "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN";
 
-        BrowserSwitchResultInfo browserSwitchResult = mock(BrowserSwitchResultInfo.class);
+        BrowserSwitchFinalResult.Success browserSwitchResult = mock(BrowserSwitchFinalResult.Success.class);
 
         when(browserSwitchResult.getRequestMetadata()).thenReturn(
-                new JSONObject().put("client-metadata-id", "sample-client-metadata-id")
-                        .put("merchant-account-id", "sample-merchant-account-id")
-                        .put("intent", "authorize").put("approval-url", approvalUrl)
-                        .put("success-url", "https://example.com/success")
-                        .put("payment-type", "single-payment"));
+            new JSONObject().put("client-metadata-id", "sample-client-metadata-id")
+                .put("merchant-account-id", "sample-merchant-account-id")
+                .put("intent", "authorize").put("approval-url", approvalUrl)
+                .put("success-url", "https://example.com/success")
+                .put("payment-type", "single-payment"));
 
         Uri uri = Uri.parse(approvalUrl);
-        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(uri);
+        when(browserSwitchResult.getReturnUrl()).thenReturn(uri);
 
         PayPalPaymentAuthResult.Success payPalPaymentAuthResult = new PayPalPaymentAuthResult.Success(
-                new PayPalPaymentAuthResultInfo(browserSwitchResult));
+            new PayPalPaymentAuthResultInfo(browserSwitchResult));
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
 

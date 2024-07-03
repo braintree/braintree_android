@@ -9,8 +9,8 @@ import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.BrowserSwitchFinalResult;
 import com.braintreepayments.api.BrowserSwitchOptions;
-import com.braintreepayments.api.BrowserSwitchResultInfo;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.BraintreeRequestCodes;
@@ -207,7 +207,7 @@ public class PayPalClient {
      */
     public void tokenize(@NonNull PayPalPaymentAuthResult.Success paymentAuthResult,
                          @NonNull final PayPalTokenizeCallback callback) {
-        BrowserSwitchResultInfo browserSwitchResult = paymentAuthResult.getPaymentAuthInfo().getBrowserSwitchResult();
+        BrowserSwitchFinalResult.Success browserSwitchResult = paymentAuthResult.getPaymentAuthInfo().getBrowserSwitchResult();
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
         String clientMetadataId = Json.optString(metadata, "client-metadata-id", null);
         String merchantAccountId = Json.optString(metadata, "merchant-account-id", null);
@@ -227,7 +227,7 @@ public class PayPalClient {
         }
 
         try {
-            Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
+            Uri deepLinkUri = browserSwitchResult.getReturnUrl();
             if (deepLinkUri != null) {
                 JSONObject urlResponseData =
                         parseUrlResponseData(deepLinkUri, successUrl, approvalUrl,

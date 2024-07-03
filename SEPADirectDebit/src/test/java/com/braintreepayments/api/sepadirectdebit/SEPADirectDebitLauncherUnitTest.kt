@@ -4,11 +4,9 @@ import android.content.Intent
 import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
+import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
-import com.braintreepayments.api.BrowserSwitchPendingRequest
-import com.braintreepayments.api.BrowserSwitchRequest
-import com.braintreepayments.api.BrowserSwitchResult
-import com.braintreepayments.api.BrowserSwitchResultInfo
+import com.braintreepayments.api.BrowserSwitchStartResult
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert.assertSame
@@ -21,7 +19,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class SEPADirectDebitLauncherUnitTest {
     private var browserSwitchClient: BrowserSwitchClient = mockk(relaxed = true)
-    private var browserSwitchRequest: BrowserSwitchRequest = mockk(relaxed = true)
+    private val pendingRequestString = "pending_request_string"
     private var activity: ComponentActivity = mockk(relaxed = true)
     private var intent: Intent = mockk(relaxed = true)
     private var options: BrowserSwitchOptions = mockk(relaxed = true)
@@ -36,8 +34,8 @@ class SEPADirectDebitLauncherUnitTest {
 
     @Test
     fun `launch on success starts browser switch returns pending request`() {
-        val browserSwitchPendingRequest: BrowserSwitchPendingRequest =
-            BrowserSwitchPendingRequest.Started(browserSwitchRequest)
+        val browserSwitchPendingRequest: BrowserSwitchStartResult =
+            BrowserSwitchStartResult.Started(pendingRequestString)
         every { browserSwitchClient.start(activity, options) } returns browserSwitchPendingRequest
 
         val pendingRequest = sut.launch(
@@ -47,16 +45,16 @@ class SEPADirectDebitLauncherUnitTest {
 
         assertTrue(pendingRequest is SEPADirectDebitPendingRequest.Started)
         assertSame(
-            browserSwitchPendingRequest,
-            (pendingRequest as SEPADirectDebitPendingRequest.Started).request
+            (browserSwitchPendingRequest as BrowserSwitchStartResult.Started).pendingRequest,
+            (pendingRequest as SEPADirectDebitPendingRequest.Started).pendingRequestString
         )
     }
 
     @Test
     fun `launch on error returns failure`() {
         val exception = BrowserSwitchException("error")
-        val browserSwitchPendingRequest: BrowserSwitchPendingRequest =
-            BrowserSwitchPendingRequest.Failure(exception)
+        val browserSwitchPendingRequest: BrowserSwitchStartResult =
+            BrowserSwitchStartResult.Failure(exception)
         every { browserSwitchClient.start(activity, options) } returns browserSwitchPendingRequest
 
         val pendingRequest = sut.launch(
@@ -73,35 +71,30 @@ class SEPADirectDebitLauncherUnitTest {
 
     @Test
     fun `handleReturnToAppFromBrowser on browser switch result returns success result`() {
-        val browserSwitchResultInfo: BrowserSwitchResultInfo = mockk(relaxed = true)
-        val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
+        val browserSwitchFinalResult = mockk<BrowserSwitchFinalResult.Success>()
         val pendingRequest: SEPADirectDebitPendingRequest.Started =
-            SEPADirectDebitPendingRequest.Started(
-                browserSwitchPendingRequest
-            )
+            SEPADirectDebitPendingRequest.Started(pendingRequestString)
         every {
-            browserSwitchClient.completeRequest(eq(browserSwitchPendingRequest), eq(intent))
-        } returns BrowserSwitchResult.Success(browserSwitchResultInfo)
+            browserSwitchClient.completeRequest(eq(intent), eq(pendingRequestString))
+        } returns browserSwitchFinalResult
 
         val paymentAuthResult = sut.handleReturnToAppFromBrowser(pendingRequest, intent)
 
         assertTrue(paymentAuthResult is SEPADirectDebitPaymentAuthResult.Success)
         assertSame(
-            (paymentAuthResult as SEPADirectDebitPaymentAuthResult.Success).paymentAuthInfo.browserSwitchResultInfo,
-            browserSwitchResultInfo
+            (paymentAuthResult as SEPADirectDebitPaymentAuthResult.Success).paymentAuthInfo.browserSwitchSuccess,
+            browserSwitchFinalResult
         )
     }
 
     @Test
     fun `handleReturnToAppFromBrowser when no BrowserSwitchResult returns no result`() {
-        val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
+        val browserSwitchPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
         val pendingRequest: SEPADirectDebitPendingRequest.Started =
-            SEPADirectDebitPendingRequest.Started(
-                browserSwitchPendingRequest
-            )
+            SEPADirectDebitPendingRequest.Started(pendingRequestString)
         every {
-            browserSwitchClient.completeRequest(eq(browserSwitchPendingRequest), eq(intent))
-        } returns BrowserSwitchResult.NoResult
+            browserSwitchClient.completeRequest(eq(intent), eq(pendingRequestString))
+        } returns BrowserSwitchFinalResult.NoResult
 
         val paymentAuthResult = sut.handleReturnToAppFromBrowser(pendingRequest, intent)
 

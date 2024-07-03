@@ -1,20 +1,20 @@
 package com.braintreepayments.api.sepadirectdebit;
 
-import com.braintreepayments.api.BrowserSwitchResultInfo;
+import com.braintreepayments.api.BrowserSwitchFinalResult;
 
 /**
  * Details of a {@link SEPADirectDebitPaymentAuthResult.Success}
  */
 public class SEPADirectDebitPaymentAuthResultInfo {
 
-    private BrowserSwitchResultInfo browserSwitchResultInfo;
+    private BrowserSwitchFinalResult.Success browserSwitchSuccess;
 
-    SEPADirectDebitPaymentAuthResultInfo(BrowserSwitchResultInfo browserSwitchResultInfo) {
-        this.browserSwitchResultInfo = browserSwitchResultInfo;
+    SEPADirectDebitPaymentAuthResultInfo(BrowserSwitchFinalResult.Success browserSwitchSuccess) {
+        this.browserSwitchSuccess = browserSwitchSuccess;
     }
 
-    BrowserSwitchResultInfo getBrowserSwitchResultInfo() {
-        return browserSwitchResultInfo;
+    BrowserSwitchFinalResult.Success getBrowserSwitchSuccess() {
+        return browserSwitchSuccess;
     }
 
 }

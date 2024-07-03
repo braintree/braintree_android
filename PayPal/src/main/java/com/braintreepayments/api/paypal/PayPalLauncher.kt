@@ -4,8 +4,8 @@ import android.content.Intent
 import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
-import com.braintreepayments.api.BrowserSwitchPendingRequest
-import com.braintreepayments.api.BrowserSwitchResult
+import com.braintreepayments.api.BrowserSwitchFinalResult
+import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.BraintreeException
 
 /**
@@ -44,8 +44,8 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
             paymentAuthRequest.requestParams.browserSwitchOptions
         )
         return when (request) {
-            is BrowserSwitchPendingRequest.Failure -> PayPalPendingRequest.Failure(request.cause)
-            is BrowserSwitchPendingRequest.Started -> PayPalPendingRequest.Started(request)
+            is BrowserSwitchStartResult.Failure -> PayPalPendingRequest.Failure(request.error)
+            is BrowserSwitchStartResult.Started -> PayPalPendingRequest.Started(request.pendingRequest)
         }
     }
 
@@ -73,12 +73,17 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
         pendingRequest: PayPalPendingRequest.Started,
         intent: Intent
     ): PayPalPaymentAuthResult {
-        return when (val browserSwitchResult = browserSwitchClient.completeRequest(pendingRequest.request, intent)) {
-            is BrowserSwitchResult.Success -> PayPalPaymentAuthResult.Success(
-                PayPalPaymentAuthResultInfo(browserSwitchResult.resultInfo)
+        return when (val browserSwitchResult =
+            browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
+            is BrowserSwitchFinalResult.Success -> PayPalPaymentAuthResult.Success(
+                PayPalPaymentAuthResultInfo(browserSwitchResult)
             )
 
-            is BrowserSwitchResult.NoResult -> PayPalPaymentAuthResult.NoResult
+            is BrowserSwitchFinalResult.Failure -> PayPalPaymentAuthResult.Failure(
+                browserSwitchResult.error
+            )
+
+            is BrowserSwitchFinalResult.NoResult -> PayPalPaymentAuthResult.NoResult
         }
     }
 
