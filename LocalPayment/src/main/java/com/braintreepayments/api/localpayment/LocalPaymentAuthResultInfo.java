@@ -1,20 +1,20 @@
 package com.braintreepayments.api.localpayment;
 
 
-import com.braintreepayments.api.BrowserSwitchResultInfo;
+import com.braintreepayments.api.BrowserSwitchFinalResult;
 
 /**
  * Details of a {@link LocalPaymentAuthResult.Success}
  */
 public class LocalPaymentAuthResultInfo {
 
-    private final BrowserSwitchResultInfo browserSwitchResultInfo;
+    private final BrowserSwitchFinalResult.Success browserSwitchSuccess;
 
-    LocalPaymentAuthResultInfo(BrowserSwitchResultInfo browserSwitchResultInfo) {
-        this.browserSwitchResultInfo = browserSwitchResultInfo;
+    LocalPaymentAuthResultInfo(BrowserSwitchFinalResult.Success browserSwitchSuccess) {
+        this.browserSwitchSuccess = browserSwitchSuccess;
     }
 
-    BrowserSwitchResultInfo getBrowserSwitchResultInfo() {
-        return browserSwitchResultInfo;
+    BrowserSwitchFinalResult.Success getBrowserSwitchResultInfo() {
+        return browserSwitchSuccess;
     }
 }

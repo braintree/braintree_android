@@ -2,20 +2,20 @@ package com.braintreepayments.api.venmo;
 
 import androidx.annotation.NonNull;
 
-import com.braintreepayments.api.BrowserSwitchResultInfo;
+import com.braintreepayments.api.BrowserSwitchFinalResult;
 
 /**
  * Details of a {@link VenmoPaymentAuthResult.Success}
  */
 public class VenmoPaymentAuthResultInfo {
 
-    private BrowserSwitchResultInfo browserSwitchResultInfo;
+    private BrowserSwitchFinalResult.Success browserSwitchSuccess;
 
-    VenmoPaymentAuthResultInfo(@NonNull BrowserSwitchResultInfo browserSwitchResultInfo) {
-        this.browserSwitchResultInfo = browserSwitchResultInfo;
+    VenmoPaymentAuthResultInfo(@NonNull BrowserSwitchFinalResult.Success browserSwitchSuccess) {
+        this.browserSwitchSuccess = browserSwitchSuccess;
     }
 
-    BrowserSwitchResultInfo getBrowserSwitchResultInfo() {
-        return browserSwitchResultInfo;
+    BrowserSwitchFinalResult.Success getBrowserSwitchResultInfo() {
+        return browserSwitchSuccess;
     }
 }

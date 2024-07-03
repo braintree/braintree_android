@@ -11,6 +11,12 @@ sealed class LocalPaymentAuthResult {
     class Success(val paymentAuthInfo: LocalPaymentAuthResultInfo) : LocalPaymentAuthResult()
 
     /**
+     * The browser switch failed.
+     * @property [error] Error detailing the reason for the browser switch failure.
+     */
+    class Failure(val error: Exception) : LocalPaymentAuthResult()
+
+    /**
      * If no matching result can be found for the [LocalPaymentPendingRequest.Started] passed to
      * [LocalPaymentLauncher.handleReturnToAppFromBrowser]. This is expected if the user closed the
      * browser to cancel the payment flow, or returns to the app without completing the

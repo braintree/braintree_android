@@ -1,20 +1,15 @@
 package com.braintreepayments.api.venmo
 
 import android.content.Intent
-import android.net.Uri
 import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
+import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
-import com.braintreepayments.api.BrowserSwitchPendingRequest
-import com.braintreepayments.api.BrowserSwitchRequest
-import com.braintreepayments.api.BrowserSwitchResult
-import com.braintreepayments.api.BrowserSwitchResultInfo
+import com.braintreepayments.api.BrowserSwitchStartResult
 import io.mockk.every
 import io.mockk.mockk
 import junit.framework.Assert
-import org.json.JSONException
-import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
@@ -31,15 +26,9 @@ class VenmoLauncherUnitTest {
     private val activity: ComponentActivity = mockk(relaxed = true)
     private val paymentAuthRequestParams: VenmoPaymentAuthRequestParams = mockk(relaxed = true)
     private val intent: Intent = mockk(relaxed = true)
+    private val pendingRequestString = "pending_request_string"
     private val options: BrowserSwitchOptions = mockk(relaxed = true)
-    private val browserSwitchRequest = BrowserSwitchRequest(
-        1,
-        Uri.parse("http://"),
-        JSONObject().put("test_key", "test_value"),
-        "return-url-scheme",
-        Uri.parse("https://example.com"),
-        false
-    )
+
     private lateinit var sut: VenmoLauncher
 
     @Before
@@ -50,7 +39,7 @@ class VenmoLauncherUnitTest {
 
     @Test
     fun `launch starts browser switch and returns pending request`() {
-        val startedPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
+        val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
         every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
 
         val pendingRequest =
@@ -58,8 +47,8 @@ class VenmoLauncherUnitTest {
 
         assertTrue(pendingRequest is VenmoPendingRequest.Started)
         assertEquals(
-            browserSwitchRequest,
-            (pendingRequest as VenmoPendingRequest.Started).request.browserSwitchRequest
+            startedPendingRequest.pendingRequest,
+            (pendingRequest as VenmoPendingRequest.Started).pendingRequestString
         )
     }
 
@@ -68,7 +57,7 @@ class VenmoLauncherUnitTest {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         val exception = BrowserSwitchException("error")
         every { browserSwitchClient.start(eq(activity), eq(options)) } returns
-                BrowserSwitchPendingRequest.Failure(exception)
+            BrowserSwitchStartResult.Failure(exception)
 
         val pendingRequest =
             sut.launch(activity, VenmoPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
@@ -95,50 +84,47 @@ class VenmoLauncherUnitTest {
         assertTrue(pendingRequest is VenmoPendingRequest.Failure)
         assertEquals(
             "AndroidManifest.xml is incorrectly configured or another app " +
-                    "defines the same browser switch url as this app. See " +
-                    "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/" +
-                    "android/v4#browser-switch-setup " +
-                    "for the correct configuration: browser switch error",
+                "defines the same browser switch url as this app. See " +
+                "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/" +
+                "android/v4#browser-switch-setup " +
+                "for the correct configuration: browser switch error",
             (pendingRequest as VenmoPendingRequest.Failure).error.message
         )
     }
 
     @Test
-    @Throws(JSONException::class)
     fun `handleReturnToAppFromBrowser when result exists returns result`() {
-        val result: BrowserSwitchResultInfo = mockk(relaxed = true)
-        val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
+        val browserSwitchFinalResult = mockk<BrowserSwitchFinalResult.Success>()
         every {
             browserSwitchClient.completeRequest(
-                browserSwitchPendingRequest,
-                intent
+                intent,
+                pendingRequestString
             )
-        } returns BrowserSwitchResult.Success(result)
+        } returns browserSwitchFinalResult
 
         val paymentAuthResult = sut.handleReturnToApp(
-            VenmoPendingRequest.Started(browserSwitchPendingRequest), intent
+            VenmoPendingRequest.Started(pendingRequestString), intent
         )
 
         assertTrue(paymentAuthResult is VenmoPaymentAuthResult.Success)
         assertSame(
-            result,
+            browserSwitchFinalResult,
             (paymentAuthResult as VenmoPaymentAuthResult.Success).paymentAuthInfo.browserSwitchResultInfo
         )
     }
 
     @Test
-    @Throws(JSONException::class)
     fun `handleReturnToAppFromBrowser when result does not exist returns null`() {
-        val browserSwitchPendingRequest = BrowserSwitchPendingRequest.Started(browserSwitchRequest)
         every {
             browserSwitchClient.completeRequest(
-                browserSwitchPendingRequest,
-                intent
+                intent,
+                pendingRequestString
             )
-        } returns BrowserSwitchResult.NoResult
+        } returns BrowserSwitchFinalResult.NoResult
 
         val paymentAuthResult = sut.handleReturnToApp(
-            VenmoPendingRequest.Started(browserSwitchPendingRequest), intent
+            VenmoPendingRequest.Started(pendingRequestString),
+            intent
         )
 
         assertTrue(paymentAuthResult is VenmoPaymentAuthResult.NoResult)
