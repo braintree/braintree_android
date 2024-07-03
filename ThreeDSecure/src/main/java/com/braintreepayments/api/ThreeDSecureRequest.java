@@ -446,6 +446,15 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeParcelable(v2UiCustomization, flags);
         dest.writeParcelable(v1UiCustomization, flags);
         dest.writeString(accountType);
+        if (customFields != null) {
+            dest.writeInt(customFields.size());
+            for (Map.Entry<String, Object> entry: customFields.entrySet()) {
+                dest.writeString(entry.getKey());
+                dest.writeValue(entry.getValue());
+            }
+        } else {
+            dest.writeInt(0);
+        }
     }
 
     public ThreeDSecureRequest(Parcel in) {
@@ -465,6 +474,15 @@ public class ThreeDSecureRequest implements Parcelable {
         v2UiCustomization = in.readParcelable(ThreeDSecureV2UiCustomization.class.getClassLoader());
         v1UiCustomization = in.readParcelable(ThreeDSecureV1UiCustomization.class.getClassLoader());
         accountType = in.readString();
+        int customFieldsSize = in.readInt();
+        if (customFieldsSize > 0) {
+            customFields = new HashMap<>();
+            for (int i = 0; i < customFieldsSize; i++) {
+                String key = in.readString();
+                Object value = in.readValue(getClass().getClassLoader());
+                customFields.put(key, value);
+            }
+        }
     }
 
     public static final Creator<ThreeDSecureRequest> CREATOR = new Creator<ThreeDSecureRequest>() {
