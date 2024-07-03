@@ -70,6 +70,8 @@ class AnalyticsClientUnitTest {
             )
         } returns mockk()
 
+        every { deviceInspector.isVenmoInstalled(context) } returns true
+
         val event = AnalyticsEvent(eventName, timestamp = 123)
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
@@ -103,12 +105,13 @@ class AnalyticsClientUnitTest {
             )
         } returns mockk()
 
+        every { deviceInspector.isVenmoInstalled(context) } returns true
+
         val event = AnalyticsEvent(
             name = eventName,
             payPalContextId = "fake-paypal-context-id",
             linkType = "fake-link-type",
             timestamp = 456,
-            venmoInstalled = true,
             isVaultRequest = true
         )
         val sut =

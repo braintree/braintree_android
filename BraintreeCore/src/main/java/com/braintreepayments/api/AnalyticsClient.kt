@@ -195,11 +195,12 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         return JSONObject().put(FPTI_KEY_EVENTS, eventsArray)
     }
 
-    private fun createFPTIEventParams(event: AnalyticsEvent) =
-        JSONObject()
+    private fun createFPTIEventParams(event: AnalyticsEvent): JSONObject {
+        val venmoInstalled = deviceInspector.isVenmoInstalled(applicationContext)
+        return JSONObject()
             .put(FPTI_KEY_EVENT_NAME, "android.${event.name}")
             .put(FPTI_KEY_TIMESTAMP, event.timestamp)
-            .put(FPTI_KEY_VENMO_INSTALLED, event.venmoInstalled)
+            .put(FPTI_KEY_VENMO_INSTALLED, venmoInstalled)
             .put(FPTI_KEY_IS_VAULT, event.isVaultRequest)
             .put(FPTI_KEY_TENANT_NAME, "Braintree")
             .putOpt(FPTI_KEY_PAYPAL_CONTEXT_ID, event.payPalContextId)
@@ -207,6 +208,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             .putOpt(FPTI_KEY_START_TIME, event.startTime)
             .putOpt(FPTI_KEY_END_TIME, event.endTime)
             .putOpt(FPTI_KEY_ENDPOINT, event.endpoint)
+    }
 
     @Throws(JSONException::class)
     private fun createFPTIBatchEventParams(
