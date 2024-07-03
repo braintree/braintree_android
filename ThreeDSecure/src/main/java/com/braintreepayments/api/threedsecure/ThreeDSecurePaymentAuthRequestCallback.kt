@@ -5,5 +5,5 @@ package com.braintreepayments.api.threedsecure
  */
 fun interface ThreeDSecurePaymentAuthRequestCallback {
 
-    fun onThreeDSecurePaymentAuthRequest(paymentAuthRequest: ThreeDSecurePaymentAuthRequest?)
+    fun onThreeDSecurePaymentAuthRequest(paymentAuthRequest: ThreeDSecurePaymentAuthRequest)
 }

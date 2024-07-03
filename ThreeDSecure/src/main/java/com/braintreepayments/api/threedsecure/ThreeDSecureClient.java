@@ -293,7 +293,10 @@ public class ThreeDSecureClient {
         }
     }
 
-    private void callbackCreatePaymentAuthFailure(ThreeDSecurePaymentAuthRequestCallback callback, ThreeDSecurePaymentAuthRequest.Failure failure) {
+    private void callbackCreatePaymentAuthFailure(
+        ThreeDSecurePaymentAuthRequestCallback callback,
+        @NonNull ThreeDSecurePaymentAuthRequest.Failure failure
+    ) {
         braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED);
         callback.onThreeDSecurePaymentAuthRequest(failure);
     }
