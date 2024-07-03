@@ -5,5 +5,5 @@ package com.braintreepayments.api.googlepay
  */
 fun interface GooglePayPaymentAuthRequestCallback {
 
-    fun onGooglePayPaymentAuthRequest(paymentAuthRequest: GooglePayPaymentAuthRequest?)
+    fun onGooglePayPaymentAuthRequest(paymentAuthRequest: GooglePayPaymentAuthRequest)
 }

@@ -11,6 +11,7 @@ import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.ErrorWithResponse;
 import com.braintreepayments.api.core.GraphQLConstants;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -111,12 +112,12 @@ public class CardClient {
         }
     }
 
-    private void callbackFailure(CardTokenizeCallback callback, CardResult cardResult) {
+    private void callbackFailure(CardTokenizeCallback callback, @NotNull CardResult cardResult) {
         braintreeClient.sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_FAILED);
         callback.onCardResult(cardResult);
     }
 
-    private void callbackSuccess(CardTokenizeCallback callback, CardResult cardResult) {
+    private void callbackSuccess(CardTokenizeCallback callback, @NotNull CardResult cardResult) {
         braintreeClient.sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_SUCCEEDED);
         callback.onCardResult(cardResult);
     }
