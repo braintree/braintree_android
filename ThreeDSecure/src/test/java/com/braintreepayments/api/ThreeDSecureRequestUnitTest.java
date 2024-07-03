@@ -67,10 +67,10 @@ public class ThreeDSecureRequestUnitTest {
         v1UiCustomization.setRedirectButtonText("return-button-text");
         v1UiCustomization.setRedirectDescription("return-label-text");
 
-        Map<String, Object> customFields = new HashMap<>();
+        Map<String, String> customFields = new HashMap<>();
         customFields.put("custom_key1", "custom_value1");
-        customFields.put("custom_key2", 123);
-        customFields.put("custom_key3", true);
+        customFields.put("custom_key2", "custom_value2");
+        customFields.put("custom_key3", "custom_value3");
 
         ThreeDSecureRequest expected = new ThreeDSecureRequest();
         expected.setNonce("a-nonce");
@@ -143,8 +143,8 @@ public class ThreeDSecureRequestUnitTest {
 
         assertEquals(3, actual.getCustomFields().size());
         assertEquals("custom_value1", actual.getCustomFields().get("custom_key1"));
-        assertEquals(123, actual.getCustomFields().get("custom_key2"));
-        assertEquals(true, actual.getCustomFields().get("custom_key3"));
+        assertEquals("custom_value2", actual.getCustomFields().get("custom_key2"));
+        assertEquals("custom_value3", actual.getCustomFields().get("custom_key3"));
     }
 
     @Test
@@ -191,7 +191,7 @@ public class ThreeDSecureRequestUnitTest {
         request.setCardAddChallengeRequested(true);
         request.setAccountType(ThreeDSecureRequest.CREDIT);
 
-        Map<String, Object> customFields = new HashMap<>();
+        Map<String, String> customFields = new HashMap<>();
         customFields.put("custom_key1", "custom_value1");
         customFields.put("custom_key2", "123");
         request.setCustomFields(customFields);

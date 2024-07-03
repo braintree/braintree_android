@@ -58,7 +58,7 @@ public class ThreeDSecureRequest implements Parcelable {
 
     private String nonce;
     private String amount;
-    private Map<String,Object> customFields;
+    private Map<String, String> customFields;
     private String mobilePhoneNumber;
     private String email;
     private @ThreeDSecureShippingMethod int shippingMethod;
@@ -90,7 +90,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param customFields Object where each key is the name of a custom field which has been configured in the Control Panel. In the Control Panel you can configure 3D Secure Rules which trigger on certain values.
      */
-    public void setCustomFields(@Nullable Map<String, Object> customFields) {
+    public void setCustomFields(@Nullable Map<String, String> customFields) {
         this.customFields = customFields;
     }
 
@@ -311,7 +311,7 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     @Nullable
-    public Map<String, Object> getCustomFields() {
+    public Map<String, String> getCustomFields() {
         return customFields;
     }
 
@@ -448,11 +448,12 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeString(accountType);
         if (customFields != null) {
             dest.writeInt(customFields.size());
-            for (Map.Entry<String, Object> entry: customFields.entrySet()) {
+            for (Map.Entry<String, String> entry: customFields.entrySet()) {
                 dest.writeString(entry.getKey());
-                dest.writeValue(entry.getValue());
+                dest.writeString(entry.getValue());
             }
         } else {
+            // set custom fields size == 0 so we know not to create a customFields map when deserializing
             dest.writeInt(0);
         }
     }
@@ -479,7 +480,7 @@ public class ThreeDSecureRequest implements Parcelable {
             customFields = new HashMap<>();
             for (int i = 0; i < customFieldsSize; i++) {
                 String key = in.readString();
-                Object value = in.readValue(getClass().getClassLoader());
+                String value = in.readString();
                 customFields.put(key, value);
             }
         }
