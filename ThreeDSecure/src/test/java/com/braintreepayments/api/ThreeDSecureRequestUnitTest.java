@@ -67,6 +67,11 @@ public class ThreeDSecureRequestUnitTest {
         v1UiCustomization.setRedirectButtonText("return-button-text");
         v1UiCustomization.setRedirectDescription("return-label-text");
 
+        Map<String, Object> customFields = new HashMap<>();
+        customFields.put("custom_key1", "custom_value1");
+        customFields.put("custom_key2", 123);
+        customFields.put("custom_key3", true);
+
         ThreeDSecureRequest expected = new ThreeDSecureRequest();
         expected.setNonce("a-nonce");
         expected.setAmount("1.00");
@@ -84,6 +89,7 @@ public class ThreeDSecureRequestUnitTest {
         expected.setV2UiCustomization(v2UiCustomization);
         expected.setV1UiCustomization(v1UiCustomization);
         expected.setAccountType(ThreeDSecureRequest.CREDIT);
+        expected.setCustomFields(customFields);
 
         Parcel parcel = Parcel.obtain();
         expected.writeToParcel(parcel, 0);
@@ -134,6 +140,11 @@ public class ThreeDSecureRequestUnitTest {
 
         assertEquals(expected.getV1UiCustomization().getRedirectDescription(),
                 actual.getV1UiCustomization().getRedirectDescription());
+
+        assertEquals(3, actual.getCustomFields().size());
+        assertEquals("custom_value1", actual.getCustomFields().get("custom_key1"));
+        assertEquals(123, actual.getCustomFields().get("custom_key2"));
+        assertEquals(true, actual.getCustomFields().get("custom_key3"));
     }
 
     @Test
