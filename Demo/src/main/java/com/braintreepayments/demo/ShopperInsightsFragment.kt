@@ -10,10 +10,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.fragment.NavHostFragment
 import com.braintreepayments.api.ExperimentalBetaApi
-import com.braintreepayments.api.ShopperInsightsBuyerPhone
-import com.braintreepayments.api.ShopperInsightsClient
-import com.braintreepayments.api.ShopperInsightsRequest
-import com.braintreepayments.api.ShopperInsightsResult
+import com.braintreepayments.api.shopperinsights.ShopperInsightsBuyerPhone
+import com.braintreepayments.api.shopperinsights.ShopperInsightsClient
+import com.braintreepayments.api.shopperinsights.ShopperInsightsRequest
+import com.braintreepayments.api.shopperinsights.ShopperInsightsResult
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
