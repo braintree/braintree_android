@@ -19,9 +19,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * Deprecated. Use PayPal module instead.
  * Used to tokenize PayPal accounts. For more information see the
  * <a href="https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4">documentation</a>
  */
+@Deprecated
 public class PayPalNativeCheckoutClient {
 
     private final BraintreeClient braintreeClient;

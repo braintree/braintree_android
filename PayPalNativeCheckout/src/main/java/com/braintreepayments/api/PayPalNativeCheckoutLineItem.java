@@ -13,6 +13,10 @@ import org.json.JSONObject;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Deprecated. Use PayPal module instead.
+ */
+@Deprecated
 public class PayPalNativeCheckoutLineItem implements Parcelable {
 
     /**
