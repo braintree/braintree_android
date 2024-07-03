@@ -44,6 +44,7 @@ public class PayPalNativeCheckoutClient {
      * <p>
      * Create a new instance of {@link PayPalNativeCheckoutClient} from within a Fragment using a {@link BraintreeClient}.
      */
+    @Deprecated
     public PayPalNativeCheckoutClient(@NonNull Fragment fragment, @NonNull BraintreeClient braintreeClient) {
         this(braintreeClient, new PayPalNativeCheckoutInternalClient(braintreeClient));
     }
@@ -84,7 +85,7 @@ public class PayPalNativeCheckoutClient {
      * This method must be invoked on a {@link PayPalNativeCheckoutClient (Fragment, BraintreeClient)} or
      * {@link PayPalNativeCheckoutClient (FragmentActivity, BraintreeClient)} in order to receive results.
      */
-   @Deprecated
+    @Deprecated
     public void tokenizePayPalAccount(@NonNull final FragmentActivity activity, @NonNull final PayPalNativeRequest payPalRequest) throws Exception {
         braintreeClient.sendAnalyticsEvent(
                 "paypal-native.tokenize.started",
