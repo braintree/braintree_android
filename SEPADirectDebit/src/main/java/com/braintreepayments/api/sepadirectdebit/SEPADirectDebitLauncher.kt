@@ -3,8 +3,8 @@ package com.braintreepayments.api.sepadirectdebit
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
-import com.braintreepayments.api.BrowserSwitchPendingRequest
-import com.braintreepayments.api.BrowserSwitchResult
+import com.braintreepayments.api.BrowserSwitchFinalResult
+import com.braintreepayments.api.BrowserSwitchStartResult
 
 /**
  * Responsible for launching a SEPA mandate in a web browser
@@ -35,10 +35,11 @@ class SEPADirectDebitLauncher internal constructor(private val browserSwitchClie
         val browserSwitchPendingRequest =
             browserSwitchClient.start(activity, params.browserSwitchOptions)
         return when (browserSwitchPendingRequest) {
-            is BrowserSwitchPendingRequest.Started ->
-                SEPADirectDebitPendingRequest.Started(browserSwitchPendingRequest)
-            is BrowserSwitchPendingRequest.Failure ->
-                SEPADirectDebitPendingRequest.Failure(browserSwitchPendingRequest.cause)
+            is BrowserSwitchStartResult.Started ->
+                SEPADirectDebitPendingRequest.Started(browserSwitchPendingRequest.pendingRequest)
+
+            is BrowserSwitchStartResult.Failure ->
+                SEPADirectDebitPendingRequest.Failure(browserSwitchPendingRequest.error)
         }
     }
 
@@ -65,11 +66,17 @@ class SEPADirectDebitLauncher internal constructor(private val browserSwitchClie
         pendingRequest: SEPADirectDebitPendingRequest.Started,
         intent: Intent
     ): SEPADirectDebitPaymentAuthResult {
-        return when (val result = browserSwitchClient.completeRequest(pendingRequest.request, intent)) {
-            is BrowserSwitchResult.Success -> SEPADirectDebitPaymentAuthResult.Success(
-                SEPADirectDebitPaymentAuthResultInfo(result.resultInfo)
+        return when (val result =
+            browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
+            is BrowserSwitchFinalResult.Success -> SEPADirectDebitPaymentAuthResult.Success(
+                SEPADirectDebitPaymentAuthResultInfo(result)
             )
-            is BrowserSwitchResult.NoResult -> SEPADirectDebitPaymentAuthResult.NoResult
+
+            is BrowserSwitchFinalResult.Failure -> {
+                SEPADirectDebitPaymentAuthResult.Failure(result.error)
+            }
+
+            is BrowserSwitchFinalResult.NoResult -> SEPADirectDebitPaymentAuthResult.NoResult
         }
     }
 }

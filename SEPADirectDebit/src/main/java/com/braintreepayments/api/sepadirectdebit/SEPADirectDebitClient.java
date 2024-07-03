@@ -9,8 +9,8 @@ import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.BrowserSwitchFinalResult;
 import com.braintreepayments.api.BrowserSwitchOptions;
-import com.braintreepayments.api.BrowserSwitchResultInfo;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.BraintreeRequestCodes;
@@ -116,10 +116,10 @@ public class SEPADirectDebitClient {
      */
     public void tokenize(@NonNull SEPADirectDebitPaymentAuthResult.Success paymentAuthResult,
                          @NonNull final SEPADirectDebitTokenizeCallback callback) {
-        BrowserSwitchResultInfo browserSwitchResult =
-                paymentAuthResult.getPaymentAuthInfo().getBrowserSwitchResultInfo();
+        BrowserSwitchFinalResult.Success browserSwitchResult =
+                paymentAuthResult.getPaymentAuthInfo().getBrowserSwitchSuccess();
 
-        Uri deepLinkUri = browserSwitchResult.getDeepLinkUrl();
+        Uri deepLinkUri = browserSwitchResult.getReturnUrl();
         if (deepLinkUri != null) {
             if (deepLinkUri.getPath().contains("success") &&
                     deepLinkUri.getQueryParameter("success").equals("true")) {

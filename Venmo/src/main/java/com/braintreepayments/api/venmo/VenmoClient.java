@@ -11,8 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.BrowserSwitchFinalResult;
 import com.braintreepayments.api.BrowserSwitchOptions;
-import com.braintreepayments.api.BrowserSwitchResultInfo;
 import com.braintreepayments.api.core.ApiClient;
 import com.braintreepayments.api.core.AppSwitchNotAvailableException;
 import com.braintreepayments.api.core.Authorization;
@@ -204,9 +204,9 @@ public class VenmoClient {
     public void tokenize(@NonNull final VenmoPaymentAuthResult.Success paymentAuthResult,
                          @NonNull VenmoTokenizeCallback callback) {
             VenmoPaymentAuthResultInfo venmoPaymentAuthResultInfo = paymentAuthResult.getPaymentAuthInfo();
-            BrowserSwitchResultInfo browserSwitchResultInfo = venmoPaymentAuthResultInfo.getBrowserSwitchResultInfo();
+        BrowserSwitchFinalResult.Success browserSwitchResultInfo = venmoPaymentAuthResultInfo.getBrowserSwitchResultInfo();
 
-        Uri deepLinkUri = browserSwitchResultInfo.getDeepLinkUrl();
+        Uri deepLinkUri = browserSwitchResultInfo.getReturnUrl();
         if (deepLinkUri != null) {
             braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED, payPalContextId, LINK_TYPE, isVaultRequest);
             if (Objects.requireNonNull(deepLinkUri.getPath()).contains("success")) {

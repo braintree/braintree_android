@@ -16,8 +16,8 @@ import android.util.Base64;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import com.braintreepayments.api.BrowserSwitchFinalResult;
 import com.braintreepayments.api.BrowserSwitchOptions;
-import com.braintreepayments.api.BrowserSwitchResultInfo;
 import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 import com.braintreepayments.api.core.Authorization;
@@ -49,7 +49,7 @@ public class VenmoClientUnitTest {
     private VenmoApi venmoApi;
     private Authorization clientToken;
     private Authorization tokenizationKey;
-    private BrowserSwitchResultInfo browserSwitchResult;
+    private BrowserSwitchFinalResult.Success browserSwitchResult;
     private VenmoPaymentAuthResult.Success paymentAuthResult;
     private final Uri SUCCESS_URL = Uri.parse("sample-scheme://x-callback-url/vzero/auth/venmo/success?resource_id=a-resource-id");
     private final Uri SUCCESS_URL_WITHOUT_RESOURCE_ID = Uri.parse("sample-scheme://x-callback-url/vzero/auth/venmo/success?username=venmojoe&payment_method_nonce=fakenonce");
@@ -72,13 +72,11 @@ public class VenmoClientUnitTest {
 
         clientToken = Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN);
         tokenizationKey = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        browserSwitchResult = mock(BrowserSwitchResultInfo.class);
+        browserSwitchResult = mock(BrowserSwitchFinalResult.Success.class);
         VenmoPaymentAuthResultInfo venmoPaymentAuthResultInfo =
                 new VenmoPaymentAuthResultInfo(browserSwitchResult);
         paymentAuthResult = new VenmoPaymentAuthResult.Success(venmoPaymentAuthResultInfo);
     }
-
-
 
     @Test
     public void createPaymentAuthRequest_whenCreatePaymentContextFails_collectAddressWithEcdDisabled() {
@@ -396,7 +394,7 @@ public class VenmoClientUnitTest {
                 .configuration(venmoEnabledConfiguration)
                 .authorizationSuccess(clientToken)
                 .build();
-        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(SUCCESS_URL);
+        when(browserSwitchResult.getReturnUrl()).thenReturn(SUCCESS_URL);
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter);
@@ -415,7 +413,7 @@ public class VenmoClientUnitTest {
                 .configuration(venmoEnabledConfiguration)
                 .authorizationSuccess(clientToken)
                 .build();
-        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(CANCEL_URL);
+        when(browserSwitchResult.getReturnUrl()).thenReturn(CANCEL_URL);
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter);
@@ -438,7 +436,7 @@ public class VenmoClientUnitTest {
                 .configuration(venmoEnabledConfiguration)
                 .authorizationSuccess(clientToken)
                 .build();
-        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(SUCCESS_URL);
+        when(browserSwitchResult.getReturnUrl()).thenReturn(SUCCESS_URL);
 
         VenmoApi venmoApi = new MockVenmoApiBuilder()
                 .createNonceFromPaymentContextSuccess(VenmoAccountNonce.fromJSON(
@@ -470,7 +468,7 @@ public class VenmoClientUnitTest {
                 .authorizationSuccess(clientToken)
                 .sendGraphQLPOSTErrorResponse(graphQLError)
                 .build();
-        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(SUCCESS_URL);
+        when(browserSwitchResult.getReturnUrl()).thenReturn(SUCCESS_URL);
 
         VenmoApi venmoApi = new MockVenmoApiBuilder()
                 .createNonceFromPaymentContextError(graphQLError)
@@ -498,7 +496,7 @@ public class VenmoClientUnitTest {
                 .authorizationSuccess(clientToken)
                 .build();
         when(braintreeClient.getApplicationContext()).thenReturn(context);
-        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(SUCCESS_URL);
+        when(browserSwitchResult.getReturnUrl()).thenReturn(SUCCESS_URL);
 
         VenmoAccountNonce nonce = mock(VenmoAccountNonce.class);
         when(nonce.getString()).thenReturn("some-nonce");
@@ -526,7 +524,7 @@ public class VenmoClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .authorizationSuccess(clientToken)
                 .build();
-        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(SUCCESS_URL);
+        when(browserSwitchResult.getReturnUrl()).thenReturn(SUCCESS_URL);
 
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter);
@@ -545,7 +543,7 @@ public class VenmoClientUnitTest {
                 .authorizationSuccess(clientToken)
                 .build();
         when(braintreeClient.getApplicationContext()).thenReturn(context);
-        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(SUCCESS_URL);
+        when(browserSwitchResult.getReturnUrl()).thenReturn(SUCCESS_URL);
 
         VenmoApi venmoApi = new MockVenmoApiBuilder()
                 .createNonceFromPaymentContextSuccess(VenmoAccountNonce.fromJSON(
@@ -573,7 +571,7 @@ public class VenmoClientUnitTest {
                 .sessionId("another-session-id")
                 .authorizationSuccess(tokenizationKey)
                 .build();
-        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(SUCCESS_URL);
+        when(browserSwitchResult.getReturnUrl()).thenReturn(SUCCESS_URL);
 
         when(sharedPrefsWriter.getVenmoVaultOption(context)).thenReturn(true);
 
@@ -593,7 +591,7 @@ public class VenmoClientUnitTest {
                 .authorizationSuccess(clientToken)
                 .build();
         when(braintreeClient.getApplicationContext()).thenReturn(context);
-        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(SUCCESS_URL_WITHOUT_RESOURCE_ID);
+        when(browserSwitchResult.getReturnUrl()).thenReturn(SUCCESS_URL_WITHOUT_RESOURCE_ID);
 
         VenmoAccountNonce venmoAccountNonce = mock(VenmoAccountNonce.class);
 
@@ -628,7 +626,7 @@ public class VenmoClientUnitTest {
                         Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
                 .build();
         when(braintreeClient.getApplicationContext()).thenReturn(context);
-        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(SUCCESS_URL);
+        when(browserSwitchResult.getReturnUrl()).thenReturn(SUCCESS_URL);
 
         VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.fromJSON(
                 new JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE));
@@ -662,7 +660,7 @@ public class VenmoClientUnitTest {
                 .authorizationSuccess(clientToken)
                 .build();
         when(braintreeClient.getApplicationContext()).thenReturn(context);
-        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(SUCCESS_URL_WITHOUT_RESOURCE_ID);
+        when(browserSwitchResult.getReturnUrl()).thenReturn(SUCCESS_URL_WITHOUT_RESOURCE_ID);
 
         Exception error = new Exception("error");
 
@@ -696,7 +694,7 @@ public class VenmoClientUnitTest {
                         Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
                 .build();
         when(braintreeClient.getApplicationContext()).thenReturn(context);
-        when(browserSwitchResult.getDeepLinkUrl()).thenReturn(SUCCESS_URL);
+        when(browserSwitchResult.getReturnUrl()).thenReturn(SUCCESS_URL);
 
         VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.fromJSON(
                 new JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE));

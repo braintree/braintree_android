@@ -5,8 +5,8 @@ import android.net.Uri
 import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
-import com.braintreepayments.api.BrowserSwitchPendingRequest
-import com.braintreepayments.api.BrowserSwitchResult
+import com.braintreepayments.api.BrowserSwitchFinalResult
+import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.BraintreeException
 
 /**
@@ -43,8 +43,8 @@ class VenmoLauncher internal constructor(
             paymentAuthRequest.requestParams.browserSwitchOptions
         )
         return when (request) {
-            is BrowserSwitchPendingRequest.Failure -> VenmoPendingRequest.Failure(request.cause)
-            is BrowserSwitchPendingRequest.Started -> VenmoPendingRequest.Started(request)
+            is BrowserSwitchStartResult.Failure -> VenmoPendingRequest.Failure(request.error)
+            is BrowserSwitchStartResult.Started -> VenmoPendingRequest.Started(request.pendingRequest)
         }
     }
 
@@ -72,12 +72,14 @@ class VenmoLauncher internal constructor(
         intent: Intent
     ): VenmoPaymentAuthResult {
         return when (val browserSwitchResult =
-            browserSwitchClient.completeRequest(pendingRequest.request, intent)) {
-            is BrowserSwitchResult.Success -> VenmoPaymentAuthResult.Success(
-                VenmoPaymentAuthResultInfo(browserSwitchResult.resultInfo)
+            browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
+            is BrowserSwitchFinalResult.Success -> VenmoPaymentAuthResult.Success(
+                VenmoPaymentAuthResultInfo(browserSwitchResult)
             )
 
-            is BrowserSwitchResult.NoResult -> VenmoPaymentAuthResult.NoResult
+            is BrowserSwitchFinalResult.Failure -> VenmoPaymentAuthResult.Failure(browserSwitchResult.error)
+
+            is BrowserSwitchFinalResult.NoResult -> VenmoPaymentAuthResult.NoResult
         }
     }
 

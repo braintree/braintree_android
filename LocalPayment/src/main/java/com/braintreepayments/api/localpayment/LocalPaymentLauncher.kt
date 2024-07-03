@@ -3,8 +3,8 @@ package com.braintreepayments.api.localpayment
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
-import com.braintreepayments.api.BrowserSwitchPendingRequest
-import com.braintreepayments.api.BrowserSwitchResult
+import com.braintreepayments.api.BrowserSwitchFinalResult
+import com.braintreepayments.api.BrowserSwitchStartResult
 
 /**
  * Responsible for launching local payment user authentication in a web browser
@@ -35,11 +35,11 @@ class LocalPaymentLauncher internal constructor(private val browserSwitchClient:
         val browserSwitchPendingRequest =
             browserSwitchClient.start(activity, params.browserSwitchOptions)
         return when (browserSwitchPendingRequest) {
-            is BrowserSwitchPendingRequest.Started -> {
-                LocalPaymentPendingRequest.Started(browserSwitchPendingRequest)
+            is BrowserSwitchStartResult.Started -> {
+                LocalPaymentPendingRequest.Started(browserSwitchPendingRequest.pendingRequest)
             }
-            is BrowserSwitchPendingRequest.Failure -> {
-                LocalPaymentPendingRequest.Failure(browserSwitchPendingRequest.cause)
+            is BrowserSwitchStartResult.Failure -> {
+                LocalPaymentPendingRequest.Failure(browserSwitchPendingRequest.error)
             }
         }
     }
@@ -68,12 +68,15 @@ class LocalPaymentLauncher internal constructor(private val browserSwitchClient:
         pendingRequest: LocalPaymentPendingRequest.Started,
         intent: Intent
     ): LocalPaymentAuthResult {
-        return when (val result = browserSwitchClient.completeRequest(pendingRequest.request, intent)) {
-            is BrowserSwitchResult.Success -> LocalPaymentAuthResult.Success(
-                LocalPaymentAuthResultInfo(result.resultInfo)
+        return when (val result =
+            browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
+            is BrowserSwitchFinalResult.Success -> LocalPaymentAuthResult.Success(
+                LocalPaymentAuthResultInfo(result)
             )
 
-            is BrowserSwitchResult.NoResult -> LocalPaymentAuthResult.NoResult
+            is BrowserSwitchFinalResult.Failure -> LocalPaymentAuthResult.Failure(result.error)
+
+            is BrowserSwitchFinalResult.NoResult -> LocalPaymentAuthResult.NoResult
         }
     }
 }
