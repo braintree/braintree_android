@@ -65,7 +65,7 @@ class ShopperInsightsFragment : BaseFragment() {
     ): View? {
         shopperInsightsClient = ShopperInsightsClient(requireContext(), authStringArg)
 
-        venmoClient = VenmoClient(requireContext(), super.getAuthStringArg())
+        venmoClient = VenmoClient(requireContext(), super.getAuthStringArg(), null)
         payPalClient = PayPalClient(requireContext(), super.getAuthStringArg(),
             Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/"))
 

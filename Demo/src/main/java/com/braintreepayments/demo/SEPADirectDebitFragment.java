@@ -37,7 +37,7 @@ public class SEPADirectDebitFragment extends BaseFragment {
         button.setOnClickListener(this::launchSEPADirectDebit);
 
         sepaDirectDebitClient =
-                new SEPADirectDebitClient(requireContext(), super.getAuthStringArg());
+                new SEPADirectDebitClient(requireContext(), super.getAuthStringArg(), null);
 
         return view;
     }

@@ -80,7 +80,7 @@ public class VenmoFragment extends BaseFragment {
     public void launchVenmo(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
         if (venmoClient == null) {
-            venmoClient = new VenmoClient(requireContext(), super.getAuthStringArg());
+            venmoClient = new VenmoClient(requireContext(), super.getAuthStringArg(), null);
         }
 
         FragmentActivity activity = getActivity();

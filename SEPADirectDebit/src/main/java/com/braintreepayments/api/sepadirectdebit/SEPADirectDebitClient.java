@@ -36,9 +36,14 @@ public class SEPADirectDebitClient {
      *
      * @param context an Android Context
      * @param authorization a Tokenization Key or Client Token used to authenticate
+     * @param returnUrlScheme a custom return url to use for browser and app switching
      */
-    public SEPADirectDebitClient(@NonNull Context context, @NonNull String authorization) {
-       this(new BraintreeClient(context, authorization));
+    public SEPADirectDebitClient(
+        @NonNull Context context,
+        @NonNull String authorization,
+        String returnUrlScheme
+    ) {
+       this(new BraintreeClient(context, authorization, returnUrlScheme));
     }
 
     @VisibleForTesting
