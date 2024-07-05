@@ -66,7 +66,7 @@ callback)`, where `riskCorrelationId` is an optional client metadata ID.
 val dataCollector = DataCollector(context, authorization)
 val dataCollectorRequest = DataCollectorRequest(hasUserLocationConsent)
 
-dataCollector.collectDeviceData(context, dataCollectoRequest) { result ->
+dataCollector.collectDeviceData(context, dataCollectorRequest) { result ->
     if (result is DataCollectorResult.Success) {
         // send result.deviceData to your server
     }
@@ -150,7 +150,7 @@ class MyActivity : FragmentActivity() {
 +       venmoLauncher = VenmoLauncher()
     }
     
-    fun initializeVenmo() {
+    private fun initializeVenmo() {
 -       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       venmoClient = VenmoClient(this, braintreeClient)
 -       venmoClient.setListener(this)
@@ -177,6 +177,9 @@ class MyActivity : FragmentActivity() {
 +               }
 +               is VenmoPaymentAuthResult.NoResult -> {
 +                   // user returned to app without completing Venmo flow, handle accordingly
++               }
++               is VenmoPaymentAuthResult.Failure -> {
++                   // handle error case
 +               }
 +          }
 +       }   
@@ -418,6 +421,9 @@ class MyActivity : FragmentActivity() {
 +               is PayPalPaymentAuthResult.NoResult -> {
 +                   // user returned to app without completing PayPal flow, handle accordingly
 +               }
++               is PayPalPaymentAuthResult.Failure ->  {
++                   // handle error case
++               }
 +          }
 +       }   
     }
@@ -518,11 +524,14 @@ class MyActivity : FragmentActivity() {
 +               is LocalPaymentAuthResult.NoResult -> {
 +                   // user returned to app without completing Local Payment flow, handle accordingly
 +               }
++               is LocalPaymentAuthResult.Failure -> {
++                   // handle error case
++               }
 +          }
 +       }   
     }
 
-    private fun initializeClients() {
+    private fun initializeLocalPayment() {
 -       braintreClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
 -       localPaymentClient = LocalPaymentClient(this, braintreeClient)
 +       localPaymentClient = LocalPaymentClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
@@ -609,6 +618,9 @@ class MyActivity : FragmentActivity() {
 +               }
 +               is SEPADirectDebitPaymentAuthResult.NoResult -> {
 +                   // user returned to app without completing flow, handle accordingly
++               }
++               is SEPADirectDebitPaymentAuthResult.Failure -> {
++                   // handle error case
 +               }
 +          }
 +       }   
