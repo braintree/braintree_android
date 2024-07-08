@@ -6,6 +6,8 @@
   * Fix `PayPalAccountNonce` Null Pointer Exception by ensuring that all `@NonNull` values are initialized with a non-null value.
 * PayPalNativeCheckout
   * Fix `PayPalNativeCheckoutAccountNonce` Null Pointer Exception by ensuring that all `@NonNull` values are initialized with a non-null value.
+* ThreeDSecure
+  * Add customFields param to ThreeDSecureRequest
 
 ## 4.47.0 (2024-06-06)
 
