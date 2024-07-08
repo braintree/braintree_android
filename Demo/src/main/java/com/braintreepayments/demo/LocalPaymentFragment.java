@@ -36,7 +36,7 @@ public class LocalPaymentFragment extends BaseFragment {
         Button mIdealButton = view.findViewById(R.id.ideal_button);
         mIdealButton.setOnClickListener(this::launchIdeal);
 
-        localPaymentClient = new LocalPaymentClient(requireContext(), super.getAuthStringArg());
+        localPaymentClient = new LocalPaymentClient(requireContext(), super.getAuthStringArg(), null);
         return view;
     }
 

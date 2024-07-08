@@ -60,9 +60,14 @@ public class VenmoClient {
      *
      * @param context an Android Context
      * @param authorization a Tokenization Key or Client Token used to authenticate
+     * @param returnUrlScheme a custom return url to use for browser and app switching
      */
-    public VenmoClient(@NonNull Context context, @NonNull String authorization) {
-        this(new BraintreeClient(context, authorization));
+    public VenmoClient(
+        @NonNull Context context,
+        @NonNull String authorization,
+        @Nullable String returnUrlScheme
+    ) {
+        this(new BraintreeClient(context, authorization, returnUrlScheme));
     }
 
     @VisibleForTesting

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.BrowserSwitchFinalResult;
@@ -42,9 +43,14 @@ public class LocalPaymentClient {
      *
      * @param context an Android Context
      * @param authorization a Tokenization Key or Client Token used to authenticate
+     * @param returnUrlScheme a custom return url to use for browser and app switching
      */
-    public LocalPaymentClient(@NonNull Context context, @NonNull String authorization) {
-        this(new BraintreeClient(context, authorization));
+    public LocalPaymentClient(
+        @NonNull Context context,
+        @NonNull String authorization,
+        @Nullable String returnUrlScheme
+    ) {
+        this(new BraintreeClient(context, authorization, returnUrlScheme));
     }
 
    @VisibleForTesting
