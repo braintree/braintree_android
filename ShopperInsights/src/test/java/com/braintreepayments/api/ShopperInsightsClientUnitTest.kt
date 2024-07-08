@@ -1,5 +1,8 @@
 package com.braintreepayments.api
 
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import com.braintreepayments.api.Configuration.Companion.fromJson
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -8,6 +11,8 @@ import io.mockk.slot
 import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -19,18 +24,21 @@ import kotlin.test.assertTrue
  * It focuses on testing how the client handles different scenarios when fetching recommended
  * payment methods.
  */
+@RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalBetaApi::class)
 class ShopperInsightsClientUnitTest {
 
     private lateinit var sut: ShopperInsightsClient
     private lateinit var api: ShopperInsightsApi
     private lateinit var braintreeClient: BraintreeClient
+    private lateinit var context: Context
 
     @Before
     fun beforeEach() {
         api = mockk(relaxed = true)
         braintreeClient = mockk(relaxed = true)
         sut = ShopperInsightsClient(api, braintreeClient)
+        context = ApplicationProvider.getApplicationContext()
     }
 
     @Test
@@ -363,6 +371,38 @@ class ShopperInsightsClientUnitTest {
         )
 
         verifySuccessAnalyticsEvent()
+    }
+
+    @Test
+    fun `test getRecommendPaymentMethods is called with a tokenization key, error is sent`() {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
+            .build()
+
+        sut = ShopperInsightsClient(api, braintreeClient)
+
+        val callback = mockk<ShopperInsightsCallback>(relaxed = true)
+
+        executeTestForFindEligiblePaymentsApi(
+            result = null,
+            error = null,
+            callback = callback
+        )
+
+        verify {
+            callback.onResult(
+                withArg { result ->
+                    assertTrue { result is ShopperInsightsResult.Failure }
+                    assertTrue {
+                        (result as ShopperInsightsResult.Failure).error is BraintreeException
+                    }
+                    assertEquals(
+                        "Invalid authorization. This feature can only be used with a client token.",
+                        (result as ShopperInsightsResult.Failure).error.message
+                    )
+                }
+            )
+        }
     }
 
     @Test

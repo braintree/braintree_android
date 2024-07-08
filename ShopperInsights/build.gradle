@@ -41,6 +41,9 @@ dependencies {
     testImplementation deps.jsonAssert
     testImplementation deps.kotlinTest
     testImplementation deps.mockk
+    testImplementation deps.robolectric
+    testImplementation deps.junitTest
+    testImplementation project(':TestUtils')
 }
 
 // region signing and publishing
