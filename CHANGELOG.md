@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* ShopperInsights (BETA)
+  * Add error when using an invalid authorization type
+
 ## 4.48.0 (2024-07-02)
 
 * PayPal
