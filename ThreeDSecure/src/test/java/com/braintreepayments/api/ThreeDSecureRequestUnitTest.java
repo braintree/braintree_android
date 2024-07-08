@@ -7,6 +7,8 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import java.util.Map;
+import java.util.HashMap;
 
 import static com.braintreepayments.api.ThreeDSecureRequest.VERSION_1;
 import static com.braintreepayments.api.ThreeDSecureRequest.VERSION_2;
@@ -65,6 +67,11 @@ public class ThreeDSecureRequestUnitTest {
         v1UiCustomization.setRedirectButtonText("return-button-text");
         v1UiCustomization.setRedirectDescription("return-label-text");
 
+        Map<String, String> customFields = new HashMap<>();
+        customFields.put("custom_key1", "custom_value1");
+        customFields.put("custom_key2", "custom_value2");
+        customFields.put("custom_key3", "custom_value3");
+
         ThreeDSecureRequest expected = new ThreeDSecureRequest();
         expected.setNonce("a-nonce");
         expected.setAmount("1.00");
@@ -82,6 +89,7 @@ public class ThreeDSecureRequestUnitTest {
         expected.setV2UiCustomization(v2UiCustomization);
         expected.setV1UiCustomization(v1UiCustomization);
         expected.setAccountType(ThreeDSecureRequest.CREDIT);
+        expected.setCustomFields(customFields);
 
         Parcel parcel = Parcel.obtain();
         expected.writeToParcel(parcel, 0);
@@ -132,6 +140,11 @@ public class ThreeDSecureRequestUnitTest {
 
         assertEquals(expected.getV1UiCustomization().getRedirectDescription(),
                 actual.getV1UiCustomization().getRedirectDescription());
+
+        assertEquals(3, actual.getCustomFields().size());
+        assertEquals("custom_value1", actual.getCustomFields().get("custom_key1"));
+        assertEquals("custom_value2", actual.getCustomFields().get("custom_key2"));
+        assertEquals("custom_value3", actual.getCustomFields().get("custom_key3"));
     }
 
     @Test
@@ -178,6 +191,11 @@ public class ThreeDSecureRequestUnitTest {
         request.setCardAddChallengeRequested(true);
         request.setAccountType(ThreeDSecureRequest.CREDIT);
 
+        Map<String, String> customFields = new HashMap<>();
+        customFields.put("custom_key1", "custom_value1");
+        customFields.put("custom_key2", "123");
+        request.setCustomFields(customFields);
+
         JSONObject json = new JSONObject(request.build("df-reference-id"));
         JSONObject additionalInfoJson = json.getJSONObject("additional_info");
 
@@ -205,6 +223,10 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals("01", additionalInfoJson.get("shipping_method"));
 
         assertEquals("account-id", additionalInfoJson.get("account_id"));
+
+        JSONObject customFieldsJson = json.getJSONObject("custom_fields");
+        assertEquals("custom_value1", customFieldsJson.getString("custom_key1"));
+        assertEquals("123",customFieldsJson.getString("custom_key2"));
     }
 
     @Test

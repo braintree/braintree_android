@@ -13,6 +13,7 @@
   * Refactor TLSCertificatePinning `certInputStream` property to initialize a `ByteArrayInputStream` once instead of every time the property is accessed.
 * ThreeDSecure
   * Move Cardinal cleanup from SDK internals into `ThreeDSecureActivity`.
+  * Add customFields param to ThreeDSecureRequest
 
 ## 4.47.0 (2024-06-06)
 
