@@ -2,7 +2,6 @@ package com.braintreepayments.api
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.braintreepayments.api.Configuration.Companion.fromJson
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -381,26 +380,15 @@ class ShopperInsightsClientUnitTest {
 
         sut = ShopperInsightsClient(api, braintreeClient)
 
-        val callback = mockk<ShopperInsightsCallback>(relaxed = true)
-
-        executeTestForFindEligiblePaymentsApi(
-            result = null,
-            error = null,
-            callback = callback
-        )
-
-        verify {
-            callback.onResult(
-                withArg { result ->
-                    assertTrue { result is ShopperInsightsResult.Failure }
-                    assertTrue {
-                        (result as ShopperInsightsResult.Failure).error is BraintreeException
-                    }
-                    assertEquals(
-                        "Invalid authorization. This feature can only be used with a client token.",
-                        (result as ShopperInsightsResult.Failure).error.message
-                    )
-                }
+        val request = ShopperInsightsRequest("some-email", null)
+        sut.getRecommendedPaymentMethods(request) { result ->
+            assertTrue { result is ShopperInsightsResult.Failure }
+            assertTrue {
+                (result as ShopperInsightsResult.Failure).error is BraintreeException
+            }
+            assertEquals(
+                "Invalid authorization. This feature can only be used with a client token.",
+                (result as ShopperInsightsResult.Failure).error.message
             )
         }
     }

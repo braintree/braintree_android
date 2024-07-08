@@ -42,13 +42,12 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
     ) {
         braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_STARTED)
 
-        braintreeClient.getAuthorization { authorization, _ ->
-            if (authorization is TokenizationKey) {
-                callbackFailure(
-                    callback = callback,
-                     error = BraintreeException("Invalid authorization. This feature can only be used with a client token.")
-                )
-            }
+        if (isTokenizationKey()) {
+            callbackFailure(
+                callback = callback,
+                error = BraintreeException("Invalid authorization. This feature can only be used with a client token.")
+            )
+            return
         }
 
         if (request.email == null && request.phone == null) {
@@ -108,6 +107,19 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                 )
             }
         }
+    }
+
+    private fun isTokenizationKey(): Boolean {
+        var isTokenizationKey = false
+        braintreeClient.getAuthorization { authorization, _ ->
+            if (authorization != null) {
+                if (authorization is TokenizationKey) {
+                    isTokenizationKey = true
+                }
+            }
+        }
+
+        return isTokenizationKey
     }
 
     private fun callbackFailure(
