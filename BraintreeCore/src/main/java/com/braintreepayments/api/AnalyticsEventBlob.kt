@@ -10,11 +10,6 @@ import androidx.room.PrimaryKey
  */
 @Entity(tableName = "analytics_event_blob")
 data class AnalyticsEventBlob(
-    @ColumnInfo(name = "json_string") val jsonString: String
-) {
-    // NOTE: default 0 value for _id is replaced when key is auto generated
-    @JvmField
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "_id")
-    var id: Long = 0L
-}
+    @ColumnInfo(name = "json_string") val jsonString: String,
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "_id") val id: Long = 0L
+)
