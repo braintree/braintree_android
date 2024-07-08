@@ -14,20 +14,14 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Suppress("SwallowedException", "TooGenericExceptionCaught")
-internal class AnalyticsClient @VisibleForTesting constructor(
-    private val applicationContext: Context,
-    private val httpClient: BraintreeHttpClient,
-    private val analyticsDatabase: AnalyticsDatabase,
-    private val workManager: WorkManager,
-    private val deviceInspector: DeviceInspector
+internal class AnalyticsClient constructor(
+    context: Context,
+    private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
+    private val analyticsDatabase: AnalyticsDatabase = AnalyticsDatabase.getInstance(context.applicationContext),
+    private val workManager: WorkManager = WorkManager.getInstance(context.applicationContext),
+    private val deviceInspector: DeviceInspector = DeviceInspector()
 ) {
-    constructor(context: Context) : this(
-        context.applicationContext,
-        BraintreeHttpClient(),
-        AnalyticsDatabase.getInstance(context.applicationContext),
-        WorkManager.getInstance(context.applicationContext),
-        DeviceInspector()
-    )
+    private val applicationContext = context.applicationContext
 
     fun sendEvent(
         configuration: Configuration,
@@ -37,7 +31,12 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         authorization: Authorization
     ): UUID {
         scheduleAnalyticsWriteInBackground(event, authorization)
-        return scheduleAnalyticsUploadInBackground(configuration, authorization, sessionId, integration)
+        return scheduleAnalyticsUploadInBackground(
+            configuration,
+            authorization,
+            sessionId,
+            integration
+        )
     }
 
     private fun scheduleAnalyticsWriteInBackground(
