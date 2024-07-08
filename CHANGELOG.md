@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.49.0 (2024-07-08)
 
 * PayPalNativeCheckout (DEPRECATED)
   * **NOTE:** This module is being deprecated and will be removed in the future version of the SDK
