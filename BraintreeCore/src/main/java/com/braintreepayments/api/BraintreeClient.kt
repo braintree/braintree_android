@@ -7,6 +7,8 @@ import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.FragmentActivity
+import org.json.JSONException
+import org.json.JSONObject
 
 /**
  * Core Braintree class that handles network requests.
@@ -160,12 +162,13 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     open fun getConfiguration(callback: ConfigurationCallback) {
         getAuthorization { authorization, authError ->
             if (authorization != null) {
-                configurationLoader.loadConfiguration(authorization) { configuration, configError ->
+                configurationLoader.loadConfiguration(authorization) { configuration, configError, timing ->
                     if (configuration != null) {
                         callback.onResult(configuration, null)
                     } else {
                         callback.onResult(null, configError)
                     }
+                    timing?.let { sendAnalyticsTimingEvent("v1/configuration", it) }
                 }
             } else {
                 callback.onResult(null, authError)
@@ -187,21 +190,22 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     @JvmOverloads
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendAnalyticsEvent(
-            eventName: String,
-            payPalContextId: String? = null,
-            linkType: String? = null,
-            isVaultRequest: Boolean = false
+        eventName: String,
+        params: AnalyticsEventParams = AnalyticsEventParams()
     ) {
         getAuthorization { authorization, _ ->
             if (authorization != null) {
                 getConfiguration { configuration, _ ->
                     val isVenmoInstalled = deviceInspector.isVenmoInstalled(applicationContext)
                     val event = AnalyticsEvent(
-                            eventName,
-                            payPalContextId,
-                            linkType,
-                            venmoInstalled = isVenmoInstalled,
-                            isVaultRequest = isVaultRequest
+                        eventName,
+                        params.payPalContextId,
+                        params.linkType,
+                        isVenmoInstalled,
+                        params.isVaultRequest,
+                        params.startTime,
+                        params.endTime,
+                        params.endpoint
                     )
                     sendAnalyticsEvent(event, configuration, authorization)
                 }
@@ -234,7 +238,18 @@ open class BraintreeClient @VisibleForTesting internal constructor(
             if (authorization != null) {
                 getConfiguration { configuration, configError ->
                     if (configuration != null) {
-                        httpClient.get(url, configuration, authorization, responseCallback)
+                        httpClient.get(url, configuration, authorization) { response, httpError ->
+                            response?.let {
+                                try {
+                                    sendAnalyticsTimingEvent(url, response.timing)
+                                    responseCallback.onResult(it.body, null)
+                                } catch (jsonException: JSONException) {
+                                    responseCallback.onResult(null, jsonException)
+                                }
+                            } ?: httpError?.let { error ->
+                                responseCallback.onResult(null, error)
+                            }
+                        }
                     } else {
                         responseCallback.onResult(null, configError)
                     }
@@ -265,9 +280,19 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                             data = data,
                             configuration = configuration,
                             authorization = authorization,
-                            additionalHeaders = additionalHeaders,
-                            callback = responseCallback
-                        )
+                            additionalHeaders = additionalHeaders
+                        ) { response, httpError ->
+                            response?.let {
+                                try {
+                                    sendAnalyticsTimingEvent(url, it.timing)
+                                    responseCallback.onResult(it.body, null)
+                                } catch (jsonException: JSONException) {
+                                    responseCallback.onResult(null, jsonException)
+                                }
+                            } ?: httpError?.let { error ->
+                                responseCallback.onResult(null, error)
+                            }
+                        }
                     } else {
                         responseCallback.onResult(null, configError)
                     }
@@ -282,17 +307,37 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun sendGraphQLPOST(payload: String?, responseCallback: HttpResponseCallback) {
+    fun sendGraphQLPOST(json: JSONObject?, responseCallback: HttpResponseCallback) {
         getAuthorization { authorization, authError ->
             if (authorization != null) {
                 getConfiguration { configuration, configError ->
                     if (configuration != null) {
                         graphQLClient.post(
-                            payload,
+                            json?.toString(),
                             configuration,
-                            authorization,
-                            responseCallback
-                        )
+                            authorization
+                        ) { response, httpError ->
+                            response?.let {
+                                try {
+                                    json?.optString(GraphQLConstants.Keys.OPERATION_NAME)?.let { query ->
+                                        val params = AnalyticsEventParams(
+                                            startTime = it.timing.startTime,
+                                            endTime = it.timing.endTime,
+                                            endpoint = query
+                                        )
+                                        sendAnalyticsEvent(
+                                            CoreAnalytics.apiRequestLatency,
+                                            params
+                                        )
+                                    }
+                                    responseCallback.onResult(it.body, null)
+                                } catch (jsonException: JSONException) {
+                                    responseCallback.onResult(null, jsonException)
+                                }
+                            } ?: httpError?.let { error ->
+                                responseCallback.onResult(null, error)
+                            }
+                        }
                     } else {
                         responseCallback.onResult(null, configError)
                     }
@@ -467,5 +512,17 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      */
     open fun launchesBrowserSwitchAsNewTask(launchesBrowserSwitchAsNewTask: Boolean) {
         this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask
+    }
+
+    private fun sendAnalyticsTimingEvent(endpoint: String, timing: HttpResponseTiming) {
+        val cleanedPath = endpoint.replace(Regex("/merchants/([A-Za-z0-9]+)/client_api"), "")
+        sendAnalyticsEvent(
+            CoreAnalytics.apiRequestLatency,
+            AnalyticsEventParams(
+                startTime = timing.startTime,
+                endTime = timing.endTime,
+                endpoint = cleanedPath
+            )
+        )
     }
 }

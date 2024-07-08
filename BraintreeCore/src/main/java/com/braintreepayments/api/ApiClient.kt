@@ -13,7 +13,7 @@ class ApiClient(private val braintreeClient: BraintreeClient) {
     fun tokenizeGraphQL(tokenizePayload: JSONObject, callback: TokenizeCallback) =
         braintreeClient.run {
             sendAnalyticsEvent("card.graphql.tokenization.started")
-            sendGraphQLPOST(tokenizePayload.toString(), object : HttpResponseCallback {
+            sendGraphQLPOST(tokenizePayload, object : HttpResponseCallback {
                 override fun onResult(responseBody: String?, httpError: Exception?) {
                     parseResponseToJSON(responseBody)?.let { json ->
                         sendAnalyticsEvent("card.graphql.tokenization.success")

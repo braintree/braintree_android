@@ -16,8 +16,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
+ * Deprecated. Use PayPal module instead.
  * Represents the parameters that are needed to start the PayPal Checkout flow
  */
+@Deprecated
 public class PayPalNativeCheckoutRequest extends PayPalNativeRequest implements Parcelable {
 
     /**

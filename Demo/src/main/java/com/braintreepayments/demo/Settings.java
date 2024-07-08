@@ -200,6 +200,10 @@ public class Settings {
         return getPreferences(context).getBoolean("paypal_credit_offered", false);
     }
 
+    public static boolean isPayPalPayLaterOffered(Context context) {
+        return getPreferences(context).getBoolean("paypal_pay_later_offered", false);
+    }
+
     public static boolean isPayPalSignatureVerificationDisabled(Context context) {
         return getPreferences(context).getBoolean("paypal_disable_signature_verification", true);
     }

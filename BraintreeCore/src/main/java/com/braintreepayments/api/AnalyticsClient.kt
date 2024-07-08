@@ -50,6 +50,9 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             .putLong(WORK_INPUT_KEY_TIMESTAMP, event.timestamp)
             .putBoolean(WORK_INPUT_KEY_VENMO_INSTALLED, event.venmoInstalled)
             .putBoolean(WORK_INPUT_KEY_IS_VAULT_REQUEST, event.isVaultRequest)
+            .putLong(WORK_INPUT_KEY_START_TIME, event.startTime ?: INVALID_TIMESTAMP)
+            .putLong(WORK_INPUT_KEY_END_TIME, event.endTime ?: INVALID_TIMESTAMP)
+            .putString(WORK_INPUT_KEY_ENDPOINT, event.endpoint)
             .build()
 
         val analyticsWorkRequest =
@@ -68,6 +71,9 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         val timestamp = inputData.getLong(WORK_INPUT_KEY_TIMESTAMP, INVALID_TIMESTAMP)
         val venmoInstalled = inputData.getBoolean(WORK_INPUT_KEY_VENMO_INSTALLED, false)
         val isVaultRequest = inputData.getBoolean(WORK_INPUT_KEY_IS_VAULT_REQUEST, false)
+        val startTime = inputData.getLong(WORK_INPUT_KEY_START_TIME, INVALID_TIMESTAMP)
+        val endTime = inputData.getLong(WORK_INPUT_KEY_END_TIME, INVALID_TIMESTAMP)
+        val endpoint = inputData.getString(WORK_INPUT_KEY_ENDPOINT)
 
         return if (eventName == null || timestamp == INVALID_TIMESTAMP) {
             ListenableWorker.Result.failure()
@@ -76,9 +82,12 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 eventName,
                 payPalContextId,
                 linkType,
-                timestamp,
                 venmoInstalled,
-                isVaultRequest
+                isVaultRequest,
+                startTime,
+                endTime,
+                endpoint,
+                timestamp
             )
             val analyticsEventDao = analyticsDatabase.analyticsEventDao()
             analyticsEventDao.insertEvent(event)
@@ -164,7 +173,14 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             return
         }
         val metadata = deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
-        val event = AnalyticsEvent("android.crash", null, null, timestamp)
+        val event = AnalyticsEvent(
+                "android.crash",
+                null,
+                null,
+                false,
+                false,
+                timestamp = timestamp
+        )
         val events = listOf(event)
         try {
             val analyticsRequest = serializeEvents(authorization, events, metadata)
@@ -173,7 +189,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 data = analyticsRequest.toString(),
                 configuration = null,
                 authorization = authorization,
-                callback = HttpNoResponse()
+                callback = null
             )
         } catch (e: JSONException) { /* ignored */
         }
@@ -206,6 +222,9 @@ internal class AnalyticsClient @VisibleForTesting constructor(
                 .put(TIMESTAMP_KEY, analyticsEvent.timestamp)
                 .put(VENMO_INSTALLED_KEY, analyticsEvent.venmoInstalled)
                 .put(IS_VAULT_REQUEST_KEY, analyticsEvent.isVaultRequest)
+                .put(START_TIME_KEY, analyticsEvent.startTime)
+                .put(END_TIME_KEY, analyticsEvent.endTime)
+                .putOpt(ENDPOINT_KEY, analyticsEvent.endpoint)
                 .put(TENANT_NAME_KEY, "Braintree")
             eventParamsJSON.put(singleEventJSON)
         }
@@ -231,6 +250,9 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         private const val EVENT_NAME_KEY = "event_name"
         private const val TIMESTAMP_KEY = "t"
         private const val TENANT_NAME_KEY = "tenant_name"
+        private const val START_TIME_KEY = "start_time"
+        private const val END_TIME_KEY = "end_time"
+        private const val ENDPOINT_KEY = "endpoint"
         const val WORK_NAME_ANALYTICS_UPLOAD = "uploadAnalytics"
         const val WORK_NAME_ANALYTICS_WRITE = "writeAnalyticsToDb"
         const val WORK_INPUT_KEY_AUTHORIZATION = "authorization"
@@ -243,6 +265,9 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         const val WORK_INPUT_KEY_VENMO_INSTALLED = "venmoInstalled"
         const val WORK_INPUT_KEY_IS_VAULT_REQUEST = "isVaultRequest"
         const val WORK_INPUT_KEY_LINK_TYPE = "linkType"
+        const val WORK_INPUT_KEY_START_TIME = "startTime"
+        const val WORK_INPUT_KEY_END_TIME = "endTime"
+        const val WORK_INPUT_KEY_ENDPOINT = "endpoint"
         private const val DELAY_TIME_SECONDS = 30L
 
         private fun getAuthorizationFromData(inputData: Data?): Authorization? =

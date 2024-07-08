@@ -4,6 +4,7 @@ import android.net.Uri
 import com.braintreepayments.api.HttpClient.RetryStrategy
 import org.json.JSONException
 import org.json.JSONObject
+import javax.net.ssl.SSLException
 
 /**
  * Network request class that handles Braintree request specifics and threading.
@@ -18,13 +19,13 @@ internal class BraintreeHttpClient(
      * @param path The path or url to request from the server via GET
      * @param configuration configuration for the Braintree Android SDK.
      * @param authorization
-     * @param callback [HttpResponseCallback]
+     * @param callback [NetworkResponseCallback]
      */
     operator fun get(
         path: String,
         configuration: Configuration?,
         authorization: Authorization?,
-        callback: HttpResponseCallback
+        callback: NetworkResponseCallback
     ) = get(path, configuration, authorization, HttpClient.NO_RETRY, callback)
 
     /**
@@ -34,14 +35,14 @@ internal class BraintreeHttpClient(
      * @param configuration configuration for the Braintree Android SDK.
      * @param authorization
      * @param retryStrategy retry strategy
-     * @param callback [HttpResponseCallback]
+     * @param callback [NetworkResponseCallback]
      */
     operator fun get(
         path: String,
         configuration: Configuration?,
         authorization: Authorization?,
         @RetryStrategy retryStrategy: Int,
-        callback: HttpResponseCallback
+        callback: NetworkResponseCallback
     ) {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
@@ -81,7 +82,7 @@ internal class BraintreeHttpClient(
      * @param data The body of the POST request
      * @param configuration configuration for the Braintree Android SDK.
      * @param authorization
-     * @param callback [HttpResponseCallback]
+     * @param callback [NetworkResponseCallback]
      */
     @Suppress("CyclomaticComplexMethod")
     fun post(
@@ -90,11 +91,11 @@ internal class BraintreeHttpClient(
         configuration: Configuration?,
         authorization: Authorization?,
         additionalHeaders: Map<String, String> = emptyMap(),
-        callback: HttpResponseCallback
+        callback: NetworkResponseCallback?
     ) {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
-            callback.onResult(null, BraintreeException(message))
+            callback?.onResult(null, BraintreeException(message))
             return
         }
         val isRelativeURL = !path.startsWith("http")
@@ -102,7 +103,7 @@ internal class BraintreeHttpClient(
             val message =
                 "Braintree HTTP GET request without configuration cannot have a relative path."
             val relativeURLNotAllowedError = BraintreeException(message)
-            callback.onResult(null, relativeURLNotAllowedError)
+            callback?.onResult(null, relativeURLNotAllowedError)
             return
         }
         val requestData = if (authorization is ClientToken) {
@@ -112,7 +113,7 @@ internal class BraintreeHttpClient(
                     authorization.authorizationFingerprint
                 ).toString()
             } catch (e: JSONException) {
-                callback.onResult(null, e)
+                callback?.onResult(null, e)
                 return
             }
         } else {
@@ -178,8 +179,10 @@ internal class BraintreeHttpClient(
         private const val USER_AGENT_HEADER = "User-Agent"
         private const val CLIENT_KEY_HEADER = "Client-Key"
 
+        @Throws(SSLException::class)
         private fun createDefaultHttpClient(): HttpClient {
-            val socketFactory = TLSSocketFactory(TLSCertificatePinning.certInputStream)
+            val socketFactory =
+                TLSSocketFactory(TLSCertificatePinning.createCertificateInputStream())
             return HttpClient(socketFactory, BraintreeHttpResponseParser())
         }
     }

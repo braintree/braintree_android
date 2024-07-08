@@ -72,7 +72,7 @@ class VenmoApi {
             callback.onResult(null, new BraintreeException("unexpected error"));
         }
 
-        braintreeClient.sendGraphQLPOST(params.toString(), new HttpResponseCallback() {
+        braintreeClient.sendGraphQLPOST(params, new HttpResponseCallback() {
 
             @Override
             public void onResult(String responseBody, Exception httpError) {
@@ -99,7 +99,7 @@ class VenmoApi {
             variables.put("id", paymentContextId);
             params.put("variables", variables);
 
-            braintreeClient.sendGraphQLPOST(params.toString(), new HttpResponseCallback() {
+            braintreeClient.sendGraphQLPOST(params, new HttpResponseCallback() {
 
                 @Override
                 public void onResult(String responseBody, Exception httpError) {
