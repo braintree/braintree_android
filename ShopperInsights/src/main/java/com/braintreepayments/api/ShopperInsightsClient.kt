@@ -30,7 +30,6 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
     /**
      * Retrieves recommended payment methods based on the provided shopper insights request.
      *
-     * @param context Android context
      * @param request The [ShopperInsightsRequest] containing information about the shopper.
      * @return A [ShopperInsightsResult] object indicating the recommended payment methods.
      * Note: This feature is in beta. Its public API may change or be removed in future releases
@@ -42,6 +41,15 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         callback: ShopperInsightsCallback
     ) {
         braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_STARTED)
+
+        braintreeClient.getAuthorization { authorization, _ ->
+            if (authorization is TokenizationKey) {
+                callbackFailure(
+                    callback = callback,
+                     error = BraintreeException("Invalid authorization. This feature can only be used with a client token.")
+                )
+            }
+        }
 
         if (request.email == null && request.phone == null) {
             callbackFailure(
