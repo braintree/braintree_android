@@ -65,7 +65,7 @@ public class VenmoClient {
     public VenmoClient(
         @NonNull Context context,
         @NonNull String authorization,
-        String returnUrlScheme
+        @Nullable String returnUrlScheme
     ) {
         this(new BraintreeClient(context, authorization, returnUrlScheme));
     }

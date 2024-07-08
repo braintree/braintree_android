@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.BrowserSwitchFinalResult;
@@ -47,7 +48,7 @@ public class LocalPaymentClient {
     public LocalPaymentClient(
         @NonNull Context context,
         @NonNull String authorization,
-        String returnUrlScheme
+        @Nullable String returnUrlScheme
     ) {
         this(new BraintreeClient(context, authorization, returnUrlScheme));
     }
