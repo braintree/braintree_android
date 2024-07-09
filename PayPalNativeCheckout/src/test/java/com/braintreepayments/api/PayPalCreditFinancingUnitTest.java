@@ -60,12 +60,12 @@ public class PayPalCreditFinancingUnitTest {
         assertFalse(payPalCreditFinancing.isCardAmountImmutable());
         assertEquals(18, payPalCreditFinancing.getTerm());
         assertFalse(payPalCreditFinancing.hasPayerAcceptance());
-        assertEquals("", payPalCreditFinancing.getMonthlyPayment().getCurrency());
-        assertEquals("", payPalCreditFinancing.getTotalCost().getCurrency());
-        assertEquals("", payPalCreditFinancing.getTotalInterest().getCurrency());
-        assertEquals("", payPalCreditFinancing.getMonthlyPayment().getValue());
-        assertEquals("", payPalCreditFinancing.getTotalCost().getValue());
-        assertEquals("", payPalCreditFinancing.getTotalInterest().getValue());
+        assertNull(payPalCreditFinancing.getMonthlyPayment().getCurrency());
+        assertNull(payPalCreditFinancing.getTotalCost().getCurrency());
+        assertNull(payPalCreditFinancing.getTotalInterest().getCurrency());
+        assertNull(payPalCreditFinancing.getMonthlyPayment().getValue());
+        assertNull(payPalCreditFinancing.getTotalCost().getValue());
+        assertNull(payPalCreditFinancing.getTotalInterest().getValue());
     }
 
     @Test

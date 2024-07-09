@@ -19,8 +19,8 @@ public class PayPalCreditFinancingAmountUnitTest {
     public void fromJson_returnsEmptyObjectWhenNull() {
         PayPalCreditFinancingAmount creditFinancingAmount = PayPalCreditFinancingAmount.fromJson(null);
         assertNotNull(creditFinancingAmount);
-        assertEquals("", creditFinancingAmount.getCurrency());
-        assertEquals("", creditFinancingAmount.getValue());
+        assertNull(creditFinancingAmount.getCurrency());
+        assertNull(creditFinancingAmount.getValue());
     }
 
     @Test
@@ -37,7 +37,7 @@ public class PayPalCreditFinancingAmountUnitTest {
         String json = "{\"value\": \"123.45\"}";
         PayPalCreditFinancingAmount creditFinancingAmount = PayPalCreditFinancingAmount.fromJson(new JSONObject(json));
 
-        assertEquals("", creditFinancingAmount.getCurrency());
+        assertNull(creditFinancingAmount.getCurrency());
         assertEquals("123.45", creditFinancingAmount.getValue());
     }
 
@@ -46,7 +46,7 @@ public class PayPalCreditFinancingAmountUnitTest {
         String json = "{\"currency\": \"USD\"}";
         PayPalCreditFinancingAmount creditFinancingAmount = PayPalCreditFinancingAmount.fromJson(new JSONObject(json));
 
-        assertEquals("", creditFinancingAmount.getValue());
+        assertNull(creditFinancingAmount.getValue());
         assertEquals("USD", creditFinancingAmount.getCurrency());
     }
 
