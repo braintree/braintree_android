@@ -25,6 +25,10 @@ public class PayPalNativeCheckoutCreditFinancingAmount implements Parcelable {
     static PayPalNativeCheckoutCreditFinancingAmount fromJson(JSONObject amount) {
         PayPalNativeCheckoutCreditFinancingAmount result = new PayPalNativeCheckoutCreditFinancingAmount();
 
+        if (amount == null) {
+            return result;
+        }
+
         result.currency = Json.optString(amount, CURRENCY_KEY, null);
         result.value = Json.optString(amount, VALUE_KEY, null);
 
