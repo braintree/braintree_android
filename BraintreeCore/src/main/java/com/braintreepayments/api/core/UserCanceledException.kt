@@ -5,7 +5,7 @@ import androidx.annotation.RestrictTo
 /**
  * Error class thrown when a user cancels a payment flow
  *
- * @property isExplicitCancellation whether or not the user explicitly canceled the payment flow.
+ * @property isExplicitCancelation whether or not the user explicitly canceled the payment flow.
  *
  * This value will be true if the user manually confirms cancellation of the payment flow.
  *
@@ -16,5 +16,5 @@ import androidx.annotation.RestrictTo
  */
 class UserCanceledException @JvmOverloads @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
     message: String?,
-    val isExplicitCancellation: Boolean = false
+    val isExplicitCancelation: Boolean = false
 ) : BraintreeException(message)
