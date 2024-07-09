@@ -14,7 +14,7 @@ import com.braintreepayments.api.sharedutils.ManifestValidator
  */
 @Suppress("LargeClass", "LongParameterList", "TooManyFunctions")
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-open class BraintreeClient @VisibleForTesting internal constructor(
+class BraintreeClient @VisibleForTesting internal constructor(
 
     /**
      * @suppress
@@ -129,7 +129,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      *
      * @param callback [ConfigurationCallback]
      */
-    open fun getConfiguration(callback: ConfigurationCallback) {
+    fun getConfiguration(callback: ConfigurationCallback) {
         if (authorization is InvalidAuthorization) {
             callback.onResult(null, createAuthError())
             return
@@ -320,7 +320,7 @@ open class BraintreeClient @VisibleForTesting internal constructor(
      * @param launchesBrowserSwitchAsNewTask set to true to allow the SDK to capture deep links.
      * This value is false by default.
      */
-    open fun launchesBrowserSwitchAsNewTask(launchesBrowserSwitchAsNewTask: Boolean) {
+    fun launchesBrowserSwitchAsNewTask(launchesBrowserSwitchAsNewTask: Boolean) {
         this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask
     }
 

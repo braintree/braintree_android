@@ -19,9 +19,9 @@ import org.json.JSONObject
  * @property errorResponse The full error response as a [String].
  * @property fieldErrors All the field errors.
  */
-open class ErrorWithResponse : Exception, Parcelable {
+class ErrorWithResponse : Exception, Parcelable {
 
-    open var statusCode: Int = 0
+    var statusCode: Int = 0
         internal set
 
     private var _message: String? = null
@@ -29,10 +29,10 @@ open class ErrorWithResponse : Exception, Parcelable {
         get() = _message
 
     private var _originalResponse: String? = null
-    open val errorResponse: String?
+    val errorResponse: String?
         get() = _originalResponse
 
-    open var fieldErrors: List<BraintreeError>? = null
+    var fieldErrors: List<BraintreeError>? = null
         internal set
 
     private constructor()
@@ -100,7 +100,7 @@ open class ErrorWithResponse : Exception, Parcelable {
         dest.writeTypedList(fieldErrors)
     }
 
-    protected constructor(inParcel: Parcel) {
+    private constructor(inParcel: Parcel) {
         statusCode = inParcel.readInt()
         _message = inParcel.readString()
         _originalResponse = inParcel.readString()

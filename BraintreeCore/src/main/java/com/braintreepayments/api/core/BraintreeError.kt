@@ -15,19 +15,19 @@ import org.json.JSONObject
  * @property code Error code if one exists; defaults to [.UNKNOWN_CODE] otherwise
  * @property fieldErrors [BraintreeError] objects for any errors nested under this field.
  */
-open class BraintreeError : Parcelable {
+class BraintreeError : Parcelable {
 
-    open var field: String? = null
+    var field: String? = null
         internal set
 
-    open var message: String? = null
+    var message: String? = null
         internal set
 
-    open var fieldErrors: MutableList<BraintreeError>? = null
+    var fieldErrors: MutableList<BraintreeError>? = null
         internal set
 
     // default value
-    open var code = UNKNOWN_CODE
+    var code = UNKNOWN_CODE
         internal set
 
     /**
@@ -36,7 +36,7 @@ open class BraintreeError : Parcelable {
      * @param field Name of the field desired, expected to be in camelCase.
      * @return [BraintreeError] for the field searched, or `null` if not found.
      */
-    open fun errorFor(field: String): BraintreeError? {
+    fun errorFor(field: String): BraintreeError? {
         if (fieldErrors == null) return null
         for (error in fieldErrors!!) {
             if (error.field == field) {
@@ -64,7 +64,7 @@ open class BraintreeError : Parcelable {
         dest.writeTypedList(fieldErrors)
     }
 
-    protected constructor(inParcel: Parcel) {
+    private constructor(inParcel: Parcel) {
         field = inParcel.readString()
         message = inParcel.readString()
         fieldErrors = inParcel.createTypedArrayList(CREATOR)
