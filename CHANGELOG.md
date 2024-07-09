@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+  * Fix issue that causes a JSON parsing error when Pay Later is selected during checkout.
+
 ## 4.49.0 (2024-07-08)
 
 * PayPalNativeCheckout (DEPRECATED)
