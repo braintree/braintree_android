@@ -32,12 +32,16 @@ class ShopperInsightsClientUnitTest {
     private lateinit var braintreeClient: BraintreeClient
     private lateinit var context: Context
 
+    private val authorizationCallbackSlot = slot<AuthorizationCallback>()
+
     @Before
     fun beforeEach() {
         api = mockk(relaxed = true)
         braintreeClient = mockk(relaxed = true)
         sut = ShopperInsightsClient(api, braintreeClient)
         context = ApplicationProvider.getApplicationContext()
+
+        every { braintreeClient.getAuthorization(capture(authorizationCallbackSlot)) } just runs
     }
 
     @Test
@@ -427,6 +431,7 @@ class ShopperInsightsClientUnitTest {
         every { api.findEligiblePayments(any(), capture(apiCallbackSlot)) } just runs
 
         sut.getRecommendedPaymentMethods(request, callback)
+        authorizationCallbackSlot.captured.onAuthorizationResult(ClientToken(Fixtures.BASE64_CLIENT_TOKEN), null)
 
         apiCallbackSlot.captured.onResult(result = result, error = error)
     }
