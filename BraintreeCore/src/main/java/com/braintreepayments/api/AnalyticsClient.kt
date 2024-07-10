@@ -7,7 +7,6 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import com.braintreepayments.api.AnalyticsDatabase.Companion.getInstance
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -15,18 +14,14 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Suppress("SwallowedException", "TooGenericExceptionCaught")
-internal class AnalyticsClient @VisibleForTesting constructor(
-    private val httpClient: BraintreeHttpClient,
-    private val analyticsDatabase: AnalyticsDatabase,
-    private val workManager: WorkManager,
-    private val deviceInspector: DeviceInspector
+internal class AnalyticsClient constructor(
+    context: Context,
+    private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
+    private val analyticsDatabase: AnalyticsDatabase = AnalyticsDatabase.getInstance(context.applicationContext),
+    private val workManager: WorkManager = WorkManager.getInstance(context.applicationContext),
+    private val deviceInspector: DeviceInspector = DeviceInspector()
 ) {
-    constructor(context: Context) : this(
-        BraintreeHttpClient(),
-        getInstance(context.applicationContext),
-        WorkManager.getInstance(context.applicationContext),
-        DeviceInspector()
-    )
+    private val applicationContext = context.applicationContext
 
     fun sendEvent(
         configuration: Configuration,
@@ -35,24 +30,22 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         integration: String?,
         authorization: Authorization
     ): UUID {
-        scheduleAnalyticsWrite(event, authorization)
-        return scheduleAnalyticsUpload(configuration, authorization, sessionId, integration)
+        scheduleAnalyticsWriteInBackground(event, authorization)
+        return scheduleAnalyticsUploadInBackground(
+            configuration,
+            authorization,
+            sessionId,
+            integration
+        )
     }
 
-    private fun scheduleAnalyticsWrite(
+    private fun scheduleAnalyticsWriteInBackground(
         event: AnalyticsEvent, authorization: Authorization
     ) {
+        val json = mapAnalyticsEventToFPTIEventJSON(event)
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
-            .putString(WORK_INPUT_KEY_EVENT_NAME, "android.${event.name}")
-            .putString(WORK_INPUT_KEY_PAYPAL_CONTEXT_ID, event.payPalContextId)
-            .putString(WORK_INPUT_KEY_LINK_TYPE, event.linkType)
-            .putLong(WORK_INPUT_KEY_TIMESTAMP, event.timestamp)
-            .putBoolean(WORK_INPUT_KEY_VENMO_INSTALLED, event.venmoInstalled)
-            .putBoolean(WORK_INPUT_KEY_IS_VAULT_REQUEST, event.isVaultRequest)
-            .putLong(WORK_INPUT_KEY_START_TIME, event.startTime ?: INVALID_TIMESTAMP)
-            .putLong(WORK_INPUT_KEY_END_TIME, event.endTime ?: INVALID_TIMESTAMP)
-            .putString(WORK_INPUT_KEY_ENDPOINT, event.endpoint)
+            .putString(WORK_INPUT_KEY_ANALYTICS_JSON, json)
             .build()
 
         val analyticsWorkRequest =
@@ -64,38 +57,19 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         )
     }
 
-    fun writeAnalytics(inputData: Data): ListenableWorker.Result {
-        val eventName = inputData.getString(WORK_INPUT_KEY_EVENT_NAME)
-        val payPalContextId = inputData.getString(WORK_INPUT_KEY_PAYPAL_CONTEXT_ID)
-        val linkType = inputData.getString(WORK_INPUT_KEY_LINK_TYPE)
-        val timestamp = inputData.getLong(WORK_INPUT_KEY_TIMESTAMP, INVALID_TIMESTAMP)
-        val venmoInstalled = inputData.getBoolean(WORK_INPUT_KEY_VENMO_INSTALLED, false)
-        val isVaultRequest = inputData.getBoolean(WORK_INPUT_KEY_IS_VAULT_REQUEST, false)
-        val startTime = inputData.getLong(WORK_INPUT_KEY_START_TIME, INVALID_TIMESTAMP)
-        val endTime = inputData.getLong(WORK_INPUT_KEY_END_TIME, INVALID_TIMESTAMP)
-        val endpoint = inputData.getString(WORK_INPUT_KEY_ENDPOINT)
-
-        return if (eventName == null || timestamp == INVALID_TIMESTAMP) {
+    fun performAnalyticsWrite(inputData: Data): ListenableWorker.Result {
+        val analyticsJSON = inputData.getString(WORK_INPUT_KEY_ANALYTICS_JSON)
+        return if (analyticsJSON == null) {
             ListenableWorker.Result.failure()
         } else {
-            val event = AnalyticsEvent(
-                eventName,
-                payPalContextId,
-                linkType,
-                venmoInstalled,
-                isVaultRequest,
-                startTime,
-                endTime,
-                endpoint,
-                timestamp
-            )
-            val analyticsEventDao = analyticsDatabase.analyticsEventDao()
-            analyticsEventDao.insertEvent(event)
+            val eventBlob = AnalyticsEventBlob(analyticsJSON)
+            val analyticsBlobDao = analyticsDatabase.analyticsEventBlobDao()
+            analyticsBlobDao.insertEventBlob(eventBlob)
             ListenableWorker.Result.success()
         }
     }
 
-    private fun scheduleAnalyticsUpload(
+    private fun scheduleAnalyticsUploadInBackground(
         configuration: Configuration,
         authorization: Authorization,
         sessionId: String?,
@@ -118,7 +92,7 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         return analyticsWorkRequest.id
     }
 
-    fun uploadAnalytics(context: Context?, inputData: Data): ListenableWorker.Result {
+    fun performAnalyticsUpload(inputData: Data): ListenableWorker.Result {
         val configuration = getConfigurationFromData(inputData)
         val authorization = getAuthorizationFromData(inputData)
         val sessionId = inputData.getString(WORK_INPUT_KEY_SESSION_ID)
@@ -129,19 +103,23 @@ internal class AnalyticsClient @VisibleForTesting constructor(
             ListenableWorker.Result.failure()
         } else {
             try {
-                val analyticsEventDao = analyticsDatabase.analyticsEventDao()
-                val events = analyticsEventDao.getAllEvents()
-                if (events.isNotEmpty()) {
-                    val metadata = deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
-                    val analyticsRequest = serializeEvents(authorization, events, metadata)
-
+                val analyticsEventBlobDao = analyticsDatabase.analyticsEventBlobDao()
+                val eventBlobs = analyticsEventBlobDao.getAllEventBlobs()
+                if (eventBlobs.isNotEmpty()) {
+                    val metadata = deviceInspector.getDeviceMetadata(
+                        applicationContext,
+                        configuration,
+                        sessionId,
+                        integration
+                    )
+                    val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
                     httpClient.post(
                         FPTI_ANALYTICS_URL,
                         analyticsRequest.toString(),
                         configuration,
                         authorization
                     )
-                    analyticsEventDao.deleteEvents(events)
+                    analyticsEventBlobDao.deleteEventBlobs(eventBlobs)
                 }
                 ListenableWorker.Result.success()
             } catch (e: Exception) {
@@ -157,7 +135,14 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         integration: String?,
         authorization: Authorization?
     ) {
-        reportCrash(context, configuration, sessionId, integration, System.currentTimeMillis(), authorization)
+        reportCrash(
+            context,
+            configuration,
+            sessionId,
+            integration,
+            System.currentTimeMillis(),
+            authorization
+        )
     }
 
     @VisibleForTesting
@@ -172,18 +157,13 @@ internal class AnalyticsClient @VisibleForTesting constructor(
         if (authorization == null) {
             return
         }
-        val metadata = deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
-        val event = AnalyticsEvent(
-                "android.crash",
-                null,
-                null,
-                false,
-                false,
-                timestamp = timestamp
-        )
-        val events = listOf(event)
+        val metadata =
+            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
+        val event = AnalyticsEvent(name = "crash", timestamp = timestamp)
+        val eventJSON = mapAnalyticsEventToFPTIEventJSON(event)
+        val eventBlobs = listOf(AnalyticsEventBlob(eventJSON))
         try {
-            val analyticsRequest = serializeEvents(authorization, events, metadata)
+            val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
             httpClient.post(
                 path = FPTI_ANALYTICS_URL,
                 data = analyticsRequest.toString(),
@@ -196,78 +176,77 @@ internal class AnalyticsClient @VisibleForTesting constructor(
     }
 
     @Throws(JSONException::class)
-    private fun serializeEvents(
+    private fun createFPTIPayload(
         authorization: Authorization?,
-        events: List<AnalyticsEvent>,
+        eventBlobs: List<AnalyticsEventBlob>,
         metadata: DeviceMetadata
     ): JSONObject {
         val batchParamsJSON = metadata.toJSON()
         authorization?.let {
             if (it is ClientToken) {
-                batchParamsJSON.put(AUTHORIZATION_FINGERPRINT_KEY, it.bearer)
+                batchParamsJSON.put(FPTI_KEY_AUTH_FINGERPRINT, it.bearer)
             } else {
-                batchParamsJSON.put(TOKENIZATION_KEY, it.bearer)
+                batchParamsJSON.put(FPTI_KEY_TOKENIZATION_KEY, it.bearer)
             }
         }
 
         val eventsContainerJSON = JSONObject()
-        eventsContainerJSON.put(BATCH_PARAMS_KEY, batchParamsJSON)
+        eventsContainerJSON.put(FPTI_KEY_BATCH_PARAMS, batchParamsJSON)
 
         val eventParamsJSON = JSONArray()
-        for (analyticsEvent in events) {
-            val singleEventJSON = JSONObject()
-                .put(EVENT_NAME_KEY, analyticsEvent.name)
-                .putOpt(PAYPAL_CONTEXT_ID_KEY, analyticsEvent.payPalContextId)
-                .putOpt(LINK_TYPE_KEY, analyticsEvent.linkType)
-                .put(TIMESTAMP_KEY, analyticsEvent.timestamp)
-                .put(VENMO_INSTALLED_KEY, analyticsEvent.venmoInstalled)
-                .put(IS_VAULT_REQUEST_KEY, analyticsEvent.isVaultRequest)
-                .put(START_TIME_KEY, analyticsEvent.startTime)
-                .put(END_TIME_KEY, analyticsEvent.endTime)
-                .putOpt(ENDPOINT_KEY, analyticsEvent.endpoint)
-                .put(TENANT_NAME_KEY, "Braintree")
-            eventParamsJSON.put(singleEventJSON)
+        for (blob in eventBlobs) {
+            eventParamsJSON.put(JSONObject(blob.jsonString))
         }
-        eventsContainerJSON.put(EVENT_PARAMS_KEY, eventParamsJSON)
+        eventsContainerJSON.put(FPTI_KEY_EVENT_PARAMS, eventParamsJSON)
 
         // Single-element "events" array required by FPTI formatting
         val eventsArray = JSONArray(arrayOf(eventsContainerJSON))
-        return JSONObject().put(EVENTS_CONTAINER_KEY, eventsArray)
+        return JSONObject().put(FPTI_KEY_EVENTS, eventsArray)
+    }
+
+    private fun mapAnalyticsEventToFPTIEventJSON(event: AnalyticsEvent): String {
+        val json = JSONObject()
+            .put(FPTI_KEY_EVENT_NAME, "android.${event.name}")
+            .put(FPTI_KEY_TIMESTAMP, event.timestamp)
+            .put(FPTI_KEY_VENMO_INSTALLED, event.venmoInstalled)
+            .put(FPTI_KEY_IS_VAULT, event.isVaultRequest)
+            .put(FPTI_KEY_TENANT_NAME, "Braintree")
+            .putOpt(FPTI_KEY_PAYPAL_CONTEXT_ID, event.payPalContextId)
+            .putOpt(FPTI_KEY_LINK_TYPE, event.linkType)
+            .putOpt(FPTI_KEY_START_TIME, event.startTime)
+            .putOpt(FPTI_KEY_END_TIME, event.endTime)
+            .putOpt(FPTI_KEY_ENDPOINT, event.endpoint)
+        return json.toString()
     }
 
     companion object {
         private const val FPTI_ANALYTICS_URL = "https://api-m.paypal.com/v1/tracking/batch/events"
-        private const val PAYPAL_CONTEXT_ID_KEY = "paypal_context_id"
-        private const val VENMO_INSTALLED_KEY = "venmo_installed"
-        private const val IS_VAULT_REQUEST_KEY = "is_vault"
-        private const val LINK_TYPE_KEY = "link_type"
-        private const val TOKENIZATION_KEY = "tokenization_key"
-        private const val AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint"
-        private const val INVALID_TIMESTAMP: Long = -1
-        private const val EVENTS_CONTAINER_KEY = "events"
-        private const val BATCH_PARAMS_KEY = "batch_params"
-        private const val EVENT_PARAMS_KEY = "event_params"
-        private const val EVENT_NAME_KEY = "event_name"
-        private const val TIMESTAMP_KEY = "t"
-        private const val TENANT_NAME_KEY = "tenant_name"
-        private const val START_TIME_KEY = "start_time"
-        private const val END_TIME_KEY = "end_time"
-        private const val ENDPOINT_KEY = "endpoint"
+
+        private const val FPTI_KEY_PAYPAL_CONTEXT_ID = "paypal_context_id"
+        private const val FPTI_KEY_VENMO_INSTALLED = "venmo_installed"
+        private const val FPTI_KEY_IS_VAULT = "is_vault"
+        private const val FPTI_KEY_LINK_TYPE = "link_type"
+        private const val FPTI_KEY_TOKENIZATION_KEY = "tokenization_key"
+        private const val FPTI_KEY_AUTH_FINGERPRINT = "authorization_fingerprint"
+        private const val FPTI_KEY_EVENTS = "events"
+        private const val FPTI_KEY_BATCH_PARAMS = "batch_params"
+        private const val FPTI_KEY_EVENT_PARAMS = "event_params"
+        private const val FPTI_KEY_EVENT_NAME = "event_name"
+        private const val FPTI_KEY_TIMESTAMP = "t"
+        private const val FPTI_KEY_TENANT_NAME = "tenant_name"
+        private const val FPTI_KEY_START_TIME = "start_time"
+        private const val FPTI_KEY_END_TIME = "end_time"
+        private const val FPTI_KEY_ENDPOINT = "endpoint"
+
         const val WORK_NAME_ANALYTICS_UPLOAD = "uploadAnalytics"
         const val WORK_NAME_ANALYTICS_WRITE = "writeAnalyticsToDb"
+
         const val WORK_INPUT_KEY_AUTHORIZATION = "authorization"
         const val WORK_INPUT_KEY_CONFIGURATION = "configuration"
-        const val WORK_INPUT_KEY_EVENT_NAME = "eventName"
         const val WORK_INPUT_KEY_INTEGRATION = "integration"
         const val WORK_INPUT_KEY_SESSION_ID = "sessionId"
-        const val WORK_INPUT_KEY_TIMESTAMP = "timestamp"
-        const val WORK_INPUT_KEY_PAYPAL_CONTEXT_ID = "payPalContextId"
-        const val WORK_INPUT_KEY_VENMO_INSTALLED = "venmoInstalled"
-        const val WORK_INPUT_KEY_IS_VAULT_REQUEST = "isVaultRequest"
-        const val WORK_INPUT_KEY_LINK_TYPE = "linkType"
-        const val WORK_INPUT_KEY_START_TIME = "startTime"
-        const val WORK_INPUT_KEY_END_TIME = "endTime"
-        const val WORK_INPUT_KEY_ENDPOINT = "endpoint"
+        const val WORK_INPUT_KEY_ANALYTICS_JSON = "analyticsJson"
+
         private const val DELAY_TIME_SECONDS = 30L
 
         private fun getAuthorizationFromData(inputData: Data?): Authorization? =

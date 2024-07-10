@@ -15,9 +15,4 @@ import androidx.work.WorkerParameters
 abstract class AnalyticsBaseWorker(
     context: Context,
     workerParams: WorkerParameters
-) : Worker(context, workerParams) {
-
-    internal open fun createAnalyticsClientFromInputData(): AnalyticsClient {
-        return AnalyticsClient(applicationContext)
-    }
-}
+) : Worker(context, workerParams)
