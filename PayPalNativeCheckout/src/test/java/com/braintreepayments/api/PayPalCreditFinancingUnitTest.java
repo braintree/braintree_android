@@ -49,6 +49,26 @@ public class PayPalCreditFinancingUnitTest {
     }
 
     @Test
+    public void canCreateCreditFinancing_fromJsonWithoutCreditFinancingData() throws JSONException {
+        String paypalAccountResponse = Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE_WITHOUT_CREDIT_FINANCING_DATA;
+        JSONObject creditFinancingJsonObject = new JSONObject(paypalAccountResponse).getJSONArray("paypalAccounts")
+                .getJSONObject(0).getJSONObject("details").getJSONObject("creditFinancingOffered");
+
+        PayPalNativeCheckoutCreditFinancing payPalCreditFinancing =
+                PayPalNativeCheckoutCreditFinancing.fromJson(creditFinancingJsonObject);
+
+        assertFalse(payPalCreditFinancing.isCardAmountImmutable());
+        assertEquals(18, payPalCreditFinancing.getTerm());
+        assertFalse(payPalCreditFinancing.hasPayerAcceptance());
+        assertNull(payPalCreditFinancing.getMonthlyPayment().getCurrency());
+        assertNull(payPalCreditFinancing.getTotalCost().getCurrency());
+        assertNull(payPalCreditFinancing.getTotalInterest().getCurrency());
+        assertNull(payPalCreditFinancing.getMonthlyPayment().getValue());
+        assertNull(payPalCreditFinancing.getTotalCost().getValue());
+        assertNull(payPalCreditFinancing.getTotalInterest().getValue());
+    }
+
+    @Test
     public void writeToParcel_serializesCorrectly() throws JSONException {
         String paypalAccountResponse = Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE;
         JSONObject creditFinancingJsonObject = new JSONObject(paypalAccountResponse).getJSONArray("paypalAccounts")
