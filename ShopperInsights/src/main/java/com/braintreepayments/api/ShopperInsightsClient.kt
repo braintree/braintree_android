@@ -59,7 +59,9 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                     is TokenizationKey -> {
                         callbackFailure(
                             callback = callback,
-                            error = BraintreeException("Invalid authorization. This feature can only be used with a client token.")
+                            error = BraintreeException(
+                                "Invalid authorization. This feature can only be used with a client token."
+                            )
                         )
                         return@getAuthorization
                     }
