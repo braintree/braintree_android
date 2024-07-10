@@ -42,14 +42,6 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
     ) {
         braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_STARTED)
 
-        if (isTokenizationKey()) {
-            callbackFailure(
-                callback = callback,
-                error = BraintreeException("Invalid authorization. This feature can only be used with a client token.")
-            )
-            return
-        }
-
         if (request.email == null && request.phone == null) {
             callbackFailure(
                 callback = callback,
@@ -61,23 +53,41 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
             return
         }
 
-        api.findEligiblePayments(
-            EligiblePaymentsApiRequest(
-                request,
-                currencyCode = currencyCode,
-                countryCode = countryCode,
-                accountDetails = includeAccountDetails,
-                constraintType = constraintType,
-                paymentSources = paymentSources
-            ),
-            callback = { result, error ->
-                handleFindEligiblePaymentsResult(
-                    result,
-                    error,
-                    callback
-                )
+        braintreeClient.getAuthorization { authorization, authorizationError ->
+            if (authorization != null) {
+                when (authorization) {
+                    is TokenizationKey -> {
+                        callbackFailure(
+                            callback = callback,
+                            error = BraintreeException("Invalid authorization. This feature can only be used with a client token.")
+                        )
+                        return@getAuthorization
+                    }
+
+                    is ClientToken -> {
+                        api.findEligiblePayments(
+                            EligiblePaymentsApiRequest(
+                                request,
+                                currencyCode = currencyCode,
+                                countryCode = countryCode,
+                                accountDetails = includeAccountDetails,
+                                constraintType = constraintType,
+                                paymentSources = paymentSources
+                            ),
+                            callback = { result, error ->
+                                handleFindEligiblePaymentsResult(
+                                    result,
+                                    error,
+                                    callback
+                                )
+                            }
+                        )
+                    }
+                }
+            } else if (authorizationError != null) {
+                callbackFailure(callback = callback, error = BraintreeException(authorizationError?.message))
             }
-        )
+        }
     }
 
     private fun handleFindEligiblePaymentsResult(
@@ -107,19 +117,6 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                 )
             }
         }
-    }
-
-    private fun isTokenizationKey(): Boolean {
-        var isTokenizationKey = false
-        braintreeClient.getAuthorization { authorization, _ ->
-            if (authorization != null) {
-                if (authorization is TokenizationKey) {
-                    isTokenizationKey = true
-                }
-            }
-        }
-
-        return isTokenizationKey
     }
 
     private fun callbackFailure(
