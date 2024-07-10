@@ -18,6 +18,7 @@
         * Remove `BraintreeSharedPreferencesException`
         * Convert `PostalAddress` to data class
         * Remove `open` modifier on `Configuration`
+        * Remove `UserCanceledException.isExplicitCancelation`
     * UnionPay
         * Remove `union-pay` module
             * UnionPay cards can now be processed as regular cards (through the `card` module) due to their partnership with Discover

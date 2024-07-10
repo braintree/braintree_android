@@ -35,7 +35,7 @@ class GooglePayActivityResultContract extends ActivityResultContract<GooglePayPa
                 return new GooglePayPaymentAuthResult(PaymentData.getFromIntent(intent), null);
             }
         } else if (resultCode == RESULT_CANCELED) {
-            return new GooglePayPaymentAuthResult(null, new UserCanceledException("User canceled Google Pay.", true));
+            return new GooglePayPaymentAuthResult(null, new UserCanceledException("User canceled Google Pay."));
         } else if (resultCode == RESULT_ERROR) {
             if (intent != null) {
                 return new GooglePayPaymentAuthResult(null, new GooglePayException("An error was encountered during the Google Pay " +
