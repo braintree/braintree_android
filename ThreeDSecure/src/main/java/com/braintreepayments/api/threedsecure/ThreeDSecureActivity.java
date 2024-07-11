@@ -35,7 +35,7 @@ public class ThreeDSecureActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         challengeObserver = new CardinalChallengeObserver(
-                this, (context, validateResponse, s) -> handleValidated(validateResponse, s));
+                this, (context, validateResponse, s) -> handleValidated(cardinalClient, validateResponse, s));
 
         /*
             Here, we schedule the 3DS auth challenge launch to run immediately after onCreate() is
@@ -83,7 +83,10 @@ public class ThreeDSecureActivity extends AppCompatActivity {
         finish();
     }
 
-    private void handleValidated(ValidateResponse validateResponse, String jwt) {
+    @VisibleForTesting
+    void handleValidated(CardinalClient cardinalClient, ValidateResponse validateResponse, String jwt) {
+        cardinalClient.cleanup();
+
         Intent result = new Intent();
         result.putExtra(EXTRA_JWT, jwt);
         result.putExtra(EXTRA_THREE_D_SECURE_RESULT, (ThreeDSecureParams) getIntent().getExtras()

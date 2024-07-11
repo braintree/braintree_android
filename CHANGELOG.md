@@ -147,6 +147,26 @@
         * Remove `BraintreeClient` from constructor
         * Update package name to `com.braintreepayments.api.shopperinsights`
 
+## 4.49.0 (2024-07-08)
+
+* PayPalNativeCheckout (DEPRECATED)
+    * **NOTE:** This module is being deprecated and will be removed in the future version of the SDK
+    * Add deprecated warning message to all public classes and methods
+* ThreeDSecure
+    * Add customFields param to ThreeDSecureRequest
+
+## 4.48.0 (2024-07-02)
+
+* PayPal
+    * Fix `PayPalAccountNonce` Null Pointer Exception by ensuring that all `@NonNull` values are initialized with a non-null value.
+* PayPalNativeCheckout
+    * Fix `PayPalNativeCheckoutAccountNonce` Null Pointer Exception by ensuring that all `@NonNull` values are initialized with a non-null value.
+* BraintreeCore
+    * Use TLS 1.3 for all HTTP requests, when available
+    * Refactor TLSCertificatePinning `certInputStream` property to initialize a `ByteArrayInputStream` once instead of every time the property is accessed.
+* ThreeDSecure
+    * Move Cardinal cleanup from SDK internals into `ThreeDSecureActivity`.
+  
 ## 4.47.0 (2024-06-06)
 
 * BraintreeCore
