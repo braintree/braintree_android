@@ -12,7 +12,9 @@ import org.json.JSONObject;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A class to contain 3D Secure request information used for authentication
@@ -73,6 +75,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private ThreeDSecureV2UiCustomization v2UiCustomization;
     private @ThreeDSecureUiType int uiType;
     private List<Integer> renderTypes;
+    private Map<String, String> customFields;
 
     /**
      * Set the nonce
@@ -247,6 +250,15 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
+     * Set Custom Fields
+     *
+     * @param customFields Object where each key is the name of a custom field which has been configured in the Control Panel. In the Control Panel you can configure 3D Secure Rules which trigger on certain values.
+     */
+    public void setCustomFields(@Nullable Map<String, String> customFields) {
+        this.customFields = customFields;
+    }
+
+    /**
      * @return The nonce to use for 3D Secure verification
      */
     @Nullable
@@ -367,6 +379,14 @@ public class ThreeDSecureRequest implements Parcelable {
         return renderTypes;
     }
 
+    /**
+     * @return The custom fields.
+     */
+    @Nullable
+    public Map<String, String> getCustomFields() {
+        return customFields;
+    }
+
     public ThreeDSecureRequest() {
     }
 
@@ -391,6 +411,17 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeSerializable(cardAddChallengeRequested);
         dest.writeParcelable(v2UiCustomization, flags);
         dest.writeString(accountType);
+
+        if (customFields != null) {
+            dest.writeInt(customFields.size());
+            for (Map.Entry<String, String> entry: customFields.entrySet()) {
+                dest.writeString(entry.getKey());
+                dest.writeString(entry.getValue());
+            }
+        } else {
+            // set custom fields size == 0 so we know not to create a customFields map when deserializing
+            dest.writeInt(0);
+        }
     }
 
     public ThreeDSecureRequest(Parcel in) {
@@ -409,6 +440,16 @@ public class ThreeDSecureRequest implements Parcelable {
         cardAddChallengeRequested = (Boolean) in.readSerializable();
         v2UiCustomization = in.readParcelable(ThreeDSecureV2UiCustomization.class.getClassLoader());
         accountType = in.readString();
+
+        int customFieldsSize = in.readInt();
+        if (customFieldsSize > 0) {
+            customFields = new HashMap<>();
+            for (int i = 0; i < customFieldsSize; i++) {
+                String key = in.readString();
+                String value = in.readString();
+                customFields.put(key, value);
+            }
+        }
     }
 
     public static final Creator<ThreeDSecureRequest> CREATOR = new Creator<ThreeDSecureRequest>() {
@@ -442,6 +483,11 @@ public class ThreeDSecureRequest implements Parcelable {
 
             if (cardAddChallengeRequested != null) {
                 base.put("card_add", cardAddChallengeRequested);
+            }
+
+            if (customFields != null && !customFields.isEmpty()) {
+                JSONObject customFieldsJson = new JSONObject(customFields);
+                base.put("custom_fields", customFieldsJson);
             }
 
             additionalInfo.putOpt("mobile_phone_number", getMobilePhoneNumber());

@@ -23,6 +23,9 @@ import com.braintreepayments.api.threedsecure.ThreeDSecureV2TextBoxCustomization
 import com.braintreepayments.api.threedsecure.ThreeDSecureV2ToolbarCustomization;
 import com.braintreepayments.api.threedsecure.ThreeDSecureV2UiCustomization;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureRequestUnitTest {
 
@@ -68,6 +71,11 @@ public class ThreeDSecureRequestUnitTest {
                 ThreeDSecureV2UiCustomization.BUTTON_TYPE_VERIFY);
         v2UiCustomization.setToolbarCustomization(toolbarCustomization);
 
+        Map<String, String> customFields = new HashMap<>();
+        customFields.put("custom_key1", "custom_value1");
+        customFields.put("custom_key2", "custom_value2");
+        customFields.put("custom_key3", "custom_value3");
+
         ThreeDSecureRequest expected = new ThreeDSecureRequest();
         expected.setNonce("a-nonce");
         expected.setAmount("1.00");
@@ -83,6 +91,7 @@ public class ThreeDSecureRequestUnitTest {
         expected.setCardAddChallengeRequested(true);
         expected.setV2UiCustomization(v2UiCustomization);
         expected.setAccountType(ThreeDSecureRequest.CREDIT);
+        expected.setCustomFields(customFields);
 
         Parcel parcel = Parcel.obtain();
         expected.writeToParcel(parcel, 0);
@@ -137,6 +146,11 @@ public class ThreeDSecureRequestUnitTest {
                 actual.getV2UiCustomization().getToolbarCustomization().getTextColor());
         assertEquals(expected.getV2UiCustomization().getToolbarCustomization().getButtonText(),
                 actual.getV2UiCustomization().getToolbarCustomization().getButtonText());
+
+        assertEquals(3, actual.getCustomFields().size());
+        assertEquals("custom_value1", actual.getCustomFields().get("custom_key1"));
+        assertEquals("custom_value2", actual.getCustomFields().get("custom_key2"));
+        assertEquals("custom_value3", actual.getCustomFields().get("custom_key3"));
     }
 
     @Test
@@ -183,6 +197,11 @@ public class ThreeDSecureRequestUnitTest {
         request.setCardAddChallengeRequested(true);
         request.setAccountType(ThreeDSecureRequest.CREDIT);
 
+        Map<String, String> customFields = new HashMap<>();
+        customFields.put("custom_key1", "custom_value1");
+        customFields.put("custom_key2", "123");
+        request.setCustomFields(customFields);
+
         JSONObject json = new JSONObject(request.build("df-reference-id"));
         JSONObject additionalInfoJson = json.getJSONObject("additional_info");
 
@@ -210,6 +229,10 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals("01", additionalInfoJson.get("shipping_method"));
 
         assertEquals("account-id", additionalInfoJson.get("account_id"));
+
+        JSONObject customFieldsJson = json.getJSONObject("custom_fields");
+        assertEquals("custom_value1", customFieldsJson.getString("custom_key1"));
+        assertEquals("123",customFieldsJson.getString("custom_key2"));
     }
 
     @Test
