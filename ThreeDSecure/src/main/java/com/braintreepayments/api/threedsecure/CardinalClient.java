@@ -118,11 +118,11 @@ class CardinalClient {
         }
     }
 
-    void cleanup() {
-        Cardinal.getInstance().cleanup();
-    }
-
     String getConsumerSessionId() {
         return consumerSessionId;
+    }
+
+    void cleanup() {
+        Cardinal.getInstance().cleanup();
     }
 }
