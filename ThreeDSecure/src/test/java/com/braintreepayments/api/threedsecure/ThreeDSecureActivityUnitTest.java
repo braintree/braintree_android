@@ -1,7 +1,9 @@
 package com.braintreepayments.api.threedsecure;
 
+import static android.app.Activity.RESULT_OK;
 import static com.braintreepayments.api.threedsecure.ThreeDSecureActivity.RESULT_COULD_NOT_START_CARDINAL;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -9,13 +11,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.core.BraintreeException;
+import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver;
+import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
 import org.json.JSONException;
 import org.junit.Test;
@@ -105,5 +110,35 @@ public class ThreeDSecureActivityUnitTest {
         Intent intentForResult = captor.getValue();
         assertEquals("Unable to launch 3DS authentication.",
                 intentForResult.getStringExtra(ThreeDSecureActivity.EXTRA_ERROR_MESSAGE));
+    }
+
+    @Test
+    public void handleValidated_returnsValidationResults() throws JSONException {
+        ThreeDSecureParams threeDSecureParams =
+                ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
+
+        Bundle extras = new Bundle();
+        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureParams);
+        Intent intent = new Intent();
+        intent.putExtras(extras);
+        ThreeDSecureActivity sut = spy(new ThreeDSecureActivity());
+        sut.setIntent(intent);
+
+        ValidateResponse cardinalValidateResponse = mock(ValidateResponse.class);
+        when(cardinalValidateResponse.getActionCode()).thenReturn(CardinalActionCode.SUCCESS);
+        CardinalClient cardinalClient = mock(CardinalClient.class);
+        sut.handleValidated(cardinalClient, cardinalValidateResponse, "jwt");
+        verify(sut).finish();
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(sut).setResult(eq(RESULT_OK), captor.capture());
+        verify(cardinalClient).cleanup();
+
+        Intent intentForResult = captor.getValue();
+        ValidateResponse activityResult = (ValidateResponse) (intentForResult.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE));
+        assertEquals("jwt", intentForResult.getStringExtra(ThreeDSecureActivity.EXTRA_JWT));
+        assertEquals(threeDSecureParams, intentForResult.getParcelableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT));
+        assertNotNull(activityResult);
+        assertEquals("SUCCESS", activityResult.getActionCode().getString());
     }
 }
