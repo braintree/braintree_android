@@ -30,7 +30,6 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
     /**
      * Retrieves recommended payment methods based on the provided shopper insights request.
      *
-     * @param context Android context
      * @param request The [ShopperInsightsRequest] containing information about the shopper.
      * @return A [ShopperInsightsResult] object indicating the recommended payment methods.
      * Note: This feature is in beta. Its public API may change or be removed in future releases
@@ -54,23 +53,43 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
             return
         }
 
-        api.findEligiblePayments(
-            EligiblePaymentsApiRequest(
-                request,
-                currencyCode = currencyCode,
-                countryCode = countryCode,
-                accountDetails = includeAccountDetails,
-                constraintType = constraintType,
-                paymentSources = paymentSources
-            ),
-            callback = { result, error ->
-                handleFindEligiblePaymentsResult(
-                    result,
-                    error,
-                    callback
-                )
+        braintreeClient.getAuthorization { authorization, authorizationError ->
+            if (authorization != null) {
+                when (authorization) {
+                    is TokenizationKey -> {
+                        callbackFailure(
+                            callback = callback,
+                            error = BraintreeException(
+                                "Invalid authorization. This feature can only be used with a client token."
+                            )
+                        )
+                        return@getAuthorization
+                    }
+
+                    is ClientToken -> {
+                        api.findEligiblePayments(
+                            EligiblePaymentsApiRequest(
+                                request,
+                                currencyCode = currencyCode,
+                                countryCode = countryCode,
+                                accountDetails = includeAccountDetails,
+                                constraintType = constraintType,
+                                paymentSources = paymentSources
+                            ),
+                            callback = { result, error ->
+                                handleFindEligiblePaymentsResult(
+                                    result,
+                                    error,
+                                    callback
+                                )
+                            }
+                        )
+                    }
+                }
+            } else if (authorizationError != null) {
+                callbackFailure(callback = callback, error = BraintreeException(authorizationError?.message))
             }
-        )
+        }
     }
 
     private fun handleFindEligiblePaymentsResult(

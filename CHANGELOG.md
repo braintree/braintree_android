@@ -4,6 +4,8 @@
 
 * PayPal
   * Fix issue that causes a JSON parsing error when Pay Later is selected during checkout.
+* ShopperInsights (BETA)
+  * Add error when using an invalid authorization type
 
 ## 4.49.0 (2024-07-08)
 

@@ -1,5 +1,7 @@
 package com.braintreepayments.api
 
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -8,6 +10,8 @@ import io.mockk.slot
 import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -19,18 +23,25 @@ import kotlin.test.assertTrue
  * It focuses on testing how the client handles different scenarios when fetching recommended
  * payment methods.
  */
+@RunWith(RobolectricTestRunner::class)
 @OptIn(ExperimentalBetaApi::class)
 class ShopperInsightsClientUnitTest {
 
     private lateinit var sut: ShopperInsightsClient
     private lateinit var api: ShopperInsightsApi
     private lateinit var braintreeClient: BraintreeClient
+    private lateinit var context: Context
+
+    private val authorizationCallbackSlot = slot<AuthorizationCallback>()
 
     @Before
     fun beforeEach() {
         api = mockk(relaxed = true)
         braintreeClient = mockk(relaxed = true)
         sut = ShopperInsightsClient(api, braintreeClient)
+        context = ApplicationProvider.getApplicationContext()
+
+        every { braintreeClient.getAuthorization(capture(authorizationCallbackSlot)) } just runs
     }
 
     @Test
@@ -366,6 +377,27 @@ class ShopperInsightsClientUnitTest {
     }
 
     @Test
+    fun `test getRecommendPaymentMethods is called with a tokenization key, error is sent`() {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
+            .build()
+
+        sut = ShopperInsightsClient(api, braintreeClient)
+
+        val request = ShopperInsightsRequest("some-email", null)
+        sut.getRecommendedPaymentMethods(request) { result ->
+            assertTrue { result is ShopperInsightsResult.Failure }
+            assertTrue {
+                (result as ShopperInsightsResult.Failure).error is BraintreeException
+            }
+            assertEquals(
+                "Invalid authorization. This feature can only be used with a client token.",
+                (result as ShopperInsightsResult.Failure).error.message
+            )
+        }
+    }
+
+    @Test
     fun `test paypal presented analytics event`() {
         sut.sendPayPalPresentedEvent()
         verify { braintreeClient.sendAnalyticsEvent("shopper-insights:paypal-presented") }
@@ -399,6 +431,7 @@ class ShopperInsightsClientUnitTest {
         every { api.findEligiblePayments(any(), capture(apiCallbackSlot)) } just runs
 
         sut.getRecommendedPaymentMethods(request, callback)
+        authorizationCallbackSlot.captured.onAuthorizationResult(ClientToken(Fixtures.BASE64_CLIENT_TOKEN), null)
 
         apiCallbackSlot.captured.onResult(result = result, error = error)
     }
