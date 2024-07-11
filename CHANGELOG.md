@@ -79,7 +79,6 @@
         * Remove `ThreeDSecureV2BaseCustomization`
         * Remove `CardinalValidateReceiver` from `ThreeDSecureActivity`
         * Make empty `ThreeDSecureLookup` constructor package-private
-        * Add `setCustomFields` to `ThreeDSecureRequest`
     * PayPal
         * Update package name to `com.braintreepayments.api.paypal`
         * Require Android App Links to return to merchant app from PayPal flows
