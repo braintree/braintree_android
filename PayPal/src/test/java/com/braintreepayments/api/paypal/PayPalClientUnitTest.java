@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.braintreepayments.api.BrowserSwitchFinalResult;
 import com.braintreepayments.api.BrowserSwitchOptions;
+import com.braintreepayments.api.core.AnalyticsEventParams;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeRequestCodes;
 import com.braintreepayments.api.core.Configuration;
@@ -183,7 +184,10 @@ public class PayPalClientUnitTest {
                 "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
                 "for more information.",
             ((PayPalPaymentAuthRequest.Failure) request).getError().getMessage());
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, null, null, false);
+
+        AnalyticsEventParams params = new AnalyticsEventParams();
+        params.setVaultRequest(false);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params);
     }
 
     @Test
@@ -205,7 +209,10 @@ public class PayPalClientUnitTest {
         PayPalPaymentAuthRequest request = captor.getValue();
         assertTrue(request instanceof PayPalPaymentAuthRequest.Failure);
         assertEquals(authError, ((PayPalPaymentAuthRequest.Failure) request).getError());
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, null, null, false);
+
+        AnalyticsEventParams params = new AnalyticsEventParams();
+        params.setVaultRequest(false);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params);
     }
 
     @Test
@@ -227,7 +234,10 @@ public class PayPalClientUnitTest {
         PayPalPaymentAuthRequest request = captor.getValue();
         assertTrue(request instanceof PayPalPaymentAuthRequest.Failure);
         assertEquals(authError, ((PayPalPaymentAuthRequest.Failure) request).getError());
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, null, null, true);
+
+        AnalyticsEventParams params = new AnalyticsEventParams();
+        params.setVaultRequest(true);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params);
     }
 
 
@@ -384,7 +394,9 @@ public class PayPalClientUnitTest {
         PayPalResult result = captor.getValue();
         assertTrue(result instanceof PayPalResult.Cancel);
 
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, null, null, false);
+        AnalyticsEventParams params = new AnalyticsEventParams();
+        params.setVaultRequest(false);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params);
     }
 
     @Test
@@ -422,6 +434,10 @@ public class PayPalClientUnitTest {
         PayPalResult result = captor.getValue();
         assertTrue(result instanceof PayPalResult.Success);
         assertEquals(payPalAccountNonce, ((PayPalResult.Success) result).getNonce());
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, "EC-HERMES-SANDBOX-EC-TOKEN", null, false);
+
+        AnalyticsEventParams params = new AnalyticsEventParams();
+        params.setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN");
+        params.setVaultRequest(false);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, params);
     }
 }
