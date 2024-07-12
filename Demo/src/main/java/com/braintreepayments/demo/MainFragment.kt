@@ -5,6 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.fragment.findNavController
 import com.braintreepayments.api.core.PaymentMethodNonce
 
@@ -16,30 +31,68 @@ class MainFragment : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_main, container, false)
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setContent {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
 
-        val googlePayButton = view.findViewById<Button>(R.id.google_pay)
-        val cardsButton = view.findViewById<Button>(R.id.card)
-        val payPalButton = view.findViewById<Button>(R.id.paypal)
-        val venmoButton = view.findViewById<Button>(R.id.venmo)
-        val visaCheckoutButton = view.findViewById<Button>(R.id.visa_checkout)
-        val localPaymentsButton = view.findViewById<Button>(R.id.local_payment)
-        val sepaDirectDebitButton = view.findViewById<Button>(R.id.sepa_debit)
-        val payPalMessagingButton = view.findViewById<Button>(R.id.paypal_messaging)
-        val shopperInsightsButton = view.findViewById<Button>(R.id.shopper_insights)
+                    Card(
+                        modifier = Modifier.padding(12.dp),
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(top = 8.dp),
+                            text = "PayPal",
+                            style = MaterialTheme.typography.headlineSmall
+                        )
 
-        cardsButton.setOnClickListener { this.launchCards() }
-        payPalButton.setOnClickListener { this.launchPayPal() }
-        localPaymentsButton.setOnClickListener { this.launchLocalPayment() }
-        googlePayButton.setOnClickListener { this.launchGooglePay() }
-        visaCheckoutButton.setOnClickListener { this.launchVisaCheckout() }
-        venmoButton.setOnClickListener { this.launchVenmo() }
-        sepaDirectDebitButton.setOnClickListener { this.launchSEPADirectDebit() }
-        payPalMessagingButton.setOnClickListener { this.launchPayPalMessaging() }
-        shopperInsightsButton.setOnClickListener { this.launchShoppingInsights() }
+                        PaymentModuleButton(R.string.paypal_button) { launchPayPal() }
+                        PaymentModuleButton(R.string.shopper_insights_button) { launchShopperInsights() }
+                        PaymentModuleButton(R.string.paypal_messaging_button) { launchPayPalMessaging() }
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
 
-        return view
+                    Card(
+                        modifier = Modifier.padding(12.dp),
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(top = 8.dp),
+                            text = "Other",
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+
+                        PaymentModuleButton(R.string.venmo) { launchVenmo() }
+                        PaymentModuleButton(R.string.cards) { launchCards() }
+                        PaymentModuleButton(R.string.google_pay) { launchGooglePay() }
+                        PaymentModuleButton(R.string.visa_checkout_button) { launchVisaCheckout() }
+                        PaymentModuleButton(R.string.local_payment_button) { launchLocalPayment() }
+                        PaymentModuleButton(R.string.sepa_direct_debit_button) { launchSEPADirectDebit() }
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun PaymentModuleButton(
+        stringResource: Int,
+        onClick: () -> Unit,
+    ) {
+        Button(
+            modifier = Modifier
+                .padding(horizontal = 12.dp, vertical = 4.dp)
+                .fillMaxWidth(),
+            onClick = onClick
+        ) {
+            Text(text = stringResource(stringResource))
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -123,7 +176,7 @@ class MainFragment : BaseFragment() {
         }
     }
 
-    private fun launchShoppingInsights() {
+    private fun launchShopperInsights() {
         fetchAuthorization { authString ->
             val action = MainFragmentDirections.actionMainFragmentToShoppingInsightsFragment()
                 .setAuthString(authString)
