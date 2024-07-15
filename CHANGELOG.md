@@ -146,6 +146,11 @@
     * Shopper Insights (BETA)
         * Remove `BraintreeClient` from constructor
         * Update package name to `com.braintreepayments.api.shopperinsights`
+    
+## v4 unreleased
+
+* PayPal
+    * Fix issue that causes a JSON parsing error when Pay Later is selected during checkout.
 
 ## 4.49.0 (2024-07-08)
 
