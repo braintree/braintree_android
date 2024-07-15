@@ -3,7 +3,7 @@ package com.braintreepayments.api.core
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpRequest
-import com.braintreepayments.api.sharedutils.HttpResponseCallback
+import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets
 class BraintreeGraphQLClientUnitTest {
 
     private lateinit var httpClient: HttpClient
-    private lateinit var httpResponseCallback: HttpResponseCallback
+    private lateinit var httpResponseCallback: NetworkResponseCallback
     private lateinit var configuration: Configuration
     private lateinit var authorization: Authorization
 

@@ -5,10 +5,6 @@ import static org.junit.Assert.assertNull;
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.braintreepayments.api.sharedutils.BaseHttpResponseParser;
-import com.braintreepayments.api.sharedutils.HttpClient;
-import com.braintreepayments.api.sharedutils.HttpRequest;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
