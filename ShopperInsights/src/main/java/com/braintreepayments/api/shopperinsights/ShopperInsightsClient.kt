@@ -12,6 +12,7 @@ import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.VENMO_
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.VENMO_SELECTED
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.TokenizationKey
 
 /**
  * Use [ShopperInsightsClient] to optimize your checkout experience
@@ -57,6 +58,16 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                 error = IllegalArgumentException(
                     "One of ShopperInsightsRequest.email or ShopperInsightsRequest.phone must be " +
                             "non-null."
+                )
+            )
+            return
+        }
+
+        if (braintreeClient.authorization is TokenizationKey) {
+            callbackFailure(
+                callback = callback,
+                error = BraintreeException(
+                    "Invalid authorization. This feature can only be used with a client token."
                 )
             )
             return
