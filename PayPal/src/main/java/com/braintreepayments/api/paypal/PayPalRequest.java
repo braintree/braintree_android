@@ -49,6 +49,10 @@ public abstract class PayPalRequest implements Parcelable {
     static final String LINE_ITEMS_KEY = "line_items";
     static final String USER_ACTION_KEY = "user_action";
 
+    static final String PLAN_TYPE_KEY = "plan_type";
+
+    static final String PLAN_METADATA_KEY = "plan_metadata";
+
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalRequest.LANDING_PAGE_TYPE_BILLING, PayPalRequest.LANDING_PAGE_TYPE_LOGIN})
     @interface PayPalLandingPageType {

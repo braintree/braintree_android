@@ -1,5 +1,8 @@
 package com.braintreepayments.api.paypal
 
+import com.braintreepayments.api.PayPalBillingPricing.Companion.toJson
+import org.json.JSONObject
+
 /**
  * PayPal recurring billing cycle details.
  *
@@ -19,4 +22,28 @@ data class PayPalBillingCycle(
     var startDate: String?,
     var isTrial: Boolean,
     var pricing: PayPalBillingPricing?
-)
+) {
+    companion object {
+        fun PayPalBillingCycle.toJson(): String {
+            return JSONObject().apply {
+                put(KEY_INTERVAL, interval)
+                put(KEY_INTERVAL_COUNT, intervalCount)
+                put(KEY_NUMBER_OF_EXECUTIONS, numberOfExecutions)
+                putOpt(KEY_SEQUENCE, sequence)
+                putOpt(KEY_START_DATE, startDate)
+                put(KEY_TRIAL, isTrial)
+                pricing?.let {
+                    put(KEY_PRICING, it.toJson())
+                }
+            }.toString()
+        }
+
+        private const val KEY_INTERVAL = "billing_frequency_unit"
+        private const val KEY_INTERVAL_COUNT = "billing_frequency"
+        private const val KEY_NUMBER_OF_EXECUTIONS = "number_of_executions"
+        private const val KEY_SEQUENCE = "sequence"
+        private const val KEY_START_DATE = "start_date"
+        private const val KEY_TRIAL = "trial"
+        private const val KEY_PRICING = "pricing_scheme"
+    }
+}
