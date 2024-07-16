@@ -17,13 +17,21 @@ internal class AnalyticsEvent(
     @ColumnInfo(name = "link_type")
     val linkType: String? = null,
 
-    val timestamp: Long = System.currentTimeMillis(),
-
     @ColumnInfo(name = "venmo_installed", defaultValue = "0")
     val venmoInstalled: Boolean = false,
 
-    @ColumnInfo(name = "is_vault", defaultValue = "0")
-    val isVaultRequest: Boolean = false
+    @ColumnInfo(name = "is_vault", defaultValue = "0") val isVaultRequest: Boolean = false,
+
+    @ColumnInfo(name = "start_time", defaultValue = "-1")
+    val startTime: Long? = -1,
+
+    @ColumnInfo(name = "end_time", defaultValue = "-1")
+    val endTime: Long? = -1,
+
+    @ColumnInfo(name = "endpoint")
+    val endpoint: String? = null,
+
+    val timestamp: Long = System.currentTimeMillis()
 ) {
     @JvmField
     @PrimaryKey(autoGenerate = true)

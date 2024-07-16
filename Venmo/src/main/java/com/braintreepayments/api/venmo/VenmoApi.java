@@ -82,7 +82,7 @@ class VenmoApi {
             callback.onResult(null, new BraintreeException("unexpected error"));
         }
 
-        braintreeClient.sendGraphQLPOST(params.toString(), (responseBody, httpError) -> {
+        braintreeClient.sendGraphQLPOST(params, (responseBody, httpError) -> {
             if (responseBody != null) {
                 String paymentContextId = parsePaymentContextId(responseBody);
                 if (TextUtils.isEmpty(paymentContextId)) {
@@ -108,7 +108,7 @@ class VenmoApi {
             variables.put("id", paymentContextId);
             params.put("variables", variables);
 
-            braintreeClient.sendGraphQLPOST(params.toString(), (responseBody, httpError) -> {
+            braintreeClient.sendGraphQLPOST(params, (responseBody, httpError) -> {
                 if (responseBody != null) {
                     try {
                         JSONObject data = new JSONObject(responseBody).getJSONObject("data");

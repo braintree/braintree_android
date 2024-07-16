@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.util.Base64
 import com.braintreepayments.api.sharedutils.HttpClient
-import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import org.json.JSONException
 
 internal class ConfigurationLoader internal constructor(
@@ -18,7 +17,7 @@ internal class ConfigurationLoader internal constructor(
     fun loadConfiguration(authorization: Authorization, callback: ConfigurationLoaderCallback) {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
-            callback.onResult(null, BraintreeException(message))
+            callback.onResult(null, BraintreeException(message), null)
             return
         }
         val configUrl = Uri.parse(authorization.configUrl)
@@ -29,27 +28,30 @@ internal class ConfigurationLoader internal constructor(
         val cachedConfig = getCachedConfiguration(authorization, configUrl)
 
         cachedConfig?.let {
-            callback.onResult(cachedConfig, null)
+            callback.onResult(cachedConfig, null, null)
         } ?: run {
-            httpClient.get(configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES,
-                object : HttpResponseCallback {
-                    override fun onResult(responseBody: String?, httpError: Exception?) {
-                        responseBody?.let {
-                            try {
-                                val configuration = Configuration.fromJson(it)
-                                saveConfigurationToCache(configuration, authorization, configUrl)
-                                callback.onResult(configuration, null)
-                            } catch (jsonException: JSONException) {
-                                callback.onResult(null, jsonException)
-                            }
-                        } ?: httpError?.let { error ->
-                            val errorMessageFormat = "Request for configuration has failed: %s"
-                            val errorMessage = String.format(errorMessageFormat, error.message)
-                            val configurationException = ConfigurationException(errorMessage, error)
-                            callback.onResult(null, configurationException)
-                        }
+            httpClient.get(
+                configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES
+            ) { response, httpError ->
+                val responseBody = response?.body
+                val timing = response?.timing
+                if (responseBody != null) {
+                    try {
+                        val configuration = Configuration.fromJson(responseBody)
+                        saveConfigurationToCache(configuration, authorization, configUrl)
+                        callback.onResult(configuration, null, timing)
+                    } catch (jsonException: JSONException) {
+                        callback.onResult(null, jsonException, null)
                     }
-                })
+                } else {
+                    httpError?.let { error ->
+                        val errorMessageFormat = "Request for configuration has failed: %s"
+                        val errorMessage = String.format(errorMessageFormat, error.message)
+                        val configurationException = ConfigurationException(errorMessage, error)
+                        callback.onResult(null, configurationException, null)
+                    }
+                }
+            }
         }
     }
 
@@ -62,7 +64,10 @@ internal class ConfigurationLoader internal constructor(
         configurationCache.saveConfiguration(configuration, cacheKey)
     }
 
-    private fun getCachedConfiguration(authorization: Authorization, configUrl: String): Configuration? {
+    private fun getCachedConfiguration(
+        authorization: Authorization,
+        configUrl: String
+    ): Configuration? {
         val cacheKey = createCacheKey(authorization, configUrl)
         val cachedConfigResponse = configurationCache.getConfiguration(cacheKey) ?: return null
         return try {

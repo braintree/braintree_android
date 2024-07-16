@@ -69,7 +69,7 @@ class AnalyticsClientUnitTest {
             )
         } returns mockk()
 
-        var event = AnalyticsEvent(eventName, null, null, 123)
+        var event = AnalyticsEvent(eventName, null, null, timestamp = 123)
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
         sut.sendEvent(configuration, event, sessionId, integration, authorization)
 
@@ -189,10 +189,10 @@ class AnalyticsClientUnitTest {
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", null, null, 123))
-        events.add(AnalyticsEvent("event1", payPalContextId, null, 456))
-        events.add(AnalyticsEvent("event2", null, linkType, 789))
-        events.add(AnalyticsEvent("event3", payPalContextId, linkType, 987))
+        events.add(AnalyticsEvent("event0", null, null, timestamp = 123))
+        events.add(AnalyticsEvent("event1", payPalContextId, null, timestamp = 456))
+        events.add(AnalyticsEvent("event2", null, linkType, timestamp = 789))
+        events.add(AnalyticsEvent("event3", payPalContextId, linkType, timestamp = 987))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val analyticsJSONSlot = slot<String>()
@@ -353,10 +353,10 @@ class AnalyticsClientUnitTest {
         } returns metadata
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", null, null, 123))
-        events.add(AnalyticsEvent("event1", payPalContextId, null, 456))
-        events.add(AnalyticsEvent("event2", null, linkType, 789))
-        events.add(AnalyticsEvent("event3", payPalContextId, linkType, 987))
+        events.add(AnalyticsEvent("event0", null, null, timestamp = 123))
+        events.add(AnalyticsEvent("event1", payPalContextId, null, timestamp = 456))
+        events.add(AnalyticsEvent("event2", null, linkType, timestamp = 789))
+        events.add(AnalyticsEvent("event3", payPalContextId, linkType, timestamp = 987))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val sut = AnalyticsClient(httpClient, analyticsDatabase, workManager, deviceInspector)
@@ -380,10 +380,10 @@ class AnalyticsClientUnitTest {
         } returns createSampleDeviceMetadata()
 
         val events: MutableList<AnalyticsEvent> = ArrayList()
-        events.add(AnalyticsEvent("event0", null, null, 123))
-        events.add(AnalyticsEvent("event1", payPalContextId, null, 456))
-        events.add(AnalyticsEvent("event0", null, linkType, 789))
-        events.add(AnalyticsEvent("event1", payPalContextId, linkType, 987))
+        events.add(AnalyticsEvent("event0", null, null, timestamp = 123))
+        events.add(AnalyticsEvent("event1", payPalContextId, null, timestamp = 456))
+        events.add(AnalyticsEvent("event0", null, linkType, timestamp = 789))
+        events.add(AnalyticsEvent("event1", payPalContextId, linkType, timestamp = 987))
         every { analyticsEventDao.getAllEvents() } returns events
 
         val httpError = Exception("error")

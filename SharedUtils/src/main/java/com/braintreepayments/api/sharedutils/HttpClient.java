@@ -49,28 +49,28 @@ public class HttpClient {
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public String sendRequest(HttpRequest request) throws Exception {
-        return syncHttpClient.request(request);
+        return syncHttpClient.request(request).getBody();
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    public void sendRequest(HttpRequest request, HttpResponseCallback callback) {
+    public void sendRequest(HttpRequest request, NetworkResponseCallback callback) {
         sendRequest(request, HttpClient.NO_RETRY, callback);
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public void sendRequest(HttpRequest request, @RetryStrategy int retryStrategy,
-                     HttpResponseCallback callback) {
+                            NetworkResponseCallback callback) {
         scheduleRequest(request, retryStrategy, callback);
     }
 
     private void scheduleRequest(final HttpRequest request, @RetryStrategy final int retryStrategy,
-                                 final HttpResponseCallback callback) {
+                                 final NetworkResponseCallback callback) {
         resetRetryCount(request);
 
         scheduler.runOnBackground(() -> {
             try {
-                String responseBody = syncHttpClient.request(request);
-                notifySuccessOnMainThread(callback, responseBody);
+                HttpResponse httpResponse = syncHttpClient.request(request);
+                notifySuccessOnMainThread(callback, httpResponse);
             } catch (Exception e) {
                 switch (retryStrategy) {
                     case HttpClient.NO_RETRY:
@@ -85,7 +85,7 @@ public class HttpClient {
     }
 
     private void retryGet(final HttpRequest request, @RetryStrategy final int retryStrategy,
-                          final HttpResponseCallback callback) {
+                          final NetworkResponseCallback callback) {
         URL url = null;
         try {
             url = request.getURL();
@@ -126,14 +126,14 @@ public class HttpClient {
         }
     }
 
-    private void notifySuccessOnMainThread(final HttpResponseCallback callback,
-                                           final String responseBody) {
+    private void notifySuccessOnMainThread(final NetworkResponseCallback callback,
+                                           final HttpResponse response) {
         if (callback != null) {
-            scheduler.runOnMain(() -> callback.onResult(responseBody, null));
+            scheduler.runOnMain(() -> callback.onResult(response, null));
         }
     }
 
-    private void notifyErrorOnMainThread(final HttpResponseCallback callback, final Exception e) {
+    private void notifyErrorOnMainThread(final NetworkResponseCallback callback, final Exception e) {
         if (callback != null) {
             scheduler.runOnMain(() -> callback.onResult(null, e));
         }
