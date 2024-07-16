@@ -1,5 +1,6 @@
 package com.braintreepayments.api.testutils
 
+import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ConfigurationCallback
@@ -17,6 +18,7 @@ class MockkBraintreeClientBuilder {
 
     private var configurationSuccess: Configuration? = null
     private var configurationException: Exception? = null
+    private var authorizationSuccess: Authorization? = null
 
     fun configurationSuccess(configurationSuccess: Configuration): MockkBraintreeClientBuilder {
         this.configurationSuccess = configurationSuccess
@@ -30,6 +32,11 @@ class MockkBraintreeClientBuilder {
 
     fun sessionId(sessionId: String): MockkBraintreeClientBuilder {
         this.sessionId = sessionId
+        return this
+    }
+
+    fun authorizationSuccess(authorizationSuccess: Authorization): MockkBraintreeClientBuilder {
+        this.authorizationSuccess = authorizationSuccess
         return this
     }
 
