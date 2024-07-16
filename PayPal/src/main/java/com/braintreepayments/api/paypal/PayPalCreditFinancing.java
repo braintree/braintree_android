@@ -39,13 +39,13 @@ public class PayPalCreditFinancing implements Parcelable {
 
         result.cardAmountImmutable = creditFinancing.optBoolean(CARD_AMOUNT_IMMUTABLE_KEY, false);
         result.monthlyPayment = PayPalCreditFinancingAmount.fromJson(
-                creditFinancing.getJSONObject(MONTHLY_PAYMENT_KEY));
+                creditFinancing.optJSONObject(MONTHLY_PAYMENT_KEY));
         result.payerAcceptance = creditFinancing.optBoolean(PAYER_ACCEPTANCE_KEY, false);
         result.term = creditFinancing.optInt(TERM_KEY, 0);
         result.totalCost =
-                PayPalCreditFinancingAmount.fromJson(creditFinancing.getJSONObject(TOTAL_COST_KEY));
+                PayPalCreditFinancingAmount.fromJson(creditFinancing.optJSONObject(TOTAL_COST_KEY));
         result.totalInterest = PayPalCreditFinancingAmount.fromJson(
-                creditFinancing.getJSONObject(TOTAL_INTEREST_KEY));
+                creditFinancing.optJSONObject(TOTAL_INTEREST_KEY));
 
         return result;
     }

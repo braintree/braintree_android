@@ -1653,6 +1653,52 @@ object Fixtures {
     """
 
     // language=JSON
+    const val PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE_WITHOUT_CREDIT_FINANCING_DATA = """
+    {
+      "paypalAccounts": [
+        {
+          "type": "PayPalAccount",
+          "nonce": "8d4e91d2-4627-10f4-6336-113e331ff9ce",
+          "description": "PayPal",
+          "consumed": false,
+          "details": {
+            "creditFinancingOffered": {
+              "term": 18
+            },
+            "payerInfo": {
+              "email": "paypal@vividseats.com",
+              "firstName": "Vivid",
+              "lastName": "Tester",
+              "payerId": "NSXGUJGV6WMGW",
+              "phone": "408-242-6641",
+              "countryCode": "US",
+              "billingAddress": {
+                "line1": "1 Main St",
+                "line2": "",
+                "city": "San Jose",
+                "state": "CA",
+                "postalCode": "95131",
+                "countryCode": "US"
+              },
+              "shippingAddress": {}
+            },
+            "correlationId": "EC-1NY995367L811651K",
+            "billingAddress": {
+              "line1": "1 Main St",
+              "line2": "",
+              "city": "San Jose",
+              "state": "CA",
+              "postalCode": "95131",
+              "countryCode": "US"
+            },
+            "shippingAddress": {}
+          }
+        }
+      ]
+    }
+    """
+
+    // language=JSON
     const val PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE = """
         {
           "paypalAccounts": [

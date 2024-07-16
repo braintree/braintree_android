@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.BrowserSwitchFinalResult;
 import com.braintreepayments.api.BrowserSwitchOptions;
+import com.braintreepayments.api.core.AnalyticsEventParams;
 import com.braintreepayments.api.core.ApiClient;
 import com.braintreepayments.api.core.AppSwitchNotAvailableException;
 import com.braintreepayments.api.core.Authorization;
@@ -213,7 +214,7 @@ public class VenmoClient {
 
         Uri deepLinkUri = browserSwitchResultInfo.getReturnUrl();
         if (deepLinkUri != null) {
-            braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED, payPalContextId, LINK_TYPE, isVaultRequest);
+            braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED, getAnalyticsParams());
             if (Objects.requireNonNull(deepLinkUri.getPath()).contains("success")) {
                 String paymentContextId = parseResourceId(String.valueOf(deepLinkUri));
                 String paymentMethodNonce = parsePaymentMethodNonce(String.valueOf(deepLinkUri));
@@ -305,22 +306,30 @@ public class VenmoClient {
     }
 
     private void callbackPaymentAuthFailure(VenmoPaymentAuthRequestCallback callback, VenmoPaymentAuthRequest request) {
-        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, payPalContextId, LINK_TYPE, isVaultRequest);
+        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, getAnalyticsParams());
         callback.onVenmoPaymentAuthRequest(request);
     }
 
     private void callbackSuccess(VenmoTokenizeCallback callback, VenmoResult venmoResult) {
-        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_SUCCEEDED, payPalContextId, LINK_TYPE, isVaultRequest);
+        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_SUCCEEDED, getAnalyticsParams());
         callback.onVenmoResult(venmoResult);
     }
 
     private void callbackTokenizeCancel(VenmoTokenizeCallback callback) {
-        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_CANCELED, payPalContextId, LINK_TYPE, isVaultRequest);
+        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_CANCELED, getAnalyticsParams());
         callback.onVenmoResult(VenmoResult.Cancel.INSTANCE);
     }
     
     private void callbackTokenizeFailure(VenmoTokenizeCallback callback, VenmoResult venmoResult) {
-        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, payPalContextId, LINK_TYPE, isVaultRequest);
+        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, getAnalyticsParams());
         callback.onVenmoResult(venmoResult);
+    }
+
+    private AnalyticsEventParams getAnalyticsParams() {
+        AnalyticsEventParams eventParameters = new AnalyticsEventParams();
+        eventParameters.setPayPalContextId(payPalContextId);
+        eventParameters.setLinkType(LINK_TYPE);
+        eventParameters.setVaultRequest(isVaultRequest);
+        return eventParameters;
     }
 }
