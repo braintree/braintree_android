@@ -123,7 +123,7 @@ class AnalyticsClientUnitTest {
         assertEquals(authorization.toString(), workSpec.input.getString("authorization"))
         assertEquals("sample-session-id", workSpec.input.getString("sessionId"))
         assertEquals("sample-integration", workSpec.input.getString("integration"))
-        
+
         // language=JSON
         val expectedJSON = """
         {
