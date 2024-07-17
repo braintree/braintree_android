@@ -276,17 +276,18 @@ class BraintreeClient @VisibleForTesting internal constructor(
                 ) { response, httpError ->
                     response?.let {
                         try {
-                            json?.optString(GraphQLConstants.Keys.OPERATION_NAME)?.let { query ->
-                                val params = AnalyticsEventParams(
-                                    startTime = it.timing.startTime,
-                                    endTime = it.timing.endTime,
-                                    endpoint = query
-                                )
-                                sendAnalyticsEvent(
-                                    CoreAnalytics.apiRequestLatency,
-                                    params
-                                )
-                            }
+                            json?.optString(GraphQLConstants.Keys.OPERATION_NAME)
+                                ?.let { query ->
+                                    val params = AnalyticsEventParams(
+                                        startTime = it.timing.startTime,
+                                        endTime = it.timing.endTime,
+                                        endpoint = query
+                                    )
+                                    sendAnalyticsEvent(
+                                        CoreAnalytics.apiRequestLatency,
+                                        params
+                                    )
+                                }
                             responseCallback.onResult(it.body, null)
                         } catch (jsonException: JSONException) {
                             responseCallback.onResult(null, jsonException)

@@ -17,6 +17,7 @@ internal class ConfigurationLoader internal constructor(
     fun loadConfiguration(authorization: Authorization, callback: ConfigurationLoaderCallback) {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
+            // NOTE: timing information is null when configuration comes from cache
             callback.onResult(null, BraintreeException(message), null)
             return
         }
