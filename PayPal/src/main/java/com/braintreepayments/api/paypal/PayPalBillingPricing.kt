@@ -1,4 +1,4 @@
-package com.braintreepayments.api
+package com.braintreepayments.api.paypal
 
 /**
  * PayPal Recurring Billing Agreement pricing details.
