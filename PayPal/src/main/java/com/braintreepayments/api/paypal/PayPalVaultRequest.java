@@ -174,12 +174,16 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
     PayPalVaultRequest(Parcel in) {
         super(in);
         shouldOfferCredit = in.readByte() != 0;
+        recurringBillingDetails = in.readParcelable(PayPalRecurringBillingDetails.class.getClassLoader());
+        recurringBillingPlanType = (PayPalRecurringBillingPlanType) in.readSerializable();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeByte((byte) (shouldOfferCredit ? 1 : 0));
+        dest.writeParcelable(recurringBillingDetails, flags);
+        dest.writeSerializable(recurringBillingPlanType);
     }
 
     @Override

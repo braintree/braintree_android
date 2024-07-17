@@ -1,6 +1,8 @@
 package com.braintreepayments.api.paypal
 
-import com.braintreepayments.api.PayPalBillingCycle.Companion.toJson
+import android.os.Parcelable
+import com.braintreepayments.api.paypal.PayPalBillingCycle.Companion.toJson
+import kotlinx.parcelize.Parcelize
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -18,6 +20,7 @@ import org.json.JSONObject
  * @property taxAmount The taxes for the billing cycle at the time of checkout.
  * @property totalAmount
  */
+@Parcelize
 data class PayPalRecurringBillingDetails(
     var billingCycles: List<PayPalBillingCycle>,
     var currencyISOCode: String,
@@ -29,7 +32,7 @@ data class PayPalRecurringBillingDetails(
     var shippingAmount: String?,
     var taxAmount: String?,
     var totalAmount: String?
-) {
+) : Parcelable {
 
     companion object {
         @JvmStatic

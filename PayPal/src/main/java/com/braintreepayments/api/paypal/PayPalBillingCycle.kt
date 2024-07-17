@@ -1,6 +1,8 @@
 package com.braintreepayments.api.paypal
 
-import com.braintreepayments.api.PayPalBillingPricing.Companion.toJson
+import android.os.Parcelable
+import com.braintreepayments.api.paypal.PayPalBillingPricing.Companion.toJson
+import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
 
 /**
@@ -14,6 +16,7 @@ import org.json.JSONObject
  * @property isTrial The tenure type of the billing cycle. In case of a plan having trial cycle, only 2 trial cycles are allowed per plan.
  * @property pricing The active pricing scheme for this billing cycle. Required if [isTrial] is false. Optional if [isTrial] is true.
  */
+@Parcelize
 data class PayPalBillingCycle(
     var interval: PayPalBillingInterval,
     var intervalCount: Int,
@@ -22,7 +25,7 @@ data class PayPalBillingCycle(
     var startDate: String?,
     var isTrial: Boolean,
     var pricing: PayPalBillingPricing?
-) {
+) : Parcelable {
     companion object {
         fun PayPalBillingCycle.toJson(): String {
             return JSONObject().apply {

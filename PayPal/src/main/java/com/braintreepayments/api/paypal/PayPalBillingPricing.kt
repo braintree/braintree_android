@@ -1,5 +1,7 @@
 package com.braintreepayments.api.paypal
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
 
 /**
@@ -9,11 +11,12 @@ import org.json.JSONObject
  * @property amount Price. The amount to charge for the subscription, recurring, UCOF or installments.
  * @property reloadThresholdAmount The reload trigger threshold condition amount when the customer is charged.
  */
+@Parcelize
 data class PayPalBillingPricing(
     var pricingModel: PayPalPricingModel,
     var amount: String,
     var reloadThresholdAmount: String?
-) {
+) : Parcelable {
     companion object {
         fun PayPalBillingPricing.toJson(): String {
             return JSONObject().apply {
