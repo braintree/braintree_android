@@ -121,15 +121,6 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return this;
     }
 
-    public TestConfigurationBuilder visaCheckout(
-            TestVisaCheckoutConfigurationBuilder visaCheckoutConfigurationBuilder) {
-        try {
-            put(new JSONObject(visaCheckoutConfigurationBuilder.build()));
-        } catch (JSONException ignored) {
-        }
-        return this;
-    }
-
     public TestConfigurationBuilder braintreeApi(
             TestBraintreeApiConfigurationBuilder braintreeApiConfigurationBuilder) {
         try {
@@ -196,14 +187,6 @@ public class TestConfigurationBuilder extends JSONBuilder {
         } catch (JSONException ignored) {
         }
         return new TestPayPalConfigurationBuilder(true);
-    }
-
-    public TestVisaCheckoutConfigurationBuilder visaCheckout() {
-        try {
-            return new TestVisaCheckoutConfigurationBuilder(jsonBody.getJSONObject("visaCheckout"));
-        } catch (JSONException ignored) {
-        }
-        return new TestVisaCheckoutConfigurationBuilder();
     }
 
     public TestGraphQLConfigurationBuilder graphQLConfigurationBuilder() {
@@ -343,33 +326,6 @@ public class TestConfigurationBuilder extends JSONBuilder {
 
         public TestGooglePayConfigurationBuilder paypalClientId(String paypalClientId) {
             put(paypalClientId);
-            return this;
-        }
-    }
-
-    public static class TestVisaCheckoutConfigurationBuilder extends JSONBuilder {
-
-        public TestVisaCheckoutConfigurationBuilder() {
-            super();
-        }
-
-        protected TestVisaCheckoutConfigurationBuilder(JSONObject json) {
-            super(json);
-        }
-
-        public TestVisaCheckoutConfigurationBuilder apikey(String apikey) {
-            put(apikey);
-            return this;
-        }
-
-        public TestVisaCheckoutConfigurationBuilder externalClientId(String externalClientId) {
-            put(externalClientId);
-            return this;
-        }
-
-        public TestVisaCheckoutConfigurationBuilder supportedCardTypes(
-                String... supportedCardTypes) {
-            put(new JSONArray(Arrays.asList(supportedCardTypes)));
             return this;
         }
     }

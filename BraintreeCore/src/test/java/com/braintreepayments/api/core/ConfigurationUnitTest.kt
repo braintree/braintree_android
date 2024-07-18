@@ -3,7 +3,10 @@ package com.braintreepayments.api.core
 import android.text.TextUtils
 import com.braintreepayments.api.testutils.Fixtures
 import org.json.JSONException
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -132,18 +135,6 @@ class ConfigurationUnitTest {
     }
 
     @Test
-    fun returnsVisaCheckoutConfiguration_whenVisaCheckoutConfigurationIsPresent() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_VISA_CHECKOUT)
-        assertTrue(sut.isVisaCheckoutEnabled)
-    }
-
-    @Test
-    fun returnsNewVisaCheckoutConfigurationWhenVisaCheckoutConfigurationIsAbsent() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
-        assertFalse(sut.isVisaCheckoutEnabled)
-    }
-
-    @Test
     fun returnsBraintreeApiConfigurationWhenBraintreeApiConfigurationPresent() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN)
         assertTrue(sut.isBraintreeApiEnabled)
@@ -221,12 +212,6 @@ class ConfigurationUnitTest {
     }
 
     @Test
-    fun isVisaCheckoutEnabled_returnsFalseWhenConfigurationApiKeyDoesNotExist() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN)
-        assertFalse(sut.isVisaCheckoutEnabled)
-    }
-
-    @Test
     fun payPalDisplayName_forwardsValueFromConfiguration() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
         assertEquals("paypal_merchant", sut.payPalDisplayName)
@@ -272,31 +257,6 @@ class ConfigurationUnitTest {
     fun payPalCurrencyIsoCode_forwardsValueFromConfiguration() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
         assertEquals("USD", sut.payPalCurrencyIsoCode)
-    }
-
-    @Test
-    fun isVisaCheckoutEnabled_returnsTrueWhenConfigurationApiKeyExists() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_VISA_CHECKOUT)
-        assertTrue(sut.isVisaCheckoutEnabled)
-    }
-
-    @Test
-    fun visaCheckoutSupportedNetworks_forwardsInvocationToVisaCheckoutConfiguration() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_VISA_CHECKOUT)
-        val expected = listOf("AMEX", "DISCOVER", "MASTERCARD", "VISA")
-        assertEquals(expected, sut.visaCheckoutSupportedNetworks)
-    }
-
-    @Test
-    fun visaCheckoutApiKey_forwardsInvocationToVisaCheckoutConfiguration() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_VISA_CHECKOUT)
-        assertEquals("gwApikey", sut.visaCheckoutApiKey)
-    }
-
-    @Test
-    fun visaCheckoutExternalClientId_forwardsInvocationToVisaCheckoutConfiguration() {
-        val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_VISA_CHECKOUT)
-        assertEquals("gwExternalClientId", sut.visaCheckoutExternalClientId)
     }
 
     @Test

@@ -108,7 +108,6 @@ dependencies {
     implementation project(':SEPADirectDebit')
     implementation project(':ThreeDSecure')
     implementation project(':Venmo')
-    implementation project(':VisaCheckout')
 
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'de.greenrobot:eventbus:2.4.1'

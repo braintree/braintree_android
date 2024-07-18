@@ -125,11 +125,6 @@
           and modify parameters
         * Rename `SEPADirectDebitPaymentAuthRequestCallback#onResult` to
           `SEPADirectDebitPaymentAuthRequestCallback#onSEPADirectDebitPaymentAuthResult`
-    * Visa Checkout
-        * Update package name to `com.braintreepayments.api.visacheckout`
-        * Change parameters of `VisaCheckoutCreateProfileBuilderCallback` and
-          `VisaCheckoutTokenizeCallback`
-        * Add `VisaCheckoutProfileBuilderResult` and `VisaCheckoutTokenizeResult`
     * American Express
         * Update package name to `com.braintreepayments.api.americanexpress`
         * Change parameters of `AmericanExpressGetRewardsBalanceCallback`
@@ -138,6 +133,8 @@
         * Remove entire Samsung Pay module
     * PayPal Native Checkout
         * Remove entire PayPal Native Checkout module
+    * Visa Checkout
+        * Remove entire Visa Checkout module
     * SharedUtils
         * Update package name to `com.braintreepayments.api.sharedutils`
     * PayPal Messaging (BETA) 

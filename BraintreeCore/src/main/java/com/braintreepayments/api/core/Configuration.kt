@@ -25,8 +25,6 @@ import org.json.JSONObject
  * @property isThreeDSecureEnabled `true` if 3D Secure is enabled and supported for the current
  * merchant account, * `false` otherwise.
  * @property isVenmoEnabled `true` if Venmo is enabled for the merchant account; `false` otherwise.
- * @property isVisaCheckoutEnabled `true` if Visa Checkout is enabled for the merchant account;
- * `false` otherwise.
  * @property merchantAccountId the current Braintree merchant account id.
  * @property merchantId the current Braintree merchant id.
  * @property payPalDirectBaseUrl the url for custom PayPal environments.
@@ -55,7 +53,6 @@ class Configuration internal constructor(configurationString: String) {
         private const val PAYPAL_KEY = "paypal"
         private const val PAY_WITH_VENMO_KEY = "payWithVenmo"
         private const val THREE_D_SECURE_ENABLED_KEY = "threeDSecureEnabled"
-        private const val VISA_CHECKOUT_KEY = "visaCheckout"
 
         @JvmStatic
         @Throws(JSONException::class)
@@ -77,7 +74,6 @@ class Configuration internal constructor(configurationString: String) {
     val isPostalCodeChallengePresent: Boolean
     val isThreeDSecureEnabled: Boolean
     val isVenmoEnabled: Boolean
-    val isVisaCheckoutEnabled: Boolean
     val merchantAccountId: String?
     val merchantId: String
     val payPalDirectBaseUrl: String?
@@ -92,140 +88,142 @@ class Configuration internal constructor(configurationString: String) {
      * @return The Access Token for Braintree API.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val braintreeApiAccessToken: String
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val braintreeApiAccessToken: String
 
     /**
      * @return the base url for accessing Braintree API.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val braintreeApiUrl: String
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val braintreeApiUrl: String
 
     /**
      * @return the authorization fingerprint to use for Google Payment, only allows tokenizing
      * Google Payment cards.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val googlePayAuthorizationFingerprint: String?
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val googlePayAuthorizationFingerprint: String?
 
     /**
      * @return the Google Pay display name to show to the user.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val googlePayDisplayName: String
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val googlePayDisplayName: String
 
     /**
      * @return the current Google Pay environment.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val googlePayEnvironment: String?
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val googlePayEnvironment: String?
 
     /**
      * @return the PayPal Client ID used by Google Pay.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val googlePayPayPalClientId: String
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val googlePayPayPalClientId: String
 
     /**
      * @return a list of supported card networks for Google Pay.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val googlePaySupportedNetworks: List<String>
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val googlePaySupportedNetworks: List<String>
 
     /**
      * @return the GraphQL url.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val graphQLUrl: String
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val graphQLUrl: String
 
     /**
      * @return a boolean indicating whether Braintree API is enabled for this merchant.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val isBraintreeApiEnabled: Boolean
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val isBraintreeApiEnabled: Boolean
 
     /**
      * @return `true` if fraud device data collection should occur; `false` otherwise.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val isFraudDataCollectionEnabled: Boolean
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val isFraudDataCollectionEnabled: Boolean
 
     /**
      * @return `true` if GraphQL is enabled for the merchant account; `false` otherwise.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val isGraphQLEnabled: Boolean
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val isGraphQLEnabled: Boolean
 
     /**
      * @return `true` if PayPal touch is currently disabled, `false` otherwise.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val isPayPalTouchDisabled: Boolean
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val isPayPalTouchDisabled: Boolean
 
     /**
      * @return the PayPal app client id.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val payPalClientId: String?
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val payPalClientId: String?
 
     /**
      * @return the PayPal currency code.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val payPalCurrencyIsoCode: String?
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val payPalCurrencyIsoCode: String?
 
     /**
      * @return the PayPal app display name.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val payPalDisplayName: String?
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val payPalDisplayName: String?
 
     /**
      * @return the current environment for PayPal.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val payPalEnvironment: String?
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val payPalEnvironment: String?
 
     /**
      * @return the Access Token used by the Venmo app to tokenize on behalf of the merchant.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val venmoAccessToken: String
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val venmoAccessToken: String
 
     /**
      * @return the Venmo environment used to handle this payment.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val venmoEnvironment: String
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val venmoEnvironment: String
 
     /**
      * @return the Venmo merchant id used by the Venmo app to authorize payment.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val venmoMerchantId: String
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val venmoMerchantId: String
 
     /**
      * @return a boolean indicating whether ECD is enabled for this Venmo merchant.
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val venmoEnrichedCustomerDataEnabled: Boolean
-
-    /**
-     * @return the Visa Checkout API key configured in the Braintree Control Panel.
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val visaCheckoutApiKey: String
-
-    /**
-     * @return the Visa Checkout External Client ID configured in the Braintree Control Panel.
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val visaCheckoutExternalClientId: String
-
-    /**
-     * @return the Visa Checkout supported networks enabled for the merchant account.
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val visaCheckoutSupportedNetworks: List<String>
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val venmoEnrichedCustomerDataEnabled: Boolean
 
     private val braintreeApiConfiguration: BraintreeApiConfiguration
     private val cardConfiguration: CardConfiguration
@@ -235,7 +233,6 @@ class Configuration internal constructor(configurationString: String) {
     private val graphQLConfiguration: GraphQLConfiguration
     private val payPalConfiguration: PayPalConfiguration
     private val venmoConfiguration: VenmoConfiguration
-    private val visaCheckoutConfiguration: VisaCheckoutConfiguration
     // endregion
 
     init {
@@ -264,14 +261,12 @@ class Configuration internal constructor(configurationString: String) {
         merchantId = json.getString(MERCHANT_ID_KEY)
         payPalConfiguration = PayPalConfiguration(json.optJSONObject(PAYPAL_KEY))
         venmoConfiguration = VenmoConfiguration(json.optJSONObject(PAY_WITH_VENMO_KEY))
-        visaCheckoutConfiguration = VisaCheckoutConfiguration(json.optJSONObject(VISA_CHECKOUT_KEY))
 
         isCvvChallengePresent = challenges.contains("cvv")
         isGooglePayEnabled = googlePayConfiguration.isEnabled
         isLocalPaymentEnabled = isPayPalEnabled // Local Payments are enabled when PayPal is enabled
         isPostalCodeChallengePresent = challenges.contains("postal_code")
         isVenmoEnabled = venmoConfiguration.isAccessTokenValid
-        isVisaCheckoutEnabled = visaCheckoutConfiguration.isEnabled
         payPalDirectBaseUrl = payPalConfiguration.directBaseUrl
         payPalPrivacyUrl = payPalConfiguration.privacyUrl
         payPalUserAgreementUrl = payPalConfiguration.userAgreementUrl
@@ -297,9 +292,6 @@ class Configuration internal constructor(configurationString: String) {
         venmoEnvironment = venmoConfiguration.environment
         venmoMerchantId = venmoConfiguration.merchantId
         venmoEnrichedCustomerDataEnabled = venmoConfiguration.enrichedCustomerDataEnabled
-        visaCheckoutApiKey = visaCheckoutConfiguration.apiKey
-        visaCheckoutExternalClientId = visaCheckoutConfiguration.externalClientId
-        visaCheckoutSupportedNetworks = visaCheckoutConfiguration.acceptedCardBrands
     }
 
     // region Public Methods

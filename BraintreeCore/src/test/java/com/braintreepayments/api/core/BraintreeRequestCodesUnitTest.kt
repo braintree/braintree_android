@@ -24,11 +24,6 @@ class BraintreeRequestCodesUnitTest {
     }
 
     @Test
-    fun visaCheckout() {
-        assertEquals(13592, BraintreeRequestCodes.VISA_CHECKOUT)
-    }
-
-    @Test
     fun googlePay() {
         assertEquals(13593, BraintreeRequestCodes.GOOGLE_PAY)
     }
