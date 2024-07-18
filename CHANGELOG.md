@@ -126,11 +126,7 @@
         * Rename `SEPADirectDebitPaymentAuthRequestCallback#onResult` to
           `SEPADirectDebitPaymentAuthRequestCallback#onSEPADirectDebitPaymentAuthResult`
     * Visa Checkout
-        * Publishing disabled for v5
-        * Update package name to `com.braintreepayments.api.visacheckout`
-        * Change parameters of `VisaCheckoutCreateProfileBuilderCallback` and
-          `VisaCheckoutTokenizeCallback`
-        * Add `VisaCheckoutProfileBuilderResult` and `VisaCheckoutTokenizeResult`
+        * Visa checkout is not yet available for v5
     * American Express
         * Update package name to `com.braintreepayments.api.americanexpress`
         * Change parameters of `AmericanExpressGetRewardsBalanceCallback`
