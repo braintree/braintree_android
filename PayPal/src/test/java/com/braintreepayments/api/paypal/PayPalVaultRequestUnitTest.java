@@ -4,6 +4,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 
 import android.os.Parcel;
@@ -19,6 +20,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RunWith(RobolectricTestRunner.class)
 public class PayPalVaultRequestUnitTest {
@@ -54,9 +56,9 @@ public class PayPalVaultRequestUnitTest {
         PayPalPricingModel pricingModel = PayPalPricingModel.FIXED;
         PayPalBillingPricing billingPricing =
                 new PayPalBillingPricing(pricingModel, "1.00");
-        billingPricing.setReloadThresholdAmount("1.00");
+        billingPricing.setReloadThresholdAmount("6.00");
         PayPalBillingCycle billingCycle =
-                new PayPalBillingCycle(billingInterval, 1, 1);
+                new PayPalBillingCycle(billingInterval, 1, 2);
         billingCycle.setSequence(1);
         billingCycle.setStartDate("2024-04-06T00:00:00Z");
         billingCycle.setTrial(true);
@@ -83,7 +85,27 @@ public class PayPalVaultRequestUnitTest {
         assertTrue(request.getShouldOfferCredit());
         assertTrue(request.hasUserLocationConsent());
         assertTrue(request.isAppLinkEnabled());
-
+        assertEquals(PayPalRecurringBillingPlanType.RECURRING, request.getRecurringBillingPlanType());
+        assertEquals("USD", request.getRecurringBillingDetails().getCurrencyISOCode());
+        assertEquals("2.00", request.getRecurringBillingDetails().getOneTimeFeeAmount());
+        assertEquals("A Product", request.getRecurringBillingDetails().getProductName());
+        assertEquals("A Description", request.getRecurringBillingDetails().getProductDescription());
+        assertSame(1,
+                Objects.requireNonNull(request.getRecurringBillingDetails().getProductQuantity()));
+        assertEquals("5.00", request.getRecurringBillingDetails().getShippingAmount());
+        assertEquals("3.00", request.getRecurringBillingDetails().getTaxAmount());
+        assertEquals("11.00", request.getRecurringBillingDetails().getTotalAmount());
+        PayPalBillingCycle requestBillingCycle = request.getRecurringBillingDetails().getBillingCycles().get(0);
+        assertEquals(PayPalBillingInterval.MONTH, requestBillingCycle.getInterval());
+        assertEquals(1, requestBillingCycle.getIntervalCount());
+        assertEquals(2, requestBillingCycle.getNumberOfExecutions());
+        assertEquals("2024-04-06T00:00:00Z", requestBillingCycle.getStartDate());
+        assertSame(1, requestBillingCycle.getSequence());
+        assertTrue(requestBillingCycle.isTrial());
+        PayPalBillingPricing requestBillingPricing = requestBillingCycle.getPricing();
+        assertEquals("6.00", requestBillingPricing.getReloadThresholdAmount());
+        assertEquals("1.00", requestBillingPricing.getAmount());
+        assertEquals(PayPalPricingModel.FIXED, requestBillingPricing.getPricingModel());
     }
 
     @Test
@@ -109,9 +131,9 @@ public class PayPalVaultRequestUnitTest {
         PayPalPricingModel pricingModel = PayPalPricingModel.FIXED;
         PayPalBillingPricing billingPricing =
                 new PayPalBillingPricing(pricingModel, "1.00");
-        billingPricing.setReloadThresholdAmount("1.00");
+        billingPricing.setReloadThresholdAmount("6.00");
         PayPalBillingCycle billingCycle =
-                new PayPalBillingCycle(billingInterval, 1, 1);
+                new PayPalBillingCycle(billingInterval, 1, 2);
         billingCycle.setSequence(1);
         billingCycle.setStartDate("2024-04-06T00:00:00Z");
         billingCycle.setTrial(true);
@@ -153,6 +175,27 @@ public class PayPalVaultRequestUnitTest {
         assertEquals("An Item", result.getLineItems().get(0).getName());
         assertTrue(result.hasUserLocationConsent());
         assertTrue(result.isAppLinkEnabled());
+        assertEquals(PayPalRecurringBillingPlanType.RECURRING, result.getRecurringBillingPlanType());
+        assertEquals("USD", result.getRecurringBillingDetails().getCurrencyISOCode());
+        assertEquals("2.00", result.getRecurringBillingDetails().getOneTimeFeeAmount());
+        assertEquals("A Product", result.getRecurringBillingDetails().getProductName());
+        assertEquals("A Description", result.getRecurringBillingDetails().getProductDescription());
+        assertSame(1,
+                Objects.requireNonNull(result.getRecurringBillingDetails().getProductQuantity()));
+        assertEquals("5.00", result.getRecurringBillingDetails().getShippingAmount());
+        assertEquals("3.00", result.getRecurringBillingDetails().getTaxAmount());
+        assertEquals("11.00", result.getRecurringBillingDetails().getTotalAmount());
+        PayPalBillingCycle resultBillingCycle = result.getRecurringBillingDetails().getBillingCycles().get(0);
+        assertEquals(PayPalBillingInterval.MONTH, resultBillingCycle.getInterval());
+        assertEquals(1, resultBillingCycle.getIntervalCount());
+        assertEquals(2, resultBillingCycle.getNumberOfExecutions());
+        assertEquals("2024-04-06T00:00:00Z", resultBillingCycle.getStartDate());
+        assertSame(1, resultBillingCycle.getSequence());
+        assertTrue(resultBillingCycle.isTrial());
+        PayPalBillingPricing resultBillingPricing = resultBillingCycle.getPricing();
+        assertEquals("6.00", resultBillingPricing.getReloadThresholdAmount());
+        assertEquals("1.00", resultBillingPricing.getAmount());
+        assertEquals(PayPalPricingModel.FIXED, resultBillingPricing.getPricingModel());
     }
 
     @Test
