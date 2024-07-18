@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.BrowserSwitchFinalResult;
 import com.braintreepayments.api.BrowserSwitchOptions;
+import com.braintreepayments.api.ExperimentalBetaApi;
 import com.braintreepayments.api.core.AnalyticsEventParams;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;
@@ -279,6 +280,19 @@ public class PayPalClient {
         } catch (JSONException | PayPalBrowserSwitchException e) {
             callbackTokenizeFailure(callback, new PayPalResult.Failure(e));
         }
+    }
+
+    @ExperimentalBetaApi
+    public void createEditAuthRequest(
+        PayPalVaultEditRequest payPalVaultEditRequest,
+
+    ) {
+
+    }
+
+    @ExperimentalBetaApi
+    public void edit() {
+
     }
 
     private JSONObject parseUrlResponseData(Uri uri, String successUrl, String approvalUrl,
