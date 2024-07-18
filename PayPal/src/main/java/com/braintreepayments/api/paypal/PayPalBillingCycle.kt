@@ -26,6 +26,7 @@ data class PayPalBillingCycle(
     var isTrial: Boolean,
     var pricing: PayPalBillingPricing?
 ) : Parcelable {
+    constructor(interval: PayPalBillingInterval, intervalCount: Int, numberOfExecutions: Int) : this(interval = interval, intervalCount = intervalCount, numberOfExecutions = numberOfExecutions, null, null, false, null)
     companion object {
         fun PayPalBillingCycle.toJson(): String {
             return JSONObject().apply {

@@ -34,6 +34,7 @@ data class PayPalRecurringBillingDetails(
     var totalAmount: String?
 ) : Parcelable {
 
+    constructor(billingCycles: List<PayPalBillingCycle>, currencyISOCode: String) : this(billingCycles, currencyISOCode, null, null, null, null, null, null, null, null)
     companion object {
         @JvmStatic
         fun PayPalRecurringBillingDetails.toJson(): String {

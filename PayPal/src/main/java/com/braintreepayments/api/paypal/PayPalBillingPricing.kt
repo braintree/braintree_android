@@ -17,6 +17,8 @@ data class PayPalBillingPricing(
     var amount: String,
     var reloadThresholdAmount: String?
 ) : Parcelable {
+
+    constructor(pricingModel: PayPalPricingModel, amount: String) : this(pricingModel = pricingModel, amount = amount, reloadThresholdAmount = null)
     companion object {
         fun PayPalBillingPricing.toJson(): String {
             return JSONObject().apply {
