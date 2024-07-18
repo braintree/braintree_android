@@ -129,12 +129,12 @@
         * Update package name to `com.braintreepayments.api.americanexpress`
         * Change parameters of `AmericanExpressGetRewardsBalanceCallback`
         * Add `AmericanExpressResult`
+    * Visa Checkout
+      * Visa Checkout module is not yet ready for v5
     * Samsung Pay
         * Remove entire Samsung Pay module
     * PayPal Native Checkout
         * Remove entire PayPal Native Checkout module
-    * Visa Checkout
-        * Remove entire Visa Checkout module
     * SharedUtils
         * Update package name to `com.braintreepayments.api.sharedutils`
     * PayPal Messaging (BETA) 
