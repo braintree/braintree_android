@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
-import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.BraintreeException
 

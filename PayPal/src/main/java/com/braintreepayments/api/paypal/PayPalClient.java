@@ -18,6 +18,10 @@ import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.BraintreeRequestCodes;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.core.UserCanceledException;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthCallback;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditCallback;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest;
 import com.braintreepayments.api.sharedutils.Json;
 
 import org.json.JSONException;

@@ -1,4 +1,4 @@
-package com.braintreepayments.api.paypal
+package com.braintreepayments.api.paypal.vaultedit
 
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.ExperimentalBetaApi
