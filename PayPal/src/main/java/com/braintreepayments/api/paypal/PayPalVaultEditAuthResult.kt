@@ -6,9 +6,11 @@ package com.braintreepayments.api.paypal
 sealed class PayPalVaultEditAuthResult {
 
     /**
-     * A successful result that should be passed to [PayPalClient.tokenize] to complete the flow
+     * A successful result that should be passed to [PayPalClient.edit] to complete the flow
      */
-    class Success internal constructor() : PayPalVaultEditAuthResult()
+    class Success internal constructor(
+        val vaultEditAuthInfo: PayPalVaultEditAuthResultInfo
+    ) : PayPalVaultEditAuthResult()
 
     /**
      * The browser switch failed.
@@ -22,5 +24,5 @@ sealed class PayPalVaultEditAuthResult {
      * browser to cancel the edit vault flow, or returns to the app without completing the
      * authentication flow.
      */
-    object NoResult: PayPalVaultEditAuthResult()
+    object NoResult : PayPalVaultEditAuthResult()
 }

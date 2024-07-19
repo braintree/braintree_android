@@ -288,15 +288,15 @@ public class PayPalClient {
         @NonNull final PayPalVaultEditRequest payPalVaultEditRequest,
         @NonNull final PayPalVaultEditAuthCallback payPalVaultEditAuthCallback
     ) {
-
+        // TODO: implement function
     }
 
     @ExperimentalBetaApi
     public void edit(
         @NonNull PayPalVaultEditAuthResult.Success vaultEditAuthResult,
-        @NonNull final PayPalTokenizeCallback callback
+        @NonNull final PayPalVaultEditCallback callback
     ) {
-
+        // TODO: implement function
     }
 
     private JSONObject parseUrlResponseData(Uri uri, String successUrl, String approvalUrl,

@@ -15,5 +15,5 @@ sealed class PayPalVaultEditAuthRequest {
     /**
      * There was an [error] creating the request.
      */
-    class Failure(val error: Exception) : PayPalVaultEditAuthRequest()
+    class Failure internal constructor(val error: Exception) : PayPalVaultEditAuthRequest()
 }
