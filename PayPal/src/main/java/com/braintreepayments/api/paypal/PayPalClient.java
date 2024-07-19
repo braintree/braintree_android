@@ -284,14 +284,18 @@ public class PayPalClient {
 
     @ExperimentalBetaApi
     public void createEditAuthRequest(
-        PayPalVaultEditRequest payPalVaultEditRequest,
-
+        @NonNull final Context context,
+        @NonNull final PayPalVaultEditRequest payPalVaultEditRequest,
+        @NonNull final PayPalVaultEditAuthCallback payPalVaultEditAuthCallback
     ) {
 
     }
 
     @ExperimentalBetaApi
-    public void edit() {
+    public void edit(
+        @NonNull PayPalVaultEditAuthResult.Success vaultEditAuthResult,
+        @NonNull final PayPalTokenizeCallback callback
+    ) {
 
     }
 
