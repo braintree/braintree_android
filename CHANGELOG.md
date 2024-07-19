@@ -1,6 +1,12 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+* PayPal
+    * Add PayPal edit funding instrument flow (BETA)
+        * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
+        * Add `PayPalClient.createEditAuthRequest()` and `PayPalClient.edit()` for editing a buyers funding instrument
+
+## unreleased (v5)
 
 * Breaking Changes
     * All Modules

@@ -1,5 +1,8 @@
 package com.braintreepayments.api.paypal
 
+import com.braintreepayments.api.ExperimentalBetaApi
+
+@ExperimentalBetaApi
 sealed class PayPalVaultEditResult {
 
     /**

@@ -1,8 +1,11 @@
 package com.braintreepayments.api.paypal
 
+import com.braintreepayments.api.ExperimentalBetaApi
+
 /**
  * A request used to launch the continuation of the PayPal Edit Vault flow.
  */
+@ExperimentalBetaApi
 sealed class PayPalVaultEditAuthRequest {
 
     /**

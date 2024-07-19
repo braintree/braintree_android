@@ -1,8 +1,11 @@
 package com.braintreepayments.api.paypal
 
+import com.braintreepayments.api.ExperimentalBetaApi
+
 /**
  * Result of the PayPal edit vault flow received from [PayPalLauncher.handleReturnToAppFromBrowser].
  */
+@ExperimentalBetaApi
 sealed class PayPalVaultEditAuthResult {
 
     /**

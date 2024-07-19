@@ -1,8 +1,11 @@
 package com.braintreepayments.api.paypal
 
+import com.braintreepayments.api.ExperimentalBetaApi
+
 /**
  * Callback for receiving result of [PayPalClient.edit].
  */
+@ExperimentalBetaApi
 fun interface PayPalVaultEditCallback {
 
     /**
