@@ -8,5 +8,5 @@ import com.braintreepayments.api.ExperimentalBetaApi
  */
 @ExperimentalBetaApi
 data class PayPalVaultEditRequest(
-    val encryptedBillingAgreementID: String
+    val editPaypalVaultId: String
 )

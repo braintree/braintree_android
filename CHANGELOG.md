@@ -2,7 +2,7 @@
 
 ## unreleased
 * PayPal
-    * Add PayPal edit funding instrument flow (BETA)
+    * Add PayPal vault edit flow (BETA)
         * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
         * Add `PayPalClient.createEditAuthRequest()` and `PayPalClient.edit()` for editing a buyers funding instrument
 
