@@ -67,7 +67,6 @@ project.ext.group_id = "com.braintreepayments.api"
 project.ext.version = rootProject.version
 project.ext.pom_desc = "PayPal Messaging dependencies for Braintree Android."
 
-apply from: rootProject.file("gradle/release-signing.gradle")
 apply from: rootProject.file("gradle/gradle-publish.gradle")
 
 // endregion
