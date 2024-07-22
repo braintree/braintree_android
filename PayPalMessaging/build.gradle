@@ -17,6 +17,15 @@ android {
         buildConfigField "String", "VERSION_NAME", "\"${rootProject.versionName}\""
     }
 
+    signingConfigs {
+        release {
+            storeFile file(System.env['KEYSTORE_FILE'] ?: 'debug.keystore')
+            storePassword System.env['KEYSTORE_PASSWORD'] ?: 'android'
+            keyAlias System.env['KEY_ALIAS'] ?: 'androiddebugkey'
+            keyPassword System.env['KEY_PASSWORD'] ?: 'android'
+        }
+    }
+
     testOptions {
         unitTests {
             includeAndroidResources = true
@@ -27,12 +36,6 @@ android {
         }
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
     compileOptions {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
