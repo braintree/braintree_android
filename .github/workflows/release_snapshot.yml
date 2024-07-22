@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'main'
+      - 'fix-maven-publish'
   workflow_dispatch:
 env:
   SIGNING_KEY_FILE_PATH: /home/runner/secretKey.gpg
