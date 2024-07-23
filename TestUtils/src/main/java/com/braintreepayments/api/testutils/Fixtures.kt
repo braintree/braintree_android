@@ -2133,7 +2133,6 @@ object Fixtures {
     // endregion
 
     // region PayPal
-
     // language=JSON
     const val PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE = """
         {
