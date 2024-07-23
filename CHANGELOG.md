@@ -1,6 +1,10 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+* PayPal
+  * Add `PayPalRecurringBillingDetails` and `ayPalRecurringBillingPlanType` opt-in request objects. Including these details will provide transparency to users on their billing schedule, dates, and amounts, as well as launch a modernized checkout UI.
+
+## unreleased
 
 * Breaking Changes
     * All Modules
