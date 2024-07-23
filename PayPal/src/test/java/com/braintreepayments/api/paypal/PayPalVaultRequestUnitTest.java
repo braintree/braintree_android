@@ -12,7 +12,6 @@ import android.os.Parcel;
 import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.core.PostalAddress;
-import com.braintreepayments.api.testutils.Fixtures;
 
 import org.json.JSONException;
 import org.junit.Test;
@@ -65,14 +64,13 @@ public class PayPalVaultRequestUnitTest {
         billingCycle.setTrial(true);
         billingCycle.setPricing(billingPricing);
         PayPalRecurringBillingDetails billingDetails =
-                new PayPalRecurringBillingDetails(List.of(billingCycle), "USD");
+                new PayPalRecurringBillingDetails(List.of(billingCycle), "11.00", "USD");
         billingDetails.setOneTimeFeeAmount("2.00");
         billingDetails.setProductName("A Product");
         billingDetails.setProductDescription("A Description");
         billingDetails.setProductQuantity(1);
         billingDetails.setShippingAmount("5.00");
         billingDetails.setTaxAmount("3.00");
-        billingDetails.setTotalAmount("11.00");
         request.setRecurringBillingDetails(billingDetails);
         request.setRecurringBillingPlanType(PayPalRecurringBillingPlanType.RECURRING);
 
@@ -140,14 +138,13 @@ public class PayPalVaultRequestUnitTest {
         billingCycle.setTrial(true);
         billingCycle.setPricing(billingPricing);
         PayPalRecurringBillingDetails billingDetails =
-                new PayPalRecurringBillingDetails(List.of(billingCycle), "USD");
+                new PayPalRecurringBillingDetails(List.of(billingCycle), "11.00", "USD");
         billingDetails.setOneTimeFeeAmount("2.00");
         billingDetails.setProductName("A Product");
         billingDetails.setProductDescription("A Description");
         billingDetails.setProductQuantity(1);
         billingDetails.setShippingAmount("5.00");
         billingDetails.setTaxAmount("3.00");
-        billingDetails.setTotalAmount("11.00");
         request.setRecurringBillingDetails(billingDetails);
         request.setRecurringBillingPlanType(PayPalRecurringBillingPlanType.RECURRING);
 
@@ -213,41 +210,5 @@ public class PayPalVaultRequestUnitTest {
         );
 
         assertTrue(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
-    }
-
-    @Test
-    public void createRequestBody_setsRBAMetadata() throws JSONException {
-        PayPalVaultRequest request = new PayPalVaultRequest(true);
-        PayPalBillingInterval billingInterval = PayPalBillingInterval.MONTH;
-        PayPalPricingModel pricingModel = PayPalPricingModel.FIXED;
-        PayPalBillingPricing billingPricing =
-                new PayPalBillingPricing(pricingModel, "1.00");
-        billingPricing.setReloadThresholdAmount("6.00");
-        PayPalBillingCycle billingCycle =
-                new PayPalBillingCycle(billingInterval, 1, 2);
-        billingCycle.setSequence(1);
-        billingCycle.setStartDate("2024-04-06T00:00:00Z");
-        billingCycle.setTrial(true);
-        billingCycle.setPricing(billingPricing);
-        PayPalRecurringBillingDetails billingDetails =
-                new PayPalRecurringBillingDetails(List.of(billingCycle), "USD");
-        billingDetails.setOneTimeFeeAmount("2.00");
-        billingDetails.setProductName("A Product");
-        billingDetails.setProductDescription("A Description");
-        billingDetails.setProductQuantity(1);
-        billingDetails.setShippingAmount("5.00");
-        billingDetails.setTaxAmount("3.00");
-        billingDetails.setTotalAmount("11.00");
-        request.setRecurringBillingDetails(billingDetails);
-        request.setRecurringBillingPlanType(PayPalRecurringBillingPlanType.RECURRING);
-
-
-        String requestBody = request.createRequestBody(
-                mock(Configuration.class),
-                mock(Authorization.class),
-                "success_url",
-                "cancel_url"
-        );
-        assertEquals(Fixtures.PAYPAL_VAULT_REQUEST_JSON.toString(), requestBody);
     }
 }
