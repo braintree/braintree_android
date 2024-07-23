@@ -677,31 +677,7 @@ class MyActivity : FragmentActivity() {
 
 ## Visa Checkout
 
-The Visa Checkout integration has been updated to improve result handling.
-
-```diff
-class MyActivity : FragmentActivity() {
-
--   private lateinit var braintreeClient: BraintreeClient
-    private lateinit var visaCheckoutClient: VisaCheckoutClient
-
-    private fun initializeVisa() {
--       braintreeClient = BraintreeClient(context, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
--       visaCheckoutClient = VisaCheckoutClient(braintreeClient)
-+       visaCheckoutClient = VisaCheckoutClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
-    }
-
-    private fun onPaymentButtonClick() {
--       visaCheckoutClient.tokenize(request)
-+       visaCheckoutClient.tokenize(request) { visaCheckoutResult ->
-+           when (visaCheckoutResult) {
-+               is VisaCheckoutResult.Success -> { /* handle visaCheckoutResult.nonce */ }
-+               is VisaCheckoutResult.Failure -> { /* handle visaCheckoutResult.error */ }
-+           }
-+       }
-    }
-}
-```
+Visa checkout is not yet available for v5.
 
 ## Samsung Pay
 

@@ -63,10 +63,10 @@ dependencies {
 
 /* maven deploy + signing */
 
-project.ext.name = "visa-checkout"
-project.ext.pom_name = "visa-checkout"
-project.ext.group_id = "com.braintreepayments.api"
-project.ext.version = rootProject.version
-project.ext.pom_desc = "Visa Checkout Module for Braintree\'s Android SDK."
-
-apply from: rootProject.file("gradle/gradle-publish.gradle")
+//project.ext.name = "visa-checkout"
+//project.ext.pom_name = "visa-checkout"
+//project.ext.group_id = "com.braintreepayments.api"
+//project.ext.version = rootProject.version
+//project.ext.pom_desc = "Visa Checkout Module for Braintree\'s Android SDK."
+//
+//apply from: rootProject.file("gradle/gradle-publish.gradle")
