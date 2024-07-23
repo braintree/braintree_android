@@ -18,7 +18,11 @@ data class PayPalBillingPricing(
     var reloadThresholdAmount: String?
 ) : Parcelable {
 
-    constructor(pricingModel: PayPalPricingModel, amount: String) : this(pricingModel = pricingModel, amount = amount, reloadThresholdAmount = null)
+    constructor(
+        pricingModel: PayPalPricingModel,
+        amount: String
+    ) : this(pricingModel = pricingModel, amount = amount, reloadThresholdAmount = null)
+
     companion object {
         fun PayPalBillingPricing.toJson(): String {
             return JSONObject().apply {
@@ -33,5 +37,3 @@ data class PayPalBillingPricing(
         private const val KEY_RELOAD_THRESHOLD_AMOUNT = "reload_threshold_amount"
     }
 }
-
-

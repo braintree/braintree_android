@@ -10,12 +10,15 @@ import org.json.JSONObject
  * PayPal recurring billing product details
  *
  * @property totalAmount
- * @property billingCycles A list of billing cycles for trial billing and regular billing. A plan can have at most two trial cycles and only one regular cycle.
- * @property currencyISOCode The three-character ISO-4217 currency code that identifies the currency.
+ * @property billingCycles A list of billing cycles for trial billing and regular billing. A plan
+ * can have at most two trial cycles and only one regular cycle.
+ * @property currencyISOCode The three-character ISO-4217 currency code that identifies the
+ * currency.
  * @property productName The name of the plan to display at checkout.
  * @property oneTimeFeeAmount Price and currency for any one-time charges due at plan signup.
  * @property productDescription Product description to display at the checkout.
- * @property productAmount The item price for the product associated with the billing cycle at the time of checkout.
+ * @property productAmount The item price for the product associated with the billing cycle at the
+ * time of checkout.
  * @property productQuantity Quantity associated with the product.
  * @property shippingAmount The shipping amount for the billing cycle at the time of checkout.
  * @property taxAmount The taxes for the billing cycle at the time of checkout.
@@ -34,7 +37,12 @@ data class PayPalRecurringBillingDetails(
     var taxAmount: String?,
 ) : Parcelable {
 
-    constructor(billingCycles: List<PayPalBillingCycle>, totalAmount: String, currencyISOCode: String) : this(billingCycles, totalAmount, currencyISOCode, null, null, null, null, null, null, null)
+    constructor(
+        billingCycles: List<PayPalBillingCycle>,
+        totalAmount: String,
+        currencyISOCode: String
+    ) : this(billingCycles, totalAmount, currencyISOCode, null, null, null, null, null, null, null)
+
     companion object {
         @JvmStatic
         fun PayPalRecurringBillingDetails.toJson(): String {

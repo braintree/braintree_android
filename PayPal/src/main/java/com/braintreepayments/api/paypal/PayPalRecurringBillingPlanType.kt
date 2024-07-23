@@ -10,12 +10,14 @@ enum class PayPalRecurringBillingPlanType {
     RECURRING,
 
     /**
-     * Fixed amount, fixed frequency, defined duration. (E.g., pay for furniture using monthly payments).
+     * Fixed amount, fixed frequency, defined duration. (E.g., pay for furniture using monthly
+     * payments).
      */
     INSTALLMENT,
 
     /**
-     * Fixed or variable amount, variable freq, no defined duration. (E.g., Coffee shop card reload, prepaid road tolling).
+     * Fixed or variable amount, variable freq, no defined duration. (E.g., Coffee shop card reload,
+     * prepaid road tolling).
      */
     UNSCHEDULED,
 
