@@ -276,7 +276,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
                 ) { response, httpError ->
                     response?.let {
                         try {
-                            json?.optString("query")
+                            json?.optString(GraphQLConstants.Keys.QUERY)
                                 ?.let { query ->
                                     val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
                                     val finalQuery = query.replace(queryDiscardHolder, "")
