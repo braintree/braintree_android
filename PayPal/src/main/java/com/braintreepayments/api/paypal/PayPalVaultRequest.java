@@ -25,7 +25,7 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
 
     private String userAuthenticationEmail;
 
-    private Boolean enablePayPalAppSwitch = false;
+    private boolean enablePayPalAppSwitch = false;
 
     /**
      * @param hasUserLocationConsent is an optional parameter that informs the SDK
@@ -75,12 +75,11 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
      *
      * @param enablePayPalAppSwitch - A boolean value indicating whether to enable the PayPal app switch flow.
      */
-    public void setEnablePayPalAppSwitch(@Nullable Boolean enablePayPalAppSwitch) {
+    public void setEnablePayPalAppSwitch(Boolean enablePayPalAppSwitch) {
         this.enablePayPalAppSwitch = enablePayPalAppSwitch;
     }
 
-    @Nullable
-    public Boolean getEnablePayPalAppSwitch() {
+    public boolean getEnablePayPalAppSwitch() {
         return this.enablePayPalAppSwitch;
     }
 
@@ -113,7 +112,7 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
             parameters.put(ENABLE_APP_SWITCH_KEY, enablePayPalAppSwitch);
             parameters.put(OS_VERSION_KEY, Build.VERSION.SDK_INT);
             parameters.put(OS_TYPE_KEY, "Android");
-            // TODO: Replace the URL with the value passed as a parameter to this method
+            // TODO: Replace the URL with the value passed as a parameter to this method, add test
             parameters.put(MERCHANT_APP_RETURN_URL_KEY, "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments");
         }
 
