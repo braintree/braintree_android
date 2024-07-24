@@ -2133,6 +2133,50 @@ object Fixtures {
     // endregion
 
     // region PayPal
+
+    // language=JSON
+    const val PAYPAL_REQUEST_JSON = """
+    { 
+    "return_url": "success_url",
+      "cancel_url": "cancel_url",
+      "offer_paypal_credit": true, 
+      "description": "Billing Agreement Description",
+      "shipping_address": {
+        "recipient_name": "Postal Address"},
+      "merchant_account_id": "merchant_account_id",
+      "correlation_id": "123-correlation",
+      "experience_profile": {
+        "no_shipping": false,
+        "landing_page_type": "login",
+        "brand_name": "Display Name",
+        "locale_code": "en-US",
+        "address_override": false},
+      "payer_email" : "email",
+      "plan_type": "RECURRING",
+      "plan_metadata": {
+        "billing_cycles": [{
+            "billing_frequency_unit": "MONTH",
+            "billing_frequency": 1,
+            "number_of_executions": 2,
+            "sequence": 1,
+            "start_date": "2024-04-06T00:00:00Z",
+            "trial": true,
+            "pricing_scheme": {
+              "pricing_model": "VARIABLE",
+              "price": "1.00",
+              "reload_threshold_amount": "6.00"}}],
+        "total_amount": "11.00",
+        "currency_iso_code": "USD",
+        "name": "A Product",
+        "one_time_fee_amount": "2.00",
+        "product_description": "A Description",
+        "product_quantity": 1,
+        "shipping_amount": "5.00",
+        "tax_amount": "3.00"
+      }
+    } 
+    """
+
     // language=JSON
     const val PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE = """
         {

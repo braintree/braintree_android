@@ -12,11 +12,13 @@ import android.os.Parcel;
 import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.core.PostalAddress;
+import com.braintreepayments.api.testutils.Fixtures;
 
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -210,5 +212,57 @@ public class PayPalVaultRequestUnitTest {
         );
 
         assertTrue(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
+    }
+
+    @Test
+    public void createRequestBody_correctlyFormatsJSON() throws JSONException {
+        PayPalVaultRequest request = new PayPalVaultRequest(true);
+        request.setLocaleCode("en-US");
+        request.setBillingAgreementDescription("Billing Agreement Description");
+        request.setShippingAddressRequired(true);
+        request.setShippingAddressEditable(true);
+        request.setShouldOfferCredit(true);
+        request.setAppLinkEnabled(true);
+        request.setUserAuthenticationEmail("email");
+
+        PostalAddress postalAddress = new PostalAddress();
+        postalAddress.setRecipientName("Postal Address");
+        request.setShippingAddressOverride(postalAddress);
+
+        request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+        request.setDisplayName("Display Name");
+        request.setRiskCorrelationId("123-correlation");
+        request.setMerchantAccountId("merchant_account_id");
+
+        PayPalBillingInterval billingInterval = PayPalBillingInterval.MONTH;
+        PayPalPricingModel pricingModel = PayPalPricingModel.VARIABLE;
+        PayPalBillingPricing billingPricing =
+                new PayPalBillingPricing(pricingModel, "1.00");
+        billingPricing.setReloadThresholdAmount("6.00");
+        PayPalBillingCycle billingCycle =
+                new PayPalBillingCycle(billingInterval, 1, 2);
+        billingCycle.setSequence(1);
+        billingCycle.setStartDate("2024-04-06T00:00:00Z");
+        billingCycle.setTrial(true);
+        billingCycle.setPricing(billingPricing);
+        PayPalRecurringBillingDetails billingDetails =
+                new PayPalRecurringBillingDetails(List.of(billingCycle), "11.00", "USD");
+        billingDetails.setOneTimeFeeAmount("2.00");
+        billingDetails.setProductName("A Product");
+        billingDetails.setProductDescription("A Description");
+        billingDetails.setProductQuantity(1);
+        billingDetails.setShippingAmount("5.00");
+        billingDetails.setTaxAmount("3.00");
+        request.setRecurringBillingDetails(billingDetails);
+        request.setRecurringBillingPlanType(PayPalRecurringBillingPlanType.RECURRING);
+
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url"
+        );
+
+        JSONAssert.assertEquals(Fixtures.PAYPAL_REQUEST_JSON, requestBody, false);
     }
 }

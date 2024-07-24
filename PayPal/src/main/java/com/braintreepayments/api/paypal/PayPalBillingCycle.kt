@@ -40,7 +40,7 @@ data class PayPalBillingCycle @JvmOverloads constructor(
     var pricing: PayPalBillingPricing? = null
 ) : Parcelable {
 
-    fun toJson(): String {
+    fun toJson(): JSONObject {
         return JSONObject().apply {
             put(KEY_INTERVAL, interval)
             put(KEY_INTERVAL_COUNT, intervalCount)
@@ -51,7 +51,7 @@ data class PayPalBillingCycle @JvmOverloads constructor(
             pricing?.let {
                 put(KEY_PRICING, it.toJson())
             }
-        }.toString()
+        }
     }
 
     companion object {
