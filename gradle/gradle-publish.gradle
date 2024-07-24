@@ -24,8 +24,6 @@ afterEvaluate {
                 version project.ext.version
                 artifactId project.ext.name
                 from components.release
-                artifact androidSourcesJar
-                artifact javadocsJar
 
                 pom {
                     name = project.ext.pom_name ?: ''
@@ -65,25 +63,4 @@ afterEvaluate {
             sign configurations.archives
         }
     }
-}
-
-task javadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    failOnError false
-}
-
-task javadocsJar(type: Jar, dependsOn: javadocs) {
-    archiveClassifier.set('javadoc')
-    from javadocs.destinationDir
-}
-
-task androidSourcesJar(type: Jar) {
-    archiveClassifier.set('sources')
-    from android.sourceSets.main.java.srcDirs
-    from android.sourceSets.main.kotlin.srcDirs
-}
-
-artifacts {
-    archives androidSourcesJar
-    archives javadocsJar
 }
