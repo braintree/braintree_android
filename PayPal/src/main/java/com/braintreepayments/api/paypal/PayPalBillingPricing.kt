@@ -12,16 +12,11 @@ import org.json.JSONObject
  * @property reloadThresholdAmount The reload trigger threshold condition amount when the customer is charged.
  */
 @Parcelize
-data class PayPalBillingPricing(
-    var pricingModel: PayPalPricingModel,
-    var amount: String,
-    var reloadThresholdAmount: String?
+data class PayPalBillingPricing @JvmOverloads constructor(
+    val pricingModel: PayPalPricingModel,
+    val amount: String,
+    var reloadThresholdAmount: String? = null
 ) : Parcelable {
-
-    constructor(
-        pricingModel: PayPalPricingModel,
-        amount: String
-    ) : this(pricingModel = pricingModel, amount = amount, reloadThresholdAmount = null)
 
     companion object {
         fun PayPalBillingPricing.toJson(): String {

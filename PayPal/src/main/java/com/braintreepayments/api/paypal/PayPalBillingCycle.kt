@@ -31,28 +31,15 @@ import org.json.JSONObject
  * false. Optional if [isTrial] is true.
  */
 @Parcelize
-data class PayPalBillingCycle(
-    var interval: PayPalBillingInterval,
-    var intervalCount: Int,
-    var numberOfExecutions: Int,
-    var sequence: Int?,
-    var startDate: String?,
-    var isTrial: Boolean,
-    var pricing: PayPalBillingPricing?
+data class PayPalBillingCycle @JvmOverloads constructor(
+    val interval: PayPalBillingInterval,
+    val intervalCount: Int,
+    val numberOfExecutions: Int,
+    var sequence: Int? = null,
+    var startDate: String? = null,
+    var isTrial: Boolean = false,
+    var pricing: PayPalBillingPricing? = null
 ) : Parcelable {
-    constructor(
-        interval: PayPalBillingInterval,
-        intervalCount: Int,
-        numberOfExecutions: Int
-    ) : this(
-        interval = interval,
-        intervalCount = intervalCount,
-        numberOfExecutions = numberOfExecutions,
-        null,
-        null,
-        false,
-        null
-    )
 
     companion object {
         fun PayPalBillingCycle.toJson(): String {

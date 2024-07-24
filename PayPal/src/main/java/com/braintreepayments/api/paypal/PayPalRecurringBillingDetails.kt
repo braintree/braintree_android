@@ -24,24 +24,18 @@ import org.json.JSONObject
  * @property taxAmount The taxes for the billing cycle at the time of checkout.
  */
 @Parcelize
-data class PayPalRecurringBillingDetails(
-    var billingCycles: List<PayPalBillingCycle>,
-    var totalAmount: String,
-    var currencyISOCode: String,
-    var productName: String?,
-    var oneTimeFeeAmount: String?,
-    var productDescription: String?,
-    var productAmount: String?,
-    var productQuantity: Int?,
-    var shippingAmount: String?,
-    var taxAmount: String?,
+data class PayPalRecurringBillingDetails @JvmOverloads constructor(
+    val billingCycles: List<PayPalBillingCycle>,
+    val totalAmount: String,
+    val currencyISOCode: String,
+    var productName: String? = null,
+    var oneTimeFeeAmount: String? = null,
+    var productDescription: String? = null,
+    var productAmount: String? = null,
+    var productQuantity: Int? = null,
+    var shippingAmount: String? = null,
+    var taxAmount: String? = null,
 ) : Parcelable {
-
-    constructor(
-        billingCycles: List<PayPalBillingCycle>,
-        totalAmount: String,
-        currencyISOCode: String
-    ) : this(billingCycles, totalAmount, currencyISOCode, null, null, null, null, null, null, null)
 
     companion object {
         @JvmStatic
