@@ -3,7 +3,7 @@
 ## unreleased
 
 * PayPal
-  * Add `PayPalRecurringBillingDetails` and `ayPalRecurringBillingPlanType` opt-in request objects. Including these details will provide transparency to users on their billing schedule, dates, and amounts, as well as launch a modernized checkout UI.
+  * Add `PayPalRecurringBillingDetails` and `PayPalRecurringBillingPlanType` opt-in request objects. Including these details will provide transparency to users on their billing schedule, dates, and amounts, as well as launch a modernized checkout UI.
 
 ## 5.0.0-beta1 (2024-07-23)
 
