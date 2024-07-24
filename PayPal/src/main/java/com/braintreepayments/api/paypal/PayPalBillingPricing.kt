@@ -18,7 +18,7 @@ data class PayPalBillingPricing @JvmOverloads constructor(
     var reloadThresholdAmount: String? = null
 ) : Parcelable {
 
-    fun toJson() : JSONObject {
+    fun toJson(): JSONObject {
         return JSONObject().apply {
             put(KEY_PRICING_MODEL, pricingModel.name)
             put(KEY_AMOUNT, amount)

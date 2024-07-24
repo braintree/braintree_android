@@ -36,7 +36,7 @@ data class PayPalRecurringBillingDetails @JvmOverloads constructor(
     var taxAmount: String? = null,
 ) : Parcelable {
 
-    fun toJson() : JSONObject {
+    fun toJson(): JSONObject {
         return JSONObject().apply {
             put(KEY_BILLING_CYCLES, JSONArray().apply {
                 for (billingCycle in billingCycles) {
