@@ -11,12 +11,19 @@ import androidx.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.BrowserSwitchFinalResult;
 import com.braintreepayments.api.BrowserSwitchOptions;
+import com.braintreepayments.api.ExperimentalBetaApi;
 import com.braintreepayments.api.core.AnalyticsEventParams;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.BraintreeRequestCodes;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.core.UserCanceledException;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthCallback;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequestParams;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditCallback;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest;
 import com.braintreepayments.api.sharedutils.Json;
 
 import org.json.JSONException;
@@ -279,6 +286,43 @@ public class PayPalClient {
         } catch (JSONException | PayPalBrowserSwitchException e) {
             callbackTokenizeFailure(callback, new PayPalResult.Failure(e));
         }
+    }
+
+    /**
+     * Starts the PayPal flow that allows a customer to edit their PayPal payment method. A
+     * {@link PayPalVaultEditAuthRequestParams} is returned in the
+     * {@link PayPalVaultEditAuthCallback} that is then passed to
+     * {@link PayPalLauncher#launch(ComponentActivity, PayPalVaultEditAuthRequest.ReadyToLaunch)}.
+     *
+     * @param context an Android Context
+     * @param payPalVaultEditRequest a {@link PayPalVaultEditRequest} containing the edit request
+     * @param payPalVaultEditAuthCallback a {@link PayPalVaultEditAuthCallback}
+     */
+    @ExperimentalBetaApi
+    public void createEditAuthRequest(
+        @NonNull final Context context,
+        @NonNull final PayPalVaultEditRequest payPalVaultEditRequest,
+        @NonNull final PayPalVaultEditAuthCallback payPalVaultEditAuthCallback
+    ) {
+        // TODO: implement function
+    }
+
+    /**
+     * After receiving a result from the PayPal web authentication flow via
+     * {@link PayPalLauncher#handleReturnToAppFromBrowser(PayPalPendingRequest.Started, Intent)},
+     * pass the {@link PayPalVaultEditAuthResult.Success} returned to this method to complete the
+     * edit vault flow.
+     *
+     * @param vaultEditAuthResult a {@link PayPalVaultEditAuthResult.Success} received in the
+     *                            callback from {@link PayPalLauncher#handleReturnToAppFromBrowser(PayPalPendingRequest.Started, Intent)}
+     * @param callback {@link PayPalVaultEditCallback}
+     */
+    @ExperimentalBetaApi
+    public void edit(
+        @NonNull PayPalVaultEditAuthResult.Success vaultEditAuthResult,
+        @NonNull final PayPalVaultEditCallback callback
+    ) {
+        // TODO: implement function
     }
 
     private JSONObject parseUrlResponseData(Uri uri, String successUrl, String approvalUrl,
