@@ -75,7 +75,7 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
      *
      * @param enablePayPalAppSwitch - A boolean value indicating whether to enable the PayPal app switch flow.
      */
-    public void setEnablePayPalAppSwitch(Boolean enablePayPalAppSwitch) {
+    public void setEnablePayPalAppSwitch(boolean enablePayPalAppSwitch) {
         this.enablePayPalAppSwitch = enablePayPalAppSwitch;
     }
 
