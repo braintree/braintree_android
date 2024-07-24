@@ -56,7 +56,6 @@ data class PayPalBillingCycle @JvmOverloads constructor(
 
     companion object {
 
-
         private const val KEY_INTERVAL = "billing_frequency_unit"
         private const val KEY_INTERVAL_COUNT = "billing_frequency"
         private const val KEY_NUMBER_OF_EXECUTIONS = "number_of_executions"
