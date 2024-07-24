@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
 import com.braintreepayments.api.core.Authorization;
-import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.core.PostalAddress;
 
