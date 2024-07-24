@@ -1,7 +1,6 @@
 package com.braintreepayments.api.paypal
 
 import android.os.Parcelable
-import com.braintreepayments.api.paypal.PayPalBillingPricing.Companion.toJson
 import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
 
@@ -41,20 +40,22 @@ data class PayPalBillingCycle @JvmOverloads constructor(
     var pricing: PayPalBillingPricing? = null
 ) : Parcelable {
 
+    fun toJson(): String {
+        return JSONObject().apply {
+            put(KEY_INTERVAL, interval)
+            put(KEY_INTERVAL_COUNT, intervalCount)
+            put(KEY_NUMBER_OF_EXECUTIONS, numberOfExecutions)
+            putOpt(KEY_SEQUENCE, sequence)
+            putOpt(KEY_START_DATE, startDate)
+            put(KEY_TRIAL, isTrial)
+            pricing?.let {
+                put(KEY_PRICING, it.toJson())
+            }
+        }.toString()
+    }
+
     companion object {
-        fun PayPalBillingCycle.toJson(): String {
-            return JSONObject().apply {
-                put(KEY_INTERVAL, interval)
-                put(KEY_INTERVAL_COUNT, intervalCount)
-                put(KEY_NUMBER_OF_EXECUTIONS, numberOfExecutions)
-                putOpt(KEY_SEQUENCE, sequence)
-                putOpt(KEY_START_DATE, startDate)
-                put(KEY_TRIAL, isTrial)
-                pricing?.let {
-                    put(KEY_PRICING, it.toJson())
-                }
-            }.toString()
-        }
+
 
         private const val KEY_INTERVAL = "billing_frequency_unit"
         private const val KEY_INTERVAL_COUNT = "billing_frequency"

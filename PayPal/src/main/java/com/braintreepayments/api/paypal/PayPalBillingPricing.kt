@@ -18,14 +18,16 @@ data class PayPalBillingPricing @JvmOverloads constructor(
     var reloadThresholdAmount: String? = null
 ) : Parcelable {
 
+    fun toJson(): String {
+        return JSONObject().apply {
+            put(KEY_PRICING_MODEL, pricingModel.name)
+            put(KEY_AMOUNT, amount)
+            putOpt(KEY_RELOAD_THRESHOLD_AMOUNT, reloadThresholdAmount)
+        }.toString()
+    }
+
     companion object {
-        fun PayPalBillingPricing.toJson(): String {
-            return JSONObject().apply {
-                put(KEY_PRICING_MODEL, pricingModel.name)
-                put(KEY_AMOUNT, amount)
-                putOpt(KEY_RELOAD_THRESHOLD_AMOUNT, reloadThresholdAmount)
-            }.toString()
-        }
+
 
         private const val KEY_PRICING_MODEL = "pricing_model"
         private const val KEY_AMOUNT = "price"

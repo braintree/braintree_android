@@ -165,7 +165,7 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
         }
 
         if (getRecurringBillingDetails() != null) {
-            parameters.put(PLAN_METADATA_KEY, PayPalRecurringBillingDetails.toJson(recurringBillingDetails));
+            parameters.put(PLAN_METADATA_KEY, recurringBillingDetails.toJson());
         }
 
         return parameters.toString();

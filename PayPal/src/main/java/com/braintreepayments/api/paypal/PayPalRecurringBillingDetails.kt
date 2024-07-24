@@ -1,7 +1,6 @@
 package com.braintreepayments.api.paypal
 
 import android.os.Parcelable
-import com.braintreepayments.api.paypal.PayPalBillingCycle.Companion.toJson
 import kotlinx.parcelize.Parcelize
 import org.json.JSONArray
 import org.json.JSONObject
@@ -37,26 +36,26 @@ data class PayPalRecurringBillingDetails @JvmOverloads constructor(
     var taxAmount: String? = null,
 ) : Parcelable {
 
+    fun toJson(): String {
+        return JSONObject().apply {
+            put(KEY_BILLING_CYCLES, JSONArray().apply {
+                for (billingCycle in billingCycles) {
+                    put(billingCycle.toJson())
+                }
+            })
+            put(KEY_TOTAL_AMOUNT, totalAmount)
+            put(KEY_CURRENCY_ISO_CODE, currencyISOCode)
+            putOpt(KEY_PRODUCT_NAME, productName)
+            putOpt(KEY_ONE_TIME_FEE_AMOUNT, oneTimeFeeAmount)
+            putOpt(KEY_PRODUCT_DESCRIPTION, productDescription)
+            putOpt(KEY_PRODUCT_PRICE, productAmount)
+            putOpt(KEY_PRODUCT_QUANTITY, productQuantity)
+            putOpt(KEY_SHIPPING_AMOUNT, shippingAmount)
+            putOpt(KEY_TAX_AMOUNT, taxAmount)
+        }.toString()
+    }
+
     companion object {
-        @JvmStatic
-        fun PayPalRecurringBillingDetails.toJson(): String {
-            return JSONObject().apply {
-                put(KEY_BILLING_CYCLES, JSONArray().apply {
-                    for (billingCycle in billingCycles) {
-                        put(billingCycle.toJson())
-                    }
-                })
-                put(KEY_TOTAL_AMOUNT, totalAmount)
-                put(KEY_CURRENCY_ISO_CODE, currencyISOCode)
-                putOpt(KEY_PRODUCT_NAME, productName)
-                putOpt(KEY_ONE_TIME_FEE_AMOUNT, oneTimeFeeAmount)
-                putOpt(KEY_PRODUCT_DESCRIPTION, productDescription)
-                putOpt(KEY_PRODUCT_PRICE, productAmount)
-                putOpt(KEY_PRODUCT_QUANTITY, productQuantity)
-                putOpt(KEY_SHIPPING_AMOUNT, shippingAmount)
-                putOpt(KEY_TAX_AMOUNT, taxAmount)
-            }.toString()
-        }
 
         private const val KEY_BILLING_CYCLES = "billing_cycles"
         private const val KEY_CURRENCY_ISO_CODE = "currency_iso_code"
