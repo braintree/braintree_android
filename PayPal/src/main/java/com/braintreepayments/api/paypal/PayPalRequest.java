@@ -48,6 +48,10 @@ public abstract class PayPalRequest implements Parcelable {
     static final String CORRELATION_ID_KEY = "correlation_id";
     static final String LINE_ITEMS_KEY = "line_items";
     static final String USER_ACTION_KEY = "user_action";
+    static final String ENABLE_APP_SWITCH_KEY = "launch_paypal_app";
+    static final String OS_VERSION_KEY = "os_version";
+    static final String OS_TYPE_KEY = "os_type";
+    static final String MERCHANT_APP_RETURN_URL_KEY = "merchant_app_return_url";
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalRequest.LANDING_PAGE_TYPE_BILLING, PayPalRequest.LANDING_PAGE_TYPE_LOGIN})
