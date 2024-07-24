@@ -357,21 +357,12 @@ class BraintreeClient @VisibleForTesting internal constructor(
     }
 
     private fun sendAnalyticsTimingEvent(endpoint: String, timing: HttpResponseTiming) {
-        val cleanedPath = endpoint.replace(Regex("/merchants/([A-Za-z0-9]+)/client_api"), "")
+        var cleanedPath = endpoint.replace(Regex("/merchants/([A-Za-z0-9]+)/client_api"), "")
+        cleanedPath = cleanedPath.replace(
+            Regex("payment_methods/.*/three_d_secure"), "payment_methods/three_d_secure"
+        )
 
-        if (cleanedPath.contains("three_d_secure")) {
-            val threeDSecurePath = cleanedPath.replace(
-                Regex("payment_methods/.*/three_d_secure"), "payment_methods/three_d_secure"
-            )
-            sendAnalyticsEvent(
-                CoreAnalytics.apiRequestLatency,
-                AnalyticsEventParams(
-                    startTime = timing.startTime,
-                    endTime = timing.endTime,
-                    endpoint = threeDSecurePath
-                )
-            )
-        } else if (cleanedPath != "/v1/tracking/batch/events") {
+        if (cleanedPath != "/v1/tracking/batch/events") {
             sendAnalyticsEvent(
                 CoreAnalytics.apiRequestLatency,
                 AnalyticsEventParams(
