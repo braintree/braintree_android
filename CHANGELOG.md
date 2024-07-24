@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+* PayPal
+  * Remove `appLinkEnabled` from `PayPalRequest` as Android app links are now required
+
 ## 5.0.0-beta1 (2024-07-23)
 
 * Breaking Changes

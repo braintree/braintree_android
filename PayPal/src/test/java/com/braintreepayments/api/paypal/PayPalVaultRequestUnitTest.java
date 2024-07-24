@@ -36,7 +36,6 @@ public class PayPalVaultRequestUnitTest {
         assertNull(request.getLandingPageType());
         assertFalse(request.getShouldOfferCredit());
         assertFalse(request.hasUserLocationConsent());
-        assertFalse(request.isAppLinkEnabled());
     }
 
     @Test
@@ -51,7 +50,6 @@ public class PayPalVaultRequestUnitTest {
         request.setRiskCorrelationId("123-correlation");
         request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
         request.setShouldOfferCredit(true);
-        request.setAppLinkEnabled(true);
 
         assertEquals("US", request.getLocaleCode());
         assertEquals("Billing Agreement Description", request.getBillingAgreementDescription());
@@ -62,7 +60,6 @@ public class PayPalVaultRequestUnitTest {
         assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
         assertTrue(request.getShouldOfferCredit());
         assertTrue(request.hasUserLocationConsent());
-        assertTrue(request.isAppLinkEnabled());
     }
 
     @Test
@@ -73,7 +70,6 @@ public class PayPalVaultRequestUnitTest {
         request.setShippingAddressRequired(true);
         request.setShippingAddressEditable(true);
         request.setShouldOfferCredit(true);
-        request.setAppLinkEnabled(true);
 
         PostalAddress postalAddress = new PostalAddress();
         postalAddress.setRecipientName("Postal Address");
@@ -108,7 +104,6 @@ public class PayPalVaultRequestUnitTest {
         assertEquals(1, result.getLineItems().size());
         assertEquals("An Item", result.getLineItems().get(0).getName());
         assertTrue(result.hasUserLocationConsent());
-        assertTrue(result.isAppLinkEnabled());
     }
 
     @Test
