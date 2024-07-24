@@ -28,7 +28,6 @@ data class PayPalBillingPricing @JvmOverloads constructor(
 
     companion object {
 
-
         private const val KEY_PRICING_MODEL = "pricing_model"
         private const val KEY_AMOUNT = "price"
         private const val KEY_RELOAD_THRESHOLD_AMOUNT = "reload_threshold_amount"
