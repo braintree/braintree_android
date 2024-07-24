@@ -130,7 +130,7 @@
         <CheckBoxPreference
             android:key="paypal_app_switch"
             android:title="PayPal App Switch"
-            android:summary="Enable or disable PayPal App Switch"
+            android:summary="Enable PayPal App Switch"
             android:defaultValue="false" />
 
         <ListPreference
