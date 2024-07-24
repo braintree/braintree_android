@@ -21,6 +21,8 @@ import org.json.JSONObject;
 public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
 
     private boolean shouldOfferCredit;
+    private PayPalRecurringBillingDetails recurringBillingDetails;
+    private PayPalRecurringBillingPlanType recurringBillingPlanType;
 
     private String userAuthenticationEmail;
 
@@ -64,10 +66,35 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
     public String getUserAuthenticationEmail() {
         return this.userAuthenticationEmail;
     }
+    
+    /**
+     * Optional: Recurring billing product details.
+     *
+     * @param recurringBillingDetails {@link PayPalRecurringBillingDetails}
+     */
+    public void setRecurringBillingDetails(PayPalRecurringBillingDetails recurringBillingDetails) {
+        this.recurringBillingDetails = recurringBillingDetails;
+    }
+
+    public PayPalRecurringBillingDetails getRecurringBillingDetails() {
+        return recurringBillingDetails;
+    }
+
+    /**
+     * Optional: Recurring billing plan type, or charge pattern.
+     *
+     * @param recurringBillingPlanType {@link PayPalRecurringBillingPlanType}
+     */
+    public void setRecurringBillingPlanType(PayPalRecurringBillingPlanType recurringBillingPlanType) {
+        this.recurringBillingPlanType = recurringBillingPlanType;
+    }
+
+    public PayPalRecurringBillingPlanType getRecurringBillingPlanType() {
+        return recurringBillingPlanType;
+    }
 
     String createRequestBody(Configuration configuration, Authorization authorization,
                              String successUrl, String cancelUrl) throws JSONException {
-
         JSONObject parameters = new JSONObject()
                 .put(RETURN_URL_KEY, successUrl)
                 .put(CANCEL_URL_KEY, cancelUrl)
@@ -132,18 +159,31 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
         }
 
         parameters.put(EXPERIENCE_PROFILE_KEY, experienceProfile);
+
+        if (getRecurringBillingPlanType() != null) {
+            parameters.put(PLAN_TYPE_KEY, recurringBillingPlanType);
+        }
+
+        if (getRecurringBillingDetails() != null) {
+            parameters.put(PLAN_METADATA_KEY, recurringBillingDetails.toJson());
+        }
+
         return parameters.toString();
     }
 
     PayPalVaultRequest(Parcel in) {
         super(in);
         shouldOfferCredit = in.readByte() != 0;
+        recurringBillingDetails = in.readParcelable(PayPalRecurringBillingDetails.class.getClassLoader());
+        recurringBillingPlanType = (PayPalRecurringBillingPlanType) in.readSerializable();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeByte((byte) (shouldOfferCredit ? 1 : 0));
+        dest.writeParcelable(recurringBillingDetails, flags);
+        dest.writeSerializable(recurringBillingPlanType);
     }
 
     @Override
