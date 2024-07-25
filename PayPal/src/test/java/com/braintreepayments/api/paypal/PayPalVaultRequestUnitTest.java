@@ -123,7 +123,8 @@ public class PayPalVaultRequestUnitTest {
             mock(Configuration.class),
             mock(Authorization.class),
             "success_url",
-            "cancel_url"
+            "cancel_url",
+            null
         );
 
         assertTrue(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
@@ -136,14 +137,16 @@ public class PayPalVaultRequestUnitTest {
 
         request.setEnablePayPalAppSwitch(true);
         String requestBody = request.createRequestBody(
-                mock(Configuration.class),
-                mock(Authorization.class),
-                "success_url",
-                "cancel_url"
+            mock(Configuration.class),
+            mock(Authorization.class),
+            "success_url",
+            "cancel_url",
+            "universal_url"
         );
 
         assertTrue(requestBody.contains("\"launch_paypal_app\":true"));
         assertTrue(requestBody.contains("\"os_type\":" + "\"Android\""));
         assertTrue(requestBody.contains("\"os_version\":" + versionSDK));
+        assertTrue(requestBody.contains("\"merchant_app_return_url\":" + "\"universal_url\""));
     }
 }
