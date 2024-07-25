@@ -75,17 +75,15 @@ public abstract class PayPalRequest implements Parcelable {
     private String riskCorrelationId;
     private final ArrayList<PayPalLineItem> lineItems;
     private final boolean hasUserLocationConsent;
-    private boolean appLinkEnabled;
     protected String userAuthenticationEmail;
 
     /**
      * Constructs a request for PayPal Checkout and Vault flows.
      *
      * @param hasUserLocationConsent is an optional parameter that informs the SDK
-     * if your application has obtained consent from the user to collect location data in compliance with
-     * <a href="https://support.google.com/googleplay/android-developer/answer/10144311#personal-sensitive">Google Play Developer Program policies</a>
-     * This flag enables PayPal to collect necessary information required for Fraud Detection and Risk Management.
-     *
+     *                               if your application has obtained consent from the user to collect location data in compliance with
+     *                               <a href="https://support.google.com/googleplay/android-developer/answer/10144311#personal-sensitive">Google Play Developer Program policies</a>
+     *                               This flag enables PayPal to collect necessary information required for Fraud Detection and Risk Management.
      * @see <a href="https://support.google.com/googleplay/android-developer/answer/10144311#personal-sensitive">User Data policies for the Google Play Developer Program </a>
      * @see <a href="https://support.google.com/googleplay/android-developer/answer/9799150?hl=en#Prominent%20in-app%20disclosure">Examples of prominent in-app disclosures</a>
      */
@@ -227,20 +225,6 @@ public abstract class PayPalRequest implements Parcelable {
         this.lineItems.addAll(lineItems);
     }
 
-    /**
-     * Optional: When set to true, the Android App Link website associated with your application
-     * will be used to return to your app from browser or app switch based payment flows. When set
-     * to false, the default or set deep link return URL will be used.
-     *
-     * Set the App Link value on `appLinkReturnUri` parameter in the {@link BraintreeClient}
-     * constructor.
-     *
-     * @param appLinkEnabled indicates whether to use the set Android App Link
-     */
-    public void setAppLinkEnabled(boolean appLinkEnabled) {
-        this.appLinkEnabled = appLinkEnabled;
-    }
-
     @Nullable
     public String getLocaleCode() {
         return localeCode;
@@ -292,12 +276,9 @@ public abstract class PayPalRequest implements Parcelable {
 
     abstract String createRequestBody(Configuration configuration, Authorization authorization,
                                       String successUrl, String cancelUrl) throws JSONException;
+
     public boolean hasUserLocationConsent() {
         return hasUserLocationConsent;
-    }
-
-    public boolean isAppLinkEnabled() {
-        return appLinkEnabled;
     }
 
     /**
@@ -327,7 +308,6 @@ public abstract class PayPalRequest implements Parcelable {
         riskCorrelationId = in.readString();
         lineItems = in.createTypedArrayList(PayPalLineItem.CREATOR);
         hasUserLocationConsent = in.readByte() != 0;
-        appLinkEnabled = in.readByte() != 0;
     }
 
     @Override
@@ -348,6 +328,5 @@ public abstract class PayPalRequest implements Parcelable {
         parcel.writeString(riskCorrelationId);
         parcel.writeTypedList(lineItems);
         parcel.writeByte((byte) (hasUserLocationConsent ? 1 : 0));
-        parcel.writeByte((byte) (appLinkEnabled ? 1 : 0));
     }
 }
