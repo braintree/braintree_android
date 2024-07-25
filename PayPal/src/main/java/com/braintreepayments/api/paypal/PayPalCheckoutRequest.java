@@ -183,8 +183,13 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
         return shouldRequestBillingAgreement;
     }
 
-    String createRequestBody(Configuration configuration, Authorization authorization,
-                             String successUrl, String cancelUrl) throws JSONException {
+    String createRequestBody(
+        Configuration configuration,
+        Authorization authorization,
+        String successUrl,
+        String cancelUrl,
+        @Nullable String universalLink
+    ) throws JSONException {
         JSONObject parameters = new JSONObject()
                 .put(RETURN_URL_KEY, successUrl)
                 .put(CANCEL_URL_KEY, cancelUrl)

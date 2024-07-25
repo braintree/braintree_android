@@ -294,8 +294,14 @@ public abstract class PayPalRequest implements Parcelable {
         return landingPageType;
     }
 
-    abstract String createRequestBody(Configuration configuration, Authorization authorization,
-                                      String successUrl, String cancelUrl) throws JSONException;
+    abstract String createRequestBody(
+            Configuration configuration,
+            Authorization authorization,
+            String successUrl,
+            String cancelUrl,
+            @Nullable String universalLink
+    ) throws JSONException;
+
     public boolean hasUserLocationConsent() {
         return hasUserLocationConsent;
     }

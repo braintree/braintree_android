@@ -55,11 +55,16 @@ class PayPalInternalClient {
                 String endpoint = isBillingAgreement
                         ? SETUP_BILLING_AGREEMENT_ENDPOINT : CREATE_SINGLE_PAYMENT_ENDPOINT;
                 String url = String.format("/v1/%s", endpoint);
+                String universalLink = isBillingAgreement
+                        ? braintreeClient.getAppLinkReturnUri().toString() : null;
 
-                String requestBody =
-                        payPalRequest.createRequestBody(configuration,
-                                braintreeClient.getAuthorization(),
-                                successUrl, cancelUrl);
+                String requestBody = payPalRequest.createRequestBody(
+                        configuration,
+                        braintreeClient.getAuthorization(),
+                        successUrl,
+                        cancelUrl,
+                        universalLink
+                );
 
                 braintreeClient.sendPOST(url, requestBody,
                         (responseBody, httpError) -> {

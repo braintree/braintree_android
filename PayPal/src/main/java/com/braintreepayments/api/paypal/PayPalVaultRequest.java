@@ -87,7 +87,8 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
         Configuration configuration,
         Authorization authorization,
         String successUrl,
-        String cancelUrl
+        String cancelUrl,
+        @Nullable String universalLink
     ) throws JSONException {
 
         JSONObject parameters = new JSONObject()
