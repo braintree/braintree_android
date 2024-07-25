@@ -523,15 +523,13 @@ open class BraintreeClient @VisibleForTesting internal constructor(
             Regex("payment_methods/.*/three_d_secure"), "payment_methods/three_d_secure"
         )
 
-        if (cleanedPath != "/v1/tracking/batch/events") {
-            sendAnalyticsEvent(
-                CoreAnalytics.apiRequestLatency,
-                AnalyticsEventParams(
-                    startTime = timing.startTime,
-                    endTime = timing.endTime,
-                    endpoint = cleanedPath
-                )
+        sendAnalyticsEvent(
+            CoreAnalytics.apiRequestLatency,
+            AnalyticsEventParams(
+                startTime = timing.startTime,
+                endTime = timing.endTime,
+                endpoint = cleanedPath
             )
-        }
+        )
     }
 }
