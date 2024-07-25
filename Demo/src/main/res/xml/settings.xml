@@ -152,13 +152,6 @@
             android:summary="@string/paypal_address_override_summary"
             android:defaultValue="false" />
 
-        <ListPreference
-            android:key="paypal_link_type"
-            android:title="@string/paypal_link"
-            android:entries="@array/paypal_link_types"
-            android:entryValues="@array/paypal_link_types_values"
-            android:defaultValue="@string/paypal_deep_link"/>
-
     </PreferenceCategory>
 
     <PreferenceCategory
