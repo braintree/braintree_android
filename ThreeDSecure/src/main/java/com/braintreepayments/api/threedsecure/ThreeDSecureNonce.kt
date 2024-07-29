@@ -14,7 +14,7 @@ import org.json.JSONObject
  * @property threeDSecureInfo The 3D Secure info for the current [ThreeDSecureNonce] or `null`
  */
 @Parcelize
-class ThreeDSecureNonce internal constructor(
+data class ThreeDSecureNonce internal constructor(
     override val cardType: String,
     override val lastTwo: String,
     override val lastFour: String,

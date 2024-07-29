@@ -26,7 +26,7 @@ import org.json.JSONObject
  * @property binData The BIN data for the card number associated with [GooglePayCardNonce]
  */
 @Parcelize
-class GooglePayCardNonce internal constructor(
+data class GooglePayCardNonce internal constructor(
     override val string: String,
     override val isDefault: Boolean,
     val cardType: String,

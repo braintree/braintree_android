@@ -23,7 +23,7 @@ import org.json.JSONObject
  * @property payerId The Payer ID provided in local payment flows.
  */
 @Parcelize
-class LocalPaymentNonce internal constructor(
+data class LocalPaymentNonce internal constructor(
     override val string: String,
     override val isDefault: Boolean,
     val clientMetadataId: String?,

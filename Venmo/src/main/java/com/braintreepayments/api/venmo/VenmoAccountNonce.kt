@@ -22,7 +22,7 @@ import org.json.JSONObject
  * @property shippingAddress The Venmo user's shipping address.
  */
 @Parcelize
-class VenmoAccountNonce internal constructor(
+data class VenmoAccountNonce internal constructor(
     override val string: String,
     override val isDefault: Boolean,
     val email: String?,

@@ -27,6 +27,7 @@ import org.json.JSONObject
  * @property cardholderName The name of the cardholder.
  */
 @Parcelize
+@Suppress("LongParameterList")
 open class CardNonce
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 constructor(

@@ -29,7 +29,7 @@ import org.json.JSONObject
  * required.
  */
 @Parcelize
-class PayPalAccountNonce internal constructor(
+data class PayPalAccountNonce internal constructor(
     override val string: String,
     override val isDefault: Boolean,
     val clientMetadataId: String?,
