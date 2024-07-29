@@ -1,6 +1,7 @@
 package com.braintreepayments.api.core
 
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 
 /**
  * Base class representing a method of payment for a customer. [PaymentMethodNonce] represents the
@@ -11,7 +12,9 @@ import android.os.Parcelable
  * actions.
  * @property isDefault `true` if this payment method is the default for the current customer, `false` otherwise
  */
-abstract class PaymentMethodNonce(
+abstract class PaymentMethodNonce
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+constructor(
     open val string: String,
     open val isDefault: Boolean
 ) : Parcelable

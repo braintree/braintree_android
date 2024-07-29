@@ -27,7 +27,9 @@ import org.json.JSONObject
  * @property cardholderName The name of the cardholder.
  */
 @Parcelize
-open class CardNonce(
+open class CardNonce
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+constructor(
     override val string: String,
     override val isDefault: Boolean,
     open val cardType: String,
