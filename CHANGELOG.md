@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* BraintreeCore
+  * Update `endpoint` syntax sent to FPTI for 3D Secure and Venmo flows
+
 ## 4.49.1 (2024-07-15)
 
 * PayPal

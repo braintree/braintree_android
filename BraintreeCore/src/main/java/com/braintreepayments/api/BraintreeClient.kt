@@ -319,12 +319,14 @@ open class BraintreeClient @VisibleForTesting internal constructor(
                         ) { response, httpError ->
                             response?.let {
                                 try {
-                                    json?.optString(GraphQLConstants.Keys.OPERATION_NAME)
+                                    json?.optString(GraphQLConstants.Keys.QUERY)
                                         ?.let { query ->
+                                            val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
+                                            val finalQuery = query.replace(queryDiscardHolder, "")
                                             val params = AnalyticsEventParams(
                                                 startTime = it.timing.startTime,
                                                 endTime = it.timing.endTime,
-                                                endpoint = query
+                                                endpoint = finalQuery
                                             )
                                             sendAnalyticsEvent(
                                                 CoreAnalytics.apiRequestLatency,
@@ -516,7 +518,11 @@ open class BraintreeClient @VisibleForTesting internal constructor(
     }
 
     private fun sendAnalyticsTimingEvent(endpoint: String, timing: HttpResponseTiming) {
-        val cleanedPath = endpoint.replace(Regex("/merchants/([A-Za-z0-9]+)/client_api"), "")
+        var cleanedPath = endpoint.replace(Regex("/merchants/([A-Za-z0-9]+)/client_api"), "")
+        cleanedPath = cleanedPath.replace(
+            Regex("payment_methods/.*/three_d_secure"), "payment_methods/three_d_secure"
+        )
+
         sendAnalyticsEvent(
             CoreAnalytics.apiRequestLatency,
             AnalyticsEventParams(
