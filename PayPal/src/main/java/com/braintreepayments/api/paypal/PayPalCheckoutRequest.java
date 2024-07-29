@@ -188,7 +188,7 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
         Authorization authorization,
         String successUrl,
         String cancelUrl,
-        @Nullable String universalLink
+        @Nullable String appLink
     ) throws JSONException {
         JSONObject parameters = new JSONObject()
                 .put(RETURN_URL_KEY, successUrl)

@@ -88,7 +88,7 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
         Authorization authorization,
         String successUrl,
         String cancelUrl,
-        @Nullable String universalLink
+        @Nullable String appLink
     ) throws JSONException {
 
         JSONObject parameters = new JSONObject()
@@ -109,11 +109,11 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
 
         parameters.putOpt(PAYER_EMAIL_KEY, userAuthenticationEmail);
 
-        if (enablePayPalAppSwitch && universalLink != null && !universalLink.isEmpty()) {
+        if (enablePayPalAppSwitch && appLink != null && !appLink.isEmpty()) {
             parameters.put(ENABLE_APP_SWITCH_KEY, enablePayPalAppSwitch);
             parameters.put(OS_VERSION_KEY, Build.VERSION.SDK_INT);
             parameters.put(OS_TYPE_KEY, "Android");
-            parameters.put(MERCHANT_APP_RETURN_URL_KEY, universalLink);
+            parameters.put(MERCHANT_APP_RETURN_URL_KEY, appLink);
         }
 
         JSONObject experienceProfile = new JSONObject();

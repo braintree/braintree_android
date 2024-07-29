@@ -299,7 +299,7 @@ public abstract class PayPalRequest implements Parcelable {
             Authorization authorization,
             String successUrl,
             String cancelUrl,
-            @Nullable String universalLink
+            @Nullable String appLink
     ) throws JSONException;
 
     public boolean hasUserLocationConsent() {
