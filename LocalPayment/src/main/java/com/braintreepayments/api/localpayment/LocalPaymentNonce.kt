@@ -34,7 +34,6 @@ data class LocalPaymentNonce internal constructor(
     val phone: String,
     val email: String?,
     val payerId: String,
-    private val type: String?
 ) : PaymentMethodNonce(
     string = string,
     isDefault = isDefault,
@@ -57,7 +56,6 @@ data class LocalPaymentNonce internal constructor(
         private const val PHONE_KEY = "phone"
         private const val PAYER_ID_KEY = "payerId"
         private const val CLIENT_METADATA_ID_KEY = "correlationId"
-        private const val TYPE_KEY = "type"
 
         @Throws(JSONException::class)
         @Suppress("ThrowsCount")
@@ -69,7 +67,6 @@ data class LocalPaymentNonce internal constructor(
             val isDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false)
             var email = Json.optString(details, EMAIL_KEY, null)
             val clientMetadataId = Json.optString(details, CLIENT_METADATA_ID_KEY, null)
-            val type = Json.optString(json, TYPE_KEY, "PayPalAccount")
 
             var billingAddress: PostalAddress
             var shippingAddress: PostalAddress
@@ -114,7 +111,6 @@ data class LocalPaymentNonce internal constructor(
                 phone = phone ?: throw JSONException("phone is null"),
                 email = email,
                 payerId = payerId ?: throw JSONException("payerId is null"),
-                type = type,
             )
         }
     }
