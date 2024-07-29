@@ -119,6 +119,7 @@ complexity:
     ignoreDefaultParameters: true
     ignoreDataClasses: true
     ignoreAnnotated: []
+    excludes: ['**/*Nonce.kt']
   MethodOverloading:
     active: false
     threshold: 6
