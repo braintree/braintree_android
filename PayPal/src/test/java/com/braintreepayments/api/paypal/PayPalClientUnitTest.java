@@ -57,11 +57,14 @@ public class PayPalClientUnitTest {
         PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest(true);
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
 
-        PayPalPaymentAuthRequestParams paymentAuthRequest =
-            new PayPalPaymentAuthRequestParams(payPalVaultRequest).approvalUrl(
-                    "https://example.com/approval/url")
-                .successUrl("https://example.com/success/url")
-                .clientMetadataId("sample-client-metadata-id");
+        PayPalPaymentAuthRequestParams paymentAuthRequest = new PayPalPaymentAuthRequestParams(
+            payPalVaultRequest,
+            null,
+            "https://example.com/approval/url",
+            "sample-client-metadata-id",
+            null,
+            "https://example.com/success/url"
+        );
         PayPalInternalClient payPalInternalClient =
             new MockPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest)
                 .build();
@@ -81,8 +84,7 @@ public class PayPalClientUnitTest {
         PayPalPaymentAuthRequestParams paymentAuthRequestCaptured =
             ((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams();
 
-        BrowserSwitchOptions browserSwitchOptions =
-            paymentAuthRequestCaptured.browserSwitchOptions;
+        BrowserSwitchOptions browserSwitchOptions = paymentAuthRequestCaptured.getBrowserSwitchOptions();
         assertEquals(BraintreeRequestCodes.PAYPAL, browserSwitchOptions.getRequestCode());
         assertFalse(browserSwitchOptions.isLaunchAsNewTask());
 
@@ -104,11 +106,15 @@ public class PayPalClientUnitTest {
         PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest(true);
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
 
-        PayPalPaymentAuthRequestParams paymentAuthRequest =
-            new PayPalPaymentAuthRequestParams(payPalVaultRequest).approvalUrl(
-                    "https://example.com/approval/url")
-                .successUrl("https://example.com/success/url")
-                .clientMetadataId("sample-client-metadata-id");
+        PayPalPaymentAuthRequestParams paymentAuthRequest = new PayPalPaymentAuthRequestParams(
+            payPalVaultRequest,
+            null,
+            "https://example.com/approval/url",
+            "sample-client-metadata-id",
+            null,
+            "https://example.com/success/url"
+        );
+
         PayPalInternalClient payPalInternalClient =
             new MockPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest)
                 .build();
@@ -126,7 +132,7 @@ public class PayPalClientUnitTest {
 
         PayPalPaymentAuthRequest request = captor.getValue();
         assertTrue(request instanceof PayPalPaymentAuthRequest.ReadyToLaunch);
-        assertTrue(((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams().browserSwitchOptions.isLaunchAsNewTask());
+        assertTrue(((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams().getBrowserSwitchOptions().isLaunchAsNewTask());
     }
 
     @Test
@@ -134,11 +140,15 @@ public class PayPalClientUnitTest {
         PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest(true);
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
 
-        PayPalPaymentAuthRequestParams paymentAuthRequest =
-            new PayPalPaymentAuthRequestParams(payPalVaultRequest).approvalUrl(
-                    "https://example.com/approval/url")
-                .successUrl("https://example.com/success/url")
-                .clientMetadataId("sample-client-metadata-id");
+        PayPalPaymentAuthRequestParams paymentAuthRequest = new PayPalPaymentAuthRequestParams(
+            payPalVaultRequest,
+            null,
+            "https://example.com/approval/url",
+            "sample-client-metadata-id",
+            null,
+            "https://example.com/success/url"
+        );
+
         PayPalInternalClient payPalInternalClient =
             new MockPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest)
                 .build();
@@ -158,7 +168,7 @@ public class PayPalClientUnitTest {
         PayPalPaymentAuthRequest request = captor.getValue();
         assertTrue(request instanceof PayPalPaymentAuthRequest.ReadyToLaunch);
         assertEquals(braintreeClient.getAppLinkReturnUri(),
-            ((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams().browserSwitchOptions.getAppLinkUri());
+            ((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams().getBrowserSwitchOptions().getAppLinkUri());
     }
 
     @Test

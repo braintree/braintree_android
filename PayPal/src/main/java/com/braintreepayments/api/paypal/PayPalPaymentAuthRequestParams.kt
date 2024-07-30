@@ -2,7 +2,7 @@ package com.braintreepayments.api.paypal
 
 import com.braintreepayments.api.BrowserSwitchOptions
 
-data class PayPalPaymentAuthRequestParams internal constructor(
+data class PayPalPaymentAuthRequestParams @JvmOverloads internal constructor(
     private val payPalRequest: PayPalRequest,
     var browserSwitchOptions: BrowserSwitchOptions?,
     val approvalUrl: String? = null,
