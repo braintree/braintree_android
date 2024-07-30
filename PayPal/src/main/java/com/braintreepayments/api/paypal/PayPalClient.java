@@ -171,8 +171,7 @@ public class PayPalClient {
             if (payPalResponse != null) {
                 payPalContextId = payPalResponse.getPairingId();
                 try {
-                    BrowserSwitchOptions options = buildBrowserSwitchOptions(payPalResponse);
-                    payPalResponse.setBrowserSwitchOptions(options);
+                    payPalResponse.setBrowserSwitchOptions(buildBrowserSwitchOptions(payPalResponse));
                     callback.onPayPalPaymentAuthRequest(
                             new PayPalPaymentAuthRequest.ReadyToLaunch(payPalResponse));
                 } catch (JSONException exception) {

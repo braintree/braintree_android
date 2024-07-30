@@ -82,7 +82,7 @@ public class PayPalClientUnitTest {
             ((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams();
 
         BrowserSwitchOptions browserSwitchOptions =
-            paymentAuthRequestCaptured.getBrowserSwitchOptions();
+            paymentAuthRequestCaptured.browserSwitchOptions;
         assertEquals(BraintreeRequestCodes.PAYPAL, browserSwitchOptions.getRequestCode());
         assertFalse(browserSwitchOptions.isLaunchAsNewTask());
 
@@ -126,8 +126,7 @@ public class PayPalClientUnitTest {
 
         PayPalPaymentAuthRequest request = captor.getValue();
         assertTrue(request instanceof PayPalPaymentAuthRequest.ReadyToLaunch);
-        assertTrue(((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams()
-            .getBrowserSwitchOptions().isLaunchAsNewTask());
+        assertTrue(((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams().browserSwitchOptions.isLaunchAsNewTask());
     }
 
     @Test
@@ -159,8 +158,7 @@ public class PayPalClientUnitTest {
         PayPalPaymentAuthRequest request = captor.getValue();
         assertTrue(request instanceof PayPalPaymentAuthRequest.ReadyToLaunch);
         assertEquals(braintreeClient.getAppLinkReturnUri(),
-            ((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams()
-                .getBrowserSwitchOptions().getAppLinkUri());
+            ((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams().browserSwitchOptions.getAppLinkUri());
     }
 
     @Test
