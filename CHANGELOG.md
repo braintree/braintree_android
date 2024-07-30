@@ -6,6 +6,7 @@
 * Breaking Changes
     * PayPal
         * Remove `appLinkEnabled` from `PayPalRequest` as Android app links are now required
+        * Updated `PayPalCreditFinancing.hasPayerAcceptance` to `getPayerAcceptance`
 
 ## 5.0.0-beta1 (2024-07-23)
 

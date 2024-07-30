@@ -1,6 +1,5 @@
 package com.braintreepayments.api.paypal
 
-import android.os.Parcel
 import android.os.Parcelable
 import com.braintreepayments.api.sharedutils.Json
 import kotlinx.parcelize.Parcelize

@@ -40,7 +40,7 @@ public class PayPalAccountNonceUnitTest {
                 payPalAccountNonce.getCreditFinancing().getMonthlyPayment().getCurrency());
         assertEquals("13.88",
                 payPalAccountNonce.getCreditFinancing().getMonthlyPayment().getValue());
-        assertTrue(payPalAccountNonce.getCreditFinancing().hasPayerAcceptance());
+        assertTrue(payPalAccountNonce.getCreditFinancing().getPayerAcceptance());
         assertEquals(18, payPalAccountNonce.getCreditFinancing().getTerm());
         assertEquals("USD", payPalAccountNonce.getCreditFinancing().getTotalCost().getCurrency());
         assertEquals("250.00", payPalAccountNonce.getCreditFinancing().getTotalCost().getValue());
@@ -103,7 +103,7 @@ public class PayPalAccountNonceUnitTest {
         assertFalse(parceled.getCreditFinancing().isCardAmountImmutable());
         assertEquals("USD", parceled.getCreditFinancing().getMonthlyPayment().getCurrency());
         assertEquals("13.88", parceled.getCreditFinancing().getMonthlyPayment().getValue());
-        assertTrue(parceled.getCreditFinancing().hasPayerAcceptance());
+        assertTrue(parceled.getCreditFinancing().getPayerAcceptance());
         assertEquals(18, parceled.getCreditFinancing().getTerm());
         assertEquals("USD", parceled.getCreditFinancing().getTotalCost().getCurrency());
         assertEquals("250.00", parceled.getCreditFinancing().getTotalCost().getValue());
