@@ -131,11 +131,13 @@ public class PayPalVaultRequestUnitTest {
     }
 
     @Test
-    public void createRequestBody_sets_enablePayPalSwitch() throws JSONException {
+    public void createRequestBody_sets_enablePayPalSwitch_and_userAuthenticationEmail_not_null() throws JSONException {
         int versionSDK = Build.VERSION.SDK_INT;
+        String payerEmail = "payer_email@example.com";
         PayPalVaultRequest request = new PayPalVaultRequest(true);
 
         request.setEnablePayPalAppSwitch(true);
+        request.setUserAuthenticationEmail(payerEmail);
         String requestBody = request.createRequestBody(
             mock(Configuration.class),
             mock(Authorization.class),

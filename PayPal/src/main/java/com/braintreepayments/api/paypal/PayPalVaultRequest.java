@@ -109,7 +109,7 @@ public class PayPalVaultRequest extends PayPalRequest implements Parcelable {
 
         parameters.putOpt(PAYER_EMAIL_KEY, userAuthenticationEmail);
 
-        if (enablePayPalAppSwitch && appLink != null && !appLink.isEmpty()) {
+        if (enablePayPalAppSwitch && appLink != null && !appLink.isEmpty() && userAuthenticationEmail != null && !userAuthenticationEmail.isEmpty()) {
             parameters.put(ENABLE_APP_SWITCH_KEY, enablePayPalAppSwitch);
             parameters.put(OS_VERSION_KEY, Build.VERSION.SDK_INT);
             parameters.put(OS_TYPE_KEY, "Android");
