@@ -25,7 +25,7 @@ class PayPalAccount extends PaymentMethod {
 
     private String clientMetadataId;
     private JSONObject urlResponseData = new JSONObject();
-    private String intent;
+    private PayPalPaymentIntent intent;
     private String merchantAccountId;
     private String paymentType;
 
@@ -43,7 +43,8 @@ class PayPalAccount extends PaymentMethod {
 
         JSONObject paymentMethodNonceJson = new JSONObject();
         paymentMethodNonceJson.put(CORRELATION_ID_KEY, clientMetadataId);
-        paymentMethodNonceJson.put(INTENT_KEY, intent);
+        String intentString = intent != null ? intent.getStringValue() : null;
+        paymentMethodNonceJson.put(INTENT_KEY, intentString);
 
         if ("single-payment".equalsIgnoreCase(paymentType)) {
             JSONObject optionsJson = new JSONObject();
@@ -94,7 +95,7 @@ class PayPalAccount extends PaymentMethod {
      * @param intent Can be either {@link PayPalPaymentIntent#AUTHORIZE} or
      *               {@link PayPalPaymentIntent#SALE}.
      */
-    void setIntent(@PayPalPaymentIntent String intent) {
+    void setIntent(PayPalPaymentIntent intent) {
         this.intent = intent;
     }
 

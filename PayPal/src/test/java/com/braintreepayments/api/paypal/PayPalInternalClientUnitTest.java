@@ -162,7 +162,7 @@ public class PayPalInternalClientUnitTest {
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
         payPalRequest.setCurrencyCode("USD");
-        payPalRequest.setIntent("authorize");
+        payPalRequest.setIntent(PayPalPaymentIntent.AUTHORIZE);
         payPalRequest.setShouldRequestBillingAgreement(true);
         payPalRequest.setBillingAgreementDescription("Billing Agreement Description");
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
@@ -565,7 +565,7 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
-        payPalRequest.setIntent("authorize");
+        payPalRequest.setIntent(PayPalPaymentIntent.AUTHORIZE);
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
         payPalRequest.setUserAction(PayPalCheckoutRequest.USER_ACTION_COMMIT);
         payPalRequest.setRiskCorrelationId("sample-client-metadata-id");
@@ -580,7 +580,7 @@ public class PayPalInternalClientUnitTest {
                 "https://checkout.paypal.com/one-touch-login-sandbox/index.html?token=fake-token&action=create_payment_resource&amount=1.00&authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel&controller=client_api%2Fpaypal_hermes&currency_iso_code=USD&experience_profile%5Baddress_override%5D=false&experience_profile%5Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&offer_paypal_credit=true&version=1";
         PayPalPaymentAuthRequestParams payPalPaymentAuthRequestParams = captor.getValue();
         assertFalse(payPalPaymentAuthRequestParams.isBillingAgreement());
-        assertEquals("authorize", payPalPaymentAuthRequestParams.getIntent());
+        assertEquals(PayPalPaymentIntent.AUTHORIZE, payPalPaymentAuthRequestParams.getIntent());
         assertEquals("sample-merchant-account-id", payPalPaymentAuthRequestParams.getMerchantAccountId());
         assertEquals("https://example.com://onetouch/v1/success", payPalPaymentAuthRequestParams.getSuccessUrl());
         assertEquals("fake-token", payPalPaymentAuthRequestParams.getPairingId());
@@ -705,7 +705,7 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
-        payPalRequest.setIntent("authorize");
+        payPalRequest.setIntent(PayPalPaymentIntent.AUTHORIZE);
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);

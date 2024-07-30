@@ -36,7 +36,7 @@ public class PayPalAccountUnitTest {
 
         assertNull(jsonAccount.opt("details"));
         assertEquals("correlation_id", jsonAccount.getString("correlationId"));
-        assertEquals(PayPalPaymentIntent.SALE, jsonAccount.getString("intent"));
+        assertEquals(PayPalPaymentIntent.SALE, PayPalPaymentIntent.fromString(jsonAccount.getString("intent")));
         assertEquals("custom", jsonMetadata.getString("integration"));
         assertEquals("paypal-sdk", jsonMetadata.getString("source"));
         assertEquals("alt_merchant_account_id", jsonObject.getString("merchant_account_id"));
@@ -68,7 +68,7 @@ public class PayPalAccountUnitTest {
 
     @Test
     public void buildJSON_whenPaymentTypeSinglePayment_setsOptionsValidateFalse()
-            throws JSONException {
+        throws JSONException {
         PayPalAccount sut = new PayPalAccount();
         sut.setPaymentType("single-payment");
 
@@ -80,7 +80,7 @@ public class PayPalAccountUnitTest {
 
     @Test
     public void buildJSON_whenPaymentTypeNotSinglePayment_doesNotSetOptionsValidate()
-            throws JSONException {
+        throws JSONException {
         PayPalAccount sut = new PayPalAccount();
         sut.setPaymentType("billing-agreement");
 
@@ -103,9 +103,9 @@ public class PayPalAccountUnitTest {
     @Test
     public void build_addsAllUrlResponseData() throws JSONException {
         JSONObject urlResponseData = new JSONObject()
-                .put("data1", "data1")
-                .put("data2", "data2")
-                .put("data3", "data3");
+            .put("data1", "data1")
+            .put("data2", "data2")
+            .put("data3", "data3");
 
         PayPalAccount sut = new PayPalAccount();
         sut.setUrlResponseData(urlResponseData);
@@ -114,11 +114,11 @@ public class PayPalAccountUnitTest {
         JSONObject paymentMethodNonceJson = json.getJSONObject(PAYPAL_KEY);
 
         JSONObject expectedPaymentMethodNonceJSON = new JSONObject()
-                .put("data1", "data1")
-                .put("data2", "data2")
-                .put("data3", "data3");
+            .put("data1", "data1")
+            .put("data2", "data2")
+            .put("data3", "data3");
         JSONAssert.assertEquals(expectedPaymentMethodNonceJSON, paymentMethodNonceJson,
-                JSONCompareMode.NON_EXTENSIBLE);
+            JSONCompareMode.NON_EXTENSIBLE);
     }
 
     @Test

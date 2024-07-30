@@ -11,7 +11,7 @@ data class PayPalPaymentAuthRequestParams @JvmOverloads internal constructor(
     val successUrl: String? = null,
 ) {
 
-    val intent: String?
+    val intent: PayPalPaymentIntent?
         get() = if (payPalRequest is PayPalCheckoutRequest) payPalRequest.intent else null
 
     val isBillingAgreement: Boolean

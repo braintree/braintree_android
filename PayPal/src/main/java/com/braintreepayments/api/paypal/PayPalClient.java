@@ -223,7 +223,9 @@ public class PayPalClient {
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
         String clientMetadataId = Json.optString(metadata, "client-metadata-id", null);
         String merchantAccountId = Json.optString(metadata, "merchant-account-id", null);
-        String payPalIntent = Json.optString(metadata, "intent", null);
+        PayPalPaymentIntent payPalIntent = PayPalPaymentIntent.fromString(
+            Json.optString(metadata, "intent", null)
+        );
         String approvalUrl = Json.optString(metadata, "approval-url", null);
         String successUrl = Json.optString(metadata, "success-url", null);
         String paymentType = Json.optString(metadata, "payment-type", "unknown");
@@ -253,10 +255,6 @@ public class PayPalClient {
 
                 if (merchantAccountId != null) {
                     payPalAccount.setMerchantAccountId(merchantAccountId);
-                }
-
-                if (payPalIntent != null) {
-                    payPalAccount.setIntent(payPalIntent);
                 }
 
                 internalPayPalClient.tokenize(payPalAccount,
