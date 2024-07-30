@@ -220,7 +220,7 @@ public class PayPalClient {
      */
     public void tokenize(@NonNull PayPalPaymentAuthResult.Success paymentAuthResult,
                          @NonNull final PayPalTokenizeCallback callback) {
-        BrowserSwitchFinalResult.Success browserSwitchResult = paymentAuthResult.getPaymentAuthInfo().getBrowserSwitchResult();
+        BrowserSwitchFinalResult.Success browserSwitchResult = paymentAuthResult.getPaymentAuthInfo().getBrowserSwitchSuccess();
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
         String clientMetadataId = Json.optString(metadata, "client-metadata-id", null);
         String merchantAccountId = Json.optString(metadata, "merchant-account-id", null);
