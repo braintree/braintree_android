@@ -17,7 +17,7 @@ public class PayPalPaymentResourceUnitTest {
                         .put("redirectUrl", "www.example.com/redirect")
                 ).toString();
 
-        PayPalPaymentResource sut = PayPalPaymentResource.fromJson(oneTimePaymentJson);
+        PayPalPaymentResource sut = PayPalPaymentResource.fromJson(oneTimePaymentJson, "");
         assertEquals("www.example.com/redirect", sut.getRedirectUrl());
     }
 
@@ -28,7 +28,19 @@ public class PayPalPaymentResourceUnitTest {
                         .put("approvalUrl", "www.example.com/redirect")
                 ).toString();
 
-        PayPalPaymentResource sut = PayPalPaymentResource.fromJson(billingAgreementJson);
+        PayPalPaymentResource sut = PayPalPaymentResource.fromJson(billingAgreementJson, "");
         assertEquals("www.example.com/redirect", sut.getRedirectUrl());
+    }
+
+    @Test
+    public void fromJson_parsesRedirectUrlFromBillingAgreementPaymentResource_when_linkType_is_universal() throws JSONException {
+        String billingAgreementJson = new JSONObject()
+                .put("agreementSetup", new JSONObject()
+                        .put("approvalUrl", "www.example.com/redirect")
+                        .put("paypalAppApprovalUrl", "www.paypal.example.com/redirect")
+                ).toString();
+
+        PayPalPaymentResource sut = PayPalPaymentResource.fromJson(billingAgreementJson, "universal");
+        assertEquals("www.paypal.example.com/redirect", sut.getRedirectUrl());
     }
 }
