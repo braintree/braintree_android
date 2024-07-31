@@ -45,8 +45,11 @@ class PayPalInternalClient {
         this.appLink = (appLinkUri != null) ? appLinkUri.toString() : null;
     }
 
-    void sendRequest(final Context context, final PayPalRequest payPalRequest,
-                     final PayPalInternalClientCallback callback) {
+    void sendRequest(
+        final Context context,
+        final PayPalRequest payPalRequest,
+        final PayPalInternalClientCallback callback
+    ) {
         braintreeClient.getConfiguration((configuration, configError) -> {
             if (configuration == null) {
                 callback.onResult(null, configError);
@@ -59,6 +62,10 @@ class PayPalInternalClient {
                         ? SETUP_BILLING_AGREEMENT_ENDPOINT : CREATE_SINGLE_PAYMENT_ENDPOINT;
                 String url = String.format("/v1/%s", endpoint);
                 String appLinkReturn = isBillingAgreement ? appLink : null;
+
+                final String linkType = (isBillingAgreement &&
+                                        ((PayPalVaultRequest) payPalRequest).getEnablePayPalAppSwitch() &&
+                                        braintreeClient.isPayPalInstalled()) ? "universal" : "deeplink";
 
                 String requestBody = payPalRequest.createRequestBody(
                         configuration,
@@ -77,7 +84,7 @@ class PayPalInternalClient {
                                                     .successUrl(successUrl);
 
                                     PayPalPaymentResource paypalPaymentResource =
-                                            PayPalPaymentResource.fromJson(responseBody);
+                                            PayPalPaymentResource.fromJson(responseBody, linkType);
                                     String redirectUrl =
                                             paypalPaymentResource.getRedirectUrl();
                                     if (redirectUrl != null) {
