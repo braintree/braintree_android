@@ -25,9 +25,13 @@ public class PayPalRequestFactory {
 
         String landingPageType = Settings.getPayPalLandingPageType(context);
         if (context.getString(R.string.paypal_landing_page_type_billing).equals(landingPageType)) {
-            request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_BILLING);
+            request.setLandingPageType(
+                PayPalRequest.PayPalLandingPageType.LANDING_PAGE_TYPE_BILLING
+            );
         } else if (context.getString(R.string.paypal_landing_page_type_login).equals(landingPageType)) {
-            request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+            request.setLandingPageType(
+                PayPalRequest.PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN
+            );
         }
 
         if (Settings.isPayPalCreditOffered(context)) {
@@ -64,9 +68,13 @@ public class PayPalRequestFactory {
 
         String landingPageType = Settings.getPayPalLandingPageType(context);
         if (context.getString(R.string.paypal_landing_page_type_billing).equals(landingPageType)) {
-            request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_BILLING);
+            request.setLandingPageType(
+                PayPalRequest.PayPalLandingPageType.LANDING_PAGE_TYPE_BILLING
+            );
         } else if (context.getString(R.string.paypal_landing_page_type_login).equals(landingPageType)) {
-            request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+            request.setLandingPageType(
+                PayPalRequest.PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN
+            );
         }
 
         String intentType = Settings.getPayPalIntentType(context);
@@ -79,7 +87,9 @@ public class PayPalRequestFactory {
         }
 
         if (Settings.isPayPalUseractionCommitEnabled(context)) {
-            request.setUserAction(PayPalCheckoutRequest.USER_ACTION_COMMIT);
+            request.setUserAction(
+                PayPalCheckoutRequest.PayPalPaymentUserAction.USER_ACTION_COMMIT
+            );
         }
 
         if (Settings.usePayPalAddressOverride(context)) {
