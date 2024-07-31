@@ -21,6 +21,7 @@ class PayPalInternalClient {
 
     private final String cancelUrl;
     private final String successUrl;
+    private final String appLink;
 
     private final BraintreeClient braintreeClient;
     private final DataCollector dataCollector;
@@ -36,10 +37,12 @@ class PayPalInternalClient {
         this.dataCollector = dataCollector;
         this.apiClient = apiClient;
 
+        Uri appLinkUri = braintreeClient.getAppLinkReturnUri();
         this.cancelUrl =
-                String.format("%s://onetouch/v1/cancel", braintreeClient.getAppLinkReturnUri());
+                String.format("%s://onetouch/v1/cancel", appLinkUri);
         this.successUrl =
-                String.format("%s://onetouch/v1/success", braintreeClient.getAppLinkReturnUri());
+                String.format("%s://onetouch/v1/success", appLinkUri);
+        this.appLink = (appLinkUri != null) ? appLinkUri.toString() : null;
     }
 
     void sendRequest(final Context context, final PayPalRequest payPalRequest,
@@ -55,11 +58,15 @@ class PayPalInternalClient {
                 String endpoint = isBillingAgreement
                         ? SETUP_BILLING_AGREEMENT_ENDPOINT : CREATE_SINGLE_PAYMENT_ENDPOINT;
                 String url = String.format("/v1/%s", endpoint);
+                String appLinkReturn = isBillingAgreement ? appLink : null;
 
-                String requestBody =
-                        payPalRequest.createRequestBody(configuration,
-                                braintreeClient.getAuthorization(),
-                                successUrl, cancelUrl);
+                String requestBody = payPalRequest.createRequestBody(
+                        configuration,
+                        braintreeClient.getAuthorization(),
+                        successUrl,
+                        cancelUrl,
+                        appLinkReturn
+                );
 
                 braintreeClient.sendPOST(url, requestBody,
                         (responseBody, httpError) -> {

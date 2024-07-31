@@ -123,27 +123,32 @@ public class PayPalVaultRequestUnitTest {
             mock(Configuration.class),
             mock(Authorization.class),
             "success_url",
-            "cancel_url"
+            "cancel_url",
+            null
         );
 
         assertTrue(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
     }
 
     @Test
-    public void createRequestBody_sets_enablePayPalSwitch() throws JSONException {
+    public void createRequestBody_sets_enablePayPalSwitch_and_userAuthenticationEmail_not_null() throws JSONException {
         int versionSDK = Build.VERSION.SDK_INT;
+        String payerEmail = "payer_email@example.com";
         PayPalVaultRequest request = new PayPalVaultRequest(true);
 
         request.setEnablePayPalAppSwitch(true);
+        request.setUserAuthenticationEmail(payerEmail);
         String requestBody = request.createRequestBody(
-                mock(Configuration.class),
-                mock(Authorization.class),
-                "success_url",
-                "cancel_url"
+            mock(Configuration.class),
+            mock(Authorization.class),
+            "success_url",
+            "cancel_url",
+            "universal_url"
         );
 
         assertTrue(requestBody.contains("\"launch_paypal_app\":true"));
         assertTrue(requestBody.contains("\"os_type\":" + "\"Android\""));
         assertTrue(requestBody.contains("\"os_version\":" + versionSDK));
+        assertTrue(requestBody.contains("\"merchant_app_return_url\":" + "\"universal_url\""));
     }
 }
