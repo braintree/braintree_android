@@ -389,4 +389,8 @@ class BraintreeClient @VisibleForTesting internal constructor(
         val message = "Valid authorization required. See $clientSDKSetupURL for more info."
         return BraintreeException(message)
     }
+
+    fun isPayPalInstalled(): Boolean {
+        return deviceInspector.isPayPalInstalled(applicationContext)
+    }
 }
