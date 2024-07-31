@@ -62,7 +62,7 @@ class PayPalInternalClient {
                         ? SETUP_BILLING_AGREEMENT_ENDPOINT : CREATE_SINGLE_PAYMENT_ENDPOINT;
                 String url = String.format("/v1/%s", endpoint);
                 String appLinkReturn = isBillingAgreement ? appLink : null;
-
+                
                 final String linkType = (isBillingAgreement &&
                                         ((PayPalVaultRequest) payPalRequest).getEnablePayPalAppSwitch() &&
                                         braintreeClient.isPayPalInstalled()) ? "universal" : "deeplink";
