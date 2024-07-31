@@ -552,6 +552,61 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
+    public void sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess_returnsPayPalURL() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .authorizationSuccess(clientToken)
+                .appLinkReturnUri(Uri.parse("https://example.com"))
+                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_PAYPAL_REDIRECT_URL)
+                .isPayPalInstalled(true)
+                .build();
+
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
+
+        PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
+        payPalRequest.setUserAuthenticationEmail("example@mail.com");
+        payPalRequest.setEnablePayPalAppSwitch(true);
+
+        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+
+        ArgumentCaptor<PayPalPaymentAuthRequestParams> captor = ArgumentCaptor.forClass(
+                PayPalPaymentAuthRequestParams.class);
+        verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
+
+        String expectedUrl = "https://paypal.com/some?ba_token=fake-ba-token";
+        PayPalPaymentAuthRequestParams payPalPaymentAuthRequestParams = captor.getValue();
+        assertTrue(payPalPaymentAuthRequestParams.isBillingAgreement());
+        assertEquals("fake-ba-token", payPalPaymentAuthRequestParams.getPairingId());
+        assertEquals(expectedUrl, payPalPaymentAuthRequestParams.getApprovalUrl());
+    }
+
+    @Test
+    public void sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess_returnsApprovalURL() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .authorizationSuccess(clientToken)
+                .appLinkReturnUri(Uri.parse("https://example.com"))
+                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_PAYPAL_REDIRECT_URL)
+                .build();
+
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
+
+        PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
+
+        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+
+        ArgumentCaptor<PayPalPaymentAuthRequestParams> captor = ArgumentCaptor.forClass(
+                PayPalPaymentAuthRequestParams.class);
+        verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
+
+        String expectedUrl = "https://www.example.com/some?ba_token=fake-ba-token";
+        PayPalPaymentAuthRequestParams payPalPaymentAuthRequestParams = captor.getValue();
+        assertTrue(payPalPaymentAuthRequestParams.isBillingAgreement());
+        assertEquals("fake-ba-token", payPalPaymentAuthRequestParams.getPairingId());
+        assertEquals(expectedUrl, payPalPaymentAuthRequestParams.getApprovalUrl());
+    }
+
+    @Test
     public void sendRequest_withPayPalCheckoutRequest_callsBackPayPalResponseOnSuccess() {
         when(dataCollector.getClientMetadataId(context, configuration, true)).thenReturn("sample-client-metadata-id");
 
