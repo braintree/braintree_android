@@ -1,34 +1,31 @@
 package com.braintreepayments.api.paypal;
 
-import com.braintreepayments.api.core.MetadataBuilder;
-import com.braintreepayments.api.paypal.PayPalAccount;
-import com.braintreepayments.api.paypal.PayPalPaymentIntent;
-
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 
+import com.braintreepayments.api.core.MetadataBuilder;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
-@RunWith(RobolectricTestRunner.class)
 public class PayPalAccountUnitTest {
 
     private static final String PAYPAL_KEY = "paypalAccount";
 
     @Test
     public void build_correctlyBuildsAPayPalAccount() throws JSONException {
-        PayPalAccount sut = new PayPalAccount();
-        sut.setIntent(PayPalPaymentIntent.SALE);
-        sut.setClientMetadataId("correlation_id");
+        PayPalAccount sut = new PayPalAccount(
+            "correlation_id",
+            new JSONObject(),
+            PayPalPaymentIntent.SALE,
+            "alt_merchant_account_id",
+            "single-payment"
+        );
         sut.setSource("paypal-sdk");
-        sut.setMerchantAccountId("alt_merchant_account_id");
-        sut.setPaymentType("single-payment");
 
         JSONObject jsonObject = sut.buildJSON();
         JSONObject jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY);
@@ -45,7 +42,13 @@ public class PayPalAccountUnitTest {
 
     @Test
     public void usesCorrectInfoForMetadata() throws JSONException {
-        PayPalAccount sut = new PayPalAccount();
+        PayPalAccount sut = new PayPalAccount(
+            "correlation_id",
+            new JSONObject(),
+            PayPalPaymentIntent.SALE,
+            "alt_merchant_account_id",
+            "single-payment"
+        );
         sut.setSource("paypal-app");
 
         JSONObject json = sut.buildJSON();
@@ -57,7 +60,13 @@ public class PayPalAccountUnitTest {
 
     @Test
     public void setsIntegrationMethod() throws JSONException {
-        PayPalAccount sut = new PayPalAccount();
+        PayPalAccount sut = new PayPalAccount(
+            "correlation_id",
+            new JSONObject(),
+            PayPalPaymentIntent.SALE,
+            "alt_merchant_account_id",
+            "single-payment"
+        );
         sut.setIntegration("test-integration");
 
         JSONObject json = sut.buildJSON();
@@ -69,8 +78,13 @@ public class PayPalAccountUnitTest {
     @Test
     public void buildJSON_whenPaymentTypeSinglePayment_setsOptionsValidateFalse()
         throws JSONException {
-        PayPalAccount sut = new PayPalAccount();
-        sut.setPaymentType("single-payment");
+        PayPalAccount sut = new PayPalAccount(
+            "correlation_id",
+            new JSONObject(),
+            PayPalPaymentIntent.SALE,
+            "alt_merchant_account_id",
+            "single-payment"
+        );
 
         JSONObject json = sut.buildJSON();
         JSONObject builtAccount = json.getJSONObject(PAYPAL_KEY);
@@ -81,8 +95,13 @@ public class PayPalAccountUnitTest {
     @Test
     public void buildJSON_whenPaymentTypeNotSinglePayment_doesNotSetOptionsValidate()
         throws JSONException {
-        PayPalAccount sut = new PayPalAccount();
-        sut.setPaymentType("billing-agreement");
+        PayPalAccount sut = new PayPalAccount(
+            "correlation_id",
+            new JSONObject(),
+            PayPalPaymentIntent.SALE,
+            "alt_merchant_account_id",
+            "billing-agreement"
+        );
 
         JSONObject json = sut.buildJSON();
         JSONObject builtAccount = json.getJSONObject(PAYPAL_KEY);
@@ -92,7 +111,13 @@ public class PayPalAccountUnitTest {
 
     @Test
     public void doesNotIncludeEmptyObjectsWhenSerializing() throws JSONException {
-        PayPalAccount sut = new PayPalAccount();
+        PayPalAccount sut = new PayPalAccount(
+            null,
+            new JSONObject(),
+            null,
+            null,
+            null
+        );
 
         JSONObject json = sut.buildJSON();
         JSONObject builtAccount = json.getJSONObject(PAYPAL_KEY);
@@ -107,8 +132,13 @@ public class PayPalAccountUnitTest {
             .put("data2", "data2")
             .put("data3", "data3");
 
-        PayPalAccount sut = new PayPalAccount();
-        sut.setUrlResponseData(urlResponseData);
+        PayPalAccount sut = new PayPalAccount(
+            null,
+            urlResponseData,
+            null,
+            null,
+            null
+        );
 
         JSONObject json = sut.buildJSON();
         JSONObject paymentMethodNonceJson = json.getJSONObject(PAYPAL_KEY);
@@ -123,7 +153,14 @@ public class PayPalAccountUnitTest {
 
     @Test
     public void build_doesNotIncludeIntentIfNotSet() throws JSONException {
-        PayPalAccount sut = new PayPalAccount();
+        PayPalAccount sut = new PayPalAccount(
+            null,
+            new JSONObject(),
+            null,
+            null,
+            null
+        );
+
         JSONObject jsonObject = sut.buildJSON();
         JSONObject jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY);
 

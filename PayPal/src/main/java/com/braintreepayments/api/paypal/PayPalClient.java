@@ -246,16 +246,14 @@ public class PayPalClient {
                 JSONObject urlResponseData =
                         parseUrlResponseData(deepLinkUri, successUrl, approvalUrl,
                                 tokenKey);
-                PayPalAccount payPalAccount = new PayPalAccount();
-                payPalAccount.setClientMetadataId(clientMetadataId);
-                payPalAccount.setIntent(payPalIntent);
-                payPalAccount.setSource("paypal-browser");
-                payPalAccount.setUrlResponseData(urlResponseData);
-                payPalAccount.setPaymentType(paymentType);
 
-                if (merchantAccountId != null) {
-                    payPalAccount.setMerchantAccountId(merchantAccountId);
-                }
+                PayPalAccount payPalAccount = new PayPalAccount(
+                    clientMetadataId,
+                    urlResponseData,
+                    payPalIntent,
+                    merchantAccountId,
+                    paymentType
+                );
 
                 internalPayPalClient.tokenize(payPalAccount,
                         (payPalAccountNonce, error) -> {
