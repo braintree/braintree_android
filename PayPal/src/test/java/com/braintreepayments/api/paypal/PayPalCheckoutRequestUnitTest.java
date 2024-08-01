@@ -57,10 +57,10 @@ public class PayPalCheckoutRequestUnitTest {
         request.setBillingAgreementDescription("Billing Agreement Description");
         request.setShippingAddressRequired(true);
         request.setShippingAddressOverride(postalAddress);
-        request.setUserAction(PayPalCheckoutRequest.PayPalPaymentUserAction.USER_ACTION_COMMIT);
+        request.setUserAction(PayPalPaymentUserAction.USER_ACTION_COMMIT);
         request.setDisplayName("Display Name");
         request.setRiskCorrelationId("123-correlation");
-        request.setLandingPageType(PayPalRequest.PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
+        request.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
 
         assertEquals("1.00", request.getAmount());
         assertEquals("USD", request.getCurrencyCode());
@@ -70,10 +70,10 @@ public class PayPalCheckoutRequestUnitTest {
         assertTrue(request.isShippingAddressRequired());
         assertEquals(postalAddress, request.getShippingAddressOverride());
         assertEquals(PayPalPaymentIntent.SALE, request.getIntent());
-        assertEquals(PayPalCheckoutRequest.PayPalPaymentUserAction.USER_ACTION_COMMIT, request.getUserAction());
+        assertEquals(PayPalPaymentUserAction.USER_ACTION_COMMIT, request.getUserAction());
         assertEquals("Display Name", request.getDisplayName());
         assertEquals("123-correlation", request.getRiskCorrelationId());
-        assertEquals(PayPalRequest.PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
+        assertEquals(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
         assertTrue(request.getShouldOfferPayLater());
         assertTrue(request.getHasUserLocationConsent());
     }
@@ -92,8 +92,8 @@ public class PayPalCheckoutRequestUnitTest {
         request.setShippingAddressOverride(postalAddress);
 
         request.setIntent(PayPalPaymentIntent.SALE);
-        request.setLandingPageType(PayPalRequest.PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
-        request.setUserAction(PayPalCheckoutRequest.PayPalPaymentUserAction.USER_ACTION_COMMIT);
+        request.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
+        request.setUserAction(PayPalPaymentUserAction.USER_ACTION_COMMIT);
         request.setDisplayName("Display Name");
         request.setRiskCorrelationId("123-correlation");
         request.setMerchantAccountId("merchant_account_id");
@@ -116,8 +116,8 @@ public class PayPalCheckoutRequestUnitTest {
         assertTrue(result.isShippingAddressEditable());
         assertEquals("Postal Address", result.getShippingAddressOverride().getRecipientName());
         assertEquals(PayPalPaymentIntent.SALE, result.getIntent());
-        assertEquals(PayPalRequest.PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN, result.getLandingPageType());
-        assertEquals(PayPalCheckoutRequest.PayPalPaymentUserAction.USER_ACTION_COMMIT, result.getUserAction());
+        assertEquals(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN, result.getLandingPageType());
+        assertEquals(PayPalPaymentUserAction.USER_ACTION_COMMIT, result.getUserAction());
         assertEquals("Display Name", result.getDisplayName());
         assertEquals("123-correlation", result.getRiskCorrelationId());
         assertEquals("merchant_account_id", result.getMerchantAccountId());

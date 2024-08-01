@@ -86,18 +86,6 @@ abstract class PayPalRequest internal constructor(
     open var lineItems: List<PayPalLineItem> = emptyList()
 ) : Parcelable {
 
-    enum class PayPalLandingPageType(val stringValue: String) {
-        /**
-         * A non-PayPal account landing page is used.
-         */
-        LANDING_PAGE_TYPE_BILLING("billing"),
-
-        /**
-         * A PayPal account login page is used.
-         */
-        LANDING_PAGE_TYPE_LOGIN("login")
-    }
-
     @Throws(JSONException::class)
     abstract fun createRequestBody(
         configuration: Configuration?,

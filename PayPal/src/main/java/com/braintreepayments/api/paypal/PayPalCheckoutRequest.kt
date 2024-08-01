@@ -6,7 +6,6 @@ import com.braintreepayments.api.core.ClientToken
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.PostalAddress
 import com.braintreepayments.api.core.PostalAddressParser
-import com.braintreepayments.api.paypal.PayPalCheckoutRequest.PayPalPaymentUserAction
 import kotlinx.parcelize.Parcelize
 import org.json.JSONArray
 import org.json.JSONException
@@ -90,27 +89,6 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     userAuthenticationEmail = userAuthenticationEmail,
     lineItems = lineItems
 ) {
-
-    /**
-     * The call-to-action in the PayPal Checkout flow
-     */
-    enum class PayPalPaymentUserAction(val stringValue: String) {
-
-        /**
-         * Shows the default call-to-action text on the PayPal Express Checkout page. This option
-         * indicates that a final confirmation will be shown on the merchant checkout site before the
-         * user's payment method is charged.
-         */
-        USER_ACTION_DEFAULT(""),
-
-        /**
-         * Shows a deterministic call-to-action. This option indicates to the user that their payment
-         * method will be charged when they click the call-to-action button on the PayPal Checkout page,
-         * and that no final confirmation page will be shown on the merchant's checkout page. This
-         * option works for both checkout and vault flows.
-         */
-        USER_ACTION_COMMIT("commit"),
-    }
 
     @Throws(JSONException::class)
     @Suppress("LongMethod", "CyclomaticComplexMethod")

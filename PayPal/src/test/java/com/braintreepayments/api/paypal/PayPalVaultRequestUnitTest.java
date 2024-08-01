@@ -48,7 +48,7 @@ public class PayPalVaultRequestUnitTest {
         request.setShippingAddressOverride(postalAddress);
         request.setDisplayName("Display Name");
         request.setRiskCorrelationId("123-correlation");
-        request.setLandingPageType(PayPalRequest.PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
+        request.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
         request.setShouldOfferCredit(true);
 
         assertEquals("US", request.getLocaleCode());
@@ -57,7 +57,7 @@ public class PayPalVaultRequestUnitTest {
         assertEquals(postalAddress, request.getShippingAddressOverride());
         assertEquals("Display Name", request.getDisplayName());
         assertEquals("123-correlation", request.getRiskCorrelationId());
-        assertEquals(PayPalRequest.PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
+        assertEquals(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
         assertTrue(request.getShouldOfferCredit());
         assertTrue(request.getHasUserLocationConsent());
     }
@@ -75,7 +75,7 @@ public class PayPalVaultRequestUnitTest {
         postalAddress.setRecipientName("Postal Address");
         request.setShippingAddressOverride(postalAddress);
 
-        request.setLandingPageType(PayPalRequest.PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
+        request.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
         request.setDisplayName("Display Name");
         request.setRiskCorrelationId("123-correlation");
         request.setMerchantAccountId("merchant_account_id");
@@ -96,7 +96,7 @@ public class PayPalVaultRequestUnitTest {
         assertTrue(result.isShippingAddressRequired());
         assertTrue(result.isShippingAddressEditable());
         assertEquals("Postal Address", result.getShippingAddressOverride().getRecipientName());
-        assertEquals(PayPalRequest.PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN, result.getLandingPageType());
+        assertEquals(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN, result.getLandingPageType());
         assertEquals("Display Name", result.getDisplayName());
         assertEquals("123-correlation", result.getRiskCorrelationId());
         assertEquals("merchant_account_id", result.getMerchantAccountId());
