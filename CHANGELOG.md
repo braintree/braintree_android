@@ -7,6 +7,7 @@
     * PayPal
         * Remove `appLinkEnabled` from `PayPalRequest` as Android app links are now required
         * Updated `PayPalCreditFinancing.hasPayerAcceptance` to `getPayerAcceptance`
+        * Converted `PayPalPaymentIntent` to an enum
         * Updated `PayPalRequest.PayPalLandingPageType` to an enum
         * Updated `PayPalCheckoutRequest.PayPalPaymentUserAction` to an enum
 
