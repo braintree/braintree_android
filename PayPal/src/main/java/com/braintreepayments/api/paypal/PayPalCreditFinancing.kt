@@ -12,7 +12,7 @@ import org.json.JSONObject
  * acceptance on PayPal side.
  * @property monthlyPayment Estimated amount per month that the customer will need to pay including
  * fees and interest.
- * @property payerAcceptance Status of whether the customer ultimately was approved for and chose to
+ * @property hasPayerAcceptance Status of whether the customer ultimately was approved for and chose to
  * make the payment using the approved installment credit.
  * @property totalCost Estimated total payment amount including interest and fees the user will pay
  * during the lifetime of the loan.
@@ -24,7 +24,7 @@ import org.json.JSONObject
 data class PayPalCreditFinancing internal constructor(
     val isCardAmountImmutable: Boolean = false,
     val monthlyPayment: PayPalCreditFinancingAmount? = null,
-    val payerAcceptance: Boolean = false,
+    val hasPayerAcceptance: Boolean = false,
     val totalCost: PayPalCreditFinancingAmount? = null,
     val totalInterest: PayPalCreditFinancingAmount? = null,
     val term: Int = 0,
@@ -52,7 +52,7 @@ data class PayPalCreditFinancing internal constructor(
                     monthlyPayment = PayPalCreditFinancingAmount.fromJson(
                         creditFinancing.optJSONObject(MONTHLY_PAYMENT_KEY)
                     ),
-                    payerAcceptance = creditFinancing.optBoolean(PAYER_ACCEPTANCE_KEY, false),
+                    hasPayerAcceptance = creditFinancing.optBoolean(PAYER_ACCEPTANCE_KEY, false),
                     term = creditFinancing.optInt(TERM_KEY, 0),
                     totalCost = PayPalCreditFinancingAmount.fromJson(
                         creditFinancing.optJSONObject(TOTAL_COST_KEY)
