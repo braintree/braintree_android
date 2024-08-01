@@ -2,11 +2,13 @@ package com.braintreepayments.demo;
 
 import android.content.Context;
 
+import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest;
+import com.braintreepayments.api.paypal.PayPalLandingPageType;
 import com.braintreepayments.api.paypal.PayPalPaymentIntent;
+import com.braintreepayments.api.paypal.PayPalPaymentUserAction;
 import com.braintreepayments.api.paypal.PayPalRequest;
 import com.braintreepayments.api.paypal.PayPalVaultRequest;
-import com.braintreepayments.api.core.PostalAddress;
 
 public class PayPalRequestFactory {
 
@@ -25,9 +27,9 @@ public class PayPalRequestFactory {
 
         String landingPageType = Settings.getPayPalLandingPageType(context);
         if (context.getString(R.string.paypal_landing_page_type_billing).equals(landingPageType)) {
-            request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_BILLING);
+            request.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_BILLING);
         } else if (context.getString(R.string.paypal_landing_page_type_login).equals(landingPageType)) {
-            request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+            request.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
         }
 
         if (Settings.isPayPalCreditOffered(context)) {
@@ -64,9 +66,9 @@ public class PayPalRequestFactory {
 
         String landingPageType = Settings.getPayPalLandingPageType(context);
         if (context.getString(R.string.paypal_landing_page_type_billing).equals(landingPageType)) {
-            request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_BILLING);
+            request.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_BILLING);
         } else if (context.getString(R.string.paypal_landing_page_type_login).equals(landingPageType)) {
-            request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+            request.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
         }
 
         String intentType = Settings.getPayPalIntentType(context);
@@ -79,7 +81,7 @@ public class PayPalRequestFactory {
         }
 
         if (Settings.isPayPalUseractionCommitEnabled(context)) {
-            request.setUserAction(PayPalCheckoutRequest.USER_ACTION_COMMIT);
+            request.setUserAction(PayPalPaymentUserAction.USER_ACTION_COMMIT);
         }
 
         if (Settings.usePayPalAddressOverride(context)) {

@@ -92,7 +92,7 @@ public class PayPalInternalClientUnitTest {
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
         payPalRequest.setBillingAgreementDescription("Billing Agreement Description");
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
-        payPalRequest.setLandingPageType("sample-landing-page-type");
+        payPalRequest.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_BILLING);
         payPalRequest.setDisplayName("sample-display-name");
         payPalRequest.setLocaleCode("US");
         payPalRequest.setShippingAddressRequired(true);
@@ -117,7 +117,7 @@ public class PayPalInternalClientUnitTest {
                 .put("description", "Billing Agreement Description")
                 .put("experience_profile", new JSONObject()
                         .put("no_shipping", false)
-                        .put("landing_page_type", "sample-landing-page-type")
+                        .put("landing_page_type", "billing")
                         .put("brand_name", "sample-display-name")
                         .put("locale_code", "US")
                         .put("address_override", false))
@@ -166,7 +166,7 @@ public class PayPalInternalClientUnitTest {
         payPalRequest.setShouldRequestBillingAgreement(true);
         payPalRequest.setBillingAgreementDescription("Billing Agreement Description");
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
-        payPalRequest.setLandingPageType("sample-landing-page-type");
+        payPalRequest.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
         payPalRequest.setDisplayName("sample-display-name");
         payPalRequest.setLocaleCode("US");
         payPalRequest.setShippingAddressRequired(true);
@@ -207,7 +207,7 @@ public class PayPalInternalClientUnitTest {
                                 .put("url", "http://example.com")))
                 .put("experience_profile", new JSONObject()
                         .put("no_shipping", false)
-                        .put("landing_page_type", "sample-landing-page-type")
+                        .put("landing_page_type", "login")
                         .put("brand_name", "sample-display-name")
                         .put("locale_code", "US")
                         .put("address_override", false))
@@ -567,7 +567,7 @@ public class PayPalInternalClientUnitTest {
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
         payPalRequest.setIntent(PayPalPaymentIntent.AUTHORIZE);
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
-        payPalRequest.setUserAction(PayPalCheckoutRequest.USER_ACTION_COMMIT);
+        payPalRequest.setUserAction(PayPalPaymentUserAction.USER_ACTION_COMMIT);
         payPalRequest.setRiskCorrelationId("sample-client-metadata-id");
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);

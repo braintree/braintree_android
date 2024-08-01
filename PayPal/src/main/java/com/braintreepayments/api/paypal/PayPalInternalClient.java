@@ -75,7 +75,7 @@ class PayPalInternalClient {
 
                                     if (clientMetadataId == null) {
                                         DataCollectorInternalRequest dataCollectorRequest =
-                                            new DataCollectorInternalRequest(payPalRequest.hasUserLocationConsent())
+                                            new DataCollectorInternalRequest(payPalRequest.getHasUserLocationConsent())
                                                 .setApplicationGuid(dataCollector.getPayPalInstallationGUID(context));
 
                                         if (pairingId != null) {
