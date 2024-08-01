@@ -65,39 +65,35 @@ class PayPalInternalClient {
                         (responseBody, httpError) -> {
                             if (responseBody != null) {
                                 try {
-                                    PayPalPaymentAuthRequestParams paymentAuthRequest =
-                                            new PayPalPaymentAuthRequestParams(payPalRequest)
-                                                    .successUrl(successUrl);
-
                                     PayPalPaymentResource paypalPaymentResource =
                                             PayPalPaymentResource.fromJson(responseBody);
-                                    String redirectUrl =
-                                            paypalPaymentResource.getRedirectUrl();
-                                    if (redirectUrl != null) {
-                                        Uri parsedRedirectUri = Uri.parse(redirectUrl);
+                                    String redirectUrl = paypalPaymentResource.getRedirectUrl();
+                                    Uri parsedRedirectUri = Uri.parse(redirectUrl);
 
-                                        String pairingId = findPairingId(parsedRedirectUri);
-                                        String clientMetadataId = payPalRequest.getRiskCorrelationId();
+                                    String pairingId = findPairingId(parsedRedirectUri);
+                                    String clientMetadataId = payPalRequest.getRiskCorrelationId();
 
-                                        if (clientMetadataId == null) {
-                                            DataCollectorInternalRequest dataCollectorRequest =
-                                                new DataCollectorInternalRequest(payPalRequest.hasUserLocationConsent())
-                                                    .setApplicationGuid(dataCollector.getPayPalInstallationGUID(context));
-
-                                            if (pairingId != null) {
-                                                dataCollectorRequest.setRiskCorrelationId(pairingId);
-                                            }
-                                            clientMetadataId = dataCollector.getClientMetadataId(context, dataCollectorRequest, configuration);
-                                        }
+                                    if (clientMetadataId == null) {
+                                        DataCollectorInternalRequest dataCollectorRequest =
+                                            new DataCollectorInternalRequest(payPalRequest.hasUserLocationConsent())
+                                                .setApplicationGuid(dataCollector.getPayPalInstallationGUID(context));
 
                                         if (pairingId != null) {
-                                            paymentAuthRequest.pairingId(pairingId);
+                                            dataCollectorRequest.setRiskCorrelationId(pairingId);
                                         }
-
-                                        paymentAuthRequest
-                                            .clientMetadataId(clientMetadataId)
-                                            .approvalUrl(parsedRedirectUri.toString());
+                                        clientMetadataId = dataCollector.getClientMetadataId(context, dataCollectorRequest, configuration);
                                     }
+
+                                    PayPalPaymentAuthRequestParams paymentAuthRequest =
+                                        new PayPalPaymentAuthRequestParams(
+                                            payPalRequest,
+                                            null,
+                                            parsedRedirectUri.toString(),
+                                            clientMetadataId,
+                                            pairingId,
+                                            successUrl
+                                        );
+
                                     callback.onResult(paymentAuthRequest, null);
 
                                 } catch (JSONException exception) {

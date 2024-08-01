@@ -50,7 +50,7 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
      */
     public static final String USER_ACTION_COMMIT = "commit";
 
-    private String intent = PayPalPaymentIntent.AUTHORIZE;
+    private PayPalPaymentIntent intent = PayPalPaymentIntent.AUTHORIZE;
     private String userAction = USER_ACTION_DEFAULT;
     private final String amount;
     private String currencyCode;
@@ -109,7 +109,7 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
      * and process orders</a>
      * for more information
      */
-    public void setIntent(@NonNull @PayPalPaymentIntent String intent) {
+    public void setIntent(@NonNull PayPalPaymentIntent intent) {
         this.intent = intent;
     }
 
@@ -163,9 +163,8 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
         return currencyCode;
     }
 
-    @PayPalPaymentIntent
     @NonNull
-    public String getIntent() {
+    public PayPalPaymentIntent getIntent() {
         return intent;
     }
 
@@ -219,7 +218,7 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
         parameters
                 .put(AMOUNT_KEY, amount)
                 .put(CURRENCY_ISO_CODE_KEY, currencyCode)
-                .put(INTENT_KEY, intent);
+                .put(INTENT_KEY, intent.getStringValue());
 
         if (!getLineItems().isEmpty()) {
             JSONArray lineItems = new JSONArray();
@@ -278,7 +277,7 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
 
     PayPalCheckoutRequest(Parcel in) {
         super(in);
-        intent = in.readString();
+        intent = PayPalPaymentIntent.fromString(in.readString());
         userAction = in.readString();
         amount = in.readString();
         currencyCode = in.readString();
@@ -289,7 +288,7 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(intent);
+        dest.writeString(intent.getStringValue());
         dest.writeString(userAction);
         dest.writeString(amount);
         dest.writeString(currencyCode);
