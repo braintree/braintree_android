@@ -144,6 +144,13 @@ class PayPalInternalClient {
         });
     }
 
+    private Uri createAppSwitchUri(Uri uri) {
+        return uri.buildUpon()
+            .appendQueryParameter("source", "braintree_sdk")
+            .appendQueryParameter("switch_initiated_time", String.valueOf(System.currentTimeMillis()))
+            .build();
+    }
+
     private String findPairingId(Uri redirectUri) {
         String pairingId = redirectUri.getQueryParameter("ba_token");
         if (pairingId == null) {
