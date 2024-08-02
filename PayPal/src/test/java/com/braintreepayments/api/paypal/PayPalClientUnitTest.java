@@ -100,7 +100,7 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
             PayPalAnalytics.TOKENIZATION_STARTED,
-            new AnalyticsEventParams(null, null, false, null, null, null)
+            new AnalyticsEventParams(null, null, true, null, null, null)
         );
     }
 

@@ -19,7 +19,6 @@ import org.json.JSONObject
 /**
  * Used to tokenize PayPal accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4)
  */
-@Suppress("TooManyFunctions")
 class PayPalClient @VisibleForTesting internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient = PayPalInternalClient(braintreeClient),
@@ -65,28 +64,9 @@ class PayPalClient @VisibleForTesting internal constructor(
         payPalRequest: PayPalRequest,
         callback: PayPalPaymentAuthCallback
     ) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED)
-        if (payPalRequest is PayPalCheckoutRequest) {
-            isVaultRequest = false
-            sendCheckoutRequest(context, payPalRequest, callback)
-        } else if (payPalRequest is PayPalVaultRequest) {
-            isVaultRequest = true
-            sendVaultRequest(context, payPalRequest, callback)
-        }
-    }
+        isVaultRequest = payPalRequest is PayPalVaultRequest
 
-    private fun sendCheckoutRequest(
-        context: Context,
-        payPalCheckoutRequest: PayPalCheckoutRequest,
-        callback: PayPalPaymentAuthCallback
-    ) {
-        braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected", analyticsParams)
-        if (payPalCheckoutRequest.shouldOfferPayLater) {
-            braintreeClient.sendAnalyticsEvent(
-                "paypal.single-payment.paylater.offered",
-                analyticsParams
-            )
-        }
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsParams)
 
         braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
             if (error != null) {
@@ -97,34 +77,7 @@ class PayPalClient @VisibleForTesting internal constructor(
                     PayPalPaymentAuthRequest.Failure(createPayPalError())
                 )
             } else {
-                sendPayPalRequest(context, payPalCheckoutRequest, callback)
-            }
-        }
-    }
-
-    private fun sendVaultRequest(
-        context: Context,
-        payPalVaultRequest: PayPalVaultRequest,
-        callback: PayPalPaymentAuthCallback
-    ) {
-        braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected", analyticsParams)
-        if (payPalVaultRequest.shouldOfferCredit) {
-            braintreeClient.sendAnalyticsEvent(
-                "paypal.billing-agreement.credit.offered",
-                analyticsParams
-            )
-        }
-
-        braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
-            if (error != null) {
-                callbackCreatePaymentAuthFailure(callback, PayPalPaymentAuthRequest.Failure(error))
-            } else if (payPalConfigInvalid(configuration)) {
-                callbackCreatePaymentAuthFailure(
-                    callback,
-                    PayPalPaymentAuthRequest.Failure(createPayPalError())
-                )
-            } else {
-                sendPayPalRequest(context, payPalVaultRequest, callback)
+                sendPayPalRequest(context, payPalRequest, callback)
             }
         }
     }
