@@ -154,7 +154,11 @@ public class PayPalInternalClientUnitTest {
         shippingAddressOverride.setPostalCode("12345");
         shippingAddressOverride.setCountryCodeAlpha2("US");
 
-        PayPalLineItem item = new PayPalLineItem(PayPalLineItem.KIND_DEBIT, "Item 0", "1", "2");
+        PayPalLineItem item = new PayPalLineItem(PayPalLineItemKind.KIND_DEBIT,
+            "Item 0",
+            "1",
+            "2"
+        );
         item.setDescription("A new item");
         item.setProductCode("abc-123");
         item.setUnitTaxAmount("1.50");
