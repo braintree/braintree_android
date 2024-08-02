@@ -130,7 +130,8 @@ class PayPalClient @VisibleForTesting internal constructor(
     }
 
     private fun sendPayPalRequest(
-        context: Context, payPalRequest: PayPalRequest,
+        context: Context,
+        payPalRequest: PayPalRequest,
         callback: PayPalPaymentAuthCallback
     ) {
         internalPayPalClient.sendRequest(
