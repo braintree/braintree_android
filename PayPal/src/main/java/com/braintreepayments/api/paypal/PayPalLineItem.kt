@@ -31,7 +31,7 @@ data class PayPalLineItem
     val kind: PayPalLineItemKind,
     val name: String,
     val quantity: String,
-    val unitAmount: String?,
+    val unitAmount: String,
     var description: String? = null,
     var imageUrl: String? = null,
     var productCode: String? = null,
