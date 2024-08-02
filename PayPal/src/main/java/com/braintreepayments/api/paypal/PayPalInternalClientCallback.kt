@@ -1,6 +1,6 @@
 package com.braintreepayments.api.paypal
 
-internal interface PayPalInternalClientCallback {
+internal fun interface PayPalInternalClientCallback {
 
     fun onResult(
         paymentAuthRequest: PayPalPaymentAuthRequestParams?,

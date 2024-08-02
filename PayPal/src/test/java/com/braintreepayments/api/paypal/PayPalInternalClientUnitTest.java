@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -103,8 +104,12 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(eq("/v1/paypal_hermes/setup_billing_agreement"),
-                captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(
+            eq("/v1/paypal_hermes/setup_billing_agreement"),
+            captor.capture(),
+            anyMap(),
+            any(HttpResponseCallback.class)
+        );
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -154,7 +159,11 @@ public class PayPalInternalClientUnitTest {
         shippingAddressOverride.setPostalCode("12345");
         shippingAddressOverride.setCountryCodeAlpha2("US");
 
-        PayPalLineItem item = new PayPalLineItem(PayPalLineItem.KIND_DEBIT, "Item 0", "1", "2");
+        PayPalLineItem item = new PayPalLineItem(PayPalLineItemKind.DEBIT,
+            "Item 0",
+            "1",
+            "2"
+        );
         item.setDescription("A new item");
         item.setProductCode("abc-123");
         item.setUnitTaxAmount("1.50");
@@ -178,8 +187,12 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(eq("/v1/paypal_hermes/create_payment_resource"),
-                captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(
+            eq("/v1/paypal_hermes/create_payment_resource"),
+            captor.capture(),
+            anyMap(),
+            any(HttpResponseCallback.class)
+        );
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -237,8 +250,12 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
-                any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(
+            anyString(),
+            captor.capture(),
+            anyMap(),
+            any(HttpResponseCallback.class)
+        );
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -262,8 +279,12 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
-                any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(
+            anyString(),
+            captor.capture(),
+            anyMap(),
+            any(HttpResponseCallback.class)
+        );
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -286,8 +307,12 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
-                any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(
+            anyString(),
+            captor.capture(),
+            anyMap(),
+            any(HttpResponseCallback.class)
+        );
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -310,8 +335,12 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
-                any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(
+            anyString(),
+            captor.capture(),
+            anyMap(),
+            any(HttpResponseCallback.class)
+        );
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -334,8 +363,12 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
-                any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(
+            anyString(),
+            captor.capture(),
+            anyMap(),
+            any(HttpResponseCallback.class)
+        );
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -362,8 +395,12 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(eq("/v1/paypal_hermes/setup_billing_agreement"),
-                captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(
+            eq("/v1/paypal_hermes/setup_billing_agreement"),
+            captor.capture(),
+            anyMap(),
+            any(HttpResponseCallback.class)
+        );
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -386,8 +423,12 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
-                any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(
+            anyString(),
+            captor.capture(),
+            anyMap(),
+            any(HttpResponseCallback.class)
+        );
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -409,8 +450,12 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
-                any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(
+            anyString(),
+            captor.capture(),
+            anyMap(),
+            any(HttpResponseCallback.class)
+        );
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -432,8 +477,12 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
-                any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(
+            anyString(),
+            captor.capture(),
+            anyMap(),
+            any(HttpResponseCallback.class)
+        );
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);
@@ -507,8 +556,12 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(),
-                any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(
+            anyString(),
+            captor.capture(),
+            anyMap(),
+            any(HttpResponseCallback.class)
+        );
 
         String result = captor.getValue();
         JSONObject actual = new JSONObject(result);

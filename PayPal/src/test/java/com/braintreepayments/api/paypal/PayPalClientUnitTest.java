@@ -98,7 +98,10 @@ public class PayPalClientUnitTest {
         assertEquals("sample-merchant-account-id", metadata.get("merchant-account-id"));
         assertEquals("paypal-browser", metadata.get("source"));
 
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED);
+        verify(braintreeClient).sendAnalyticsEvent(
+            PayPalAnalytics.TOKENIZATION_STARTED,
+            new AnalyticsEventParams(null, null, false, null, null, null)
+        );
     }
 
     @Test
