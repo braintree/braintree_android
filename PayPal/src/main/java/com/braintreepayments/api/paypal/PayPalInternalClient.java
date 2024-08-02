@@ -109,8 +109,20 @@ class PayPalInternalClient {
                                         }
 
                                         paymentAuthRequest
-                                            .clientMetadataId(clientMetadataId)
-                                            .approvalUrl(parsedRedirectUri.toString());
+                                                .clientMetadataId(clientMetadataId);
+
+                                        if (linkType.equals("universal")) {
+                                            if (pairingId != null && !pairingId.isEmpty()) {
+                                                paymentAuthRequest
+                                                        .approvalUrl(createAppSwitchUri(parsedRedirectUri).toString());
+                                            } else {
+                                                callback.onResult(null, new Exception("Missing BA Token for PayPal App Switch."));
+                                                return;
+                                            }
+                                        } else {
+                                            paymentAuthRequest
+                                                .approvalUrl(parsedRedirectUri.toString());
+                                        }
                                     }
                                     callback.onResult(paymentAuthRequest, null);
 

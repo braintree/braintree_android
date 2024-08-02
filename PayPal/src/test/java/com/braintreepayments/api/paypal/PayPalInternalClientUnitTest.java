@@ -3,6 +3,7 @@ package com.braintreepayments.api.paypal;
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -573,11 +574,16 @@ public class PayPalInternalClientUnitTest {
                 PayPalPaymentAuthRequestParams.class);
         verify(payPalInternalClientCallback).onResult(captor.capture(), (Exception) isNull());
 
-        String expectedUrl = "https://paypal.com/some?ba_token=fake-ba-token";
         PayPalPaymentAuthRequestParams payPalPaymentAuthRequestParams = captor.getValue();
         assertTrue(payPalPaymentAuthRequestParams.isBillingAgreement());
-        assertEquals("fake-ba-token", payPalPaymentAuthRequestParams.getPairingId());
-        assertEquals(expectedUrl, payPalPaymentAuthRequestParams.getApprovalUrl());
+
+        Uri approvalUri = Uri.parse(payPalPaymentAuthRequestParams.getApprovalUrl());
+        String pairingId = approvalUri.getQueryParameter("ba_token");
+        assertNotNull(pairingId);
+        assertEquals(pairingId, payPalPaymentAuthRequestParams.getPairingId());
+        assertNotNull(approvalUri.getQueryParameter("source"));
+        assertNotNull(approvalUri.getQueryParameter("switch_initiated_time"));
+        assertEquals(approvalUri.getHost(), "paypal.com");
     }
 
     @Test
