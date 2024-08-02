@@ -13,6 +13,8 @@
         * Update `PayPalRequest.hasUserLocationConsent()` to `getHasUserLocationConsent()` (Java)
         * Change `PayPalLineItem.desc()` to `setDescription()`
         * Change `PayPalLineItemKind` to an enum
+        * Rename `PayPalLineItemKind.KIND_CREDIT` to `CREDIT`
+        * Rename `PayPalLineItemKind.KIND_DEBIT` to `DEBIT`
 
 ## 5.0.0-beta1 (2024-07-23)
 

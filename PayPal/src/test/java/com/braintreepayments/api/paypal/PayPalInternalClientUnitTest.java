@@ -43,7 +43,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 
 @RunWith(RobolectricTestRunner.class)
 public class PayPalInternalClientUnitTest {
@@ -160,7 +159,7 @@ public class PayPalInternalClientUnitTest {
         shippingAddressOverride.setPostalCode("12345");
         shippingAddressOverride.setCountryCodeAlpha2("US");
 
-        PayPalLineItem item = new PayPalLineItem(PayPalLineItemKind.KIND_DEBIT,
+        PayPalLineItem item = new PayPalLineItem(PayPalLineItemKind.DEBIT,
             "Item 0",
             "1",
             "2"

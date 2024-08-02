@@ -5,9 +5,6 @@ import android.os.Parcel;
 import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.core.PostalAddress;
-import com.braintreepayments.api.paypal.PayPalLineItem;
-import com.braintreepayments.api.paypal.PayPalRequest;
-import com.braintreepayments.api.paypal.PayPalVaultRequest;
 
 import org.json.JSONException;
 import org.junit.Test;
@@ -81,7 +78,7 @@ public class PayPalVaultRequestUnitTest {
         request.setMerchantAccountId("merchant_account_id");
 
         ArrayList<PayPalLineItem> lineItems = new ArrayList<>();
-        lineItems.add(new PayPalLineItem(PayPalLineItemKind.KIND_DEBIT, "An Item", "1", "1"));
+        lineItems.add(new PayPalLineItem(PayPalLineItemKind.DEBIT, "An Item", "1", "1"));
         request.setLineItems(lineItems);
 
         Parcel parcel = Parcel.obtain();

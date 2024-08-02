@@ -8,14 +8,12 @@ import org.robolectric.RobolectricTestRunner;
 
 import static junit.framework.Assert.assertEquals;
 
-import com.braintreepayments.api.paypal.PayPalLineItem;
-
 @RunWith(RobolectricTestRunner.class)
 public class PayPalLineItemUnitTest {
 
     @Test
     public void toJson_setsKeysAndValues() throws JSONException {
-        PayPalLineItem item = new PayPalLineItem(PayPalLineItemKind.KIND_DEBIT,
+        PayPalLineItem item = new PayPalLineItem(PayPalLineItemKind.DEBIT,
             "An Item",
             "1",
             "2");
