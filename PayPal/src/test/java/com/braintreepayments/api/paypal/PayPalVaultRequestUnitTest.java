@@ -37,8 +37,7 @@ public class PayPalVaultRequestUnitTest {
         assertNull(request.getDisplayName());
         assertNull(request.getLandingPageType());
         assertFalse(request.getShouldOfferCredit());
-        assertFalse(request.hasUserLocationConsent());
-        assertFalse(request.isAppLinkEnabled());
+        assertFalse(request.getHasUserLocationConsent());
     }
 
     @Test
@@ -51,9 +50,8 @@ public class PayPalVaultRequestUnitTest {
         request.setShippingAddressOverride(postalAddress);
         request.setDisplayName("Display Name");
         request.setRiskCorrelationId("123-correlation");
-        request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+        request.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
         request.setShouldOfferCredit(true);
-        request.setAppLinkEnabled(true);
         PayPalBillingInterval billingInterval = PayPalBillingInterval.MONTH;
         PayPalPricingModel pricingModel = PayPalPricingModel.FIXED;
         PayPalBillingPricing billingPricing =
@@ -82,10 +80,9 @@ public class PayPalVaultRequestUnitTest {
         assertEquals(postalAddress, request.getShippingAddressOverride());
         assertEquals("Display Name", request.getDisplayName());
         assertEquals("123-correlation", request.getRiskCorrelationId());
-        assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
+        assertEquals(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
         assertTrue(request.getShouldOfferCredit());
-        assertTrue(request.hasUserLocationConsent());
-        assertTrue(request.isAppLinkEnabled());
+        assertTrue(request.getHasUserLocationConsent());
         assertEquals(PayPalRecurringBillingPlanType.RECURRING, request.getRecurringBillingPlanType());
         assertEquals("USD", request.getRecurringBillingDetails().getCurrencyISOCode());
         assertEquals("2.00", request.getRecurringBillingDetails().getOneTimeFeeAmount());
@@ -117,13 +114,12 @@ public class PayPalVaultRequestUnitTest {
         request.setShippingAddressRequired(true);
         request.setShippingAddressEditable(true);
         request.setShouldOfferCredit(true);
-        request.setAppLinkEnabled(true);
 
         PostalAddress postalAddress = new PostalAddress();
         postalAddress.setRecipientName("Postal Address");
         request.setShippingAddressOverride(postalAddress);
 
-        request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+        request.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
         request.setDisplayName("Display Name");
         request.setRiskCorrelationId("123-correlation");
         request.setMerchantAccountId("merchant_account_id");
@@ -151,7 +147,7 @@ public class PayPalVaultRequestUnitTest {
         request.setRecurringBillingPlanType(PayPalRecurringBillingPlanType.RECURRING);
 
         ArrayList<PayPalLineItem> lineItems = new ArrayList<>();
-        lineItems.add(new PayPalLineItem(PayPalLineItem.KIND_DEBIT, "An Item", "1", "1"));
+        lineItems.add(new PayPalLineItem(PayPalLineItemKind.DEBIT, "An Item", "1", "1"));
         request.setLineItems(lineItems);
 
         Parcel parcel = Parcel.obtain();
@@ -165,16 +161,14 @@ public class PayPalVaultRequestUnitTest {
         assertTrue(result.getShouldOfferCredit());
         assertTrue(result.isShippingAddressRequired());
         assertTrue(result.isShippingAddressEditable());
-        assertEquals("Postal Address", result.getShippingAddressOverride()
-            .getRecipientName());
-        assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, result.getLandingPageType());
+        assertEquals("Postal Address", result.getShippingAddressOverride().getRecipientName());
+        assertEquals(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN, result.getLandingPageType());
         assertEquals("Display Name", result.getDisplayName());
         assertEquals("123-correlation", result.getRiskCorrelationId());
         assertEquals("merchant_account_id", result.getMerchantAccountId());
         assertEquals(1, result.getLineItems().size());
         assertEquals("An Item", result.getLineItems().get(0).getName());
-        assertTrue(result.hasUserLocationConsent());
-        assertTrue(result.isAppLinkEnabled());
+        assertTrue(result.getHasUserLocationConsent());
         assertEquals(PayPalRecurringBillingPlanType.RECURRING, result.getRecurringBillingPlanType());
         assertEquals("USD", result.getRecurringBillingDetails().getCurrencyISOCode());
         assertEquals("2.00", result.getRecurringBillingDetails().getOneTimeFeeAmount());
@@ -222,14 +216,13 @@ public class PayPalVaultRequestUnitTest {
         request.setShippingAddressRequired(true);
         request.setShippingAddressEditable(true);
         request.setShouldOfferCredit(true);
-        request.setAppLinkEnabled(true);
         request.setUserAuthenticationEmail("email");
 
         PostalAddress postalAddress = new PostalAddress();
         postalAddress.setRecipientName("Postal Address");
         request.setShippingAddressOverride(postalAddress);
 
-        request.setLandingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+        request.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
         request.setDisplayName("Display Name");
         request.setRiskCorrelationId("123-correlation");
         request.setMerchantAccountId("merchant_account_id");

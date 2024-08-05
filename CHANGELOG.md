@@ -1,9 +1,22 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
-
+* BraintreeCore
+  * Update `endpoint` syntax sent to FPTI for 3D Secure and Venmo flows
 * PayPal
-  * Add `PayPalRecurringBillingDetails` and `PayPalRecurringBillingPlanType` opt-in request objects. Including these details will provide transparency to users on their billing schedule, dates, and amounts, as well as launch a modernized checkout UI.
+    * Add `PayPalRecurringBillingDetails` and `PayPalRecurringBillingPlanType` opt-in request objects. Including these details will provide transparency to users on their billing schedule, dates, and amounts, as well as launch a modernized checkout UI.
+* Breaking Changes
+    * PayPal
+        * Remove `appLinkEnabled` from `PayPalRequest` as Android app links are now required
+        * Update `PayPalCreditFinancing.hasPayerAcceptance()` to `getHasPayerAcceptance()` (Java)
+        * Change `PayPalPaymentIntent` to an enum
+        * Change `PayPalLandingPageType` to an enum
+        * Change `PayPalPaymentUserAction` to an enum
+        * Update `PayPalRequest.hasUserLocationConsent()` to `getHasUserLocationConsent()` (Java)
+        * Change `PayPalLineItem.desc()` to `setDescription()`
+        * Change `PayPalLineItemKind` to an enum
+        * Rename `PayPalLineItemKind.KIND_CREDIT` to `CREDIT`
+        * Rename `PayPalLineItemKind.KIND_DEBIT` to `DEBIT`
 
 ## 5.0.0-beta1 (2024-07-23)
 
