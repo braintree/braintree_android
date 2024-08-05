@@ -39,7 +39,7 @@ class PayPalPaymentResource {
      * @return a PayPal payment resource
      * @throws JSONException when json input is invalid
      */
-    static PayPalPaymentResource fromJson(String jsonString, String linkType) throws JSONException {
+    static PayPalPaymentResource fromJson(String jsonString) throws JSONException {
         JSONObject json = new JSONObject(jsonString);
 
         PayPalPaymentResource payPalPaymentResource = new PayPalPaymentResource();
@@ -50,7 +50,7 @@ class PayPalPaymentResource {
             redirectJson = json.optJSONObject(AGREEMENT_SETUP_KEY);
             String payPalApprovalURL = Json.optString(redirectJson, PAYPAL_APP_APPROVAL_URL_KEY, "");
             
-            if (linkType.equals("universal") && !payPalApprovalURL.isEmpty()) {
+            if (!payPalApprovalURL.isEmpty()) {
                 payPalPaymentResource.redirectUrl(payPalApprovalURL);
             } else {
                 payPalPaymentResource.redirectUrl(Json.optString(redirectJson, APPROVAL_URL_KEY, ""));
