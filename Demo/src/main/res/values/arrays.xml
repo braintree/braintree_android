@@ -35,14 +35,4 @@
         <item name="login">@string/paypal_landing_page_type_login</item>
     </string-array>
 
-    <string-array name="paypal_link_types">
-        <item name="deep_link">@string/paypal_deep_link</item>
-        <item name="app_link">@string/paypal_app_link</item>
-    </string-array>
-
-    <string-array name="paypal_link_types_values">
-        <item name="deep_link">@string/paypal_deep_link</item>
-        <item name="app_link">@string/paypal_app_link</item>
-    </string-array>
-
 </resources>

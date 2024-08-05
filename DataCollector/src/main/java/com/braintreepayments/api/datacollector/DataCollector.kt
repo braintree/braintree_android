@@ -32,7 +32,8 @@ class DataCollector @VisibleForTesting internal constructor(
         )
     )
 
-    internal constructor(braintreeClient: BraintreeClient) : this(
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    constructor(braintreeClient: BraintreeClient) : this(
         braintreeClient,
         MagnesInternalClient(),
         UUIDHelper()

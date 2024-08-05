@@ -1,12 +1,27 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+
+* BraintreeCore
+  * Update `endpoint` syntax sent to FPTI for 3D Secure and Venmo flows
 * PayPal
     * Add PayPal vault edit flow (BETA)
         * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
         * Add `PayPalClient.createEditAuthRequest()` and `PayPalClient.edit()` for editing a buyers funding instrument
+* Breaking Changes
+    * PayPal
+        * Remove `appLinkEnabled` from `PayPalRequest` as Android app links are now required
+        * Update `PayPalCreditFinancing.hasPayerAcceptance()` to `getHasPayerAcceptance()` (Java)
+        * Change `PayPalPaymentIntent` to an enum
+        * Change `PayPalLandingPageType` to an enum
+        * Change `PayPalPaymentUserAction` to an enum
+        * Update `PayPalRequest.hasUserLocationConsent()` to `getHasUserLocationConsent()` (Java)
+        * Change `PayPalLineItem.desc()` to `setDescription()`
+        * Change `PayPalLineItemKind` to an enum
+        * Rename `PayPalLineItemKind.KIND_CREDIT` to `CREDIT`
+        * Rename `PayPalLineItemKind.KIND_DEBIT` to `DEBIT`
 
-## unreleased (v5)
+## 5.0.0-beta1 (2024-07-23)
 
 * Breaking Changes
     * All Modules
@@ -132,10 +147,7 @@
         * Rename `SEPADirectDebitPaymentAuthRequestCallback#onResult` to
           `SEPADirectDebitPaymentAuthRequestCallback#onSEPADirectDebitPaymentAuthResult`
     * Visa Checkout
-        * Update package name to `com.braintreepayments.api.visacheckout`
-        * Change parameters of `VisaCheckoutCreateProfileBuilderCallback` and
-          `VisaCheckoutTokenizeCallback`
-        * Add `VisaCheckoutProfileBuilderResult` and `VisaCheckoutTokenizeResult`
+        * Visa checkout is not yet available for v5
     * American Express
         * Update package name to `com.braintreepayments.api.americanexpress`
         * Change parameters of `AmericanExpressGetRewardsBalanceCallback`

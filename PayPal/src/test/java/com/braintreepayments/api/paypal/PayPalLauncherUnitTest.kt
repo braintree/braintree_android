@@ -108,7 +108,7 @@ class PayPalLauncherUnitTest {
         assertTrue(paymentAuthResult is PayPalPaymentAuthResult.Success)
         assertSame(
             browserSwitchFinalResult,
-            (paymentAuthResult as PayPalPaymentAuthResult.Success).paymentAuthInfo.browserSwitchResult
+            (paymentAuthResult as PayPalPaymentAuthResult.Success).paymentAuthInfo.browserSwitchSuccess
         )
     }
 

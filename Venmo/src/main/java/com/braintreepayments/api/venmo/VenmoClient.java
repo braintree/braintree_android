@@ -198,11 +198,11 @@ public class VenmoClient {
     }
 
     /**
-     * After successfully authenticating a Venmo user account via {@link 
+     * After successfully authenticating a Venmo user account via {@link
      * VenmoClient#createPaymentAuthRequest(Context, VenmoRequest, VenmoPaymentAuthRequestCallback)},
      * this method should be invoked to tokenize the account to retrieve a
      * {@link VenmoAccountNonce}.
-     * 
+     *
      * @param paymentAuthResult the result of {@link VenmoLauncher#handleReturnToApp(VenmoPendingRequest.Started, Intent)}
      * @param callback a {@link VenmoInternalCallback} to receive a {@link VenmoAccountNonce} or
      *                 error from Venmo tokenization
@@ -256,8 +256,18 @@ public class VenmoClient {
                             }
                         });
                     } else {
-                        VenmoAccountNonce venmoAccountNonce =
-                                new VenmoAccountNonce(paymentMethodNonce, username, false);
+                        VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(
+                            paymentMethodNonce,
+                            false,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            username,
+                            null,
+                            null
+                        );
                         callbackSuccess(callback, new VenmoResult.Success(venmoAccountNonce));
                     }
                 }
@@ -319,7 +329,7 @@ public class VenmoClient {
         braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_CANCELED, getAnalyticsParams());
         callback.onVenmoResult(VenmoResult.Cancel.INSTANCE);
     }
-    
+
     private void callbackTokenizeFailure(VenmoTokenizeCallback callback, VenmoResult venmoResult) {
         braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, getAnalyticsParams());
         callback.onVenmoResult(venmoResult);

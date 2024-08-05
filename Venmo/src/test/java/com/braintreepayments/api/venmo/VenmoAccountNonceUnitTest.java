@@ -20,8 +20,18 @@ public class VenmoAccountNonceUnitTest {
 
     private static final String NONCE = "venmo-nonce";
     private static final String USERNAME = "venmo-username";
-    private static final VenmoAccountNonce VENMO_NONCE =
-            new VenmoAccountNonce(NONCE, USERNAME, false);
+    private static final VenmoAccountNonce VENMO_NONCE = new VenmoAccountNonce(
+        NONCE,
+        false,
+        null,
+        null,
+        null,
+        null,
+        null,
+        USERNAME,
+        null,
+        null
+    );
 
     @Test
     public void fromJson_parsesResponse() throws JSONException {

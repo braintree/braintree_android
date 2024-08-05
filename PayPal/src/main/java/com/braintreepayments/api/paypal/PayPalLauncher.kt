@@ -39,13 +39,13 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
             val manifestInvalidError = createBrowserSwitchError(browserSwitchException)
             return PayPalPendingRequest.Failure(manifestInvalidError)
         }
-        val request = browserSwitchClient.start(
-            activity,
-            paymentAuthRequest.requestParams.browserSwitchOptions
-        )
-        return when (request) {
-            is BrowserSwitchStartResult.Failure -> PayPalPendingRequest.Failure(request.error)
-            is BrowserSwitchStartResult.Started -> PayPalPendingRequest.Started(request.pendingRequest)
+        return paymentAuthRequest.requestParams.browserSwitchOptions?.let { options ->
+            when (val request = browserSwitchClient.start(activity, options)) {
+                is BrowserSwitchStartResult.Failure -> PayPalPendingRequest.Failure(request.error)
+                is BrowserSwitchStartResult.Started -> PayPalPendingRequest.Started(request.pendingRequest)
+            }
+        } ?: run {
+            PayPalPendingRequest.Failure(BraintreeException("BrowserSwitchOptions is null"))
         }
     }
 

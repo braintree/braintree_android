@@ -252,6 +252,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
+      - name: Setup Java
+        uses: ./.github/actions/setup
       - name: Set GitHub User
         uses: ./.github/actions/set_github_user
       - name: Update Version
@@ -277,6 +279,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
+      - name: Setup Java
+        uses: ./.github/actions/setup
       - name: Save changelog entries to a file
         run: |
           sed -e '1,/##/d' -e '/##/,$d' CHANGELOG.md > changelog_entries.md
