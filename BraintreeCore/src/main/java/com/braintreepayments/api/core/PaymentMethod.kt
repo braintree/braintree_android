@@ -1,6 +1,6 @@
 package com.braintreepayments.api.core
 
-import android.os.Parcel
+import android.os.Parcelable
 import androidx.annotation.RestrictTo
 import org.json.JSONException
 import org.json.JSONObject
@@ -9,7 +9,12 @@ import org.json.JSONObject
  * An abstract class to extend when creating a payment method. Contains logic and
  * implementations shared by all payment methods.
  */
-abstract class PaymentMethod {
+abstract class PaymentMethod(
+    open var integration: String? = DEFAULT_INTEGRATION,
+    open var source: String? = DEFAULT_SOURCE,
+    open var sessionId: String? = null,
+    open var apiPath: String
+) : Parcelable {
 
     /**
      * @suppress
@@ -25,79 +30,20 @@ abstract class PaymentMethod {
         private const val DEFAULT_INTEGRATION = "custom"
     }
 
-    private var _sessionId: String? = null
-    private var _source: String? = DEFAULT_SOURCE
-    private var _integration: String? = DEFAULT_INTEGRATION
-
-    abstract val apiPath: String?
-
-    /**
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    constructor()
-
-    /**
-     * Sets the integration method associated with the tokenization call for analytics use.
-     * Defaults to custom and does not need to ever be set.
-     *
-     * @param integration the current integration style.
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun setIntegration(integration: String) {
-        _integration = integration
-    }
-
-    /**
-     * Sets the source associated with the tokenization call for analytics use. Set automatically.
-     *
-     * @param source the source of the payment method.
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun setSource(source: String) {
-        _source = source
-    }
-
-    /**
-     * @param sessionId sets the session id associated with this request. The session is a uuid.
-     * This field is automatically set at the point of tokenization, and any previous
-     * values ignored.
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun setSessionId(sessionId: String?) {
-        // TODO: require session id in constructor to eliminate the possibility of a null value
-        _sessionId = sessionId
-    }
-
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun buildMetadataJSON(): JSONObject {
         return MetadataBuilder()
-            .sessionId(_sessionId)
-            .source(_source)
-            .integration(_integration)
+            .sessionId(sessionId)
+            .source(source)
+            .integration(integration)
             .build()
     }
 
     @Throws(JSONException::class)
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    open fun buildJSON(): JSONObject? {
+    open fun buildJSON(): JSONObject {
         val base = JSONObject()
         base.put(MetadataBuilder.META_KEY, buildMetadataJSON())
         return base
-    }
-
-    protected constructor(parcel: Parcel) {
-        _integration = parcel.readString()
-        _source = parcel.readString()
-        _sessionId = parcel.readString()
-    }
-
-    open fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(_integration)
-        dest.writeString(_source)
-        dest.writeString(_sessionId)
     }
 }

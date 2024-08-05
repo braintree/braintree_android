@@ -30,7 +30,7 @@ class ApiClient(private val braintreeClient: BraintreeClient) {
     fun tokenizeREST(paymentMethod: PaymentMethod, callback: TokenizeCallback) =
         braintreeClient.run {
             val url = versionedPath("$PAYMENT_METHOD_ENDPOINT/${paymentMethod.apiPath}")
-            paymentMethod.setSessionId(braintreeClient.sessionId)
+            paymentMethod.sessionId = braintreeClient.sessionId
 
             sendAnalyticsEvent("card.rest.tokenization.started")
             sendPOST(
