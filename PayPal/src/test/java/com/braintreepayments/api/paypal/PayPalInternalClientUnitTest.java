@@ -592,7 +592,7 @@ public class PayPalInternalClientUnitTest {
                 .configuration(configuration)
                 .authorizationSuccess(clientToken)
                 .appLinkReturnUri(Uri.parse("https://example.com"))
-                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_PAYPAL_REDIRECT_URL)
+                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_APPROVAL_URL)
                 .build();
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
