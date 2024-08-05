@@ -83,7 +83,7 @@ class AnalyticsClientUnitTest {
         // language=JSON
         val expectedJSON = """
         {
-          "event_name": "android.sample-event-name",
+          "event_name": "sample-event-name",
           "t": 123,
           "venmo_installed": false,
           "is_vault": false,
@@ -127,7 +127,7 @@ class AnalyticsClientUnitTest {
         // language=JSON
         val expectedJSON = """
         {
-          "event_name": "android.sample-event-name",
+          "event_name": "sample-event-name",
           "paypal_context_id": "fake-paypal-context-id",
           "link_type": "fake-link-type",
           "t": 456,
@@ -470,7 +470,7 @@ class AnalyticsClientUnitTest {
               },
               "event_params": [
                 {
-                    "event_name": "android.crash",
+                    "event_name": "crash",
                     "t": 123,
                     "tenant_name": "Braintree",
                     "venmo_installed": false,

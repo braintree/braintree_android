@@ -207,7 +207,7 @@ internal class AnalyticsClient constructor(
 
     private fun mapAnalyticsEventToFPTIEventJSON(event: AnalyticsEvent): String {
         val json = JSONObject()
-            .put(FPTI_KEY_EVENT_NAME, "android.${event.name}")
+            .put(FPTI_KEY_EVENT_NAME, event.name)
             .put(FPTI_KEY_TIMESTAMP, event.timestamp)
             .put(FPTI_KEY_VENMO_INSTALLED, event.venmoInstalled)
             .put(FPTI_KEY_IS_VAULT, event.isVaultRequest)
