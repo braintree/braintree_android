@@ -5,7 +5,7 @@ package com.braintreepayments.api.core
  * Note: This enum is exposed for internal Braintree use only. Do not use.
  * It is not covered by Semantic Versioning and may change or be removed at any time.
  */
-public enum class LinkType(val stringValue: String)  {
+public enum class LinkType(val stringValue: String) {
     UNIVERSAL("universal"),
     DEEPLINK("deeplink")
 }
