@@ -21,10 +21,10 @@ import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
 import org.json.JSONObject
 
-
 /**
  * Used to tokenize PayPal accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4)
  */
+@Suppress("TooManyFunctions")
 class PayPalClient @VisibleForTesting internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient = PayPalInternalClient(braintreeClient),
