@@ -61,9 +61,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     private var launchesBrowserSwitchAsNewTask: Boolean = false
     private val deviceInspector: DeviceInspector
 
-    var isPayPalInstalled: Boolean = false
-        get() = deviceInspector.isPayPalInstalled(applicationContext)
-
     // NOTE: this constructor is used to make dependency injection easy
     internal constructor(params: BraintreeClientParams) : this(
         applicationContext = params.applicationContext,
@@ -384,6 +381,10 @@ class BraintreeClient @VisibleForTesting internal constructor(
      */
     fun launchesBrowserSwitchAsNewTask(launchesBrowserSwitchAsNewTask: Boolean) {
         this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask
+    }
+
+    fun isPayPalInstalled(): Boolean {
+        return deviceInspector.isPayPalInstalled(applicationContext)
     }
 
     private fun createAuthError(): BraintreeException {
