@@ -116,7 +116,7 @@ class PayPalInternalClient {
                                                 paymentAuthRequest
                                                         .approvalUrl(createAppSwitchUri(parsedRedirectUri).toString());
                                             } else {
-                                                callback.onResult(null, new Exception("Missing BA Token for PayPal App Switch."));
+                                                callback.onResult(null, new BraintreeException("Missing BA Token for PayPal App Switch."));
                                                 return;
                                             }
                                         } else {
