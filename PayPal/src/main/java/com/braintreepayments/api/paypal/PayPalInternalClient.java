@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 import com.braintreepayments.api.core.ApiClient;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.LinkType;
 import com.braintreepayments.api.datacollector.DataCollector;
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest;
 
@@ -64,9 +65,9 @@ class PayPalInternalClient {
                 String url = String.format("/v1/%s", endpoint);
                 String appLinkReturn = isBillingAgreement ? appLink : null;
                 
-                final String linkType = (isBillingAgreement &&
-                                        ((PayPalVaultRequest) payPalRequest).getEnablePayPalAppSwitch() &&
-                                        braintreeClient.isPayPalInstalled()) ? "universal" : "deeplink";
+                final LinkType linkType = (isBillingAgreement &&
+                                          ((PayPalVaultRequest) payPalRequest).getEnablePayPalAppSwitch() &&
+                                          braintreeClient.isPayPalInstalled()) ? LinkType.UNIVERSAL : LinkType.DEEPLINK;
 
                 String requestBody = payPalRequest.createRequestBody(
                         configuration,
@@ -85,7 +86,7 @@ class PayPalInternalClient {
                                                     .successUrl(successUrl);
 
                                     PayPalPaymentResource paypalPaymentResource =
-                                            PayPalPaymentResource.fromJson(responseBody, linkType);
+                                            PayPalPaymentResource.fromJson(responseBody);
                                     String redirectUrl =
                                             paypalPaymentResource.getRedirectUrl();
                                     if (redirectUrl != null) {
@@ -112,7 +113,7 @@ class PayPalInternalClient {
                                         paymentAuthRequest
                                                 .clientMetadataId(clientMetadataId);
 
-                                        if (linkType.equals("universal")) {
+                                        if (linkType == LinkType.UNIVERSAL) {
                                             if (pairingId != null && !pairingId.isEmpty()) {
                                                 paymentAuthRequest
                                                         .approvalUrl(createAppSwitchUri(parsedRedirectUri).toString());
