@@ -7,6 +7,8 @@ import androidx.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.core.ApiClient;
 import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.LinkType;
 import com.braintreepayments.api.datacollector.DataCollector;
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest;
 
@@ -45,8 +47,11 @@ class PayPalInternalClient {
         this.appLink = (appLinkUri != null) ? appLinkUri.toString() : null;
     }
 
-    void sendRequest(final Context context, final PayPalRequest payPalRequest,
-                     final PayPalInternalClientCallback callback) {
+    void sendRequest(
+        final Context context,
+        final PayPalRequest payPalRequest,
+        final PayPalInternalClientCallback callback
+    ) {
         braintreeClient.getConfiguration((configuration, configError) -> {
             if (configuration == null) {
                 callback.onResult(null, configError);
@@ -59,6 +64,10 @@ class PayPalInternalClient {
                         ? SETUP_BILLING_AGREEMENT_ENDPOINT : CREATE_SINGLE_PAYMENT_ENDPOINT;
                 String url = String.format("/v1/%s", endpoint);
                 String appLinkReturn = isBillingAgreement ? appLink : null;
+                
+                final LinkType linkType = (isBillingAgreement &&
+                                          ((PayPalVaultRequest) payPalRequest).getEnablePayPalAppSwitch() &&
+                                          braintreeClient.isPayPalInstalled()) ? LinkType.UNIVERSAL : LinkType.DEEPLINK;
 
                 String requestBody = payPalRequest.createRequestBody(
                         configuration,
@@ -102,8 +111,20 @@ class PayPalInternalClient {
                                         }
 
                                         paymentAuthRequest
-                                            .clientMetadataId(clientMetadataId)
-                                            .approvalUrl(parsedRedirectUri.toString());
+                                                .clientMetadataId(clientMetadataId);
+
+                                        if (linkType == LinkType.UNIVERSAL) {
+                                            if (pairingId != null && !pairingId.isEmpty()) {
+                                                paymentAuthRequest
+                                                        .approvalUrl(createAppSwitchUri(parsedRedirectUri).toString());
+                                            } else {
+                                                callback.onResult(null, new BraintreeException("Missing BA Token for PayPal App Switch."));
+                                                return;
+                                            }
+                                        } else {
+                                            paymentAuthRequest
+                                                .approvalUrl(parsedRedirectUri.toString());
+                                        }
                                     }
                                     callback.onResult(paymentAuthRequest, null);
 
@@ -135,6 +156,13 @@ class PayPalInternalClient {
                 callback.onResult(null, exception);
             }
         });
+    }
+
+    private Uri createAppSwitchUri(Uri uri) {
+        return uri.buildUpon()
+            .appendQueryParameter("source", "braintree_sdk")
+            .appendQueryParameter("switch_initiated_time", String.valueOf(System.currentTimeMillis()))
+            .build();
     }
 
     private String findPairingId(Uri redirectUri) {

@@ -383,6 +383,10 @@ class BraintreeClient @VisibleForTesting internal constructor(
         this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask
     }
 
+    fun isPayPalInstalled(): Boolean {
+        return deviceInspector.isPayPalInstalled(applicationContext)
+    }
+
     private fun createAuthError(): BraintreeException {
         val clientSDKSetupURL =
             "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization"

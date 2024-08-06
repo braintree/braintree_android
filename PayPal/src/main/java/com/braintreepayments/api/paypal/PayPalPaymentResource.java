@@ -14,6 +14,7 @@ class PayPalPaymentResource {
     private static final String REDIRECT_URL_KEY = "redirectUrl";
     private static final String AGREEMENT_SETUP_KEY = "agreementSetup";
     private static final String APPROVAL_URL_KEY = "approvalUrl";
+    private static final String PAYPAL_APP_APPROVAL_URL_KEY = "paypalAppApprovalUrl";
 
     private String redirectUrl;
 
@@ -47,7 +48,13 @@ class PayPalPaymentResource {
             payPalPaymentResource.redirectUrl(Json.optString(redirectJson, REDIRECT_URL_KEY, ""));
         } else {
             redirectJson = json.optJSONObject(AGREEMENT_SETUP_KEY);
-            payPalPaymentResource.redirectUrl(Json.optString(redirectJson, APPROVAL_URL_KEY, ""));
+            String payPalApprovalURL = Json.optString(redirectJson, PAYPAL_APP_APPROVAL_URL_KEY, "");
+            
+            if (!payPalApprovalURL.isEmpty()) {
+                payPalPaymentResource.redirectUrl(payPalApprovalURL);
+            } else {
+                payPalPaymentResource.redirectUrl(Json.optString(redirectJson, APPROVAL_URL_KEY, ""));
+            }
         }
         return payPalPaymentResource;
     }

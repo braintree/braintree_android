@@ -2189,6 +2189,27 @@ object Fixtures {
     """
 
     // language=JSON
+    const val PAYPAL_HERMES_RESPONSE_WITH_PAYPAL_REDIRECT_URL = """
+        {
+          "agreementSetup":{
+            "tokenId":"fake-ba-token",
+            "approvalUrl":"https://www.example.com/some?ba_token=fake-ba-token",
+            "paypalAppApprovalUrl":"https://paypal.com/some?ba_token=fake-ba-token"
+          }
+        }
+    """
+
+    // language=JSON
+    const val PAYPAL_HERMES_RESPONSE_WITH_APPROVAL_URL = """
+        {
+          "agreementSetup":{
+            "tokenId":"fake-ba-token",
+            "approvalUrl":"https://www.example.com/some?ba_token=fake-ba-token"
+          }
+        }
+    """
+
+    // language=JSON
     const val PAYPAL_OTC_RESPONSE = """
         {
           "client": {
