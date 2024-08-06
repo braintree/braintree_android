@@ -152,6 +152,12 @@
             android:summary="@string/paypal_address_override_summary"
             android:defaultValue="false" />
 
+        <CheckBoxPreference
+            android:key="paypal_rba_metadata"
+            android:title="@string/paypal_rba_metadata"
+            android:summary="@string/paypal_rba_metadata_summary"
+            android:defaultValue="false" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

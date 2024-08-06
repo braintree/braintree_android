@@ -10,7 +10,8 @@ import org.json.JSONObject
  *
  * @property totalAmount
  * @property billingCycles A list of billing cycles for trial billing and regular billing. A plan
- * can have at most two trial cycles and only one regular cycle.
+ * can have at most two trial cycles and only one regular cycle. Exceeding 3 items in this array
+ * results in an error.
  * @property currencyISOCode The three-character ISO-4217 currency code that identifies the
  * currency.
  * @property productName The name of the plan to display at checkout.

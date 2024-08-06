@@ -21,7 +21,7 @@ import org.json.JSONObject
  * example, sequence 1 could be a 3 month trial period, and sequence 2 could be a longer term full
  * rater cycle. Max value 100. All billing cycles should have unique sequence values.
  * @property startDate The date and time when the billing cycle starts, in Internet date and time
- * format `YYYY-MM-DDT00:00:00Z`. If not provided the billing cycle starts at the time of checkout.
+ * format `YYYY-MM-DD`. If not provided the billing cycle starts at the time of checkout.
  * If provided and the merchant wants the billing cycle to start at the time of checkout, provide
  * the current time. Otherwise the [startDate] can be in future.
  * @property isTrial The tenure type of the billing cycle. In case of a plan having trial cycle,
