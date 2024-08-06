@@ -96,11 +96,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
         )
     )
 
-    /**
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    constructor(options: BraintreeOptions) : this(BraintreeClientParams(options))
+    internal constructor(options: BraintreeOptions) : this(BraintreeClientParams(options))
 
     internal constructor(
         context: Context,

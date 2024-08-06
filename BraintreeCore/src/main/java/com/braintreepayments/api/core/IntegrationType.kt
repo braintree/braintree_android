@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy
  * @suppress
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-object IntegrationType {
+internal object IntegrationType {
     const val CUSTOM = "custom"
     const val DROP_IN = "dropin"
 

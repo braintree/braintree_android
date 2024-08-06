@@ -5,7 +5,7 @@ import android.text.TextUtils
 import android.os.Parcelable
 
 /**
- * Java object representing a postal address
+ * Object representing a postal address
  */
 @Parcelize
 data class PostalAddress(

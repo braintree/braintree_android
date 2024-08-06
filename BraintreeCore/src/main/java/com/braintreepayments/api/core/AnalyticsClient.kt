@@ -7,7 +7,6 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import com.braintreepayments.api.core.AnalyticsDatabase.Companion.getInstance
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -15,7 +14,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Suppress("SwallowedException", "TooGenericExceptionCaught")
-internal class AnalyticsClient constructor(
+internal class AnalyticsClient(
     context: Context,
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
     private val analyticsDatabase: AnalyticsDatabase = AnalyticsDatabase.getInstance(context.applicationContext),
