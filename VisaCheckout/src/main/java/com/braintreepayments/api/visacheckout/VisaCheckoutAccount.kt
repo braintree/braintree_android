@@ -2,6 +2,8 @@ package com.braintreepayments.api.visacheckout
 
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.PaymentMethod
+import com.braintreepayments.api.core.PaymentMethod.Companion.DEFAULT_INTEGRATION
+import com.braintreepayments.api.core.PaymentMethod.Companion.DEFAULT_SOURCE
 import com.visa.checkout.VisaPaymentSummary
 import org.json.JSONException
 import org.json.JSONObject
@@ -10,19 +12,22 @@ import org.json.JSONObject
  * Use to construct a Visa Checkout tokenization request.
  */
 internal class VisaCheckoutAccount(
-    private val visaPaymentSummary: VisaPaymentSummary
-) : PaymentMethod() {
+    private val visaPaymentSummary: VisaPaymentSummary,
+    override var sessionId: String? = null,
+    override var source: String? = DEFAULT_SOURCE,
+    override var integration: String? = DEFAULT_INTEGRATION
+) : PaymentMethod {
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @Throws(JSONException::class)
-    override fun buildJSON(): JSONObject? {
+    override fun buildJSON(): JSONObject {
         val json = super.buildJSON()
         val paymentMethodNonceJson = JSONObject().apply {
             put(CALL_ID, visaPaymentSummary.callId)
             put(ENCRYPTED_KEY, visaPaymentSummary.encKey)
             put(ENCRYPTED_PAYMENT_DATA, visaPaymentSummary.encPaymentData)
         }
-        json?.put(VISA_CHECKOUT_KEY, paymentMethodNonceJson)
+        json.put(VISA_CHECKOUT_KEY, paymentMethodNonceJson)
         return json
     }
 

@@ -1,7 +1,6 @@
 package com.braintreepayments.api.card;
 
 import static com.braintreepayments.api.testutils.Assertions.assertBinDataEqual;
-import static com.braintreepayments.api.card.BinData.UNKNOWN;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 
@@ -23,12 +22,12 @@ public class BinDataUnitTest {
         BinData binData = BinData.fromJson(new JSONObject("{}"));
 
         assertNotNull(binData);
-        assertEquals(UNKNOWN, binData.getPrepaid());
-        assertEquals(UNKNOWN, binData.getHealthcare());
-        assertEquals(UNKNOWN, binData.getDebit());
-        assertEquals(UNKNOWN, binData.getDurbinRegulated());
-        assertEquals(UNKNOWN, binData.getCommercial());
-        assertEquals(UNKNOWN, binData.getPayroll());
+        assertEquals(BinData.BinType.Unknown, binData.getPrepaid());
+        assertEquals(BinData.BinType.Unknown, binData.getHealthcare());
+        assertEquals(BinData.BinType.Unknown, binData.getDebit());
+        assertEquals(BinData.BinType.Unknown, binData.getDurbinRegulated());
+        assertEquals(BinData.BinType.Unknown, binData.getCommercial());
+        assertEquals(BinData.BinType.Unknown, binData.getPayroll());
         assertEquals("", binData.getIssuingBank());
         assertEquals("", binData.getCountryOfIssuance());
         assertEquals("", binData.getProductId());
@@ -39,12 +38,12 @@ public class BinDataUnitTest {
         BinData binData = BinData.fromJson(new JSONObject());
 
         assertNotNull(binData);
-        assertEquals(UNKNOWN, binData.getPrepaid());
-        assertEquals(UNKNOWN, binData.getHealthcare());
-        assertEquals(UNKNOWN, binData.getDebit());
-        assertEquals(UNKNOWN, binData.getDurbinRegulated());
-        assertEquals(UNKNOWN, binData.getCommercial());
-        assertEquals(UNKNOWN, binData.getPayroll());
+        assertEquals(BinData.BinType.Unknown, binData.getPrepaid());
+        assertEquals(BinData.BinType.Unknown, binData.getHealthcare());
+        assertEquals(BinData.BinType.Unknown, binData.getDebit());
+        assertEquals(BinData.BinType.Unknown, binData.getDurbinRegulated());
+        assertEquals(BinData.BinType.Unknown, binData.getCommercial());
+        assertEquals(BinData.BinType.Unknown, binData.getPayroll());
         assertEquals("", binData.getIssuingBank());
         assertEquals("", binData.getCountryOfIssuance());
         assertEquals("", binData.getProductId());
@@ -58,9 +57,9 @@ public class BinDataUnitTest {
                 .put("productId", JSONObject.NULL);
 
         BinData binData = BinData.fromJson(jsonObject);
-        assertEquals(UNKNOWN, binData.getIssuingBank());
-        assertEquals(UNKNOWN, binData.getCountryOfIssuance());
-        assertEquals(UNKNOWN, binData.getProductId());
+        assertEquals(BinData.BinType.Unknown.name(), binData.getIssuingBank());
+        assertEquals(BinData.BinType.Unknown.name(), binData.getCountryOfIssuance());
+        assertEquals(BinData.BinType.Unknown.name(), binData.getProductId());
     }
 
     @Test

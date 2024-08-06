@@ -15,10 +15,10 @@ import org.json.JSONObject
  * Used to tokenize credit or debit cards using a [Card]. For more information see the
  * [documentation](https://developer.paypal.com/braintree/docs/guides/credit-cards/overview)
  */
-class CardClient {
-
-    private val braintreeClient: BraintreeClient
+class CardClient @VisibleForTesting internal constructor(
+    private val braintreeClient: BraintreeClient,
     private val apiClient: ApiClient
+){
 
     /**
      * Initializes a new [CardClient] instance
@@ -38,15 +38,6 @@ class CardClient {
         braintreeClient,
         ApiClient(braintreeClient)
     )
-
-    @VisibleForTesting
-    internal constructor(
-        braintreeClient: BraintreeClient,
-        apiClient: ApiClient
-    ) {
-        this.braintreeClient = braintreeClient
-        this.apiClient = apiClient
-    }
 
     /**
      * Create a [CardNonce].
@@ -82,9 +73,11 @@ class CardClient {
                 return@getConfiguration
             }
             val shouldTokenizeViaGraphQL =
-                configuration!!.isGraphQLFeatureEnabled(
+                configuration?.isGraphQLFeatureEnabled(
                     GraphQLConstants.Features.TOKENIZE_CREDIT_CARDS
-                )
+                ) ?: run {
+                    false
+                }
             if (shouldTokenizeViaGraphQL) {
                 card.sessionId = braintreeClient.sessionId
                 try {

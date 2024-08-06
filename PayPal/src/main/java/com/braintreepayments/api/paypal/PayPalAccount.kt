@@ -1,6 +1,10 @@
 package com.braintreepayments.api.paypal
 
 import com.braintreepayments.api.core.PaymentMethod
+import com.braintreepayments.api.core.PaymentMethod.Companion.DEFAULT_INTEGRATION
+import com.braintreepayments.api.core.PaymentMethod.Companion.DEFAULT_SOURCE
+import com.braintreepayments.api.core.PaymentMethod.Companion.OPTIONS_KEY
+import com.braintreepayments.api.core.PaymentMethod.Companion.VALIDATE_KEY
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -18,16 +22,19 @@ import org.json.JSONObject
  * @property paymentType Payment type from original PayPal request. Either "billing-agreement" or
  * "single-payment"
  */
-internal data class PayPalAccount(
+data class PayPalAccount(
     val clientMetadataId: String?,
     val urlResponseData: JSONObject,
     val intent: PayPalPaymentIntent?,
     val merchantAccountId: String?,
-    val paymentType: String?
-) : PaymentMethod() {
+    val paymentType: String?,
+    override var sessionId: String? = null,
+    override var source: String? = DEFAULT_SOURCE,
+    override var integration: String? = DEFAULT_INTEGRATION
+) : PaymentMethod {
 
     @Throws(JSONException::class)
-    override fun buildJSON(): JSONObject? {
+    override fun buildJSON(): JSONObject {
         val json = super.buildJSON()
 
         val paymentMethodNonceJson = JSONObject()

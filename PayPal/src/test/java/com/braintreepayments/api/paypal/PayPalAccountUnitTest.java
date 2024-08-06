@@ -23,7 +23,10 @@ public class PayPalAccountUnitTest {
             new JSONObject(),
             PayPalPaymentIntent.SALE,
             "alt_merchant_account_id",
-            "single-payment"
+            "single-payment",
+                "session_id",
+                "form",
+                "custom"
         );
         sut.setSource("paypal-sdk");
 
@@ -47,7 +50,10 @@ public class PayPalAccountUnitTest {
             new JSONObject(),
             PayPalPaymentIntent.SALE,
             "alt_merchant_account_id",
-            "single-payment"
+            "single-payment",
+                "session_id",
+                "form",
+                "custom"
         );
         sut.setSource("paypal-app");
 
@@ -65,7 +71,10 @@ public class PayPalAccountUnitTest {
             new JSONObject(),
             PayPalPaymentIntent.SALE,
             "alt_merchant_account_id",
-            "single-payment"
+            "single-payment",
+                "session_id",
+                "form",
+                "custom"
         );
         sut.setIntegration("test-integration");
 
@@ -83,7 +92,10 @@ public class PayPalAccountUnitTest {
             new JSONObject(),
             PayPalPaymentIntent.SALE,
             "alt_merchant_account_id",
-            "single-payment"
+            "single-payment",
+                "session_id",
+                "form",
+                "custom"
         );
 
         JSONObject json = sut.buildJSON();
@@ -100,7 +112,10 @@ public class PayPalAccountUnitTest {
             new JSONObject(),
             PayPalPaymentIntent.SALE,
             "alt_merchant_account_id",
-            "billing-agreement"
+            "billing-agreement",
+                "session_id",
+                "form",
+                "custom"
         );
 
         JSONObject json = sut.buildJSON();
@@ -116,7 +131,10 @@ public class PayPalAccountUnitTest {
             new JSONObject(),
             null,
             null,
-            null
+            null,
+                null,
+                null,
+                null
         );
 
         JSONObject json = sut.buildJSON();
@@ -137,7 +155,10 @@ public class PayPalAccountUnitTest {
             urlResponseData,
             null,
             null,
-            null
+            null,
+                null,
+                null,
+                null
         );
 
         JSONObject json = sut.buildJSON();
@@ -158,7 +179,10 @@ public class PayPalAccountUnitTest {
             new JSONObject(),
             null,
             null,
-            null
+            null,
+                null,
+                null,
+                null
         );
 
         JSONObject jsonObject = sut.buildJSON();

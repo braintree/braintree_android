@@ -45,7 +45,7 @@ class ApiClientUnitTest {
         sut.tokenizeREST(card, tokenizeCallback)
 
         verifyOrder {
-            card.setSessionId("session-id")
+            card.sessionId = "session-id"
             braintreeClient.sendPOST(any(), any(), any(), any())
         }
 

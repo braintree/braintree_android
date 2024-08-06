@@ -5,6 +5,13 @@ import com.braintreepayments.api.sharedutils.Json
 import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
 
+/**
+ *
+ * @property regulationEnvironment for the associated nonce to help determine the need for 3D Secure.
+ *
+ * @see <a href="https://developer.paypal.com/braintree/docs/guides/3d-secure/advanced-options/android/v4#authentication-insight">Documentation</a>
+ * for possible values.
+ */
 @Parcelize
 data class AuthenticationInsight(val regulationEnvironment: String) : Parcelable {
 

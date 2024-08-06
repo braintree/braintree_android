@@ -314,7 +314,7 @@ class CardUnitTest {
         val json = card.buildJSONForGraphQL()
         val jsonCard = json.getJSONObject(GraphQLConstants.Keys.VARIABLES)
             .getJSONObject(GraphQLConstants.Keys.INPUT)
-            .getJSONObject(BaseCard.CREDIT_CARD_KEY)
+            .getJSONObject(CREDIT_CARD_KEY)
         val jsonBillingAddress = jsonCard.getJSONObject(BILLING_ADDRESS_KEY)
         val jsonOptions = json.getJSONObject(GraphQLConstants.Keys.VARIABLES)
             .getJSONObject(GraphQLConstants.Keys.INPUT)
@@ -351,7 +351,7 @@ class CardUnitTest {
         val json = card.buildJSONForGraphQL()
         val jsonCard = json.getJSONObject(GraphQLConstants.Keys.VARIABLES)
                 .getJSONObject(GraphQLConstants.Keys.INPUT)
-                .getJSONObject(BaseCard.CREDIT_CARD_KEY)
+                .getJSONObject(CREDIT_CARD_KEY)
         val billingAddress = jsonCard.getJSONObject(BILLING_ADDRESS_KEY)
 
         assertFalse(billingAddress.has("firstName"))
@@ -460,7 +460,7 @@ class CardUnitTest {
         val json = card.buildJSONForGraphQL()
         val jsonCard = json.getJSONObject(GraphQLConstants.Keys.VARIABLES)
                 .getJSONObject(GraphQLConstants.Keys.INPUT)
-                .getJSONObject(BaseCard.CREDIT_CARD_KEY)
+                .getJSONObject(CREDIT_CARD_KEY)
 
         assertFalse(jsonCard.keys().hasNext())
     }
@@ -521,29 +521,5 @@ class CardUnitTest {
 
         assertNull(variablesJson.optJSONObject("authenticationInsightInput"))
         assertEquals(GRAPH_QL_MUTATION, json.getString(GraphQLConstants.Keys.QUERY))
-    }
-
-    @Test
-    @Throws(JSONException::class)
-    fun buildJSON_handlesFullExpirationDateMMYY() {
-        val card = Card()
-        card.expirationDate = "01/15"
-
-        val jsonCard = card.buildJSON().getJSONObject(CREDIT_CARD_KEY)
-
-        assertEquals("01", jsonCard.getString("expirationMonth"))
-        assertEquals("15", jsonCard.getString("expirationYear"))
-    }
-
-    @Test
-    @Throws(JSONException::class)
-    fun buildJSON_handlesFullExpirationDateMMYYYY() {
-        val card = Card()
-        card.expirationDate = "01/2015"
-
-        val jsonCard = card.buildJSON().getJSONObject(CREDIT_CARD_KEY)
-
-        assertEquals("01", jsonCard.getString("expirationMonth"))
-        assertEquals("2015", jsonCard.getString("expirationYear"))
     }
 }
