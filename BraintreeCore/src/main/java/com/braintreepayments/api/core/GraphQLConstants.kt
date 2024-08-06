@@ -20,7 +20,6 @@ object GraphQLConstants {
         const val LEGACY_CODE = "legacyCode"
         const val URL = "url"
         const val FEATURES = "features"
-        const val OPERATION_NAME = "operationName"
     }
 
     object ErrorTypes {

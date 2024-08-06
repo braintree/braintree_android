@@ -8,19 +8,20 @@ import org.robolectric.RobolectricTestRunner;
 
 import static junit.framework.Assert.assertEquals;
 
-import com.braintreepayments.api.paypal.PayPalLineItem;
-
 @RunWith(RobolectricTestRunner.class)
 public class PayPalLineItemUnitTest {
 
     @Test
     public void toJson_setsKeysAndValues() throws JSONException {
-        PayPalLineItem item = new PayPalLineItem(PayPalLineItem.KIND_DEBIT, "An Item", "1", "2");
+        PayPalLineItem item = new PayPalLineItem(PayPalLineItemKind.DEBIT,
+            "An Item",
+            "1",
+            "2");
         item.setDescription("A new item");
         item.setImageUrl("http://example.com/image.jpg");
         item.setProductCode("abc-123");
         item.setUnitTaxAmount("1.50");
-        item.setUpcType(PayPalLineItem.UPC_TYPE_2);
+        item.setUpcType(PayPalLineItemUpcType.UPC_TYPE_2);
         item.setUpcCode("upc-code");
         item.setUrl("http://example.com");
 

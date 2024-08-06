@@ -1,5 +1,21 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+* BraintreeCore
+  * Update `endpoint` syntax sent to FPTI for 3D Secure and Venmo flows
+* Breaking Changes
+    * PayPal
+        * Remove `appLinkEnabled` from `PayPalRequest` as Android app links are now required
+        * Update `PayPalCreditFinancing.hasPayerAcceptance()` to `getHasPayerAcceptance()` (Java)
+        * Change `PayPalPaymentIntent` to an enum
+        * Change `PayPalLandingPageType` to an enum
+        * Change `PayPalPaymentUserAction` to an enum
+        * Update `PayPalRequest.hasUserLocationConsent()` to `getHasUserLocationConsent()` (Java)
+        * Change `PayPalLineItem.desc()` to `setDescription()`
+        * Change `PayPalLineItemKind` to an enum
+        * Rename `PayPalLineItemKind.KIND_CREDIT` to `CREDIT`
+        * Rename `PayPalLineItemKind.KIND_DEBIT` to `DEBIT`
+
 ## 5.0.0-beta1 (2024-07-23)
 
 * Breaking Changes
