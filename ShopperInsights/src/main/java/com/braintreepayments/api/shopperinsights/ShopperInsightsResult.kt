@@ -1,6 +1,6 @@
 package com.braintreepayments.api.shopperinsights
 
-import com.braintreepayments.api.ExperimentalBetaApi
+import com.braintreepayments.api.core.ExperimentalBetaApi
 
 /**
  * The result object returned when insights about a shopper is requested.
