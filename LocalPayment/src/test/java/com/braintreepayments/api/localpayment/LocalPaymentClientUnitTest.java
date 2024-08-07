@@ -434,7 +434,7 @@ public class LocalPaymentClientUnitTest {
         assertTrue(paymentAuthRequest instanceof LocalPaymentAuthRequest.ReadyToLaunch);
         LocalPaymentAuthRequestParams params = ((LocalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams();
         BrowserSwitchOptions browserSwitchOptions = params.getBrowserSwitchOptions();
-        assertEquals(BraintreeRequestCodes.LOCAL_PAYMENT, browserSwitchOptions.getRequestCode());
+        assertEquals(BraintreeRequestCodes.LOCAL_PAYMENT.getCode(), browserSwitchOptions.getRequestCode());
         assertEquals(Uri.parse("https://sample.com/approval?token=sample-token"),
             browserSwitchOptions.getUrl());
         assertFalse(browserSwitchOptions.isLaunchAsNewTask());

@@ -155,7 +155,7 @@ public class VenmoClientUnitTest {
         VenmoPaymentAuthRequestParams params = ((VenmoPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams();
 
         BrowserSwitchOptions browserSwitchOptions = params.getBrowserSwitchOptions();
-        assertEquals(BraintreeRequestCodes.VENMO, browserSwitchOptions.getRequestCode());
+        assertEquals(BraintreeRequestCodes.VENMO.getCode(), browserSwitchOptions.getRequestCode());
         assertEquals("com.example", browserSwitchOptions.getReturnUrlScheme());
 
         Uri url = browserSwitchOptions.getUrl();
