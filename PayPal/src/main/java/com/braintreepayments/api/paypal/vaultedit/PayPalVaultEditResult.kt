@@ -9,7 +9,8 @@ sealed class PayPalVaultEditResult {
     /**
      * The PayPal vault edit flow completed successfully.
      *
-     * @property clientMetadataId client metadata id
+     * @property clientMetadataId This ID is used to link subsequent retry attempts if payment is
+     * declined.
      * @property payerId ID of the payer
      * @property email email address of the payer
      * @property firstName first name of the payer
