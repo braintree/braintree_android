@@ -69,7 +69,7 @@ data class Card(
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun buildMetadataJSON(): JSONObject {
+    private fun buildMetadataJSON(): JSONObject {
         return MetadataBuilder()
             .sessionId(sessionId)
             .source(source)
