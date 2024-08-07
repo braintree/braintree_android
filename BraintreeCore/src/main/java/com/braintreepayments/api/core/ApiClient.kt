@@ -12,13 +12,10 @@ class ApiClient(private val braintreeClient: BraintreeClient) {
 
     fun tokenizeGraphQL(tokenizePayload: JSONObject, callback: TokenizeCallback) =
         braintreeClient.run {
-            sendAnalyticsEvent("card.graphql.tokenization.started")
             sendGraphQLPOST(tokenizePayload) { responseBody, httpError ->
                 parseResponseToJSON(responseBody)?.let { json ->
-                    sendAnalyticsEvent("card.graphql.tokenization.success")
                     callback.onResult(json, null)
                 } ?: httpError?.let { error ->
-                    sendAnalyticsEvent("card.graphql.tokenization.failure")
                     callback.onResult(null, error)
                 }
             }
@@ -29,16 +26,13 @@ class ApiClient(private val braintreeClient: BraintreeClient) {
             val url = versionedPath("$PAYMENT_METHOD_ENDPOINT/${paymentMethod.apiPath}")
             paymentMethod.setSessionId(braintreeClient.sessionId)
 
-            sendAnalyticsEvent("card.rest.tokenization.started")
             sendPOST(
                 url = url,
                 data = paymentMethod.buildJSON().toString(),
             ) { responseBody, httpError ->
                 parseResponseToJSON(responseBody)?.let { json ->
-                    sendAnalyticsEvent("card.rest.tokenization.success")
                     callback.onResult(json, null)
                 } ?: httpError?.let { error ->
-                    sendAnalyticsEvent("card.rest.tokenization.failure")
                     callback.onResult(null, error)
                 }
             }
