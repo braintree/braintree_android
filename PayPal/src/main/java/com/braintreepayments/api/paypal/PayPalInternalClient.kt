@@ -42,6 +42,10 @@ internal class PayPalInternalClient(
                 val url = "/v1/$endpoint"
                 val appLinkReturn = if (isBillingAgreement) appLink else null
 
+                if (isBillingAgreement) {
+                    (payPalRequest as PayPalVaultRequest).enablePayPalAppSwitch = braintreeClient.isPayPalInstalled()
+                }
+
                 val requestBody = payPalRequest.createRequestBody(
                     configuration = configuration,
                     authorization = braintreeClient.authorization,
