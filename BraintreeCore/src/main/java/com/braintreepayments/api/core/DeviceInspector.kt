@@ -18,7 +18,7 @@ internal class DeviceInspector(
         context: Context?,
         configuration: Configuration?,
         sessionId: String?,
-        integration: String?
+        integration: IntegrationType?
     ): DeviceMetadata {
         return DeviceMetadata(
             appId = context?.packageName,

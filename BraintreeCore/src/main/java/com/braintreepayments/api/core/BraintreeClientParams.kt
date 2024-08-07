@@ -3,7 +3,6 @@ package com.braintreepayments.api.core
 import android.content.Context
 import android.net.Uri
 import com.braintreepayments.api.BrowserSwitchClient
-import com.braintreepayments.api.core.IntegrationType.Integration
 import com.braintreepayments.api.sharedutils.ManifestValidator
 
 internal data class BraintreeClientParams(
@@ -19,7 +18,7 @@ internal data class BraintreeClientParams(
     val manifestValidator: ManifestValidator = ManifestValidator(),
     val uuidHelper: UUIDHelper = UUIDHelper(),
     val configurationLoader: ConfigurationLoader = ConfigurationLoader(context, httpClient),
-    @Integration val integrationType: String,
+    val integrationType: IntegrationType,
 ) {
 
     constructor(options: BraintreeOptions) : this(

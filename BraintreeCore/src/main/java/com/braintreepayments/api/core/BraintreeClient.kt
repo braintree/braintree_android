@@ -5,7 +5,6 @@ import android.content.pm.ActivityInfo
 import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
-import com.braintreepayments.api.core.IntegrationType.Integration
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
@@ -29,7 +28,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val integrationType: String,
+    val integrationType: IntegrationType,
 
     /**
      * @suppress
@@ -102,7 +101,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
         context: Context,
         authorization: Authorization,
         sessionId: String?,
-        @Integration integrationType: String
+        integrationType: IntegrationType
     ) : this(
         BraintreeOptions(
             context = context,

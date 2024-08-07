@@ -4,6 +4,7 @@ import android.os.Parcel
 import com.braintreepayments.api.testutils.CardNumber.VISA
 import com.braintreepayments.api.core.GraphQLConstants
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.IntegrationType
 import com.braintreepayments.api.core.MetadataBuilder
 import com.braintreepayments.api.core.PaymentMethod
 import junit.framework.TestCase.assertEquals
@@ -98,7 +99,7 @@ class CardUnitTest {
         card.shouldValidate = true
         card.merchantAccountId = "merchant-account-id"
         card.isAuthenticationInsightRequested = true
-        card.setIntegration("test-integration")
+        card.setIntegration(IntegrationType.CUSTOM)
         card.setSource("test-source")
         card.setSessionId("test-session-id")
 
@@ -130,7 +131,7 @@ class CardUnitTest {
         assertEquals("Some Region", jsonBillingAddress?.getString("region"))
         assertEquals("USA", jsonBillingAddress?.getString("countryCodeAlpha3"))
 
-        assertEquals("test-integration", jsonMetadata?.getString("integration"))
+        assertEquals(IntegrationType.CUSTOM.stringValue, jsonMetadata?.getString("integration"))
         assertEquals("test-source", jsonMetadata?.getString("source"))
         assertEquals("test-session-id", jsonMetadata?.getString("sessionId"))
     }
@@ -202,11 +203,11 @@ class CardUnitTest {
     @Throws(JSONException::class)
     fun buildJSON_setsIntegrationMethod() {
         val card = Card()
-        card.setIntegration("test-integration")
+        card.setIntegration(IntegrationType.CUSTOM)
 
         val metadata = card.buildJSON()?.getJSONObject(MetadataBuilder.META_KEY)
 
-        assertEquals("test-integration", metadata?.getString("integration"))
+        assertEquals(IntegrationType.CUSTOM.stringValue, metadata?.getString("integration"))
     }
 
     @Test
@@ -311,7 +312,7 @@ class CardUnitTest {
         card.shouldValidate = true
         card.merchantAccountId = "merchant-account-id"
         card.isAuthenticationInsightRequested = true
-        card.setIntegration("test-integration")
+        card.setIntegration(IntegrationType.CUSTOM)
         card.setSource("test-source")
         card.setSessionId("test-session-id")
 
@@ -342,7 +343,7 @@ class CardUnitTest {
         assertEquals("12345", jsonBillingAddress.getString("postalCode"))
         assertEquals("Some Region", jsonBillingAddress.getString("region"))
         assertEquals("USA", jsonBillingAddress.getString("countryCode"))
-        assertEquals("test-integration", jsonMetadata.getString("integration"))
+        assertEquals(IntegrationType.CUSTOM.stringValue, jsonMetadata.getString("integration"))
         assertEquals("test-source", jsonMetadata.getString("source"))
         assertEquals("test-session-id", jsonMetadata.getString("sessionId"))
     }
@@ -412,11 +413,11 @@ class CardUnitTest {
     @Throws(Exception::class)
     fun buildJSONForGraphQL_setsIntegrationMethod() {
         val card = Card()
-        card.setIntegration("test-integration")
+        card.setIntegration(IntegrationType.CUSTOM)
 
         val json = card.buildJSONForGraphQL()
 
-        assertEquals("test-integration",
+        assertEquals(IntegrationType.CUSTOM.stringValue,
             json.getJSONObject("clientSdkMetadata").getString("integration"))
     }
 
@@ -595,7 +596,7 @@ class CardUnitTest {
         card.shouldValidate = true
         card.merchantAccountId = "merchant-account-id"
         card.isAuthenticationInsightRequested = true
-        card.setIntegration("test-integration")
+        card.setIntegration(IntegrationType.CUSTOM)
         card.setSource("test-source")
         card.setSessionId("test-session-id")
 

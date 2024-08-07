@@ -27,7 +27,7 @@ internal class AnalyticsClient(
         configuration: Configuration,
         event: AnalyticsEvent,
         sessionId: String?,
-        integration: String?,
+        integration: IntegrationType?,
         authorization: Authorization
     ): UUID {
         scheduleAnalyticsWriteInBackground(event, authorization)
@@ -73,13 +73,13 @@ internal class AnalyticsClient(
         configuration: Configuration,
         authorization: Authorization,
         sessionId: String?,
-        integration: String?
+        integration: IntegrationType?
     ): UUID {
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
             .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
-            .putString(WORK_INPUT_KEY_INTEGRATION, integration)
+            .putString(WORK_INPUT_KEY_INTEGRATION, integration?.stringValue)
             .build()
 
         val analyticsWorkRequest = OneTimeWorkRequest.Builder(AnalyticsUploadWorker::class.java)
@@ -110,7 +110,7 @@ internal class AnalyticsClient(
                         applicationContext,
                         configuration,
                         sessionId,
-                        integration
+                        IntegrationType.fromString(integration)
                     )
                     val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
                     httpClient.post(
@@ -132,7 +132,7 @@ internal class AnalyticsClient(
         context: Context?,
         configuration: Configuration?,
         sessionId: String?,
-        integration: String?,
+        integration: IntegrationType?,
         authorization: Authorization?
     ) {
         reportCrash(
@@ -150,7 +150,7 @@ internal class AnalyticsClient(
         context: Context?,
         configuration: Configuration?,
         sessionId: String?,
-        integration: String?,
+        integration: IntegrationType?,
         timestamp: Long,
         authorization: Authorization?
     ) {

@@ -14,7 +14,7 @@ internal class DeviceMetadata(
     private val dropInSDKVersion: String? = null,
     private val environment: String? = null,
     private val eventSource: String? = null,
-    private val integrationType: String? = null,
+    private val integrationType: IntegrationType? = null,
     private val isSimulator: Boolean = false,
     private val merchantAppVersion: String? = null,
     private val merchantId: String? = null,
@@ -35,7 +35,7 @@ internal class DeviceMetadata(
             .put(DROP_IN_SDK_VERSION, dropInSDKVersion)
             .put(EVENT_SOURCE_KEY, eventSource)
             .put(ENVIRONMENT_KEY, environment)
-            .put(INTEGRATION_TYPE_KEY, integrationType)
+            .put(INTEGRATION_TYPE_KEY, integrationType?.stringValue)
             .put(IS_SIMULATOR_KEY, isSimulator)
             .put(MERCHANT_APP_VERSION_KEY, merchantAppVersion)
             .put(MERCHANT_ID_KEY, merchantId)

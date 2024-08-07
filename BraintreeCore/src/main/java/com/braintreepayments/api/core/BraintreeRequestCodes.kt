@@ -1,8 +1,12 @@
 package com.braintreepayments.api.core
 
+import androidx.annotation.RestrictTo
+
 /**
  * Request codes that Braintree uses when communicating between Android Activities and Fragments.
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+@Suppress("MagicNumber")
 enum class BraintreeRequestCodes(val code: Int) {
     THREE_D_SECURE(13487),
     VENMO(13488),
