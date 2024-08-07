@@ -204,14 +204,6 @@ public class Settings {
         return getPreferences(context).getBoolean("paypal_address_override", true);
     }
 
-    public static boolean useHardcodedPayPalConfiguration(Context context) {
-        return getPreferences(context).getBoolean("paypal_use_hardcoded_configuration", false);
-    }
-
-    public static String getPayPalLinkType(Context context) {
-        return getPreferences(context).getString("paypal_link_type", context.getString(R.string.paypal_deep_link));
-    }
-
     public static boolean isThreeDSecureEnabled(Context context) {
         return getPreferences(context).getBoolean("enable_three_d_secure", false);
     }

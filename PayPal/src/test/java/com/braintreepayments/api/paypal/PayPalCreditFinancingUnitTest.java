@@ -25,7 +25,7 @@ public class PayPalCreditFinancingUnitTest {
         assertNotNull(payPalCreditFinancing);
         assertFalse(payPalCreditFinancing.isCardAmountImmutable());
         assertEquals(0, payPalCreditFinancing.getTerm());
-        assertFalse(payPalCreditFinancing.hasPayerAcceptance());
+        assertFalse(payPalCreditFinancing.getHasPayerAcceptance());
         assertNull(payPalCreditFinancing.getMonthlyPayment());
         assertNull(payPalCreditFinancing.getTotalCost());
         assertNull(payPalCreditFinancing.getTotalInterest());
@@ -44,7 +44,7 @@ public class PayPalCreditFinancingUnitTest {
 
         assertFalse(payPalCreditFinancing.isCardAmountImmutable());
         assertEquals(18, payPalCreditFinancing.getTerm());
-        assertTrue(payPalCreditFinancing.hasPayerAcceptance());
+        assertTrue(payPalCreditFinancing.getHasPayerAcceptance());
         assertEquals("USD", payPalCreditFinancing.getMonthlyPayment().getCurrency());
         assertEquals("USD", payPalCreditFinancing.getTotalCost().getCurrency());
         assertEquals("USD", payPalCreditFinancing.getTotalInterest().getCurrency());
@@ -63,7 +63,7 @@ public class PayPalCreditFinancingUnitTest {
 
         assertFalse(payPalCreditFinancing.isCardAmountImmutable());
         assertEquals(18, payPalCreditFinancing.getTerm());
-        assertFalse(payPalCreditFinancing.hasPayerAcceptance());
+        assertFalse(payPalCreditFinancing.getHasPayerAcceptance());
         assertNull(payPalCreditFinancing.getMonthlyPayment().getCurrency());
         assertNull(payPalCreditFinancing.getTotalCost().getCurrency());
         assertNull(payPalCreditFinancing.getTotalInterest().getCurrency());
@@ -92,7 +92,7 @@ public class PayPalCreditFinancingUnitTest {
         assertNotNull(payPalCreditFinancing);
         assertFalse(payPalCreditFinancing.isCardAmountImmutable());
         assertEquals(18, payPalCreditFinancing.getTerm());
-        assertTrue(payPalCreditFinancing.hasPayerAcceptance());
+        assertTrue(payPalCreditFinancing.getHasPayerAcceptance());
         assertEquals("USD", payPalCreditFinancing.getMonthlyPayment().getCurrency());
         assertEquals("USD", payPalCreditFinancing.getTotalCost().getCurrency());
         assertEquals("USD", payPalCreditFinancing.getTotalInterest().getCurrency());
