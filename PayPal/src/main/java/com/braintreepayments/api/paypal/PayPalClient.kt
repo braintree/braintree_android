@@ -10,6 +10,7 @@ import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.sharedutils.Json
@@ -29,6 +30,11 @@ class PayPalClient @VisibleForTesting internal constructor(
      * In the PayPal flow this will be either an EC token or a Billing Agreement token
      */
     private var payPalContextId: String? = null
+
+    /**
+     * Used for sending the type of flow, universal vs deeplink to FPTI
+     */
+    private var linkType: LinkType? = null
 
     /**
      * True if `tokenize()` was called with a Vault request object type
@@ -65,6 +71,7 @@ class PayPalClient @VisibleForTesting internal constructor(
         callback: PayPalPaymentAuthCallback
     ) {
         isVaultRequest = payPalRequest is PayPalVaultRequest
+        linkType = if (isAppSwitchEnabled(payPalRequest)) LinkType.UNIVERSAL else LinkType.DEEPLINK
 
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsParams)
 
@@ -285,12 +292,19 @@ class PayPalClient @VisibleForTesting internal constructor(
         get() {
             return AnalyticsEventParams(
                 payPalContextId = payPalContextId,
+                linkType = linkType?.stringValue,
                 isVaultRequest = isVaultRequest
             )
         }
 
     private fun payPalConfigInvalid(configuration: Configuration?): Boolean {
         return (configuration == null || !configuration.isPayPalEnabled)
+    }
+
+    private fun isAppSwitchEnabled(payPalRequest: PayPalRequest): Boolean {
+        return (payPalRequest is PayPalVaultRequest) &&
+                payPalRequest.enablePayPalAppSwitch &&
+                braintreeClient.isPayPalInstalled()
     }
 
     companion object {
