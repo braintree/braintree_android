@@ -8,6 +8,15 @@ sealed class PayPalVaultEditResult {
 
     /**
      * The PayPal vault edit flow completed successfully.
+     *
+     * @property clientMetadataId client metadata id
+     * @property payerId ID of the payer
+     * @property email email address of the payer
+     * @property firstName first name of the payer
+     * @property lastName last name of the payer
+     * @property phone phone number of the payer
+     * @property shippingAddress shipping address of the payer
+     * @property fundingSourceDescription description of the funding source
      */
     class Success internal constructor(
         val clientMetadataId: String,
