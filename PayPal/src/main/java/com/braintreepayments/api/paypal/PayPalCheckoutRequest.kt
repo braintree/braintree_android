@@ -96,7 +96,8 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
         configuration: Configuration?,
         authorization: Authorization?,
         successUrl: String?,
-        cancelUrl: String?
+        cancelUrl: String?,
+        appLink: String?
     ): String {
         val parameters = JSONObject()
             .put(RETURN_URL_KEY, successUrl)

@@ -91,7 +91,8 @@ abstract class PayPalRequest internal constructor(
         configuration: Configuration?,
         authorization: Authorization?,
         successUrl: String?,
-        cancelUrl: String?
+        cancelUrl: String?,
+        appLink: String?
     ): String?
 
     companion object {
@@ -119,5 +120,9 @@ abstract class PayPalRequest internal constructor(
         const val CORRELATION_ID_KEY: String = "correlation_id"
         const val LINE_ITEMS_KEY: String = "line_items"
         const val USER_ACTION_KEY: String = "user_action"
+        const val ENABLE_APP_SWITCH_KEY: String = "launch_paypal_app"
+        const val OS_VERSION_KEY: String = "os_version"
+        const val OS_TYPE_KEY: String = "os_type"
+        const val MERCHANT_APP_RETURN_URL_KEY: String = "merchant_app_return_url"
     }
 }
