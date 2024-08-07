@@ -152,7 +152,9 @@ internal class PayPalInternalClient(
     }
 
     private fun isAppSwitchEnabled(payPalRequest: PayPalRequest): Boolean {
-        return (payPalRequest is PayPalVaultRequest) && payPalRequest.enablePayPalAppSwitch && braintreeClient.isPayPalInstalled()
+        return (payPalRequest is PayPalVaultRequest) &&
+                payPalRequest.enablePayPalAppSwitch &&
+                braintreeClient.isPayPalInstalled()
     }
 
     private fun findPairingId(redirectUri: Uri): String? {
