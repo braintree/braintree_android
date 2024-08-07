@@ -1,6 +1,7 @@
 package com.braintreepayments.api.visacheckout
 
 import androidx.annotation.RestrictTo
+import com.braintreepayments.api.core.MetadataBuilder
 import com.braintreepayments.api.core.PaymentMethod
 import com.braintreepayments.api.core.PaymentMethod.Companion.DEFAULT_INTEGRATION
 import com.braintreepayments.api.core.PaymentMethod.Companion.DEFAULT_SOURCE
@@ -19,9 +20,19 @@ internal class VisaCheckoutAccount(
 ) : PaymentMethod {
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun buildMetadataJSON(): JSONObject {
+        return MetadataBuilder()
+            .sessionId(sessionId)
+            .source(source)
+            .integration(integration)
+            .build()
+    }
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @Throws(JSONException::class)
     override fun buildJSON(): JSONObject {
-        val json = super.buildJSON()
+        val json = JSONObject()
+            .put(MetadataBuilder.META_KEY, buildMetadataJSON())
         val paymentMethodNonceJson = JSONObject().apply {
             put(CALL_ID, visaPaymentSummary.callId)
             put(ENCRYPTED_KEY, visaPaymentSummary.encKey)

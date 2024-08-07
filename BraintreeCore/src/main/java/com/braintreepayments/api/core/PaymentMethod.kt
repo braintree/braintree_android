@@ -19,20 +19,7 @@ interface PaymentMethod {
         const val DEFAULT_INTEGRATION = "custom"
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun buildMetadataJSON(): JSONObject {
-        return MetadataBuilder()
-            .sessionId(sessionId)
-            .source(source)
-            .integration(integration)
-            .build()
-    }
-
     @Throws(JSONException::class)
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun buildJSON(): JSONObject {
-        return JSONObject().apply {
-            put(MetadataBuilder.META_KEY, buildMetadataJSON())
-        }
-    }
+    fun buildJSON(): JSONObject
 }

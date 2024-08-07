@@ -1,5 +1,7 @@
 package com.braintreepayments.api.paypal
 
+import androidx.annotation.RestrictTo
+import com.braintreepayments.api.core.MetadataBuilder
 import com.braintreepayments.api.core.PaymentMethod
 import com.braintreepayments.api.core.PaymentMethod.Companion.DEFAULT_INTEGRATION
 import com.braintreepayments.api.core.PaymentMethod.Companion.DEFAULT_SOURCE
@@ -33,9 +35,19 @@ data class PayPalAccount(
     override var integration: String? = DEFAULT_INTEGRATION
 ) : PaymentMethod {
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    fun buildMetadataJSON(): JSONObject {
+        return MetadataBuilder()
+            .sessionId(sessionId)
+            .source(source)
+            .integration(integration)
+            .build()
+    }
+
     @Throws(JSONException::class)
     override fun buildJSON(): JSONObject {
-        val json = super.buildJSON()
+        val json = JSONObject()
+            .put(MetadataBuilder.META_KEY, buildMetadataJSON())
 
         val paymentMethodNonceJson = JSONObject()
         paymentMethodNonceJson.put(CORRELATION_ID_KEY, clientMetadataId)
