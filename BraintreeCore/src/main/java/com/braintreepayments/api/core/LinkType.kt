@@ -8,7 +8,7 @@ import androidx.annotation.RestrictTo
  * It is not covered by Semantic Versioning and may change or be removed at any time.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-public enum class LinkType(val stringValue: String) {
+enum class LinkType(val stringValue: String) {
     UNIVERSAL("universal"),
     DEEPLINK("deeplink")
 }
