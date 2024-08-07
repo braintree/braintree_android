@@ -81,7 +81,7 @@ public class SEPADirectDebitClientUnitTest {
         BrowserSwitchOptions browserSwitchOptions = params.getBrowserSwitchOptions();
         assertEquals(Uri.parse("http://www.example.com"), browserSwitchOptions.getUrl());
         assertEquals("com.example", browserSwitchOptions.getReturnUrlScheme());
-        assertEquals(BraintreeRequestCodes.SEPA_DEBIT, browserSwitchOptions.getRequestCode());
+        assertEquals(BraintreeRequestCodes.SEPA_DEBIT.getCode(), browserSwitchOptions.getRequestCode());
         JSONObject metadata = browserSwitchOptions.getMetadata();
         assertEquals("1234", metadata.get("ibanLastFour"));
         assertEquals("fake-customer-id", metadata.get("customerId"));

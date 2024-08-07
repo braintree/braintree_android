@@ -1,6 +1,5 @@
 package com.braintreepayments.api.core
 
-import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.sharedutils.AuthorizationException
 import com.braintreepayments.api.sharedutils.BaseHttpResponseParser
 import com.braintreepayments.api.sharedutils.HttpResponseParser
@@ -12,7 +11,7 @@ import java.net.HttpURLConnection
 /**
  * Class that handles parsing http responses for [BraintreeGraphQLClient].
  */
-internal class BraintreeGraphQLResponseParser @VisibleForTesting constructor(
+internal class BraintreeGraphQLResponseParser(
     private val baseParser: HttpResponseParser
 ) : HttpResponseParser {
 

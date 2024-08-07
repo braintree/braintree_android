@@ -3,23 +3,23 @@ package com.braintreepayments.api.core
 import org.json.JSONException
 import org.json.JSONObject
 
-internal class DeviceMetadata internal constructor(
-    private var appId: String? = null,
-    private var appName: String? = null,
-    private var clientSDKVersion: String? = null,
-    private var clientOs: String? = null,
-    private var component: String? = null,
-    private var deviceManufacturer: String? = null,
-    private var deviceModel: String? = null,
-    private var dropInSDKVersion: String? = null,
-    private var environment: String? = null,
-    private var eventSource: String? = null,
-    private var integrationType: String? = null,
-    private var isSimulator: Boolean = false,
-    private var merchantAppVersion: String? = null,
-    private var merchantId: String? = null,
-    private var platform: String? = null,
-    private var sessionId: String? = null,
+internal class DeviceMetadata(
+    private val appId: String? = null,
+    private val appName: String? = null,
+    private val clientSDKVersion: String? = null,
+    private val clientOs: String? = null,
+    private val component: String? = null,
+    private val deviceManufacturer: String? = null,
+    private val deviceModel: String? = null,
+    private val dropInSDKVersion: String? = null,
+    private val environment: String? = null,
+    private val eventSource: String? = null,
+    private val integrationType: IntegrationType? = null,
+    private val isSimulator: Boolean = false,
+    private val merchantAppVersion: String? = null,
+    private val merchantId: String? = null,
+    private val platform: String? = null,
+    private val sessionId: String? = null,
 ) {
 
     @Throws(JSONException::class)
@@ -35,7 +35,7 @@ internal class DeviceMetadata internal constructor(
             .put(DROP_IN_SDK_VERSION, dropInSDKVersion)
             .put(EVENT_SOURCE_KEY, eventSource)
             .put(ENVIRONMENT_KEY, environment)
-            .put(INTEGRATION_TYPE_KEY, integrationType)
+            .put(INTEGRATION_TYPE_KEY, integrationType?.stringValue)
             .put(IS_SIMULATOR_KEY, isSimulator)
             .put(MERCHANT_APP_VERSION_KEY, merchantAppVersion)
             .put(MERCHANT_ID_KEY, merchantId)

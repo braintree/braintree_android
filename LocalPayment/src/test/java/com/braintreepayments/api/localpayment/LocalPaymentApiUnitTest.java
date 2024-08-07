@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 
 import android.net.Uri;
 
+import com.braintreepayments.api.core.IntegrationType;
 import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 import com.braintreepayments.api.core.BraintreeClient;
@@ -138,7 +139,7 @@ public class LocalPaymentApiUnitTest {
     public void tokenize_sendsCorrectPostParams() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("sample-session-id")
-                .integration("sample-integration-type")
+                .integration(IntegrationType.CUSTOM)
                 .build();
 
         LocalPaymentApi sut = new LocalPaymentApi(braintreeClient);
@@ -166,7 +167,7 @@ public class LocalPaymentApiUnitTest {
 
         JSONObject metaData = new JSONObject()
                 .put("source", "client")
-                .put("integration", "sample-integration-type")
+                .put("integration", "custom")
                 .put("sessionId", "sample-session-id");
         expectedJSON.put("_meta", metaData);
 
@@ -178,7 +179,7 @@ public class LocalPaymentApiUnitTest {
         Exception error = new Exception("error");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("sample-session-id")
-                .integration("sample-integration-type")
+                .integration(IntegrationType.CUSTOM)
                 .sendPOSTErrorResponse(error)
                 .build();
 
@@ -194,7 +195,7 @@ public class LocalPaymentApiUnitTest {
     public void tokenize_onJSONError_forwardsErrorToCallback() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("sample-session-id")
-                .integration("sample-integration-type")
+                .integration(IntegrationType.CUSTOM)
                 .sendPOSTSuccessfulResponse("not-json")
                 .build();
 
@@ -213,7 +214,7 @@ public class LocalPaymentApiUnitTest {
     public void tokenize_onPOSTSuccess_returnsResultToCallback() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sessionId("sample-session-id")
-                .integration("sample-integration-type")
+                .integration(IntegrationType.CUSTOM)
                 .sendPOSTSuccessfulResponse(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE)
                 .build();
 

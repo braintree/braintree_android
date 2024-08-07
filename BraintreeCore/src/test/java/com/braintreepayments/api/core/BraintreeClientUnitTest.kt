@@ -351,7 +351,7 @@ class BraintreeClientUnitTest {
                 configuration,
                 match { it.name == "event.started" },
                 "session-id",
-                "custom",
+                IntegrationType.CUSTOM,
                 authorization
             )
         }
@@ -438,7 +438,7 @@ class BraintreeClientUnitTest {
     fun integrationType_returnsCustomByDefault() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val sut = BraintreeClient(BraintreeOptions(context, authorization))
-        assertEquals("custom", sut.integrationType)
+        assertEquals("custom", sut.integrationType.stringValue)
     }
 
     @Test
@@ -446,7 +446,7 @@ class BraintreeClientUnitTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val sessionId = "custom-session-id"
         val sut = BraintreeClient(context, authorization, sessionId, IntegrationType.DROP_IN)
-        assertEquals("dropin", sut.integrationType)
+        assertEquals("dropin", sut.integrationType.stringValue)
     }
 
     @Test

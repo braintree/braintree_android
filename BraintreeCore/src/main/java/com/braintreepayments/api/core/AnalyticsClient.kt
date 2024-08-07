@@ -7,7 +7,6 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import com.braintreepayments.api.core.AnalyticsDatabase.Companion.getInstance
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -15,7 +14,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Suppress("SwallowedException", "TooGenericExceptionCaught")
-internal class AnalyticsClient constructor(
+internal class AnalyticsClient(
     context: Context,
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
     private val analyticsDatabase: AnalyticsDatabase = AnalyticsDatabase.getInstance(context.applicationContext),
@@ -28,7 +27,7 @@ internal class AnalyticsClient constructor(
         configuration: Configuration,
         event: AnalyticsEvent,
         sessionId: String?,
-        integration: String?,
+        integration: IntegrationType?,
         authorization: Authorization
     ): UUID {
         scheduleAnalyticsWriteInBackground(event, authorization)
@@ -74,13 +73,13 @@ internal class AnalyticsClient constructor(
         configuration: Configuration,
         authorization: Authorization,
         sessionId: String?,
-        integration: String?
+        integration: IntegrationType?
     ): UUID {
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
             .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
-            .putString(WORK_INPUT_KEY_INTEGRATION, integration)
+            .putString(WORK_INPUT_KEY_INTEGRATION, integration?.stringValue)
             .build()
 
         val analyticsWorkRequest = OneTimeWorkRequest.Builder(AnalyticsUploadWorker::class.java)
@@ -111,7 +110,7 @@ internal class AnalyticsClient constructor(
                         applicationContext,
                         configuration,
                         sessionId,
-                        integration
+                        IntegrationType.fromString(integration)
                     )
                     val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
                     httpClient.post(
@@ -133,7 +132,7 @@ internal class AnalyticsClient constructor(
         context: Context?,
         configuration: Configuration?,
         sessionId: String?,
-        integration: String?,
+        integration: IntegrationType?,
         authorization: Authorization?
     ) {
         reportCrash(
@@ -151,7 +150,7 @@ internal class AnalyticsClient constructor(
         context: Context?,
         configuration: Configuration?,
         sessionId: String?,
-        integration: String?,
+        integration: IntegrationType?,
         timestamp: Long,
         authorization: Authorization?
     ) {

@@ -85,7 +85,7 @@ public class PayPalClientUnitTest {
             ((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams();
 
         BrowserSwitchOptions browserSwitchOptions = paymentAuthRequestCaptured.getBrowserSwitchOptions();
-        assertEquals(BraintreeRequestCodes.PAYPAL, browserSwitchOptions.getRequestCode());
+        assertEquals(BraintreeRequestCodes.PAYPAL.getCode(), browserSwitchOptions.getRequestCode());
         assertFalse(browserSwitchOptions.isLaunchAsNewTask());
 
         assertEquals(Uri.parse("https://example.com/approval/url"), browserSwitchOptions.getUrl());

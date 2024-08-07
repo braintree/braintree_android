@@ -11,10 +11,10 @@ import static org.mockito.Mockito.when;
 import com.braintreepayments.api.core.ApiClient;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.Configuration;
+import com.braintreepayments.api.core.TokenizeCallback;
 import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.testutils.MockApiClientBuilder;
 import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
-import com.braintreepayments.api.core.TokenizeCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;

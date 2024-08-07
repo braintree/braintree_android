@@ -19,6 +19,7 @@ import androidx.test.core.app.ApplicationProvider;
 import com.braintreepayments.api.BrowserSwitchFinalResult;
 import com.braintreepayments.api.BrowserSwitchOptions;
 import com.braintreepayments.api.core.AnalyticsEventParams;
+import com.braintreepayments.api.core.IntegrationType;
 import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 import com.braintreepayments.api.core.Authorization;
@@ -92,7 +93,7 @@ public class VenmoClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
-                .integration("custom")
+                .integration(IntegrationType.CUSTOM)
                 .authorizationSuccess(clientToken)
                 .build();
 
@@ -125,7 +126,7 @@ public class VenmoClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("fake-session-id")
-                .integration("custom")
+                .integration(IntegrationType.CUSTOM)
                 .authorizationSuccess(clientToken)
                 .returnUrlScheme("com.example")
                 .build();
@@ -154,7 +155,7 @@ public class VenmoClientUnitTest {
         VenmoPaymentAuthRequestParams params = ((VenmoPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams();
 
         BrowserSwitchOptions browserSwitchOptions = params.getBrowserSwitchOptions();
-        assertEquals(BraintreeRequestCodes.VENMO, browserSwitchOptions.getRequestCode());
+        assertEquals(BraintreeRequestCodes.VENMO.getCode(), browserSwitchOptions.getRequestCode());
         assertEquals("com.example", browserSwitchOptions.getReturnUrlScheme());
 
         Uri url = browserSwitchOptions.getUrl();
@@ -222,7 +223,7 @@ public class VenmoClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
-                .integration("custom")
+                .integration(IntegrationType.CUSTOM)
                 .authorizationSuccess(clientToken)
                 .build();
 
@@ -255,7 +256,7 @@ public class VenmoClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
                 .sessionId("session-id")
-                .integration("custom")
+                .integration(IntegrationType.CUSTOM)
                 .authorizationSuccess(clientToken)
                 .build();
 

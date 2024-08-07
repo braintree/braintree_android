@@ -1,6 +1,5 @@
 package com.braintreepayments.api.core
 
-import androidx.annotation.RestrictTo
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
@@ -12,8 +11,7 @@ import java.nio.charset.Charset
 /**
  * @suppress
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-object StreamHelper {
+internal object StreamHelper {
     @JvmStatic
     @Throws(IOException::class)
     fun getString(inputStream: InputStream?): String {

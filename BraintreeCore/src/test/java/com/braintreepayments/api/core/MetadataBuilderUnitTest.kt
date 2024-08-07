@@ -13,7 +13,7 @@ class MetadataBuilderUnitTest {
     @Throws(JSONException::class)
     fun build_correctlyBuildsMetadata() {
         val json = MetadataBuilder()
-            .integration("custom")
+            .integration(IntegrationType.CUSTOM)
             .version()
             .sessionId("session-id")
             .source("form")

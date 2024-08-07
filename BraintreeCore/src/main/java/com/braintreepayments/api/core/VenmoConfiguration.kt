@@ -11,7 +11,7 @@ import org.json.JSONObject
  * @property merchantId The merchant Id associated with this merchant's Venmo integration.
  * @property enrichedCustomerDataEnabled The boolean value indicating whether ECD is enabled for the merchant.
  */
-internal class VenmoConfiguration constructor(
+internal class VenmoConfiguration(
     val accessToken: String,
     val environment: String,
     val merchantId: String,

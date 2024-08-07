@@ -31,7 +31,7 @@ class AnalyticsClientUnitTest {
     private lateinit var sessionId: String
     private lateinit var payPalContextId: String
     private lateinit var linkType: String
-    private lateinit var integration: String
+    private lateinit var integration: IntegrationType
     private lateinit var workManager: WorkManager
     private lateinit var analyticsDatabase: AnalyticsDatabase
     private lateinit var analyticsEventBlobDao: AnalyticsEventBlobDao
@@ -46,7 +46,7 @@ class AnalyticsClientUnitTest {
         sessionId = "sample-session-id"
         payPalContextId = "sample-paypal-context-id"
         linkType = "sample-link-type"
-        integration = "sample-integration"
+        integration = IntegrationType.CUSTOM
         authorization = fromString(Fixtures.TOKENIZATION_KEY)
         context = ApplicationProvider.getApplicationContext()
         configuration = fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
@@ -187,7 +187,7 @@ class AnalyticsClientUnitTest {
             .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
             .putString(AnalyticsClient.WORK_INPUT_KEY_SESSION_ID, sessionId)
-            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration)
+            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration.stringValue)
             .build()
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
@@ -204,7 +204,7 @@ class AnalyticsClientUnitTest {
             .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
             .putString(AnalyticsClient.WORK_INPUT_KEY_SESSION_ID, sessionId)
-            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration)
+            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration.stringValue)
             .build()
         val metadata = createSampleDeviceMetadata()
 
@@ -245,7 +245,7 @@ class AnalyticsClientUnitTest {
                 "mobile_device_model": "fake-mobile-device-model",
                 "event_source": "fake-event-source",
                 "merchant_sdk_env": "fake-environment",
-                "api_integration_type": "fake-integration",
+                "api_integration_type": "custom",
                 "is_simulator": false,
                 "mapv": "fake-merchant-app-version",
                 "merchant_id": "fake-merchant-id",
@@ -269,7 +269,7 @@ class AnalyticsClientUnitTest {
         val inputData = Data.Builder()
             .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(AnalyticsClient.WORK_INPUT_KEY_SESSION_ID, sessionId)
-            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration)
+            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration.stringValue)
             .build()
 
         val sut =
@@ -287,7 +287,7 @@ class AnalyticsClientUnitTest {
         val inputData = Data.Builder()
             .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
             .putString(AnalyticsClient.WORK_INPUT_KEY_SESSION_ID, sessionId)
-            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration)
+            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration.stringValue)
             .build()
 
         val sut =
@@ -308,7 +308,7 @@ class AnalyticsClientUnitTest {
             )
             .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
             .putString(AnalyticsClient.WORK_INPUT_KEY_SESSION_ID, sessionId)
-            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration)
+            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration.stringValue)
             .build()
 
         every {
@@ -339,7 +339,7 @@ class AnalyticsClientUnitTest {
         val inputData = Data.Builder()
             .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
-            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration)
+            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration.stringValue)
             .build()
 
         val sut =
@@ -376,7 +376,7 @@ class AnalyticsClientUnitTest {
             .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
             .putString(AnalyticsClient.WORK_INPUT_KEY_SESSION_ID, sessionId)
-            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration)
+            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration.stringValue)
             .build()
 
         val metadata = createSampleDeviceMetadata()
@@ -402,7 +402,7 @@ class AnalyticsClientUnitTest {
             .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
             .putString(AnalyticsClient.WORK_INPUT_KEY_SESSION_ID, sessionId)
-            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration)
+            .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration.stringValue)
             .build()
 
         every {
@@ -460,7 +460,7 @@ class AnalyticsClientUnitTest {
                 "mobile_device_model": "fake-mobile-device-model",
                 "event_source": "fake-event-source",
                 "merchant_sdk_env": "fake-environment",
-                "api_integration_type": "fake-integration",
+                "api_integration_type": "custom",
                 "is_simulator": false,
                 "mapv": "fake-merchant-app-version",
                 "merchant_id": "fake-merchant-id",
@@ -515,7 +515,7 @@ class AnalyticsClientUnitTest {
             deviceModel = "fake-mobile-device-model",
             environment = "fake-environment",
             eventSource = "fake-event-source",
-            integrationType = "fake-integration",
+            integrationType = IntegrationType.CUSTOM,
             isSimulator = false,
             merchantAppVersion = "fake-merchant-app-version",
             merchantId = "fake-merchant-id",

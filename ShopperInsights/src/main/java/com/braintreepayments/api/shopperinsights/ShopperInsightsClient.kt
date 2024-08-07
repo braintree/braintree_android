@@ -2,7 +2,7 @@ package com.braintreepayments.api.shopperinsights
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
-import com.braintreepayments.api.ExperimentalBetaApi
+import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_FAILED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_STARTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_SUCCEEDED
