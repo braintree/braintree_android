@@ -85,7 +85,6 @@ class AnalyticsClientUnitTest {
         {
           "event_name": "sample-event-name",
           "t": 123,
-          "venmo_installed": false,
           "is_vault": false,
           "tenant_name": "Braintree"
         }
@@ -108,9 +107,8 @@ class AnalyticsClientUnitTest {
             name = eventName,
             payPalContextId = "fake-paypal-context-id",
             linkType = "fake-link-type",
-            timestamp = 456,
-            venmoInstalled = true,
-            isVaultRequest = true
+            isVaultRequest = true,
+            timestamp = 456
         )
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
@@ -131,7 +129,6 @@ class AnalyticsClientUnitTest {
           "paypal_context_id": "fake-paypal-context-id",
           "link_type": "fake-link-type",
           "t": 456,
-          "venmo_installed": true,
           "is_vault": true,
           "tenant_name": "Braintree",
           "start_time": 789,
@@ -208,12 +205,12 @@ class AnalyticsClientUnitTest {
             .build()
         val metadata = createSampleDeviceMetadata()
 
+        every { deviceInspector.isVenmoInstalled(context) } returns true
         every {
             deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
         } returns metadata
 
-        val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
-        blobs.add(AnalyticsEventBlob("""{ "fake": "json" }"""))
+        val blobs = listOf(AnalyticsEventBlob("""{ "fake": "json" }"""))
         every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
 
         val analyticsJSONSlot = slot<String>()
@@ -247,6 +244,7 @@ class AnalyticsClientUnitTest {
                 "merchant_sdk_env": "fake-environment",
                 "api_integration_type": "custom",
                 "is_simulator": false,
+                "venmo_installed": true,
                 "mapv": "fake-merchant-app-version",
                 "merchant_id": "fake-merchant-id",
                 "platform": "fake-platform",
@@ -303,7 +301,8 @@ class AnalyticsClientUnitTest {
     @Throws(JSONException::class)
     fun uploadAnalytics_whenAuthorizationIsClientToken_includesAuthFingerprintBatchParam() {
         val inputData = Data.Builder()
-            .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION,
+            .putString(
+                AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION,
                 Fixtures.BASE64_CLIENT_TOKEN2
             )
             .putString(AnalyticsClient.WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
@@ -315,8 +314,7 @@ class AnalyticsClientUnitTest {
             deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
         } returns createSampleDeviceMetadata()
 
-        val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
-        blobs.add(AnalyticsEventBlob("""{ "fake": "json" }"""))
+        val blobs = listOf(AnalyticsEventBlob("""{ "fake": "json" }"""))
         every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
 
         val analyticsJSONSlot = slot<String>()
@@ -384,8 +382,7 @@ class AnalyticsClientUnitTest {
             deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
         } returns metadata
 
-        val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
-        blobs.add(AnalyticsEventBlob("""{ "fake": "json" }"""))
+        val blobs = listOf(AnalyticsEventBlob("""{ "fake": "json" }"""))
         every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
 
         val sut =
@@ -409,8 +406,7 @@ class AnalyticsClientUnitTest {
             deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
         } returns createSampleDeviceMetadata()
 
-        val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
-        blobs.add(AnalyticsEventBlob("""{ "fake": "json" }"""))
+        val blobs = listOf(AnalyticsEventBlob("""{ "fake": "json" }"""))
         every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
 
         val httpError = Exception("error")
@@ -426,6 +422,8 @@ class AnalyticsClientUnitTest {
     @Throws(Exception::class)
     fun reportCrash_sendsCrashAnalyticsEvent() {
         val metadata = createSampleDeviceMetadata()
+
+        every { deviceInspector.isVenmoInstalled(context) } returns false
         every {
             deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         } returns metadata
@@ -462,6 +460,7 @@ class AnalyticsClientUnitTest {
                 "merchant_sdk_env": "fake-environment",
                 "api_integration_type": "custom",
                 "is_simulator": false,
+                "venmo_installed": false,
                 "mapv": "fake-merchant-app-version",
                 "merchant_id": "fake-merchant-id",
                 "platform": "fake-platform",
@@ -473,7 +472,6 @@ class AnalyticsClientUnitTest {
                     "event_name": "crash",
                     "t": 123,
                     "tenant_name": "Braintree",
-                    "venmo_installed": false,
                     "is_vault": false
                 }
               ]
