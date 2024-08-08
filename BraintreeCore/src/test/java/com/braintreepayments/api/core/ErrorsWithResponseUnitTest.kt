@@ -2,6 +2,7 @@ package com.braintreepayments.api.core
 
 import android.os.Parcel
 import com.braintreepayments.api.testutils.Fixtures
+import kotlinx.parcelize.parcelableCreator
 import org.json.JSONException
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -146,7 +147,7 @@ class ErrorsWithResponseUnitTest {
         val parcel = Parcel.obtain()
         error.writeToParcel(parcel, 0)
         parcel.setDataPosition(0)
-        val parceled = ErrorWithResponse.CREATOR.createFromParcel(parcel)
+        val parceled = parcelableCreator<ErrorWithResponse>().createFromParcel(parcel)
         assertEquals(error.statusCode, parceled.statusCode)
         assertEquals(error.message, parceled.message)
         assertEquals(error.errorResponse, parceled.errorResponse)

@@ -2,6 +2,7 @@ package com.braintreepayments.api.core
 
 import android.os.Parcel
 import com.braintreepayments.api.testutils.Fixtures
+import kotlinx.parcelize.parcelableCreator
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
@@ -24,7 +25,7 @@ class BraintreeErrorUnitTest {
         val parcel = Parcel.obtain()
         error.writeToParcel(parcel, 0)
         parcel.setDataPosition(0)
-        val parceled = BraintreeError.CREATOR.createFromParcel(parcel)
+        val parceled = parcelableCreator<BraintreeError>().createFromParcel(parcel)
 
         assertEquals(error.field, parceled.field)
         assertEquals(error.message, parceled.message)
@@ -42,7 +43,7 @@ class BraintreeErrorUnitTest {
         val parcel = Parcel.obtain()
         error.writeToParcel(parcel, 0)
         parcel.setDataPosition(0)
-        val parceled = BraintreeError.CREATOR.createFromParcel(parcel)
+        val parceled = parcelableCreator<BraintreeError>().createFromParcel(parcel)
 
         assertEquals(error.field, parceled.field)
         assertEquals(error.message, parceled.message)
