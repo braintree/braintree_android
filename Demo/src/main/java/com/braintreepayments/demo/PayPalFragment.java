@@ -133,7 +133,7 @@ public class PayPalFragment extends BaseFragment {
                         String pairingId = ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams().getPairingId();
 
                         if (pairingId != null && !pairingId.isEmpty()) {
-                            Toast.makeText(getActivity(), pairingId, Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "Pairing ID: $pairingId", Toast.LENGTH_LONG).show();
                         }
 
                         if (request instanceof PayPalPendingRequest.Started) {
