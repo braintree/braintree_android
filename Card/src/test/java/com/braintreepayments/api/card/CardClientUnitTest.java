@@ -3,6 +3,7 @@ package com.braintreepayments.api.card;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -56,7 +57,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_STARTED);
+        verify(braintreeClient).sendAnalyticsEvent(eq(CardAnalytics.CARD_TOKENIZE_STARTED), any());
     }
 
     @Test
@@ -135,7 +136,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_SUCCEEDED);
+        verify(braintreeClient).sendAnalyticsEvent(eq(CardAnalytics.CARD_TOKENIZE_SUCCEEDED), any());
     }
 
     @Test
@@ -151,7 +152,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_SUCCEEDED);
+        verify(braintreeClient).sendAnalyticsEvent(eq(CardAnalytics.CARD_TOKENIZE_SUCCEEDED), any());
     }
 
     @Test
@@ -214,7 +215,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_FAILED);
+        verify(braintreeClient).sendAnalyticsEvent(eq(CardAnalytics.CARD_TOKENIZE_FAILED), any());
     }
 
     @Test
@@ -231,7 +232,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_FAILED);
+        verify(braintreeClient).sendAnalyticsEvent(eq(CardAnalytics.CARD_TOKENIZE_FAILED), any());
     }
 
     @Test
