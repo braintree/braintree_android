@@ -210,8 +210,7 @@ class AnalyticsClientUnitTest {
             deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
         } returns metadata
 
-        val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
-        blobs.add(AnalyticsEventBlob("""{ "fake": "json" }"""))
+        val blobs = listOf(AnalyticsEventBlob("""{ "fake": "json" }"""))
         every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
 
         val analyticsJSONSlot = slot<String>()
@@ -315,8 +314,7 @@ class AnalyticsClientUnitTest {
             deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
         } returns createSampleDeviceMetadata()
 
-        val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
-        blobs.add(AnalyticsEventBlob("""{ "fake": "json" }"""))
+        val blobs = listOf(AnalyticsEventBlob("""{ "fake": "json" }"""))
         every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
 
         val analyticsJSONSlot = slot<String>()
@@ -384,8 +382,7 @@ class AnalyticsClientUnitTest {
             deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
         } returns metadata
 
-        val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
-        blobs.add(AnalyticsEventBlob("""{ "fake": "json" }"""))
+        val blobs = listOf(AnalyticsEventBlob("""{ "fake": "json" }"""))
         every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
 
         val sut =
@@ -409,8 +406,7 @@ class AnalyticsClientUnitTest {
             deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
         } returns createSampleDeviceMetadata()
 
-        val blobs: MutableList<AnalyticsEventBlob> = ArrayList()
-        blobs.add(AnalyticsEventBlob("""{ "fake": "json" }"""))
+        val blobs = listOf(AnalyticsEventBlob("""{ "fake": "json" }"""))
         every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
 
         val httpError = Exception("error")
