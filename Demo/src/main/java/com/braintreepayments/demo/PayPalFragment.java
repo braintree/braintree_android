@@ -55,7 +55,7 @@ public class PayPalFragment extends BaseFragment {
             FragmentActivity activity = getActivity();
 
             if (Settings.isPayPalAppSwithEnabled(activity) && buyerEmailEditText.getText().toString().isEmpty()) {
-                Toast.makeText(activity, "Email cannot be nil for App Switch flow", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, "Email is required for the App Switch flow", Toast.LENGTH_SHORT).show();
                 return;
             }
 
