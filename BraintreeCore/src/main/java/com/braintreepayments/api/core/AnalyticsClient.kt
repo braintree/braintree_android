@@ -181,7 +181,7 @@ internal class AnalyticsClient(
         eventBlobs: List<AnalyticsEventBlob>,
         metadata: DeviceMetadata
     ): JSONObject {
-        val batchParamsJSON = metadata.toJSON()
+        val batchParamsJSON = mapDeviceMetadataToFPTIBatchParamsJSON(metadata)
         authorization?.let {
             if (it is ClientToken) {
                 batchParamsJSON.put(FPTI_KEY_AUTH_FINGERPRINT, it.bearer)
@@ -204,11 +204,35 @@ internal class AnalyticsClient(
         return JSONObject().put(FPTI_KEY_EVENTS, eventsArray)
     }
 
+    @Throws(JSONException::class)
+    private fun mapDeviceMetadataToFPTIBatchParamsJSON(metadata: DeviceMetadata): JSONObject {
+        val isVenmoInstalled = deviceInspector.isVenmoInstalled(applicationContext)
+        return metadata.run {
+            JSONObject()
+                .put(APP_ID_KEY, appId)
+                .put(APP_NAME_KEY, appName)
+                .put(CLIENT_SDK_VERSION_KEY, clientSDKVersion)
+                .put(CLIENT_OS_KEY, clientOs)
+                .put(COMPONENT_KEY, component)
+                .put(DEVICE_MANUFACTURER_KEY, deviceManufacturer)
+                .put(DEVICE_MODEL_KEY, deviceModel)
+                .put(DROP_IN_SDK_VERSION, dropInSDKVersion)
+                .put(EVENT_SOURCE_KEY, eventSource)
+                .put(ENVIRONMENT_KEY, environment)
+                .put(INTEGRATION_TYPE_KEY, integrationType?.stringValue)
+                .put(IS_SIMULATOR_KEY, isSimulator)
+                .put(MERCHANT_APP_VERSION_KEY, merchantAppVersion)
+                .put(MERCHANT_ID_KEY, merchantId)
+                .put(PLATFORM_KEY, platform)
+                .put(SESSION_ID_KEY, sessionId)
+                .put(FPTI_KEY_VENMO_INSTALLED, isVenmoInstalled)
+        }
+    }
+
     private fun mapAnalyticsEventToFPTIEventJSON(event: AnalyticsEvent): String {
         val json = JSONObject()
             .put(FPTI_KEY_EVENT_NAME, event.name)
             .put(FPTI_KEY_TIMESTAMP, event.timestamp)
-            .put(FPTI_KEY_VENMO_INSTALLED, event.venmoInstalled)
             .put(FPTI_KEY_IS_VAULT, event.isVaultRequest)
             .put(FPTI_KEY_TENANT_NAME, "Braintree")
             .putOpt(FPTI_KEY_PAYPAL_CONTEXT_ID, event.payPalContextId)
@@ -237,6 +261,24 @@ internal class AnalyticsClient(
         private const val FPTI_KEY_START_TIME = "start_time"
         private const val FPTI_KEY_END_TIME = "end_time"
         private const val FPTI_KEY_ENDPOINT = "endpoint"
+
+        private const val APP_ID_KEY = "app_id"
+        private const val APP_NAME_KEY = "app_name"
+        private const val CLIENT_SDK_VERSION_KEY = "c_sdk_ver"
+        private const val CLIENT_OS_KEY = "client_os"
+        private const val COMPONENT_KEY = "comp"
+        private const val DEVICE_MANUFACTURER_KEY = "device_manufacturer"
+        private const val DEVICE_MODEL_KEY = "mobile_device_model"
+        private const val DROP_IN_SDK_VERSION = "drop_in_sdk_ver"
+        private const val EVENT_SOURCE_KEY = "event_source"
+        private const val ENVIRONMENT_KEY = "merchant_sdk_env"
+        private const val INTEGRATION_TYPE_KEY = "api_integration_type"
+        private const val IS_SIMULATOR_KEY = "is_simulator"
+        private const val MERCHANT_APP_VERSION_KEY = "mapv"
+        private const val MERCHANT_ID_KEY = "merchant_id"
+        private const val PLATFORM_KEY = "platform"
+        private const val SESSION_ID_KEY = "session_id"
+
         const val WORK_NAME_ANALYTICS_UPLOAD = "uploadAnalytics"
         const val WORK_NAME_ANALYTICS_WRITE = "writeAnalyticsToDb"
 
