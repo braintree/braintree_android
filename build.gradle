@@ -10,21 +10,17 @@ buildscript {
     def sdkTargetJavaVersion = JavaVersion.VERSION_11
 
     ext.versions = [
-            "kotlin"         : "1.9.10",
-            "androidxTest"   : "1.5.0",
-            "room"           : "2.6.1",
-            "playServices"   : "19.3.0",
             "javaSourceCompatibility": sdkTargetJavaVersion,
             "javaTargetCompatibility": sdkTargetJavaVersion,
     ]
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.4'
-        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0"
-        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.5.0'
-        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.9.10'
-        classpath 'org.jetbrains.dokka:android-documentation-plugin:1.9.10'
+        classpath libs.gradle
+        classpath libs.gradle.nexus.staging.plugin
+        classpath libs.kotlin.gradle.plugin
+        classpath libs.androidx.navigation.safe.args.gradle.plugin
+        classpath libs.dokka.gradle.plugin
+        classpath libs.dokka.android.documentation.plugin
     }
 }
 
