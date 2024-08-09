@@ -17,40 +17,6 @@ buildscript {
             "javaSourceCompatibility": sdkTargetJavaVersion,
             "javaTargetCompatibility": sdkTargetJavaVersion,
     ]
-    ext.deps = [
-            "appCompat"                  : "androidx.appcompat:appcompat:1.6.0",
-            "annotation"                 : "androidx.annotation:annotation:1.7.0",
-            "coreKtx"                    : "androidx.core:core-ktx:1.12.0",
-
-            "lifecycleRuntime"           : "androidx.lifecycle:lifecycle-runtime:2.6.2",
-
-            "kotlinStdLib"               : "org.jetbrains.kotlin:kotlin-stdlib:1.9.20",
-            "kotlinTest"                 : "org.jetbrains.kotlin:kotlin-test-junit:${versions.kotlin}",
-            // This library doesn't seem to follow the versioning pattern of the other jetbrains
-            // kotlin libraries. Make sure to keep this dependency in line with the kotlin version used.
-            "kotlinCoroutinesCore"       : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1",
-
-            "browserSwitch"              : "com.braintreepayments.api:browser-switch:3.0.0-beta1",
-            "cardinal"                   : "org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.7-5",
-            "playServicesWallet"         : "com.google.android.gms:play-services-wallet:${versions.playServices}",
-
-            "work"                       : "androidx.work:work-runtime:2.8.1",
-            "workTesting"                : "androidx.work:work-testing:2.8.1",
-
-            "roomCompiler"               : "androidx.room:room-compiler:${versions.room}",
-            "roomRuntime"                : "androidx.room:room-runtime:${versions.room}",
-
-            "androidxTestRules"          : "androidx.test:rules:${versions.androidxTest}",
-            "androidxTestRunner"         : "androidx.test:runner:${versions.androidxTest}",
-            "androidxTestCore"           : "androidx.test:core:${versions.androidxTest}",
-
-            "junit"                      : "junit:junit:4.13.2",
-            "junitTest"                  : "androidx.test.ext:junit:1.1.5",
-            "robolectric"                : "org.robolectric:robolectric:4.11.1",
-            "mockitoCore"                : "org.mockito:mockito-core:5.7.0",
-            "jsonAssert"                 : "org.skyscreamer:jsonassert:1.5.1",
-            "mockk"                      : "io.mockk:mockk:1.13.8",
-    ]
 
     dependencies {
         classpath 'com.android.tools.build:gradle:8.1.4'

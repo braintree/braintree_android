@@ -46,14 +46,14 @@ android {
 dependencies {
     api project(':BraintreeCore')
 
-    implementation deps.appCompat
+    implementation libs.androidx.appcompat
 
-    testImplementation deps.robolectric
-    testImplementation deps.androidxTestCore
-    testImplementation deps.junitTest
-    testImplementation deps.mockitoCore
-    testImplementation deps.jsonAssert
-    testImplementation deps.mockk
+    testImplementation libs.robolectric
+    testImplementation libs.androidx.test.core
+    testImplementation libs.androidx.junit
+    testImplementation libs.mockito.core
+    testImplementation libs.json.assert
+    testImplementation libs.mockk
     testImplementation project(':TestUtils')
 }
 

@@ -75,7 +75,7 @@ android {
 
 dependencies {
     implementation 'androidx.preference:preference:1.2.1'
-    implementation deps.kotlinStdLib
+    implementation libs.kotlin.stdlib
 
     implementation('com.squareup.retrofit:retrofit:1.9.0') {
         exclude module: 'com.google.gson'
@@ -96,7 +96,7 @@ dependencies {
 
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'de.greenrobot:eventbus:2.4.1'
-    implementation deps.appCompat
+    implementation libs.androidx.appcompat
     implementation 'androidx.preference:preference:1.2.1'
     implementation 'com.google.android.material:material:1.10.0'
     implementation 'androidx.cardview:cardview:1.0.0'

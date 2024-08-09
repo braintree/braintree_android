@@ -64,37 +64,37 @@ android {
 
 
 dependencies {
-    implementation deps.appCompat
-    implementation deps.work
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.work.runtime
 
-    implementation deps.coreKtx
-    implementation deps.kotlinStdLib
+    implementation libs.androidx.core.ktx
+    implementation libs.kotlin.stdlib
 
-    implementation deps.roomRuntime
+    implementation libs.androidx.room.runtime
 
     // Ref: https://stackoverflow.com/a/51067251
-    kapt deps.roomCompiler
+    kapt libs.androidx.room.compiler
 
-    api deps.browserSwitch
+    api libs.browser.switch
     api project(':SharedUtils')
 
-    androidTestImplementation deps.playServicesWallet
-    androidTestImplementation deps.androidxTestRules
-    androidTestImplementation deps.androidxTestRunner
-    androidTestImplementation deps.junitTest
-    androidTestImplementation deps.workTesting
+    androidTestImplementation libs.play.services.wallet
+    androidTestImplementation libs.androidx.test.rules
+    androidTestImplementation libs.androidx.test.runner
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.work.testing
     androidTestImplementation project(':Card')
     androidTestImplementation project(':PayPal')
     androidTestImplementation project(':TestUtils')
 
-    testImplementation deps.workTesting
-    testImplementation deps.robolectric
-    testImplementation deps.androidxTestCore
-    testImplementation deps.junitTest
-    testImplementation deps.mockitoCore
-    testImplementation deps.jsonAssert
-    testImplementation deps.mockk
-    testImplementation deps.kotlinTest
+    testImplementation libs.androidx.work.testing
+    testImplementation libs.robolectric
+    testImplementation libs.androidx.test.core
+    testImplementation libs.androidx.junit
+    testImplementation libs.mockito.core
+    testImplementation libs.json.assert
+    testImplementation libs.mockk
+    testImplementation libs.kotlin.test
     testImplementation project(':PayPal')
     testImplementation project(':TestUtils')
     testImplementation project(':Venmo')

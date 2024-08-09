@@ -49,21 +49,21 @@ android {
 dependencies {
     implementation files('libs/android-magnessdk-5.5.1.jar')
 
-    implementation deps.annotation
+    implementation libs.androidx.annotation
     api project(':BraintreeCore')
 
-    testImplementation deps.robolectric
-    testImplementation deps.mockitoCore
-    testImplementation deps.androidxTestCore
-    testImplementation deps.jsonAssert
-    testImplementation deps.mockitoCore
+    testImplementation libs.robolectric
+    testImplementation libs.mockito.core
+    testImplementation libs.androidx.test.core
+    testImplementation libs.json.assert
+    testImplementation libs.mockito.core
 
     testImplementation project(':TestUtils')
 
-    androidTestImplementation deps.androidxTestRules
-    androidTestImplementation deps.androidxTestRunner
-    androidTestImplementation deps.junitTest
-    androidTestImplementation deps.appCompat
+    androidTestImplementation libs.androidx.test.rules
+    androidTestImplementation libs.androidx.test.runner
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.appcompat
     androidTestImplementation project(':TestUtils')
 }
 

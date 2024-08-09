@@ -41,15 +41,15 @@ android {
 }
 
 dependencies {
-    implementation deps.coreKtx
+    implementation libs.androidx.core.ktx
 
     api project(':BraintreeCore')
 
-    testImplementation deps.jsonAssert
-    testImplementation deps.kotlinTest
-    testImplementation deps.mockk
-    testImplementation deps.robolectric
-    testImplementation deps.junitTest
+    testImplementation libs.json.assert
+    testImplementation libs.kotlin.test
+    testImplementation libs.mockk
+    testImplementation libs.robolectric
+    testImplementation libs.androidx.junit
     testImplementation project(':TestUtils')
 }
 

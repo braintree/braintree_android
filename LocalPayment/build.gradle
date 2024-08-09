@@ -42,21 +42,21 @@ android {
 }
 
 dependencies {
-    implementation deps.appCompat
+    implementation libs.androidx.appcompat
 
     api project(':BraintreeCore')
     implementation project(':DataCollector')
 
-    testImplementation deps.robolectric
-    testImplementation deps.mockitoCore
-    testImplementation deps.jsonAssert
-    testImplementation deps.mockk
+    testImplementation libs.robolectric
+    testImplementation libs.mockito.core
+    testImplementation libs.json.assert
+    testImplementation libs.mockk
     testImplementation project(':TestUtils')
 
     androidTestImplementation project(':TestUtils')
-    androidTestImplementation deps.androidxTestRules
-    androidTestImplementation deps.androidxTestRunner
-    androidTestImplementation deps.junitTest
+    androidTestImplementation libs.androidx.test.rules
+    androidTestImplementation libs.androidx.test.runner
+    androidTestImplementation libs.androidx.junit
 }
 
 // region signing and publishing

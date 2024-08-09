@@ -43,11 +43,11 @@ android {
 dependencies {
     api project(':BraintreeCore')
 
-    implementation deps.annotation
+    implementation libs.androidx.annotation
 
-    testImplementation deps.robolectric
-    testImplementation deps.mockitoCore
-    testImplementation deps.jsonAssert
+    testImplementation libs.robolectric
+    testImplementation libs.mockito.core
+    testImplementation libs.json.assert
     testImplementation project(':TestUtils')
 }
 
