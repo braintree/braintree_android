@@ -2,56 +2,73 @@
 gradle = "8.1.4"
 gradleNexusStagingPlugin = "0.21.2"
 kotlinGradlePlugin = "1.8.0"
+gradleNexusPublish = "1.1.0"
 kotlin = "1.9.10"
 coreKtx = "1.12.0"
 androidxLifecycle = "2.6.2"
-coroutines = "1.7.1"
-browserSwitch = "3.0.0-beta1"
-cardinal = "2.2.7-5"
+androidxRoom = "2.6.1"
+androidxTest = "1.5.0"
 androidxAppcompat = "1.6.0"
 androidxAnnotation = "1.7.0"
 androidxWork = "2.8.1"
+androidxJunit = "1.1.5"
+coroutines = "1.7.1"
+browserSwitch = "3.0.0-beta1"
+cardinal = "2.2.7-5"
 navigationSafeArgsGradlePlugin = "2.5.0"
 playServices = "19.3.0"
-androidx-room = "2.6.1"
-androidx-test = "1.5.0"
 junit = "4.13.2"
-androidx-junit = "1.1.5"
 robolectric = "4.11.1"
-mockito-core = "5.7.0"
-json-assert = "1.5.1"
+mockito = "5.7.0"
+jsonAssert = "1.5.1"
 mockk = "1.13.8"
+detekt = "1.23.6"
 dokka = "1.9.10"
 
 [libraries]
+# Androidx
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidxAnnotation" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppcompat" }
 androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime", version.ref = "androidxLifecycle" }
 androidx-navigation-safe-args-gradle-plugin = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "navigationSafeArgsGradlePlugin" }
-dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
-dokka-android-documentation-plugin = { module = "org.jetbrains.dokka:android-documentation-plugin", version.ref = "dokka" }
-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
-gradle-nexus-staging-plugin = { module = "io.codearte.gradle.nexus:gradle-nexus-staging-plugin", version.ref = "gradleNexusStagingPlugin" }
+androidx-work-runtime = { group = "androidx.work", name = "work-runtime", version.ref = "androidxWork" }
+androidx-work-testing = { group = "androidx.work", name = "work-testing", version.ref = "androidxWork" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidxRoom" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidxRoom" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTest" }
+androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTest" }
+androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidxTest" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }
+
+# Kotlin
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+
+gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
+gradle-nexus-staging-plugin = { module = "io.codearte.gradle.nexus:gradle-nexus-staging-plugin", version.ref = "gradleNexusStagingPlugin" }
 browser-switch = { group = "com.braintreepayments.api", name = "browser-switch", version.ref = "browserSwitch" }
 cardinal = { group = "org.jfrog.cardinalcommerce.gradle", name = "cardinalmobilesdk", version.ref = "cardinal" }
-androidx-work-runtime = { group = "androidx.work", name = "work-runtime", version.ref = "androidxWork" }
-androidx-work-testing = { group = "androidx.work", name = "work-testing", version.ref = "androidxWork" }
 play-services-wallet = { group = "com.google.android.gms", name = "play-services-wallet", version.ref = "playServices" }
-androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
-androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
-androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidx-test" }
-androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test" }
-androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidx-test" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-junit" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
-mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito-core" }
-json-assert = { group = "org.skyscreamer", name = "jsonassert", version.ref = "json-assert" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+json-assert = { group = "org.skyscreamer", name = "jsonassert", version.ref = "jsonAssert" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+detekt-rules-libraries = { module = "io.gitlab.arturbosch.detekt:detekt-rules-libraries", version.ref = "detekt" }
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+dokka-android-documentation-plugin = { module = "org.jetbrains.dokka:android-documentation-plugin", version.ref = "dokka" }
 
 [plugins]
+android-application = { id = "com.android.application", version.ref = "gradle" }
+android-library = { id = "com.android.library", version.ref = "gradle" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+androidx-safeargs = { id = "androidx.navigation.safeargs", version.ref = "navigationSafeArgsGradlePlugin" }
+gradle-nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "gradleNexusPublish" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

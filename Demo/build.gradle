@@ -1,7 +1,7 @@
 plugins {
-    id 'com.android.application'
-    id 'androidx.navigation.safeargs'
-    id 'kotlin-android'
+    alias libs.plugins.android.application
+    alias libs.plugins.androidx.safeargs
+    alias libs.plugins.kotlin.android
 }
 
 android {
@@ -52,7 +52,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.1"
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
 
     compileOptions {
@@ -100,7 +100,7 @@ dependencies {
     implementation 'androidx.preference:preference:1.2.1'
     implementation 'com.google.android.material:material:1.10.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.multidex:multidex:2.0.1'
+//    implementation 'androidx.multidex:multidex:2.0.1'
 
     implementation 'io.card:android-sdk:5.5.1'
     implementation 'com.braintreepayments:card-form:5.4.0'
