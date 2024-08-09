@@ -1,10 +1,10 @@
 package com.braintreepayments.api.core
 
-import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.GraphQLConstants.ErrorTypes
 import com.braintreepayments.api.sharedutils.Json
+import kotlinx.parcelize.Parcelize
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -15,20 +15,13 @@ import org.json.JSONObject
  * @property code Error code if one exists; defaults to [.UNKNOWN_CODE] otherwise
  * @property fieldErrors [BraintreeError] objects for any errors nested under this field.
  */
-class BraintreeError : Parcelable {
-
-    var field: String? = null
-        internal set
-
-    var message: String? = null
-        internal set
-
-    var fieldErrors: MutableList<BraintreeError>? = null
-        internal set
-
-    // default value
-    var code = UNKNOWN_CODE
-        internal set
+@Parcelize
+class BraintreeError internal constructor(
+    val field: String? = null,
+    val message: String? = null,
+    val fieldErrors: MutableList<BraintreeError>? = null,
+    val code: Int = UNKNOWN_CODE,
+) : Parcelable {
 
     /**
      * Method to extract an error for an individual field, e.g. creditCard, customer, etc.
@@ -38,7 +31,7 @@ class BraintreeError : Parcelable {
      */
     fun errorFor(field: String): BraintreeError? {
         if (fieldErrors == null) return null
-        for (error in fieldErrors!!) {
+        for (error in fieldErrors) {
             if (error.field == field) {
                 return error
             } else if (error.fieldErrors != null) {
@@ -50,24 +43,6 @@ class BraintreeError : Parcelable {
 
     override fun toString(): String {
         return "BraintreeError for $field: $message -> ${fieldErrors?.toString() ?: ""}"
-    }
-
-    internal constructor()
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(field)
-        dest.writeString(message)
-        dest.writeTypedList(fieldErrors)
-    }
-
-    private constructor(inParcel: Parcel) {
-        field = inParcel.readString()
-        message = inParcel.readString()
-        fieldErrors = inParcel.createTypedArrayList(CREATOR)
     }
 
     companion object {
@@ -122,12 +97,12 @@ class BraintreeError : Parcelable {
             return errors
         }
 
-        internal fun fromJson(json: JSONObject) = BraintreeError().apply {
-            field = Json.optString(json, FIELD_KEY, null)
-            message = Json.optString(json, MESSAGE_KEY, null)
-            code = json.optInt(CODE_KEY, UNKNOWN_CODE)
-            fieldErrors = fromJsonArray(json.optJSONArray(FIELD_ERRORS_KEY))
-        }
+        internal fun fromJson(json: JSONObject) = BraintreeError(
+            field = Json.optString(json, FIELD_KEY, null),
+            message = Json.optString(json, MESSAGE_KEY, null),
+            code = json.optInt(CODE_KEY, UNKNOWN_CODE),
+            fieldErrors = fromJsonArray(json.optJSONArray(FIELD_ERRORS_KEY)),
+        )
 
         @Throws(JSONException::class)
         private fun addGraphQLFieldError(
@@ -137,15 +112,16 @@ class BraintreeError : Parcelable {
         ) {
             val field = inputPath[0]
             if (inputPath.size == 1) {
-                val error = BraintreeError()
-                error.field = field
-                error.message = errorJSON.getString(GraphQLConstants.Keys.MESSAGE)
+                val code = errorJSON.optJSONObject(GraphQLConstants.Keys.EXTENSIONS)
+                    ?.optInt(GraphQLConstants.Keys.LEGACY_CODE, UNKNOWN_CODE)
+                    ?: UNKNOWN_CODE
 
-                val extensions = errorJSON.optJSONObject(GraphQLConstants.Keys.EXTENSIONS)
-                if (extensions != null) {
-                    error.code = extensions.optInt(GraphQLConstants.Keys.LEGACY_CODE, UNKNOWN_CODE)
-                }
-                error.fieldErrors = ArrayList()
+                val error = BraintreeError(
+                    field = field,
+                    message = errorJSON.getString(GraphQLConstants.Keys.MESSAGE),
+                    fieldErrors = ArrayList(),
+                    code = code
+                )
 
                 errors?.add(error)
                 return
@@ -162,20 +138,15 @@ class BraintreeError : Parcelable {
                 }
 
                 if (nestedError == null) {
-                    nestedError = BraintreeError()
-                    nestedError.field = field
-                    nestedError.fieldErrors = ArrayList()
+                    nestedError = BraintreeError(
+                        field = field,
+                        fieldErrors = ArrayList()
+                    )
                     errors.add(nestedError)
                 }
             }
 
             addGraphQLFieldError(nestedInputPath, errorJSON, nestedError?.fieldErrors)
-        }
-
-        @JvmField
-        val CREATOR = object : Parcelable.Creator<BraintreeError> {
-            override fun createFromParcel(source: Parcel) = BraintreeError(source)
-            override fun newArray(size: Int) = arrayOfNulls<BraintreeError>(size)
         }
     }
 }
