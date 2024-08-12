@@ -157,12 +157,14 @@ class BraintreeClient @VisibleForTesting internal constructor(
         params: AnalyticsEventParams = AnalyticsEventParams()
     ) {
         getConfiguration { configuration, _ ->
+            val isPayPalInstalled = deviceInspector.isPayPalInstalled(applicationContext)
             val isVenmoInstalled = deviceInspector.isVenmoInstalled(applicationContext)
             val event = AnalyticsEvent(
                 eventName,
                 params.payPalContextId,
                 params.linkType,
                 isVenmoInstalled,
+                isPayPalInstalled,
                 params.isVaultRequest,
                 params.startTime,
                 params.endTime,

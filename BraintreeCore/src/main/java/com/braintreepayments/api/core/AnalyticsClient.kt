@@ -210,6 +210,7 @@ internal class AnalyticsClient constructor(
             .put(FPTI_KEY_EVENT_NAME, event.name)
             .put(FPTI_KEY_TIMESTAMP, event.timestamp)
             .put(FPTI_KEY_VENMO_INSTALLED, event.venmoInstalled)
+            .put(FPTI_KEY_PAYPAL_INSTALLED, event.isPayPalInstalled)
             .put(FPTI_KEY_IS_VAULT, event.isVaultRequest)
             .put(FPTI_KEY_TENANT_NAME, "Braintree")
             .putOpt(FPTI_KEY_PAYPAL_CONTEXT_ID, event.payPalContextId)
@@ -225,6 +226,7 @@ internal class AnalyticsClient constructor(
 
         private const val FPTI_KEY_PAYPAL_CONTEXT_ID = "paypal_context_id"
         private const val FPTI_KEY_VENMO_INSTALLED = "venmo_installed"
+        private const val FPTI_KEY_PAYPAL_INSTALLED = "paypal_installed"
         private const val FPTI_KEY_IS_VAULT = "is_vault"
         private const val FPTI_KEY_LINK_TYPE = "link_type"
         private const val FPTI_KEY_TOKENIZATION_KEY = "tokenization_key"
