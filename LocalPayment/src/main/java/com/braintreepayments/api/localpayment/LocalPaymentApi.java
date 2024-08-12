@@ -61,7 +61,7 @@ class LocalPaymentApi {
 
             JSONObject metaData = new JSONObject()
                     .put("source", "client")
-                    .put("integration", braintreeClient.getIntegrationType())
+                    .put("integration", braintreeClient.getIntegrationType().getStringValue())
                     .put("sessionId", braintreeClient.getSessionId());
             payload.put("_meta", metaData);
 

@@ -135,7 +135,7 @@ class PayPalClient @VisibleForTesting internal constructor(
         }
 
         return BrowserSwitchOptions()
-            .requestCode(BraintreeRequestCodes.PAYPAL)
+            .requestCode(BraintreeRequestCodes.PAYPAL.code)
             .appLinkUri(braintreeClient.appLinkReturnUri)
             .url(Uri.parse(paymentAuthRequest.approvalUrl))
             .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())

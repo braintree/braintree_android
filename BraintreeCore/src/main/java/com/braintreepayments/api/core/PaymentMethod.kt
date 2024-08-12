@@ -22,12 +22,11 @@ abstract class PaymentMethod {
         const val VALIDATE_KEY = "validate"
 
         private const val DEFAULT_SOURCE = "form"
-        private const val DEFAULT_INTEGRATION = "custom"
     }
 
     private var _sessionId: String? = null
     private var _source: String? = DEFAULT_SOURCE
-    private var _integration: String? = DEFAULT_INTEGRATION
+    private var _integration: IntegrationType? = IntegrationType.CUSTOM
 
     abstract val apiPath: String?
 
@@ -45,7 +44,7 @@ abstract class PaymentMethod {
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun setIntegration(integration: String) {
+    fun setIntegration(integration: IntegrationType) {
         _integration = integration
     }
 
@@ -90,13 +89,13 @@ abstract class PaymentMethod {
     }
 
     protected constructor(parcel: Parcel) {
-        _integration = parcel.readString()
+        _integration = IntegrationType.fromString(parcel.readString())
         _source = parcel.readString()
         _sessionId = parcel.readString()
     }
 
     open fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(_integration)
+        dest.writeString(_integration?.stringValue)
         dest.writeString(_source)
         dest.writeString(_sessionId)
     }

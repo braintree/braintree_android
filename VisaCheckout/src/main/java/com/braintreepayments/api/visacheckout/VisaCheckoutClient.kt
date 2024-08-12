@@ -6,7 +6,6 @@ import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ConfigurationException
-import com.braintreepayments.api.core.TokenizeCallback
 import com.braintreepayments.api.visacheckout.VisaCheckoutNonce.Companion.fromJSON
 import com.visa.checkout.Environment
 import com.visa.checkout.Profile
