@@ -1,6 +1,6 @@
 package com.braintreepayments.api.paypalmessaging
 
-import com.braintreepayments.api.ExperimentalBetaApi
+import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.paypal.messages.config.PayPalMessagePageType
 
 /**

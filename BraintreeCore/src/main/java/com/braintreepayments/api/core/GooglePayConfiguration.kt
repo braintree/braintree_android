@@ -16,7 +16,7 @@ import org.json.JSONObject
  * @property supportedNetworks a string array of supported card networks for Google Pay.
  * @property paypalClientId the PayPal Client ID.
  */
-internal data class GooglePayConfiguration constructor(
+internal data class GooglePayConfiguration(
     val isEnabled: Boolean,
     val googleAuthorizationFingerprint: String?,
     val environment: String?,

@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import com.braintreepayments.api.ExperimentalBetaApi
+import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypalmessaging.PayPalMessagingColor
 import com.braintreepayments.api.paypalmessaging.PayPalMessagingListener
 import com.braintreepayments.api.paypalmessaging.PayPalMessagingLogoType

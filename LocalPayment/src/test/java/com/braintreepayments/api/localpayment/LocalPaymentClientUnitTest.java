@@ -25,6 +25,7 @@ import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.BraintreeRequestCodes;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.core.ConfigurationException;
+import com.braintreepayments.api.core.IntegrationType;
 import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.datacollector.DataCollector;
 import com.braintreepayments.api.testutils.Fixtures;
@@ -433,7 +434,7 @@ public class LocalPaymentClientUnitTest {
         assertTrue(paymentAuthRequest instanceof LocalPaymentAuthRequest.ReadyToLaunch);
         LocalPaymentAuthRequestParams params = ((LocalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams();
         BrowserSwitchOptions browserSwitchOptions = params.getBrowserSwitchOptions();
-        assertEquals(BraintreeRequestCodes.LOCAL_PAYMENT, browserSwitchOptions.getRequestCode());
+        assertEquals(BraintreeRequestCodes.LOCAL_PAYMENT.getCode(), browserSwitchOptions.getRequestCode());
         assertEquals(Uri.parse("https://sample.com/approval?token=sample-token"),
             browserSwitchOptions.getUrl());
         assertFalse(browserSwitchOptions.isLaunchAsNewTask());
@@ -540,7 +541,7 @@ public class LocalPaymentClientUnitTest {
             .configuration(payPalEnabledConfig)
             .sendPOSTErrorResponse(postError)
             .sessionId("sample-session-id")
-            .integration("sample-integration-type")
+            .integration(IntegrationType.CUSTOM)
             .build();
 
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
@@ -587,7 +588,7 @@ public class LocalPaymentClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configuration(payPalEnabledConfig)
             .sessionId("sample-session-id")
-            .integration("sample-integration-type")
+            .integration(IntegrationType.CUSTOM)
             .build();
         when(dataCollector.getClientMetadataId(activity, payPalEnabledConfig, false)).thenReturn(
             "sample-correlation-id");
@@ -618,7 +619,7 @@ public class LocalPaymentClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configuration(payPalEnabledConfig)
-            .integration("custom")
+            .integration(IntegrationType.CUSTOM)
             .sessionId("session-id")
             .build();
         when(dataCollector.getClientMetadataId(any(Context.class),
@@ -702,7 +703,7 @@ public class LocalPaymentClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configurationError(configError)
             .sessionId("sample-session-id")
-            .integration("sample-integration-type")
+            .integration(IntegrationType.CUSTOM)
             .build();
         when(dataCollector.getClientMetadataId(activity, payPalEnabledConfig, true)).thenReturn(
             "sample-correlation-id");
@@ -769,7 +770,7 @@ public class LocalPaymentClientUnitTest {
         when(browserSwitchResult.getReturnUrl()).thenReturn(Uri.parse(webUrl));
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configuration(payPalEnabledConfig)
-            .integration("custom")
+            .integration(IntegrationType.CUSTOM)
             .sessionId("session-id")
             .build();
         when(dataCollector.getClientMetadataId(any(Context.class), same(payPalEnabledConfig), anyBoolean())).thenReturn("client-metadata-id");

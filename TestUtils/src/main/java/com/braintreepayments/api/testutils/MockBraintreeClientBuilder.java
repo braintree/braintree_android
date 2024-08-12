@@ -14,6 +14,7 @@ import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.core.ConfigurationCallback;
+import com.braintreepayments.api.core.IntegrationType;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
 
 import org.mockito.stubbing.Answer;
@@ -35,7 +36,7 @@ public class MockBraintreeClientBuilder {
     private Authorization authorization;
 
     private String sessionId;
-    private String integration;
+    private IntegrationType integration;
     private String returnUrlScheme;
     private Uri appLinkReturnUri;
 
@@ -99,7 +100,7 @@ public class MockBraintreeClientBuilder {
         return this;
     }
 
-    public MockBraintreeClientBuilder integration(String integration) {
+    public MockBraintreeClientBuilder integration(IntegrationType integration) {
         this.integration = integration;
         return this;
     }

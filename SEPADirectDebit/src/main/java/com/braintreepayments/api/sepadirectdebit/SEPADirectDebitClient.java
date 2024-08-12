@@ -187,7 +187,7 @@ public class SEPADirectDebitClient {
                 .put(MANDATE_TYPE_KEY, createMandateResult.getMandateType().toString());
 
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
-                .requestCode(BraintreeRequestCodes.SEPA_DEBIT)
+                .requestCode(BraintreeRequestCodes.SEPA_DEBIT.getCode())
                 .url(Uri.parse(createMandateResult.getApprovalUrl()))
                 .metadata(metadata)
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme());

@@ -4,6 +4,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 
+import com.braintreepayments.api.core.IntegrationType;
 import com.braintreepayments.api.core.MetadataBuilder;
 
 import org.json.JSONException;
@@ -67,12 +68,12 @@ public class PayPalAccountUnitTest {
             "alt_merchant_account_id",
             "single-payment"
         );
-        sut.setIntegration("test-integration");
+        sut.setIntegration(IntegrationType.CUSTOM);
 
         JSONObject json = sut.buildJSON();
         JSONObject metadata = json.getJSONObject(MetadataBuilder.META_KEY);
 
-        assertEquals("test-integration", metadata.getString("integration"));
+        assertEquals(IntegrationType.CUSTOM.getStringValue(), metadata.getString("integration"));
     }
 
     @Test

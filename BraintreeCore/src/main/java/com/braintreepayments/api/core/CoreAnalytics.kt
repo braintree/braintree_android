@@ -1,5 +1,5 @@
 package com.braintreepayments.api.core
 
-object CoreAnalytics {
+internal object CoreAnalytics {
     const val apiRequestLatency = "core:api-request-latency"
 }

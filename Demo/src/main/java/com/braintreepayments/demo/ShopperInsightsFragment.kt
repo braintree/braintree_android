@@ -9,7 +9,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.fragment.NavHostFragment
-import com.braintreepayments.api.ExperimentalBetaApi
+import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.ShopperInsightsBuyerPhone
 import com.braintreepayments.api.shopperinsights.ShopperInsightsClient
 import com.braintreepayments.api.shopperinsights.ShopperInsightsRequest
