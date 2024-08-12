@@ -86,6 +86,7 @@ class AnalyticsClientUnitTest {
           "event_name": "sample-event-name",
           "t": 123,
           "venmo_installed": false,
+          "paypal_installed": false,
           "is_vault": false,
           "tenant_name": "Braintree"
         }
@@ -474,6 +475,7 @@ class AnalyticsClientUnitTest {
                     "t": 123,
                     "tenant_name": "Braintree",
                     "venmo_installed": false,
+                    "paypal_installed": false,
                     "is_vault": false
                 }
               ]
