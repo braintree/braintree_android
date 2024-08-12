@@ -107,9 +107,8 @@ class AnalyticsClientUnitTest {
             name = eventName,
             payPalContextId = "fake-paypal-context-id",
             linkType = "fake-link-type",
-            timestamp = 456,
-            venmoInstalled = true,
-            isVaultRequest = true
+            isVaultRequest = true,
+            timestamp = 456
         )
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
