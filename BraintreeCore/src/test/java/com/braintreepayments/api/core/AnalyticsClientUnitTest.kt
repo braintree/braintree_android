@@ -196,6 +196,7 @@ class AnalyticsClientUnitTest {
 
     @Test
     @Throws(Exception::class)
+    @Suppress("LongMethod")
     fun uploadAnalytics_whenEventsExist_sendsAllEvents() {
         val inputData = Data.Builder()
             .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())

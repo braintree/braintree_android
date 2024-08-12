@@ -143,7 +143,7 @@ internal class PayPalInternalClient(
             }
         }
     }
-    
+
     private fun createAppSwitchUri(uri: Uri): Uri {
         return uri.buildUpon()
             .appendQueryParameter("source", "braintree_sdk")
