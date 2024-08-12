@@ -53,21 +53,21 @@ class DeviceInspectorUnitTest {
     @Throws(JSONException::class)
     fun getDeviceMetadata_returnsPlatform() {
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals("Android", metadata.toJSON().getString("platform"))
+        assertEquals("Android", metadata.platform)
     }
 
     @Test
     @Throws(JSONException::class)
     fun getDeviceMetadata_returnsEventSource() {
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals("mobile-native", metadata.toJSON().getString("event_source"))
+        assertEquals("mobile-native", metadata.eventSource)
     }
 
     @Test
     @Throws(JSONException::class)
     fun getDeviceMetadata_returnsComponent() {
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals("braintreeclientsdk", metadata.toJSON().getString("comp"))
+        assertEquals("braintreeclientsdk", metadata.component)
     }
 
     @Test
@@ -75,21 +75,21 @@ class DeviceInspectorUnitTest {
     fun getDeviceMetadata_returnsPlatformVersion() {
         ReflectionHelpers.setStaticField(VERSION::class.java, "SDK_INT", 123)
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals("Android API 123", metadata.toJSON().getString("client_os"))
+        assertEquals("Android API 123", metadata.clientOs)
     }
 
     @Test
     @Throws(JSONException::class)
     fun getDeviceMetadata_returnsSDKVersion() {
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals(BuildConfig.VERSION_NAME, metadata.toJSON().getString("c_sdk_ver"))
+        assertEquals(BuildConfig.VERSION_NAME, metadata.clientSDKVersion)
     }
 
     @Test
     @Throws(JSONException::class)
     fun getDeviceMetadata_returnsAppId() {
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals("com.sample.app", metadata.toJSON().getString("app_id"))
+        assertEquals("com.sample.app", metadata.appId)
     }
 
     @Test
@@ -97,10 +97,7 @@ class DeviceInspectorUnitTest {
     fun getDeviceMetadata_whenApplicationInfoUnavailable_returnsApplicationNameUnknown() {
         every { packageManager.getApplicationInfo("com.sample.app", 0) } throws PackageManager.NameNotFoundException()
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals(
-            "ApplicationNameUnknown",
-            metadata.toJSON().getString("app_name")
-        )
+        assertEquals("ApplicationNameUnknown", metadata.appName)
     }
 
     @Test
@@ -110,7 +107,7 @@ class DeviceInspectorUnitTest {
         every { packageManager.getApplicationInfo("com.sample.app", 0) } returns applicationInfo
         every { packageManager.getApplicationLabel(applicationInfo) } returns "SampleAppName"
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals("SampleAppName", metadata.toJSON().getString("app_name"))
+        assertEquals("SampleAppName", metadata.appName)
     }
 
     @Test
@@ -118,10 +115,7 @@ class DeviceInspectorUnitTest {
     fun getDeviceMetadata_returnsDeviceManufacturer() {
         ReflectionHelpers.setStaticField(Build::class.java, "MANUFACTURER", "device-manufacturer")
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals(
-            "device-manufacturer",
-            metadata.toJSON().getString("device_manufacturer")
-        )
+        assertEquals("device-manufacturer", metadata.deviceManufacturer)
     }
 
     @Test
@@ -129,7 +123,7 @@ class DeviceInspectorUnitTest {
     fun getDeviceMetadata_returnsDeviceModel() {
         ReflectionHelpers.setStaticField(Build::class.java, "MODEL", "device-model")
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals("device-model", metadata.toJSON().getString("mobile_device_model"))
+        assertEquals("device-model", metadata.deviceModel)
     }
 
     @Test
@@ -143,7 +137,7 @@ class DeviceInspectorUnitTest {
         )
         ReflectionHelpers.setStaticField(Build::class.java, "FINGERPRINT", "randomBuildFingerprint")
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals("false", metadata.toJSON().getString("is_simulator"))
+        assertFalse(metadata.isSimulator)
     }
 
     @Test
@@ -151,7 +145,7 @@ class DeviceInspectorUnitTest {
     fun getDeviceMetadata_whenBuildProductIsGoogleSdk_returnsTrueForIsSimulator() {
         ReflectionHelpers.setStaticField(Build::class.java, "PRODUCT", "google_sdk")
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertTrue(metadata.toJSON().getBoolean("is_simulator"))
+        assertTrue(metadata.isSimulator)
     }
 
     @Test
@@ -159,7 +153,7 @@ class DeviceInspectorUnitTest {
     fun getDeviceMetadata_whenBuildProductIsSdk_returnsTrueForIsSimulator() {
         ReflectionHelpers.setStaticField(Build::class.java, "PRODUCT", "sdk")
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertTrue(metadata.toJSON().getBoolean("is_simulator"))
+        assertTrue(metadata.isSimulator)
     }
 
     @Test
@@ -167,7 +161,7 @@ class DeviceInspectorUnitTest {
     fun getDeviceMetadata_whenBuildManufacturerIsGenymotion_returnsTrueForIsSimulator() {
         ReflectionHelpers.setStaticField(Build::class.java, "MANUFACTURER", "Genymotion")
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertTrue(metadata.toJSON().getBoolean("is_simulator"))
+        assertTrue(metadata.isSimulator)
     }
 
     @Test
@@ -175,21 +169,21 @@ class DeviceInspectorUnitTest {
     fun getDeviceMetadata_whenBuildFingerpintContainsGeneric_returnsTrueForIsSimulator() {
         ReflectionHelpers.setStaticField(Build::class.java, "FINGERPRINT", "generic")
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertTrue(metadata.toJSON().getBoolean("is_simulator"))
+        assertTrue(metadata.isSimulator)
     }
 
     @Test
     @Throws(JSONException::class)
     fun getDeviceMetadata_forwardsSessionId() {
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals("session-id", metadata.toJSON().getString("session_id"))
+        assertEquals("session-id", metadata.sessionId)
     }
 
     @Test
     @Throws(JSONException::class)
     fun getDeviceMetadata_forwardsIntegrationType() {
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals("integration-type", metadata.toJSON().getString("api_integration_type"))
+        assertEquals("integration-type", metadata.integrationType)
     }
 
     @Test
@@ -199,7 +193,7 @@ class DeviceInspectorUnitTest {
         packageInfo.versionName = "AppVersion"
         every { packageManager.getPackageInfo("com.sample.app", 0) } returns packageInfo
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals("AppVersion", metadata.toJSON().getString("mapv"))
+        assertEquals("AppVersion", metadata.merchantAppVersion)
     }
 
     @Test
@@ -207,7 +201,7 @@ class DeviceInspectorUnitTest {
     fun getDeviceMetadata_whenAppVersionUnavailable_returnsVersionUnknownByDefault() {
         every { packageManager.getPackageInfo("com.sample.app", 0) } throws PackageManager.NameNotFoundException()
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals("VersionUnknown", metadata.toJSON().getString("mapv"))
+        assertEquals("VersionUnknown", metadata.merchantAppVersion)
     }
 
     @Test
@@ -216,7 +210,7 @@ class DeviceInspectorUnitTest {
         mockkObject(DeviceInspector) {
             every { DeviceInspector.getDropInVersion() } returns "fake-drop-in-version"
             val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-            assertEquals("fake-drop-in-version", metadata.toJSON().getString("drop_in_sdk_ver"))
+            assertEquals("fake-drop-in-version", metadata.dropInSDKVersion)
         }
     }
 
@@ -224,14 +218,14 @@ class DeviceInspectorUnitTest {
     @Throws(JSONException::class)
     fun getSDKEnvironment_forwardsEnvironmentFromConfig() {
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals("test", metadata.toJSON().getString("merchant_sdk_env"))
+        assertEquals("test", metadata.environment)
     }
 
     @Test
     @Throws(JSONException::class)
     fun getMerchantID_forwardsMerchantIdFromConfig() {
         val metadata = sut.getDeviceMetadata(context, btConfiguration, "session-id", "integration-type")
-        assertEquals("integration_merchant_id", metadata.toJSON().getString("merchant_id"))
+        assertEquals("integration_merchant_id", metadata.merchantId)
     }
 
     @Test
