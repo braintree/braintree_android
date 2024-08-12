@@ -53,6 +53,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
 
     private val crashReporter: CrashReporter
     private var launchesBrowserSwitchAsNewTask: Boolean = false
+    private val deviceInspector: DeviceInspector
 
     // NOTE: this constructor is used to make dependency injection easy
     internal constructor(params: BraintreeClientParams) : this(
@@ -112,6 +113,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
         // statistics access via the sdk console
         crashReporter = CrashReporter(this)
         crashReporter.start()
+        deviceInspector = DeviceInspector()
     }
 
     /**
