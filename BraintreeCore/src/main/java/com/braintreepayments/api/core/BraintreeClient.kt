@@ -130,7 +130,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
             } else {
                 callback.onResult(null, configError)
             }
-            timing?.let { sendAnalyticsTimingEvent("v1/configuration", it) }
+            timing?.let { sendAnalyticsTimingEvent("/v1/configuration", it) }
         }
     }
 
