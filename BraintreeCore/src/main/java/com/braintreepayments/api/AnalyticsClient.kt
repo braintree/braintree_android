@@ -181,7 +181,7 @@ internal class AnalyticsClient constructor(
         eventBlobs: List<AnalyticsEventBlob>,
         metadata: DeviceMetadata
     ): JSONObject {
-        val batchParamsJSON = metadata.toJSON()
+        val batchParamsJSON = mapDeviceMetadataToFPTIBatchParamsJSON(metadata)
         authorization?.let {
             if (it is ClientToken) {
                 batchParamsJSON.put(FPTI_KEY_AUTH_FINGERPRINT, it.bearer)
@@ -208,7 +208,6 @@ internal class AnalyticsClient constructor(
         val json = JSONObject()
             .put(FPTI_KEY_EVENT_NAME, "android.${event.name}")
             .put(FPTI_KEY_TIMESTAMP, event.timestamp)
-            .put(FPTI_KEY_VENMO_INSTALLED, event.venmoInstalled)
             .put(FPTI_KEY_IS_VAULT, event.isVaultRequest)
             .put(FPTI_KEY_TENANT_NAME, "Braintree")
             .putOpt(FPTI_KEY_PAYPAL_CONTEXT_ID, event.payPalContextId)
@@ -219,11 +218,35 @@ internal class AnalyticsClient constructor(
         return json.toString()
     }
 
+    @Throws(JSONException::class)
+    private fun mapDeviceMetadataToFPTIBatchParamsJSON(metadata: DeviceMetadata): JSONObject {
+        val isVenmoInstalled = deviceInspector.isVenmoInstalled(applicationContext)
+        return metadata.run {
+            JSONObject()
+                .putOpt(FPTI_BATCH_KEY_APP_ID, appId)
+                .putOpt(FPTI_BATCH_KEY_APP_NAME, appName)
+                .putOpt(FPTI_BATCH_KEY_CLIENT_SDK_VERSION, clientSDKVersion)
+                .putOpt(FPTI_BATCH_KEY_CLIENT_OS, clientOs)
+                .putOpt(FPTI_BATCH_KEY_COMPONENT, component)
+                .putOpt(FPTI_BATCH_KEY_DEVICE_MANUFACTURER, deviceManufacturer)
+                .putOpt(FPTI_BATCH_KEY_DEVICE_MODEL, deviceModel)
+                .putOpt(FPTI_BATCH_KEY_DROP_IN_SDK_VERSION, dropInSDKVersion)
+                .putOpt(FPTI_BATCH_KEY_EVENT_SOURCE, eventSource)
+                .putOpt(FPTI_BATCH_KEY_ENVIRONMENT, environment)
+                .putOpt(FPTI_BATCH_KEY_INTEGRATION_TYPE, integrationType)
+                .put(FPTI_BATCH_KEY_IS_SIMULATOR, isSimulator)
+                .putOpt(FPTI_BATCH_KEY_MERCHANT_APP_VERSION, merchantAppVersion)
+                .putOpt(FPTI_BATCH_KEY_MERCHANT_ID, merchantId)
+                .putOpt(FPTI_BATCH_KEY_PLATFORM, platform)
+                .putOpt(FPTI_BATCH_KEY_SESSION_ID, sessionId)
+                .put(FPTI_BATCH_KEY_VENMO_INSTALLED, isVenmoInstalled)
+        }
+    }
+
     companion object {
         private const val FPTI_ANALYTICS_URL = "https://api-m.paypal.com/v1/tracking/batch/events"
 
         private const val FPTI_KEY_PAYPAL_CONTEXT_ID = "paypal_context_id"
-        private const val FPTI_KEY_VENMO_INSTALLED = "venmo_installed"
         private const val FPTI_KEY_IS_VAULT = "is_vault"
         private const val FPTI_KEY_LINK_TYPE = "link_type"
         private const val FPTI_KEY_TOKENIZATION_KEY = "tokenization_key"
@@ -237,6 +260,24 @@ internal class AnalyticsClient constructor(
         private const val FPTI_KEY_START_TIME = "start_time"
         private const val FPTI_KEY_END_TIME = "end_time"
         private const val FPTI_KEY_ENDPOINT = "endpoint"
+
+        private const val FPTI_BATCH_KEY_VENMO_INSTALLED = "venmo_installed"
+        private const val FPTI_BATCH_KEY_APP_ID = "app_id"
+        private const val FPTI_BATCH_KEY_APP_NAME = "app_name"
+        private const val FPTI_BATCH_KEY_CLIENT_SDK_VERSION = "c_sdk_ver"
+        private const val FPTI_BATCH_KEY_CLIENT_OS = "client_os"
+        private const val FPTI_BATCH_KEY_COMPONENT = "comp"
+        private const val FPTI_BATCH_KEY_DEVICE_MANUFACTURER = "device_manufacturer"
+        private const val FPTI_BATCH_KEY_DEVICE_MODEL = "mobile_device_model"
+        private const val FPTI_BATCH_KEY_DROP_IN_SDK_VERSION = "drop_in_sdk_ver"
+        private const val FPTI_BATCH_KEY_EVENT_SOURCE = "event_source"
+        private const val FPTI_BATCH_KEY_ENVIRONMENT = "merchant_sdk_env"
+        private const val FPTI_BATCH_KEY_INTEGRATION_TYPE = "api_integration_type"
+        private const val FPTI_BATCH_KEY_IS_SIMULATOR = "is_simulator"
+        private const val FPTI_BATCH_KEY_MERCHANT_APP_VERSION = "mapv"
+        private const val FPTI_BATCH_KEY_MERCHANT_ID = "merchant_id"
+        private const val FPTI_BATCH_KEY_PLATFORM = "platform"
+        private const val FPTI_BATCH_KEY_SESSION_ID = "session_id"
 
         const val WORK_NAME_ANALYTICS_UPLOAD = "uploadAnalytics"
         const val WORK_NAME_ANALYTICS_WRITE = "writeAnalyticsToDb"
