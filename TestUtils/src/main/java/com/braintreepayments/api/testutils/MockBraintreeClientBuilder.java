@@ -43,7 +43,6 @@ public class MockBraintreeClientBuilder {
 
     private ActivityInfo activityInfo;
     private boolean launchesBrowserSwitchAsNewTask;
-    private boolean isPayPalInstalled;
 
     public MockBraintreeClientBuilder configuration(Configuration configuration) {
         this.configuration = configuration;
@@ -116,12 +115,6 @@ public class MockBraintreeClientBuilder {
         return this;
     }
 
-    public MockBraintreeClientBuilder isPayPalInstalled(
-            boolean isPayPalInstalled) {
-        this.isPayPalInstalled = isPayPalInstalled;
-        return this;
-    }
-
     public MockBraintreeClientBuilder appLinkReturnUri(
             Uri appLinkReturnUri) {
         this.appLinkReturnUri = appLinkReturnUri;
@@ -137,7 +130,6 @@ public class MockBraintreeClientBuilder {
         when(braintreeClient.getManifestActivityInfo(any())).thenReturn(activityInfo);
         when(braintreeClient.launchesBrowserSwitchAsNewTask()).thenReturn(
                 launchesBrowserSwitchAsNewTask);
-        when(braintreeClient.isPayPalInstalled()).thenReturn(isPayPalInstalled);
         when(braintreeClient.getAppLinkReturnUri()).thenReturn(appLinkReturnUri);
 
         doAnswer((Answer<Void>) invocation -> {

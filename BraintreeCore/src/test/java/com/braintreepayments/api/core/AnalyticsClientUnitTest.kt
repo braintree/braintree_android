@@ -196,6 +196,7 @@ class AnalyticsClientUnitTest {
 
     @Test
     @Throws(Exception::class)
+    @Suppress("LongMethod")
     fun uploadAnalytics_whenEventsExist_sendsAllEvents() {
         val inputData = Data.Builder()
             .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
@@ -206,6 +207,7 @@ class AnalyticsClientUnitTest {
         val metadata = createSampleDeviceMetadata()
 
         every { deviceInspector.isVenmoInstalled(context) } returns true
+        every { deviceInspector.isPayPalInstalled(context) } returns true
         every {
             deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
         } returns metadata
@@ -245,6 +247,7 @@ class AnalyticsClientUnitTest {
                 "api_integration_type": "custom",
                 "is_simulator": false,
                 "venmo_installed": true,
+                "paypal_installed": true,
                 "mapv": "fake-merchant-app-version",
                 "merchant_id": "fake-merchant-id",
                 "platform": "fake-platform",
@@ -424,6 +427,7 @@ class AnalyticsClientUnitTest {
         val metadata = createSampleDeviceMetadata()
 
         every { deviceInspector.isVenmoInstalled(context) } returns false
+        every { deviceInspector.isPayPalInstalled(context) } returns false
         every {
             deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         } returns metadata
@@ -461,6 +465,7 @@ class AnalyticsClientUnitTest {
                 "api_integration_type": "custom",
                 "is_simulator": false,
                 "venmo_installed": false,
+                "paypal_installed": false,
                 "mapv": "fake-merchant-app-version",
                 "merchant_id": "fake-merchant-id",
                 "platform": "fake-platform",

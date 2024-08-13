@@ -5,16 +5,21 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.sharedutils.AppHelper
 import com.braintreepayments.api.sharedutils.SignatureVerifier
 
-internal class DeviceInspector(
+/**
+ * @suppress
+ */
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+class DeviceInspector(
     private val appHelper: AppHelper = AppHelper(),
     private val signatureVerifier: SignatureVerifier = SignatureVerifier(),
 ) {
 
-    fun getDeviceMetadata(
+    internal fun getDeviceMetadata(
         context: Context?,
         configuration: Configuration?,
         sessionId: String?,

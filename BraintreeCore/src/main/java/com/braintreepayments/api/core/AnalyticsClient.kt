@@ -221,6 +221,7 @@ internal class AnalyticsClient(
     @Throws(JSONException::class)
     private fun mapDeviceMetadataToFPTIBatchParamsJSON(metadata: DeviceMetadata): JSONObject {
         val isVenmoInstalled = deviceInspector.isVenmoInstalled(applicationContext)
+        val isPayPalInstalled = deviceInspector.isPayPalInstalled(applicationContext)
         return metadata.run {
             JSONObject()
                 .put(FPTI_BATCH_KEY_APP_ID, appId)
@@ -240,6 +241,7 @@ internal class AnalyticsClient(
                 .put(FPTI_BATCH_KEY_PLATFORM, platform)
                 .put(FPTI_BATCH_KEY_SESSION_ID, sessionId)
                 .put(FPTI_BATCH_KEY_VENMO_INSTALLED, isVenmoInstalled)
+                .put(FPTI_BATCH_KEY_PAYPAL_INSTALLED, isPayPalInstalled)
         }
     }
 
@@ -262,6 +264,7 @@ internal class AnalyticsClient(
         private const val FPTI_KEY_ENDPOINT = "endpoint"
 
         private const val FPTI_BATCH_KEY_VENMO_INSTALLED = "venmo_installed"
+        private const val FPTI_BATCH_KEY_PAYPAL_INSTALLED = "paypal_installed"
         private const val FPTI_BATCH_KEY_APP_ID = "app_id"
         private const val FPTI_BATCH_KEY_APP_NAME = "app_name"
         private const val FPTI_BATCH_KEY_CLIENT_SDK_VERSION = "c_sdk_ver"
