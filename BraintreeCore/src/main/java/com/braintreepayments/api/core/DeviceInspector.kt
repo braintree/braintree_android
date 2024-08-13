@@ -10,6 +10,9 @@ import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.sharedutils.AppHelper
 import com.braintreepayments.api.sharedutils.SignatureVerifier
 
+/**
+ * @suppress
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class DeviceInspector(
     private val appHelper: AppHelper = AppHelper(),
@@ -56,16 +59,10 @@ class DeviceInspector(
         return isVenmoIntentAvailable && isVenmoSignatureValid
     }
 
-    /**
-     * @suppress
-     */
     fun isPayPalInstalled(context: Context?): Boolean {
         return appHelper.isAppInstalled(context, PAYPAL_APP_PACKAGE)
     }
 
-    /**
-     * @suppress
-     */
     fun isVenmoInstalled(context: Context?): Boolean {
         return appHelper.isAppInstalled(context, VENMO_APP_PACKAGE)
     }
