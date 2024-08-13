@@ -71,7 +71,11 @@ class PayPalClient @VisibleForTesting internal constructor(
         callback: PayPalPaymentAuthCallback
     ) {
         isVaultRequest = payPalRequest is PayPalVaultRequest
-        linkType = if (isAppSwitchEnabled(payPalRequest)) LinkType.UNIVERSAL else LinkType.DEEPLINK
+        linkType = if (internalPayPalClient.isAppSwitchEnabled(payPalRequest) && internalPayPalClient.isPayPalInstalled(context)) {
+            LinkType.UNIVERSAL
+        } else {
+            LinkType.DEEPLINK
+        }
 
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsParams)
 
@@ -299,12 +303,6 @@ class PayPalClient @VisibleForTesting internal constructor(
 
     private fun payPalConfigInvalid(configuration: Configuration?): Boolean {
         return (configuration == null || !configuration.isPayPalEnabled)
-    }
-
-    private fun isAppSwitchEnabled(payPalRequest: PayPalRequest): Boolean {
-        return (payPalRequest is PayPalVaultRequest) &&
-                payPalRequest.enablePayPalAppSwitch &&
-                braintreeClient.isPayPalInstalled()
     }
 
     companion object {
