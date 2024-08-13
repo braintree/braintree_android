@@ -14,6 +14,7 @@ import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.core.ConfigurationCallback;
+import com.braintreepayments.api.core.IntegrationType;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
 
 import org.mockito.stubbing.Answer;
@@ -35,14 +36,13 @@ public class MockBraintreeClientBuilder {
     private Authorization authorization;
 
     private String sessionId;
-    private String integration;
+    private IntegrationType integration;
     private String returnUrlScheme;
     private Uri appLinkReturnUri;
 
 
     private ActivityInfo activityInfo;
     private boolean launchesBrowserSwitchAsNewTask;
-    private boolean isPayPalInstalled;
 
     public MockBraintreeClientBuilder configuration(Configuration configuration) {
         this.configuration = configuration;
@@ -99,7 +99,7 @@ public class MockBraintreeClientBuilder {
         return this;
     }
 
-    public MockBraintreeClientBuilder integration(String integration) {
+    public MockBraintreeClientBuilder integration(IntegrationType integration) {
         this.integration = integration;
         return this;
     }
@@ -112,12 +112,6 @@ public class MockBraintreeClientBuilder {
     public MockBraintreeClientBuilder launchesBrowserSwitchAsNewTask(
             boolean launchesBrowserSwitchAsNewTask) {
         this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask;
-        return this;
-    }
-
-    public MockBraintreeClientBuilder isPayPalInstalled(
-            boolean isPayPalInstalled) {
-        this.isPayPalInstalled = isPayPalInstalled;
         return this;
     }
 
@@ -136,7 +130,6 @@ public class MockBraintreeClientBuilder {
         when(braintreeClient.getManifestActivityInfo(any())).thenReturn(activityInfo);
         when(braintreeClient.launchesBrowserSwitchAsNewTask()).thenReturn(
                 launchesBrowserSwitchAsNewTask);
-        when(braintreeClient.isPayPalInstalled()).thenReturn(isPayPalInstalled);
         when(braintreeClient.getAppLinkReturnUri()).thenReturn(appLinkReturnUri);
 
         doAnswer((Answer<Void>) invocation -> {

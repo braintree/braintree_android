@@ -6,6 +6,7 @@ import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
@@ -15,7 +16,8 @@ import org.json.JSONObject
 internal class PayPalInternalClient(
     private val braintreeClient: BraintreeClient,
     private val dataCollector: DataCollector = DataCollector(braintreeClient),
-    private val apiClient: ApiClient = ApiClient(braintreeClient)
+    private val apiClient: ApiClient = ApiClient(braintreeClient),
+    private val deviceInspector: DeviceInspector = DeviceInspector()
 ) {
     private val cancelUrl = "${braintreeClient.appLinkReturnUri}://onetouch/v1/cancel"
     private val successUrl = "${braintreeClient.appLinkReturnUri}://onetouch/v1/success"
@@ -43,7 +45,7 @@ internal class PayPalInternalClient(
                 val appLinkReturn = if (isBillingAgreement) appLink else null
 
                 if (isBillingAgreement) {
-                    (payPalRequest as PayPalVaultRequest).enablePayPalAppSwitch = braintreeClient.isPayPalInstalled()
+                    (payPalRequest as PayPalVaultRequest).enablePayPalAppSwitch = isPayPalInstalled(context)
                 }
 
                 val requestBody = payPalRequest.createRequestBody(
@@ -127,7 +129,7 @@ internal class PayPalInternalClient(
                     successUrl = successUrl
                 )
 
-                if (isAppSwitchEnabled(payPalRequest)) {
+                if (isAppSwitchEnabled(payPalRequest) && isPayPalInstalled(context)) {
                     if (!pairingId.isNullOrEmpty()) {
                         paymentAuthRequest.approvalUrl = createAppSwitchUri(parsedRedirectUri).toString()
                     } else {
@@ -153,8 +155,11 @@ internal class PayPalInternalClient(
 
     private fun isAppSwitchEnabled(payPalRequest: PayPalRequest): Boolean {
         return (payPalRequest is PayPalVaultRequest) &&
-                payPalRequest.enablePayPalAppSwitch &&
-                braintreeClient.isPayPalInstalled()
+                payPalRequest.enablePayPalAppSwitch
+    }
+
+    private fun isPayPalInstalled(context: Context): Boolean {
+        return deviceInspector.isPayPalInstalled(context)
     }
 
     private fun findPairingId(redirectUri: Uri): String? {

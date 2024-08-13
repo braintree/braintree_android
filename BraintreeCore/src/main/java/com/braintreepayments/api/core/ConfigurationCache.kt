@@ -1,13 +1,12 @@
 package com.braintreepayments.api.core
 
 import android.content.Context
-import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.sharedutils.BraintreeSharedPreferences
 import java.util.concurrent.TimeUnit
 
-internal class ConfigurationCache @VisibleForTesting constructor(
-        private val sharedPreferences: BraintreeSharedPreferences
-    ) {
+internal class ConfigurationCache(
+    private val sharedPreferences: BraintreeSharedPreferences
+) {
 
     fun getConfiguration(cacheKey: String): String? {
         return getConfiguration(cacheKey, System.currentTimeMillis())

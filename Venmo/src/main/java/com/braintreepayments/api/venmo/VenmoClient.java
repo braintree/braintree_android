@@ -189,7 +189,7 @@ public class VenmoClient {
                 .build();
 
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
-                .requestCode(BraintreeRequestCodes.VENMO)
+                .requestCode(BraintreeRequestCodes.VENMO.getCode())
                 .url(venmoBaseURL)
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme());
         VenmoPaymentAuthRequestParams params = new VenmoPaymentAuthRequestParams(

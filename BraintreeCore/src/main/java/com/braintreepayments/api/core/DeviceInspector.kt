@@ -14,21 +14,16 @@ import com.braintreepayments.api.sharedutils.SignatureVerifier
  * @suppress
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class DeviceInspector @VisibleForTesting internal constructor(
-    private val appHelper: AppHelper,
-    private val signatureVerifier: SignatureVerifier,
+class DeviceInspector(
+    private val appHelper: AppHelper = AppHelper(),
+    private val signatureVerifier: SignatureVerifier = SignatureVerifier(),
 ) {
-
-    constructor() : this(
-        AppHelper(),
-        SignatureVerifier(),
-    )
 
     internal fun getDeviceMetadata(
         context: Context?,
         configuration: Configuration?,
         sessionId: String?,
-        integration: String?
+        integration: IntegrationType?
     ): DeviceMetadata {
         return DeviceMetadata(
             appId = context?.packageName,

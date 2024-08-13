@@ -2,7 +2,6 @@ package com.braintreepayments.api.core
 
 import androidx.annotation.RestrictTo
 import org.json.JSONObject
-import java.lang.Exception
 
 /**
  * Communicates JSON response from a tokenization request on the main thread.

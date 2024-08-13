@@ -1,6 +1,6 @@
 package com.braintreepayments.api.shopperinsights
 
-import com.braintreepayments.api.ExperimentalBetaApi
+import com.braintreepayments.api.core.ExperimentalBetaApi
 
 /**
  * Data class encapsulating the result of a shopper insight api request.

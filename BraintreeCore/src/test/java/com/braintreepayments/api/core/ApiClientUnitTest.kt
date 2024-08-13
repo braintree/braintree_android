@@ -72,19 +72,6 @@ class ApiClientUnitTest {
     }
 
     @Test
-    @Throws(BraintreeException::class, JSONException::class)
-    fun tokenizeGraphQL_sendGraphQLAnalyticsEventWhenEnabled() {
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .configurationSuccess(graphQLEnabledConfig)
-            .build()
-        val card = Card()
-        val sut = ApiClient(braintreeClient)
-        sut.tokenizeGraphQL(card.buildJSONForGraphQL(), tokenizeCallback)
-
-        verify { braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.started") }
-    }
-
-    @Test
     fun tokenizeREST_tokenizesPaymentMethodsWithREST() {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLEnabledConfig)
@@ -95,34 +82,6 @@ class ApiClientUnitTest {
         sut.tokenizeREST(mockk(relaxed = true), tokenizeCallback)
 
         verify(inverse = true) { braintreeClient.sendGraphQLPOST(any(), any()) }
-    }
-
-    @Test
-    @Throws(BraintreeException::class, JSONException::class)
-    fun tokenizeGraphQL_sendGraphQLAnalyticsEventOnSuccess() {
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .configurationSuccess(graphQLEnabledConfig)
-            .sendGraphQLPOSTSuccessfulResponse(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD)
-            .build()
-
-        val card = Card()
-        val sut = ApiClient(braintreeClient)
-        sut.tokenizeGraphQL(card.buildJSONForGraphQL(), tokenizeCallback)
-
-        verify { braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success") }
-    }
-
-    @Test
-    @Throws(BraintreeException::class, JSONException::class)
-    fun tokenizeGraphQL_sendGraphQLAnalyticsEventOnFailure() {
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .configurationSuccess(graphQLEnabledConfig)
-            .sendGraphQLPOSTErrorResponse(ErrorWithResponse.fromGraphQLJson(Fixtures.ERRORS_GRAPHQL_CREDIT_CARD_ERROR))
-            .build()
-        val card = Card()
-        val sut = ApiClient(braintreeClient)
-        sut.tokenizeGraphQL(card.buildJSONForGraphQL(), tokenizeCallback)
-        verify { braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure") }
     }
 
     @Test
