@@ -10,11 +10,15 @@ import java.util.concurrent.Executors;
 
 class ThreadScheduler implements Scheduler {
 
+    // a single thread in the pool is sufficient since we aren't doing a large number
+    // of concurrent networking requests
+    private final static int POOL_SIZE = 1;
+
     private final Handler mainThreadHandler;
     private final ExecutorService backgroundThreadService;
 
     ThreadScheduler() {
-        this(new Handler(Looper.getMainLooper()), Executors.newCachedThreadPool());
+        this(new Handler(Looper.getMainLooper()), Executors.newFixedThreadPool(POOL_SIZE));
     }
 
     @VisibleForTesting
