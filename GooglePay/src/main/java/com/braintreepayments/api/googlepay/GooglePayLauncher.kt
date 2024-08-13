@@ -11,12 +11,13 @@ import androidx.lifecycle.LifecycleOwner
  * Responsible for launching the Google Pay payment sheet
  */
 class GooglePayLauncher @VisibleForTesting internal constructor(
-    registry: ActivityResultRegistry, lifecycleOwner: LifecycleOwner?,
+    registry: ActivityResultRegistry,
+    lifecycleOwner: LifecycleOwner,
     callback: GooglePayLauncherCallback
 ) {
-    @VisibleForTesting
-    var activityLauncher: ActivityResultLauncher<GooglePayPaymentAuthRequestParams> = registry.register(
-        GOOGLE_PAY_RESULT, lifecycleOwner!!,
+
+    private val activityLauncher: ActivityResultLauncher<GooglePayPaymentAuthRequestParams> = registry.register(
+        GOOGLE_PAY_RESULT, lifecycleOwner,
         GooglePayActivityResultContract()
     ) { googlePayPaymentAuthResult: GooglePayPaymentAuthResult? ->
         callback.onGooglePayLauncherResult(

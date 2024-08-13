@@ -370,7 +370,6 @@ class GooglePayRequest : Parcelable {
         return environment
     }
 
-
     override fun describeContents(): Int {
         return 0
     }

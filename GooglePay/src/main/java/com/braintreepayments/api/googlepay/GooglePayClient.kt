@@ -11,7 +11,6 @@ import com.braintreepayments.api.core.ErrorWithResponse.Companion.fromJson
 import com.braintreepayments.api.core.MetadataBuilder
 import com.braintreepayments.api.core.TokenizationKey
 import com.braintreepayments.api.core.UserCanceledException
-import com.braintreepayments.api.googlepay.GooglePayActivity
 import com.braintreepayments.api.googlepay.GooglePayCardNonce.Companion.fromJSON
 import com.braintreepayments.api.googlepay.GooglePayReadinessResult.NotReadyToPay
 import com.google.android.gms.wallet.IsReadyToPayRequest
@@ -288,7 +287,6 @@ class GooglePayClient @VisibleForTesting internal constructor(
         }
     }
 
-
     /**
      * After a user successfully authorizes Google Pay payment via
      * [GooglePayClient.createPaymentAuthRequest], this
@@ -560,7 +558,6 @@ class GooglePayClient @VisibleForTesting internal constructor(
                     buildPayPalPaymentMethodParameters(configuration)
                 )
             }
-
 
             if (request.getTokenizationSpecificationForType(PAYPAL_PAYMENT_TYPE) == null) {
                 request.setTokenizationSpecificationForType(

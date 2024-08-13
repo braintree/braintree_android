@@ -13,7 +13,7 @@ import kotlinx.parcelize.Parcelize
  * @property status The object that contains more details about the error and how to resolve it.
  */
 @Parcelize
-class GooglePayException (
+class GooglePayException(
     override val message: String? = null,
     val status: Status? = null,
 ) : BraintreeException(), Parcelable

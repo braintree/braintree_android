@@ -163,35 +163,6 @@ public class GooglePayClientUnitTest {
         verify(readyToPayCallback).onGooglePayReadinessResult(any(GooglePayReadinessResult.NotReadyToPay.class));
     }
 
-    @Test
-    public void isReadyToPay_whenActivityIsNull_forwardsErrorToCallback() {
-        Configuration configuration = new TestConfigurationBuilder()
-                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder().enabled(
-                        true))
-                .buildConfiguration();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
-                .activityInfo(activityInfo)
-                .build();
-
-        GooglePayInternalClient internalGooglePayClient =
-                new MockGooglePayInternalClientBuilder().build();
-
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.isReadyToPay(null, null, readyToPayCallback);
-
-        ArgumentCaptor<GooglePayReadinessResult> captor = ArgumentCaptor.forClass(GooglePayReadinessResult.class);
-        verify(readyToPayCallback).onGooglePayReadinessResult(captor.capture());
-
-        GooglePayReadinessResult result = captor.getValue();
-        assertTrue(result instanceof GooglePayReadinessResult.NotReadyToPay);
-        Throwable exception = ((GooglePayReadinessResult.NotReadyToPay) result).getError();
-        assertTrue(exception instanceof IllegalArgumentException);
-        assertEquals("Activity cannot be null.", exception.getMessage());
-    }
-
     // endregion
 
     // region createPaymentAuthRequest
@@ -462,8 +433,8 @@ public class GooglePayClientUnitTest {
         sut.createPaymentAuthRequest(googlePayRequest, intentDataCallback);
 
         InOrder order = inOrder(braintreeClient);
-        order.verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.PAYMENT_REQUEST_STARTED));
-        order.verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.PAYMENT_REQUEST_SUCCEEDED));
+        order.verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.PAYMENT_REQUEST_STARTED), any());
+        order.verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.PAYMENT_REQUEST_SUCCEEDED), any());
     }
 
     @Test
@@ -492,8 +463,8 @@ public class GooglePayClientUnitTest {
         sut.createPaymentAuthRequest(googlePayRequest, intentDataCallback);
 
         InOrder order = inOrder(braintreeClient);
-        order.verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.PAYMENT_REQUEST_STARTED));
-        order.verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.PAYMENT_REQUEST_FAILED));
+        order.verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.PAYMENT_REQUEST_STARTED), any());
+        order.verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.PAYMENT_REQUEST_FAILED), any());
     }
 
     @Test
@@ -524,7 +495,7 @@ public class GooglePayClientUnitTest {
         assertEquals(
                 "Google Pay is not enabled for your Braintree account, or Google Play Services are not configured correctly.",
                 exception.getMessage());
-        verify(braintreeClient).sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_REQUEST_FAILED);
+        verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.PAYMENT_REQUEST_FAILED), any());
     }
 
     @Test
@@ -953,42 +924,6 @@ public class GooglePayClientUnitTest {
     }
 
     @Test
-    public void createPaymentAuthRequest_whenRequestIsNull_forwardsExceptionToListener() {
-        Configuration configuration = new TestConfigurationBuilder()
-                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
-                        .environment("sandbox")
-                        .googleAuthorizationFingerprint("google-auth-fingerprint")
-                        .paypalClientId("paypal-client-id-for-google-payment")
-                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
-                        .enabled(true))
-                .withAnalytics()
-                .buildConfiguration();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
-                .activityInfo(activityInfo)
-                .build();
-
-        GooglePayInternalClient internalGooglePayClient =
-                new MockGooglePayInternalClientBuilder().build();
-
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient);
-        sut.createPaymentAuthRequest(null, intentDataCallback);
-
-        ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
-                GooglePayPaymentAuthRequest.class);
-        verify(intentDataCallback).onGooglePayPaymentAuthRequest(captor.capture());
-
-        GooglePayPaymentAuthRequest request = captor.getValue();
-        assertTrue(request instanceof GooglePayPaymentAuthRequest.Failure);
-        Exception exception = ((GooglePayPaymentAuthRequest.Failure) request).getError();
-        assertTrue(exception instanceof BraintreeException);
-        assertEquals("Cannot pass null GooglePayRequest to requestPayment", exception.getMessage());
-        verify(braintreeClient).sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_REQUEST_FAILED);
-    }
-
-    @Test
     public void createPaymentAuthRequest_whenManifestInvalid_forwardsExceptionToListener() {
         Configuration configuration = new TestConfigurationBuilder()
                 .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -1023,7 +958,7 @@ public class GooglePayClientUnitTest {
         assertEquals("GooglePayActivity was not found in the Android " +
                         "manifest, or did not have a theme of R.style.bt_transparent_activity",
                 exception.getMessage());
-        verify(braintreeClient).sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_REQUEST_FAILED);
+        verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.PAYMENT_REQUEST_FAILED), any());
     }
 
     // endregion
@@ -1133,8 +1068,8 @@ public class GooglePayClientUnitTest {
         PaymentMethodNonce nonce = ((GooglePayResult.Success) result).getNonce();
         PaymentMethodNonce expectedNonce = GooglePayCardNonce.fromJSON(new JSONObject(paymentDataJson));
         assertEquals(nonce.getString(), expectedNonce.getString());
-        verify(braintreeClient).sendAnalyticsEvent(GooglePayAnalytics.TOKENIZE_STARTED);
-        verify(braintreeClient).sendAnalyticsEvent(GooglePayAnalytics.TOKENIZE_SUCCEEDED);
+        verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.TOKENIZE_STARTED), any());
+        verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.TOKENIZE_SUCCEEDED), any());
     }
 
     @Test
@@ -1156,8 +1091,8 @@ public class GooglePayClientUnitTest {
         GooglePayResult result = captor.getValue();
         assertTrue(result instanceof GooglePayResult.Failure);
         assertEquals(error, ((GooglePayResult.Failure) result).getError());
-        verify(braintreeClient).sendAnalyticsEvent(GooglePayAnalytics.TOKENIZE_STARTED);
-        verify(braintreeClient).sendAnalyticsEvent(GooglePayAnalytics.TOKENIZE_FAILED);
+        verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.TOKENIZE_STARTED), any());
+        verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.TOKENIZE_FAILED), any());
     }
 
     @Test
@@ -1179,8 +1114,8 @@ public class GooglePayClientUnitTest {
 
         GooglePayResult result = captor.getValue();
         assertTrue(result instanceof GooglePayResult.Cancel);
-        verify(braintreeClient).sendAnalyticsEvent(GooglePayAnalytics.TOKENIZE_STARTED);
-        verify(braintreeClient).sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_SHEET_CANCELED);
+        verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.TOKENIZE_STARTED), any());
+        verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.PAYMENT_SHEET_CANCELED), any());
     }
 
     // endregion
