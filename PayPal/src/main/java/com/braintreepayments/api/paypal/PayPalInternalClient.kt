@@ -153,12 +153,12 @@ internal class PayPalInternalClient(
             .build()
     }
 
-    private fun isAppSwitchEnabled(payPalRequest: PayPalRequest): Boolean {
+    internal fun isAppSwitchEnabled(payPalRequest: PayPalRequest): Boolean {
         return (payPalRequest is PayPalVaultRequest) &&
                 payPalRequest.enablePayPalAppSwitch
     }
 
-    private fun isPayPalInstalled(context: Context): Boolean {
+    internal fun isPayPalInstalled(context: Context): Boolean {
         return deviceInspector.isPayPalInstalled(context)
     }
 
