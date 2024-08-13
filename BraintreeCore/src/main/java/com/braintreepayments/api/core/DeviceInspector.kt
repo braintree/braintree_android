@@ -5,16 +5,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.sharedutils.AppHelper
 import com.braintreepayments.api.sharedutils.SignatureVerifier
 
-internal class DeviceInspector(
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+class DeviceInspector(
     private val appHelper: AppHelper = AppHelper(),
     private val signatureVerifier: SignatureVerifier = SignatureVerifier(),
 ) {
 
-    fun getDeviceMetadata(
+    internal fun getDeviceMetadata(
         context: Context?,
         configuration: Configuration?,
         sessionId: String?,
@@ -54,10 +56,16 @@ internal class DeviceInspector(
         return isVenmoIntentAvailable && isVenmoSignatureValid
     }
 
+    /**
+     * @suppress
+     */
     fun isPayPalInstalled(context: Context?): Boolean {
         return appHelper.isAppInstalled(context, PAYPAL_APP_PACKAGE)
     }
 
+    /**
+     * @suppress
+     */
     fun isVenmoInstalled(context: Context?): Boolean {
         return appHelper.isAppInstalled(context, VENMO_APP_PACKAGE)
     }
