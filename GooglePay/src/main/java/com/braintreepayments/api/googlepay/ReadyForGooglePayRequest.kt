@@ -3,6 +3,7 @@ package com.braintreepayments.api.googlepay
 /**
  * Optional parameters to use when checking whether Google Pay is supported and set up on the customer's device.
  */
+@SuppressWarnings("MaxLineLength")
 class ReadyForGooglePayRequest {
     /**
      * If set to true, then the [GooglePayClient.isReadyToPay]

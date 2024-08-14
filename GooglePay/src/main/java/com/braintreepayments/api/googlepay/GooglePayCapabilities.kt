@@ -15,6 +15,7 @@ object GooglePayCapabilities {
      * `false` otherwise. Note: this value only pertains to the Braintree configuration, to check if
      * the user has Google Pay setup use [GooglePayClient.isReadyToPay]
      */
+    @SuppressWarnings("SwallowedException")
     fun isGooglePayEnabled(context: Context, configuration: Configuration): Boolean {
         try {
             Class.forName(Wallet::class.java.name)

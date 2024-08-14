@@ -15,6 +15,7 @@ import java.util.Locale
 /**
  * Represents the parameters that are needed to use the Google Pay API.
  */
+@SuppressWarnings("TooManyFunctions")
 class GooglePayRequest : Parcelable {
     /**
      * Details and the price of the transaction. Required.
@@ -213,6 +214,8 @@ class GooglePayRequest : Parcelable {
      *
      * @return String
      */
+
+    @SuppressWarnings("LongMethod", "CyclomaticComplexMethod", "NestedBlockDepth")
     fun toJson(): String {
         val transactionInfoJson = JSONObject()
         val transactionInfo = transactionInfo

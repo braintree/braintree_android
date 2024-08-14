@@ -26,6 +26,7 @@ import org.json.JSONObject
 /**
  * Used to create and tokenize Google Pay payment methods. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/google-pay/overview)
  */
+@SuppressWarnings("TooManyFunctions")
 class GooglePayClient @VisibleForTesting internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalGooglePayClient: GooglePayInternalClient
@@ -73,6 +74,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
      * @param request  [ReadyForGooglePayRequest]
      * @param callback [GooglePayIsReadyToPayCallback]
      */
+    @SuppressWarnings("SwallowedException")
     fun isReadyToPay(
         context: Context,
         request: ReadyForGooglePayRequest?,
@@ -173,6 +175,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
      * @param request  The [GooglePayRequest] containing options for the transaction.
      * @param callback [GooglePayPaymentAuthRequestCallback]
      */
+    @SuppressWarnings("LongMethod", "MaximumLineLength")
     fun createPaymentAuthRequest(
         request: GooglePayRequest,
         callback: GooglePayPaymentAuthRequestCallback
@@ -225,7 +228,8 @@ class GooglePayClient @VisibleForTesting internal constructor(
                 callbackPaymentRequestFailure(
                     GooglePayPaymentAuthRequest.Failure(
                         BraintreeException(
-                            "Google Pay is not enabled for your Braintree account, or Google Play Services are not configured correctly."
+                            "Google Pay is not enabled for your Braintree account, " +
+                                    "or Google Play Services are not configured correctly."
                         )
                     ), callback
                 )
@@ -258,6 +262,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
      * Services through [PaymentsClient.loadPaymentData]
      * @param callback    [GooglePayTokenizeCallback]
      */
+    @SuppressWarnings("TooGenericExceptionCaught")
     fun tokenize(paymentData: PaymentData?, callback: GooglePayTokenizeCallback) {
         try {
             val result = JSONObject(paymentData!!.toJson())
