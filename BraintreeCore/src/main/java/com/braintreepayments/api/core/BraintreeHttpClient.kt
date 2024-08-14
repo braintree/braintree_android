@@ -80,6 +80,49 @@ internal class BraintreeHttpClient(
     }
 
     /**
+     * Make a HTTP GET request to Braintree using the base url, path and authorization provided.
+     * If the path is a full url, it will be used instead of the previously provided url.
+     * @param path The path or url to request from the server via GET
+     * @param configuration configuration for the Braintree Android SDK.
+     * @param authorization
+     * @param retryStrategy retry strategy
+     * @param callback [NetworkResponseCallback]
+     */
+    operator fun get(
+        path: String,
+        configuration: Configuration?,
+        authorization: Authorization?
+    ): String {
+        if (authorization is InvalidAuthorization) {
+            val message = authorization.errorMessage
+            throw BraintreeException(message)
+        }
+        val isRelativeURL = !path.startsWith("http")
+        if (configuration == null && isRelativeURL) {
+            val message =
+                "Braintree HTTP GET request without configuration cannot have a relative path."
+            val relativeURLNotAllowedError = BraintreeException(message)
+            throw relativeURLNotAllowedError
+        }
+        val targetPath = if (authorization is ClientToken) {
+            Uri.parse(path).buildUpon()
+                .appendQueryParameter(AUTHORIZATION_FINGERPRINT_KEY, authorization.bearer)
+                .toString()
+        } else {
+            path
+        }
+        val request = HttpRequest().method("GET").path(targetPath)
+            .addHeader(USER_AGENT_HEADER, "braintree/android/" + BuildConfig.VERSION_NAME)
+        if (isRelativeURL && configuration != null) {
+            request.baseUrl(configuration.clientApiUrl)
+        }
+        if (authorization is TokenizationKey) {
+            request.addHeader(CLIENT_KEY_HEADER, authorization.bearer)
+        }
+        return httpClient.sendRequest(request)
+    }
+
+    /**
      * Make a HTTP POST request to Braintree.
      * If the path is a full url, it will be used instead of the previously provided url.
      * @param path The path or url to request from the server via HTTP POST

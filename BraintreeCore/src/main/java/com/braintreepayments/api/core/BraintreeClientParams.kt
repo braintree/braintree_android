@@ -18,6 +18,7 @@ internal data class BraintreeClientParams(
     val manifestValidator: ManifestValidator = ManifestValidator(),
     val uuidHelper: UUIDHelper = UUIDHelper(),
     val configurationLoader: ConfigurationLoader = ConfigurationLoader(context, httpClient),
+    val configurationService: ConfigurationService = ConfigurationService(context, httpClient),
     val integrationType: IntegrationType,
 ) {
 

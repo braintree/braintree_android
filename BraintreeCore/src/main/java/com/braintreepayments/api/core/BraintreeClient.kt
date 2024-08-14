@@ -42,6 +42,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
     private val httpClient: BraintreeHttpClient,
     private val graphQLClient: BraintreeGraphQLClient,
     private val configurationLoader: ConfigurationLoader,
+    private val configurationService: ConfigurationService,
     private val manifestValidator: ManifestValidator,
     private val returnUrlScheme: String,
     private val braintreeDeepLinkReturnUrlScheme: String,
@@ -64,6 +65,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
         httpClient = params.httpClient,
         graphQLClient = params.graphQLClient,
         configurationLoader = params.configurationLoader,
+        configurationService = params.configurationService,
         manifestValidator = params.manifestValidator,
         returnUrlScheme = params.returnUrlScheme,
         braintreeDeepLinkReturnUrlScheme = params.braintreeReturnUrlScheme,
@@ -124,7 +126,8 @@ class BraintreeClient @VisibleForTesting internal constructor(
             callback.onResult(null, createAuthError())
             return
         }
-        configurationLoader.loadConfiguration(authorization) { configuration, configError, timing ->
+
+        configurationService.loadConfiguration(authorization) { configuration, configError, timing ->
             if (configuration != null) {
                 callback.onResult(configuration, null)
             } else {
