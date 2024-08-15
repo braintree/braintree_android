@@ -43,7 +43,7 @@ public class MagnesInternalClientUnitTest {
     private HashMap<String, String> additionalData;
     private DataCollectorInternalRequest dataCollectorInternalRequest;
 
-    private boolean hasUserLocationConsent = true;
+    private final boolean hasUserLocationConsent = true;
 
     @Before
     public void beforeEach() {
@@ -64,11 +64,11 @@ public class MagnesInternalClientUnitTest {
 
         additionalData = new HashMap<>();
 
-        dataCollectorInternalRequest = new DataCollectorInternalRequest(hasUserLocationConsent)
-                .setRiskCorrelationId("sample-client-metadata-id")
-                .setDisableBeacon(true)
-                .setAdditionalData(additionalData)
-                .setApplicationGuid(validApplicationGUID);
+        dataCollectorInternalRequest = new DataCollectorInternalRequest(hasUserLocationConsent);
+        dataCollectorInternalRequest.setClientMetadataId("sample-client-metadata-id");
+        dataCollectorInternalRequest.setDisableBeacon(true);
+        dataCollectorInternalRequest.setAdditionalData(additionalData);
+        dataCollectorInternalRequest.setApplicationGuid(validApplicationGUID);
     }
 
     @Test
@@ -166,8 +166,8 @@ public class MagnesInternalClientUnitTest {
 
     @Test
     public void getClientMetaDataId_returnsAnEmptyStringWhenApplicationGUIDIsInvalid() {
-        DataCollectorInternalRequest requestWithInvalidGUID = new DataCollectorInternalRequest(hasUserLocationConsent)
-                .setApplicationGuid("invalid guid");
+        DataCollectorInternalRequest requestWithInvalidGUID = new DataCollectorInternalRequest(hasUserLocationConsent);
+        requestWithInvalidGUID.setApplicationGuid("invalid guid");
 
         MagnesInternalClient sut = new MagnesInternalClient(magnesSDK);
         String result = sut.getClientMetadataId(context, prodConfiguration, requestWithInvalidGUID);

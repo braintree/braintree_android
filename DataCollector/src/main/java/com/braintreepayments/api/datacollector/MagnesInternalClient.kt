@@ -10,7 +10,7 @@ import lib.android.paypal.com.magnessdk.MagnesSDK
 import lib.android.paypal.com.magnessdk.MagnesSettings
 import lib.android.paypal.com.magnessdk.MagnesSource
 
-internal class MagnesInternalClient(
+class MagnesInternalClient(
     private val magnesSDK: MagnesSDK = MagnesSDK.getInstance()
 ) {
 

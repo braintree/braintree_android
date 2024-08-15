@@ -8,8 +8,8 @@ public class DataCollectorInternalRequestUnitTest {
 
     @Test
     public void setClientMetadataId_trimsId_to_32characters() {
-        DataCollectorInternalRequest request = new DataCollectorInternalRequest(true)
-                .setRiskCorrelationId("pairing-id-pairing-id-pairing-idXXX");
+        DataCollectorInternalRequest request = new DataCollectorInternalRequest(true);
+        request.setClientMetadataId("pairing-id-pairing-id-pairing-idXXX");
 
         assertEquals("pairing-id-pairing-id-pairing-id", request.getClientMetadataId());
         assertEquals(32, request.getClientMetadataId().length());

@@ -42,7 +42,6 @@ class DataCollector @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @VisibleForTesting
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun getPayPalInstallationGUID(context: Context?): String {
         return uuidHelper.getInstallationGUID(context)
@@ -58,8 +57,9 @@ class DataCollector @VisibleForTesting internal constructor(
         configuration: Configuration?,
         hasUserLocationConsent: Boolean
     ): String {
-        val request = DataCollectorInternalRequest(hasUserLocationConsent)
-            .setApplicationGuid(getPayPalInstallationGUID(context))
+        val request = DataCollectorInternalRequest(hasUserLocationConsent).apply {
+            applicationGuid = getPayPalInstallationGUID(context)
+        }
         return getClientMetadataId(context, request, configuration)
     }
 
@@ -68,7 +68,6 @@ class DataCollector @VisibleForTesting internal constructor(
      */
     @MainThread
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    @VisibleForTesting
     fun getClientMetadataId(
         context: Context?,
         request: DataCollectorInternalRequest?,
@@ -100,10 +99,11 @@ class DataCollector @VisibleForTesting internal constructor(
             if (configuration != null) {
                 val deviceData = JSONObject()
                 try {
-                    val internalRequest = DataCollectorInternalRequest(request.hasUserLocationConsent)
-                        .setApplicationGuid(getPayPalInstallationGUID(context))
+                    val internalRequest = DataCollectorInternalRequest(request.hasUserLocationConsent).apply {
+                        applicationGuid = getPayPalInstallationGUID(context)
+                    }
                     if (request.riskCorrelationId != null) {
-                        internalRequest.setRiskCorrelationId(request.riskCorrelationId)
+                        internalRequest.clientMetadataId = request.riskCorrelationId
                     }
                     val correlationId =
                         magnesInternalClient.getClientMetadataId(context, configuration, internalRequest)
