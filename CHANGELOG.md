@@ -3,6 +3,8 @@
 ## unreleased
 * BraintreeCore
   * Update `endpoint` syntax sent to FPTI for 3D Secure and Venmo flows
+* ThreeDSecure
+  * Update `ThreeDSecureActivity` theme attributes to prevent the Action Bar title from displaying and enforce transparency properly with AppCompat theme attributes
 * Breaking Changes
     * PayPal
         * Remove `appLinkEnabled` from `PayPalRequest` as Android app links are now required
