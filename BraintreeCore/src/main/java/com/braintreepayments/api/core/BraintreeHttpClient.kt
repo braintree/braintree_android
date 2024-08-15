@@ -6,7 +6,6 @@ import com.braintreepayments.api.sharedutils.HttpClient.RetryStrategy
 import com.braintreepayments.api.sharedutils.HttpRequest
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.sharedutils.TLSSocketFactory
-import org.json.JSONException
 import org.json.JSONObject
 import javax.net.ssl.SSLException
 
@@ -53,11 +52,7 @@ internal class BraintreeHttpClient(
             path = path,
             configuration = configuration,
             authorization = authorization,
-            retryStrategy = if (retryStrategy == HttpClient.RETRY_MAX_3_TIMES) {
-                BraintreeHttpRetryStrategy.RETRY_MAX_3_TIMES
-            } else {
-                BraintreeHttpRetryStrategy.NO_RETRY
-            }
+            retryStrategy = retryStrategy
         )
         sendRequest(request, callback)
     }
@@ -117,11 +112,7 @@ internal class BraintreeHttpClient(
     private fun sendRequest(request: BraintreeHttpRequest, callback: NetworkResponseCallback?) {
         try {
             val httpRequest = buildHttpRequest(request)
-            val retryStrategy = when (request.retryStrategy) {
-                BraintreeHttpRetryStrategy.NO_RETRY -> HttpClient.NO_RETRY
-                BraintreeHttpRetryStrategy.RETRY_MAX_3_TIMES -> HttpClient.RETRY_MAX_3_TIMES
-            }
-            httpClient.sendRequest(httpRequest, retryStrategy, callback)
+            httpClient.sendRequest(httpRequest, request.retryStrategy, callback)
         } catch (e: Exception) {
             // forward errors
             callback?.onResult(null, e)
@@ -134,7 +125,7 @@ internal class BraintreeHttpClient(
         return httpClient.sendRequest(httpRequest)
     }
 
-    private fun buildHttpRequest(request: BraintreeHttpRequest) : HttpRequest  = request.run {
+    private fun buildHttpRequest(request: BraintreeHttpRequest): HttpRequest = request.run {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
             throw BraintreeException(message)
@@ -156,7 +147,7 @@ internal class BraintreeHttpClient(
         }
 
         val requestData = if (method == "POST") {
-             if (authorization is ClientToken) {
+            if (authorization is ClientToken) {
                 JSONObject(data ?: "{}").put(
                     AUTHORIZATION_FINGERPRINT_KEY,
                     authorization.authorizationFingerprint

@@ -1,6 +1,8 @@
 package com.braintreepayments.api.core
 
 import androidx.annotation.RestrictTo
+import com.braintreepayments.api.sharedutils.HttpClient
+import com.braintreepayments.api.sharedutils.HttpClient.RetryStrategy
 
 /**
  * @suppress
@@ -13,5 +15,5 @@ data class BraintreeHttpRequest(
     val additionalHeaders: Map<String, String> = emptyMap(),
     val configuration: Configuration? = null,
     val authorization: Authorization? = null,
-    val retryStrategy: BraintreeHttpRetryStrategy = BraintreeHttpRetryStrategy.NO_RETRY,
+    @RetryStrategy val retryStrategy: Int = HttpClient.NO_RETRY
 )
