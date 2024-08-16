@@ -3,12 +3,15 @@ package com.braintreepayments.api.core
 import android.content.Context
 import android.net.Uri
 import android.util.Base64
-import com.braintreepayments.api.sharedutils.HttpClient
+import com.braintreepayments.api.sharedutils.Scheduler
+import com.braintreepayments.api.sharedutils.ThreadScheduler
 import org.json.JSONException
+import java.lang.ref.WeakReference
 
 internal class ConfigurationLoader internal constructor(
     private val httpClient: BraintreeHttpClient,
-    private val configurationCache: ConfigurationCache
+    private val configurationCache: ConfigurationCache,
+    private val scheduler: Scheduler = ThreadScheduler()
 ) {
     constructor(context: Context, httpClient: BraintreeHttpClient) : this(
         httpClient, ConfigurationCache.getInstance(context)
@@ -21,41 +24,45 @@ internal class ConfigurationLoader internal constructor(
             callback.onResult(null, BraintreeException(message), null)
             return
         }
-        val configUrl = Uri.parse(authorization.configUrl)
-            .buildUpon()
-            .appendQueryParameter("configVersion", "3")
-            .build()
-            .toString()
-        val cachedConfig = getCachedConfiguration(authorization, configUrl)
 
-        cachedConfig?.let {
-            callback.onResult(cachedConfig, null, null)
-        } ?: run {
-            val request = BraintreeHttpRequest(
-                method = "GET",
-                path = configUrl,
-                retryStrategy = HttpClient.RETRY_MAX_3_TIMES
-            )
-            httpClient.sendRequest(
-                request = request,
-                authorization = authorization
-            ) { response, httpError ->
-                val responseBody = response?.body
-                val timing = response?.timing
-                if (responseBody != null) {
-                    try {
-                        val configuration = Configuration.fromJson(responseBody)
-                        saveConfigurationToCache(configuration, authorization, configUrl)
-                        callback.onResult(configuration, null, timing)
-                    } catch (jsonException: JSONException) {
-                        callback.onResult(null, jsonException, null)
+        val callbackRef = WeakReference(callback)
+        scheduler.runOnBackground {
+            val configUrl = Uri.parse(authorization.configUrl)
+                .buildUpon()
+                .appendQueryParameter("configVersion", "3")
+                .build()
+                .toString()
+            val cachedConfig = getCachedConfiguration(authorization, configUrl)
+            cachedConfig?.let {
+                callbackRef.get()?.let {
+                    scheduler.runOnMain {
+                        callback.onResult(cachedConfig, null, null)
                     }
-                } else {
-                    httpError?.let { error ->
-                        val errorMessageFormat = "Request for configuration has failed: %s"
-                        val errorMessage = String.format(errorMessageFormat, error.message)
-                        val configurationException = ConfigurationException(errorMessage, error)
-                        callback.onResult(null, configurationException, null)
+                }
+            } ?: run {
+                val request = BraintreeHttpRequest(method = "GET", path = configUrl)
+                try {
+                    val response = httpClient.sendRequestSync(
+                        request = request,
+                        configuration = null,
+                        authorization = authorization
+                    )
+                    val configuration = Configuration.fromJson(response.body!!)
+                    saveConfigurationToCache(configuration, authorization, configUrl)
+                    callbackRef.get()?.let {
+                        scheduler.runOnMain {
+                            callback.onResult(configuration, null, response.timing)
+                        }
+                    }
+
+                } catch (error: Exception) {
+                    val errorMessageFormat = "Request for configuration has failed: %s"
+                    val errorMessage = String.format(errorMessageFormat, error.message)
+                    val configurationException = ConfigurationException(errorMessage, error)
+                    callbackRef.get()?.let {
+                        scheduler.runOnMain {
+                            callback.onResult(null, configurationException, null)
+                        }
                     }
                 }
             }

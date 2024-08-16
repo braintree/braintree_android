@@ -1,5 +1,7 @@
 package com.braintreepayments.api.sharedutils;
 
+import androidx.annotation.RestrictTo;
+
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -13,12 +15,13 @@ import javax.net.ssl.SSLSocketFactory;
  * This class performs an http request on the calling thread. The external caller is
  * responsible for thread scheduling to ensure that this is not called on the main thread.
  */
-class SynchronousHttpClient {
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+public class SynchronousHttpClient {
 
     private SSLSocketFactory socketFactory;
     private final HttpResponseParser parser;
 
-    SynchronousHttpClient(SSLSocketFactory socketFactory, HttpResponseParser parser) {
+    public SynchronousHttpClient(SSLSocketFactory socketFactory, HttpResponseParser parser) {
         this.parser = parser;
         if (socketFactory != null) {
             this.socketFactory = socketFactory;
@@ -35,7 +38,7 @@ class SynchronousHttpClient {
         this.socketFactory = socketFactory;
     }
 
-    HttpResponse request(HttpRequest httpRequest) throws Exception {
+    public HttpResponse request(HttpRequest httpRequest) throws Exception {
         if (httpRequest.getPath() == null) {
             throw new IllegalArgumentException("Path cannot be null");
         }

@@ -1,18 +1,23 @@
 package com.braintreepayments.api.core
 
 import android.net.Uri
-import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpRequest
+import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
+import com.braintreepayments.api.sharedutils.Scheduler
+import com.braintreepayments.api.sharedutils.SynchronousHttpClient
 import com.braintreepayments.api.sharedutils.TLSSocketFactory
+import com.braintreepayments.api.sharedutils.ThreadScheduler
 import org.json.JSONObject
+import java.lang.ref.WeakReference
 import javax.net.ssl.SSLException
 
 /**
  * Network request class that handles Braintree request specifics and threading.
  */
 internal class BraintreeHttpClient(
-    private val httpClient: HttpClient = createDefaultHttpClient()
+    private val httpClient: SynchronousHttpClient = createDefaultHttpClient(),
+    private val scheduler: Scheduler = ThreadScheduler()
 ) {
 
     /**
@@ -28,12 +33,23 @@ internal class BraintreeHttpClient(
         authorization: Authorization? = null,
         callback: NetworkResponseCallback?
     ) {
-        try {
-            val httpRequest = buildHttpRequest(request, configuration, authorization)
-            httpClient.sendRequest(httpRequest, request.retryStrategy, callback)
-        } catch (e: Exception) {
-            // forward errors
-            callback?.onResult(null, e)
+        val callbackRef = WeakReference(callback)
+        scheduler.runOnBackground {
+            try {
+                val response = sendRequestSync(request, configuration, authorization)
+                callbackRef.get()?.let { cb ->
+                    scheduler.runOnMain {
+                        cb.onResult(response, null)
+                    }
+                }
+            } catch (e: Exception) {
+                // forward errors
+                callbackRef.get()?.let { cb ->
+                    scheduler.runOnMain {
+                        cb?.onResult(null, e)
+                    }
+                }
+            }
         }
     }
 
@@ -48,9 +64,9 @@ internal class BraintreeHttpClient(
         request: BraintreeHttpRequest,
         configuration: Configuration?,
         authorization: Authorization?
-    ): String {
+    ): HttpResponse {
         val httpRequest = buildHttpRequest(request, configuration, authorization)
-        return httpClient.sendRequest(httpRequest)
+        return httpClient.request(httpRequest)
     }
 
     @Suppress("CyclomaticComplexMethod")
@@ -117,10 +133,10 @@ internal class BraintreeHttpClient(
         private const val CLIENT_KEY_HEADER = "Client-Key"
 
         @Throws(SSLException::class)
-        private fun createDefaultHttpClient(): HttpClient {
+        private fun createDefaultHttpClient(): SynchronousHttpClient {
             val socketFactory =
                 TLSSocketFactory(TLSCertificatePinning.createCertificateInputStream())
-            return HttpClient(socketFactory, BraintreeHttpResponseParser())
+            return SynchronousHttpClient(socketFactory, BraintreeHttpResponseParser())
         }
     }
 }
