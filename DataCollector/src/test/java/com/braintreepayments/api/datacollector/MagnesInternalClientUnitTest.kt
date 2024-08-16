@@ -73,14 +73,14 @@ class MagnesInternalClientUnitTest {
 
     @Test
     fun getClientMetaDataId_returnsEmptyStringWhenContextIsNull() {
-            val sut = MagnesInternalClient(magnesSDK)
-            val result = sut.getClientMetadataId(
-                null, sandboxConfiguration,
-                dataCollectorInternalRequest
-            )
+        val sut = MagnesInternalClient(magnesSDK)
+        val result = sut.getClientMetadataId(
+            null, sandboxConfiguration,
+            dataCollectorInternalRequest
+        )
 
-            Assert.assertEquals("", result)
-        }
+        Assert.assertTrue(result.isEmpty())
+    }
 
     @Throws(InvalidInputException::class)
     @Test

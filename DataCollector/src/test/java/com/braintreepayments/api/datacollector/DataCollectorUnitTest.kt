@@ -12,7 +12,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
-import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Before
@@ -26,7 +25,8 @@ class DataCollectorUnitTest {
     @MockK
     lateinit var context: Context
 
-    @MockK lateinit var configuration: Configuration
+    @MockK
+    lateinit var configuration: Configuration
 
     @MockK
     lateinit var uuidHelper: UUIDHelper
@@ -48,7 +48,6 @@ class DataCollectorUnitTest {
             .build()
 
     @Before
-    @Throws(JSONException::class)
     fun beforeEach() {
 
         MockKAnnotations.init(this, relaxed = true)
