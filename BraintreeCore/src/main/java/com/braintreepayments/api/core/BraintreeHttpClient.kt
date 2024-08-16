@@ -109,6 +109,12 @@ internal class BraintreeHttpClient(
         return sendRequestSync(request)
     }
 
+    /**
+     * Make an asynchronous Braintree authenticated HTTP request.
+     *
+     * @param request the braintree http request.
+     * @param callback See [NetworkResponseCallback].
+     */
     private fun sendRequest(request: BraintreeHttpRequest, callback: NetworkResponseCallback?) {
         try {
             val httpRequest = buildHttpRequest(request)
@@ -119,6 +125,12 @@ internal class BraintreeHttpClient(
         }
     }
 
+    /**
+     * Make a synchronous Braintree authenticated HTTP request. This method is useful when
+     * mutli-threading logic is managed by another entity e.g. WorkManager, ExecutorService.
+     *
+     * @param request the braintree http request.
+     */
     @Throws(Exception::class)
     fun sendRequestSync(request: BraintreeHttpRequest): String {
         val httpRequest = buildHttpRequest(request)
