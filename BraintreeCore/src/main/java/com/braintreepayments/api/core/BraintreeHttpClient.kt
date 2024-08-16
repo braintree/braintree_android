@@ -17,30 +17,6 @@ internal class BraintreeHttpClient(
 ) {
 
     /**
-     * Make a HTTP GET request to Braintree using the base url, path and authorization provided.
-     * If the path is a full url, it will be used instead of the previously provided url.
-     * @param path The path or url to request from the server via GET
-     * @param configuration configuration for the Braintree Android SDK.
-     * @param authorization
-     * @param retryStrategy retry strategy
-     * @param callback [NetworkResponseCallback]
-     */
-    operator fun get(
-        path: String,
-        configuration: Configuration?,
-        authorization: Authorization?,
-        @RetryStrategy retryStrategy: Int,
-        callback: NetworkResponseCallback
-    ) {
-        val request = BraintreeHttpRequest(
-            method = "GET",
-            path = path,
-            retryStrategy = retryStrategy
-        )
-        sendRequest(request, configuration, authorization, callback)
-    }
-
-    /**
      * Make a HTTP POST request to Braintree.
      * If the path is a full url, it will be used instead of the previously provided url.
      * @param path The path or url to request from the server via HTTP POST
