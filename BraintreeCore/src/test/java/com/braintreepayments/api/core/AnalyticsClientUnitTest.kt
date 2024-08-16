@@ -213,14 +213,9 @@ class AnalyticsClientUnitTest {
         val blobs = listOf(AnalyticsEventBlob("""{ "fake": "json" }"""))
         every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
 
-        val analyticsJSONSlot = slot<String>()
+        val httpRequestSlot = slot<BraintreeHttpRequest>()
         every {
-            httpClient.post(
-                "https://api-m.paypal.com/v1/tracking/batch/events",
-                capture(analyticsJSONSlot),
-                any(),
-                any()
-            )
+            httpClient.sendRequestSync(capture(httpRequestSlot), any(), any())
         }
 
         val sut =
@@ -258,7 +253,7 @@ class AnalyticsClientUnitTest {
           ]
         }
         """
-        val actualJSON = JSONObject(analyticsJSONSlot.captured)
+        val actualJSON = JSONObject(httpRequestSlot.captured.data!!)
         JSONAssert.assertEquals(JSONObject(expectedJSON), actualJSON, true)
     }
 
@@ -317,14 +312,14 @@ class AnalyticsClientUnitTest {
         val blobs = listOf(AnalyticsEventBlob("""{ "fake": "json" }"""))
         every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
 
-        val analyticsJSONSlot = slot<String>()
-        every { httpClient.post(any(), capture(analyticsJSONSlot), any(), any()) }
+        val httpRequestSlot = slot<BraintreeHttpRequest>()
+        every { httpClient.sendRequestSync(capture(httpRequestSlot), any(), any()) }
 
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
         sut.performAnalyticsUpload(inputData)
 
-        val analyticsJson = JSONObject(analyticsJSONSlot.captured)
+        val analyticsJson = JSONObject(httpRequestSlot.captured.data!!)
 
         val eventJSON = analyticsJson.getJSONArray("events")[0] as JSONObject
         val batchParams = eventJSON["batch_params"] as JSONObject
@@ -410,7 +405,7 @@ class AnalyticsClientUnitTest {
         every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
 
         val httpError = Exception("error")
-        every { httpClient.post(any(), any(), any(), any()) } throws httpError
+        every { httpClient.sendRequestSync(any(), any(), any()) } throws httpError
 
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
@@ -428,20 +423,17 @@ class AnalyticsClientUnitTest {
             deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         } returns metadata
 
-        val analyticsJSONSlot = slot<String>()
+        val httpRequestSlot = slot<BraintreeHttpRequest>()
         every {
-            httpClient.post(
-                path = "https://api-m.paypal.com/v1/tracking/batch/events",
-                data = capture(analyticsJSONSlot),
-                configuration = any(),
-                authorization = authorization,
-                callback = any()
-            )
+            httpClient.sendRequest(capture(httpRequestSlot), any(), authorization, any())
         } returns Unit
 
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
         sut.reportCrash(context, configuration, sessionId, integration, 123, authorization)
+
+        assertEquals(httpRequestSlot.captured.method, "POST")
+        assertEquals(httpRequestSlot.captured.path, "https://api-m.paypal.com/v1/tracking/batch/events")
 
         // language=JSON
         val expectedJSON = """
@@ -479,7 +471,7 @@ class AnalyticsClientUnitTest {
           ]
         }
         """
-        val actualJSON = JSONObject(analyticsJSONSlot.captured)
+        val actualJSON = JSONObject(httpRequestSlot.captured.data!!)
         JSONAssert.assertEquals(JSONObject(expectedJSON), actualJSON, true)
     }
 

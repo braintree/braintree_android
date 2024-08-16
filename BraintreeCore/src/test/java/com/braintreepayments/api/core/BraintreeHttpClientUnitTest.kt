@@ -38,7 +38,7 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun get_withNullConfiguration_requiresRequiresRequestToHaveAnAbsolutePath() {
+    fun sendRequest_withNullConfiguration_requiresRequestToHaveAnAbsolutePath() {
         val tokenizationKey = mockk<Authorization>()
         val callback = mockk<NetworkResponseCallback>()
 
@@ -46,7 +46,11 @@ class BraintreeHttpClientUnitTest {
         every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.get("sample/path", null, tokenizationKey, callback)
+        val request = BraintreeHttpRequest(
+            method = "GET",
+            path = "sample/path"
+        )
+        sut.sendRequest(request, authorization = tokenizationKey, callback = callback)
 
         val exception = exceptionSlot.captured
         assertEquals(
@@ -57,7 +61,7 @@ class BraintreeHttpClientUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun get_withNullConfigurationAndAbsoluteURL_doesNotSetABaseURLOnTheRequest() {
+    fun sendRequest_withNullConfigurationAndAbsoluteURL_doesNotSetABaseURLOnTheRequest() {
         val tokenizationKey: Authorization = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val callback = mockk<NetworkResponseCallback>()
 
@@ -67,7 +71,11 @@ class BraintreeHttpClientUnitTest {
         } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.get("https://example.com/sample/path", null, tokenizationKey, callback)
+        val request = BraintreeHttpRequest(
+            method = "GET",
+            path = "https://example.com/sample/path"
+        )
+        sut.sendRequest(request, authorization = tokenizationKey, callback = callback)
 
         val httpRequest = httpRequestSlot.captured
         assertEquals(URL("https://example.com/sample/path"), httpRequest.url)
@@ -75,7 +83,7 @@ class BraintreeHttpClientUnitTest {
 
     @Test
     @Throws(MalformedURLException::class, URISyntaxException::class)
-    fun get_withTokenizationKey_forwardsHttpRequestToHttpClient() {
+    fun sendRequest_withTokenizationKey_forwardsHttpRequestToHttpClient() {
         val tokenizationKey: Authorization = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val configuration = mockk<Configuration>()
         every { configuration.clientApiUrl } returns "https://example.com"
@@ -87,7 +95,11 @@ class BraintreeHttpClientUnitTest {
         } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.get("sample/path", configuration, tokenizationKey, callback)
+        val request = BraintreeHttpRequest(
+            method = "GET",
+            path = "sample/path"
+        )
+        sut.sendRequest(request, configuration, tokenizationKey, callback)
 
         val httpRequest = httpRequestSlot.captured
         val headers = httpRequest.headers
@@ -99,7 +111,7 @@ class BraintreeHttpClientUnitTest {
 
     @Test
     @Throws(MalformedURLException::class, URISyntaxException::class)
-    fun get_withClientToken_forwardsHttpRequestToHttpClient() {
+    fun sendRequest_withClientToken_forwardsHttpRequestToHttpClient() {
         val clientToken =
             Authorization.fromString(FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN))
         val configuration = mockk<Configuration>()
@@ -112,7 +124,11 @@ class BraintreeHttpClientUnitTest {
         } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.get("sample/path", configuration, clientToken, callback)
+        val request = BraintreeHttpRequest(
+            method = "GET",
+            path = "sample/path"
+        )
+        sut.sendRequest(request, configuration, clientToken, callback)
 
         val httpRequest = httpRequestSlot.captured
         val headers = httpRequest.headers
@@ -128,7 +144,7 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun get_withInvalidToken_forwardsExceptionToCallback() {
+    fun sendRequest_withInvalidToken_forwardsExceptionToCallback() {
         val authorization: Authorization =
             InvalidAuthorization("invalid", "token invalid")
         val configuration = mockk<Configuration>()
@@ -138,7 +154,11 @@ class BraintreeHttpClientUnitTest {
         every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.get("sample/path", configuration, authorization, callback)
+        val request = BraintreeHttpRequest(
+            method = "GET",
+            path = "sample/path"
+        )
+        sut.sendRequest(request, configuration, authorization, callback)
 
         val exception = exceptionSlot.captured
         assertEquals("token invalid", exception.message)
@@ -146,7 +166,7 @@ class BraintreeHttpClientUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun postSync_withTokenizationKey_forwardsHttpRequestToHttpClient() {
+    fun sendRequestSync_withTokenizationKey_forwardsPOSTRequestToHttpClient() {
         val tokenizationKey: Authorization = TokenizationKey(Fixtures.TOKENIZATION_KEY)
 
         val configuration = mockk<Configuration>()
@@ -156,7 +176,12 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot)) } returns "sample result"
 
         val sut = BraintreeHttpClient(httpClient)
-        val result = sut.post("sample/path", "{}", configuration, tokenizationKey)
+        val request = BraintreeHttpRequest(
+            method = "POST",
+            path = "sample/path",
+            data = "{}"
+        )
+        val result = sut.sendRequestSync(request, configuration, tokenizationKey)
         assertEquals("sample result", result)
 
         val httpRequest = httpRequestSlot.captured
@@ -173,7 +198,7 @@ class BraintreeHttpClientUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun postSync_withClientToken_forwardsHttpRequestToHttpClient() {
+    fun sendRequestSync_withClientToken_forwardsPOSTRequestToHttpClient() {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
@@ -185,7 +210,12 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot)) } returns "sample result"
 
         val sut = BraintreeHttpClient(httpClient)
-        val result = sut.post("sample/path", "{}", configuration, clientToken)
+        val request = BraintreeHttpRequest(
+            method = "POST",
+            path = "sample/path",
+            data = "{}"
+        )
+        val result = sut.sendRequestSync(request, configuration, clientToken)
         assertEquals("sample result", result)
 
         val httpRequest = httpRequestSlot.captured
@@ -201,14 +231,19 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun postSync_withNullConfiguration_andRelativeUrl_throwsError() {
+    fun sendRequestSync_withNullConfiguration_andRelativeUrl_throwsError() {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
 
         val sut = BraintreeHttpClient(httpClient)
+        val request = BraintreeHttpRequest(
+            method = "POST",
+            path = "sample/path",
+            data = "{}"
+        )
         try {
-            sut.post("sample/path", "{}", null, clientToken)
+            sut.sendRequestSync(request, null, clientToken)
         } catch (e: Exception) {
             assertTrue(e is BraintreeException)
             assertEquals(
@@ -220,7 +255,7 @@ class BraintreeHttpClientUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun postSync_withNullConfiguration_andAbsoluteURL_doesNotSetABaseURLOnTheRequest() {
+    fun sendRequestSync_withNullConfiguration_andAbsoluteURL_doesNotSetABaseURLOnTheRequest() {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
@@ -229,21 +264,31 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot)) } returns ""
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.post("https://example.com/sample/path", "{}", null, clientToken)
+        val request = BraintreeHttpRequest(
+            method = "POST",
+            path = "https://example.com/sample/path",
+            data = "{}"
+        )
+        sut.sendRequestSync(request, null, clientToken)
 
         val httpRequest = httpRequestSlot.captured
         assertEquals(URL("https://example.com/sample/path"), httpRequest.url)
     }
 
     @Test
-    fun postSync_withInvalidToken_throwsBraintreeException() {
+    fun sendRequestSync_withInvalidToken_throwsBraintreeException() {
         val authorization: Authorization =
             InvalidAuthorization("invalid", "token invalid")
         val configuration = mockk<Configuration>()
 
         val sut = BraintreeHttpClient(httpClient)
+        val request = BraintreeHttpRequest(
+            method = "POST",
+            path = "https://example.com/sample/path",
+            data = "{}"
+        )
         try {
-            sut.post("https://example.com/sample/path", "{}", configuration, authorization)
+            sut.sendRequestSync(request, configuration, authorization)
         } catch (e: Exception) {
             assertTrue(e is BraintreeException)
             assertEquals("token invalid", e.message)
@@ -252,7 +297,7 @@ class BraintreeHttpClientUnitTest {
 
     @Test
     @Throws(MalformedURLException::class, URISyntaxException::class)
-    fun postAsync_withTokenizationKey_forwardsHttpRequestToHttpClient() {
+    fun sendRequest_withTokenizationKey_forwardsPOSTRequestToHttpClient() {
         val tokenizationKey: Authorization = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val configuration = mockk<Configuration>()
         every { configuration.clientApiUrl } returns "https://example.com"
@@ -262,13 +307,12 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot), anyInt(), callback) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.post(
+        val request = BraintreeHttpRequest(
+            method = "POST",
             path = "sample/path",
-            data = "{}",
-            configuration = configuration,
-            authorization = tokenizationKey,
-            callback = callback
+            data = "{}"
         )
+        sut.sendRequest(request, configuration, tokenizationKey, callback)
 
         val httpRequest = httpRequestSlot.captured
         val headers = httpRequest.headers
@@ -281,7 +325,7 @@ class BraintreeHttpClientUnitTest {
 
     @Test
     @Throws(MalformedURLException::class, URISyntaxException::class)
-    fun postAsync_withClientToken_forwardsHttpRequestToHttpClient() {
+    fun sendRequest_withClientToken_forwardsPOSTRequestToHttpClient() {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
@@ -294,13 +338,12 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot), anyInt(), callback) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.post(
+        val request = BraintreeHttpRequest(
+            method = "POST",
             path = "sample/path",
-            data = "{}",
-            configuration = configuration,
-            authorization = clientToken,
-            callback = callback
+            data = "{}"
         )
+        sut.sendRequest(request, configuration, clientToken, callback)
 
         val httpRequest = httpRequestSlot.captured
         val headers = httpRequest.headers
@@ -314,7 +357,7 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun postAsync_withNullConfiguration_andRelativeUrl_postsCallbackError() {
+    fun sendRequest_withNullConfiguration_andRelativeUrl_postsCallbackError() {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
@@ -323,14 +366,14 @@ class BraintreeHttpClientUnitTest {
         val callback = mockk<NetworkResponseCallback>()
         every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
 
+        // NOTE: duplicate of sendRequest_withNullConfiguration_requiresRequestToHaveAnAbsolutePath
         val sut = BraintreeHttpClient(httpClient)
-        sut.post(
+        val request = BraintreeHttpRequest(
+            method = "POST",
             path = "sample/path",
-            data = "{}",
-            configuration = null,
-            authorization = clientToken,
-            callback = callback
+            data = "{}"
         )
+        sut.sendRequest(request, null, clientToken, callback)
 
         val exception = exceptionSlot.captured
         assertEquals(
@@ -341,30 +384,30 @@ class BraintreeHttpClientUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun postAsync_withNullConfiguration_andAbsoluteURL_doesNotSetABaseURLOnTheRequest() {
+    fun sendRequest_withNullConfiguration_andAbsoluteURL_doesNotSetABaseURLOnTheRequest() {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
 
+        // NOTE: duplicate of sendRequest_withNullConfigurationAndAbsoluteURL_doesNotSetABaseURLOnTheRequest
         val httpRequestSlot = slot<HttpRequest>()
         val callback = mockk<NetworkResponseCallback>()
         every { httpClient.sendRequest(capture(httpRequestSlot), anyInt(), callback) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.post(
+        val request = BraintreeHttpRequest(
+            method = "POST",
             path = "https://example.com/sample/path",
-            data = "{}",
-            configuration = null,
-            authorization = clientToken,
-            callback = callback
+            data = "{}"
         )
+        sut.sendRequest(request, null, clientToken, callback)
 
         val httpRequest = httpRequestSlot.captured
         assertEquals(URL("https://example.com/sample/path"), httpRequest.url)
     }
 
     @Test
-    fun postAsync_withPathAndDataAndCallback_whenClientTokenAuthAndInvalidJSONPayload_postsCallbackError() {
+    fun sendRequest_withPathAndDataAndCallback_whenClientTokenAuthAndInvalidJSONPayload_postsCallbackError() {
         val configuration = mockk<Configuration>()
         every { configuration.clientApiUrl } returns "https://example.com"
 
@@ -376,13 +419,12 @@ class BraintreeHttpClientUnitTest {
         every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.post(
+        val request = BraintreeHttpRequest(
+            method = "POST",
             path = "sample/path",
             data = "not json",
-            configuration = configuration,
-            authorization = clientToken,
-            callback = callback
         )
+        sut.sendRequest(request, configuration, clientToken, callback)
 
         val exception = exceptionSlot.captured
         assertEquals(
@@ -392,23 +434,23 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun postAsync_withInvalidToken_forwardsExceptionToCallback() {
+    fun sendRequest_withPOSTmethodAndInvalidToken_forwardsExceptionToCallback() {
         val configuration = mockk<Configuration>()
         val authorization: Authorization =
             InvalidAuthorization("invalid", "token invalid")
 
+        // NOTE: duplicate of sendRequest_withInvalidToken_forwardsExceptionToCallback
         val exceptionSlot = slot<BraintreeException>()
         val callback = mockk<NetworkResponseCallback>()
         every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.post(
+        val request = BraintreeHttpRequest(
+            method = "POST",
             path = "sample/path",
             data = "{}",
-            configuration = configuration,
-            authorization = authorization,
-            callback = callback
         )
+        sut.sendRequest(request, configuration, authorization, callback)
 
         val exception = exceptionSlot.captured
         assertEquals("token invalid", exception.message)
@@ -424,9 +466,13 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot), anyInt(), any()) } just runs
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.post(
+        val request = BraintreeHttpRequest(
+            method = "POST",
             path = "sample/path",
             data = "{}",
+        )
+        sut.sendRequest(
+            request,
             configuration = mockk<Configuration>(relaxed = true),
             authorization = tokenizationKey,
             callback = mockk<NetworkResponseCallback>()
@@ -445,9 +491,13 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot), anyInt(), any()) } just runs
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.post(
+        val request = BraintreeHttpRequest(
+            method = "POST",
             path = "sample/path",
             data = "{}",
+        )
+        sut.sendRequest(
+            request,
             configuration = mockk<Configuration>(relaxed = true),
             authorization = tokenizationKey,
             callback = mockk<NetworkResponseCallback>()
@@ -463,12 +513,16 @@ class BraintreeHttpClientUnitTest {
         val callback = mockk<NetworkResponseCallback>()
         val sut = BraintreeHttpClient(httpClient)
 
-        sut.post(
+        val request = BraintreeHttpRequest(
+            method = "POST",
             path = "sample/path",
             data = "{}",
+            additionalHeaders = headers
+        )
+        sut.sendRequest(
+            request,
             configuration = mockk(relaxed = true),
             authorization = mockk(relaxed = true),
-            additionalHeaders = headers,
             callback = callback
         )
 

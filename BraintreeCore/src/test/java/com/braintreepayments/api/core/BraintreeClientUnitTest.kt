@@ -59,8 +59,10 @@ class BraintreeClientUnitTest {
 
     @Test
     fun constructor_usesSessionIdFromParams() {
-        val params = BraintreeOptions(context = context, sessionId = "session-id", authorization =
-        authorization)
+        val params = BraintreeOptions(
+            context = context, sessionId = "session-id", authorization =
+            authorization
+        )
         val sut = BraintreeClient(params)
         assertEquals("session-id", sut.sessionId)
     }
@@ -69,7 +71,8 @@ class BraintreeClientUnitTest {
     fun constructor_setsSessionIdFromUUIDHelperIfSessionIdNotIncluded() {
         val uuidRegex = """[a-fA-F0-9]{32}""".toRegex()
 
-        val sut = BraintreeClient(BraintreeOptions(context = context, authorization = authorization))
+        val sut =
+            BraintreeClient(BraintreeOptions(context = context, authorization = authorization))
         assertTrue(uuidRegex.matches(sut.sessionId))
     }
 
@@ -131,15 +134,19 @@ class BraintreeClientUnitTest {
         val networkResponseCallbackSlot = slot<NetworkResponseCallback>()
 
         sut.sendGET("sample-url", httpResponseCallback)
+
+        val httpRequestSlot = slot<BraintreeHttpRequest>()
         verify {
-            braintreeHttpClient.get(
-                "sample-url",
+            braintreeHttpClient.sendRequest(
+                capture(httpRequestSlot),
                 configuration,
                 authorization,
                 capture(networkResponseCallbackSlot)
             )
         }
 
+        assertEquals("GET", httpRequestSlot.captured.method)
+        assertEquals("sample-url", httpRequestSlot.captured.path)
         assertTrue(networkResponseCallbackSlot.isCaptured)
     }
 
@@ -186,16 +193,19 @@ class BraintreeClientUnitTest {
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
         sut.sendPOST("sample-url", "{}", emptyMap(), httpResponseCallback)
 
+        val httpRequestSlot = slot<BraintreeHttpRequest>()
         verify {
-            braintreeHttpClient.post(
-                path = "sample-url",
-                data = "{}",
-                configuration = configuration,
-                authorization = authorization,
-                callback = capture(networkResponseCallbackSlot)
+            braintreeHttpClient.sendRequest(
+                capture(httpRequestSlot),
+                configuration,
+                authorization,
+                capture(networkResponseCallbackSlot)
             )
         }
 
+        assertEquals("POST", httpRequestSlot.captured.method)
+        assertEquals("sample-url", httpRequestSlot.captured.path)
+        assertEquals("{}", httpRequestSlot.captured.data)
         assertTrue(networkResponseCallbackSlot.isCaptured)
     }
 
@@ -228,16 +238,17 @@ class BraintreeClientUnitTest {
             responseCallback = mockk(relaxed = true)
         )
 
+        val httpRequestSlot = slot<BraintreeHttpRequest>()
         verify {
-            braintreeHttpClient.post(
-                path = any(),
-                data = any(),
-                configuration = any(),
-                authorization = any(),
-                additionalHeaders = emptyMap(),
-                callback = any()
+            braintreeHttpClient.sendRequest(
+                capture(httpRequestSlot),
+                any(),
+                authorization,
+                any()
             )
         }
+
+        assertEquals(emptyMap<String, String>(), httpRequestSlot.captured.additionalHeaders)
     }
 
     @Test
@@ -256,16 +267,16 @@ class BraintreeClientUnitTest {
             responseCallback = mockk(relaxed = true)
         )
 
+        val httpRequestSlot = slot<BraintreeHttpRequest>()
         verify {
-            braintreeHttpClient.post(
-                path = any(),
-                data = any(),
-                configuration = any(),
-                authorization = any(),
-                additionalHeaders = headers,
-                callback = any()
+            braintreeHttpClient.sendRequest(
+                capture(httpRequestSlot),
+                any(),
+                authorization,
+                any()
             )
         }
+        assertEquals(headers, httpRequestSlot.captured.additionalHeaders)
     }
 
     @Test
@@ -410,8 +421,12 @@ class BraintreeClientUnitTest {
     fun returnUrlScheme_returnsUrlSchemeDefinedInConstructor() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val returnUrlScheme = "custom-url-scheme"
-        val sut = BraintreeClient(BraintreeOptions(context, authorization, returnUrlScheme =
-        returnUrlScheme))
+        val sut = BraintreeClient(
+            BraintreeOptions(
+                context, authorization, returnUrlScheme =
+                returnUrlScheme
+            )
+        )
         assertEquals("custom-url-scheme", sut.getReturnUrlScheme())
     }
 
