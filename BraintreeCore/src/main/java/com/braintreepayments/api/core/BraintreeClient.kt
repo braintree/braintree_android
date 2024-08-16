@@ -176,33 +176,8 @@ class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     fun sendGET(url: String, responseCallback: HttpResponseCallback) {
-        if (authorization is InvalidAuthorization) {
-            responseCallback.onResult(null, createAuthError())
-            return
-        }
-        getConfiguration { configuration, configError ->
-            if (configuration != null) {
-                val request = BraintreeHttpRequest(method = "GET", path = url)
-                httpClient.sendRequest(
-                    request,
-                    configuration,
-                    authorization
-                ) { response, httpError ->
-                    response?.let {
-                        try {
-                            sendAnalyticsTimingEvent(url, response.timing)
-                            responseCallback.onResult(it.body, null)
-                        } catch (jsonException: JSONException) {
-                            responseCallback.onResult(null, jsonException)
-                        }
-                    } ?: httpError?.let { error ->
-                        responseCallback.onResult(null, error)
-                    }
-                }
-            } else {
-                responseCallback.onResult(null, configError)
-            }
-        }
+        val request = BraintreeHttpRequest(method = "GET", path = url)
+        sendHttpRequest(request, responseCallback)
     }
 
     /**
@@ -215,18 +190,25 @@ class BraintreeClient @VisibleForTesting internal constructor(
         additionalHeaders: Map<String, String> = emptyMap(),
         responseCallback: HttpResponseCallback,
     ) {
+        val request = BraintreeHttpRequest(
+            method = "POST",
+            path = url,
+            data = data,
+            additionalHeaders = additionalHeaders
+        )
+        sendHttpRequest(request, responseCallback)
+    }
+
+    private fun sendHttpRequest(
+        request: BraintreeHttpRequest,
+        responseCallback: HttpResponseCallback
+    ) {
         if (authorization is InvalidAuthorization) {
             responseCallback.onResult(null, createAuthError())
             return
         }
         getConfiguration { configuration, configError ->
             if (configuration != null) {
-                val request = BraintreeHttpRequest(
-                    method = "POST",
-                    path = url,
-                    data = data,
-                    additionalHeaders = additionalHeaders
-                )
                 httpClient.sendRequest(
                     request = request,
                     configuration = configuration,
@@ -234,7 +216,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
                 ) { response, httpError ->
                     response?.let {
                         try {
-                            sendAnalyticsTimingEvent(url, it.timing)
+                            sendAnalyticsTimingEvent(request.path, it.timing)
                             responseCallback.onResult(it.body, null)
                         } catch (jsonException: JSONException) {
                             responseCallback.onResult(null, jsonException)
