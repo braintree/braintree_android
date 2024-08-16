@@ -2,7 +2,6 @@ package com.braintreepayments.api.core
 
 import android.net.Uri
 import com.braintreepayments.api.sharedutils.HttpClient
-import com.braintreepayments.api.sharedutils.HttpClient.RetryStrategy
 import com.braintreepayments.api.sharedutils.HttpRequest
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.sharedutils.TLSSocketFactory
@@ -22,6 +21,7 @@ internal class BraintreeHttpClient(
      * @param request the braintree http request.
      * @param callback See [NetworkResponseCallback].
      */
+    @Suppress("TooGenericExceptionCaught")
     fun sendRequest(
         request: BraintreeHttpRequest,
         configuration: Configuration? = null,
@@ -53,6 +53,7 @@ internal class BraintreeHttpClient(
         return httpClient.sendRequest(httpRequest)
     }
 
+    @Suppress("CyclomaticComplexMethod")
     private fun buildHttpRequest(
         request: BraintreeHttpRequest,
         configuration: Configuration?,
