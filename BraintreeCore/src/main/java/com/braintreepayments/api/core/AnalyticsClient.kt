@@ -113,12 +113,13 @@ internal class AnalyticsClient(
                         IntegrationType.fromString(integration)
                     )
                     val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
-                    httpClient.post(
-                        FPTI_ANALYTICS_URL,
-                        analyticsRequest.toString(),
-                        configuration,
-                        authorization
+
+                    val request = BraintreeHttpRequest(
+                        method = "POST",
+                        path = FPTI_ANALYTICS_URL,
+                        data = analyticsRequest.toString()
                     )
+                    httpClient.sendRequestSync(request, configuration, authorization)
                     analyticsEventBlobDao.deleteEventBlobs(eventBlobs)
                 }
                 ListenableWorker.Result.success()

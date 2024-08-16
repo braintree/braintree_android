@@ -17,27 +17,6 @@ internal class BraintreeHttpClient(
 ) {
 
     /**
-     * Makes a synchronous HTTP POST request to Braintree.
-     *
-     * @param path the path or url to request from the server via HTTP POST
-     * @param data the body of the post request
-     * @param configuration configuration for the Braintree Android SDK.
-     * @param authorization
-     * @return the HTTP response body
-     */
-    @Throws(Exception::class)
-    fun post(
-        path: String, data: String, configuration: Configuration?, authorization: Authorization?
-    ): String {
-        val request = BraintreeHttpRequest(
-            method = "POST",
-            path = path,
-            data = data,
-        )
-        return sendRequestSync(request, configuration, authorization)
-    }
-
-    /**
      * Make an asynchronous Braintree authenticated HTTP request.
      *
      * @param request the braintree http request.
