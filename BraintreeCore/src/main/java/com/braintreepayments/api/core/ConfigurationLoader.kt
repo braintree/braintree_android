@@ -27,11 +27,7 @@ internal class ConfigurationLoader internal constructor(
 
         val callbackRef = WeakReference(callback)
         scheduler.runOnBackground {
-            val configUrl = Uri.parse(authorization.configUrl)
-                .buildUpon()
-                .appendQueryParameter("configVersion", "3")
-                .build()
-                .toString()
+            val configUrl = buildConfigurationURL(authorization)
             val cachedConfig = getCachedConfiguration(authorization, configUrl)
             cachedConfig?.let {
                 callbackRef.get()?.let {
@@ -68,6 +64,13 @@ internal class ConfigurationLoader internal constructor(
             }
         }
     }
+
+    private fun buildConfigurationURL(authorization: Authorization) =
+        Uri.parse(authorization.configUrl)
+            .buildUpon()
+            .appendQueryParameter("configVersion", "3")
+            .build()
+            .toString()
 
     private fun saveConfigurationToCache(
         configuration: Configuration,
