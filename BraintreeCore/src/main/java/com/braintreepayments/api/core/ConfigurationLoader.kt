@@ -3,6 +3,7 @@ package com.braintreepayments.api.core
 import android.content.Context
 import android.net.Uri
 import android.util.Base64
+import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.Scheduler
 import com.braintreepayments.api.sharedutils.ThreadScheduler
 import org.json.JSONException
@@ -18,54 +19,50 @@ internal class ConfigurationLoader internal constructor(
     )
 
     fun loadConfiguration(authorization: Authorization, callback: ConfigurationLoaderCallback) {
-        if (authorization is InvalidAuthorization) {
-            val message = authorization.errorMessage
-            // NOTE: timing information is null when configuration comes from cache
-            callback.onResult(null, BraintreeException(message), null)
-            return
-        }
-
         val callbackRef = WeakReference(callback)
         scheduler.runOnBackground {
-            val configUrl = buildConfigurationURL(authorization)
+            val configUrl = buildConfigURL(authorization)
             val cachedConfig = getCachedConfiguration(authorization, configUrl)
-            cachedConfig?.let {
-                callbackRef.get()?.let {
-                    scheduler.runOnMain {
-                        callback.onResult(cachedConfig, null, null)
-                    }
-                }
-            } ?: run {
-                val request = BraintreeHttpRequest(method = "GET", path = configUrl)
+            if (cachedConfig == null) {
                 try {
-                    val response = httpClient.sendRequestSync(
-                        request = request,
-                        configuration = null,
-                        authorization = authorization
-                    )
-                    val configuration = Configuration.fromJson(response.body!!)
+                    val configResponse = fetchConfigurationFromNetworkSync(configUrl, authorization)
+                    val configuration = Configuration.fromJson(configResponse.body!!)
                     saveConfigurationToCache(configuration, authorization, configUrl)
-                    callbackRef.get()?.let {
-                        scheduler.runOnMain {
-                            callback.onResult(configuration, null, response.timing)
-                        }
+                    scheduler.runOnMain {
+                        val cb = callbackRef.get()
+                        cb?.onResult(configuration, null, configResponse.timing)
                     }
-
                 } catch (error: Exception) {
                     val errorMessageFormat = "Request for configuration has failed: %s"
                     val errorMessage = String.format(errorMessageFormat, error.message)
                     val configurationException = ConfigurationException(errorMessage, error)
-                    callbackRef.get()?.let {
-                        scheduler.runOnMain {
-                            callback.onResult(null, configurationException, null)
-                        }
+                    scheduler.runOnMain {
+                        val cb = callbackRef.get()
+                        cb?.onResult(null, configurationException, null)
                     }
+                }
+            } else {
+                scheduler.runOnMain {
+                    val cb = callbackRef.get()
+                    cb?.onResult(cachedConfig, null, null)
                 }
             }
         }
     }
 
-    private fun buildConfigurationURL(authorization: Authorization) =
+    private fun fetchConfigurationFromNetworkSync(
+        configUrl: String,
+        authorization: Authorization
+    ): HttpResponse {
+        val request = BraintreeHttpRequest(method = "GET", path = configUrl)
+        return httpClient.sendRequestSync(
+            request = request,
+            configuration = null,
+            authorization = authorization
+        )
+    }
+
+    private fun buildConfigURL(authorization: Authorization) =
         Uri.parse(authorization.configUrl)
             .buildUpon()
             .appendQueryParameter("configVersion", "3")
