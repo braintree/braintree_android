@@ -1,6 +1,9 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+* All Modules
+  * Android 15 Support
+    * Upgrade `compileSdkVersion` and `targetSdkVersion` to API 35
 * BraintreeCore
   * Update `endpoint` syntax sent to FPTI for 3D Secure and Venmo flows
 * ThreeDSecure
