@@ -3,6 +3,7 @@ package com.braintreepayments.api.core
 import android.content.Context
 import android.net.Uri
 import android.util.Base64
+import androidx.annotation.WorkerThread
 import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.Scheduler
 import com.braintreepayments.api.sharedutils.ThreadScheduler
@@ -22,10 +23,10 @@ internal class ConfigurationLoader internal constructor(
         val callbackRef = WeakReference(callback)
         scheduler.runOnBackground {
             val configUrl = buildConfigURL(authorization)
-            val cachedConfig = getCachedConfiguration(authorization, configUrl)
+            val cachedConfig = loadConfigurationFromCache(authorization, configUrl)
             if (cachedConfig == null) {
                 try {
-                    val configResponse = fetchConfigurationFromNetworkSync(configUrl, authorization)
+                    val configResponse = loadConfigurationFromNetwork(configUrl, authorization)
                     val configuration = Configuration.fromJson(configResponse.body!!)
                     saveConfigurationToCache(configuration, authorization, configUrl)
                     scheduler.runOnMain {
@@ -50,7 +51,8 @@ internal class ConfigurationLoader internal constructor(
         }
     }
 
-    private fun fetchConfigurationFromNetworkSync(
+    @WorkerThread
+    private fun loadConfigurationFromNetwork(
         configUrl: String,
         authorization: Authorization
     ): HttpResponse {
@@ -78,7 +80,7 @@ internal class ConfigurationLoader internal constructor(
         configurationCache.saveConfiguration(configuration, cacheKey)
     }
 
-    private fun getCachedConfiguration(
+    private fun loadConfigurationFromCache(
         authorization: Authorization,
         configUrl: String
     ): Configuration? {
