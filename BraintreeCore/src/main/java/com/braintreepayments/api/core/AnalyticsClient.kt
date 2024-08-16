@@ -164,13 +164,12 @@ internal class AnalyticsClient(
         val eventBlobs = listOf(AnalyticsEventBlob(eventJSON))
         try {
             val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
-            httpClient.post(
+            val request = BraintreeHttpRequest(
+                method = "POST",
                 path = FPTI_ANALYTICS_URL,
-                data = analyticsRequest.toString(),
-                configuration = null,
-                authorization = authorization,
-                callback = null
+                data = analyticsRequest.toString()
             )
+            httpClient.sendRequest(request, authorization = authorization, callback = null)
         } catch (e: JSONException) { /* ignored */
         }
     }

@@ -220,12 +220,16 @@ class BraintreeClient @VisibleForTesting internal constructor(
         }
         getConfiguration { configuration, configError ->
             if (configuration != null) {
-                httpClient.post(
+                val request = BraintreeHttpRequest(
+                    method = "POST",
                     path = url,
                     data = data,
-                    configuration = configuration,
-                    authorization = authorization,
                     additionalHeaders = additionalHeaders
+                )
+                httpClient.sendRequest(
+                    request = request,
+                    configuration = configuration,
+                    authorization = authorization
                 ) { response, httpError ->
                     response?.let {
                         try {

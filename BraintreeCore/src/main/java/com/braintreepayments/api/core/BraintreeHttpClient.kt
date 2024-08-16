@@ -17,33 +17,6 @@ internal class BraintreeHttpClient(
 ) {
 
     /**
-     * Make a HTTP POST request to Braintree.
-     * If the path is a full url, it will be used instead of the previously provided url.
-     * @param path The path or url to request from the server via HTTP POST
-     * @param data The body of the POST request
-     * @param configuration configuration for the Braintree Android SDK.
-     * @param authorization
-     * @param callback [NetworkResponseCallback]
-     */
-    @Suppress("CyclomaticComplexMethod")
-    fun post(
-        path: String,
-        data: String,
-        configuration: Configuration?,
-        authorization: Authorization?,
-        additionalHeaders: Map<String, String> = emptyMap(),
-        callback: NetworkResponseCallback?
-    ) {
-        val request = BraintreeHttpRequest(
-            method = "POST",
-            path = path,
-            data = data,
-            additionalHeaders = additionalHeaders
-        )
-        sendRequest(request, configuration, authorization, callback)
-    }
-
-    /**
      * Makes a synchronous HTTP POST request to Braintree.
      *
      * @param path the path or url to request from the server via HTTP POST
