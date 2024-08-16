@@ -13,7 +13,5 @@ data class BraintreeHttpRequest(
     val path: String,
     val data: String? = null,
     val additionalHeaders: Map<String, String> = emptyMap(),
-    val configuration: Configuration? = null,
-    val authorization: Authorization? = null,
     @RetryStrategy val retryStrategy: Int = HttpClient.NO_RETRY
 )

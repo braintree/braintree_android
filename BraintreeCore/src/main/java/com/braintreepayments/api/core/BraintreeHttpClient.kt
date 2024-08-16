@@ -22,21 +22,6 @@ internal class BraintreeHttpClient(
      * @param path The path or url to request from the server via GET
      * @param configuration configuration for the Braintree Android SDK.
      * @param authorization
-     * @param callback [NetworkResponseCallback]
-     */
-    operator fun get(
-        path: String,
-        configuration: Configuration?,
-        authorization: Authorization?,
-        callback: NetworkResponseCallback
-    ) = get(path, configuration, authorization, HttpClient.NO_RETRY, callback)
-
-    /**
-     * Make a HTTP GET request to Braintree using the base url, path and authorization provided.
-     * If the path is a full url, it will be used instead of the previously provided url.
-     * @param path The path or url to request from the server via GET
-     * @param configuration configuration for the Braintree Android SDK.
-     * @param authorization
      * @param retryStrategy retry strategy
      * @param callback [NetworkResponseCallback]
      */
@@ -50,11 +35,9 @@ internal class BraintreeHttpClient(
         val request = BraintreeHttpRequest(
             method = "GET",
             path = path,
-            configuration = configuration,
-            authorization = authorization,
             retryStrategy = retryStrategy
         )
-        sendRequest(request, callback)
+        sendRequest(request, configuration, authorization, callback)
     }
 
     /**
@@ -79,11 +62,9 @@ internal class BraintreeHttpClient(
             method = "POST",
             path = path,
             data = data,
-            configuration = configuration,
-            authorization = authorization,
             additionalHeaders = additionalHeaders
         )
-        sendRequest(request, callback)
+        sendRequest(request, configuration, authorization, callback)
     }
 
     /**
@@ -103,10 +84,8 @@ internal class BraintreeHttpClient(
             method = "POST",
             path = path,
             data = data,
-            configuration = configuration,
-            authorization = authorization,
         )
-        return sendRequestSync(request)
+        return sendRequestSync(request, configuration, authorization)
     }
 
     /**
@@ -115,9 +94,14 @@ internal class BraintreeHttpClient(
      * @param request the braintree http request.
      * @param callback See [NetworkResponseCallback].
      */
-    private fun sendRequest(request: BraintreeHttpRequest, callback: NetworkResponseCallback?) {
+    fun sendRequest(
+        request: BraintreeHttpRequest,
+        configuration: Configuration? = null,
+        authorization: Authorization? = null,
+        callback: NetworkResponseCallback?
+    ) {
         try {
-            val httpRequest = buildHttpRequest(request)
+            val httpRequest = buildHttpRequest(request, configuration, authorization)
             httpClient.sendRequest(httpRequest, request.retryStrategy, callback)
         } catch (e: Exception) {
             // forward errors
@@ -132,12 +116,20 @@ internal class BraintreeHttpClient(
      * @param request the braintree http request.
      */
     @Throws(Exception::class)
-    fun sendRequestSync(request: BraintreeHttpRequest): String {
-        val httpRequest = buildHttpRequest(request)
+    fun sendRequestSync(
+        request: BraintreeHttpRequest,
+        configuration: Configuration?,
+        authorization: Authorization?
+    ): String {
+        val httpRequest = buildHttpRequest(request, configuration, authorization)
         return httpClient.sendRequest(httpRequest)
     }
 
-    private fun buildHttpRequest(request: BraintreeHttpRequest): HttpRequest = request.run {
+    private fun buildHttpRequest(
+        request: BraintreeHttpRequest,
+        configuration: Configuration?,
+        authorization: Authorization?,
+    ): HttpRequest = request.run {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
             throw BraintreeException(message)

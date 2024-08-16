@@ -182,7 +182,11 @@ class BraintreeClient @VisibleForTesting internal constructor(
         }
         getConfiguration { configuration, configError ->
             if (configuration != null) {
-                httpClient.get(url, configuration, authorization) { response, httpError ->
+                val request = BraintreeHttpRequest(
+                    method = "GET",
+                    path = url,
+                )
+                httpClient.sendRequest(request, configuration, authorization) { response, httpError ->
                     response?.let {
                         try {
                             sendAnalyticsTimingEvent(url, response.timing)
