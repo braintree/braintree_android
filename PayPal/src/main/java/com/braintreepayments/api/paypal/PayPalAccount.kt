@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypal
 
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.PaymentMethod
 import org.json.JSONException
 import org.json.JSONObject
@@ -18,7 +19,8 @@ import org.json.JSONObject
  * @property paymentType Payment type from original PayPal request. Either "billing-agreement" or
  * "single-payment"
  */
-internal data class PayPalAccount(
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+data class PayPalAccount(
     val clientMetadataId: String?,
     val urlResponseData: JSONObject,
     val intent: PayPalPaymentIntent?,
