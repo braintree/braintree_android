@@ -131,8 +131,8 @@ class GooglePayClient @VisibleForTesting internal constructor(
                 }
             } catch (ignored: JSONException) {
             }
-            val request1 = IsReadyToPayRequest.fromJson(json.toString())
-            internalGooglePayClient.isReadyToPay(context, configuration, request1, callback)
+            val readyToPayRequest = IsReadyToPayRequest.fromJson(json.toString())
+            internalGooglePayClient.isReadyToPay(context, configuration, readyToPayRequest, callback)
         }
     }
 
