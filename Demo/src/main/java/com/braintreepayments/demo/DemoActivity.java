@@ -3,25 +3,27 @@ package com.braintreepayments.demo;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsCompat.Type.InsetsType;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,6 +47,17 @@ public class DemoActivity extends AppCompatActivity implements ActivityCompat.On
         setProgressBarIndeterminateVisibility(true);
 
         registerSharedPreferencesListener();
+
+        // Support Edge-to-Edge layout in Android 15
+        // Ref: https://developer.android.com/develop/ui/views/layout/edge-to-edge#cutout-insets
+        View navHostView = findViewById(R.id.nav_host);
+        ViewCompat.setOnApplyWindowInsetsListener(navHostView, (v, insets) -> {
+            @InsetsType int insetTypeMask =
+                    WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout();
+            Insets bars = insets.getInsets(insetTypeMask);
+            v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
     }
 
     public void fetchAuthorization(BraintreeAuthorizationCallback callback) {
