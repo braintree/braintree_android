@@ -29,7 +29,7 @@ import org.json.JSONObject
 @SuppressWarnings("TooManyFunctions")
 class GooglePayClient @VisibleForTesting internal constructor(
     private val braintreeClient: BraintreeClient,
-    private val internalGooglePayClient: GooglePayInternalClient
+    private val internalGooglePayClient: GooglePayInternalClient = GooglePayInternalClient()
 ) {
     /**
      * Initializes a new [GooglePayClient] instance
@@ -42,12 +42,6 @@ class GooglePayClient @VisibleForTesting internal constructor(
             context,
             authorization
         )
-    )
-
-    @VisibleForTesting
-    internal constructor(braintreeClient: BraintreeClient) : this(
-        braintreeClient,
-        GooglePayInternalClient()
     )
 
     /**
@@ -100,11 +94,6 @@ class GooglePayClient @VisibleForTesting internal constructor(
                 return@getConfiguration
             }
 
-            if (context == null) {
-                callback.onGooglePayReadinessResult(NotReadyToPay(IllegalArgumentException("Activity cannot be null.")))
-                return@getConfiguration
-            }
-
             val json = JSONObject()
             val allowedCardNetworks = buildCardNetworks(configuration)
 
@@ -154,16 +143,21 @@ class GooglePayClient @VisibleForTesting internal constructor(
         callback: GooglePayGetTokenizationParametersCallback
     ) {
         braintreeClient.getConfiguration { configuration: Configuration?, e: Exception? ->
-            if (configuration == null && e != null) {
-                callback.onTokenizationParametersResult(GooglePayTokenizationParameters.Failure(e))
-                return@getConfiguration
-            }
-            callback.onTokenizationParametersResult(
-                GooglePayTokenizationParameters.Success(
-                    getTokenizationParameters(configuration, braintreeClient.authorization),
-                    getAllowedCardNetworks(configuration)
+
+            if (configuration != null) {
+                callback.onTokenizationParametersResult(
+                    GooglePayTokenizationParameters.Success(
+                        getTokenizationParameters(configuration, braintreeClient.authorization),
+                        getAllowedCardNetworks(configuration)
+                    )
                 )
-            )
+            } else {
+                if (e != null) {
+                    callback.onTokenizationParametersResult(GooglePayTokenizationParameters.Failure(e))
+                } else {
+                    callback.onTokenizationParametersResult(null)
+                }
+            }
         }
     }
 
@@ -194,17 +188,6 @@ class GooglePayClient @VisibleForTesting internal constructor(
             return
         }
 
-        if (request == null) {
-            callbackPaymentRequestFailure(
-                GooglePayPaymentAuthRequest.Failure(
-                    BraintreeException(
-                        "Cannot pass null GooglePayRequest to requestPayment"
-                    )
-                ), callback
-            )
-            return
-        }
-
         if (request.transactionInfo == null) {
             callbackPaymentRequestFailure(
                 GooglePayPaymentAuthRequest.Failure(
@@ -217,39 +200,39 @@ class GooglePayClient @VisibleForTesting internal constructor(
         }
 
         braintreeClient.getConfiguration { configuration: Configuration?, configError: Exception? ->
-            if (configuration == null && configError != null) {
-                callbackPaymentRequestFailure(
-                    GooglePayPaymentAuthRequest.Failure(configError),
+
+            if (configuration?.isGooglePayEnabled == true) {
+                setGooglePayRequestDefaults(configuration, braintreeClient.authorization, request)
+
+                val paymentDataRequest =
+                    PaymentDataRequest.fromJson(request.toJson())
+
+                val params =
+                    GooglePayPaymentAuthRequestParams(
+                        getGooglePayEnvironment(configuration),
+                        paymentDataRequest
+                    )
+                callbackPaymentRequestSuccess(
+                    GooglePayPaymentAuthRequest.ReadyToLaunch(params),
                     callback
                 )
-                return@getConfiguration
+            } else {
+                if (configError == null) {
+                    callbackPaymentRequestFailure(
+                        GooglePayPaymentAuthRequest.Failure(
+                            BraintreeException(
+                                "Google Pay is not enabled for your Braintree account, " +
+                                        "or Google Play Services are not configured correctly."
+                            )
+                        ), callback
+                    )
+                } else {
+                    callbackPaymentRequestFailure(
+                        GooglePayPaymentAuthRequest.Failure(configError),
+                        callback
+                    )
+                }
             }
-            if (!configuration!!.isGooglePayEnabled) {
-                callbackPaymentRequestFailure(
-                    GooglePayPaymentAuthRequest.Failure(
-                        BraintreeException(
-                            "Google Pay is not enabled for your Braintree account, " +
-                                    "or Google Play Services are not configured correctly."
-                        )
-                    ), callback
-                )
-                return@getConfiguration
-            }
-
-            setGooglePayRequestDefaults(configuration, braintreeClient.authorization, request)
-
-            val paymentDataRequest =
-                PaymentDataRequest.fromJson(request.toJson())
-
-            val params =
-                GooglePayPaymentAuthRequestParams(
-                    getGooglePayEnvironment(configuration),
-                    paymentDataRequest
-                )
-            callbackPaymentRequestSuccess(
-                GooglePayPaymentAuthRequest.ReadyToLaunch(params),
-                callback
-            )
         }
     }
 
@@ -263,14 +246,14 @@ class GooglePayClient @VisibleForTesting internal constructor(
      * @param callback    [GooglePayTokenizeCallback]
      */
     @SuppressWarnings("TooGenericExceptionCaught")
-    fun tokenize(paymentData: PaymentData?, callback: GooglePayTokenizeCallback) {
+    fun tokenize(paymentData: PaymentData, callback: GooglePayTokenizeCallback) {
         try {
-            val result = JSONObject(paymentData!!.toJson())
+            val result = JSONObject(paymentData.toJson())
             callbackTokenizeSuccess(GooglePayResult.Success(fromJSON(result)), callback)
         } catch (e: JSONException) {
             try {
                 val token =
-                    JSONObject(paymentData!!.toJson()).getJSONObject("paymentMethodData")
+                    JSONObject(paymentData.toJson()).getJSONObject("paymentMethodData")
                         .getJSONObject("tokenizationData").getString("token")
                 callbackTokenizeFailure(GooglePayResult.Failure(fromJson(token)), callback)
             } catch (e1: JSONException) {
@@ -281,7 +264,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
         } catch (e: NullPointerException) {
             try {
                 val token =
-                    JSONObject(paymentData!!.toJson()).getJSONObject("paymentMethodData")
+                    JSONObject(paymentData.toJson()).getJSONObject("paymentMethodData")
                         .getJSONObject("tokenizationData").getString("token")
                 callbackTokenizeFailure(GooglePayResult.Failure(fromJson(token)), callback)
             } catch (e1: JSONException) {
@@ -306,8 +289,9 @@ class GooglePayClient @VisibleForTesting internal constructor(
         callback: GooglePayTokenizeCallback
     ) {
         braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.TOKENIZE_STARTED)
-        if (paymentAuthResult.paymentData != null) {
-            tokenize(paymentAuthResult.paymentData, callback)
+        val paymentData = paymentAuthResult.paymentData
+        if (paymentData != null) {
+            tokenize(paymentData, callback)
         } else if (paymentAuthResult.error != null) {
             if (paymentAuthResult.error is UserCanceledException) {
                 callbackTokenizeCancel(callback)
@@ -317,8 +301,8 @@ class GooglePayClient @VisibleForTesting internal constructor(
         }
     }
 
-    fun getGooglePayEnvironment(configuration: Configuration?): Int {
-        return if ("production" == configuration!!.googlePayEnvironment) {
+    private fun getGooglePayEnvironment(configuration: Configuration): Int {
+        return if ("production" == configuration.googlePayEnvironment) {
             WalletConstants.ENVIRONMENT_PRODUCTION
         } else {
             WalletConstants.ENVIRONMENT_TEST
@@ -326,16 +310,15 @@ class GooglePayClient @VisibleForTesting internal constructor(
     }
 
     fun getTokenizationParameters(
-        configuration: Configuration?,
+        configuration: Configuration,
         authorization: Authorization
     ): PaymentMethodTokenizationParameters {
-        var version: String
 
         val metadata =
             MetadataBuilder().integration(braintreeClient.integrationType)
                 .sessionId(braintreeClient.sessionId).version().build()
 
-        version = try {
+        val version = try {
             metadata.getString("version")
         } catch (e: JSONException) {
             com.braintreepayments.api.core.BuildConfig.VERSION_NAME
@@ -346,14 +329,15 @@ class GooglePayClient @VisibleForTesting internal constructor(
                 WalletConstants.PAYMENT_METHOD_TOKENIZATION_TYPE_PAYMENT_GATEWAY
             )
                 .addParameter("gateway", "braintree")
-                .addParameter("braintree:merchantId", configuration!!.merchantId)
-                .addParameter(
-                    "braintree:authorizationFingerprint",
-                    configuration.googlePayAuthorizationFingerprint!!
-                )
+                .addParameter("braintree:merchantId", configuration.merchantId)
                 .addParameter("braintree:apiVersion", "v1")
                 .addParameter("braintree:sdkVersion", version)
                 .addParameter("braintree:metadata", metadata.toString())
+
+        val fingerprint = configuration.googlePayAuthorizationFingerprint
+        if (fingerprint?.isNotEmpty() == true) {
+            parameters.addParameter("braintree:authorizationFingerprint", fingerprint)
+        }
 
         if (authorization is TokenizationKey) {
             parameters.addParameter("braintree:clientKey", authorization.bearer)
@@ -362,9 +346,9 @@ class GooglePayClient @VisibleForTesting internal constructor(
         return parameters.build()
     }
 
-    fun getAllowedCardNetworks(configuration: Configuration?): ArrayList<Int> {
+    fun getAllowedCardNetworks(configuration: Configuration): ArrayList<Int> {
         val allowedNetworks = ArrayList<Int>()
-        for (network in configuration!!.googlePaySupportedNetworks) {
+        for (network in configuration.googlePaySupportedNetworks) {
             when (network) {
                 VISA_NETWORK -> allowedNetworks.add(WalletConstants.CARD_NETWORK_VISA)
                 MASTERCARD_NETWORK -> allowedNetworks.add(WalletConstants.CARD_NETWORK_MASTERCARD)
@@ -378,7 +362,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
         return allowedNetworks
     }
 
-    private fun buildCardNetworks(configuration: Configuration?): JSONArray {
+    private fun buildCardNetworks(configuration: Configuration): JSONArray {
         val cardNetworkStrings = JSONArray()
 
         for (network in getAllowedCardNetworks(configuration)) {
@@ -398,7 +382,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
     }
 
     private fun buildCardPaymentMethodParameters(
-        configuration: Configuration?,
+        configuration: Configuration,
         request: GooglePayRequest
     ): JSONObject {
         val defaultParameters = JSONObject()
@@ -445,7 +429,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
         return defaultParameters
     }
 
-    private fun buildPayPalPaymentMethodParameters(configuration: Configuration?): JSONObject {
+    private fun buildPayPalPaymentMethodParameters(configuration: Configuration): JSONObject {
         val defaultParameters = JSONObject()
 
         try {
@@ -454,7 +438,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
                     JSONObject().put(
                         "payee", JSONObject().put(
                             "client_id",
-                            configuration!!.googlePayPayPalClientId
+                            configuration.googlePayPayPalClientId
                         )
                     )
                         .put("recurring_payment", "true")
@@ -469,7 +453,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
     }
 
     private fun buildCardTokenizationSpecification(
-        configuration: Configuration?,
+        configuration: Configuration,
         authorization: Authorization
     ): JSONObject {
         val cardJson = JSONObject()
@@ -479,7 +463,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
         try {
             parameters.put("gateway", "braintree").put("braintree:apiVersion", "v1")
                 .put("braintree:sdkVersion", googlePayVersion)
-                .put("braintree:merchantId", configuration!!.merchantId)
+                .put("braintree:merchantId", configuration.merchantId)
                 .put(
                     "braintree:metadata", JSONObject().put("source", "client")
                         .put("integration", braintreeClient.integrationType)
@@ -506,7 +490,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
         return cardJson
     }
 
-    private fun buildPayPalTokenizationSpecification(configuration: Configuration?): JSONObject {
+    private fun buildPayPalTokenizationSpecification(configuration: Configuration): JSONObject {
         val json = JSONObject()
         val googlePayVersion = BuildConfig.VERSION_NAME
 
@@ -515,7 +499,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
                 "parameters",
                 JSONObject().put("gateway", "braintree").put("braintree:apiVersion", "v1")
                     .put("braintree:sdkVersion", googlePayVersion)
-                    .put("braintree:merchantId", configuration!!.merchantId)
+                    .put("braintree:merchantId", configuration.merchantId)
                     .put(
                         "braintree:paypalClientId",
                         configuration.googlePayPayPalClientId
@@ -535,7 +519,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
     }
 
     private fun setGooglePayRequestDefaults(
-        configuration: Configuration?,
+        configuration: Configuration,
         authorization: Authorization,
         request: GooglePayRequest
     ) {
@@ -554,7 +538,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
         }
 
         val googlePayCanProcessPayPal = request.isPayPalEnabled &&
-                !TextUtils.isEmpty(configuration!!.googlePayPayPalClientId)
+                !TextUtils.isEmpty(configuration.googlePayPayPalClientId)
 
         if (googlePayCanProcessPayPal) {
             if (request.getAllowedPaymentMethod("PAYPAL") == null) {
@@ -572,7 +556,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
             }
         }
 
-        request.setEnvironment(configuration!!.googlePayEnvironment)
+        request.setEnvironment(configuration.googlePayEnvironment)
     }
 
     private fun validateManifest(): Boolean {

@@ -18,26 +18,32 @@ internal class GooglePayActivityResultContract :
     }
 
     override fun parseResult(resultCode: Int, intent: Intent?): GooglePayPaymentAuthResult {
-        if (resultCode == Activity.RESULT_OK) {
-            if (intent != null) {
-                return GooglePayPaymentAuthResult(PaymentData.getFromIntent(intent), null)
+        when (resultCode) {
+            Activity.RESULT_OK -> {
+                if (intent != null) {
+                    return GooglePayPaymentAuthResult(PaymentData.getFromIntent(intent), null)
+                }
             }
-        } else if (resultCode == Activity.RESULT_CANCELED) {
-            return GooglePayPaymentAuthResult(
-                null,
-                UserCanceledException("User canceled Google Pay.")
-            )
-        } else if (resultCode == AutoResolveHelper.RESULT_ERROR) {
-            if (intent != null) {
+            Activity.RESULT_CANCELED -> {
                 return GooglePayPaymentAuthResult(
-                    null, GooglePayException(
-                        "An error was encountered during the Google Pay " +
-                                "flow. See the status object in this exception for more details.",
-                        AutoResolveHelper.getStatusFromIntent(intent)
-                    )
+                    null,
+                    UserCanceledException("User canceled Google Pay.")
                 )
             }
+            AutoResolveHelper.RESULT_ERROR -> {
+                if (intent != null) {
+                    return GooglePayPaymentAuthResult(
+                    null,
+                        GooglePayException(
+                            "An error was encountered during the Google Pay " +
+                                    "flow. See the status object in this exception for more details.",
+                            AutoResolveHelper.getStatusFromIntent(intent)
+                        )
+                    )
+                }
+            }
         }
+
         return GooglePayPaymentAuthResult(null, BraintreeException("An unexpected error occurred."))
     }
 }
