@@ -7,6 +7,8 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.api.testutils.Fixtures;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,11 +30,11 @@ public class BraintreeGraphQLClientTest {
     }
 
     @Test(timeout = 5000)
-    public void postRequestSslCertificateSuccessfulInSandbox() throws InterruptedException {
+    public void postRequestSslCertificateSuccessfulInSandbox() throws InterruptedException, JSONException {
         Context context = ApplicationProvider.getApplicationContext();
         BraintreeClient braintreeClient = new BraintreeClient(context, Fixtures.TOKENIZATION_KEY);
 
-        braintreeClient.sendGraphQLPOST("{}", (responseBody, httpError) -> {
+        braintreeClient.sendGraphQLPOST(new JSONObject("{}"), (responseBody, httpError) -> {
             // Make sure SSL handshake is successful
             assertFalse(httpError instanceof SSLException);
             countDownLatch.countDown();
@@ -42,11 +44,11 @@ public class BraintreeGraphQLClientTest {
     }
 
     @Test(timeout = 5000)
-    public void postRequestSslCertificateSuccessfulInProduction() throws InterruptedException {
+    public void postRequestSslCertificateSuccessfulInProduction() throws InterruptedException, JSONException {
         Context context = ApplicationProvider.getApplicationContext();
         BraintreeClient braintreeClient = new BraintreeClient(context, Fixtures.PROD_TOKENIZATION_KEY);
 
-        braintreeClient.sendGraphQLPOST("{}", (responseBody, httpError) -> {
+        braintreeClient.sendGraphQLPOST(new JSONObject("{}"), (responseBody, httpError) -> {
             // Make sure SSL handshake is successful
             assertFalse(httpError instanceof SSLException);
             countDownLatch.countDown();
