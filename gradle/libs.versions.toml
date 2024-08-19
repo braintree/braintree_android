@@ -39,6 +39,7 @@ eventbus = "2.4.1"
 material = "1.10.0"
 leakcanary = "2.12"
 deviceAutomator = "1.0.0"
+btCardForm = "5.4.0"
 
 [libraries]
 # Androidx
@@ -94,6 +95,7 @@ eventbus = { module = "de.greenrobot:eventbus", version.ref = "eventbus" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 device-automator = { module = "com.braintreepayments:device-automator", version.ref = "deviceAutomator" }
+bt-card-form = { module = "com.braintreepayments:card-form", version.ref = "btCardForm" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradle" }
