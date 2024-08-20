@@ -42,7 +42,7 @@ public class SynchronousHttpClientUnitTest {
     public void request_whenHttpRequestURLMalformed_throwsMalformedURLException() {
         final HttpRequest httpRequest = new HttpRequest()
                 .path("")
-                .method("GET")
+                .method(HttpMethod.GET)
                 .baseUrl("/:/");
 
         final SynchronousHttpClient sut =
@@ -77,7 +77,7 @@ public class SynchronousHttpClientUnitTest {
     public void request_setsRequestMethod() throws Exception {
         final HttpRequest httpRequest = spy(new HttpRequest()
                 .path("sample/path")
-                .method("GET")
+                .method(HttpMethod.GET)
                 .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
@@ -99,7 +99,7 @@ public class SynchronousHttpClientUnitTest {
             throws Exception {
         final HttpRequest httpRequest = spy(new HttpRequest()
                 .path("sample/path")
-                .method("GET")
+                .method(HttpMethod.GET)
                 .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
@@ -120,7 +120,7 @@ public class SynchronousHttpClientUnitTest {
     public void request_whenConnectionIsHttps_setsSSLSocketFactory() throws Exception {
         final HttpRequest httpRequest = spy(new HttpRequest()
                 .path("sample/path")
-                .method("GET")
+                .method(HttpMethod.GET)
                 .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
@@ -142,7 +142,7 @@ public class SynchronousHttpClientUnitTest {
             throws Exception {
         final HttpRequest httpRequest = spy(new HttpRequest()
                 .path("sample/path")
-                .method("GET")
+                .method(HttpMethod.GET)
                 .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
@@ -171,7 +171,7 @@ public class SynchronousHttpClientUnitTest {
     public void request_setsHttpReadTimeout() throws Exception {
         final HttpRequest httpRequest = spy(new HttpRequest()
                 .path("sample/path")
-                .method("GET")
+                .method(HttpMethod.GET)
                 .baseUrl("https://www.sample.com"));
 
         when(httpRequest.getReadTimeout()).thenReturn(123);
@@ -194,7 +194,7 @@ public class SynchronousHttpClientUnitTest {
     public void request_setsHttpConnectionTimeout() throws Exception {
         final HttpRequest httpRequest = spy(new HttpRequest()
                 .path("sample/path")
-                .method("GET")
+                .method(HttpMethod.GET)
                 .baseUrl("https://www.sample.com"));
 
         when(httpRequest.getConnectTimeout()).thenReturn(456);
@@ -217,7 +217,7 @@ public class SynchronousHttpClientUnitTest {
     public void request_setsHttpHeaders() throws Exception {
         final HttpRequest httpRequest = spy(new HttpRequest()
                 .path("sample/path")
-                .method("GET")
+                .method(HttpMethod.GET)
                 .baseUrl("https://www.sample.com")
                 .addHeader("Sample-Header", "Sample Value"));
 
@@ -239,7 +239,7 @@ public class SynchronousHttpClientUnitTest {
     public void request_parsesResponseAndReturnsHttpBody() throws Exception {
         final HttpRequest httpRequest = spy(new HttpRequest()
                 .path("sample/path")
-                .method("GET")
+                .method(HttpMethod.GET)
                 .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
@@ -260,7 +260,7 @@ public class SynchronousHttpClientUnitTest {
     public void request_onSuccess_closesUrlConnection() throws Exception {
         final HttpRequest httpRequest = spy(new HttpRequest()
                 .path("sample/path")
-                .method("GET")
+                .method(HttpMethod.GET)
                 .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
@@ -282,7 +282,7 @@ public class SynchronousHttpClientUnitTest {
             throws Exception {
         final HttpRequest httpRequest = spy(new HttpRequest()
                 .path("sample/path")
-                .method("GET")
+                .method(HttpMethod.GET)
                 .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
@@ -309,7 +309,7 @@ public class SynchronousHttpClientUnitTest {
     public void request_whenPost_addsContentTypeHeader() throws Exception {
         final HttpRequest httpRequest = spy(new HttpRequest()
                 .path("sample/path")
-                .method("POST")
+                .method(HttpMethod.POST)
                 .data("test data")
                 .baseUrl("https://www.sample.com"));
 
@@ -333,7 +333,7 @@ public class SynchronousHttpClientUnitTest {
     public void request_whenPost_writesAsciiCharactersToOutputStream() throws Exception {
         final HttpRequest httpRequest = spy(new HttpRequest()
                 .path("sample/path")
-                .method("POST")
+                .method(HttpMethod.POST)
                 .data("test data")
                 .baseUrl("https://www.sample.com"));
 
@@ -363,7 +363,7 @@ public class SynchronousHttpClientUnitTest {
     public void request_whenPost_writesUTF8CharactersToOutputStream() throws Exception {
         final HttpRequest httpRequest = spy(new HttpRequest()
                 .path("sample/path")
-                .method("POST")
+                .method(HttpMethod.POST)
                 .data("Bjärne Stroustrüp")
                 .baseUrl("https://www.sample.com"));
 

@@ -60,9 +60,9 @@ public class HttpRequestUnitTest {
         @Test
         public void getMethod_returnsMethod() {
             HttpRequest sut = HttpRequest.newInstance()
-                    .method("GET");
+                    .method(HttpMethod.GET);
 
-            assertEquals("GET", sut.getMethod());
+            assertEquals(HttpMethod.GET, sut.getMethod());
         }
 
         @Test
