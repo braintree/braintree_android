@@ -4,7 +4,6 @@ import androidx.annotation.RestrictTo
 import com.braintreepayments.api.card.AuthenticationInsight
 import com.braintreepayments.api.card.BinData
 import com.braintreepayments.api.card.CardNonce
-import com.braintreepayments.api.sharedutils.Json
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject

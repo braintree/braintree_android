@@ -37,7 +37,8 @@ import org.json.JSONObject
  * performed for this transaction.
  * @property threeDSecureServerTransactionId Unique transaction identifier assigned by the 3DS
  * Server to identify a single transaction.
- * @property paresStatus The Payer Authentication Response (PARes) Status, a transaction status result identifier. Possible Values:
+ * @property paresStatus The Payer Authentication Response (PARes) Status, a transaction status
+ * result identifier. Possible Values:
  * Y – Successful Authentication
  * N – Failed Authentication
  * U – Unable to Complete Authentication
