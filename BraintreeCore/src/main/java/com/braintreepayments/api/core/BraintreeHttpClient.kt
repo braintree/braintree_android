@@ -32,9 +32,9 @@ internal class BraintreeHttpClient(
         try {
             val httpRequest = buildHttpRequest(request, configuration, authorization)
             httpClient.sendRequest(httpRequest, request.retryStrategy, callback)
-        } catch (e: Exception) {
+        } catch (error: Exception) {
             // forward errors
-            callback?.onResult(null, e)
+            callback?.onResult(null, error)
         }
     }
 
