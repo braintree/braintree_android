@@ -7,7 +7,7 @@ buildscript {
         }
     }
 
-    def sdkTargetJavaVersion = JavaVersion.VERSION_11
+    def sdkTargetJavaVersion = JavaVersion.VERSION_17
 
     ext.versions = [
             "javaSourceCompatibility": sdkTargetJavaVersion,
