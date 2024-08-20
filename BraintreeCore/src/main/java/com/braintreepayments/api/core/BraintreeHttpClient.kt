@@ -18,7 +18,7 @@ internal class BraintreeHttpClient(
     /**
      * Make an asynchronous Braintree authenticated HTTP request.
      *
-     * @param request the braintree http request.
+     * @param request the http request.
      * @param callback See [NetworkResponseCallback].
      */
     @Suppress("TooGenericExceptionCaught")
