@@ -29,7 +29,7 @@ class ConfigurationLoaderUnitTest {
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
         sut.loadConfiguration(authorization, callback)
 
-        val httpRequestSlot = slot<BraintreeHttpRequest>()
+        val httpRequestSlot = slot<InternalHttpRequest>()
         val callbackSlot = slot<NetworkResponseCallback>()
         verify {
             braintreeHttpClient.sendRequest(

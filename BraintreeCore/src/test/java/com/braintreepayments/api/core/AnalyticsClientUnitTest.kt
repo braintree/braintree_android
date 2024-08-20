@@ -213,7 +213,7 @@ class AnalyticsClientUnitTest {
         val blobs = listOf(AnalyticsEventBlob("""{ "fake": "json" }"""))
         every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
 
-        val httpRequestSlot = slot<BraintreeHttpRequest>()
+        val httpRequestSlot = slot<InternalHttpRequest>()
         every {
             httpClient.sendRequestSync(capture(httpRequestSlot), any(), any())
         }
@@ -312,7 +312,7 @@ class AnalyticsClientUnitTest {
         val blobs = listOf(AnalyticsEventBlob("""{ "fake": "json" }"""))
         every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
 
-        val httpRequestSlot = slot<BraintreeHttpRequest>()
+        val httpRequestSlot = slot<InternalHttpRequest>()
         every { httpClient.sendRequestSync(capture(httpRequestSlot), any(), any()) }
 
         val sut =
@@ -423,7 +423,7 @@ class AnalyticsClientUnitTest {
             deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         } returns metadata
 
-        val httpRequestSlot = slot<BraintreeHttpRequest>()
+        val httpRequestSlot = slot<InternalHttpRequest>()
         every {
             httpClient.sendRequest(capture(httpRequestSlot), any(), authorization, any())
         } returns Unit

@@ -8,7 +8,7 @@ import com.braintreepayments.api.sharedutils.HttpClient.RetryStrategy
  * @suppress
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-data class BraintreeHttpRequest(
+data class InternalHttpRequest(
     val method: String,
     val path: String,
     val data: String? = null,

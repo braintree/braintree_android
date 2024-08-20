@@ -46,7 +46,7 @@ class BraintreeHttpClientUnitTest {
         every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "GET",
             path = "sample/path"
         )
@@ -71,7 +71,7 @@ class BraintreeHttpClientUnitTest {
         } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "GET",
             path = "https://example.com/sample/path"
         )
@@ -95,7 +95,7 @@ class BraintreeHttpClientUnitTest {
         } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "GET",
             path = "sample/path"
         )
@@ -124,7 +124,7 @@ class BraintreeHttpClientUnitTest {
         } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "GET",
             path = "sample/path"
         )
@@ -154,7 +154,7 @@ class BraintreeHttpClientUnitTest {
         every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "GET",
             path = "sample/path"
         )
@@ -176,7 +176,7 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot)) } returns "sample result"
 
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "POST",
             path = "sample/path",
             data = "{}"
@@ -210,7 +210,7 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot)) } returns "sample result"
 
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "POST",
             path = "sample/path",
             data = "{}"
@@ -237,7 +237,7 @@ class BraintreeHttpClientUnitTest {
         ) as ClientToken
 
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "POST",
             path = "sample/path",
             data = "{}"
@@ -264,7 +264,7 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot)) } returns ""
 
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "POST",
             path = "https://example.com/sample/path",
             data = "{}"
@@ -282,7 +282,7 @@ class BraintreeHttpClientUnitTest {
         val configuration = mockk<Configuration>()
 
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "POST",
             path = "https://example.com/sample/path",
             data = "{}"
@@ -307,7 +307,7 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot), anyInt(), callback) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "POST",
             path = "sample/path",
             data = "{}"
@@ -338,7 +338,7 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot), anyInt(), callback) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "POST",
             path = "sample/path",
             data = "{}"
@@ -368,7 +368,7 @@ class BraintreeHttpClientUnitTest {
 
         // NOTE: duplicate of sendRequest_withNullConfiguration_requiresRequestToHaveAnAbsolutePath
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "POST",
             path = "sample/path",
             data = "{}"
@@ -395,7 +395,7 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot), anyInt(), callback) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "POST",
             path = "https://example.com/sample/path",
             data = "{}"
@@ -419,7 +419,7 @@ class BraintreeHttpClientUnitTest {
         every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "POST",
             path = "sample/path",
             data = "not json",
@@ -445,7 +445,7 @@ class BraintreeHttpClientUnitTest {
         every { callback.onResult(null, capture(exceptionSlot)) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "POST",
             path = "sample/path",
             data = "{}",
@@ -466,7 +466,7 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot), anyInt(), any()) } just runs
 
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "POST",
             path = "sample/path",
             data = "{}",
@@ -491,7 +491,7 @@ class BraintreeHttpClientUnitTest {
         every { httpClient.sendRequest(capture(httpRequestSlot), anyInt(), any()) } just runs
 
         val sut = BraintreeHttpClient(httpClient)
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "POST",
             path = "sample/path",
             data = "{}",
@@ -513,7 +513,7 @@ class BraintreeHttpClientUnitTest {
         val callback = mockk<NetworkResponseCallback>()
         val sut = BraintreeHttpClient(httpClient)
 
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "POST",
             path = "sample/path",
             data = "{}",

@@ -176,7 +176,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     fun sendGET(url: String, responseCallback: HttpResponseCallback) {
-        val request = BraintreeHttpRequest(method = "GET", path = url)
+        val request = InternalHttpRequest(method = "GET", path = url)
         sendHttpRequest(request, responseCallback)
     }
 
@@ -190,7 +190,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
         additionalHeaders: Map<String, String> = emptyMap(),
         responseCallback: HttpResponseCallback,
     ) {
-        val request = BraintreeHttpRequest(
+        val request = InternalHttpRequest(
             method = "POST",
             path = url,
             data = data,
@@ -200,7 +200,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
     }
 
     private fun sendHttpRequest(
-        request: BraintreeHttpRequest,
+        request: InternalHttpRequest,
         responseCallback: HttpResponseCallback
     ) {
         if (authorization is InvalidAuthorization) {

@@ -114,7 +114,7 @@ internal class AnalyticsClient(
                     )
                     val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
 
-                    val request = BraintreeHttpRequest(
+                    val request = InternalHttpRequest(
                         method = "POST",
                         path = FPTI_ANALYTICS_URL,
                         data = analyticsRequest.toString()
@@ -165,7 +165,7 @@ internal class AnalyticsClient(
         val eventBlobs = listOf(AnalyticsEventBlob(eventJSON))
         try {
             val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
-            val request = BraintreeHttpRequest(
+            val request = InternalHttpRequest(
                 method = "POST",
                 path = FPTI_ANALYTICS_URL,
                 data = analyticsRequest.toString()

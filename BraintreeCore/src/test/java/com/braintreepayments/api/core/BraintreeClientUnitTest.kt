@@ -135,7 +135,7 @@ class BraintreeClientUnitTest {
 
         sut.sendGET("sample-url", httpResponseCallback)
 
-        val httpRequestSlot = slot<BraintreeHttpRequest>()
+        val httpRequestSlot = slot<InternalHttpRequest>()
         verify {
             braintreeHttpClient.sendRequest(
                 capture(httpRequestSlot),
@@ -193,7 +193,7 @@ class BraintreeClientUnitTest {
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
         sut.sendPOST("sample-url", "{}", emptyMap(), httpResponseCallback)
 
-        val httpRequestSlot = slot<BraintreeHttpRequest>()
+        val httpRequestSlot = slot<InternalHttpRequest>()
         verify {
             braintreeHttpClient.sendRequest(
                 capture(httpRequestSlot),
@@ -238,7 +238,7 @@ class BraintreeClientUnitTest {
             responseCallback = mockk(relaxed = true)
         )
 
-        val httpRequestSlot = slot<BraintreeHttpRequest>()
+        val httpRequestSlot = slot<InternalHttpRequest>()
         verify {
             braintreeHttpClient.sendRequest(
                 capture(httpRequestSlot),
@@ -267,7 +267,7 @@ class BraintreeClientUnitTest {
             responseCallback = mockk(relaxed = true)
         )
 
-        val httpRequestSlot = slot<BraintreeHttpRequest>()
+        val httpRequestSlot = slot<InternalHttpRequest>()
         verify {
             braintreeHttpClient.sendRequest(
                 capture(httpRequestSlot),

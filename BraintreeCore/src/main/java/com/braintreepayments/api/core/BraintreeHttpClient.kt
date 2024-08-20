@@ -23,7 +23,7 @@ internal class BraintreeHttpClient(
      */
     @Suppress("TooGenericExceptionCaught")
     fun sendRequest(
-        request: BraintreeHttpRequest,
+        request: InternalHttpRequest,
         configuration: Configuration? = null,
         authorization: Authorization? = null,
         callback: NetworkResponseCallback?
@@ -45,7 +45,7 @@ internal class BraintreeHttpClient(
      */
     @Throws(Exception::class)
     fun sendRequestSync(
-        request: BraintreeHttpRequest,
+        request: InternalHttpRequest,
         configuration: Configuration?,
         authorization: Authorization?
     ): String {
@@ -55,7 +55,7 @@ internal class BraintreeHttpClient(
 
     @Suppress("CyclomaticComplexMethod")
     private fun buildHttpRequest(
-        request: BraintreeHttpRequest,
+        request: InternalHttpRequest,
         configuration: Configuration?,
         authorization: Authorization?,
     ): HttpRequest = request.run {

@@ -31,7 +31,7 @@ internal class ConfigurationLoader internal constructor(
         cachedConfig?.let {
             callback.onResult(cachedConfig, null, null)
         } ?: run {
-            val request = BraintreeHttpRequest(
+            val request = InternalHttpRequest(
                 method = "GET",
                 path = configUrl,
                 retryStrategy = HttpClient.RETRY_MAX_3_TIMES
