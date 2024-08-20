@@ -8,6 +8,7 @@ import static junit.framework.Assert.assertNotNull;
 import android.os.Parcel;
 
 import com.braintreepayments.api.card.BinData;
+import com.braintreepayments.api.card.BinType;
 import com.braintreepayments.api.testutils.Fixtures;
 
 import org.json.JSONArray;
@@ -64,13 +65,13 @@ public class VisaCheckoutNonceUnitTest {
         assertEquals("userEmail", visaCheckoutNonce.getUserData().getUserEmail());
 
         assertNotNull(visaCheckoutNonce.getBinData());
-        assertEquals(BinData.BinType.Unknown, visaCheckoutNonce.getBinData().getPrepaid());
-        assertEquals(BinData.BinType.Yes, visaCheckoutNonce.getBinData().getHealthcare());
-        assertEquals(BinData.BinType.No, visaCheckoutNonce.getBinData().getDebit());
-        assertEquals(BinData.BinType.Unknown, visaCheckoutNonce.getBinData().getDurbinRegulated());
-        assertEquals(BinData.BinType.Unknown, visaCheckoutNonce.getBinData().getCommercial());
-        assertEquals(BinData.BinType.Unknown, visaCheckoutNonce.getBinData().getPayroll());
-        assertEquals(BinData.BinType.Unknown.name(), visaCheckoutNonce.getBinData().getIssuingBank());
+        assertEquals(BinType.Unknown, visaCheckoutNonce.getBinData().getPrepaid());
+        assertEquals(BinType.Yes, visaCheckoutNonce.getBinData().getHealthcare());
+        assertEquals(BinType.No, visaCheckoutNonce.getBinData().getDebit());
+        assertEquals(BinType.Unknown, visaCheckoutNonce.getBinData().getDurbinRegulated());
+        assertEquals(BinType.Unknown, visaCheckoutNonce.getBinData().getCommercial());
+        assertEquals(BinType.Unknown, visaCheckoutNonce.getBinData().getPayroll());
+        assertEquals(BinType.Unknown.name(), visaCheckoutNonce.getBinData().getIssuingBank());
         assertEquals("Something", visaCheckoutNonce.getBinData().getCountryOfIssuance());
         assertEquals("123", visaCheckoutNonce.getBinData().getProductId());
     }

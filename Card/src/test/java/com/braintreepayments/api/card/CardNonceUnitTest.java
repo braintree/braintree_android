@@ -40,13 +40,13 @@ public class CardNonceUnitTest {
         assertEquals("11", cardNonce.getLastTwo());
         assertEquals("1111", cardNonce.getLastFour());
         assertNotNull(cardNonce.getBinData());
-        assertEquals(BinData.BinType.Unknown, cardNonce.getBinData().getPrepaid());
-        assertEquals(BinData.BinType.Yes, cardNonce.getBinData().getHealthcare());
-        assertEquals(BinData.BinType.No, cardNonce.getBinData().getDebit());
-        assertEquals(BinData.BinType.Unknown, cardNonce.getBinData().getDurbinRegulated());
-        assertEquals(BinData.BinType.Unknown, cardNonce.getBinData().getCommercial());
-        assertEquals(BinData.BinType.Unknown, cardNonce.getBinData().getPayroll());
-        assertEquals(BinData.BinType.Unknown.name(), cardNonce.getBinData().getIssuingBank());
+        assertEquals(BinType.Unknown, cardNonce.getBinData().getPrepaid());
+        assertEquals(BinType.Yes, cardNonce.getBinData().getHealthcare());
+        assertEquals(BinType.No, cardNonce.getBinData().getDebit());
+        assertEquals(BinType.Unknown, cardNonce.getBinData().getDurbinRegulated());
+        assertEquals(BinType.Unknown, cardNonce.getBinData().getCommercial());
+        assertEquals(BinType.Unknown, cardNonce.getBinData().getPayroll());
+        assertEquals(BinType.Unknown.name(), cardNonce.getBinData().getIssuingBank());
         assertEquals("Something", cardNonce.getBinData().getCountryOfIssuance());
         assertEquals("123", cardNonce.getBinData().getProductId());
         assertEquals("unregulated",
@@ -65,12 +65,12 @@ public class CardNonceUnitTest {
         assertEquals("11", cardNonce.getLastTwo());
         assertEquals("1111", cardNonce.getLastFour());
         assertNotNull(cardNonce.getBinData());
-        assertEquals(BinData.BinType.Yes, cardNonce.getBinData().getPrepaid());
-        assertEquals(BinData.BinType.Yes, cardNonce.getBinData().getHealthcare());
-        assertEquals(BinData.BinType.No, cardNonce.getBinData().getDebit());
-        assertEquals(BinData.BinType.Yes, cardNonce.getBinData().getDurbinRegulated());
-        assertEquals(BinData.BinType.No, cardNonce.getBinData().getCommercial());
-        assertEquals(BinData.BinType.Yes, cardNonce.getBinData().getPayroll());
+        assertEquals(BinType.Yes, cardNonce.getBinData().getPrepaid());
+        assertEquals(BinType.Yes, cardNonce.getBinData().getHealthcare());
+        assertEquals(BinType.No, cardNonce.getBinData().getDebit());
+        assertEquals(BinType.Yes, cardNonce.getBinData().getDurbinRegulated());
+        assertEquals(BinType.No, cardNonce.getBinData().getCommercial());
+        assertEquals(BinType.Yes, cardNonce.getBinData().getPayroll());
         assertEquals("Bank of America", cardNonce.getBinData().getIssuingBank());
         assertEquals("USA", cardNonce.getBinData().getCountryOfIssuance());
         assertEquals("123", cardNonce.getBinData().getProductId());
@@ -110,15 +110,15 @@ public class CardNonceUnitTest {
         assertEquals("", cardNonce.getExpirationYear());
         assertEquals("", cardNonce.getCardholderName());
         assertNotNull(cardNonce.getBinData());
-        assertEquals(BinData.BinType.Unknown, cardNonce.getBinData().getPrepaid());
-        assertEquals(BinData.BinType.Unknown, cardNonce.getBinData().getHealthcare());
-        assertEquals(BinData.BinType.Unknown, cardNonce.getBinData().getDebit());
-        assertEquals(BinData.BinType.Unknown, cardNonce.getBinData().getDurbinRegulated());
-        assertEquals(BinData.BinType.Unknown, cardNonce.getBinData().getCommercial());
-        assertEquals(BinData.BinType.Unknown, cardNonce.getBinData().getPayroll());
-        assertEquals(BinData.BinType.Unknown.name(), cardNonce.getBinData().getIssuingBank());
-        assertEquals(BinData.BinType.Unknown.name(), cardNonce.getBinData().getCountryOfIssuance());
-        assertEquals(BinData.BinType.Unknown.name(), cardNonce.getBinData().getProductId());
+        assertEquals(BinType.Unknown, cardNonce.getBinData().getPrepaid());
+        assertEquals(BinType.Unknown, cardNonce.getBinData().getHealthcare());
+        assertEquals(BinType.Unknown, cardNonce.getBinData().getDebit());
+        assertEquals(BinType.Unknown, cardNonce.getBinData().getDurbinRegulated());
+        assertEquals(BinType.Unknown, cardNonce.getBinData().getCommercial());
+        assertEquals(BinType.Unknown, cardNonce.getBinData().getPayroll());
+        assertEquals(BinType.Unknown.name(), cardNonce.getBinData().getIssuingBank());
+        assertEquals(BinType.Unknown.name(), cardNonce.getBinData().getCountryOfIssuance());
+        assertEquals(BinType.Unknown.name(), cardNonce.getBinData().getProductId());
     }
 
     @Test

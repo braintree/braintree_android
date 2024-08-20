@@ -23,7 +23,7 @@ import org.json.JSONObject
  * (e.g. `D` (Visa Signature Preferred), `G` (Visa Business)).
  */
 @Parcelize
-data class BinData(
+data class BinData internal constructor(
     val prepaid: BinType = BinType.Unknown,
     val healthcare: BinType = BinType.Unknown,
     val debit: BinType = BinType.Unknown,
@@ -34,12 +34,6 @@ data class BinData(
     val countryOfIssuance: String = BinType.Unknown.name,
     val productId: String = BinType.Unknown.name
 ) : Parcelable {
-
-    enum class BinType {
-        Yes,
-        No,
-        Unknown
-    }
 
     companion object {
 

@@ -17,7 +17,7 @@ import org.json.JSONObject
  */
 class CardClient @VisibleForTesting internal constructor(
     private val braintreeClient: BraintreeClient,
-    private val apiClient: ApiClient
+    private val apiClient: ApiClient = ApiClient(braintreeClient)
 ) {
 
     /**
@@ -31,12 +31,6 @@ class CardClient @VisibleForTesting internal constructor(
             context,
             authorization
         )
-    )
-
-    @VisibleForTesting
-    internal constructor(braintreeClient: BraintreeClient) : this(
-        braintreeClient,
-        ApiClient(braintreeClient)
     )
 
     /**
