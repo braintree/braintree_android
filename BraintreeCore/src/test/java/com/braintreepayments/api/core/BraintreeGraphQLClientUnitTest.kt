@@ -2,6 +2,7 @@ package com.braintreepayments.api.core
 
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.sharedutils.HttpClient
+import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.sharedutils.HttpRequest
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import io.mockk.every
@@ -49,7 +50,7 @@ class BraintreeGraphQLClientUnitTest {
         val httpRequest = httpRequestSlot.captured
         assertEquals(URL("https://example-graphql.com/graphql/sample/path"), httpRequest.url)
         assertEquals("data", String(httpRequest.data, StandardCharsets.UTF_8))
-        assertEquals("POST", httpRequest.method)
+        assertEquals(HttpMethod.POST, httpRequest.method)
 
         val headers = httpRequest.headers
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
@@ -71,7 +72,7 @@ class BraintreeGraphQLClientUnitTest {
         val httpRequest = httpRequestSlot.captured
         assertEquals(URL("https://example-graphql.com/graphql"), httpRequest.url)
         assertEquals("data", String(httpRequest.data, StandardCharsets.UTF_8))
-        assertEquals("POST", httpRequest.method)
+        assertEquals(HttpMethod.POST, httpRequest.method)
 
         val headers = httpRequest.headers
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
@@ -92,7 +93,7 @@ class BraintreeGraphQLClientUnitTest {
         val httpRequest = httpRequestSlot.captured
         assertEquals(URL("https://example-graphql.com/graphql/sample/path"), httpRequest.url)
         assertEquals("data", String(httpRequest.data, StandardCharsets.UTF_8))
-        assertEquals("POST", httpRequest.method)
+        assertEquals(HttpMethod.POST, httpRequest.method)
 
         val headers = httpRequest.headers
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])

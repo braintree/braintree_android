@@ -51,8 +51,8 @@ class SynchronousHttpClient {
             ((HttpsURLConnection) connection).setSSLSocketFactory(socketFactory);
         }
 
-        String requestMethod = httpRequest.getMethod();
-        connection.setRequestMethod(requestMethod);
+        HttpMethod requestMethod = httpRequest.getMethod();
+        connection.setRequestMethod(requestMethod.name());
 
         connection.setReadTimeout(httpRequest.getReadTimeout());
         connection.setConnectTimeout(httpRequest.getConnectTimeout());
@@ -63,7 +63,7 @@ class SynchronousHttpClient {
             connection.setRequestProperty(entry.getKey(), entry.getValue());
         }
 
-        if (requestMethod != null && requestMethod.equals("POST")) {
+        if (requestMethod == HttpMethod.POST) {
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoOutput(true);
 
