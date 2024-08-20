@@ -27,10 +27,11 @@ class ApiClientTest {
     }
 
     @Test(timeout = 10000)
-    @Ignore("It isn't clear what this test does or how it works, but we removed a lot of the PayPal OTC logic when refactoring for v4.")
-    @Throws(
-        InterruptedException::class, JSONException::class
+    @Ignore(
+        """It isn't clear what this test does or how it works,
+       but we removed a lot of the PayPal OTC logic when refactoring for v4."""
     )
+    @Throws(InterruptedException::class, JSONException::class)
     fun tokenize_tokenizesAPayPalAccountWithATokenizationKey() {
         val latch = CountDownLatch(1)
         val braintreeClient = BraintreeClient(context, Fixtures.TOKENIZATION_KEY)
