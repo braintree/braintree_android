@@ -2,8 +2,8 @@
 
 ## unreleased
 * All Modules
-  * Android 15 Support
-    * Upgrade `compileSdkVersion` and `targetSdkVersion` to API 35
+  * Upgrade `compileSdkVersion` and `targetSdkVersion` to API 35
+  * Bump target Java version to Java 17
 * BraintreeCore
   * Update `endpoint` syntax sent to FPTI for 3D Secure and Venmo flows
 * ThreeDSecure
