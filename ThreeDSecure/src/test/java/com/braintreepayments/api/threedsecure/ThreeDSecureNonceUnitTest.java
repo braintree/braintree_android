@@ -31,8 +31,8 @@ public class ThreeDSecureNonceUnitTest {
         assertEquals("11", threeDSecureNonce.getLastTwo());
         assertEquals("1111", threeDSecureNonce.getLastFour());
         assertNotNull(threeDSecureNonce.getThreeDSecureInfo());
-        assertFalse(threeDSecureNonce.getThreeDSecureInfo().isLiabilityShifted());
-        assertTrue(threeDSecureNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertFalse(threeDSecureNonce.getThreeDSecureInfo().getLiabilityShifted());
+        assertTrue(threeDSecureNonce.getThreeDSecureInfo().getLiabilityShiftPossible());
         assertNotNull(threeDSecureNonce.getBinData());
         assertEquals(UNKNOWN, threeDSecureNonce.getBinData().getPrepaid());
         assertEquals(YES, threeDSecureNonce.getBinData().getHealthcare());
@@ -59,8 +59,8 @@ public class ThreeDSecureNonceUnitTest {
         assertEquals("11", threeDSecureNonce.getLastTwo());
         assertEquals("1111", threeDSecureNonce.getLastFour());
         assertNotNull(threeDSecureNonce.getThreeDSecureInfo());
-        assertFalse(threeDSecureNonce.getThreeDSecureInfo().isLiabilityShifted());
-        assertFalse(threeDSecureNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertFalse(threeDSecureNonce.getThreeDSecureInfo().getLiabilityShifted());
+        assertFalse(threeDSecureNonce.getThreeDSecureInfo().getLiabilityShiftPossible());
         assertNotNull(threeDSecureNonce.getBinData());
         assertEquals(YES, threeDSecureNonce.getBinData().getPrepaid());
         assertEquals(YES, threeDSecureNonce.getBinData().getHealthcare());
@@ -108,8 +108,8 @@ public class ThreeDSecureNonceUnitTest {
         assertEquals("", threeDSecureNonce.getExpirationYear());
         assertEquals("", threeDSecureNonce.getCardholderName());
         assertNotNull(threeDSecureNonce.getThreeDSecureInfo());
-        assertFalse(threeDSecureNonce.getThreeDSecureInfo().isLiabilityShifted());
-        assertFalse(threeDSecureNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertFalse(threeDSecureNonce.getThreeDSecureInfo().getLiabilityShifted());
+        assertFalse(threeDSecureNonce.getThreeDSecureInfo().getLiabilityShiftPossible());
         assertNotNull(threeDSecureNonce.getBinData());
         assertEquals(UNKNOWN, threeDSecureNonce.getBinData().getPrepaid());
         assertEquals(UNKNOWN, threeDSecureNonce.getBinData().getHealthcare());
@@ -143,7 +143,7 @@ public class ThreeDSecureNonceUnitTest {
         assertBinDataEqual(threeDSecureNonce.getBinData(), parceled.getBinData());
         assertEquals(threeDSecureNonce.getAuthenticationInsight().getRegulationEnvironment(),
                 parceled.getAuthenticationInsight().getRegulationEnvironment());
-        assertEquals(threeDSecureNonce.getThreeDSecureInfo().isLiabilityShifted(), parceled.getThreeDSecureInfo().isLiabilityShifted());
-        assertEquals(threeDSecureNonce.getThreeDSecureInfo().isLiabilityShiftPossible(), parceled.getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertEquals(threeDSecureNonce.getThreeDSecureInfo().getLiabilityShifted(), parceled.getThreeDSecureInfo().getLiabilityShifted());
+        assertEquals(threeDSecureNonce.getThreeDSecureInfo().getLiabilityShiftPossible(), parceled.getThreeDSecureInfo().getLiabilityShiftPossible());
     }
 }
