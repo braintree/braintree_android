@@ -2,6 +2,7 @@ package com.braintreepayments.api.core
 
 import android.net.Uri
 import com.braintreepayments.api.sharedutils.HttpClient
+import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.sharedutils.HttpRequest
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.sharedutils.TLSSocketFactory
@@ -70,7 +71,7 @@ internal class BraintreeHttpClient(
             throw BraintreeException(message)
         }
 
-        val targetPath = if (method == "GET" && authorization is ClientToken) {
+        val targetPath = if (method == HttpMethod.GET && authorization is ClientToken) {
             Uri.parse(path)
                 .buildUpon()
                 .appendQueryParameter(AUTHORIZATION_FINGERPRINT_KEY, authorization.bearer)
@@ -79,7 +80,7 @@ internal class BraintreeHttpClient(
             path
         }
 
-        val requestData = if (method == "POST") {
+        val requestData = if (method == HttpMethod.POST) {
             if (authorization is ClientToken) {
                 JSONObject(data ?: "{}").put(
                     AUTHORIZATION_FINGERPRINT_KEY,

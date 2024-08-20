@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Base64
 import com.braintreepayments.api.sharedutils.HttpClient
+import com.braintreepayments.api.sharedutils.HttpMethod
 import org.json.JSONException
 
 internal class ConfigurationLoader internal constructor(
@@ -32,7 +33,7 @@ internal class ConfigurationLoader internal constructor(
             callback.onResult(cachedConfig, null, null)
         } ?: run {
             val request = InternalHttpRequest(
-                method = "GET",
+                method = HttpMethod.GET,
                 path = configUrl,
                 retryStrategy = HttpClient.RETRY_MAX_3_TIMES
             )

@@ -7,6 +7,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import com.braintreepayments.api.sharedutils.HttpMethod
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -115,7 +116,7 @@ internal class AnalyticsClient(
                     val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
 
                     val request = InternalHttpRequest(
-                        method = "POST",
+                        method = HttpMethod.POST,
                         path = FPTI_ANALYTICS_URL,
                         data = analyticsRequest.toString()
                     )
@@ -166,7 +167,7 @@ internal class AnalyticsClient(
         try {
             val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
             val request = InternalHttpRequest(
-                method = "POST",
+                method = HttpMethod.POST,
                 path = FPTI_ANALYTICS_URL,
                 data = analyticsRequest.toString()
             )

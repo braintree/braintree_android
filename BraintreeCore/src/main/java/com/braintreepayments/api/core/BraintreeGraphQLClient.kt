@@ -1,6 +1,7 @@
 package com.braintreepayments.api.core
 
 import com.braintreepayments.api.sharedutils.HttpClient
+import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.sharedutils.HttpRequest
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.sharedutils.TLSSocketFactory
@@ -24,7 +25,7 @@ internal class BraintreeGraphQLClient(
             return
         }
         val request = HttpRequest()
-            .method("POST")
+            .method(HttpMethod.POST)
             .path(path)
             .data(data)
             .baseUrl(configuration.graphQLUrl)
@@ -47,7 +48,7 @@ internal class BraintreeGraphQLClient(
             return
         }
         val request = HttpRequest()
-            .method("POST")
+            .method(HttpMethod.POST)
             .path("")
             .data(data)
             .baseUrl(configuration.graphQLUrl)
@@ -70,7 +71,7 @@ internal class BraintreeGraphQLClient(
             throw BraintreeException(message)
         }
         val request = HttpRequest()
-            .method("POST")
+            .method(HttpMethod.POST)
             .path(path)
             .data(data)
             .baseUrl(configuration.graphQLUrl)

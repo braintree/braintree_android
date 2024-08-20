@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo
 import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
+import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
@@ -176,7 +177,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     fun sendGET(url: String, responseCallback: HttpResponseCallback) {
-        val request = InternalHttpRequest(method = "GET", path = url)
+        val request = InternalHttpRequest(method = HttpMethod.GET, path = url)
         sendHttpRequest(request, responseCallback)
     }
 
@@ -191,7 +192,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
         responseCallback: HttpResponseCallback,
     ) {
         val request = InternalHttpRequest(
-            method = "POST",
+            method = HttpMethod.POST,
             path = url,
             data = data,
             additionalHeaders = additionalHeaders
