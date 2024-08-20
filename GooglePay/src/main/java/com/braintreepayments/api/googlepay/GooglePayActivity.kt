@@ -29,7 +29,9 @@ class GooglePayActivity : AppCompatActivity() {
         )
 
         val request = intent.getParcelableExtra<PaymentDataRequest>(EXTRA_PAYMENT_DATA_REQUEST)
-        AutoResolveHelper.resolveTask(paymentsClient.loadPaymentData(request!!), this, REQUEST_CODE)
+        if (request != null) {
+            AutoResolveHelper.resolveTask(paymentsClient.loadPaymentData(request), this, REQUEST_CODE)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

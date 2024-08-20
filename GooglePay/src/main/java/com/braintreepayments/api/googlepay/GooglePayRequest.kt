@@ -224,7 +224,7 @@ class GooglePayRequest : Parcelable {
         val allowedCountryCodeList: ArrayList<String?>?
 
         if (isShippingAddressRequired) {
-            allowedCountryCodeList = shippingAddressRequirements!!.allowedCountryCodes
+            allowedCountryCodeList = shippingAddressRequirements?.allowedCountryCodes
 
             if (allowedCountryCodeList != null && allowedCountryCodeList.size > 0) {
                 try {
@@ -245,15 +245,18 @@ class GooglePayRequest : Parcelable {
             val totalPriceStatus = totalPriceStatusToString()
             transactionInfoJson
                 .put("totalPriceStatus", totalPriceStatus)
-                .put("totalPrice", transactionInfo!!.totalPrice)
-                .put("currencyCode", transactionInfo.currencyCode)
 
-            if (countryCode != null) {
-                transactionInfoJson.put("countryCode", countryCode)
+            if (transactionInfo != null) {
+                transactionInfoJson.put("totalPrice", transactionInfo.totalPrice)
+                transactionInfoJson.put("currencyCode", transactionInfo.currencyCode)
             }
 
-            if (totalPriceLabel != null) {
-                transactionInfoJson.put("totalPriceLabel", totalPriceLabel)
+            countryCode?.let {
+                transactionInfoJson.put("countryCode", it)
+            }
+
+            totalPriceLabel?.let {
+                transactionInfoJson.put("totalPriceLabel", it)
             }
         } catch (ignored: JSONException) {
         }
@@ -325,11 +328,16 @@ class GooglePayRequest : Parcelable {
     }
 
     private fun totalPriceStatusToString(): String {
-        return when (transactionInfo!!.totalPriceStatus) {
-            WalletConstants.TOTAL_PRICE_STATUS_NOT_CURRENTLY_KNOWN -> "NOT_CURRENTLY_KNOWN"
-            WalletConstants.TOTAL_PRICE_STATUS_ESTIMATED -> "ESTIMATED"
-            WalletConstants.TOTAL_PRICE_STATUS_FINAL -> "FINAL"
-            else -> "FINAL"
+
+        return transactionInfo?.let {
+            when (it.totalPriceStatus) {
+                WalletConstants.TOTAL_PRICE_STATUS_NOT_CURRENTLY_KNOWN -> "NOT_CURRENTLY_KNOWN"
+                WalletConstants.TOTAL_PRICE_STATUS_ESTIMATED -> "ESTIMATED"
+                WalletConstants.TOTAL_PRICE_STATUS_FINAL -> "FINAL"
+                else -> "FINAL"
+            }
+        } ?: run {
+            "FINAL"
         }
     }
 

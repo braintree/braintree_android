@@ -12,18 +12,18 @@ import com.google.android.gms.wallet.WalletConstants
 
 internal class GooglePayInternalClient {
     fun isReadyToPay(
-        context: Context?,
+        context: Context,
         configuration: Configuration,
-        isReadyToPayRequest: IsReadyToPayRequest?,
+        isReadyToPayRequest: IsReadyToPayRequest,
         callback: GooglePayIsReadyToPayCallback
     ) {
         val paymentsClient = Wallet.getPaymentsClient(
-            context!!,
+            context,
             WalletOptions.Builder()
                 .setEnvironment(getGooglePayEnvironment(configuration))
                 .build()
         )
-        paymentsClient.isReadyToPay(isReadyToPayRequest!!)
+        paymentsClient.isReadyToPay(isReadyToPayRequest)
             .addOnCompleteListener { task: Task<Boolean> ->
                 try {
                     val isReady = task.getResult(ApiException::class.java)
@@ -38,7 +38,7 @@ internal class GooglePayInternalClient {
             }
     }
 
-    fun getGooglePayEnvironment(configuration: Configuration): Int {
+    private fun getGooglePayEnvironment(configuration: Configuration): Int {
         return if ("production" == configuration.googlePayEnvironment) {
             WalletConstants.ENVIRONMENT_PRODUCTION
         } else {
