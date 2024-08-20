@@ -29,17 +29,20 @@ class ConfigurationLoaderUnitTest {
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
         sut.loadConfiguration(authorization, callback)
 
-        val expectedConfigUrl = "https://example.com/config?configVersion=3"
+        val httpRequestSlot = slot<InternalHttpRequest>()
         val callbackSlot = slot<NetworkResponseCallback>()
         verify {
-            braintreeHttpClient.get(
-                    expectedConfigUrl,
-                    null,
-                    authorization,
-                    HttpClient.RETRY_MAX_3_TIMES,
-                    capture(callbackSlot)
+            braintreeHttpClient.sendRequest(
+                capture(httpRequestSlot),
+                null,
+                authorization,
+                capture(callbackSlot)
             )
         }
+
+        val expectedConfigUrl = "https://example.com/config?configVersion=3"
+        assertEquals(expectedConfigUrl, httpRequestSlot.captured.path)
+        assertEquals(HttpClient.RETRY_MAX_3_TIMES, httpRequestSlot.captured.retryStrategy)
 
         val httpResponseCallback = callbackSlot.captured
         httpResponseCallback.onResult(
@@ -57,15 +60,13 @@ class ConfigurationLoaderUnitTest {
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
         sut.loadConfiguration(authorization, callback)
 
-        val expectedConfigUrl = "https://example.com/config?configVersion=3"
         val callbackSlot = slot<NetworkResponseCallback>()
         verify {
-            braintreeHttpClient.get(
-                    expectedConfigUrl,
-                    null,
-                    authorization,
-                    HttpClient.RETRY_MAX_3_TIMES,
-                    capture(callbackSlot)
+            braintreeHttpClient.sendRequest(
+                any(),
+                null,
+                authorization,
+                capture(callbackSlot)
             )
         }
 
@@ -91,14 +92,14 @@ class ConfigurationLoaderUnitTest {
 
         val callbackSlot = slot<NetworkResponseCallback>()
         verify {
-            braintreeHttpClient.get(
-                    ofType(String::class),
-                    null,
-                    authorization,
-                    HttpClient.RETRY_MAX_3_TIMES,
-                    capture(callbackSlot)
+            braintreeHttpClient.sendRequest(
+                any(),
+                null,
+                authorization,
+                capture(callbackSlot)
             )
         }
+
         val httpResponseCallback = callbackSlot.captured
         httpResponseCallback.onResult(HttpResponse("not json", HttpResponseTiming(0, 0)), null)
         verify {
@@ -113,14 +114,12 @@ class ConfigurationLoaderUnitTest {
         sut.loadConfiguration(authorization, callback)
 
         val callbackSlot = slot<NetworkResponseCallback>()
-
         verify {
-            braintreeHttpClient.get(
-                    ofType(String::class),
-                    null,
-                    authorization,
-                    HttpClient.RETRY_MAX_3_TIMES,
-                    capture(callbackSlot)
+            braintreeHttpClient.sendRequest(
+                any(),
+                null,
+                authorization,
+                capture(callbackSlot)
             )
         }
 
@@ -167,12 +166,11 @@ class ConfigurationLoaderUnitTest {
         sut.loadConfiguration(authorization, callback)
 
         verify(exactly = 0) {
-            braintreeHttpClient.get(
-                    ofType(String::class),
-                    null,
-                    authorization,
-                    ofType(Int::class),
-                    ofType(NetworkResponseCallback::class)
+            braintreeHttpClient.sendRequest(
+                any(),
+                null,
+                authorization,
+                any()
             )
         }
         verify { callback.onResult(ofType(Configuration::class), null, null) }

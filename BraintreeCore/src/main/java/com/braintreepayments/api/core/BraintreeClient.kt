@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo
 import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
+import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
@@ -176,28 +177,8 @@ class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     fun sendGET(url: String, responseCallback: HttpResponseCallback) {
-        if (authorization is InvalidAuthorization) {
-            responseCallback.onResult(null, createAuthError())
-            return
-        }
-        getConfiguration { configuration, configError ->
-            if (configuration != null) {
-                httpClient.get(url, configuration, authorization) { response, httpError ->
-                    response?.let {
-                        try {
-                            sendAnalyticsTimingEvent(url, response.timing)
-                            responseCallback.onResult(it.body, null)
-                        } catch (jsonException: JSONException) {
-                            responseCallback.onResult(null, jsonException)
-                        }
-                    } ?: httpError?.let { error ->
-                        responseCallback.onResult(null, error)
-                    }
-                }
-            } else {
-                responseCallback.onResult(null, configError)
-            }
-        }
+        val request = InternalHttpRequest(method = HttpMethod.GET, path = url)
+        sendHttpRequest(request, responseCallback)
     }
 
     /**
@@ -210,22 +191,33 @@ class BraintreeClient @VisibleForTesting internal constructor(
         additionalHeaders: Map<String, String> = emptyMap(),
         responseCallback: HttpResponseCallback,
     ) {
+        val request = InternalHttpRequest(
+            method = HttpMethod.POST,
+            path = url,
+            data = data,
+            additionalHeaders = additionalHeaders
+        )
+        sendHttpRequest(request, responseCallback)
+    }
+
+    private fun sendHttpRequest(
+        request: InternalHttpRequest,
+        responseCallback: HttpResponseCallback
+    ) {
         if (authorization is InvalidAuthorization) {
             responseCallback.onResult(null, createAuthError())
             return
         }
         getConfiguration { configuration, configError ->
             if (configuration != null) {
-                httpClient.post(
-                    path = url,
-                    data = data,
+                httpClient.sendRequest(
+                    request = request,
                     configuration = configuration,
-                    authorization = authorization,
-                    additionalHeaders = additionalHeaders
+                    authorization = authorization
                 ) { response, httpError ->
                     response?.let {
                         try {
-                            sendAnalyticsTimingEvent(url, it.timing)
+                            sendAnalyticsTimingEvent(request.path, it.timing)
                             responseCallback.onResult(it.body, null)
                         } catch (jsonException: JSONException) {
                             responseCallback.onResult(null, jsonException)

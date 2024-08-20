@@ -7,6 +7,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import com.braintreepayments.api.sharedutils.HttpMethod
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -113,12 +114,13 @@ internal class AnalyticsClient(
                         IntegrationType.fromString(integration)
                     )
                     val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
-                    httpClient.post(
-                        FPTI_ANALYTICS_URL,
-                        analyticsRequest.toString(),
-                        configuration,
-                        authorization
+
+                    val request = InternalHttpRequest(
+                        method = HttpMethod.POST,
+                        path = FPTI_ANALYTICS_URL,
+                        data = analyticsRequest.toString()
                     )
+                    httpClient.sendRequestSync(request, configuration, authorization)
                     analyticsEventBlobDao.deleteEventBlobs(eventBlobs)
                 }
                 ListenableWorker.Result.success()
@@ -164,13 +166,12 @@ internal class AnalyticsClient(
         val eventBlobs = listOf(AnalyticsEventBlob(eventJSON))
         try {
             val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
-            httpClient.post(
+            val request = InternalHttpRequest(
+                method = HttpMethod.POST,
                 path = FPTI_ANALYTICS_URL,
-                data = analyticsRequest.toString(),
-                configuration = null,
-                authorization = authorization,
-                callback = null
+                data = analyticsRequest.toString()
             )
+            httpClient.sendRequest(request, authorization = authorization, callback = null)
         } catch (e: JSONException) { /* ignored */
         }
     }

@@ -23,7 +23,7 @@ public class HttpRequest {
     private String baseUrl;
 
     private byte[] data;
-    private String method;
+    private HttpMethod method;
 
     private final int readTimeout;
     private final int connectTimeout;
@@ -64,7 +64,7 @@ public class HttpRequest {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    public HttpRequest method(String method) {
+    public HttpRequest method(HttpMethod method) {
         this.method = method;
         return this;
     }
@@ -92,7 +92,7 @@ public class HttpRequest {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    public String getMethod() {
+    public HttpMethod getMethod() {
         return method;
     }
 
