@@ -15,6 +15,8 @@
         * Change `PayPalLineItemKind` to an enum
         * Rename `PayPalLineItemKind.KIND_CREDIT` to `CREDIT`
         * Rename `PayPalLineItemKind.KIND_DEBIT` to `DEBIT`
+* PayPal
+  * Add `userPhoneNumber` property to `PayPalVaultRequest` and `PayPalCheckoutRequest`
 
 ## 5.0.0-beta1 (2024-07-23)
 
