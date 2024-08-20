@@ -206,7 +206,9 @@ class ShopperInsightsFragment : BaseFragment() {
             requireContext(),
             PayPalRequestFactory.createPayPalVaultRequest(
                 activity,
-                emailInput.editText?.text.toString()
+                emailInput.editText?.text.toString(),
+                countryCodeInput.editText?.text.toString(),
+                nationalNumberInput.editText?.text.toString()
             )
         ) {
             if (it == null) return@createPaymentAuthRequest

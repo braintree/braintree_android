@@ -44,14 +44,26 @@ public class PayPalFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_paypal, container, false);
         TextInputEditText buyerEmailEditText = view.findViewById(R.id.buyer_email_edit_text);
+        TextInputEditText buyerPhoneCountryCodeEditText = view.findViewById(R.id.buyer_phone_country_code_edit_text);
+        TextInputEditText buyerPhoneNationalNumberEditText = view.findViewById(R.id.buyer_phone_national_number_edit_text);
         Button billingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
 
         singlePaymentButton.setOnClickListener(v -> {
-            launchPayPal(false, buyerEmailEditText.getText().toString());
+            launchPayPal(
+                false,
+                buyerEmailEditText.getText().toString(),
+                buyerPhoneCountryCodeEditText.getText().toString(),
+                buyerPhoneNationalNumberEditText.getText().toString()
+            );
         });
         billingAgreementButton.setOnClickListener(v -> {
-            launchPayPal(true, buyerEmailEditText.getText().toString());
+            launchPayPal(
+                true,
+                buyerEmailEditText.getText().toString(),
+                buyerPhoneCountryCodeEditText.getText().toString(),
+                buyerPhoneNationalNumberEditText.getText().toString()
+            );
         });
 
         payPalClient = new PayPalClient(
@@ -91,7 +103,12 @@ public class PayPalFragment extends BaseFragment {
         PendingRequestStore.getInstance().clearPayPalPendingRequest(requireContext());
     }
 
-    private void launchPayPal(boolean isBillingAgreement, String buyerEmailAddress) {
+    private void launchPayPal(
+        boolean isBillingAgreement,
+        String buyerEmailAddress,
+        String buyerPhoneCountryCode,
+        String buyerPhoneNationalNumber
+    ) {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
@@ -102,10 +119,10 @@ public class PayPalFragment extends BaseFragment {
                 if (dataCollectorResult instanceof DataCollectorResult.Success) {
                     deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
                 }
-                launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress);
+                launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber);
             });
         } else {
-            launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress);
+            launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber);
         }
     }
 
@@ -113,13 +130,26 @@ public class PayPalFragment extends BaseFragment {
         FragmentActivity activity,
         boolean isBillingAgreement,
         String amount,
-        String buyerEmailAddress
+        String buyerEmailAddress,
+        String buyerPhoneCountryCode,
+        String buyerPhoneNationalNumber
     ) {
         PayPalRequest payPalRequest;
         if (isBillingAgreement) {
-            payPalRequest = createPayPalVaultRequest(activity, buyerEmailAddress);
+            payPalRequest = createPayPalVaultRequest(
+                activity,
+                buyerEmailAddress,
+                buyerPhoneCountryCode,
+                buyerPhoneNationalNumber
+            );
         } else {
-            payPalRequest = createPayPalCheckoutRequest(activity, amount, buyerEmailAddress);
+            payPalRequest = createPayPalCheckoutRequest(
+                activity,
+                amount,
+                buyerEmailAddress,
+                buyerPhoneCountryCode,
+                buyerPhoneNationalNumber
+            );
         }
         payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest,
                 (paymentAuthRequest) -> {

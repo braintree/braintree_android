@@ -69,6 +69,8 @@ import org.json.JSONException
  * server.
  * @property userAuthenticationEmail User email to initiate a quicker authentication flow in cases
  * where the user has a PayPal Account with the same email.
+ * @property userPhoneNumber User phone number used to initiate a quicker authentication flow in
+ * cases where the user has a PayPal Account with the phone number.
  * @property lineItems The line items for this transaction. It can include up to 249 line items.
  */
 abstract class PayPalRequest internal constructor(
@@ -83,6 +85,7 @@ abstract class PayPalRequest internal constructor(
     open var merchantAccountId: String? = null,
     open var riskCorrelationId: String? = null,
     open var userAuthenticationEmail: String? = null,
+    open var userPhoneNumber: PayPalPhoneNumber? = null,
     open var lineItems: List<PayPalLineItem> = emptyList()
 ) : Parcelable {
 
@@ -119,5 +122,6 @@ abstract class PayPalRequest internal constructor(
         const val CORRELATION_ID_KEY: String = "correlation_id"
         const val LINE_ITEMS_KEY: String = "line_items"
         const val USER_ACTION_KEY: String = "user_action"
+        const val PHONE_NUMBER_KEY: String = "phone_number"
     }
 }
