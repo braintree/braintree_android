@@ -7,6 +7,7 @@ import com.braintreepayments.api.core.AnalyticsClient.Companion.WORK_INPUT_KEY_A
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.core.Authorization.Companion.fromString
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
+import com.braintreepayments.api.sharedutils.HttpMethod
 import io.mockk.*
 import java.io.IOException
 import java.security.GeneralSecurityException
@@ -432,7 +433,7 @@ class AnalyticsClientUnitTest {
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
         sut.reportCrash(context, configuration, sessionId, integration, 123, authorization)
 
-        assertEquals(httpRequestSlot.captured.method, "POST")
+        assertEquals(httpRequestSlot.captured.method, HttpMethod.POST)
         assertEquals(httpRequestSlot.captured.path, "https://api-m.paypal.com/v1/tracking/batch/events")
 
         // language=JSON

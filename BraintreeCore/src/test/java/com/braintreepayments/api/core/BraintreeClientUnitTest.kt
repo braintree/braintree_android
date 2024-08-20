@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.braintreepayments.api.BrowserSwitchClient
+import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.ManifestValidator
@@ -145,7 +146,7 @@ class BraintreeClientUnitTest {
             )
         }
 
-        assertEquals("GET", httpRequestSlot.captured.method)
+        assertEquals(HttpMethod.GET, httpRequestSlot.captured.method)
         assertEquals("sample-url", httpRequestSlot.captured.path)
         assertTrue(networkResponseCallbackSlot.isCaptured)
     }
@@ -203,7 +204,7 @@ class BraintreeClientUnitTest {
             )
         }
 
-        assertEquals("POST", httpRequestSlot.captured.method)
+        assertEquals(HttpMethod.POST, httpRequestSlot.captured.method)
         assertEquals("sample-url", httpRequestSlot.captured.path)
         assertEquals("{}", httpRequestSlot.captured.data)
         assertTrue(networkResponseCallbackSlot.isCaptured)

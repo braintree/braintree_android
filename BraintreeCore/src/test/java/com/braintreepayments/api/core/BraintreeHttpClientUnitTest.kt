@@ -3,6 +3,7 @@ package com.braintreepayments.api.core
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.FixturesHelper
 import com.braintreepayments.api.sharedutils.HttpClient
+import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.sharedutils.HttpRequest
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import io.mockk.every
@@ -47,7 +48,7 @@ class BraintreeHttpClientUnitTest {
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "GET",
+            method = HttpMethod.GET,
             path = "sample/path"
         )
         sut.sendRequest(request, authorization = tokenizationKey, callback = callback)
@@ -72,7 +73,7 @@ class BraintreeHttpClientUnitTest {
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "GET",
+            method = HttpMethod.GET,
             path = "https://example.com/sample/path"
         )
         sut.sendRequest(request, authorization = tokenizationKey, callback = callback)
@@ -96,7 +97,7 @@ class BraintreeHttpClientUnitTest {
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "GET",
+            method = HttpMethod.GET,
             path = "sample/path"
         )
         sut.sendRequest(request, configuration, tokenizationKey, callback)
@@ -106,7 +107,7 @@ class BraintreeHttpClientUnitTest {
         assertEquals(URL("https://example.com/sample/path"), httpRequest.url)
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
         assertEquals(Fixtures.TOKENIZATION_KEY, headers["Client-Key"])
-        assertEquals("GET", httpRequest.method)
+        assertEquals(HttpMethod.GET, httpRequest.method)
     }
 
     @Test
@@ -125,7 +126,7 @@ class BraintreeHttpClientUnitTest {
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "GET",
+            method = HttpMethod.GET,
             path = "sample/path"
         )
         sut.sendRequest(request, configuration, clientToken, callback)
@@ -140,7 +141,7 @@ class BraintreeHttpClientUnitTest {
         assertEquals(URL(expectedUrlString), httpRequest.url)
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
         assertNull(headers["Client-Key"])
-        assertEquals("GET", httpRequest.method)
+        assertEquals(HttpMethod.GET, httpRequest.method)
     }
 
     @Test
@@ -155,7 +156,7 @@ class BraintreeHttpClientUnitTest {
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "GET",
+            method = HttpMethod.GET,
             path = "sample/path"
         )
         sut.sendRequest(request, configuration, authorization, callback)
@@ -177,7 +178,7 @@ class BraintreeHttpClientUnitTest {
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "POST",
+            method = HttpMethod.POST,
             path = "sample/path",
             data = "{}"
         )
@@ -192,7 +193,7 @@ class BraintreeHttpClientUnitTest {
             headers["User-Agent"]
         )
         assertEquals(Fixtures.TOKENIZATION_KEY, headers["Client-Key"])
-        assertEquals("POST", httpRequest.method)
+        assertEquals(HttpMethod.POST, httpRequest.method)
         assertEquals("{}", String(httpRequest.data, StandardCharsets.UTF_8))
     }
 
@@ -211,7 +212,7 @@ class BraintreeHttpClientUnitTest {
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "POST",
+            method = HttpMethod.POST,
             path = "sample/path",
             data = "{}"
         )
@@ -224,7 +225,7 @@ class BraintreeHttpClientUnitTest {
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
 
         assertNull(headers["Client-Key"])
-        assertEquals("POST", httpRequest.method)
+        assertEquals(HttpMethod.POST, httpRequest.method)
         val expectedData =
             """{"authorizationFingerprint":"${clientToken.authorizationFingerprint}"}"""
         assertEquals(expectedData, String(httpRequest.data, StandardCharsets.UTF_8))
@@ -238,7 +239,7 @@ class BraintreeHttpClientUnitTest {
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "POST",
+            method = HttpMethod.POST,
             path = "sample/path",
             data = "{}"
         )
@@ -265,7 +266,7 @@ class BraintreeHttpClientUnitTest {
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "POST",
+            method = HttpMethod.POST,
             path = "https://example.com/sample/path",
             data = "{}"
         )
@@ -283,7 +284,7 @@ class BraintreeHttpClientUnitTest {
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "POST",
+            method = HttpMethod.POST,
             path = "https://example.com/sample/path",
             data = "{}"
         )
@@ -308,7 +309,7 @@ class BraintreeHttpClientUnitTest {
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "POST",
+            method = HttpMethod.POST,
             path = "sample/path",
             data = "{}"
         )
@@ -319,7 +320,7 @@ class BraintreeHttpClientUnitTest {
         assertEquals(URL("https://example.com/sample/path"), httpRequest.url)
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
         assertEquals(Fixtures.TOKENIZATION_KEY, headers["Client-Key"])
-        assertEquals("POST", httpRequest.method)
+        assertEquals(HttpMethod.POST, httpRequest.method)
         assertEquals("{}", String(httpRequest.data, StandardCharsets.UTF_8))
     }
 
@@ -339,7 +340,7 @@ class BraintreeHttpClientUnitTest {
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "POST",
+            method = HttpMethod.POST,
             path = "sample/path",
             data = "{}"
         )
@@ -350,7 +351,7 @@ class BraintreeHttpClientUnitTest {
         assertEquals(URL("https://example.com/sample/path"), httpRequest.url)
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
         assertNull(headers["Client-Key"])
-        assertEquals("POST", httpRequest.method)
+        assertEquals(HttpMethod.POST, httpRequest.method)
         val expectedData =
             """{"authorizationFingerprint":"${clientToken.authorizationFingerprint}"}"""
         assertEquals(expectedData, String(httpRequest.data, StandardCharsets.UTF_8))
@@ -369,7 +370,7 @@ class BraintreeHttpClientUnitTest {
         // NOTE: duplicate of sendRequest_withNullConfiguration_requiresRequestToHaveAnAbsolutePath
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "POST",
+            method = HttpMethod.POST,
             path = "sample/path",
             data = "{}"
         )
@@ -396,7 +397,7 @@ class BraintreeHttpClientUnitTest {
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "POST",
+            method = HttpMethod.POST,
             path = "https://example.com/sample/path",
             data = "{}"
         )
@@ -420,7 +421,7 @@ class BraintreeHttpClientUnitTest {
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "POST",
+            method = HttpMethod.POST,
             path = "sample/path",
             data = "not json",
         )
@@ -446,7 +447,7 @@ class BraintreeHttpClientUnitTest {
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "POST",
+            method = HttpMethod.POST,
             path = "sample/path",
             data = "{}",
         )
@@ -467,7 +468,7 @@ class BraintreeHttpClientUnitTest {
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "POST",
+            method = HttpMethod.POST,
             path = "sample/path",
             data = "{}",
         )
@@ -492,7 +493,7 @@ class BraintreeHttpClientUnitTest {
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
-            method = "POST",
+            method = HttpMethod.POST,
             path = "sample/path",
             data = "{}",
         )
@@ -514,7 +515,7 @@ class BraintreeHttpClientUnitTest {
         val sut = BraintreeHttpClient(httpClient)
 
         val request = InternalHttpRequest(
-            method = "POST",
+            method = HttpMethod.POST,
             path = "sample/path",
             data = "{}",
             additionalHeaders = headers
