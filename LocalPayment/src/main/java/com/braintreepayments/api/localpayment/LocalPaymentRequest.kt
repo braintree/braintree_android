@@ -31,7 +31,8 @@ class LocalPaymentRequest
     var amount: String? = null
 
     /**
-     * @param bankIdentificationCode Optional - the Bank Identification Code of the customer (specific to iDEAL transactions).
+     * @param bankIdentificationCode Optional - the Bank Identification
+     * Code of the customer (specific to iDEAL transactions).
      */
     var bic: String? = null
 
