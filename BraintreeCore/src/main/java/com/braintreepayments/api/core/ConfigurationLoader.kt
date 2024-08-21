@@ -32,11 +32,7 @@ internal class ConfigurationLoader internal constructor(
         cachedConfig?.let {
             callback.onResult(cachedConfig, null, null)
         } ?: run {
-            val request = InternalHttpRequest(
-                method = HttpMethod.GET,
-                path = configUrl,
-                retryStrategy = HttpClient.RETRY_MAX_3_TIMES
-            )
+            val request = InternalHttpRequest(method = HttpMethod.GET, path = configUrl)
             httpClient.sendRequest(
                 request = request,
                 authorization = authorization
