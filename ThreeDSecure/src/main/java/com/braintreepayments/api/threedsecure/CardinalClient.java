@@ -15,7 +15,7 @@ import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
 
 import org.json.JSONArray;
 
-public class CardinalClient {
+class CardinalClient {
 
     private String consumerSessionId;
 

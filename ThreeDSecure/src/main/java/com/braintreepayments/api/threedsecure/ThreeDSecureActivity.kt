@@ -14,7 +14,7 @@ import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 /**
  * The Activity that receives Cardinal SDK result from 3DS v2 flow
  */
-class ThreeDSecureActivity : AppCompatActivity() {
+internal class ThreeDSecureActivity : AppCompatActivity() {
     private val cardinalClient = CardinalClient()
     private var challengeObserver: CardinalChallengeObserver? = null
 
