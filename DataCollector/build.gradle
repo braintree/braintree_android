@@ -57,6 +57,7 @@ dependencies {
     testImplementation libs.androidx.test.core
     testImplementation libs.json.assert
     testImplementation libs.mockito.core
+    testImplementation libs.mockk
 
     testImplementation project(':TestUtils')
 
