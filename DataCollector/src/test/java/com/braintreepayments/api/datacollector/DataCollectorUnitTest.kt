@@ -51,7 +51,8 @@ class DataCollectorUnitTest {
     @Throws(JSONException::class)
     fun beforeEach() {
 
-        MockKAnnotations.init(this, relaxUnitFun = true)
+        MockKAnnotations.init(this, relaxed = true)
+
         every { configuration.environment } returns "sandbox"
         every { uuidHelper.getInstallationGUID(context) } returns sampleInstallationGUID
         every { magnesInternalClient.getClientMetadataId(
