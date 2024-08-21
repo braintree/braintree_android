@@ -775,9 +775,6 @@ public class LocalPaymentClientUnitTest {
             .build();
         when(dataCollector.getClientMetadataId(any(Context.class), same(payPalEnabledConfig), anyBoolean())).thenReturn("client-metadata-id");
 
-        LocalPaymentNonce successNonce = LocalPaymentNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE));
-        LocalPaymentResult localPaymentResult = mock(LocalPaymentResult.class);
-
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, dataCollector, localPaymentApi);
         LocalPaymentAuthResult.Success localPaymentAuthResult = new LocalPaymentAuthResult.Success(new LocalPaymentAuthResultInfo(browserSwitchResult));
