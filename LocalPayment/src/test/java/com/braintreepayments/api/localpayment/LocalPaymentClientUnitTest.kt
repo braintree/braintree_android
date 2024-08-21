@@ -28,6 +28,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
+import org.mockito.Captor
 import org.mockito.Mockito
 import org.robolectric.RobolectricTestRunner
 import org.skyscreamer.jsonassert.JSONAssert
@@ -45,10 +46,21 @@ class LocalPaymentClientUnitTest {
     private var payPalEnabledConfig: Configuration? = null
     private var payPalDisabledConfig: Configuration? = null
 
+    @Captor
+    lateinit var captorLocalPaymentAuthRequest: ArgumentCaptor<LocalPaymentAuthRequest>
+    @Captor
+    lateinit var captorLocalPaymentResult: ArgumentCaptor<LocalPaymentResult>
+
     @Before
     @Throws(JSONException::class)
     fun beforeEach() {
         activity = Mockito.mock(FragmentActivity::class.java)
+        captorLocalPaymentAuthRequest = ArgumentCaptor.forClass(
+            LocalPaymentAuthRequest::class.java
+        )
+        captorLocalPaymentResult = ArgumentCaptor.forClass(
+            LocalPaymentResult::class.java
+        )
         localPaymentAuthCallback = Mockito.mock(LocalPaymentAuthCallback::class.java)
         localPaymentTokenizeCallback = Mockito.mock(
             LocalPaymentTokenizeCallback::class.java
@@ -135,6 +147,8 @@ class LocalPaymentClientUnitTest {
         )
     }
 
+    fun <T> capture(argumentCaptor: ArgumentCaptor<T>): T = argumentCaptor.capture()
+
     @Test
     fun createPaymentAuthRequest_success_forwardsResultToCallback() {
         val braintreeClient = MockBraintreeClientBuilder()
@@ -153,12 +167,9 @@ class LocalPaymentClientUnitTest {
         val request = idealLocalPaymentRequest
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback!!)
 
-        val captor = ArgumentCaptor.forClass(
-            LocalPaymentAuthRequest::class.java
-        )
-        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(captor.capture())
+        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(capture(captorLocalPaymentAuthRequest))
 
-        val paymentAuthRequest = captor.value
+        val paymentAuthRequest = captorLocalPaymentAuthRequest.value
         assertTrue(paymentAuthRequest is LocalPaymentAuthRequest.ReadyToLaunch)
         val params = (paymentAuthRequest as LocalPaymentAuthRequest.ReadyToLaunch).requestParams
         assertEquals(localPaymentAuthRequestParams, params)
@@ -202,12 +213,10 @@ class LocalPaymentClientUnitTest {
         val request = idealLocalPaymentRequest
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback!!)
 
-        val captor = ArgumentCaptor.forClass(
-            LocalPaymentAuthRequest::class.java
-        )
-        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(captor.capture())
 
-        val paymentAuthRequest = captor.value
+        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(capture(captorLocalPaymentAuthRequest))
+
+        val paymentAuthRequest = captorLocalPaymentAuthRequest.value
         assertTrue(paymentAuthRequest is LocalPaymentAuthRequest.Failure)
         val exception = (paymentAuthRequest as LocalPaymentAuthRequest.Failure).error
         assertEquals(exception, configException)
@@ -251,12 +260,10 @@ class LocalPaymentClientUnitTest {
         val request = idealLocalPaymentRequest
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback!!)
 
-        val captor = ArgumentCaptor.forClass(
-            LocalPaymentAuthRequest::class.java
-        )
-        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(captor.capture())
 
-        val paymentAuthRequest = captor.value
+        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(capture(captorLocalPaymentAuthRequest))
+
+        val paymentAuthRequest = captorLocalPaymentAuthRequest.value
         assertTrue(paymentAuthRequest is LocalPaymentAuthRequest.Failure)
         val exception = (paymentAuthRequest as LocalPaymentAuthRequest.Failure).error
         assertTrue(exception is ConfigurationException)
@@ -275,12 +282,10 @@ class LocalPaymentClientUnitTest {
 
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback!!)
 
-        val captor = ArgumentCaptor.forClass(
-            LocalPaymentAuthRequest::class.java
-        )
-        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(captor.capture())
 
-        val paymentAuthRequest = captor.value
+        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(capture(captorLocalPaymentAuthRequest))
+
+        val paymentAuthRequest = captorLocalPaymentAuthRequest.value
         assertTrue(paymentAuthRequest is LocalPaymentAuthRequest.Failure)
         val exception = (paymentAuthRequest as LocalPaymentAuthRequest.Failure).error
         assertTrue(exception is BraintreeException)
@@ -302,12 +307,10 @@ class LocalPaymentClientUnitTest {
 
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback!!)
 
-        val captor = ArgumentCaptor.forClass(
-            LocalPaymentAuthRequest::class.java
-        )
-        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(captor.capture())
 
-        val paymentAuthRequest = captor.value
+        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(capture(captorLocalPaymentAuthRequest))
+
+        val paymentAuthRequest = captorLocalPaymentAuthRequest.value
         assertTrue(paymentAuthRequest is LocalPaymentAuthRequest.Failure)
         val exception = (paymentAuthRequest as LocalPaymentAuthRequest.Failure).error
         assertTrue(exception is BraintreeException)
@@ -327,12 +330,10 @@ class LocalPaymentClientUnitTest {
 
         sut.createPaymentAuthRequest(null, localPaymentAuthCallback!!)
 
-        val captor = ArgumentCaptor.forClass(
-            LocalPaymentAuthRequest::class.java
-        )
-        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(captor.capture())
 
-        val paymentAuthRequest = captor.value
+        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(capture(captorLocalPaymentAuthRequest))
+
+        val paymentAuthRequest = captorLocalPaymentAuthRequest.value
         assertTrue(paymentAuthRequest is LocalPaymentAuthRequest.Failure)
         val exception = (paymentAuthRequest as LocalPaymentAuthRequest.Failure).error
         assertTrue(exception is BraintreeException)
@@ -350,7 +351,7 @@ class LocalPaymentClientUnitTest {
 
         try {
             sut.createPaymentAuthRequest(request, null)
-           fail("Should throw")
+            fail("Should throw")
         } catch (exception: RuntimeException) {
             assertEquals("A LocalPaymentAuthRequestCallback is required.", exception.message)
         }
@@ -372,12 +373,10 @@ class LocalPaymentClientUnitTest {
             localPaymentAuthCallback!!
         )
 
-        val captor = ArgumentCaptor.forClass(
-            LocalPaymentAuthRequest::class.java
-        )
-        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(captor.capture())
 
-        val paymentAuthRequest = captor.value
+        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(capture(captorLocalPaymentAuthRequest))
+
+        val paymentAuthRequest = captorLocalPaymentAuthRequest.value
         assertTrue(paymentAuthRequest is LocalPaymentAuthRequest.Failure)
         val exception = (paymentAuthRequest as LocalPaymentAuthRequest.Failure).error
         assertTrue(exception is BraintreeException)
@@ -401,12 +400,10 @@ class LocalPaymentClientUnitTest {
 
         sut.createPaymentAuthRequest(idealLocalPaymentRequest, localPaymentAuthCallback!!)
 
-        val captor = ArgumentCaptor.forClass(
-            LocalPaymentAuthRequest::class.java
-        )
-        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(captor.capture())
 
-        val paymentAuthRequest = captor.value
+        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(capture(captorLocalPaymentAuthRequest))
+
+        val paymentAuthRequest = captorLocalPaymentAuthRequest.value
         assertTrue(paymentAuthRequest is LocalPaymentAuthRequest.ReadyToLaunch)
         val params = (paymentAuthRequest as LocalPaymentAuthRequest.ReadyToLaunch).requestParams
         assertEquals(localPaymentAuthRequestParams, params)
@@ -483,12 +480,10 @@ class LocalPaymentClientUnitTest {
 
         sut.buildBrowserSwitchOptions(transaction, true, localPaymentAuthCallback!!)
 
-        val captor = ArgumentCaptor.forClass(
-            LocalPaymentAuthRequest::class.java
-        )
-        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(captor.capture())
 
-        val paymentAuthRequest = captor.value
+        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(capture(captorLocalPaymentAuthRequest))
+
+        val paymentAuthRequest = captorLocalPaymentAuthRequest.value
         assertTrue(paymentAuthRequest is LocalPaymentAuthRequest.ReadyToLaunch)
         val params = (paymentAuthRequest as LocalPaymentAuthRequest.ReadyToLaunch).requestParams
         val browserSwitchOptions = params.browserSwitchOptions
@@ -526,12 +521,10 @@ class LocalPaymentClientUnitTest {
 
         sut.buildBrowserSwitchOptions(transaction, true, localPaymentAuthCallback!!)
 
-        val captor = ArgumentCaptor.forClass(
-            LocalPaymentAuthRequest::class.java
-        )
-        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(captor.capture())
 
-        val paymentAuthRequest = captor.value
+        Mockito.verify(localPaymentAuthCallback)?.onLocalPaymentAuthRequest(capture(captorLocalPaymentAuthRequest))
+
+        val paymentAuthRequest = captorLocalPaymentAuthRequest.value
         assertTrue(paymentAuthRequest is LocalPaymentAuthRequest.ReadyToLaunch)
         val params = (paymentAuthRequest as LocalPaymentAuthRequest.ReadyToLaunch).requestParams
         val browserSwitchOptions = params.browserSwitchOptions
@@ -578,14 +571,12 @@ class LocalPaymentClientUnitTest {
 
         sut.tokenize(activity!!, localPaymentAuthResult, localPaymentTokenizeCallback!!)
 
-        val captor = ArgumentCaptor.forClass(
-            LocalPaymentResult::class.java
-        )
+
         Mockito.verify(localPaymentTokenizeCallback)?.onLocalPaymentResult(
-            captor.capture()
+            capture(captorLocalPaymentResult)
         )
 
-        val result = captor.value
+        val result = captorLocalPaymentResult.value
         assertTrue(result is LocalPaymentResult.Failure)
         val exception = (result as LocalPaymentResult.Failure).error
         assertTrue(exception is BraintreeException)
@@ -603,7 +594,7 @@ class LocalPaymentClientUnitTest {
     @Throws(JSONException::class)
     fun tokenize_whenPostFailure_notifiesCallbackOfErrorAlongWithAnalyticsEvent() {
         val browserSwitchResult: BrowserSwitchFinalResult.Success =
-             Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
+            Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
         Mockito.`when`<JSONObject>(browserSwitchResult.requestMetadata).thenReturn(
             JSONObject()
                 .put("payment-type", "ideal")
@@ -641,14 +632,12 @@ class LocalPaymentClientUnitTest {
 
         sut.tokenize(activity!!, localPaymentAuthResult, localPaymentTokenizeCallback!!)
 
-        val captor = ArgumentCaptor.forClass(
-            LocalPaymentResult::class.java
-        )
+
         Mockito.verify(localPaymentTokenizeCallback)?.onLocalPaymentResult(
-            captor.capture()
+            capture(captorLocalPaymentResult)
         )
 
-        val result = captor.value
+        val result = captorLocalPaymentResult.value
         assertTrue(result is LocalPaymentResult.Failure)
         val exception = (result as LocalPaymentResult.Failure).error
         assertEquals(postError, exception)
@@ -662,7 +651,7 @@ class LocalPaymentClientUnitTest {
     @Throws(JSONException::class)
     fun tokenize_whenResultOKAndSuccessful_tokenizesWithLocalPaymentApi() {
         val browserSwitchResult: BrowserSwitchFinalResult.Success =
-             Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
+            Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
 
         Mockito.`when`<JSONObject>(browserSwitchResult.requestMetadata).thenReturn(
             JSONObject()
@@ -706,7 +695,7 @@ class LocalPaymentClientUnitTest {
     @Throws(JSONException::class)
     fun tokenize_whenResultOKAndTokenizationSucceeds_sendsResultToCallback() {
         val browserSwitchResult: BrowserSwitchFinalResult.Success =
-             Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
+            Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
 
         Mockito.`when`<JSONObject>(browserSwitchResult.requestMetadata).thenReturn(
             JSONObject()
@@ -749,14 +738,12 @@ class LocalPaymentClientUnitTest {
 
         sut.tokenize(activity!!, localPaymentAuthResult, localPaymentTokenizeCallback!!)
 
-        val captor = ArgumentCaptor.forClass(
-            LocalPaymentResult::class.java
-        )
+
         Mockito.verify(localPaymentTokenizeCallback)?.onLocalPaymentResult(
-            captor.capture()
+            capture(captorLocalPaymentResult)
         )
 
-        val result = captor.value
+        val result = captorLocalPaymentResult.value
         assertTrue(result is LocalPaymentResult.Success)
         val nonce = (result as LocalPaymentResult.Success).nonce
         assertEquals(successNonce, nonce)
@@ -766,7 +753,7 @@ class LocalPaymentClientUnitTest {
     @Throws(JSONException::class)
     fun tokenize_whenResultOKAndTokenizationSuccess_sendsAnalyticsEvent() {
         val browserSwitchResult: BrowserSwitchFinalResult.Success =
-             Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
+            Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
 
         Mockito.`when`<JSONObject>(browserSwitchResult.requestMetadata).thenReturn(
             JSONObject()
@@ -819,7 +806,7 @@ class LocalPaymentClientUnitTest {
     @Throws(JSONException::class)
     fun tokenize_whenResultOK_onConfigurationError_returnsError() {
         val browserSwitchResult: BrowserSwitchFinalResult.Success =
-             Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
+            Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
 
         Mockito.`when`<JSONObject>(browserSwitchResult.requestMetadata).thenReturn(
             JSONObject()
@@ -852,14 +839,12 @@ class LocalPaymentClientUnitTest {
 
         sut.tokenize(activity!!, localPaymentAuthResult, localPaymentTokenizeCallback!!)
 
-        val captor = ArgumentCaptor.forClass(
-            LocalPaymentResult::class.java
-        )
+
         Mockito.verify(localPaymentTokenizeCallback)?.onLocalPaymentResult(
-            captor.capture()
+            capture(captorLocalPaymentResult)
         )
 
-        val result = captor.value
+        val result = captorLocalPaymentResult.value
         assertTrue(result is LocalPaymentResult.Failure)
         val exception = (result as LocalPaymentResult.Failure).error
         assertEquals(configError, exception)
@@ -869,7 +854,7 @@ class LocalPaymentClientUnitTest {
     @Throws(JSONException::class)
     fun tokenize_whenResultOKAndUserCancels_notifiesCallbackAndSendsAnalyticsEvent() {
         val browserSwitchResult: BrowserSwitchFinalResult.Success =
-             Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
+            Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
 
         Mockito.`when`<JSONObject>(browserSwitchResult.requestMetadata).thenReturn(
             JSONObject()
@@ -891,14 +876,12 @@ class LocalPaymentClientUnitTest {
 
         sut.tokenize(activity!!, localPaymentAuthResult, localPaymentTokenizeCallback!!)
 
-        val captor = ArgumentCaptor.forClass(
-            LocalPaymentResult::class.java
-        )
+
         Mockito.verify(localPaymentTokenizeCallback)?.onLocalPaymentResult(
-            captor.capture()
+            capture(captorLocalPaymentResult)
         )
 
-        val result = captor.value
+        val result = captorLocalPaymentResult.value
         assertTrue(result is LocalPaymentResult.Cancel)
         Mockito.verify(braintreeClient)?.sendAnalyticsEvent(
             LocalPaymentAnalytics.PAYMENT_CANCELED,
@@ -933,7 +916,7 @@ class LocalPaymentClientUnitTest {
                 ), ArgumentMatchers.same(payPalEnabledConfig), ArgumentMatchers.anyBoolean()
             )
         ).thenReturn("client-metadata-id")
-        
+
         val request = idealLocalPaymentRequest
         val sut = LocalPaymentClient(braintreeClient, dataCollector!!, localPaymentApi!!)
         val localPaymentAuthResult =
