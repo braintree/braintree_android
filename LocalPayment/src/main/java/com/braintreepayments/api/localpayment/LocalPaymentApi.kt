@@ -2,7 +2,6 @@ package com.braintreepayments.api.localpayment
 
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.localpayment.LocalPaymentNonce.Companion.fromJSON
-import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -18,7 +17,7 @@ internal class LocalPaymentApi(private val braintreeClient: BraintreeClient) {
 
         val url = "/v1/local_payments/create"
         braintreeClient.sendPOST(url = url, data = request.build(returnUrl, cancel),
-            responseCallback = HttpResponseCallback { responseBody: String?, httpError: Exception? ->
+            responseCallback = { responseBody: String?, httpError: Exception? ->
                 if (responseBody != null) {
                     try {
                         val responseJson = JSONObject(responseBody)
@@ -66,7 +65,7 @@ internal class LocalPaymentApi(private val braintreeClient: BraintreeClient) {
             braintreeClient.sendPOST(
                 url = url,
                 data = payload.toString(),
-                responseCallback = HttpResponseCallback { responseBody: String?, httpError: Exception? ->
+                responseCallback = { responseBody: String?, httpError: Exception? ->
                     if (responseBody != null) {
                         try {
                             val result =

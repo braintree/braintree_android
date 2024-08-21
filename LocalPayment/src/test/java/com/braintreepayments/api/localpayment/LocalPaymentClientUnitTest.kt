@@ -563,7 +563,7 @@ class LocalPaymentClientUnitTest {
     @Throws(JSONException::class)
     fun tokenize_whenResultOK_uriNull_notifiesCallbackOfErrorAlongWithAnalyticsEvent() {
         val browserSwitchResult: BrowserSwitchFinalResult.Success =
-            Mockito.mock<BrowserSwitchFinalResult.Success>(
+            Mockito.mock(
                 BrowserSwitchFinalResult.Success::class.java
             )
         val localPaymentAuthResult = LocalPaymentAuthResult.Success(
@@ -603,7 +603,7 @@ class LocalPaymentClientUnitTest {
     @Throws(JSONException::class)
     fun tokenize_whenPostFailure_notifiesCallbackOfErrorAlongWithAnalyticsEvent() {
         val browserSwitchResult: BrowserSwitchFinalResult.Success =
-            Mockito.mock<BrowserSwitchFinalResult.Success>(BrowserSwitchFinalResult.Success::class.java)
+             Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
         Mockito.`when`<JSONObject>(browserSwitchResult.requestMetadata).thenReturn(
             JSONObject()
                 .put("payment-type", "ideal")
@@ -611,7 +611,7 @@ class LocalPaymentClientUnitTest {
         )
 
         val webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId"
-        Mockito.`when`<Uri>(browserSwitchResult.returnUrl).thenReturn(Uri.parse(webUrl))
+        Mockito.`when`(browserSwitchResult.returnUrl).thenReturn(Uri.parse(webUrl))
         val localPaymentAuthResult = LocalPaymentAuthResult.Success(
             LocalPaymentAuthResultInfo(browserSwitchResult)
         )
@@ -662,7 +662,7 @@ class LocalPaymentClientUnitTest {
     @Throws(JSONException::class)
     fun tokenize_whenResultOKAndSuccessful_tokenizesWithLocalPaymentApi() {
         val browserSwitchResult: BrowserSwitchFinalResult.Success =
-            Mockito.mock<BrowserSwitchFinalResult.Success>(BrowserSwitchFinalResult.Success::class.java)
+             Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
 
         Mockito.`when`<JSONObject>(browserSwitchResult.requestMetadata).thenReturn(
             JSONObject()
@@ -671,7 +671,7 @@ class LocalPaymentClientUnitTest {
         )
 
         val webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId"
-        Mockito.`when`<Uri>(browserSwitchResult.returnUrl).thenReturn(Uri.parse(webUrl))
+        Mockito.`when`(browserSwitchResult.returnUrl).thenReturn(Uri.parse(webUrl))
         val localPaymentAuthResult = LocalPaymentAuthResult.Success(
             LocalPaymentAuthResultInfo(browserSwitchResult)
         )
@@ -706,7 +706,7 @@ class LocalPaymentClientUnitTest {
     @Throws(JSONException::class)
     fun tokenize_whenResultOKAndTokenizationSucceeds_sendsResultToCallback() {
         val browserSwitchResult: BrowserSwitchFinalResult.Success =
-            Mockito.mock<BrowserSwitchFinalResult.Success>(BrowserSwitchFinalResult.Success::class.java)
+             Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
 
         Mockito.`when`<JSONObject>(browserSwitchResult.requestMetadata).thenReturn(
             JSONObject()
@@ -715,7 +715,7 @@ class LocalPaymentClientUnitTest {
         )
 
         val webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId"
-        Mockito.`when`<Uri>(browserSwitchResult.returnUrl).thenReturn(Uri.parse(webUrl))
+        Mockito.`when`(browserSwitchResult.returnUrl).thenReturn(Uri.parse(webUrl))
         val localPaymentAuthResult = LocalPaymentAuthResult.Success(
             LocalPaymentAuthResultInfo(browserSwitchResult)
         )
@@ -766,7 +766,7 @@ class LocalPaymentClientUnitTest {
     @Throws(JSONException::class)
     fun tokenize_whenResultOKAndTokenizationSuccess_sendsAnalyticsEvent() {
         val browserSwitchResult: BrowserSwitchFinalResult.Success =
-            Mockito.mock<BrowserSwitchFinalResult.Success>(BrowserSwitchFinalResult.Success::class.java)
+             Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
 
         Mockito.`when`<JSONObject>(browserSwitchResult.requestMetadata).thenReturn(
             JSONObject()
@@ -775,7 +775,7 @@ class LocalPaymentClientUnitTest {
         )
 
         val webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId"
-        Mockito.`when`<Uri>(browserSwitchResult.returnUrl).thenReturn(Uri.parse(webUrl))
+        Mockito.`when`(browserSwitchResult.returnUrl).thenReturn(Uri.parse(webUrl))
         val localPaymentAuthResult = LocalPaymentAuthResult.Success(
             LocalPaymentAuthResultInfo(browserSwitchResult)
         )
@@ -819,7 +819,7 @@ class LocalPaymentClientUnitTest {
     @Throws(JSONException::class)
     fun tokenize_whenResultOK_onConfigurationError_returnsError() {
         val browserSwitchResult: BrowserSwitchFinalResult.Success =
-            Mockito.mock<BrowserSwitchFinalResult.Success>(BrowserSwitchFinalResult.Success::class.java)
+             Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
 
         Mockito.`when`<JSONObject>(browserSwitchResult.requestMetadata).thenReturn(
             JSONObject()
@@ -828,7 +828,7 @@ class LocalPaymentClientUnitTest {
         )
 
         val webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId"
-        Mockito.`when`<Uri>(browserSwitchResult.returnUrl).thenReturn(Uri.parse(webUrl))
+        Mockito.`when`(browserSwitchResult.returnUrl).thenReturn(Uri.parse(webUrl))
         val localPaymentAuthResult = LocalPaymentAuthResult.Success(
             LocalPaymentAuthResultInfo(browserSwitchResult)
         )
@@ -869,7 +869,7 @@ class LocalPaymentClientUnitTest {
     @Throws(JSONException::class)
     fun tokenize_whenResultOKAndUserCancels_notifiesCallbackAndSendsAnalyticsEvent() {
         val browserSwitchResult: BrowserSwitchFinalResult.Success =
-            Mockito.mock<BrowserSwitchFinalResult.Success>(BrowserSwitchFinalResult.Success::class.java)
+             Mockito.mock(BrowserSwitchFinalResult.Success::class.java)
 
         Mockito.`when`<JSONObject>(browserSwitchResult.requestMetadata).thenReturn(
             JSONObject()
@@ -878,7 +878,7 @@ class LocalPaymentClientUnitTest {
         )
 
         val webUrl = "sample-scheme://local-payment-cancel?paymentToken=canceled"
-        Mockito.`when`<Uri>(browserSwitchResult.returnUrl).thenReturn(Uri.parse(webUrl))
+        Mockito.`when`(browserSwitchResult.returnUrl).thenReturn(Uri.parse(webUrl))
         val localPaymentAuthResult = LocalPaymentAuthResult.Success(
             LocalPaymentAuthResultInfo(browserSwitchResult)
         )
@@ -920,7 +920,7 @@ class LocalPaymentClientUnitTest {
         )
 
         val webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId"
-        Mockito.`when`<Uri>(browserSwitchResult.returnUrl).thenReturn(Uri.parse(webUrl))
+        Mockito.`when`(browserSwitchResult.returnUrl).thenReturn(Uri.parse(webUrl))
         val braintreeClient = MockBraintreeClientBuilder()
             .configuration(payPalEnabledConfig)
             .integration(IntegrationType.CUSTOM)
@@ -933,12 +933,7 @@ class LocalPaymentClientUnitTest {
                 ), ArgumentMatchers.same(payPalEnabledConfig), ArgumentMatchers.anyBoolean()
             )
         ).thenReturn("client-metadata-id")
-
-        val successNonce = fromJSON(JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE))
-        val localPaymentResult = Mockito.mock(
-            LocalPaymentResult::class.java
-        )
-
+        
         val request = idealLocalPaymentRequest
         val sut = LocalPaymentClient(braintreeClient, dataCollector!!, localPaymentApi!!)
         val localPaymentAuthResult =

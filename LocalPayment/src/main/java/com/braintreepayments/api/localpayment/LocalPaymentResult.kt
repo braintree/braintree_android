@@ -18,5 +18,5 @@ sealed class LocalPaymentResult {
     /**
      * The user canceled the local payment flow.
      */
-    object Cancel : LocalPaymentResult()
+    data object Cancel : LocalPaymentResult()
 }

@@ -22,5 +22,5 @@ sealed class LocalPaymentAuthResult {
      * browser to cancel the payment flow, or returns to the app without completing the
      * authentication flow.
      */
-    object NoResult : LocalPaymentAuthResult()
+    data object NoResult : LocalPaymentAuthResult()
 }
