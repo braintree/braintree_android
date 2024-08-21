@@ -59,8 +59,8 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
      * @param callback [LocalPaymentAuthCallback]
      */
     fun createPaymentAuthRequest(
-        request: LocalPaymentRequest,
-        callback: LocalPaymentAuthCallback
+        request: LocalPaymentRequest?,
+        callback: LocalPaymentAuthCallback?
     ) {
         braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED)
 
@@ -95,7 +95,7 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
                     }
 
                     localPaymentApi.createPaymentMethod(
-                        request
+                        request!!
                     ) { localPaymentResult: LocalPaymentAuthRequestParams?, createPaymentMethodError: Exception? ->
                         if (localPaymentResult != null) {
                             val pairingId = localPaymentResult.paymentId
@@ -191,6 +191,16 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
         val hasUserLocationConsent = Json.optBoolean(metadata, "has-user-location-consent", false)
 
         val deepLinkUri: Uri = browserSwitchResult.returnUrl
+        if (deepLinkUri == null) {
+            tokenizeFailure(
+                BraintreeException(
+                    "LocalPayment encountered an error, return URL is " +
+                            "invalid."
+                ),
+                callback
+            )
+            return
+        }
 
         val responseString = deepLinkUri.toString()
         if (responseString.lowercase(Locale.getDefault()).contains(
