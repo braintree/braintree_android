@@ -1,6 +1,12 @@
 package com.braintreepayments.api.paypal
 
+import androidx.annotation.RestrictTo
+import com.braintreepayments.api.core.IntegrationType
+import com.braintreepayments.api.core.MetadataBuilder
 import com.braintreepayments.api.core.PaymentMethod
+import com.braintreepayments.api.core.PaymentMethod.Companion.DEFAULT_SOURCE
+import com.braintreepayments.api.core.PaymentMethod.Companion.OPTIONS_KEY
+import com.braintreepayments.api.core.PaymentMethod.Companion.VALIDATE_KEY
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -18,17 +24,30 @@ import org.json.JSONObject
  * @property paymentType Payment type from original PayPal request. Either "billing-agreement" or
  * "single-payment"
  */
-internal data class PayPalAccount(
+data class PayPalAccount(
     val clientMetadataId: String?,
     val urlResponseData: JSONObject,
     val intent: PayPalPaymentIntent?,
     val merchantAccountId: String?,
-    val paymentType: String?
-) : PaymentMethod() {
+    val paymentType: String?,
+    override var sessionId: String? = null,
+    override var source: String? = DEFAULT_SOURCE,
+    override var integration: IntegrationType? = IntegrationType.CUSTOM
+) : PaymentMethod {
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    private fun buildMetadataJSON(): JSONObject {
+        return MetadataBuilder()
+            .sessionId(sessionId)
+            .source(source)
+            .integration(integration)
+            .build()
+    }
 
     @Throws(JSONException::class)
-    override fun buildJSON(): JSONObject? {
-        val json = super.buildJSON()
+    override fun buildJSON(): JSONObject {
+        val json = JSONObject()
+            .put(MetadataBuilder.META_KEY, buildMetadataJSON())
 
         val paymentMethodNonceJson = JSONObject()
         paymentMethodNonceJson.put(CORRELATION_ID_KEY, clientMetadataId)
