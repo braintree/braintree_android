@@ -1,6 +1,6 @@
 package com.braintreepayments.api.sharedutils;
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.app.Activity;
 
-public class ManifestTestActivity extends AppCompatActivity {
+public class ManifestTestActivity extends Activity {
 }
