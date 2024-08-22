@@ -1,11 +1,11 @@
 package com.braintreepayments.api.core
 
-import com.braintreepayments.api.testutils.Fixtures
-import com.braintreepayments.api.testutils.FixturesHelper
 import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.sharedutils.HttpRequest
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
+import com.braintreepayments.api.testutils.Fixtures
+import com.braintreepayments.api.testutils.FixturesHelper
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -17,7 +17,6 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.anyInt
 import org.robolectric.RobolectricTestRunner
 import java.net.MalformedURLException
 import java.net.URISyntaxException
@@ -68,7 +67,7 @@ class BraintreeHttpClientUnitTest {
 
         val httpRequestSlot = slot<HttpRequest>()
         every {
-            httpClient.sendRequest(capture(httpRequestSlot), HttpClient.NO_RETRY, callback)
+            httpClient.sendRequest(capture(httpRequestSlot), callback)
         } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
@@ -92,7 +91,7 @@ class BraintreeHttpClientUnitTest {
         val httpRequestSlot = slot<HttpRequest>()
         val callback = mockk<NetworkResponseCallback>()
         every {
-            httpClient.sendRequest(capture(httpRequestSlot), HttpClient.NO_RETRY, callback)
+            httpClient.sendRequest(capture(httpRequestSlot), callback)
         } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
@@ -121,7 +120,7 @@ class BraintreeHttpClientUnitTest {
         val httpRequestSlot = slot<HttpRequest>()
         val callback = mockk<NetworkResponseCallback>()
         every {
-            httpClient.sendRequest(capture(httpRequestSlot), HttpClient.NO_RETRY, callback)
+            httpClient.sendRequest(capture(httpRequestSlot), callback)
         } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
@@ -305,7 +304,7 @@ class BraintreeHttpClientUnitTest {
 
         val callback = mockk<NetworkResponseCallback>()
         val httpRequestSlot = slot<HttpRequest>()
-        every { httpClient.sendRequest(capture(httpRequestSlot), anyInt(), callback) } returns Unit
+        every { httpClient.sendRequest(capture(httpRequestSlot), callback) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
@@ -336,7 +335,7 @@ class BraintreeHttpClientUnitTest {
 
         val callback = mockk<NetworkResponseCallback>()
         val httpRequestSlot = slot<HttpRequest>()
-        every { httpClient.sendRequest(capture(httpRequestSlot), anyInt(), callback) } returns Unit
+        every { httpClient.sendRequest(capture(httpRequestSlot), callback) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
@@ -393,7 +392,7 @@ class BraintreeHttpClientUnitTest {
         // NOTE: duplicate of sendRequest_withNullConfigurationAndAbsoluteURL_doesNotSetABaseURLOnTheRequest
         val httpRequestSlot = slot<HttpRequest>()
         val callback = mockk<NetworkResponseCallback>()
-        every { httpClient.sendRequest(capture(httpRequestSlot), anyInt(), callback) } returns Unit
+        every { httpClient.sendRequest(capture(httpRequestSlot), callback) } returns Unit
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
@@ -464,7 +463,7 @@ class BraintreeHttpClientUnitTest {
         every { tokenizationKey.bearer } returns token
 
         val httpRequestSlot = slot<HttpRequest>()
-        every { httpClient.sendRequest(capture(httpRequestSlot), anyInt(), any()) } just runs
+        every { httpClient.sendRequest(capture(httpRequestSlot), any()) } just runs
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
@@ -489,7 +488,7 @@ class BraintreeHttpClientUnitTest {
         every { tokenizationKey.bearer } returns null
 
         val httpRequestSlot = slot<HttpRequest>()
-        every { httpClient.sendRequest(capture(httpRequestSlot), anyInt(), any()) } just runs
+        every { httpClient.sendRequest(capture(httpRequestSlot), any()) } just runs
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
@@ -531,7 +530,7 @@ class BraintreeHttpClientUnitTest {
             httpClient.sendRequest(withArg {
                 assertEquals(it.headers["name1"], "value1")
                 assertEquals(it.headers["name2"], "value2")
-            }, anyInt(), callback)
+            }, callback)
         }
     }
 }

@@ -42,7 +42,6 @@ class ConfigurationLoaderUnitTest {
 
         val expectedConfigUrl = "https://example.com/config?configVersion=3"
         assertEquals(expectedConfigUrl, httpRequestSlot.captured.path)
-        assertEquals(HttpClient.RETRY_MAX_3_TIMES, httpRequestSlot.captured.retryStrategy)
 
         val httpResponseCallback = callbackSlot.captured
         httpResponseCallback.onResult(
