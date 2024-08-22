@@ -3,7 +3,6 @@ package com.braintreepayments.api.core
 import android.content.Context
 import android.net.Uri
 import android.util.Base64
-import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpMethod
 import org.json.JSONException
 
