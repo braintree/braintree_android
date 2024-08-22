@@ -10,7 +10,4 @@ data class AnalyticsEventParams(
     var startTime: Long? = null,
     var endTime: Long? = null,
     var endpoint: String? = null
-) {
-    // TODO: this is a convenience constructor for Java; remove after Kotlin migration is complete
-    constructor() : this(null, null, false, null, null, null)
-}
+)
