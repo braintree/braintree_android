@@ -46,12 +46,17 @@ public class PayPalFragment extends BaseFragment {
         TextInputEditText buyerEmailEditText = view.findViewById(R.id.buyer_email_edit_text);
         Button billingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
+        Button editVaultButton = view.findViewById(R.id.paypal_edit_vault_button);
 
         singlePaymentButton.setOnClickListener(v -> {
             launchPayPal(false, buyerEmailEditText.getText().toString());
         });
         billingAgreementButton.setOnClickListener(v -> {
             launchPayPal(true, buyerEmailEditText.getText().toString());
+        });
+
+        editVaultButton.setOnClickListener(v -> {
+            launchPayPalEditFIVault(true, buyerEmailEditText.getText().toString());
         });
 
         payPalClient = new PayPalClient(
@@ -106,6 +111,24 @@ public class PayPalFragment extends BaseFragment {
             });
         } else {
             launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress);
+        }
+    }
+
+    private void launchPayPalEditFIVault(boolean isBillingAgreement, String buyerEmailAddress) {
+        FragmentActivity activity = getActivity();
+        activity.setProgressBarIndeterminateVisibility(true);
+
+        dataCollector = new DataCollector(requireContext(), super.getAuthStringArg());
+
+        if (Settings.shouldCollectDeviceData(requireActivity())) {
+            dataCollector.collectDeviceData(requireActivity(), new DataCollectorRequest(true), (dataCollectorResult) -> {
+                if (dataCollectorResult instanceof DataCollectorResult.Success) {
+                    deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
+                }
+                //launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress);
+            });
+        } else {
+            //launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress);
         }
     }
 

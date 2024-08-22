@@ -37,6 +37,12 @@
             android:layout_height="wrap_content"
             android:text="@string/paypal_billing_agreement" />
 
+        <Button
+            android:id="@+id/paypal_edit_vault_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="EditFI Vault" />
+
     </LinearLayout>
 
 </LinearLayout>
