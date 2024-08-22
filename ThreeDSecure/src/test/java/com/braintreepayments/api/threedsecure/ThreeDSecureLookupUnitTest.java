@@ -51,7 +51,7 @@ public class ThreeDSecureLookupUnitTest {
         assertEquals("merchant-descriptor", lookupWithoutVersion.getMd());
         assertEquals("https://term-url/", lookupWithoutVersion.getTermUrl());
         assertEquals("sample-pareq", lookupWithoutVersion.getPareq());
-        assertEquals("", lookupWithoutVersion.getThreeDSecureVersion());
+        assertEquals("2.1.0", lookupWithoutVersion.getThreeDSecureVersion());
         assertEquals("sample-transaction-id", lookupWithoutVersion.getTransactionId());
         assertTrue(lookupWithoutVersion.requiresUserAuthentication());
     }

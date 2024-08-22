@@ -38,11 +38,12 @@ data class ThreeDSecureLookup internal constructor(
         @Throws(JSONException::class)
         fun fromJson(jsonString: String): ThreeDSecureLookup {
             val json = JSONObject(jsonString)
+            val pareq = json.optString(PA_REQ_KEY, "")
             return ThreeDSecureLookup(
                 acsUrl = Json.optString(json, ACS_URL_KEY, null),
                 md = json.getString(MD_KEY),
                 termUrl = json.getString(TERM_URL_KEY),
-                pareq = json.getString(PA_REQ_KEY),
+                pareq = if (pareq == "null") "" else pareq,
                 threeDSecureVersion = json.getString(THREE_D_SECURE_VERSION_KEY),
                 transactionId = json.getString(TRANSACTION_ID_KEY)
             )
