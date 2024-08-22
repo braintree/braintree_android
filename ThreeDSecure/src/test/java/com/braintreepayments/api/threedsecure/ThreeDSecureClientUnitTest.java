@@ -277,7 +277,7 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureRequest request = new ThreeDSecureRequest();
         request.setNonce("a-nonce");
         request.setAmount("amount");
-        request.setRequestedExemptionType(ThreeDSecureRequest.SECURE_CORPORATE);
+        request.setRequestedExemptionType(ThreeDSecureRequestedExemptionType.SECURE_CORPORATE);
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
         billingAddress.setGivenName("billing-given-name");

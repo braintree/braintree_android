@@ -87,10 +87,10 @@ public class ThreeDSecureRequestUnitTest {
         expected.setChallengeRequested(true);
         expected.setDataOnlyRequested(true);
         expected.setExemptionRequested(true);
-        expected.setRequestedExemptionType(ThreeDSecureRequest.LOW_VALUE);
+        expected.setRequestedExemptionType(ThreeDSecureRequestedExemptionType.LOW_VALUE);
         expected.setCardAddChallengeRequested(true);
         expected.setV2UiCustomization(v2UiCustomization);
-        expected.setAccountType(ThreeDSecureRequest.CREDIT);
+        expected.setAccountType(ThreeDSecureAccountType.CREDIT);
         expected.setCustomFields(customFields);
 
         Parcel parcel = Parcel.obtain();
@@ -195,7 +195,7 @@ public class ThreeDSecureRequestUnitTest {
         request.setDataOnlyRequested(true);
         request.setExemptionRequested(true);
         request.setCardAddChallengeRequested(true);
-        request.setAccountType(ThreeDSecureRequest.CREDIT);
+        request.setAccountType(ThreeDSecureAccountType.CREDIT);
 
         Map<String, String> customFields = new HashMap<>();
         customFields.put("custom_key1", "custom_value1");

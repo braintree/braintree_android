@@ -109,7 +109,7 @@ class CardinalClientUnitTest {
 
         val sut = CardinalClient()
         val request = ThreeDSecureRequest().apply {
-            uiType = ThreeDSecureRequest.BOTH
+            uiType = ThreeDSecureUiType.BOTH
         }
         sut.initialize(context, configuration, request, cardinalInitializeCallback)
 
@@ -128,11 +128,11 @@ class CardinalClientUnitTest {
         val sut = CardinalClient()
         val request = ThreeDSecureRequest().apply {
             renderTypes = listOf(
-                ThreeDSecureRequest.OTP,
-                ThreeDSecureRequest.SINGLE_SELECT,
-                ThreeDSecureRequest.MULTI_SELECT,
-                ThreeDSecureRequest.OOB,
-                ThreeDSecureRequest.RENDER_HTML,
+                ThreeDSecureRenderType.OTP,
+                ThreeDSecureRenderType.SINGLE_SELECT,
+                ThreeDSecureRenderType.MULTI_SELECT,
+                ThreeDSecureRenderType.OOB,
+                ThreeDSecureRenderType.RENDER_HTML,
             )
         }
         sut.initialize(context, configuration, request, cardinalInitializeCallback)

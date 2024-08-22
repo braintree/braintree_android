@@ -30,8 +30,11 @@ import com.braintreepayments.api.threedsecure.ThreeDSecureLauncher;
 import com.braintreepayments.api.threedsecure.ThreeDSecureNonce;
 import com.braintreepayments.api.threedsecure.ThreeDSecurePaymentAuthRequest;
 import com.braintreepayments.api.threedsecure.ThreeDSecurePostalAddress;
+import com.braintreepayments.api.threedsecure.ThreeDSecureRenderType;
 import com.braintreepayments.api.threedsecure.ThreeDSecureRequest;
+import com.braintreepayments.api.threedsecure.ThreeDSecureRequestedExemptionType;
 import com.braintreepayments.api.threedsecure.ThreeDSecureResult;
+import com.braintreepayments.api.threedsecure.ThreeDSecureUiType;
 import com.braintreepayments.api.threedsecure.ThreeDSecureV2ButtonCustomization;
 import com.braintreepayments.api.threedsecure.ThreeDSecureV2LabelCustomization;
 import com.braintreepayments.api.threedsecure.ThreeDSecureV2TextBoxCustomization;
@@ -330,18 +333,18 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         threeDSecureRequest.setEmail("test@email.com");
         threeDSecureRequest.setBillingAddress(billingAddress);
         threeDSecureRequest.setNonce(cardNonce.getString());
-        threeDSecureRequest.setRequestedExemptionType(ThreeDSecureRequest.LOW_VALUE);
+        threeDSecureRequest.setRequestedExemptionType(ThreeDSecureRequestedExemptionType.LOW_VALUE);
         threeDSecureRequest.setAdditionalInformation(additionalInformation);
         threeDSecureRequest.setV2UiCustomization(v2UiCustomization);
 
-        threeDSecureRequest.setUiType(ThreeDSecureRequest.BOTH);
+        threeDSecureRequest.setUiType(ThreeDSecureUiType.BOTH);
 
         threeDSecureRequest.setRenderTypes(Arrays.asList(
-                ThreeDSecureRequest.OTP,
-                ThreeDSecureRequest.SINGLE_SELECT,
-                ThreeDSecureRequest.MULTI_SELECT,
-                ThreeDSecureRequest.OOB,
-                ThreeDSecureRequest.RENDER_HTML
+            ThreeDSecureRenderType.OTP,
+            ThreeDSecureRenderType.SINGLE_SELECT,
+            ThreeDSecureRenderType.MULTI_SELECT,
+            ThreeDSecureRenderType.OOB,
+            ThreeDSecureRenderType.RENDER_HTML
         ));
 
         return threeDSecureRequest;

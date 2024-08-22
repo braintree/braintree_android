@@ -5,7 +5,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringDef;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,60 +20,22 @@ import java.util.Map;
  */
 public class ThreeDSecureRequest implements Parcelable {
 
-    @Retention(RetentionPolicy.SOURCE)
-    @StringDef({CREDIT, DEBIT})
-    @interface ThreeDSecureAccountType {
-    }
-
-    public static final String CREDIT = "credit";
-    public static final String DEBIT = "debit";
-
-    @Retention(RetentionPolicy.SOURCE)
-    @StringDef({LOW_VALUE, SECURE_CORPORATE, TRUSTED_BENEFICIARY, TRANSACTION_RISK_ANALYSIS})
-    @interface ThreeDSecureRequestedExemptionType {
-    }
-
-    public static final String LOW_VALUE = "low_value";
-    public static final String SECURE_CORPORATE = "secure_corporate";
-    public static final String TRUSTED_BENEFICIARY = "trusted_beneficiary";
-    public static final String TRANSACTION_RISK_ANALYSIS = "transaction_risk_analysis";
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({NATIVE, HTML, BOTH})
-    @interface ThreeDSecureUiType {
-    }
-
-    public static final int NATIVE = 1;
-    public static final int HTML = 2;
-    public static final int BOTH = 3;
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({OTP, SINGLE_SELECT, MULTI_SELECT, OOB, RENDER_HTML})
-    @interface ThreeDSecureRenderType {
-    }
-
-    public static final int OTP = 1;
-    public static final int SINGLE_SELECT = 2;
-    public static final int MULTI_SELECT = 3;
-    public static final int OOB = 4;
-    public static final int RENDER_HTML = 5;
-
     private String nonce;
     private String amount;
     private String mobilePhoneNumber;
     private String email;
     private ThreeDSecureShippingMethod shippingMethod;
     private ThreeDSecurePostalAddress billingAddress;
-    private @ThreeDSecureAccountType String accountType;
+    private ThreeDSecureAccountType accountType;
     private ThreeDSecureAdditionalInformation additionalInformation;
     private boolean challengeRequested = false;
     private boolean dataOnlyRequested = false;
     private boolean exemptionRequested = false;
-    private @ThreeDSecureRequestedExemptionType String requestedExemptionType;
+    private ThreeDSecureRequestedExemptionType requestedExemptionType;
     private Boolean cardAddChallengeRequested;
     private ThreeDSecureV2UiCustomization v2UiCustomization;
-    private @ThreeDSecureUiType int uiType;
-    private List<Integer> renderTypes;
+    private ThreeDSecureUiType uiType = ThreeDSecureUiType.BOTH;
+    private List<ThreeDSecureRenderType> renderTypes;
     private Map<String, String> customFields;
 
     /**
@@ -145,7 +106,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @param accountType {@link ThreeDSecureAccountType} The account type selected by the
      *                    cardholder.
      */
-    public void setAccountType(@Nullable @ThreeDSecureAccountType String accountType) {
+    public void setAccountType(@Nullable ThreeDSecureAccountType accountType) {
         this.accountType = accountType;
     }
 
@@ -191,7 +152,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *                               selected by the cardholder.
      */
     public void setRequestedExemptionType(
-        @Nullable @ThreeDSecureRequestedExemptionType String requestedExemptionType) {
+        @Nullable ThreeDSecureRequestedExemptionType requestedExemptionType) {
         this.requestedExemptionType = requestedExemptionType;
     }
 
@@ -229,7 +190,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param uiType {@link ThreeDSecureUiType} The UI type to request.
      */
-    public void setUiType(@ThreeDSecureUiType int uiType) {
+    public void setUiType(ThreeDSecureUiType uiType) {
         this.uiType = uiType;
     }
 
@@ -245,7 +206,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *
      * @param renderTypes specifies what render types to use in the 3D Secure challenge
      */
-    public void setRenderTypes(List<Integer> renderTypes) {
+    public void setRenderTypes(List<ThreeDSecureRenderType> renderTypes) {
         this.renderTypes = renderTypes;
     }
 
@@ -309,7 +270,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @return The account type
      */
     @Nullable
-    public @ThreeDSecureAccountType String getAccountType() {
+    public ThreeDSecureAccountType getAccountType() {
         return accountType;
     }
 
@@ -344,7 +305,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @return The requested exemption type
      */
     @Nullable
-    public @ThreeDSecureRequestedExemptionType String getRequestedExemptionType() {
+    public ThreeDSecureRequestedExemptionType getRequestedExemptionType() {
         return requestedExemptionType;
     }
 
@@ -368,14 +329,14 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The UI type.
      */
-    public @ThreeDSecureUiType int getUiType() {
+    public ThreeDSecureUiType getUiType() {
         return uiType;
     }
 
     /**
      * @return The render type.
      */
-    public List<Integer> getRenderTypes() {
+    public List<ThreeDSecureRenderType> getRenderTypes() {
         return renderTypes;
     }
 
@@ -407,10 +368,10 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeByte(challengeRequested ? (byte) 1 : 0);
         dest.writeByte(dataOnlyRequested ? (byte) 1 : 0);
         dest.writeByte(exemptionRequested ? (byte) 1 : 0);
-        dest.writeString(requestedExemptionType);
+        dest.writeValue(requestedExemptionType);
         dest.writeSerializable(cardAddChallengeRequested);
         dest.writeParcelable(v2UiCustomization, flags);
-        dest.writeString(accountType);
+        dest.writeValue(accountType);
 
         if (customFields != null) {
             dest.writeInt(customFields.size());
@@ -436,10 +397,10 @@ public class ThreeDSecureRequest implements Parcelable {
         challengeRequested = in.readByte() > 0;
         dataOnlyRequested = in.readByte() > 0;
         exemptionRequested = in.readByte() > 0;
-        requestedExemptionType = in.readString();
+        requestedExemptionType = (ThreeDSecureRequestedExemptionType) in.readValue(ThreeDSecureRequestedExemptionType.class.getClassLoader());
         cardAddChallengeRequested = (Boolean) in.readSerializable();
         v2UiCustomization = in.readParcelable(ThreeDSecureV2UiCustomization.class.getClassLoader());
-        accountType = in.readString();
+        accountType = (ThreeDSecureAccountType) in.readValue(ThreeDSecureAccountType.class.getClassLoader());
 
         int customFieldsSize = in.readInt();
         if (customFieldsSize > 0) {
@@ -479,7 +440,9 @@ public class ThreeDSecureRequest implements Parcelable {
         try {
             base.put("amount", amount);
             base.put("additional_info", additionalInfo);
-            base.putOpt("account_type", accountType);
+            if (accountType != null) {
+                base.put("account_type", accountType.getStringValue());
+            }
 
             if (cardAddChallengeRequested != null) {
                 base.put("card_add", cardAddChallengeRequested);
@@ -511,7 +474,9 @@ public class ThreeDSecureRequest implements Parcelable {
             base.put("challenge_requested", challengeRequested);
             base.put("data_only_requested", dataOnlyRequested);
             base.put("exemption_requested", exemptionRequested);
-            base.put("requested_exemption_type", requestedExemptionType);
+            if (requestedExemptionType != null) {
+                base.put("requested_exemption_type", requestedExemptionType.getStringValue());
+            }
         } catch (JSONException ignored) {
         }
 

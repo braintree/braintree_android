@@ -78,27 +78,24 @@ class CardinalClient {
         cardinalConfigurationParameters.setEnableDFSync(true);
 
         switch (request.getUiType()) {
-            case ThreeDSecureRequest.NATIVE:
-                cardinalConfigurationParameters.setUiType(CardinalUiType.NATIVE);
-            case ThreeDSecureRequest.HTML:
-                cardinalConfigurationParameters.setUiType(CardinalUiType.HTML);
-            case ThreeDSecureRequest.BOTH:
-                cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
+            case NATIVE: cardinalConfigurationParameters.setUiType(CardinalUiType.NATIVE);
+            case HTML: cardinalConfigurationParameters.setUiType(CardinalUiType.HTML);
+            case BOTH: cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
         }
 
         if (request.getRenderTypes() != null) {
             JSONArray renderTypes = new JSONArray();
 
-            for (Integer renderType : request.getRenderTypes()) {
-                if (renderType.equals(ThreeDSecureRequest.OTP)) {
+            for (ThreeDSecureRenderType renderType : request.getRenderTypes()) {
+                if (renderType.equals(ThreeDSecureRenderType.OTP)) {
                     renderTypes.put(CardinalRenderType.OTP);
-                } else if (renderType.equals(ThreeDSecureRequest.SINGLE_SELECT)) {
+                } else if (renderType.equals(ThreeDSecureRenderType.SINGLE_SELECT)) {
                     renderTypes.put(CardinalRenderType.SINGLE_SELECT);
-                } else if (renderType.equals(ThreeDSecureRequest.MULTI_SELECT)) {
+                } else if (renderType.equals(ThreeDSecureRenderType.MULTI_SELECT)) {
                     renderTypes.put(CardinalRenderType.MULTI_SELECT);
-                } else if (renderType.equals(ThreeDSecureRequest.OOB)) {
+                } else if (renderType.equals(ThreeDSecureRenderType.OOB)) {
                     renderTypes.put(CardinalRenderType.OOB);
-                } else if (renderType.equals(ThreeDSecureRequest.RENDER_HTML)) {
+                } else if (renderType.equals(ThreeDSecureRenderType.RENDER_HTML)) {
                     renderTypes.put(CardinalRenderType.HTML);
                 }
             }
