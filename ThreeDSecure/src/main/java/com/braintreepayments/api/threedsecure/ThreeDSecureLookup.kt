@@ -11,12 +11,12 @@ import org.json.JSONObject
  */
 @Parcelize
 data class ThreeDSecureLookup internal constructor(
-    val acsUrl: String? = null,
-    val md: String = "",
-    val termUrl: String = "",
-    val pareq: String = "",
-    val threeDSecureVersion: String = "",
-    val transactionId: String = ""
+    val acsUrl: String?,
+    val md: String,
+    val termUrl: String,
+    val pareq: String,
+    val threeDSecureVersion: String,
+    val transactionId: String
 ) : Parcelable {
 
     companion object {
@@ -40,11 +40,11 @@ data class ThreeDSecureLookup internal constructor(
             val json = JSONObject(jsonString)
             return ThreeDSecureLookup(
                 acsUrl = Json.optString(json, ACS_URL_KEY, null),
-                md = Json.optString(json, MD_KEY, ""),
-                termUrl = Json.optString(json, TERM_URL_KEY, ""),
-                pareq = Json.optString(json, PA_REQ_KEY, ""),
-                threeDSecureVersion = Json.optString(json, THREE_D_SECURE_VERSION_KEY, ""),
-                transactionId = Json.optString(json, TRANSACTION_ID_KEY, "")
+                md = json.getString(MD_KEY),
+                termUrl = json.getString(TERM_URL_KEY),
+                pareq = json.getString(PA_REQ_KEY),
+                threeDSecureVersion = json.getString(THREE_D_SECURE_VERSION_KEY),
+                transactionId = json.getString(TRANSACTION_ID_KEY)
             )
         }
     }
