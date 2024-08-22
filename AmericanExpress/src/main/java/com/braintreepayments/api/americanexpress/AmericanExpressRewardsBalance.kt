@@ -109,7 +109,7 @@ class AmericanExpressRewardsBalance : Parcelable {
         @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         @Throws(JSONException::class)
         fun fromJson(jsonString: String?): AmericanExpressRewardsBalance {
-            val json = JSONObject(jsonString)
+            val json = JSONObject(jsonString!!)
 
             val rewardsBalance = AmericanExpressRewardsBalance()
 
@@ -132,7 +132,7 @@ class AmericanExpressRewardsBalance : Parcelable {
         @JvmField
         val CREATOR: Parcelable.Creator<AmericanExpressRewardsBalance?> =
             object : Parcelable.Creator<AmericanExpressRewardsBalance?> {
-                override fun createFromParcel(source: Parcel): AmericanExpressRewardsBalance? {
+                override fun createFromParcel(source: Parcel): AmericanExpressRewardsBalance {
                     return AmericanExpressRewardsBalance(source)
                 }
 
