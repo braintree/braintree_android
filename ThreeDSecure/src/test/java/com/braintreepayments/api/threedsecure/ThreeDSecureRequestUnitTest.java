@@ -97,7 +97,7 @@ public class ThreeDSecureRequestUnitTest {
         expected.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        ThreeDSecureRequest actual = new ThreeDSecureRequest(parcel);
+        ThreeDSecureRequest actual = ThreeDSecureRequest.CREATOR.createFromParcel(parcel);
 
         assertEquals(expected.getAmount(), actual.getAmount());
         assertEquals(expected.getAccountType(), actual.getAccountType());
@@ -127,11 +127,11 @@ public class ThreeDSecureRequestUnitTest {
                 actual.getBillingAddress().getPostalCode());
         assertEquals(expected.getAdditionalInformation().getAccountId(),
                 actual.getAdditionalInformation().getAccountId());
-        assertEquals(expected.isChallengeRequested(), actual.isChallengeRequested());
-        assertEquals(expected.isDataOnlyRequested(), actual.isDataOnlyRequested());
-        assertEquals(expected.isExemptionRequested(), actual.isExemptionRequested());
+        assertEquals(expected.getChallengeRequested(), actual.getChallengeRequested());
+        assertEquals(expected.getDataOnlyRequested(), actual.getDataOnlyRequested());
+        assertEquals(expected.getExemptionRequested(), actual.getExemptionRequested());
         assertEquals(expected.getRequestedExemptionType(), actual.getRequestedExemptionType());
-        assertEquals(expected.isCardAddChallengeRequested(), actual.isCardAddChallengeRequested());
+        assertEquals(expected.getCardAddChallengeRequested(), actual.getCardAddChallengeRequested());
 
         assertEquals(expected.getV2UiCustomization().getLabelCustomization().getHeadingTextColor(),
                 actual.getV2UiCustomization().getLabelCustomization().getHeadingTextColor());
@@ -162,8 +162,8 @@ public class ThreeDSecureRequestUnitTest {
         expected.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        ThreeDSecureRequest actual = new ThreeDSecureRequest(parcel);
-        assertNull(actual.isCardAddChallengeRequested());
+        ThreeDSecureRequest actual = ThreeDSecureRequest.CREATOR.createFromParcel(parcel);
+        assertNull(actual.getCardAddChallengeRequested());
     }
 
     @Test
