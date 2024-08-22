@@ -65,23 +65,7 @@ public class LocalPaymentFragment extends BaseFragment {
             return;
         }
 
-        PostalAddress address = new PostalAddress();
-        address.setStreetAddress("Stadhouderskade 78");
-        address.setCountryCodeAlpha2("NL");
-        address.setLocality("Amsterdam");
-        address.setPostalCode("1072 AE");
-
-        LocalPaymentRequest request = new LocalPaymentRequest(true);
-        request.paymentType = "ideal";
-        request.amount = "1.10";
-        request.address = address;
-        request.phone = "207215300";
-        request.email = "android-test-buyer@paypal.com";
-        request.givenName = "Test";
-        request.surname = "Buyer";
-        request.setShippingAddressRequired(true);
-        request.merchantAccountId = "altpay_eur";
-        request.currencyCode = "EUR";
+        LocalPaymentRequest request = getLocalPaymentRequest();
 
         localPaymentClient.createPaymentAuthRequest(request, (paymentAuthRequest) -> {
             if (paymentAuthRequest instanceof LocalPaymentAuthRequest.ReadyToLaunch) {
@@ -96,6 +80,28 @@ public class LocalPaymentFragment extends BaseFragment {
                 handleError(((LocalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
             }
         });
+    }
+
+    @NonNull
+    private static LocalPaymentRequest getLocalPaymentRequest() {
+        PostalAddress address = new PostalAddress();
+        address.setStreetAddress("Stadhouderskade 78");
+        address.setCountryCodeAlpha2("NL");
+        address.setLocality("Amsterdam");
+        address.setPostalCode("1072 AE");
+
+        LocalPaymentRequest request = new LocalPaymentRequest(true);
+        request.setPaymentType("ideal");
+        request.setAmount("1.10");
+        request.setAddress(address);
+        request.setPhone("207215300");
+        request.setEmail("android-test-buyer@paypal.com");
+        request.setGivenName("Test");
+        request.setSurname("Buyer");
+        request.setShippingAddressRequired(true);
+        request.setMerchantAccountId("altpay_eur");
+        request.setCurrencyCode("EUR");
+        return request;
     }
 
     protected void handleLocalPaymentResult(LocalPaymentResult localPaymentResult) {

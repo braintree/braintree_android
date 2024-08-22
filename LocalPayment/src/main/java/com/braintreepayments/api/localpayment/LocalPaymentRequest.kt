@@ -21,13 +21,13 @@ class LocalPaymentRequest
     /**
      * @param address Optional - The address of the customer. An error will occur if this address is not valid.
      */
-    @JvmField
+
     var address: PostalAddress? = null
 
     /**
      * @param amount Optional - The amount for the transaction.
      */
-    @JvmField
+
     var amount: String? = null
 
     /**
@@ -40,38 +40,38 @@ class LocalPaymentRequest
      * @param currencyCode Optional - A valid ISO currency code to use for the transaction. Defaults to merchant
      * currency code if not set.
      */
-    @JvmField
+
     var currencyCode: String? = null
 
     /**
      * @param displayName Optional - The merchant name displayed inside of the Local Payment flow
      * when starting the payment.
      */
-    @JvmField
+
     var displayName: String? = null
 
     /**
      * @param email Optional - Payer email of the customer.
      */
-    @JvmField
+
     var email: String? = null
 
     /**
      * @param givenName Optional - Given (first) name of the customer.
      */
-    @JvmField
+
     var givenName: String? = null
 
     /**
      * @param merchantAccountId Optional - A non-default merchant account to use for tokenization.
      */
-    @JvmField
+
     var merchantAccountId: String? = null
 
     /**
      * @param paymentType - The type of payment
      */
-    @JvmField
+
     var paymentType: String? = null
 
     /**
@@ -81,13 +81,13 @@ class LocalPaymentRequest
      * may determine which banks are presented to the customer.
      * @see [Supported Country Codes](https://developer.paypal.com/braintree/docs/guides/local-payment-methods/client-side-custom/android/v4.invoke-payment-flow)
      */
-    @JvmField
+
     var paymentTypeCountryCode: String? = null
 
     /**
      * @param phone Optional - Phone number of the customer.
      */
-    @JvmField
+
     var phone: String? = null
 
     /**
@@ -99,7 +99,7 @@ class LocalPaymentRequest
     /**
      * @param surname Optional - Surname (last name) of the customer.
      */
-    @JvmField
+
     var surname: String? = null
 
     fun hasUserLocationConsent(): Boolean {
