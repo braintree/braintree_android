@@ -15,6 +15,12 @@
         * Change `PayPalLineItemKind` to an enum
         * Rename `PayPalLineItemKind.KIND_CREDIT` to `CREDIT`
         * Rename `PayPalLineItemKind.KIND_DEBIT` to `DEBIT`
+        * Update `ThreeDSSecureInfo.isLiabilityShifted()` to `ThreeDSSecureInfo.getLiabilityShifted()`
+        * Update `ThreeDSSecureInfo.isLiabilityShiftPossible()` to `ThreeDSSecureInfo.getLiabilityShiftPossible()`
+        * Update `ThreeDSSecureInfo.wasVerified()` to `ThreeDSSecureInfo.getWasVerified()`
+        * Update `ThreeDSecurePaymentAuthResult.getThreeSecureResult()` to `ThreeDSecurePaymentAuthResult.getThreeDSecureParams()`
+        * Update `ThreeDSecurePaymentAuthResult.getJWT()` to `ThreeDSecurePaymentAuthResult.getJwt()`
+        * Change `ThreeDSecureShippingMethod` to an enum
 
 ## 5.0.0-beta1 (2024-07-23)
 

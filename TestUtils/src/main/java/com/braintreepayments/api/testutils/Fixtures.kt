@@ -55,7 +55,8 @@ object Fixtures {
             "md": "merchant-descriptor",
             "termUrl": "https://term-url/",
             "pareq": "sample-pareq",
-            "transactionId": "sample-transaction-id"
+            "transactionId": "sample-transaction-id",
+            "threeDSecureVersion": "2.1.0"
           },
           "paymentMethod": {
             "type": "CreditCard",

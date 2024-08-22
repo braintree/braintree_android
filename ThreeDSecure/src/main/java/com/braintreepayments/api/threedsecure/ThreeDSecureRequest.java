@@ -63,7 +63,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private String amount;
     private String mobilePhoneNumber;
     private String email;
-    private @ThreeDSecureShippingMethod int shippingMethod;
+    private ThreeDSecureShippingMethod shippingMethod;
     private ThreeDSecurePostalAddress billingAddress;
     private @ThreeDSecureAccountType String accountType;
     private ThreeDSecureAdditionalInformation additionalInformation;
@@ -124,7 +124,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @param shippingMethod The 2-digit string indicating the shipping method chosen for the
      *                       transaction.
      */
-    public void setShippingMethod(@ThreeDSecureShippingMethod int shippingMethod) {
+    public void setShippingMethod(ThreeDSecureShippingMethod shippingMethod) {
         this.shippingMethod = shippingMethod;
     }
 
@@ -155,7 +155,7 @@ public class ThreeDSecureRequest implements Parcelable {
      * @param additionalInformation Additional information.
      */
     public void setAdditionalInformation(
-            @Nullable ThreeDSecureAdditionalInformation additionalInformation) {
+        @Nullable ThreeDSecureAdditionalInformation additionalInformation) {
         this.additionalInformation = additionalInformation;
     }
 
@@ -191,7 +191,7 @@ public class ThreeDSecureRequest implements Parcelable {
      *                               selected by the cardholder.
      */
     public void setRequestedExemptionType(
-            @Nullable @ThreeDSecureRequestedExemptionType String requestedExemptionType) {
+        @Nullable @ThreeDSecureRequestedExemptionType String requestedExemptionType) {
         this.requestedExemptionType = requestedExemptionType;
     }
 
@@ -293,7 +293,7 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The shipping method to use for 3D Secure verification
      */
-    public @ThreeDSecureShippingMethod int getShippingMethod() {
+    public ThreeDSecureShippingMethod getShippingMethod() {
         return shippingMethod;
     }
 
@@ -401,7 +401,7 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeString(amount);
         dest.writeString(mobilePhoneNumber);
         dest.writeString(email);
-        dest.writeInt(shippingMethod);
+        dest.writeValue(shippingMethod);
         dest.writeParcelable(billingAddress, flags);
         dest.writeParcelable(additionalInformation, flags);
         dest.writeByte(challengeRequested ? (byte) 1 : 0);
@@ -414,7 +414,7 @@ public class ThreeDSecureRequest implements Parcelable {
 
         if (customFields != null) {
             dest.writeInt(customFields.size());
-            for (Map.Entry<String, String> entry: customFields.entrySet()) {
+            for (Map.Entry<String, String> entry : customFields.entrySet()) {
                 dest.writeString(entry.getKey());
                 dest.writeString(entry.getValue());
             }
@@ -429,10 +429,10 @@ public class ThreeDSecureRequest implements Parcelable {
         amount = in.readString();
         mobilePhoneNumber = in.readString();
         email = in.readString();
-        shippingMethod = in.readInt();
+        shippingMethod = (ThreeDSecureShippingMethod) in.readValue(ThreeDSecureShippingMethod.class.getClassLoader());
         billingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
         additionalInformation =
-                in.readParcelable(ThreeDSecureAdditionalInformation.class.getClassLoader());
+            in.readParcelable(ThreeDSecureAdditionalInformation.class.getClassLoader());
         challengeRequested = in.readByte() > 0;
         dataOnlyRequested = in.readByte() > 0;
         exemptionRequested = in.readByte() > 0;
@@ -519,18 +519,19 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     private String getShippingMethodAsString() {
+        if (shippingMethod == null) return null;
         switch (shippingMethod) {
-            case ThreeDSecureShippingMethod.SAME_DAY:
+            case SAME_DAY:
                 return "01";
-            case ThreeDSecureShippingMethod.EXPEDITED:
+            case EXPEDITED:
                 return "02";
-            case ThreeDSecureShippingMethod.PRIORITY:
+            case PRIORITY:
                 return "03";
-            case ThreeDSecureShippingMethod.GROUND:
+            case GROUND:
                 return "04";
-            case ThreeDSecureShippingMethod.ELECTRONIC_DELIVERY:
+            case ELECTRONIC_DELIVERY:
                 return "05";
-            case ThreeDSecureShippingMethod.SHIP_TO_STORE:
+            case SHIP_TO_STORE:
                 return "06";
             default:
                 return null;

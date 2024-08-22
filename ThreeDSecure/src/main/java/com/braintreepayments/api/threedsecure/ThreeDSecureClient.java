@@ -256,9 +256,9 @@ public class ThreeDSecureClient {
         if (threeDSecureError != null) {
             callbackTokenizeFailure(callback, new ThreeDSecureResult.Failure(threeDSecureError, null));
         } else {
-            ThreeDSecureParams threeDSecureParams = paymentAuthResult.getThreeSecureResult();
+            ThreeDSecureParams threeDSecureParams = paymentAuthResult.getThreeDSecureParams();
             ValidateResponse validateResponse = paymentAuthResult.getValidateResponse();
-            String jwt = paymentAuthResult.getJWT();
+            String jwt = paymentAuthResult.getJwt();
 
             switch (validateResponse.getActionCode()) {
                 case FAILURE:

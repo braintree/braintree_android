@@ -282,8 +282,8 @@ public class ThreeDSecureAPIUnitTest {
         assertNotNull(cardNonce);
 
         ThreeDSecureInfo threeDSecureInfo = cardNonce.getThreeDSecureInfo();
-        assertFalse(threeDSecureInfo.isLiabilityShifted());
-        assertTrue(threeDSecureInfo.isLiabilityShiftPossible());
+        assertFalse(threeDSecureInfo.getLiabilityShifted());
+        assertTrue(threeDSecureInfo.getLiabilityShiftPossible());
         assertEquals("123456-12345-12345-a-adfa", cardNonce.getString());
         assertEquals("Failed to authenticate, please try a different form of payment.",
                 actualResult.getErrorMessage());
