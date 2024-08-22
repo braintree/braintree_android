@@ -13,5 +13,38 @@ import com.braintreepayments.api.ExperimentalBetaApi
 @ExperimentalBetaApi
 data class PayPalVaultEditRequest(
     val editPaypalVaultId: String,
+    val merchantAccountID: String?,
     val merchantAccountId: String? = null,
+    var correlationID: String?
+) {
+    fun parameters(): Map<String, Any> {
+        val parameters = mutableMapOf<String, Any>()
+
+        parameters["edit_paypal_vault_id"] = editPaypalVaultId
+
+        if (correlationID != null) {
+            parameters["correlation_id"] = correlationID!!
+        }
+
+        val callbackURLScheme = "sdk.ios.braintree"
+        val callbackURLHostAndPath = "onetouch/v1"
+
+        parameters["return_url"] = "$callbackURLScheme://$callbackURLHostAndPath/success"
+        parameters["cancel_url"] = "$callbackURLScheme://$callbackURLHostAndPath/cancel"
+
+        return parameters
+    }
+}
+
+const val hermesPath: String = "v1/paypal_hermes/generate_edit_fi_url"
+
+// Example usage
+@OptIn(ExperimentalBetaApi::class)
+val request = PayPalVaultEditRequest(
+    editPaypalVaultId = "exampleID",
+    merchantAccountID = "exampleMerchantAccountID",
+    correlationID = "exampleCorrelationID"
 )
+
+@OptIn(ExperimentalBetaApi::class)
+val params = request.parameters()
