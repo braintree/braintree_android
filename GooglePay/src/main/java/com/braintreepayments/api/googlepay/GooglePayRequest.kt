@@ -1,12 +1,12 @@
 package com.braintreepayments.api.googlepay
 
-import android.os.Parcel
 import android.os.Parcelable
 import android.text.TextUtils
 import com.google.android.gms.wallet.ShippingAddressRequirements
 import com.google.android.gms.wallet.TransactionInfo
 import com.google.android.gms.wallet.WalletConstants
 import com.google.android.gms.wallet.WalletConstants.BillingAddressFormat
+import kotlinx.parcelize.Parcelize
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -14,144 +14,85 @@ import java.util.Locale
 
 /**
  * Represents the parameters that are needed to use the Google Pay API.
+ *
+ * Details and the price of the transaction. Required.
+ * @property transactionInfo See [TransactionInfo].
+ *
+ * Optional.
+ * @property emailRequired `true` if the buyer's email address is required to be returned, `false` otherwise.
+ *
+ * Optional.
+ * @property phoneNumberRequired `true` if the buyer's phone number is required to be returned as part of the
+ * billing address and shipping address, `false` otherwise.
+ *
+ * Optional.
+ * @property billingAddressRequired `true` if the buyer's billing address is required to be returned,
+ * false` otherwise.
+ *
+ * Optional.
+ * @property billingAddressFormat the billing address format to return. [BillingAddressFormat]
+ *
+ * Optional.
+ * @property shippingAddressRequired `true` if the buyer's shipping address is required to be returned,
+ * `false` otherwise.
+ *
+ * Optional.
+ * @property shippingAddressRequirements the shipping address requirements. [ShippingAddressRequirements]
+ *
+ * Optional.
+ * @property allowPrepaidCards `true` prepaid cards are allowed, `false` otherwise.
+ *
+ * Defines if PayPal should be an available payment method in Google Pay.
+ * Defaults to `true`.
+ * @property enablePayPal `true` by default. Allows PayPal to be a payment method in Google Pay.
+ *
+ * Optional.
+ * @property merchantName The merchant name that will be presented in Google Pay
+ *
+ * ISO 3166-1 alpha-2 country code where the transaction is processed. This is required for
+ * merchants based in European Economic Area (EEA) countries.
+ * NOTE: to support Elo cards, country code must be set to "BR"
+ * @property countryCode The country code where the transaction is processed
+ *
+ * Optional
+ * @property totalPriceLabel Custom label for the total price within the display items
  */
-@SuppressWarnings("TooManyFunctions")
-class GooglePayRequest : Parcelable {
-    /**
-     * Details and the price of the transaction. Required.
-     *
-     * @return See [TransactionInfo].
-     */
-    /**
-     * Details and the price of the transaction. Required.
-     *
-     * @param transactionInfo See [TransactionInfo].
-     */
+@Suppress("TooManyFunctions")
+@Parcelize
+class GooglePayRequest(
     // NEXT_MAJOR_VERSION: allow merchants to set transaction info params individually and build
     // JSON object under the hood
-    var transactionInfo: TransactionInfo? = null
-    /**
-     * @return If the buyer's email address is required to be returned.
-     */
-    /**
-     * Optional.
-     *
-     * @param emailRequired `true` if the buyer's email address is required to be returned, `false` otherwise.
-     */
-    var isEmailRequired: Boolean = false
-    /**
-     * @return If the buyer's phone number is required to be returned as part of the
-     * billing address and shipping address.
-     */
-    /**
-     * Optional.
-     *
-     * @param phoneNumberRequired `true` if the buyer's phone number is required to be returned as part of the
-     * billing address and shipping address, `false` otherwise.
-     */
-    var isPhoneNumberRequired: Boolean = false
-    /**
-     * @return If the buyer's billing address is required to be returned.
-     */
-    /**
-     * Optional.
-     *
-     * @param billingAddressRequired `true` if the buyer's billing address is required to be returned,
-     * `false` otherwise.
-     */
-    var isBillingAddressRequired: Boolean = false
-    /**
-     * @return If the buyer's billing address is required to be returned.
-     */
-    /**
-     * Optional.
-     *
-     * @param billingAddressFormat the billing address format to return. [BillingAddressFormat]
-     */
-    @get:BillingAddressFormat
-    var billingAddressFormat: Int = 0
-    /**
-     * @return If the buyer's shipping address is required to be returned.
-     */
-    /**
-     * Optional.
-     *
-     * @param shippingAddressRequired `true` if the buyer's shipping address is required to be returned,
-     * `false` otherwise.
-     */
-    var isShippingAddressRequired: Boolean = false
-    /**
-     * @return The shipping address requirements. See [ShippingAddressRequirements].
-     */
-    /**
-     * Optional.
-     *
-     * @param shippingAddressRequirements the shipping address requirements. [ShippingAddressRequirements]
-     */
+    var transactionInfo: TransactionInfo? = null,
+    var isEmailRequired: Boolean = false,
+    var isPhoneNumberRequired: Boolean = false,
+    var isBillingAddressRequired: Boolean = false,
+    @BillingAddressFormat
+    var billingAddressFormat: Int = 0,
+    var isShippingAddressRequired: Boolean = false,
     // NEXT_MAJOR_VERSION: allow merchants to set shipping address requirements params individually
     // and build JSON object under the hood
-    var shippingAddressRequirements: ShippingAddressRequirements? = null
-    /**
-     * @return If prepaid cards are allowed.
-     */
-    /**
-     * Optional.
-     *
-     * @param allowPrepaidCards `true` prepaid cards are allowed, `false` otherwise.
-     */
-    var allowPrepaidCards: Boolean = false
-    /**
-     * @return If PayPal should be an available payment method in Google Pay.
-     */
-    /**
-     * Defines if PayPal should be an available payment method in Google Pay.
-     * Defaults to `true`.
-     *
-     * @param enablePayPal `true` by default. Allows PayPal to be a payment method in Google Pay.
-     */
-    var isPayPalEnabled: Boolean = true
-    private val allowedPaymentMethods = HashMap<String, JSONObject>()
-    private val tokenizationSpecifications = HashMap<String, JSONObject>()
-    private val allowedAuthMethods = HashMap<String, JSONArray>()
-    private val allowedCardNetworks = HashMap<String, JSONArray>()
-    private var environment: String? = null
+    var shippingAddressRequirements: ShippingAddressRequirements? = null,
+    var allowPrepaidCards: Boolean = false,
+    var isPayPalEnabled: Boolean = true,
+    var googleMerchantName: String? = null,
+    var countryCode: String? = null,
+    var totalPriceLabel: String? = null,
+    var allowCreditCards: Boolean = true,
+    private var environment: String? = null,
+    private val allowedPaymentMethods: MutableMap<String, String> = HashMap(),
+    private val tokenizationSpecifications: MutableMap<String, String> = HashMap(),
+    private val allowedAuthMethods: MutableMap<String, String> = HashMap(),
+    private val allowedCardNetworks: MutableMap<String, String> = HashMap()
+) : Parcelable {
 
-    /**
-     * @return If credit cards are allowed.
-     */
-    var isCreditCardsAllowed: Boolean = true
-        private set
-    /**
-     * @return The merchant name that will be presented in Google Pay.
-     */
-    /**
-     * Optional.
-     *
-     * @param merchantName The merchant name that will be presented in Google Pay
-     */
-    var googleMerchantName: String? = null
-    /**
-     * @return The country code where the transaction is processed.
-     */
-    /**
-     * ISO 3166-1 alpha-2 country code where the transaction is processed. This is required for
-     * merchants based in European Economic Area (EEA) countries.
-     *
-     *
-     * NOTE: to support Elo cards, country code must be set to "BR"
-     *
-     * @param countryCode The country code where the transaction is processed
-     */
-    var countryCode: String? = null
+    fun setEnvironment(environment: String?) {
+        this.environment =
+            if ("PRODUCTION" == environment?.uppercase(Locale.getDefault())) "PRODUCTION" else "TEST"
+    }
 
-    /**
-     * Optional
-     *
-     * @param totalPriceLabel Custom label for the total price within the display items
-     */
-    var totalPriceLabel: String? = null
-
-    constructor()
+    fun getEnvironment(): String? {
+        return environment
+    }
 
     /**
      * Simple wrapper to assign given parameters to specified paymentMethod
@@ -160,7 +101,7 @@ class GooglePayRequest : Parcelable {
      * @param parameters        Parameters to assign to the paymentMethod
      */
     fun setAllowedPaymentMethod(paymentMethodType: String, parameters: JSONObject) {
-        allowedPaymentMethods[paymentMethodType] = parameters
+        allowedPaymentMethods[paymentMethodType] = parameters.toString()
     }
 
     /**
@@ -170,7 +111,7 @@ class GooglePayRequest : Parcelable {
      * @param parameters        The tokenizationSpecification parameters to attach
      */
     fun setTokenizationSpecificationForType(paymentMethodType: String, parameters: JSONObject) {
-        tokenizationSpecifications[paymentMethodType] = parameters
+        tokenizationSpecifications[paymentMethodType] = parameters.toString()
     }
 
     /**
@@ -180,7 +121,7 @@ class GooglePayRequest : Parcelable {
      * @param authMethods       the authMethods to allow the paymentMethodType to transact with
      */
     fun setAllowedAuthMethods(paymentMethodType: String, authMethods: JSONArray) {
-        allowedAuthMethods[paymentMethodType] = authMethods
+        allowedAuthMethods[paymentMethodType] = authMethods.toString()
     }
 
     /**
@@ -190,22 +131,7 @@ class GooglePayRequest : Parcelable {
      * @param cardNetworks      the cardNetworks to allow the paymentMethodType to transact with
      */
     fun setAllowedCardNetworks(paymentMethodType: String, cardNetworks: JSONArray) {
-        allowedCardNetworks[paymentMethodType] = cardNetworks
-    }
-
-    fun setEnvironment(environment: String?) {
-        this.environment =
-            if ("PRODUCTION" == environment?.uppercase(Locale.getDefault())) "PRODUCTION" else "TEST"
-    }
-
-    /**
-     * Optional.
-     *
-     * @param allowCreditCards Set to `false` if you don't support credit cards.
-     * Defaults to `true`.
-     */
-    fun setAllowCreditCards(allowCreditCards: Boolean) {
-        this.isCreditCardsAllowed = allowCreditCards
+        allowedCardNetworks[paymentMethodType] = cardNetworks.toString()
     }
 
     /**
@@ -265,18 +191,21 @@ class GooglePayRequest : Parcelable {
             try {
                 val paymentMethod = JSONObject()
                     .put("type", key)
-                    .put("parameters", value)
-                    .put("tokenizationSpecification", tokenizationSpecifications[key])
+                    .put("parameters", JSONObject(value))
+                val tokenSpec = tokenizationSpecifications[key]
+                if (tokenSpec != null) {
+                    paymentMethod.put("tokenizationSpecification", JSONObject(tokenSpec))
+                }
 
                 if ("CARD" == key) {
                     val paymentMethodParams = paymentMethod.getJSONObject("parameters")
                     paymentMethodParams
                         .put("billingAddressRequired", isBillingAddressRequired)
                         .put("allowPrepaidCards", allowPrepaidCards)
-                        .put("allowCreditCards", isCreditCardsAllowed)
+                        .put("allowCreditCards", allowCreditCards)
                     try {
                         val billingAddressParameters =
-                            value["billingAddressParameters"] as JSONObject
+                            JSONObject(value)["billingAddressParameters"]
                         paymentMethodParams
                             .put("billingAddressParameters", billingAddressParameters)
                     } catch (ignored: JSONException) {
@@ -353,85 +282,35 @@ class GooglePayRequest : Parcelable {
      * @return Allowed payment methods for a given payment method type.
      */
     fun getAllowedPaymentMethod(type: String): JSONObject? {
-        return allowedPaymentMethods[type]
+        return allowedPaymentMethods[type]?.let {
+            JSONObject(it)
+        }
     }
 
     /**
      * @return Tokenization specification for a given payment method type.
      */
     fun getTokenizationSpecificationForType(type: String): JSONObject? {
-        return tokenizationSpecifications[type]
+        return tokenizationSpecifications[type]?.let {
+            JSONObject(it)
+        }
     }
 
     /**
      * @return Allowed authentication methods for a given payment method type.
      */
     fun getAllowedAuthMethodsForType(type: String): JSONArray? {
-        return allowedAuthMethods[type]
+        return allowedAuthMethods[type]?.let {
+            JSONArray(it)
+        }
     }
 
     /**
      * @return Allowed card networks for a given payment method type.
      */
     fun getAllowedCardNetworksForType(type: String): JSONArray? {
-        return allowedCardNetworks[type]
-    }
-
-    fun getEnvironment(): String? {
-        return environment
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeParcelable(transactionInfo, flags)
-        dest.writeByte((if (isEmailRequired) 1 else 0).toByte())
-        dest.writeByte((if (isPhoneNumberRequired) 1 else 0).toByte())
-        dest.writeByte((if (isBillingAddressRequired) 1 else 0).toByte())
-        dest.writeInt(billingAddressFormat)
-        dest.writeByte((if (isShippingAddressRequired) 1 else 0).toByte())
-        dest.writeParcelable(shippingAddressRequirements, flags)
-        dest.writeByte((if (allowPrepaidCards) 1 else 0).toByte())
-        dest.writeByte((if (isPayPalEnabled) 1 else 0).toByte())
-        dest.writeString(environment)
-        dest.writeString(googleMerchantName)
-        dest.writeString(countryCode)
-        dest.writeByte((if (isCreditCardsAllowed) 1 else 0).toByte())
-        dest.writeString(totalPriceLabel)
-    }
-
-    internal constructor(`in`: Parcel) {
-        transactionInfo = `in`.readParcelable(TransactionInfo::class.java.classLoader)
-        isEmailRequired = `in`.readByte().toInt() != 0
-        isPhoneNumberRequired = `in`.readByte().toInt() != 0
-        isBillingAddressRequired = `in`.readByte().toInt() != 0
-        billingAddressFormat = `in`.readInt()
-        isShippingAddressRequired = `in`.readByte().toInt() != 0
-        shippingAddressRequirements = `in`.readParcelable(
-            ShippingAddressRequirements::class.java.classLoader
-        )
-        allowPrepaidCards = `in`.readByte().toInt() != 0
-        isPayPalEnabled = `in`.readByte().toInt() != 0
-        environment = `in`.readString()
-        googleMerchantName = `in`.readString()
-        countryCode = `in`.readString()
-        isCreditCardsAllowed = `in`.readByte().toInt() != 0
-        totalPriceLabel = `in`.readString()
-    }
-
-    companion object {
-        @JvmField
-        val CREATOR: Parcelable.Creator<GooglePayRequest> =
-            object : Parcelable.Creator<GooglePayRequest> {
-                override fun createFromParcel(`in`: Parcel): GooglePayRequest {
-                    return GooglePayRequest(`in`)
-                }
-
-                override fun newArray(size: Int): Array<GooglePayRequest?> {
-                    return arrayOfNulls(size)
-                }
-            }
+        return allowedCardNetworks[type]?.let {
+            JSONArray(it)
+        }
     }
 }

@@ -169,7 +169,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
      * @param request  The [GooglePayRequest] containing options for the transaction.
      * @param callback [GooglePayPaymentAuthRequestCallback]
      */
-    @SuppressWarnings("LongMethod", "MaximumLineLength")
+    @SuppressWarnings("LongMethod")
     fun createPaymentAuthRequest(
         request: GooglePayRequest,
         callback: GooglePayPaymentAuthRequestCallback
