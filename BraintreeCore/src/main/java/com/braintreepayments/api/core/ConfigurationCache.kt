@@ -2,7 +2,6 @@ package com.braintreepayments.api.core
 
 import android.content.Context
 import android.util.Base64
-import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.sharedutils.BraintreeSharedPreferences
 import org.json.JSONException
 import java.util.concurrent.TimeUnit
@@ -11,14 +10,10 @@ internal class ConfigurationCache(
     private val sharedPreferences: BraintreeSharedPreferences
 ) {
 
-    fun getConfiguration(authorization: Authorization, configUrl: String): Configuration? =
-        getConfiguration(authorization, configUrl, System.currentTimeMillis())
-
-    @VisibleForTesting
     fun getConfiguration(
         authorization: Authorization,
         configUrl: String,
-        currentTimeMillis: Long
+        currentTimeMillis: Long = System.currentTimeMillis()
     ): Configuration? {
         val cacheKey = createCacheKey(authorization, configUrl)
         val timestampKey = "${cacheKey}_timestamp"
@@ -41,15 +36,8 @@ internal class ConfigurationCache(
     fun putConfiguration(
         configuration: Configuration,
         authorization: Authorization,
-        configUrl: String
-    ) = putConfiguration(configuration, authorization, configUrl, System.currentTimeMillis())
-
-    @VisibleForTesting
-    fun putConfiguration(
-        configuration: Configuration,
-        authorization: Authorization,
         configUrl: String,
-        currentTimeMillis: Long
+        currentTimeMillis: Long = System.currentTimeMillis()
     ) {
         val cacheKey = createCacheKey(authorization, configUrl)
         val timestampKey = "${cacheKey}_timestamp"
