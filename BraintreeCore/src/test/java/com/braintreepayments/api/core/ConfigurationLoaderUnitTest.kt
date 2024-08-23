@@ -1,6 +1,5 @@
 package com.braintreepayments.api.core
 
-import android.util.Base64
 import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
@@ -74,13 +73,13 @@ class ConfigurationLoaderUnitTest {
         httpResponseCallback.onResult(
             HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0)), null
         )
-        val cacheKey = Base64.encodeToString(
-            "https://example.com/config?configVersion=3bearer".toByteArray(),
-            0
-        )
 
         verify {
-            configurationCache.saveConfiguration(ofType(Configuration::class), cacheKey)
+            configurationCache.putConfiguration(
+                any<Configuration>(),
+                authorization,
+                "https://example.com/config"
+            )
         }
     }
 
@@ -154,13 +153,11 @@ class ConfigurationLoaderUnitTest {
 
     @Test
     fun loadConfiguration_whenCachedConfigurationAvailable_loadsConfigurationFromCache() {
-        val cacheKey = Base64.encodeToString(
-            "https://example.com/config?configVersion=3bearer".toByteArray(),
-            0
-        )
         every { authorization.configUrl } returns "https://example.com/config"
         every { authorization.bearer } returns "bearer"
-        every { configurationCache.getConfiguration(cacheKey) } returns Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN
+        every {
+            configurationCache.getConfiguration(authorization, "https://example.com/config")
+        } returns Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN)
 
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
         sut.loadConfiguration(authorization, callback)
