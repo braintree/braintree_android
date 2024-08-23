@@ -10,21 +10,31 @@ import io.mockk.slot
 import io.mockk.verify
 import org.json.JSONException
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class ConfigurationLoaderUnitTest {
-    private var configurationCache: ConfigurationCache = mockk(relaxed = true)
-    private var braintreeHttpClient: BraintreeHttpClient = mockk(relaxed = true)
-    private var callback: ConfigurationLoaderCallback = mockk(relaxed = true)
-    private var authorization: Authorization = mockk(relaxed = true)
+
+    private lateinit var configurationCache: ConfigurationCache
+    private lateinit var braintreeHttpClient: BraintreeHttpClient
+    private lateinit var callback: ConfigurationLoaderCallback
+    private lateinit var authorization: Authorization
+
+    @Before
+    fun beforeEach() {
+        configurationCache = mockk(relaxed = true)
+        braintreeHttpClient = mockk(relaxed = true)
+        callback = mockk(relaxed = true)
+        authorization = mockk(relaxed = true)
+    }
 
     @Test
     fun loadConfiguration_loadsConfigurationForTheCurrentEnvironment() {
-
         every { authorization.configUrl } returns "https://example.com/config"
+        every { configurationCache.getConfiguration(any(), any()) } returns null
 
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
         sut.loadConfiguration(authorization, callback)
@@ -53,6 +63,7 @@ class ConfigurationLoaderUnitTest {
 
     @Test
     fun loadConfiguration_savesFetchedConfigurationToCache() {
+        every { configurationCache.getConfiguration(any(), any()) } returns null
         every { authorization.configUrl } returns "https://example.com/config"
         every { authorization.bearer } returns "bearer"
 
@@ -78,14 +89,16 @@ class ConfigurationLoaderUnitTest {
             configurationCache.putConfiguration(
                 any<Configuration>(),
                 authorization,
-                "https://example.com/config"
+                "https://example.com/config?configVersion=3"
             )
         }
     }
 
     @Test
     fun loadConfiguration_onJSONParsingError_forwardsExceptionToErrorResponseListener() {
+        every { configurationCache.getConfiguration(any(), any()) } returns null
         every { authorization.configUrl } returns "https://example.com/config"
+
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
         sut.loadConfiguration(authorization, callback)
 
@@ -108,7 +121,9 @@ class ConfigurationLoaderUnitTest {
 
     @Test
     fun loadConfiguration_onHttpError_forwardsExceptionToErrorResponseListener() {
+        every { configurationCache.getConfiguration(any(), any()) } returns null
         every { authorization.configUrl } returns "https://example.com/config"
+
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
         sut.loadConfiguration(authorization, callback)
 
