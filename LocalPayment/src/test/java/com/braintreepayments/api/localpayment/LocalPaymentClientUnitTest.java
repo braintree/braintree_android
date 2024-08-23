@@ -79,7 +79,7 @@ public class LocalPaymentClientUnitTest {
             new LocalPaymentClient(braintreeClient, dataCollector, localPaymentApi);
         sut.createPaymentAuthRequest(getIdealLocalPaymentRequest(), localPaymentAuthCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED,new AnalyticsEventParams());
     }
 
     @Test
@@ -369,7 +369,7 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         String approvalUrl = "https://sample.com/approval?token=sample-token";
         LocalPaymentAuthRequestParams
-            transaction = new LocalPaymentAuthRequestParams(request, approvalUrl, null);
+            transaction = new LocalPaymentAuthRequestParams(request, approvalUrl, "");
 
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
             .createPaymentMethodSuccess(transaction)
@@ -380,7 +380,7 @@ public class LocalPaymentClientUnitTest {
                 localPaymentApi);
         sut.createPaymentAuthRequest(getIdealLocalPaymentRequest(), localPaymentAuthCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED,new AnalyticsEventParams());
         verify(braintreeClient).sendAnalyticsEvent(
             LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED,
             new AnalyticsEventParams()
@@ -407,7 +407,7 @@ public class LocalPaymentClientUnitTest {
                 localPaymentApi);
         sut.createPaymentAuthRequest(getIdealLocalPaymentRequest(), localPaymentAuthCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED);
+        verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED,new AnalyticsEventParams());
         AnalyticsEventParams params = new AnalyticsEventParams();
         params.setPayPalContextId("some-paypal-context-id");
         verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED, params);
