@@ -2,9 +2,12 @@
 
 ## unreleased
 * All Modules
-  * Upgrade Gradle version to `8.5.2`
+<<<<<<< Updated upstream
   * Upgrade `compileSdkVersion` and `targetSdkVersion` to API 35
   * Bump target Java version to Java 17
+=======
+  * Upgrade Gradle version to `8.5.2`
+>>>>>>> Stashed changes
 * BraintreeCore
   * Update `endpoint` syntax sent to FPTI for 3D Secure and Venmo flows
 * ThreeDSecure
@@ -21,12 +24,6 @@
         * Change `PayPalLineItemKind` to an enum
         * Rename `PayPalLineItemKind.KIND_CREDIT` to `CREDIT`
         * Rename `PayPalLineItemKind.KIND_DEBIT` to `DEBIT`
-        * Update `ThreeDSSecureInfo.isLiabilityShifted()` to `ThreeDSSecureInfo.getLiabilityShifted()`
-        * Update `ThreeDSSecureInfo.isLiabilityShiftPossible()` to `ThreeDSSecureInfo.getLiabilityShiftPossible()`
-        * Update `ThreeDSSecureInfo.wasVerified()` to `ThreeDSSecureInfo.getWasVerified()`
-        * Update `ThreeDSecurePaymentAuthResult.getThreeSecureResult()` to `ThreeDSecurePaymentAuthResult.getThreeDSecureParams()`
-        * Update `ThreeDSecurePaymentAuthResult.getJWT()` to `ThreeDSecurePaymentAuthResult.getJwt()`
-        * Change `ThreeDSecureShippingMethod` to an enum
 
 ## 5.0.0-beta1 (2024-07-23)
 

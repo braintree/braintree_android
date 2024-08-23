@@ -35,7 +35,7 @@ public class LocalPaymentClientTest {
         address.setLocality("Den Haag");
         address.setPostalCode("2585 GJ");
 
-        LocalPaymentRequest request = new LocalPaymentRequest();
+        LocalPaymentRequest request = new LocalPaymentRequest(false);
         request.setPaymentType("ideal");
         request.setAmount("1.10");
         request.setAddress(address);

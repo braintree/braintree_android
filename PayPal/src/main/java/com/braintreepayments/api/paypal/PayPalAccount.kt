@@ -24,6 +24,7 @@ import org.json.JSONObject
  * @property paymentType Payment type from original PayPal request. Either "billing-agreement" or
  * "single-payment"
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 data class PayPalAccount(
     val clientMetadataId: String?,
     val urlResponseData: JSONObject,

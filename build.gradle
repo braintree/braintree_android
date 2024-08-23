@@ -7,7 +7,7 @@ buildscript {
         }
     }
 
-    def sdkTargetJavaVersion = JavaVersion.VERSION_11
+    def sdkTargetJavaVersion = JavaVersion.VERSION_17
 
     ext.versions = [
             "javaSourceCompatibility": sdkTargetJavaVersion,
@@ -51,11 +51,11 @@ allprojects {
 version '5.0.0-beta2-SNAPSHOT'
 group 'com.braintreepayments'
 ext {
-    compileSdkVersion = 34
+    compileSdkVersion = 35
     minSdkVersion = 23
     minSdkVersionPayPalMessaging = 23
     versionCode = 194
-    targetSdkVersion = 34
+    targetSdkVersion = 35
     versionName = version
 }
 

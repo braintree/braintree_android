@@ -30,16 +30,6 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
-
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
-    kotlin {
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of("11"))
-        }
-    }
 }
 
 dependencies {
@@ -50,11 +40,9 @@ dependencies {
     testImplementation libs.androidx.test.core
     testImplementation libs.mockito.core
     testImplementation libs.robolectric
-    testImplementation libs.mockito.core
 
     androidTestImplementation libs.androidx.test.runner
     androidTestImplementation libs.androidx.junit
-    androidTestImplementation libs.androidx.appcompat
 }
 
 // region signing and publishing
