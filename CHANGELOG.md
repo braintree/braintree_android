@@ -10,6 +10,8 @@
 * ThreeDSecure
   * Update `ThreeDSecureActivity` theme attributes to prevent the Action Bar title from displaying and enforce transparency properly with AppCompat theme attributes
 * Breaking Changes
+    * All Modules
+      * `countryCodeAlpha2` now returns a 2 character country code instead of a 3 character country code 
     * PayPal
         * Remove `appLinkEnabled` from `PayPalRequest` as Android app links are now required
         * Update `PayPalCreditFinancing.hasPayerAcceptance()` to `getHasPayerAcceptance()` (Java)
