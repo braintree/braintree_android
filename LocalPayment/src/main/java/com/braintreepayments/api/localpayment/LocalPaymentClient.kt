@@ -67,7 +67,7 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
         var exception: Exception? = null
 
         if (callback == null) {
-            throw RuntimeException("A LocalPaymentAuthRequestCallback is required.")
+            throw IllegalArgumentException("A LocalPaymentAuthRequestCallback is required.")
         }
 
         if (request == null) {
