@@ -9,8 +9,8 @@ import androidx.annotation.VisibleForTesting;
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class BraintreeSharedPreferences {
 
-    private static final String BRAINTREE_PREFERENCES_FILE_KEY =
-            "com.braintreepayments.api.SHARED_PREFERENCES";
+    private static final String PREFERENCES_FILE_KEY =
+        "com.braintreepayments.api.SHARED_PREFERENCES";
     private static volatile BraintreeSharedPreferences INSTANCE;
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
@@ -19,24 +19,19 @@ public class BraintreeSharedPreferences {
             synchronized (BraintreeSharedPreferences.class) {
                 // double check that instance was not created in another thread
                 if (INSTANCE == null) {
-                    INSTANCE = new BraintreeSharedPreferences(context, BRAINTREE_PREFERENCES_FILE_KEY);
+                    INSTANCE =
+                        new BraintreeSharedPreferences(createSharedPreferencesInstance(context));
                 }
             }
         }
         return INSTANCE;
     }
 
-    private static SharedPreferences createSharedPreferencesInstance(Context context, String preferencesFileKey) {
-        return context.getSharedPreferences(preferencesFileKey, Context.MODE_PRIVATE);
+    private static SharedPreferences createSharedPreferencesInstance(Context context) {
+        return context.getSharedPreferences(PREFERENCES_FILE_KEY, Context.MODE_PRIVATE);
     }
 
     private final SharedPreferences sharedPreferences;
-
-    @VisibleForTesting
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    public BraintreeSharedPreferences(Context context, String preferencesFileKey) {
-        this(createSharedPreferencesInstance(context, preferencesFileKey));
-    }
 
     @VisibleForTesting
     BraintreeSharedPreferences(SharedPreferences sharedPreferences) {
