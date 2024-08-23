@@ -2,6 +2,7 @@ package com.braintreepayments.api.core
 
 import android.content.Context
 import android.util.Base64
+import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.sharedutils.BraintreeSharedPreferences
 import org.json.JSONException
 import java.util.concurrent.TimeUnit
@@ -10,11 +11,28 @@ internal class ConfigurationCache(
     private val sharedPreferences: BraintreeSharedPreferences
 ) {
 
-    fun getConfiguration(authorization: Authorization, configUrl: String): Configuration? {
+    fun getConfiguration(authorization: Authorization, configUrl: String): Configuration? =
+        getConfiguration(authorization, configUrl, System.currentTimeMillis())
+
+    @VisibleForTesting
+    fun getConfiguration(
+        authorization: Authorization,
+        configUrl: String,
+        currentTimeMillis: Long
+    ): Configuration? {
         val cacheKey = createCacheKey(authorization, configUrl)
-        val cachedConfigResponse = getConfiguration(cacheKey) ?: return null
+        val timestampKey = "${cacheKey}_timestamp"
+
+        var configurationAsString: String? = null
+        if (sharedPreferences.containsKey(timestampKey)) {
+            val timeInCache = currentTimeMillis - sharedPreferences.getLong(timestampKey)
+            if (timeInCache < TIME_TO_LIVE) {
+                configurationAsString = sharedPreferences.getString(cacheKey, "")
+            }
+        }
+
         return try {
-            Configuration.fromJson(cachedConfigResponse)
+            configurationAsString?.let { Configuration.fromJson(it) }
         } catch (e: JSONException) {
             null
         }
@@ -24,35 +42,16 @@ internal class ConfigurationCache(
         configuration: Configuration,
         authorization: Authorization,
         configUrl: String
-    ) {
-        val cacheKey = createCacheKey(authorization, configUrl)
-        saveConfiguration(configuration, cacheKey)
-    }
+    ) = putConfiguration(configuration, authorization, configUrl, System.currentTimeMillis())
 
-    fun getConfiguration(cacheKey: String): String? {
-        return getConfiguration(cacheKey, System.currentTimeMillis())
-    }
-
-    fun getConfiguration(cacheKey: String, currentTimeMillis: Long): String? {
-        val timestampKey = "${cacheKey}_timestamp"
-        if (sharedPreferences.containsKey(timestampKey)) {
-            val timeInCache = currentTimeMillis - sharedPreferences.getLong(timestampKey)
-            if (timeInCache < TIME_TO_LIVE) {
-                return sharedPreferences.getString(cacheKey, "")
-            }
-        }
-        return null
-    }
-
-    fun saveConfiguration(configuration: Configuration, cacheKey: String?) {
-        saveConfiguration(configuration, cacheKey, System.currentTimeMillis())
-    }
-
-    fun saveConfiguration(
+    @VisibleForTesting
+    fun putConfiguration(
         configuration: Configuration,
-        cacheKey: String?,
+        authorization: Authorization,
+        configUrl: String,
         currentTimeMillis: Long
     ) {
+        val cacheKey = createCacheKey(authorization, configUrl)
         val timestampKey = "${cacheKey}_timestamp"
         sharedPreferences.putStringAndLong(
             cacheKey,
@@ -65,10 +64,6 @@ internal class ConfigurationCache(
     companion object {
         private val TIME_TO_LIVE = TimeUnit.MINUTES.toMillis(5)
 
-        private fun createCacheKey(authorization: Authorization, configUrl: String): String {
-            return Base64.encodeToString("$configUrl${authorization.bearer}".toByteArray(), 0)
-        }
-
         @Volatile
         private var INSTANCE: ConfigurationCache? = null
         fun getInstance(context: Context): ConfigurationCache =
@@ -77,5 +72,9 @@ internal class ConfigurationCache(
                     BraintreeSharedPreferences.getInstance(context)
                 ).also { INSTANCE = it }
             }
+
+        private fun createCacheKey(authorization: Authorization, configUrl: String): String {
+            return Base64.encodeToString("$configUrl${authorization.bearer}".toByteArray(), 0)
+        }
     }
 }
