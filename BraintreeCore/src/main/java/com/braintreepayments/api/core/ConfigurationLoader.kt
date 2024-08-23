@@ -2,7 +2,6 @@ package com.braintreepayments.api.core
 
 import android.content.Context
 import android.net.Uri
-import android.util.Base64
 import com.braintreepayments.api.sharedutils.HttpMethod
 import org.json.JSONException
 
@@ -26,8 +25,8 @@ internal class ConfigurationLoader internal constructor(
             .appendQueryParameter("configVersion", "3")
             .build()
             .toString()
-        val cachedConfig = getCachedConfiguration(authorization, configUrl)
 
+        val cachedConfig = configurationCache.getConfiguration(authorization, configUrl)
         cachedConfig?.let {
             callback.onResult(cachedConfig, null, null)
         } ?: run {
@@ -41,7 +40,7 @@ internal class ConfigurationLoader internal constructor(
                 if (responseBody != null) {
                     try {
                         val configuration = Configuration.fromJson(responseBody)
-                        saveConfigurationToCache(configuration, authorization, configUrl)
+                        configurationCache.putConfiguration(configuration, authorization, configUrl)
                         callback.onResult(configuration, null, timing)
                     } catch (jsonException: JSONException) {
                         callback.onResult(null, jsonException, null)
@@ -55,34 +54,6 @@ internal class ConfigurationLoader internal constructor(
                     }
                 }
             }
-        }
-    }
-
-    private fun saveConfigurationToCache(
-        configuration: Configuration,
-        authorization: Authorization,
-        configUrl: String
-    ) {
-        val cacheKey = createCacheKey(authorization, configUrl)
-        configurationCache.saveConfiguration(configuration, cacheKey)
-    }
-
-    private fun getCachedConfiguration(
-        authorization: Authorization,
-        configUrl: String
-    ): Configuration? {
-        val cacheKey = createCacheKey(authorization, configUrl)
-        val cachedConfigResponse = configurationCache.getConfiguration(cacheKey) ?: return null
-        return try {
-            Configuration.fromJson(cachedConfigResponse)
-        } catch (e: JSONException) {
-            null
-        }
-    }
-
-    companion object {
-        private fun createCacheKey(authorization: Authorization, configUrl: String): String {
-            return Base64.encodeToString("$configUrl${authorization.bearer}".toByteArray(), 0)
         }
     }
 }
