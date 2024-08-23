@@ -26,7 +26,7 @@ public class HttpClientTest {
         HttpClient sut = new HttpClient(null, new BaseHttpResponseParser());
 
         HttpRequest httpRequest = new HttpRequest()
-                .method("GET")
+                .method(HttpMethod.GET)
                 .baseUrl("https://bad.endpoint")
                 .path("bad/path");
 

@@ -1,18 +1,19 @@
 package com.braintreepayments.api.core
 
 import android.util.Base64
-import com.braintreepayments.api.testutils.Fixtures
-import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
-import io.mockk.*
-import org.robolectric.RobolectricTestRunner
+import com.braintreepayments.api.testutils.Fixtures
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import org.json.JSONException
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.Exception
+import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class ConfigurationLoaderUnitTest {
@@ -42,7 +43,6 @@ class ConfigurationLoaderUnitTest {
 
         val expectedConfigUrl = "https://example.com/config?configVersion=3"
         assertEquals(expectedConfigUrl, httpRequestSlot.captured.path)
-        assertEquals(HttpClient.RETRY_MAX_3_TIMES, httpRequestSlot.captured.retryStrategy)
 
         val httpResponseCallback = callbackSlot.captured
         httpResponseCallback.onResult(
