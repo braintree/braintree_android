@@ -21,8 +21,7 @@ class ConfigurationCacheUnitTest {
     @Before
     fun beforeEach() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        braintreeSharedPreferences =
-            BraintreeSharedPreferences(context, "ConfigurationCacheUnitTest")
+        braintreeSharedPreferences = BraintreeSharedPreferences.getInstance(context)
     }
 
     @After
