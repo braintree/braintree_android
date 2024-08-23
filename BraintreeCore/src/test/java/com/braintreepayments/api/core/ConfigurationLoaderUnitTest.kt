@@ -89,7 +89,8 @@ class ConfigurationLoaderUnitTest {
             configurationCache.putConfiguration(
                 any<Configuration>(),
                 authorization,
-                "https://example.com/config?configVersion=3"
+                "https://example.com/config?configVersion=3",
+                any()
             )
         }
     }
