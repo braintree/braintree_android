@@ -141,6 +141,7 @@
         * Move `ThreeDSecureInfo` to `three-d-secure` module
         * Add `CardResult` object
         * Change `CardTokenizeCallback` parameters
+        * Change `BinType` from String to enum
     * SEPA Direct Debit
         * Update package name to `com.braintreepayments.api.sepadirectdebit`
         * Remove `SEPADirectDebitLifecycleObserver` and `SEPADirectDebitListener`
