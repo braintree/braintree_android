@@ -5,5 +5,5 @@ data class CreateMandateResult internal constructor(
     val ibanLastFour: String,
     val customerId: String,
     val bankReferenceToken: String,
-    val mandateType: SEPADirectDebitMandateType?
+    val mandateType: SEPADirectDebitMandateType
 )

@@ -101,7 +101,10 @@ internal class SEPADirectDebitApi(private val braintreeClient: BraintreeClient) 
         val mandateType = sepaDebitAccount.getString("mandateType")
 
         return CreateMandateResult(
-            approvalUrl, ibanLastFour, customerId, bankReferenceToken,
+            approvalUrl,
+            ibanLastFour,
+            customerId,
+            bankReferenceToken,
             SEPADirectDebitMandateType.valueOf(mandateType)
         )
     }
