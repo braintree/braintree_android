@@ -3,24 +3,22 @@ package com.braintreepayments.api.core
 import android.content.Context
 import android.util.Base64
 import com.braintreepayments.api.sharedutils.BraintreeSharedPreferences
+import com.braintreepayments.api.sharedutils.Timestamper
 import org.json.JSONException
 import java.util.concurrent.TimeUnit
 
 internal class ConfigurationCache(
-    private val sharedPreferences: BraintreeSharedPreferences
+    private val sharedPreferences: BraintreeSharedPreferences,
+    private val timestamper: Timestamper = Timestamper()
 ) {
 
-    fun getConfiguration(
-        authorization: Authorization,
-        configUrl: String,
-        currentTimeMillis: Long = System.currentTimeMillis()
-    ): Configuration? {
+    fun getConfiguration(authorization: Authorization, configUrl: String): Configuration? {
         val cacheKey = createCacheKey(authorization, configUrl)
         val timestampKey = "${cacheKey}_timestamp"
 
         var configurationAsString: String? = null
         if (sharedPreferences.containsKey(timestampKey)) {
-            val timeInCache = currentTimeMillis - sharedPreferences.getLong(timestampKey)
+            val timeInCache = timestamper.now - sharedPreferences.getLong(timestampKey)
             if (timeInCache < TIME_TO_LIVE) {
                 configurationAsString = sharedPreferences.getString(cacheKey, "")
             }
@@ -36,8 +34,7 @@ internal class ConfigurationCache(
     fun putConfiguration(
         configuration: Configuration,
         authorization: Authorization,
-        configUrl: String,
-        currentTimeMillis: Long = System.currentTimeMillis()
+        configUrl: String
     ) {
         val cacheKey = createCacheKey(authorization, configUrl)
         val timestampKey = "${cacheKey}_timestamp"
@@ -45,7 +42,7 @@ internal class ConfigurationCache(
             cacheKey,
             configuration.toJson(),
             timestampKey,
-            currentTimeMillis
+            timestamper.now
         )
     }
 
