@@ -1,6 +1,7 @@
 package com.braintreepayments.api.sharedutils;
 
 import androidx.annotation.RestrictTo;
+import androidx.annotation.WorkerThread;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -38,6 +39,7 @@ public class SynchronousHttpClient {
         this.socketFactory = socketFactory;
     }
 
+    @WorkerThread
     public HttpResponse request(HttpRequest httpRequest) throws Exception {
         if (httpRequest.getPath() == null) {
             throw new IllegalArgumentException("Path cannot be null");
