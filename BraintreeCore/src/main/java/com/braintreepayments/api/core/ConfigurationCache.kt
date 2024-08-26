@@ -3,13 +3,13 @@ package com.braintreepayments.api.core
 import android.content.Context
 import android.util.Base64
 import com.braintreepayments.api.sharedutils.BraintreeSharedPreferences
-import com.braintreepayments.api.sharedutils.Timestamper
+import com.braintreepayments.api.sharedutils.Time
 import org.json.JSONException
 import java.util.concurrent.TimeUnit
 
 internal class ConfigurationCache(
     private val sharedPreferences: BraintreeSharedPreferences,
-    private val timestamper: Timestamper = Timestamper()
+    private val time: Time = Time()
 ) {
 
     fun getConfiguration(authorization: Authorization, configUrl: String): Configuration? {
@@ -18,7 +18,7 @@ internal class ConfigurationCache(
 
         var configurationAsString: String? = null
         if (sharedPreferences.containsKey(timestampKey)) {
-            val timeInCache = timestamper.now - sharedPreferences.getLong(timestampKey)
+            val timeInCache = time.now - sharedPreferences.getLong(timestampKey)
             if (timeInCache < TIME_TO_LIVE) {
                 configurationAsString = sharedPreferences.getString(cacheKey, "")
             }
@@ -42,7 +42,7 @@ internal class ConfigurationCache(
             cacheKey,
             configuration.toJson(),
             timestampKey,
-            timestamper.now
+            time.now
         )
     }
 
