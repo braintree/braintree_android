@@ -1,15 +1,20 @@
 package com.braintreepayments.api.core
 
-import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.sharedutils.HttpRequest
+import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
+import com.braintreepayments.api.sharedutils.Scheduler
+import com.braintreepayments.api.sharedutils.SynchronousHttpClient
 import com.braintreepayments.api.sharedutils.TLSSocketFactory
+import com.braintreepayments.api.sharedutils.ThreadScheduler
+import java.lang.ref.WeakReference
 import java.util.Locale
 import javax.net.ssl.SSLException
 
 internal class BraintreeGraphQLClient(
-    private val httpClient: HttpClient = createDefaultHttpClient()
+    private val httpClient: SynchronousHttpClient = createDefaultHttpClient(),
+    private val threadScheduler: Scheduler = ThreadScheduler(1)
 ) {
 
     fun post(
@@ -30,10 +35,12 @@ internal class BraintreeGraphQLClient(
             .data(data)
             .baseUrl(configuration.graphQLUrl)
             .addHeader("User-Agent", "braintree/android/" + BuildConfig.VERSION_NAME)
-            .addHeader("Authorization",
-                String.format(Locale.US, "Bearer %s", authorization.bearer))
+            .addHeader(
+                "Authorization",
+                String.format(Locale.US, "Bearer %s", authorization.bearer)
+            )
             .addHeader("Braintree-Version", GraphQLConstants.Headers.API_VERSION)
-        httpClient.sendRequest(request, callback)
+        sendRequestInBackground(request, callback)
     }
 
     fun post(
@@ -53,10 +60,12 @@ internal class BraintreeGraphQLClient(
             .data(data)
             .baseUrl(configuration.graphQLUrl)
             .addHeader("User-Agent", "braintree/android/" + BuildConfig.VERSION_NAME)
-            .addHeader("Authorization",
-                String.format(Locale.US, "Bearer %s", authorization.bearer))
+            .addHeader(
+                "Authorization",
+                String.format(Locale.US, "Bearer %s", authorization.bearer)
+            )
             .addHeader("Braintree-Version", GraphQLConstants.Headers.API_VERSION)
-        httpClient.sendRequest(request, callback)
+        sendRequestInBackground(request, callback)
     }
 
     @Throws(Exception::class)
@@ -76,19 +85,39 @@ internal class BraintreeGraphQLClient(
             .data(data)
             .baseUrl(configuration.graphQLUrl)
             .addHeader("User-Agent", "braintree/android/" + BuildConfig.VERSION_NAME)
-            .addHeader("Authorization",
-                String.format(Locale.US, "Bearer %s", authorization.bearer))
+            .addHeader(
+                "Authorization",
+                String.format(Locale.US, "Bearer %s", authorization.bearer)
+            )
             .addHeader("Braintree-Version", GraphQLConstants.Headers.API_VERSION)
-        return httpClient.sendRequest(request)
+        return httpClient.request(request).body ?: ""
+    }
+
+    private fun sendRequestInBackground(request: HttpRequest, callback: NetworkResponseCallback) {
+        val cbRef = WeakReference(callback)
+        threadScheduler.runOnBackground {
+            var response: HttpResponse? = null
+            var error: Exception? = null
+            try {
+                response = httpClient.request(request)
+            } catch (e: Exception) {
+                error = e
+            }
+
+            threadScheduler.runOnMain {
+                val cb = cbRef.get()
+                cb?.onResult(response, error)
+            }
+        }
     }
 
     companion object {
 
         @Throws(SSLException::class)
-        private fun createDefaultHttpClient(): HttpClient {
+        private fun createDefaultHttpClient(): SynchronousHttpClient {
             val socketFactory =
                 TLSSocketFactory(TLSCertificatePinning.createCertificateInputStream())
-            return HttpClient(socketFactory, BraintreeGraphQLResponseParser())
+            return SynchronousHttpClient(socketFactory, BraintreeGraphQLResponseParser())
         }
     }
 }

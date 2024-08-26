@@ -1,6 +1,5 @@
 package com.braintreepayments.api.core
 
-import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.sharedutils.HttpRequest
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
