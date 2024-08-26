@@ -62,10 +62,6 @@ internal class ConfigurationLoader internal constructor(
         configUrl: String,
         authorization: Authorization
     ): ConfigurationLoaderResponse {
-        var configuration: Configuration? = null
-        var error: Exception? = null
-        var timing: HttpResponseTiming? = null
-
         val request = InternalHttpRequest(method = HttpMethod.GET, path = configUrl)
         try {
             val response = httpClient.sendRequestSync(
@@ -74,23 +70,18 @@ internal class ConfigurationLoader internal constructor(
                 authorization = authorization,
             )
 
-            // capture timing stats
-            timing = response.timing
-
             // parse configuration
-            configuration = response.body?.let { Configuration.fromJson(it) }
+            val configuration = response.body?.let { Configuration.fromJson(it) }
 
             // save configuration to cache (if present)
             configuration?.let { configurationCache.putConfiguration(it, authorization, configUrl) }
-        } catch (loadConfigError: Exception) {
-            error = createConfigurationException(loadConfigError)
-        }
-        return ConfigurationLoaderResponse(configuration, error, timing)
-    }
 
-    private fun createConfigurationException(cause: Exception): ConfigurationException {
-        val errorMessage = "Request for configuration has failed: ${cause.message}"
-        return ConfigurationException(errorMessage, cause)
+            val timing = response.timing
+            return ConfigurationLoaderResponse(configuration = configuration, timing = timing)
+        } catch (error: Exception) {
+            val errorMessage = "Request for configuration has failed: ${error.message}"
+            return ConfigurationLoaderResponse(error = ConfigurationException(errorMessage, error))
+        }
     }
 
     companion object {
