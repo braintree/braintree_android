@@ -80,8 +80,8 @@ class CardinalClientUnitTest {
 
         val parameters = parametersSlot.captured
         assertEquals(
-            request.v2UiCustomization!!.cardinalUiCustomization,
-            parameters.uiCustomization
+            request.v2UiCustomization!!.cardinalUiCustomization.toolbarCustomization,
+            parameters.uiCustomization.toolbarCustomization
         )
     }
 

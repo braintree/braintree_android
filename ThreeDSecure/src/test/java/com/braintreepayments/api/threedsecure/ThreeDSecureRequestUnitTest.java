@@ -67,8 +67,8 @@ public class ThreeDSecureRequestUnitTest {
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
         v2UiCustomization.setLabelCustomization(labelCustomization);
         v2UiCustomization.setTextBoxCustomization(textBoxCustomization);
-        v2UiCustomization.setButtonCustomization(buttonCustomization,
-                ThreeDSecureV2UiCustomization.BUTTON_TYPE_VERIFY);
+        v2UiCustomization.setButtonCustomization(buttonCustomization);
+        v2UiCustomization.setButtonType(ThreeDSecureV2ButtonType.BUTTON_TYPE_VERIFY);
         v2UiCustomization.setToolbarCustomization(toolbarCustomization);
 
         Map<String, String> customFields = new HashMap<>();
