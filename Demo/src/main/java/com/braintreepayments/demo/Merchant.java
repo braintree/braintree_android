@@ -24,26 +24,28 @@ public class Merchant {
             public void success(ClientToken clientToken, Response response) {
                 String token = clientToken.getValue();
                 if (TextUtils.isEmpty(token)) {
-                    listener.onResult(null, new Exception("Client token was empty"));
+                    listener.onResult(new FetchClientTokenResult.Error(
+                        new Exception("Client token was empty")
+                    ));
                 } else {
-                    listener.onResult(token, null);
+                    listener.onResult(new FetchClientTokenResult.Success(token));
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
                 if (error.getResponse() == null) {
-                    listener.onResult(null, error);
+                    listener.onResult(new FetchClientTokenResult.Error(new Exception(error)));
                 } else {
                     int responseStatus = error.getResponse().getStatus();
                     String responseBody = error.getResponse().getBody().toString();
 
                     String errorFormat =
-                            "Unable to get a client token. Response Code: %d Response body: %s";
+                        "Unable to get a client token. Response Code: %d Response body: %s";
                     String errorMessage = String.format(
-                            Locale.US, errorFormat, responseStatus, responseBody);
+                        Locale.US, errorFormat, responseStatus, responseBody);
 
-                    listener.onResult(null, new Exception(errorMessage));
+                    listener.onResult(new FetchClientTokenResult.Error(new Exception(errorMessage)));
                 }
             }
         });

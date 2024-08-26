@@ -24,8 +24,6 @@ import retrofit.client.Response;
 
 public class CreateTransactionFragment extends Fragment {
 
-    public static final String EXTRA_PAYMENT_METHOD_NONCE = "nonce";
-
     private ProgressBar loadingSpinner;
 
     @Override
@@ -58,7 +56,7 @@ public class CreateTransactionFragment extends Fragment {
             @Override
             public void success(Transaction transaction, Response response) {
                 if (transaction.getMessage() != null &&
-                        transaction.getMessage().startsWith("created")) {
+                    transaction.getMessage().startsWith("created")) {
                     setStatus(R.string.transaction_complete);
                     setMessage(transaction.getMessage());
                 } else {
@@ -74,9 +72,13 @@ public class CreateTransactionFragment extends Fragment {
             @Override
             public void failure(RetrofitError error) {
                 setStatus(R.string.transaction_failed);
-                setMessage("Unable to create a transaction. Response Code: " +
+                if (error.getResponse() != null) {
+                    setMessage("Unable to create a transaction. Response Code: " +
                         error.getResponse().getStatus() + " Response body: " +
                         error.getResponse().getBody());
+                } else {
+                    setMessage("Unable to create a transaction. Error: " + error);
+                }
             }
         };
 
@@ -86,14 +88,11 @@ public class CreateTransactionFragment extends Fragment {
         TransactionRequest transactionRequest;
         if (Settings.isThreeDSecureEnabled(activity)) {
             String threeDSecureMerchantId = Settings.getThreeDSecureMerchantAccountId(activity);
-            transactionRequest = new TransactionRequest(amount, nonceString, threeDSecureMerchantId);
-
-            if (Settings.isThreeDSecureRequired(activity)) {
-                transactionRequest.setThreeDSecureRequired(true);
-            }
+            boolean threeDSecureRequired = Settings.isThreeDSecureRequired(activity);
+            transactionRequest = new TransactionRequest(amount, nonceString, threeDSecureMerchantId, threeDSecureRequired);
         } else {
             String merchantAccountId = Settings.getMerchantAccountId(activity);
-            transactionRequest = new TransactionRequest(amount, nonceString, merchantAccountId);
+            transactionRequest = new TransactionRequest(amount, nonceString, merchantAccountId, false);
         }
 
         DemoApplication.getApiClient(activity).createTransaction(transactionRequest, callback);
