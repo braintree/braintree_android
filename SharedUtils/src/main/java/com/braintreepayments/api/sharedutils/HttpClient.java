@@ -13,7 +13,7 @@ public class HttpClient {
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public HttpClient(SSLSocketFactory socketFactory, HttpResponseParser httpResponseParser) {
-        this(new SynchronousHttpClient(socketFactory, httpResponseParser), new ThreadScheduler());
+        this(new SynchronousHttpClient(socketFactory, httpResponseParser), new ThreadScheduler(1));
     }
 
     @VisibleForTesting
@@ -23,8 +23,8 @@ public class HttpClient {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    public String sendRequest(HttpRequest request) throws Exception {
-        return syncHttpClient.request(request).getBody();
+    public HttpResponse sendRequest(HttpRequest request) throws Exception {
+        return syncHttpClient.request(request);
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)

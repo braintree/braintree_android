@@ -79,7 +79,7 @@ internal class BraintreeGraphQLClient(
             .addHeader("Authorization",
                 String.format(Locale.US, "Bearer %s", authorization.bearer))
             .addHeader("Braintree-Version", GraphQLConstants.Headers.API_VERSION)
-        return httpClient.sendRequest(request)
+        return httpClient.sendRequest(request).body ?: ""
     }
 
     companion object {
