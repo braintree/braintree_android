@@ -1,62 +1,79 @@
 package com.braintreepayments.api.core
 
-import com.braintreepayments.api.testutils.Fixtures
-import com.braintreepayments.api.core.Configuration.Companion.fromJson
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.sharedutils.BraintreeSharedPreferences
-import org.robolectric.RobolectricTestRunner
-import io.mockk.*
+import com.braintreepayments.api.sharedutils.Time
+import com.braintreepayments.api.testutils.Fixtures
+import io.mockk.every
+import io.mockk.mockk
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
 class ConfigurationCacheUnitTest {
 
-    private var braintreeSharedPreferences: BraintreeSharedPreferences = mockk(relaxed = true)
+    private lateinit var time: Time
+    private lateinit var braintreeSharedPreferences: BraintreeSharedPreferences
+
+    @Before
+    fun beforeEach() {
+        time = mockk()
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        braintreeSharedPreferences = BraintreeSharedPreferences.getInstance(context)
+    }
+
+    @After
+    fun afterEach() {
+        braintreeSharedPreferences.clearSharedPreferences()
+    }
 
     @Test
-    fun saveConfiguration_savesConfigurationInSharedPrefs() {
-        val configuration = fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
-        val sut = ConfigurationCache(braintreeSharedPreferences)
-        sut.saveConfiguration(configuration, "cacheKey", 123L)
-        verify {
-            braintreeSharedPreferences.putStringAndLong(
-                "cacheKey",
-                configuration.toJson(),
-                "cacheKey_timestamp",
-                123L
-            )
-        }
+    fun getConfiguration_returnsReturnsNullByDefault() {
+        val sut = ConfigurationCache(braintreeSharedPreferences, time)
+
+        val authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY)
+        val configUrl = "https://sample.com/url"
+        every { time.currentTime } returns TimeUnit.MINUTES.toMillis(20)
+
+        assertNull(sut.getConfiguration(authorization, configUrl))
     }
 
     @Test
     fun getConfiguration_returnsConfigurationFromSharedPrefs() {
-        val configuration = fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
-        every { braintreeSharedPreferences.containsKey("cacheKey_timestamp") } returns true
-        every { braintreeSharedPreferences.getLong("cacheKey_timestamp") } returns 0L
-        every { braintreeSharedPreferences.getString("cacheKey", "") } returns configuration.toJson()
+        val sut = ConfigurationCache(braintreeSharedPreferences, time)
 
-        val sut = ConfigurationCache(braintreeSharedPreferences)
-        sut.saveConfiguration(configuration, "cacheKey", 0)
+        val authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY)
+        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
+        val configUrl = "https://sample.com/url"
 
-        assertEquals(
-            configuration.toJson(),
-            sut.getConfiguration("cacheKey", TimeUnit.MINUTES.toMillis(5) - 1)
-        )
+        every { time.currentTime } returns 0L
+        sut.putConfiguration(configuration, authorization, configUrl)
+
+        every { time.currentTime } returns (TimeUnit.MINUTES.toMillis(5) - 1)
+        val expected = configuration.toJson()
+        val actual = sut.getConfiguration(authorization, configUrl)?.toJson()
+        assertEquals(expected, actual)
     }
 
     @Test
     fun getConfiguration_whenCacheEntryExpires_returnsNull() {
-        val configuration = fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
-        every { braintreeSharedPreferences.containsKey("cacheKey_timestamp") } returns true
-        every { braintreeSharedPreferences.getLong("cacheKey_timestamp") } returns TimeUnit.MINUTES.toMillis(5)
-        every { braintreeSharedPreferences.getString("cacheKey", "") } returns configuration.toJson()
+        val sut = ConfigurationCache(braintreeSharedPreferences, time)
 
-        val sut = ConfigurationCache(braintreeSharedPreferences)
-        sut.saveConfiguration(configuration, "cacheKey", 0)
+        val authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY)
+        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
+        val configUrl = "https://sample.com/url"
 
-        assertNull(sut.getConfiguration("cacheKey", TimeUnit.MINUTES.toMillis(20)))
+        every { time.currentTime } returns 0L
+        sut.putConfiguration(configuration, authorization, configUrl)
+
+        every { time.currentTime } returns TimeUnit.MINUTES.toMillis(20)
+        assertNull(sut.getConfiguration(authorization, configUrl))
     }
 }

@@ -1,43 +1,48 @@
 package com.braintreepayments.api.core
 
 import android.content.Context
+import android.util.Base64
 import com.braintreepayments.api.sharedutils.BraintreeSharedPreferences
+import com.braintreepayments.api.sharedutils.Time
+import org.json.JSONException
 import java.util.concurrent.TimeUnit
 
 internal class ConfigurationCache(
-    private val sharedPreferences: BraintreeSharedPreferences
+    private val sharedPreferences: BraintreeSharedPreferences,
+    private val time: Time = Time()
 ) {
 
-    fun getConfiguration(cacheKey: String): String? {
-        return getConfiguration(cacheKey, System.currentTimeMillis())
-    }
-
-    fun getConfiguration(cacheKey: String, currentTimeMillis: Long): String? {
+    fun getConfiguration(authorization: Authorization, configUrl: String): Configuration? {
+        val cacheKey = createCacheKey(authorization, configUrl)
         val timestampKey = "${cacheKey}_timestamp"
+
+        var configurationAsString: String? = null
         if (sharedPreferences.containsKey(timestampKey)) {
-            val timeInCache = currentTimeMillis - sharedPreferences.getLong(timestampKey)
+            val timeInCache = time.currentTime - sharedPreferences.getLong(timestampKey)
             if (timeInCache < TIME_TO_LIVE) {
-                return sharedPreferences.getString(cacheKey, "")
+                configurationAsString = sharedPreferences.getString(cacheKey, "")
             }
         }
-        return null
+
+        return try {
+            configurationAsString?.let { Configuration.fromJson(it) }
+        } catch (e: JSONException) {
+            null
+        }
     }
 
-    fun saveConfiguration(configuration: Configuration, cacheKey: String?) {
-        saveConfiguration(configuration, cacheKey, System.currentTimeMillis())
-    }
-
-    fun saveConfiguration(
+    fun putConfiguration(
         configuration: Configuration,
-        cacheKey: String?,
-        currentTimeMillis: Long
+        authorization: Authorization,
+        configUrl: String
     ) {
+        val cacheKey = createCacheKey(authorization, configUrl)
         val timestampKey = "${cacheKey}_timestamp"
         sharedPreferences.putStringAndLong(
             cacheKey,
             configuration.toJson(),
             timestampKey,
-            currentTimeMillis
+            time.currentTime
         )
     }
 
@@ -52,5 +57,9 @@ internal class ConfigurationCache(
                     BraintreeSharedPreferences.getInstance(context)
                 ).also { INSTANCE = it }
             }
+
+        private fun createCacheKey(authorization: Authorization, configUrl: String): String {
+            return Base64.encodeToString("$configUrl${authorization.bearer}".toByteArray(), 0)
+        }
     }
 }
