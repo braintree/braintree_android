@@ -12,7 +12,7 @@ import java.lang.ref.WeakReference
 internal class ConfigurationLoader internal constructor(
     private val httpClient: BraintreeHttpClient,
     private val configurationCache: ConfigurationCache,
-    private val threadScheduler: Scheduler = ThreadScheduler(1)
+    private val threadScheduler: Scheduler = ThreadScheduler(THREAD_POOL_SIZE)
 ) {
     constructor(context: Context, httpClient: BraintreeHttpClient) : this(
         httpClient, ConfigurationCache.getInstance(context)
@@ -31,7 +31,7 @@ internal class ConfigurationLoader internal constructor(
         auth: Authorization,
         callback: ConfigurationLoaderCallback
     ) {
-        val configUrl = Uri.parse(auth.configUrl)
+        val url = Uri.parse(auth.configUrl)
             .buildUpon()
             .appendQueryParameter("configVersion", "3")
             .build()
@@ -39,8 +39,7 @@ internal class ConfigurationLoader internal constructor(
 
         val cbRef = WeakReference(callback)
         threadScheduler.runOnBackground {
-            val response =
-                loadConfigFromCache(auth, configUrl) ?: loadConfigFromNetwork(auth, configUrl)
+            val response = loadConfigFromCache(url, auth) ?: loadConfigFromNetwork(url, auth)
             threadScheduler.runOnMain {
                 val cb = cbRef.get()
                 cb?.onResult(response)
@@ -49,19 +48,19 @@ internal class ConfigurationLoader internal constructor(
     }
 
     private fun loadConfigFromCache(
-        authorization: Authorization,
-        configUrl: String
+        configUrl: String,
+        authorization: Authorization
     ): ConfigurationLoaderResponse? =
         configurationCache.getConfiguration(authorization, configUrl)?.let { configuration ->
             // NOTE: timing information is null when configuration comes from cache
-            return ConfigurationLoaderResponse(configuration)
+            return ConfigurationLoaderResponse(configuration, timing = null)
         }
 
-
+    @Suppress("TooGenericExceptionCaught")
     @WorkerThread
     private fun loadConfigFromNetwork(
-        authorization: Authorization,
-        configUrl: String
+        configUrl: String,
+        authorization: Authorization
     ): ConfigurationLoaderResponse {
         var configuration: Configuration? = null
         var error: Exception? = null
@@ -83,11 +82,19 @@ internal class ConfigurationLoader internal constructor(
 
             // save configuration to cache (if present)
             configuration?.let { configurationCache.putConfiguration(it, authorization, configUrl) }
-        } catch (e: Exception) {
-            val errorMessageFormat = "Request for configuration has failed: %s"
-            val errorMessage = String.format(errorMessageFormat, e.message)
-            error = ConfigurationException(errorMessage, e)
+        } catch (loadConfigError: Exception) {
+            error = createConfigurationException(loadConfigError)
         }
         return ConfigurationLoaderResponse(configuration, error, timing)
+    }
+
+    private fun createConfigurationException(cause: Exception): ConfigurationException {
+        val errorMessage = "Request for configuration has failed: ${cause.message}"
+        return ConfigurationException(errorMessage, cause)
+    }
+
+    companion object {
+        // NOTE: a single thread pool makes the ThreadScheduler behave like a serial dispatch queue
+        const val THREAD_POOL_SIZE = 1
     }
 }
