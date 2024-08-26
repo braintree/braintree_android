@@ -125,13 +125,14 @@ class BraintreeClient @VisibleForTesting internal constructor(
             callback.onResult(null, createAuthError())
             return
         }
-        configurationLoader.loadConfiguration(authorization) { configuration, configError, timing ->
+        configurationLoader.loadConfiguration(authorization) { response ->
+            val configuration = response.configuration
             if (configuration != null) {
                 callback.onResult(configuration, null)
             } else {
-                callback.onResult(null, configError)
+                callback.onResult(null, response.error)
             }
-            timing?.let { sendAnalyticsTimingEvent("/v1/configuration", it) }
+            response.timing?.let { sendAnalyticsTimingEvent("/v1/configuration", it) }
         }
     }
 

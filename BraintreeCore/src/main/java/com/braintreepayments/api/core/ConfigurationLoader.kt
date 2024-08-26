@@ -20,9 +20,8 @@ internal class ConfigurationLoader internal constructor(
 
     fun loadConfiguration(authorization: Authorization, callback: ConfigurationLoaderCallback) {
         if (authorization is InvalidAuthorization) {
-            val message = authorization.errorMessage
-            // NOTE: timing information is null when configuration comes from cache
-            callback.onResult(null, BraintreeException(message), null)
+            val invalidAuthError = BraintreeException(authorization.errorMessage)
+            callback.onResult(ConfigurationLoaderResponse(error = invalidAuthError))
             return
         }
         loadConfigurationInBackground(authorization, callback)
@@ -40,11 +39,11 @@ internal class ConfigurationLoader internal constructor(
 
         val cbRef = WeakReference(callback)
         threadScheduler.runOnBackground {
-            val (config, error, timing) =
+            val response =
                 loadConfigFromCache(auth, configUrl) ?: loadConfigFromNetwork(auth, configUrl)
             threadScheduler.runOnMain {
                 val cb = cbRef.get()
-                cb?.onResult(config, error, timing)
+                cb?.onResult(response)
             }
         }
     }
@@ -52,10 +51,10 @@ internal class ConfigurationLoader internal constructor(
     private fun loadConfigFromCache(
         authorization: Authorization,
         configUrl: String
-    ): Triple<Configuration?, Exception?, HttpResponseTiming?>? =
+    ): ConfigurationLoaderResponse? =
         configurationCache.getConfiguration(authorization, configUrl)?.let { configuration ->
             // NOTE: timing information is null when configuration comes from cache
-            return Triple(configuration, null, null)
+            return ConfigurationLoaderResponse(configuration)
         }
 
 
@@ -63,7 +62,7 @@ internal class ConfigurationLoader internal constructor(
     private fun loadConfigFromNetwork(
         authorization: Authorization,
         configUrl: String
-    ): Triple<Configuration?, Exception?, HttpResponseTiming?> {
+    ): ConfigurationLoaderResponse {
         var configuration: Configuration? = null
         var error: Exception? = null
         var timing: HttpResponseTiming? = null
@@ -89,6 +88,6 @@ internal class ConfigurationLoader internal constructor(
             val errorMessage = String.format(errorMessageFormat, e.message)
             error = ConfigurationException(errorMessage, e)
         }
-        return Triple(configuration, error, timing)
+        return ConfigurationLoaderResponse(configuration, error, timing)
     }
 }
