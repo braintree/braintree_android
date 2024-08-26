@@ -53,7 +53,7 @@ internal class ConfigurationLoader internal constructor(
     ): ConfigurationLoaderResponse? =
         configurationCache.getConfiguration(authorization, configUrl)?.let { configuration ->
             // NOTE: timing information is null when configuration comes from cache
-            return ConfigurationLoaderResponse(configuration, timing = null)
+            return ConfigurationLoaderResponse(configuration = configuration, timing = null)
         }
 
     @Suppress("TooGenericExceptionCaught")
