@@ -29,6 +29,14 @@
         * Update `ThreeDSecurePaymentAuthResult.getThreeSecureResult()` to `ThreeDSecurePaymentAuthResult.getThreeDSecureParams()`
         * Update `ThreeDSecurePaymentAuthResult.getJWT()` to `ThreeDSecurePaymentAuthResult.getJwt()`
         * Change `ThreeDSecureShippingMethod` to an enum
+        * Change `ThreeDSecureAccountType` to an enum
+        * Change `ThreeDSecureRenderType` to an enum
+        * Change `ThreeDSecureRequestedExemptionType` to an enum
+        * Change `ThreeDSecureUiType` to an enum
+        * Update `ThreeDSecureRequest.isChallengeRequested()` to `ThreeDSecureRequest.getChallengeRequested()`
+        * Update `ThreeDSecureRequest.isDataOnlyRequested()` to `ThreeDSecureRequest.getDataOnlyRequested()`
+        * Update `ThreeDSecureRequest.isExemptionRequested()` to `ThreeDSecureRequest.getDataOnlyRequested()`
+        * Update `ThreeDSecureRequest.isCardAddChallengeRequested()` to `ThreeDSecureRequest.getCardAddChallengeRequested()`
 
 ## 5.0.0-beta1 (2024-07-23)
 
