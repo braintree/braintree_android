@@ -12,7 +12,7 @@ import java.lang.ref.WeakReference
 internal class ConfigurationLoader internal constructor(
     private val httpClient: BraintreeHttpClient,
     private val configurationCache: ConfigurationCache,
-    private val threadScheduler: Scheduler = ThreadScheduler(THREAD_POOL_SIZE)
+    private val threadScheduler: Scheduler = ThreadScheduler(SERIAL_DISPATCH_QUEUE_POOL_SIZE)
 ) {
     constructor(context: Context, httpClient: BraintreeHttpClient) : this(
         httpClient, ConfigurationCache.getInstance(context)
@@ -95,6 +95,6 @@ internal class ConfigurationLoader internal constructor(
 
     companion object {
         // NOTE: a single thread pool makes the ThreadScheduler behave like a serial dispatch queue
-        const val THREAD_POOL_SIZE = 1
+        const val SERIAL_DISPATCH_QUEUE_POOL_SIZE = 1
     }
 }
