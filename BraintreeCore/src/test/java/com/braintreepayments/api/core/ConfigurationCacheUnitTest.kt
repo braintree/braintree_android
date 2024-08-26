@@ -40,7 +40,7 @@ class ConfigurationCacheUnitTest {
 
         val authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY)
         val configUrl = "https://sample.com/url"
-        every { time.now } returns TimeUnit.MINUTES.toMillis(20)
+        every { time.currentTime } returns TimeUnit.MINUTES.toMillis(20)
 
         assertNull(sut.getConfiguration(authorization, configUrl))
     }
@@ -53,10 +53,10 @@ class ConfigurationCacheUnitTest {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
         val configUrl = "https://sample.com/url"
 
-        every { time.now } returns 0L
+        every { time.currentTime } returns 0L
         sut.putConfiguration(configuration, authorization, configUrl)
 
-        every { time.now } returns (TimeUnit.MINUTES.toMillis(5) - 1)
+        every { time.currentTime } returns (TimeUnit.MINUTES.toMillis(5) - 1)
         val expected = configuration.toJson()
         val actual = sut.getConfiguration(authorization, configUrl)?.toJson()
         assertEquals(expected, actual)
@@ -70,10 +70,10 @@ class ConfigurationCacheUnitTest {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
         val configUrl = "https://sample.com/url"
 
-        every { time.now } returns 0L
+        every { time.currentTime } returns 0L
         sut.putConfiguration(configuration, authorization, configUrl)
 
-        every { time.now } returns TimeUnit.MINUTES.toMillis(20)
+        every { time.currentTime } returns TimeUnit.MINUTES.toMillis(20)
         assertNull(sut.getConfiguration(authorization, configUrl))
     }
 }

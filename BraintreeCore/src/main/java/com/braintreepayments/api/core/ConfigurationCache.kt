@@ -18,7 +18,7 @@ internal class ConfigurationCache(
 
         var configurationAsString: String? = null
         if (sharedPreferences.containsKey(timestampKey)) {
-            val timeInCache = time.now - sharedPreferences.getLong(timestampKey)
+            val timeInCache = time.currentTime - sharedPreferences.getLong(timestampKey)
             if (timeInCache < TIME_TO_LIVE) {
                 configurationAsString = sharedPreferences.getString(cacheKey, "")
             }
@@ -42,7 +42,7 @@ internal class ConfigurationCache(
             cacheKey,
             configuration.toJson(),
             timestampKey,
-            time.now
+            time.currentTime
         )
     }
 

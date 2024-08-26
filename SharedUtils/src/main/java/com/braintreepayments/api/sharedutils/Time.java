@@ -5,7 +5,7 @@ import androidx.annotation.RestrictTo;
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class Time {
 
-    public long getNow() {
+    public long getCurrentTime() {
         return System.currentTimeMillis();
     }
 }
