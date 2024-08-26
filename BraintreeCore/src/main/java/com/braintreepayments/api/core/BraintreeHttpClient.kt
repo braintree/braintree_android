@@ -54,9 +54,9 @@ internal class BraintreeHttpClient(
         request: InternalHttpRequest,
         configuration: Configuration?,
         authorization: Authorization?
-    ): String {
+    ): HttpResponse {
         val httpRequest = buildHttpRequest(request, configuration, authorization)
-        return httpClient.request(httpRequest).body ?: ""
+        return httpClient.request(httpRequest)
     }
 
     @Suppress("CyclomaticComplexMethod")
