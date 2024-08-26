@@ -7,9 +7,7 @@ import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.Scheduler
 import com.braintreepayments.api.sharedutils.ThreadScheduler
-import org.json.JSONException
 import java.lang.ref.WeakReference
-import kotlin.concurrent.thread
 
 internal class ConfigurationLoader internal constructor(
     private val httpClient: BraintreeHttpClient,
@@ -31,10 +29,10 @@ internal class ConfigurationLoader internal constructor(
     }
 
     private fun loadConfigurationInBackground(
-        authorization: Authorization,
+        auth: Authorization,
         callback: ConfigurationLoaderCallback
     ) {
-        val configUrl = Uri.parse(authorization.configUrl)
+        val configUrl = Uri.parse(auth.configUrl)
             .buildUpon()
             .appendQueryParameter("configVersion", "3")
             .build()
@@ -42,17 +40,16 @@ internal class ConfigurationLoader internal constructor(
 
         val cbRef = WeakReference(callback)
         threadScheduler.runOnBackground {
-            val (configuration, error, timing) =
-                fetchConfigurationFromCache(authorization, configUrl)
-                    ?: fetchConfigurationFromNetwork(authorization, configUrl)
+            val (config, error, timing) =
+                loadConfigFromCache(auth, configUrl) ?: loadConfigFromNetwork(auth, configUrl)
             threadScheduler.runOnMain {
                 val cb = cbRef.get()
-                cb?.onResult(configuration, error, timing)
+                cb?.onResult(config, error, timing)
             }
         }
     }
 
-    private fun fetchConfigurationFromCache(
+    private fun loadConfigFromCache(
         authorization: Authorization,
         configUrl: String
     ): Triple<Configuration?, Exception?, HttpResponseTiming?>? =
@@ -63,7 +60,7 @@ internal class ConfigurationLoader internal constructor(
 
 
     @WorkerThread
-    private fun fetchConfigurationFromNetwork(
+    private fun loadConfigFromNetwork(
         authorization: Authorization,
         configUrl: String
     ): Triple<Configuration?, Exception?, HttpResponseTiming?> {
