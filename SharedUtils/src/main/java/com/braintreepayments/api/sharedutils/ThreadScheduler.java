@@ -13,8 +13,8 @@ class ThreadScheduler implements Scheduler {
     private final Handler mainThreadHandler;
     private final ExecutorService backgroundThreadService;
 
-    ThreadScheduler() {
-        this(new Handler(Looper.getMainLooper()), Executors.newCachedThreadPool());
+    ThreadScheduler(int threadPoolSize) {
+        this(new Handler(Looper.getMainLooper()), Executors.newFixedThreadPool(threadPoolSize));
     }
 
     @VisibleForTesting
