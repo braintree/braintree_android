@@ -11,9 +11,9 @@ import org.json.JSONObject
  */
 @Parcelize
 data class ThreeDSecureParams(
-    var threeDSecureNonce: ThreeDSecureNonce? = null,
-    val errorMessage: String? = null,
-    val lookup: ThreeDSecureLookup? = null
+    var threeDSecureNonce: ThreeDSecureNonce?,
+    val errorMessage: String?,
+    val lookup: ThreeDSecureLookup?
 ) : Parcelable {
 
     fun hasError(): Boolean {
