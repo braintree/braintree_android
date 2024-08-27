@@ -481,7 +481,7 @@ class BraintreeClientUnitTest {
             configurationLoader.loadConfiguration(authorization, capture(callbackSlot))
         }
 
-        callbackSlot.captured.onResult(configuration, null, null)
+        callbackSlot.captured.onResult(ConfigurationLoaderResponse(configuration))
 
         verify {
             analyticsClient.reportCrash(

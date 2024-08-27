@@ -3,6 +3,8 @@ package com.braintreepayments.api.core
 import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.sharedutils.HttpRequest
+import com.braintreepayments.api.sharedutils.HttpResponse
+import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.FixturesHelper
@@ -173,7 +175,8 @@ class BraintreeHttpClientUnitTest {
         every { configuration.clientApiUrl } returns "https://example.com"
 
         val httpRequestSlot = slot<HttpRequest>()
-        every { httpClient.sendRequest(capture(httpRequestSlot)) } returns "sample result"
+        val httpResponse = HttpResponse(body = "sample result", HttpResponseTiming(123L, 456L))
+        every { httpClient.sendRequest(capture(httpRequestSlot)) } returns httpResponse
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
@@ -182,7 +185,7 @@ class BraintreeHttpClientUnitTest {
             data = "{}"
         )
         val result = sut.sendRequestSync(request, configuration, tokenizationKey)
-        assertEquals("sample result", result)
+        assertEquals("sample result", result.body)
 
         val httpRequest = httpRequestSlot.captured
         val headers = httpRequest.headers
@@ -207,7 +210,8 @@ class BraintreeHttpClientUnitTest {
         every { configuration.clientApiUrl } returns "https://example.com"
 
         val httpRequestSlot = slot<HttpRequest>()
-        every { httpClient.sendRequest(capture(httpRequestSlot)) } returns "sample result"
+        val httpResponse = HttpResponse(body = "sample result", HttpResponseTiming(123L, 456L))
+        every { httpClient.sendRequest(capture(httpRequestSlot)) } returns httpResponse
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(
@@ -216,7 +220,7 @@ class BraintreeHttpClientUnitTest {
             data = "{}"
         )
         val result = sut.sendRequestSync(request, configuration, clientToken)
-        assertEquals("sample result", result)
+        assertEquals("sample result", result.body)
 
         val httpRequest = httpRequestSlot.captured
         val headers = httpRequest.headers
@@ -261,7 +265,8 @@ class BraintreeHttpClientUnitTest {
         ) as ClientToken
 
         val httpRequestSlot = slot<HttpRequest>()
-        every { httpClient.sendRequest(capture(httpRequestSlot)) } returns ""
+        val httpResponse = HttpResponse(body = "", HttpResponseTiming(123L, 456L))
+        every { httpClient.sendRequest(capture(httpRequestSlot)) } returns httpResponse
 
         val sut = BraintreeHttpClient(httpClient)
         val request = InternalHttpRequest(

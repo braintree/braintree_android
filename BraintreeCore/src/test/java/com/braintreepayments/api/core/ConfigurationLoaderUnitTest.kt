@@ -10,6 +10,9 @@ import io.mockk.slot
 import io.mockk.verify
 import org.json.JSONException
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -58,7 +61,13 @@ class ConfigurationLoaderUnitTest {
             HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0)), null
         )
 
-        verify { callback.onResult(ofType(Configuration::class), null, HttpResponseTiming(0, 0)) }
+        val responseSlot = slot<ConfigurationLoaderResponse>()
+        verify { callback.onResult(capture(responseSlot)) }
+
+        val response = responseSlot.captured
+        assertNotNull(response.configuration)
+        assertNull(response.error)
+        assertEquals(HttpResponseTiming(0, 0), response.timing)
     }
 
     @Test
@@ -114,9 +123,14 @@ class ConfigurationLoaderUnitTest {
 
         val httpResponseCallback = callbackSlot.captured
         httpResponseCallback.onResult(HttpResponse("not json", HttpResponseTiming(0, 0)), null)
-        verify {
-            callback.onResult(null, ofType(JSONException::class), null)
-        }
+
+        val responseSlot = slot<ConfigurationLoaderResponse>()
+        verify { callback.onResult(capture(responseSlot)) }
+
+        val response = responseSlot.captured
+        assertNull(response.configuration)
+        assertTrue(response.error is JSONException)
+        assertNull(response.timing)
     }
 
     @Test
@@ -140,16 +154,17 @@ class ConfigurationLoaderUnitTest {
         val httpResponseCallback = callbackSlot.captured
         val httpError = Exception("http error")
         httpResponseCallback.onResult(null, httpError)
-        val errorSlot = slot<Exception>()
-        verify {
-            callback.onResult(null, capture(errorSlot), null)
-        }
 
-        val error = errorSlot.captured as ConfigurationException
-        assertEquals(
-            "Request for configuration has failed: http error",
-            error.message
-        )
+        val responseSlot = slot<ConfigurationLoaderResponse>()
+        verify { callback.onResult(capture(responseSlot)) }
+
+        val response = responseSlot.captured
+        assertNull(response.configuration)
+        assertNull(response.timing)
+
+        val error = response.error
+        assertTrue(error is ConfigurationException)
+        assertEquals("Request for configuration has failed: http error", error?.message)
     }
 
     @Test
@@ -157,13 +172,17 @@ class ConfigurationLoaderUnitTest {
         val authorization: Authorization = InvalidAuthorization("invalid", "token invalid")
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
         sut.loadConfiguration(authorization, callback)
-        val errorSlot = slot<BraintreeException>()
-        verify {
-            callback.onResult(null, capture(errorSlot), null)
-        }
 
-        val exception = errorSlot.captured
-        assertEquals("token invalid", exception.message)
+        val responseSlot = slot<ConfigurationLoaderResponse>()
+        verify { callback.onResult(capture(responseSlot)) }
+
+        val response = responseSlot.captured
+        assertNull(response.configuration)
+        assertNull(response.timing)
+
+        val error = response.error
+        assertTrue(error is BraintreeException)
+        assertEquals("token invalid", error?.message)
     }
 
     @Test
@@ -177,14 +196,13 @@ class ConfigurationLoaderUnitTest {
         val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
         sut.loadConfiguration(authorization, callback)
 
-        verify(exactly = 0) {
-            braintreeHttpClient.sendRequest(
-                any(),
-                null,
-                authorization,
-                any()
-            )
-        }
-        verify { callback.onResult(ofType(Configuration::class), null, null) }
+        val responseSlot = slot<ConfigurationLoaderResponse>()
+        verify { callback.onResult(capture(responseSlot)) }
+
+        verify(exactly = 0) { braintreeHttpClient.sendRequestSync(any(), null, authorization) }
+        val response = responseSlot.captured
+        assertNotNull(response.configuration)
+        assertNull(response.error)
+        assertNull(response.timing)
     }
 }
