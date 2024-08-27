@@ -108,7 +108,9 @@ internal class BraintreeHttpClient(
             result.addHeader(CLIENT_KEY_HEADER, authorization.bearer)
         }
 
-        authorization?.bearer?.let { token -> result.addHeader("Authorization", "Bearer $token") }
+        if (method == HttpMethod.POST) {
+            authorization?.bearer?.let { token -> result.addHeader("Authorization", "Bearer $token") }
+        }
         additionalHeaders.forEach { (name, value) -> result.addHeader(name, value) }
         return result
     }
