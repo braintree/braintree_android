@@ -3,7 +3,9 @@ package com.braintreepayments.api.core
 import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
+import com.braintreepayments.api.sharedutils.Scheduler
 import com.braintreepayments.api.testutils.Fixtures
+import com.braintreepayments.api.testutils.MockThreadScheduler
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -25,6 +27,7 @@ class ConfigurationLoaderUnitTest {
     private lateinit var braintreeHttpClient: BraintreeHttpClient
     private lateinit var callback: ConfigurationLoaderCallback
     private lateinit var authorization: Authorization
+    private lateinit var threadScheduler: Scheduler
 
     @Before
     fun beforeEach() {
@@ -32,6 +35,7 @@ class ConfigurationLoaderUnitTest {
         braintreeHttpClient = mockk(relaxed = true)
         callback = mockk(relaxed = true)
         authorization = mockk(relaxed = true)
+        threadScheduler = MockThreadScheduler()
     }
 
     @Test

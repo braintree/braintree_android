@@ -1,16 +1,16 @@
-package com.braintreepayments.api.sharedutils;
+package com.braintreepayments.api.testutils;
 
 import com.braintreepayments.api.sharedutils.Scheduler;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class MockThreadScheduler implements Scheduler {
+public class MockThreadScheduler implements Scheduler {
 
     private final List<Runnable> mainThreadRunnables;
     private final List<Runnable> backgroundThreadRunnables;
 
-    MockThreadScheduler() {
+    public MockThreadScheduler() {
         mainThreadRunnables = new ArrayList<>();
         backgroundThreadRunnables = new ArrayList<>();
     }
@@ -25,11 +25,11 @@ class MockThreadScheduler implements Scheduler {
         backgroundThreadRunnables.add(runnable);
     }
 
-    void flushMainThread() {
+    public void flushMainThread() {
         List<Runnable> remainingRunnables = new ArrayList<>(mainThreadRunnables);
         mainThreadRunnables.clear();
 
-        for (Runnable runnable: remainingRunnables) {
+        for (Runnable runnable : remainingRunnables) {
             runnable.run();
         }
         if (mainThreadRunnables.size() > 0) {
@@ -37,11 +37,11 @@ class MockThreadScheduler implements Scheduler {
         }
     }
 
-    void flushBackgroundThread() {
+    public void flushBackgroundThread() {
         List<Runnable> remainingRunnables = new ArrayList<>(backgroundThreadRunnables);
         backgroundThreadRunnables.clear();
 
-        for (Runnable runnable: remainingRunnables) {
+        for (Runnable runnable : remainingRunnables) {
             runnable.run();
         }
         if (backgroundThreadRunnables.size() > 0) {
