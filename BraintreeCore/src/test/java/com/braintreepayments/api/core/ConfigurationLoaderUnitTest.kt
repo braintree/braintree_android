@@ -1,9 +1,8 @@
 package com.braintreepayments.api.core
 
+import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
-import com.braintreepayments.api.sharedutils.NetworkResponseCallback
-import com.braintreepayments.api.sharedutils.Scheduler
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockThreadScheduler
 import io.mockk.every
@@ -14,6 +13,7 @@ import org.json.JSONException
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -27,7 +27,7 @@ class ConfigurationLoaderUnitTest {
     private lateinit var braintreeHttpClient: BraintreeHttpClient
     private lateinit var callback: ConfigurationLoaderCallback
     private lateinit var authorization: Authorization
-    private lateinit var threadScheduler: Scheduler
+    private lateinit var threadScheduler: MockThreadScheduler
 
     @Before
     fun beforeEach() {
@@ -39,32 +39,46 @@ class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    fun loadConfiguration_loadsConfigurationForTheCurrentEnvironment() {
+    fun loadConfiguration_loadsConfigurationOnBackgroundThread() {
         every { authorization.configUrl } returns "https://example.com/config"
         every { configurationCache.getConfiguration(any(), any()) } returns null
 
-        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
+        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache, threadScheduler)
         sut.loadConfiguration(authorization, callback)
 
-        val httpRequestSlot = slot<InternalHttpRequest>()
-        val callbackSlot = slot<NetworkResponseCallback>()
+        // no http calls should be made on main thread
+        verify(exactly = 0) { braintreeHttpClient.sendRequestSync(any(), any(), any()) }
+        threadScheduler.flushBackgroundThread()
+
+        val requestSlot = slot<InternalHttpRequest>()
         verify {
-            braintreeHttpClient.sendRequest(
-                capture(httpRequestSlot),
-                null,
-                authorization,
-                capture(callbackSlot)
-            )
+            braintreeHttpClient.sendRequestSync(capture(requestSlot), null, authorization)
         }
 
-        val expectedConfigUrl = "https://example.com/config?configVersion=3"
-        assertEquals(expectedConfigUrl, httpRequestSlot.captured.path)
+        val httpRequest = requestSlot.captured
+        assertEquals(HttpMethod.GET, httpRequest.method)
+        assertEquals("https://example.com/config?configVersion=3", httpRequest.path)
+    }
 
-        val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(
-            HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0)), null
-        )
+    @Test
+    fun loadConfiguration_onSuccess_callsBackConfigurationOnMainThread() {
+        every { authorization.configUrl } returns "https://example.com/config"
+        every { configurationCache.getConfiguration(any(), any()) } returns null
 
+        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache, threadScheduler)
+        sut.loadConfiguration(authorization, callback)
+
+        val httpResponse =
+            HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0))
+        every {
+            braintreeHttpClient.sendRequestSync(any(), null, authorization)
+        } returns httpResponse
+
+        threadScheduler.flushBackgroundThread()
+        // call back should happen on main thread
+        verify(exactly = 0) { callback.onResult(any()) }
+
+        threadScheduler.flushMainThread()
         val responseSlot = slot<ConfigurationLoaderResponse>()
         verify { callback.onResult(capture(responseSlot)) }
 
@@ -76,89 +90,70 @@ class ConfigurationLoaderUnitTest {
 
     @Test
     fun loadConfiguration_savesFetchedConfigurationToCache() {
-        every { configurationCache.getConfiguration(any(), any()) } returns null
         every { authorization.configUrl } returns "https://example.com/config"
-        every { authorization.bearer } returns "bearer"
+        every { configurationCache.getConfiguration(any(), any()) } returns null
 
-        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
+        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache, threadScheduler)
         sut.loadConfiguration(authorization, callback)
 
-        val callbackSlot = slot<NetworkResponseCallback>()
-        verify {
-            braintreeHttpClient.sendRequest(
-                any(),
-                null,
-                authorization,
-                capture(callbackSlot)
-            )
-        }
+        val httpResponse =
+            HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0))
+        every {
+            braintreeHttpClient.sendRequestSync(any(), null, authorization)
+        } returns httpResponse
+        threadScheduler.flushBackgroundThread()
 
-        val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(
-            HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0)), null
-        )
-
+        val expectedConfigUrl = "https://example.com/config?configVersion=3"
         verify {
-            configurationCache.putConfiguration(
-                any<Configuration>(),
-                authorization,
-                "https://example.com/config?configVersion=3"
-            )
+            configurationCache.putConfiguration(any(), authorization, expectedConfigUrl)
         }
     }
 
     @Test
     fun loadConfiguration_onJSONParsingError_forwardsExceptionToErrorResponseListener() {
-        every { configurationCache.getConfiguration(any(), any()) } returns null
         every { authorization.configUrl } returns "https://example.com/config"
+        every { configurationCache.getConfiguration(any(), any()) } returns null
 
-        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
+        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache, threadScheduler)
         sut.loadConfiguration(authorization, callback)
 
-        val callbackSlot = slot<NetworkResponseCallback>()
-        verify {
-            braintreeHttpClient.sendRequest(
-                any(),
-                null,
-                authorization,
-                capture(callbackSlot)
-            )
-        }
+        val httpResponse = HttpResponse("not json", HttpResponseTiming(0, 0))
+        every {
+            braintreeHttpClient.sendRequestSync(any(), null, authorization)
+        } returns httpResponse
 
-        val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(HttpResponse("not json", HttpResponseTiming(0, 0)), null)
+        threadScheduler.flushBackgroundThread()
+        // call back should happen on main thread
+        verify(exactly = 0) { callback.onResult(any()) }
 
+        threadScheduler.flushMainThread()
         val responseSlot = slot<ConfigurationLoaderResponse>()
         verify { callback.onResult(capture(responseSlot)) }
 
         val response = responseSlot.captured
         assertNull(response.configuration)
-        assertTrue(response.error is JSONException)
+        assertTrue(response.error?.cause is JSONException)
         assertNull(response.timing)
     }
 
     @Test
     fun loadConfiguration_onHttpError_forwardsExceptionToErrorResponseListener() {
-        every { configurationCache.getConfiguration(any(), any()) } returns null
         every { authorization.configUrl } returns "https://example.com/config"
+        every { configurationCache.getConfiguration(any(), any()) } returns null
 
-        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
+        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache, threadScheduler)
         sut.loadConfiguration(authorization, callback)
 
-        val callbackSlot = slot<NetworkResponseCallback>()
-        verify {
-            braintreeHttpClient.sendRequest(
-                any(),
-                null,
-                authorization,
-                capture(callbackSlot)
-            )
-        }
-
-        val httpResponseCallback = callbackSlot.captured
         val httpError = Exception("http error")
-        httpResponseCallback.onResult(null, httpError)
+        every {
+            braintreeHttpClient.sendRequestSync(any(), null, authorization)
+        } throws httpError
 
+        threadScheduler.flushBackgroundThread()
+        // call back should happen on main thread
+        verify(exactly = 0) { callback.onResult(any()) }
+
+        threadScheduler.flushMainThread()
         val responseSlot = slot<ConfigurationLoaderResponse>()
         verify { callback.onResult(capture(responseSlot)) }
 
@@ -174,7 +169,7 @@ class ConfigurationLoaderUnitTest {
     @Test
     fun loadConfiguration_whenInvalidToken_forwardsExceptionToCallback() {
         val authorization: Authorization = InvalidAuthorization("invalid", "token invalid")
-        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
+        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache, threadScheduler)
         sut.loadConfiguration(authorization, callback)
 
         val responseSlot = slot<ConfigurationLoaderResponse>()
@@ -193,19 +188,26 @@ class ConfigurationLoaderUnitTest {
     fun loadConfiguration_whenCachedConfigurationAvailable_loadsConfigurationFromCache() {
         every { authorization.configUrl } returns "https://example.com/config"
         every { authorization.bearer } returns "bearer"
-        every {
-            configurationCache.getConfiguration(authorization, "https://example.com/config")
-        } returns Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN)
 
-        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
+        val cachedConfiguration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN)
+        every {
+            configurationCache.getConfiguration(authorization, "https://example.com/config?configVersion=3")
+        } returns cachedConfiguration
+
+        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache, threadScheduler)
         sut.loadConfiguration(authorization, callback)
 
+        threadScheduler.flushBackgroundThread()
+        // call back should happen on main thread
+        verify(exactly = 0) { callback.onResult(any()) }
+
+        threadScheduler.flushMainThread()
         val responseSlot = slot<ConfigurationLoaderResponse>()
         verify { callback.onResult(capture(responseSlot)) }
 
         verify(exactly = 0) { braintreeHttpClient.sendRequestSync(any(), null, authorization) }
         val response = responseSlot.captured
-        assertNotNull(response.configuration)
+        assertSame(cachedConfiguration, response.configuration)
         assertNull(response.error)
         assertNull(response.timing)
     }
