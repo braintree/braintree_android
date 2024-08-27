@@ -37,6 +37,9 @@
         * Update `ThreeDSecureRequest.isDataOnlyRequested()` to `ThreeDSecureRequest.getDataOnlyRequested()`
         * Update `ThreeDSecureRequest.isExemptionRequested()` to `ThreeDSecureRequest.getDataOnlyRequested()`
         * Update `ThreeDSecureRequest.isCardAddChallengeRequested()` to `ThreeDSecureRequest.getCardAddChallengeRequested()`
+    *  ThreeDSecure
+      * Split `ThreeDSecureV2UiCustomization.setButtonCustomization()` to `setButtonCustomization()` and `setButtonType()`
+      * Change `ThreeDSecureV2ButtonType` to an enum
 
 ## 5.0.0-beta1 (2024-07-23)
 
