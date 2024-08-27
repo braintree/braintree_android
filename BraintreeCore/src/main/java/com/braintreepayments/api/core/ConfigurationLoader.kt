@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import androidx.annotation.WorkerThread
 import com.braintreepayments.api.sharedutils.HttpMethod
-import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.Scheduler
 import com.braintreepayments.api.sharedutils.ThreadScheduler
 import java.lang.ref.WeakReference
