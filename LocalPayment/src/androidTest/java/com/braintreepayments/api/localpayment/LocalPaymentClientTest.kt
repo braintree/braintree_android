@@ -13,8 +13,8 @@ import java.util.concurrent.CountDownLatch
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class LocalPaymentClientTest {
-    private var countDownLatch: CountDownLatch? = null
-    private var braintreeClient: BraintreeClient? = null
+    private lateinit var countDownLatch: CountDownLatch
+    private lateinit var braintreeClient: BraintreeClient
 
     @Before
     fun setUp() {
