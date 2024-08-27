@@ -109,7 +109,7 @@ public class HttpClientUnitTest {
 
         when(syncHttpClient.request(httpRequest)).thenReturn(response);
 
-        String result = sut.sendRequest(httpRequest);
-        assertEquals("response body", result);
+        HttpResponse result = sut.sendRequest(httpRequest);
+        assertEquals("response body", result.getBody());
     }
 }
