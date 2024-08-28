@@ -56,12 +56,12 @@ data class BinData internal constructor(
             val json = jsonObject ?: JSONObject()
 
             return BinData(
-                prepaid = BinType.valueOf(Json.optString(json, PREPAID_KEY, BinType.Unknown.name)),
-                healthcare = BinType.valueOf(Json.optString(json, HEALTHCARE_KEY, BinType.Unknown.name)),
-                debit = BinType.valueOf(Json.optString(json, DEBIT_KEY, BinType.Unknown.name)),
-                durbinRegulated = BinType.valueOf(Json.optString(json, DURBIN_REGULATED_KEY, BinType.Unknown.name)),
-                commercial = BinType.valueOf(Json.optString(json, COMMERCIAL_KEY, BinType.Unknown.name)),
-                payroll = BinType.valueOf(Json.optString(json, PAYROLL_KEY, BinType.Unknown.name)),
+                prepaid = BinType.fromString(Json.optString(json, PREPAID_KEY, BinType.Unknown.name)),
+                healthcare = BinType.fromString(Json.optString(json, HEALTHCARE_KEY, BinType.Unknown.name)),
+                debit = BinType.fromString(Json.optString(json, DEBIT_KEY, BinType.Unknown.name)),
+                durbinRegulated = BinType.fromString(Json.optString(json, DURBIN_REGULATED_KEY, BinType.Unknown.name)),
+                commercial = BinType.fromString(Json.optString(json, COMMERCIAL_KEY, BinType.Unknown.name)),
+                payroll = BinType.fromString(Json.optString(json, PAYROLL_KEY, BinType.Unknown.name)),
                 issuingBank = convertNullToUnknown(json, ISSUING_BANK_KEY),
                 countryOfIssuance = convertNullToUnknown(json, COUNTRY_OF_ISSUANCE_KEY),
                 productId = convertNullToUnknown(json, PRODUCT_ID_KEY)
