@@ -100,6 +100,7 @@
         * Change `GooglePayGetTokenizationParametersCallback` parameters
         * Rename `GooglePayLauncherCallback#onResult` to
           `GooglePayLauncherCallback#onGooglePayLauncherResult`
+        * Change `GooglePayRequest#isCreditCardsAllowed` to `GooglePayRequest#getAllowCreditCards`
     * ThreeDSecure
         * Remove `ThreeDSecureListener`
         * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`,

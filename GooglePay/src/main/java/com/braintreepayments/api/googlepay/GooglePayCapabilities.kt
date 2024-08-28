@@ -17,16 +17,16 @@ object GooglePayCapabilities {
      */
     @SuppressWarnings("SwallowedException")
     fun isGooglePayEnabled(context: Context, configuration: Configuration): Boolean {
-        try {
+        return try {
             Class.forName(Wallet::class.java.name)
 
-            return configuration.isGooglePayEnabled && GoogleApiAvailability.getInstance()
+            configuration.isGooglePayEnabled && GoogleApiAvailability.getInstance()
                 .isGooglePlayServicesAvailable(context) ==
                     ConnectionResult.SUCCESS
         } catch (e: ClassNotFoundException) {
-            return false
+            false
         } catch (e: NoClassDefFoundError) {
-            return false
+            false
         }
     }
 }
