@@ -12,9 +12,11 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.ExperimentalBetaApi;
 import com.braintreepayments.api.core.PaymentMethodNonce;
 import com.braintreepayments.api.datacollector.DataCollector;
 import com.braintreepayments.api.datacollector.DataCollectorRequest;
@@ -26,6 +28,7 @@ import com.braintreepayments.api.paypal.PayPalPaymentAuthResult;
 import com.braintreepayments.api.paypal.PayPalPendingRequest;
 import com.braintreepayments.api.paypal.PayPalRequest;
 import com.braintreepayments.api.paypal.PayPalResult;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class PayPalFragment extends BaseFragment {
@@ -88,6 +91,7 @@ public class PayPalFragment extends BaseFragment {
     private void storePendingRequest(PayPalPendingRequest.Started request) {
         PendingRequestStore.getInstance().putPayPalPendingRequest(requireContext(), request);
     }
+
     private PayPalPendingRequest.Started getPendingRequest() {
         return PendingRequestStore.getInstance().getPayPalPendingRequest(requireContext());
     }
@@ -114,6 +118,7 @@ public class PayPalFragment extends BaseFragment {
         }
     }
 
+    @OptIn(markerClass = ExperimentalBetaApi.class)
     private void launchPayPalEditFIVault(boolean isBillingAgreement, String buyerEmailAddress) {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
@@ -125,18 +130,30 @@ public class PayPalFragment extends BaseFragment {
                 if (dataCollectorResult instanceof DataCollectorResult.Success) {
                     deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
                 }
-                //launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress);
+
+                // The Vault ID is encrypted and shared with us
+                // Server SDK call with a customer ID or PayPal account to get encrypted Billing Id and optional merchant account Id
+                PayPalVaultEditRequest request = new PayPalVaultEditRequest("YJbRTegvI/dIDEyFZRa52Twflbn0q2pSktu1llbZmMg=", null, null);
+
+                payPalClient.createEditAuthRequest(requireContext(), request,(PayPalVaultEditAuthCallback) -> {
+
+                });
             });
         } else {
-            //launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress);
+
+            PayPalVaultEditRequest request = new PayPalVaultEditRequest("YJbRTegvI/dIDEyFZRa52Twflbn0q2pSktu1llbZmMg=", null, null);
         }
     }
 
+    private void launchEditRequest() {
+        // Initialize
+    }
+
     private void launchPayPal(
-        FragmentActivity activity,
-        boolean isBillingAgreement,
-        String amount,
-        String buyerEmailAddress
+            FragmentActivity activity,
+            boolean isBillingAgreement,
+            String amount,
+            String buyerEmailAddress
     ) {
         PayPalRequest payPalRequest;
         if (isBillingAgreement) {
@@ -148,7 +165,7 @@ public class PayPalFragment extends BaseFragment {
                 (paymentAuthRequest) -> {
                     if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.Failure) {
                         handleError(((PayPalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
-                    } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch){
+                    } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch) {
                         PayPalPendingRequest request = payPalLauncher.launch(requireActivity(),
                                 ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
                         if (request instanceof PayPalPendingRequest.Started) {
@@ -175,7 +192,7 @@ public class PayPalFragment extends BaseFragment {
             super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
             PayPalFragmentDirections.ActionPayPalFragmentToDisplayNonceFragment action =
-                PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
+                    PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
             action.setTransactionAmount(amount);
             action.setDeviceData(deviceData);
 
