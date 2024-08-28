@@ -6,105 +6,54 @@ import org.json.JSONObject
 
 /**
  * Builder used to construct an local payment request.
- */
-class LocalPaymentRequest
-/**
+ *
  * @param hasUserLocationConsent is an optional parameter that informs the SDK
- * if your application has obtained consent from the user to collect location data in compliance with
- * [Google Play Developer Program policies](https://support.google.com/googleplay/android-developer/answer/10144311#personal-sensitive)
- * This flag enables PayPal to collect necessary information required for Fraud Detection and Risk Management.
+ *  if your application has obtained consent from the user to collect location data in compliance with
+ *  [Google Play Developer Program policies](https://support.google.com/googleplay/android-developer/answer/10144311#personal-sensitive)
+ *  This flag enables PayPal to collect necessary information required for Fraud Detection and Risk Management.
  *
- * @see [User Data policies for the Google Play Developer Program ](https://support.google.com/googleplay/android-developer/answer/10144311.personal-sensitive)
+ *  @see [User Data policies for the Google Play Developer Program ](https://support.google.com/googleplay/android-developer/answer/10144311.personal-sensitive)
  *
- * @see [Examples of prominent in-app disclosures](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en.Prominent%20in-app%20disclosure)
- */(private val hasUserLocationConsent: Boolean) {
-    /**
-     * @param address Optional - The address of the customer. An error will occur if this address is not valid.
-     */
-
-    var address: PostalAddress? = null
-
-    /**
-     * @param amount Optional - The amount for the transaction.
-     */
-
-    var amount: String? = null
-
-    /**
-     * @param bankIdentificationCode Optional - the Bank Identification
-     * Code of the customer (specific to iDEAL transactions).
-     */
-    var bic: String? = null
-
-    /**
-     * @param currencyCode Optional - A valid ISO currency code to use for the transaction. Defaults to merchant
-     * currency code if not set.
-     */
-
-    var currencyCode: String? = null
-
-    /**
-     * @param displayName Optional - The merchant name displayed inside of the Local Payment flow
-     * when starting the payment.
-     */
-
-    var displayName: String? = null
-
-    /**
-     * @param email Optional - Payer email of the customer.
-     */
-
-    var email: String? = null
-
-    /**
-     * @param givenName Optional - Given (first) name of the customer.
-     */
-
-    var givenName: String? = null
-
-    /**
-     * @param merchantAccountId Optional - A non-default merchant account to use for tokenization.
-     */
-
-    var merchantAccountId: String? = null
-
-    /**
-     * @param paymentType - The type of payment
-     */
-
-    var paymentType: String? = null
-
-    /**
-     * @param paymentTypeCountryCode The country code of the local payment. This value must be one of
-     * the supported country codes for a given local payment type listed.
-     * For local payments supported in multiple countries, this value
-     * may determine which banks are presented to the customer.
-     * @see [Supported Country Codes](https://developer.paypal.com/braintree/docs/guides/local-payment-methods/client-side-custom/android/v4.invoke-payment-flow)
-     */
-
-    var paymentTypeCountryCode: String? = null
-
-    /**
-     * @param phone Optional - Phone number of the customer.
-     */
-
-    var phone: String? = null
-
-    /**
-     * @param shippingAddressRequired - Indicates whether or not the payment needs to be shipped. For digital goods,
-     * this should be false. Defaults to false.
-     */
-    var isShippingAddressRequired: Boolean = false
-
-    /**
-     * @param surname Optional - Surname (last name) of the customer.
-     */
-
+ *  @see [Examples of prominent in-app disclosures](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en.Prominent%20in-app%20disclosure)
+ * @property address Optional - The address of the customer. An error will occur if this address
+ *                              is not valid.
+ * @property amount Optional - The amount for the transaction.
+ * @property bankIdentificationCode Optional - the Bank Identification Code
+ *                                  of the customer (specific to iDEAL transactions).
+ * @property currencyCode Optional - A valid ISO currency code to use for the transaction.
+ *                        Defaults to merchant currency code if not set.
+ * @property displayName Optional - The merchant name displayed inside of the Local Payment flow
+ *                       when starting the payment.
+ * @property email Optional - Payer email of the customer.
+ * @property givenName Optional - Given (first) name of the customer.
+ * @property merchantAccountId Optional - A non-default merchant account to use for tokenization.
+ * @property paymentType - The type of payment
+ * @property paymentTypeCountryCode The country code of the local payment. This value must be one of
+ *       the supported country codes for a given local payment type listed.
+ *       For local payments supported in multiple countries, this value
+ *       may determine which banks are presented to the customer.
+ *       @see [Supported Country Codes](https://developer.paypal.com/braintree/docs/guides/local-payment-methods/client-side-custom/android/v4.invoke-payment-flow)
+ * @property phone Optional - Phone number of the customer.
+ * @property isShippingAddressRequired - Indicates whether or not the payment needs to be shipped.
+ *                                    For digital goods, this should be false. Defaults to false.
+ * @property surname Optional - Surname (last name) of the customer.
+ */
+data class LocalPaymentRequest @JvmOverloads constructor(
+    val hasUserLocationConsent: Boolean,
+    var address: PostalAddress? = null,
+    var amount: String? = null,
+    var bankIdentificationCode: String? = null,
+    var currencyCode: String? = null,
+    var displayName: String? = null,
+    var email: String? = null,
+    var givenName: String? = null,
+    var merchantAccountId: String? = null,
+    var paymentType: String? = null,
+    var paymentTypeCountryCode: String? = null,
+    var phone: String? = null,
+    var isShippingAddressRequired: Boolean = false,
     var surname: String? = null
-
-    fun hasUserLocationConsent(): Boolean {
-        return hasUserLocationConsent
-    }
+) {
 
     fun build(returnUrl: String?, cancelUrl: String?): String {
         try {
@@ -121,7 +70,7 @@ class LocalPaymentRequest
                 .put(PHONE_KEY, phone)
                 .put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId)
                 .putOpt(PAYMENT_TYPE_COUNTRY_CODE_KEY, paymentTypeCountryCode)
-                .putOpt(BIC_KEY, bic)
+                .putOpt(BIC_KEY, bankIdentificationCode)
 
             if (address != null) {
                 payload.put(STREET_ADDRESS_KEY, address!!.streetAddress)

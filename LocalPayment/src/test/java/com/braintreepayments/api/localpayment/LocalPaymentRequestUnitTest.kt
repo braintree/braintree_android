@@ -23,22 +23,23 @@ class LocalPaymentRequestUnitTest {
         address.region = "CA"
         address.postalCode = "2585 GJ"
 
-        val request = LocalPaymentRequest(true)
-        request.paymentType = "ideal"
-        request.amount = "1.10"
-        request.address = address
-        request.phone = "639847934"
-        request.email = "jon@getbraintree.com"
-        request.givenName = "Jon"
-        request.surname = "Doe"
-        request.isShippingAddressRequired = false
-        request.merchantAccountId = "local-merchant-account-id"
-        request.currencyCode = "EUR"
-        request.paymentTypeCountryCode = "NL"
-        request.bic = "bank-id-code"
-        request.displayName = "My Brand!"
+        val request = LocalPaymentRequest(true,
+            address,
+            "1.10",
+            "bank-id-code",
+            "EUR",
+            "My Brand!",
+            "jon@getbraintree.com",
+            "Jon",
+            "local-merchant-account-id",
+            "ideal",
+            "NL",
+            "639847934",
+            false,
+            "Doe"
+        )
 
-        assertTrue(request.hasUserLocationConsent())
+        assertTrue(request.hasUserLocationConsent)
 
         val json = JSONObject(request.build("http://success-url.com", "http://cancel-url.com"))
 

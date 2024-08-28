@@ -1,5 +1,6 @@
 package com.braintreepayments.demo;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +41,7 @@ public class LocalPaymentFragment extends BaseFragment {
         return view;
     }
 
+    @SuppressLint("VisibleForTests")
     @Override
     public void onResume() {
         super.onResume();
@@ -82,7 +84,6 @@ public class LocalPaymentFragment extends BaseFragment {
         });
     }
 
-    @NonNull
     private static LocalPaymentRequest getLocalPaymentRequest() {
         PostalAddress address = new PostalAddress();
         address.setStreetAddress("Stadhouderskade 78");
@@ -101,6 +102,7 @@ public class LocalPaymentFragment extends BaseFragment {
         request.setShippingAddressRequired(true);
         request.setMerchantAccountId("altpay_eur");
         request.setCurrencyCode("EUR");
+
         return request;
     }
 
@@ -126,6 +128,7 @@ public class LocalPaymentFragment extends BaseFragment {
     private void storePendingRequest(LocalPaymentPendingRequest.Started request) {
         PendingRequestStore.getInstance().putLocalPaymentPendingRequest(requireContext(), request);
     }
+
     private LocalPaymentPendingRequest.Started getPendingRequest() {
         return PendingRequestStore.getInstance().getLocalPaymentPendingRequest(requireContext());
     }

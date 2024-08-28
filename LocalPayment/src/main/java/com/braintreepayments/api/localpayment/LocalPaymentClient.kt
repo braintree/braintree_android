@@ -2,6 +2,7 @@ package com.braintreepayments.api.localpayment
 
 import android.content.Context
 import android.net.Uri
+import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
@@ -10,7 +11,6 @@ import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
-import com.braintreepayments.api.core.ConfigurationException
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
@@ -20,7 +20,7 @@ import java.util.Locale
 /**
  * Used to integrate with local payments.
  */
-internal class LocalPaymentClient @VisibleForTesting internal constructor(
+class LocalPaymentClient @VisibleForTesting internal constructor(
     private val braintreeClient: BraintreeClient,
     private val dataCollector: DataCollector = DataCollector(braintreeClient),
     private val localPaymentApi: LocalPaymentApi = LocalPaymentApi(braintreeClient)
@@ -43,12 +43,6 @@ internal class LocalPaymentClient @VisibleForTesting internal constructor(
         authorization: String,
         returnUrlScheme: String?
     ) : this(BraintreeClient(context, authorization, returnUrlScheme))
-
-    /*@VisibleForTesting
-    internal constructor(braintreeClient: BraintreeClient) : this(
-        braintreeClient, DataCollector(braintreeClient),
-        LocalPaymentApi(braintreeClient)
-    )*/
 
     /**
      * Starts the payment flow for a [LocalPaymentRequest] and calls back a
@@ -84,13 +78,9 @@ internal class LocalPaymentClient @VisibleForTesting internal constructor(
             braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
                 if (configuration != null) {
                     if (!configuration.isPayPalEnabled) {
-                        authRequestFailure(
-                            ConfigurationException(
-                                "Local payments are not enabled for this " +
-                                        "merchant."
-                            ),
-                            callback
-                        )
+                        val errorMessage =
+                            "Local payments are not enabled for this merchant."
+                        authRequestFailure(BraintreeException(errorMessage), callback)
                         return@getConfiguration
                     }
 
@@ -100,22 +90,18 @@ internal class LocalPaymentClient @VisibleForTesting internal constructor(
                         ) { localPaymentResult: LocalPaymentAuthRequestParams?, createPaymentMethodError: Exception? ->
                             if (localPaymentResult != null) {
                                 val pairingId = localPaymentResult.paymentId
-                                if (pairingId.isNotEmpty()) {
+                                if (pairingId != null && !pairingId.isEmpty()) {
                                     payPalContextId = pairingId
                                 }
                                 buildBrowserSwitchOptions(
                                     localPaymentResult,
-                                    request.hasUserLocationConsent(),
+                                    request.hasUserLocationConsent,
                                     callback
                                 )
                             } else if (createPaymentMethodError != null) {
-                                authRequestFailure(
-                                    BraintreeException(
-                                        "An error occurred creating the " +
-                                                "local payment method."
-                                    ),
-                                    callback
-                                )
+                                val errorMessage =
+                                    "An error occurred creating the local payment method."
+                                authRequestFailure(BraintreeException(errorMessage), callback)
                             }
                         }
                     }
@@ -125,7 +111,7 @@ internal class LocalPaymentClient @VisibleForTesting internal constructor(
             }
         }
     }
-
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun buildBrowserSwitchOptions(
         localPaymentAuthRequestParams: LocalPaymentAuthRequestParams,
         hasUserLocationConsent: Boolean,
@@ -175,10 +161,10 @@ internal class LocalPaymentClient @VisibleForTesting internal constructor(
      * [LocalPaymentAuthResult.Success] returned to this method to tokenize the local
      * payment method and receive a [LocalPaymentNonce] on success.
      *
-     * @param context                         Android Context
+     * @param context Android Context
      * @param localPaymentAuthResult a [LocalPaymentAuthResult.Success] received from
      * [LocalPaymentLauncher.handleReturnToAppFromBrowser]
-     * @param callback                        [LocalPaymentInternalTokenizeCallback]
+     * @param callback [LocalPaymentInternalTokenizeCallback]
      */
     fun tokenize(
         context: Context,
@@ -194,13 +180,8 @@ internal class LocalPaymentClient @VisibleForTesting internal constructor(
 
         val deepLinkUri: Uri = browserSwitchResult.returnUrl
         if (deepLinkUri == null) {
-            tokenizeFailure(
-                BraintreeException(
-                    "LocalPayment encountered an error, return URL is " +
-                            "invalid."
-                ),
-                callback
-            )
+            val errorMessage = "LocalPayment encountered an error, return URL is invalid."
+            tokenizeFailure(BraintreeException(errorMessage), callback)
             return
         }
 

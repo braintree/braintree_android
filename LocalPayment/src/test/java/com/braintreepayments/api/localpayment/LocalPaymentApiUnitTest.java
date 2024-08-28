@@ -14,12 +14,12 @@ import static org.mockito.Mockito.verify;
 
 import android.net.Uri;
 
-import com.braintreepayments.api.core.IntegrationType;
-import com.braintreepayments.api.testutils.Fixtures;
-import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.core.IntegrationType;
 import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
+import com.braintreepayments.api.testutils.Fixtures;
+import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,8 +29,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
-
-import java.util.HashMap;
 
 @RunWith(RobolectricTestRunner.class)
 public class LocalPaymentApiUnitTest {

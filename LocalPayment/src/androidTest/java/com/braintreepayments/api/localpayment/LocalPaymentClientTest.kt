@@ -34,16 +34,14 @@ class LocalPaymentClientTest {
         address.locality = "Den Haag"
         address.postalCode = "2585 GJ"
 
-        val request = LocalPaymentRequest(true)
-        request.paymentType = "ideal"
-        request.amount = "1.10"
-        request.address = address
-        request.phone = "639847934"
-        request.email = "jon@getbraintree.com"
-        request.givenName = "Jon"
-        request.surname = "Doe"
-        request.isShippingAddressRequired = true
-        request.currencyCode = "EUR"
+        val request = LocalPaymentRequest(true,
+            address = address,
+            amount = "1.10",
+            currencyCode = "EUR",
+            email = "jon@getbraintree.com",
+            givenName = "Jon",
+            phone = "639847934",
+            paymentType = "ideal", isShippingAddressRequired = true, paymentTypeCountryCode = "NL")
 
         val sut = LocalPaymentClient(braintreeClient)
         sut.createPaymentAuthRequest(request) { localPaymentAuthRequest: LocalPaymentAuthRequest ->
