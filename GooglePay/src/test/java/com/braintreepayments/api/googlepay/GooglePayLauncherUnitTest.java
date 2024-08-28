@@ -1,7 +1,9 @@
 package com.braintreepayments.api.googlepay;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -10,15 +12,11 @@ import androidx.activity.result.ActivityResultRegistry;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.fragment.app.FragmentActivity;
 
-import com.braintreepayments.api.googlepay.GooglePayLauncher;
-import com.braintreepayments.api.googlepay.GooglePayLauncherCallback;
-import com.braintreepayments.api.googlepay.GooglePayPaymentAuthRequestParams;
-import com.braintreepayments.api.googlepay.GooglePayPaymentAuthResult;
-import com.braintreepayments.api.googlepay.GooglePayRequest;
 import com.google.android.gms.wallet.PaymentDataRequest;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +28,8 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 public class GooglePayLauncherUnitTest {
 
+    private AutoCloseable closeable;
+
     @Mock
     ActivityResultLauncher<GooglePayPaymentAuthRequestParams> activityLauncher;
 
@@ -37,8 +37,13 @@ public class GooglePayLauncherUnitTest {
 
     @Before
     public void beforeEach() {
-        MockitoAnnotations.initMocks(this);
+        closeable = MockitoAnnotations.openMocks(this);
         callback = mock(GooglePayLauncherCallback.class);
+    }
+
+    @After
+    public void teardown() throws Exception {
+        closeable.close();
     }
 
     @Test
@@ -47,8 +52,8 @@ public class GooglePayLauncherUnitTest {
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
         FragmentActivity lifecycleOwner = new FragmentActivity();
 
-        GooglePayLauncher sut = new GooglePayLauncher(activityResultRegistry, lifecycleOwner,
-                callback);
+        doReturn(activityLauncher).when(activityResultRegistry).register(any(), any(), any(), any());
+        new GooglePayLauncher(activityResultRegistry, lifecycleOwner, callback);
 
         verify(activityResultRegistry).register(eq(expectedKey), same(lifecycleOwner),
                 Mockito.<ActivityResultContract<GooglePayPaymentAuthRequestParams, GooglePayPaymentAuthResult>>any(),
@@ -71,9 +76,8 @@ public class GooglePayLauncherUnitTest {
         ActivityResultRegistry activityResultRegistry = mock(ActivityResultRegistry.class);
         FragmentActivity lifecycleOwner = new FragmentActivity();
 
-        GooglePayLauncher sut = new GooglePayLauncher(activityResultRegistry, lifecycleOwner,
-                callback);
-        sut.activityLauncher = activityLauncher;
+        doReturn(activityLauncher).when(activityResultRegistry).register(any(), any(), any(), any());
+        GooglePayLauncher sut = new GooglePayLauncher(activityResultRegistry, lifecycleOwner, callback);
 
         sut.launch(intentData);
         verify(activityLauncher).launch(intentData);
