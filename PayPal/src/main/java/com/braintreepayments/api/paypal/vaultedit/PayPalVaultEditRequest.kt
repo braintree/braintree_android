@@ -18,21 +18,6 @@ data class PayPalVaultEditRequest(
     var correlationId: String? = null
 ) {
     val hermesPath: String = "v1/paypal_hermes/generate_edit_fi_url"
-    val parameters = mutableMapOf<String, Any>()
-
-    fun parameters(): Map<String, Any> {
-
-        parameters["edit_paypal_vault_id"] = editPaypalVaultId
-
-        if (correlationId != null) {
-            parameters["correlation_id"] = correlationId!!
-        }
-
-        parameters["return_url"] = "sdk.ios.braintree"
-        parameters["return_url"] = "onetouch/v1"
-
-        return parameters
-    }
 }
 
 

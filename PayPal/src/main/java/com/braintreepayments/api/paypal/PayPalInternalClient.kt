@@ -2,12 +2,15 @@ package com.braintreepayments.api.paypal
 
 import android.content.Context
 import android.net.Uri
+import com.braintreepayments.api.ExperimentalBetaApi
 import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthCallback
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -130,6 +133,31 @@ internal class PayPalInternalClient(
         return redirectUri.getQueryParameter("ba_token")
             ?: redirectUri.getQueryParameter("token")
     }
+
+    @ExperimentalBetaApi
+    fun sendVaultEditRequest(payPalVaultEditRequest: PayPalVaultEditRequest, payPalVaultEditAuthCallback: PayPalVaultEditAuthCallback) {
+
+        val parameters = mutableMapOf<String, Any>()
+
+        fun parameters(): Map<String, Any> {
+
+            parameters["edit_paypal_vault_id"] = editPaypalVaultId
+
+            if (correlationId != null) {
+                parameters["correlation_id"] = correlationId!!
+            }
+
+            parameters["return_url"] = "sdk.ios.braintree"
+            parameters["return_url"] = "onetouch/v1"
+
+            return parameters
+        }
+
+        braintreeClient.sendPOST("URL", JSONObject("").toString()) { response, error ->
+
+        }
+    }
+
 
     companion object {
         private const val CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource"
