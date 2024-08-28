@@ -27,21 +27,21 @@ internal class ConfigurationLoader internal constructor(
     }
 
     private fun loadConfigurationInBackground(
-        auth: Authorization,
+        authorization: Authorization,
         callback: ConfigurationLoaderCallback
     ) {
-        val url = Uri.parse(auth.configUrl)
+        val url = Uri.parse(authorization.configUrl)
             .buildUpon()
             .appendQueryParameter("configVersion", "3")
             .build()
             .toString()
 
-        val cbRef = WeakReference(callback)
+        val callbackReference = WeakReference(callback)
         threadScheduler.runOnBackground {
-            val response = loadConfigFromCache(url, auth) ?: loadConfigFromNetwork(url, auth)
+            val response =
+                loadConfigFromCache(url, authorization) ?: loadConfigFromNetwork(url, authorization)
             threadScheduler.runOnMain {
-                val cb = cbRef.get()
-                cb?.onResult(response)
+                callbackReference.get()?.onResult(response)
             }
         }
     }
