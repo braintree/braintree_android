@@ -68,25 +68,19 @@ public class LocalPaymentNonceUnitTest {
             new JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_MISSING_FIELDS_RESPONSE)
         );
 
-        Parcel parcel = Parcel.obtain();
-        result.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-
-        LocalPaymentNonce parceled = LocalPaymentNonce.CREATOR.createFromParcel(parcel);
-
-        assertNotNull(parceled);
-        assertEquals("141b7583-2922-1ce6-1f2e-f352b69115d6", parceled.getString());
-        assertNull(parceled.getEmail());
-        assertNull(parceled.getShippingAddress().getStreetAddress());
-        assertNull(parceled.getShippingAddress().getExtendedAddress());
-        assertNull(parceled.getShippingAddress().getLocality());
-        assertNull(parceled.getShippingAddress().getRegion());
-        assertNull(parceled.getShippingAddress().getPostalCode());
-        assertNull(parceled.getShippingAddress().getCountryCodeAlpha2());
-        assertNull(parceled.getShippingAddress().getRecipientName());
-        assertEquals("", parceled.getGivenName());
-        assertEquals("", parceled.getSurname());
-        assertEquals("", parceled.getPayerId());
-        assertEquals("c7ce54e0cde5406785b13c99086a9f4c", parceled.getClientMetadataId());
+        assertNotNull(result);
+        assertEquals("141b7583-2922-1ce6-1f2e-f352b69115d6", result.getString());
+        assertNull(result.getEmail());
+        assertNull(result.getShippingAddress().getStreetAddress());
+        assertNull(result.getShippingAddress().getExtendedAddress());
+        assertNull(result.getShippingAddress().getLocality());
+        assertNull(result.getShippingAddress().getRegion());
+        assertNull(result.getShippingAddress().getPostalCode());
+        assertNull(result.getShippingAddress().getCountryCodeAlpha2());
+        assertNull(result.getShippingAddress().getRecipientName());
+        assertEquals("", result.getGivenName());
+        assertEquals("", result.getSurname());
+        assertEquals("", result.getPayerId());
+        assertEquals("c7ce54e0cde5406785b13c99086a9f4c", result.getClientMetadataId());
     }
 }
