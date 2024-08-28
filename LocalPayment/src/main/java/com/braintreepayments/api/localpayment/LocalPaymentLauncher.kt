@@ -33,14 +33,16 @@ class LocalPaymentLauncher internal constructor(private val browserSwitchClient:
     ): LocalPaymentPendingRequest {
         val params = localPaymentAuthRequest.requestParams
         val browserSwitchPendingRequest =
-            browserSwitchClient.start(activity, params.browserSwitchOptions!!)
+            params.browserSwitchOptions?.let { browserSwitchClient.start(activity, it) }
         return when (browserSwitchPendingRequest) {
             is BrowserSwitchStartResult.Started -> {
                 LocalPaymentPendingRequest.Started(browserSwitchPendingRequest.pendingRequest)
             }
+
             is BrowserSwitchStartResult.Failure -> {
                 LocalPaymentPendingRequest.Failure(browserSwitchPendingRequest.error)
             }
+            null ->  LocalPaymentPendingRequest.Failure(Exception("Parameters not valid"))
         }
     }
 
