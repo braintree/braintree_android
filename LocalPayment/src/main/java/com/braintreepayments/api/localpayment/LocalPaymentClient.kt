@@ -20,10 +20,10 @@ import java.util.Locale
 /**
  * Used to integrate with local payments.
  */
-class LocalPaymentClient @VisibleForTesting internal constructor(
+internal class LocalPaymentClient @VisibleForTesting internal constructor(
     private val braintreeClient: BraintreeClient,
-    private val dataCollector: DataCollector,
-    private val localPaymentApi: LocalPaymentApi
+    private val dataCollector: DataCollector = DataCollector(braintreeClient),
+    private val localPaymentApi: LocalPaymentApi = LocalPaymentApi(braintreeClient)
 ) {
     /**
      * Used for linking events from the client to server side request
@@ -44,11 +44,11 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
         returnUrlScheme: String?
     ) : this(BraintreeClient(context, authorization, returnUrlScheme))
 
-    @VisibleForTesting
+    /*@VisibleForTesting
     internal constructor(braintreeClient: BraintreeClient) : this(
         braintreeClient, DataCollector(braintreeClient),
         LocalPaymentApi(braintreeClient)
-    )
+    )*/
 
     /**
      * Starts the payment flow for a [LocalPaymentRequest] and calls back a
@@ -94,27 +94,29 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
                         return@getConfiguration
                     }
 
-                    localPaymentApi.createPaymentMethod(
-                        request!!
-                    ) { localPaymentResult: LocalPaymentAuthRequestParams?, createPaymentMethodError: Exception? ->
-                        if (localPaymentResult != null) {
-                            val pairingId = localPaymentResult.paymentId
-                            if (pairingId != null && !pairingId.isEmpty()) {
-                                payPalContextId = pairingId
+                    request?.let {
+                        localPaymentApi.createPaymentMethod(
+                            it
+                        ) { localPaymentResult: LocalPaymentAuthRequestParams?, createPaymentMethodError: Exception? ->
+                            if (localPaymentResult != null) {
+                                val pairingId = localPaymentResult.paymentId
+                                if (pairingId.isNotEmpty()) {
+                                    payPalContextId = pairingId
+                                }
+                                buildBrowserSwitchOptions(
+                                    localPaymentResult,
+                                    request.hasUserLocationConsent(),
+                                    callback
+                                )
+                            } else if (createPaymentMethodError != null) {
+                                authRequestFailure(
+                                    BraintreeException(
+                                        "An error occurred creating the " +
+                                                "local payment method."
+                                    ),
+                                    callback
+                                )
                             }
-                            buildBrowserSwitchOptions(
-                                localPaymentResult,
-                                request.hasUserLocationConsent(),
-                                callback
-                            )
-                        } else if (createPaymentMethodError != null) {
-                            authRequestFailure(
-                                BraintreeException(
-                                    "An error occurred creating the " +
-                                            "local payment method."
-                                ),
-                                callback
-                            )
                         }
                     }
                 } else if (error != null) {

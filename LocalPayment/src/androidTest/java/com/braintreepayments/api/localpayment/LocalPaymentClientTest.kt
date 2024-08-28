@@ -45,14 +45,14 @@ class LocalPaymentClientTest {
         request.isShippingAddressRequired = true
         request.currencyCode = "EUR"
 
-        val sut = LocalPaymentClient(braintreeClient!!)
+        val sut = LocalPaymentClient(braintreeClient)
         sut.createPaymentAuthRequest(request) { localPaymentAuthRequest: LocalPaymentAuthRequest ->
             assertTrue(localPaymentAuthRequest is LocalPaymentAuthRequest.ReadyToLaunch)
             assertNotNull((localPaymentAuthRequest as LocalPaymentAuthRequest.ReadyToLaunch).requestParams.approvalUrl)
             assertNotNull(localPaymentAuthRequest.requestParams.paymentId)
-            countDownLatch!!.countDown()
+            countDownLatch.countDown()
         }
 
-        countDownLatch!!.await()
+        countDownLatch.await()
     }
 }
