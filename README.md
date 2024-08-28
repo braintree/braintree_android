@@ -53,6 +53,10 @@ Start with [**'Hello, Client!'**](https://developer.paypal.com/braintree/docs/st
 
 Next, read the [**full documentation**](https://developer.paypal.com/braintree/docs/guides/overview) for information about integration options, such as Drop-In UI, PayPal and credit card tokenization.
 
+## Upgrade Your SDK Version
+
+See [**Android Developer Guidelines**](https://developer.android.com/build/dependencies) for details on how to add and manage build dependencies. 
+
 ## Versions
 
 This SDK abides by our Client SDK Deprecation Policy. For more information on the potential statuses of an SDK check our [developer docs](https://developer.paypal.com/braintree/docs/guides/client-sdk/deprecation-policy).
