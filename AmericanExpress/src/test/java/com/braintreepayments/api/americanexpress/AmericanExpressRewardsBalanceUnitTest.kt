@@ -1,6 +1,5 @@
 package com.braintreepayments.api.americanexpress
 
-import android.os.Parcel
 import com.braintreepayments.api.americanexpress.AmericanExpressRewardsBalance.Companion.fromJson
 import com.braintreepayments.api.testutils.Fixtures
 import org.json.JSONException
