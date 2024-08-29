@@ -3,6 +3,7 @@ package com.braintreepayments.api.core
 import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.sharedutils.HttpRequest
+import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.sharedutils.TLSSocketFactory
 import java.util.Locale
@@ -65,7 +66,7 @@ internal class BraintreeGraphQLClient(
         data: String?,
         configuration: Configuration,
         authorization: Authorization
-    ): String {
+    ): HttpResponse {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
             throw BraintreeException(message)
@@ -79,7 +80,7 @@ internal class BraintreeGraphQLClient(
             .addHeader("Authorization",
                 String.format(Locale.US, "Bearer %s", authorization.bearer))
             .addHeader("Braintree-Version", GraphQLConstants.Headers.API_VERSION)
-        return httpClient.sendRequest(request).body ?: ""
+        return httpClient.sendRequest(request)
     }
 
     companion object {

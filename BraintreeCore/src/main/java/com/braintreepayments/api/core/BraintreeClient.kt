@@ -5,12 +5,14 @@ import android.content.pm.ActivityInfo
 import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
+import androidx.annotation.WorkerThread
 import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
-import org.json.JSONException
+import com.braintreepayments.api.sharedutils.Scheduler
 import org.json.JSONObject
+import java.lang.ref.WeakReference
 
 /**
  * Core Braintree class that handles network requests.
@@ -50,6 +52,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     val appLinkReturnUri: Uri?,
+    private val threadScheduler: Scheduler
 ) {
 
     private val crashReporter: CrashReporter
@@ -68,7 +71,8 @@ class BraintreeClient @VisibleForTesting internal constructor(
         manifestValidator = params.manifestValidator,
         returnUrlScheme = params.returnUrlScheme,
         braintreeDeepLinkReturnUrlScheme = params.braintreeReturnUrlScheme,
-        appLinkReturnUri = params.appLinkReturnUri
+        appLinkReturnUri = params.appLinkReturnUri,
+        threadScheduler = params.threadScheduler
     )
 
     /**
@@ -132,7 +136,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
             } else {
                 callback.onResult(null, response.error)
             }
-            response.timing?.let { sendAnalyticsTimingEvent("/v1/configuration", it) }
+            response.timing?.let { sendRESTTimingEvent("/v1/configuration", it) }
         }
     }
 
@@ -209,22 +213,48 @@ class BraintreeClient @VisibleForTesting internal constructor(
             responseCallback.onResult(null, createAuthError())
             return
         }
+        val responseCallbackRef = WeakReference(responseCallback)
         getConfiguration { configuration, configError ->
             if (configuration != null) {
-                httpClient.sendRequest(
-                    request = request,
-                    configuration = configuration,
-                    authorization = authorization
-                ) { response, httpError ->
-                    response?.let {
-                        try {
-                            sendAnalyticsTimingEvent(request.path, it.timing)
-                            responseCallback.onResult(it.body, null)
-                        } catch (jsonException: JSONException) {
-                            responseCallback.onResult(null, jsonException)
-                        }
-                    } ?: httpError?.let { error ->
-                        responseCallback.onResult(null, error)
+                threadScheduler.runOnBackground {
+                    val (responseBody, error) = sendHttpRequestSync(request, configuration)
+                    threadScheduler.runOnMain {
+                        responseCallbackRef.get()?.onResult(responseBody, error)
+                    }
+                }
+            } else {
+                responseCallback.onResult(null, configError)
+            }
+        }
+    }
+
+    @WorkerThread
+    private fun sendHttpRequestSync(
+        request: InternalHttpRequest,
+        configuration: Configuration
+    ): Pair<String?, Exception?> = try {
+        val response = httpClient.sendRequestSync(request, configuration, authorization)
+        sendRESTTimingEvent(request.path, response.timing)
+        Pair(response.body, null)
+    } catch (error: Exception) {
+        Pair(null, error)
+    }
+
+    /**
+     * @suppress
+     */
+    fun sendGraphQLPOST(json: JSONObject?, responseCallback: HttpResponseCallback) {
+        if (authorization is InvalidAuthorization) {
+            responseCallback.onResult(null, createAuthError())
+            return
+        }
+        val responseCallbackRef = WeakReference(responseCallback)
+        getConfiguration { configuration, configError ->
+            if (configuration != null) {
+                threadScheduler.runOnBackground {
+                    val (responseBody, error) = sendGraphQLPOSTSync(json, configuration)
+                    threadScheduler.runOnMain {
+                        responseCallbackRef.get()?.onResult(responseBody, error)
                     }
                 }
             } else {
@@ -236,46 +266,16 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    fun sendGraphQLPOST(json: JSONObject?, responseCallback: HttpResponseCallback) {
-        if (authorization is InvalidAuthorization) {
-            responseCallback.onResult(null, createAuthError())
-            return
-        }
-        getConfiguration { configuration, configError ->
-            if (configuration != null) {
-                graphQLClient.post(
-                    json?.toString(),
-                    configuration,
-                    authorization
-                ) { response, httpError ->
-                    response?.let {
-                        try {
-                            json?.optString(GraphQLConstants.Keys.QUERY)
-                                ?.let { query ->
-                                    val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
-                                    val finalQuery = query.replace(queryDiscardHolder, "")
-                                    val params = AnalyticsEventParams(
-                                        startTime = it.timing.startTime,
-                                        endTime = it.timing.endTime,
-                                        endpoint = finalQuery
-                                    )
-                                    sendAnalyticsEvent(
-                                        CoreAnalytics.apiRequestLatency,
-                                        params
-                                    )
-                                }
-                            responseCallback.onResult(it.body, null)
-                        } catch (jsonException: JSONException) {
-                            responseCallback.onResult(null, jsonException)
-                        }
-                    } ?: httpError?.let { error ->
-                        responseCallback.onResult(null, error)
-                    }
-                }
-            } else {
-                responseCallback.onResult(null, configError)
-            }
-        }
+    private fun sendGraphQLPOSTSync(
+        json: JSONObject?,
+        configuration: Configuration
+    ): Pair<String?, Exception?> = try {
+        val data = json?.toString()
+        val response = graphQLClient.post("", data, configuration, authorization)
+        sendGraphQLTimingEvent(json, response.timing)
+        Pair(response.body, null)
+    } catch (graphQLError: Exception) {
+        Pair(null, graphQLError)
     }
 
     /**
@@ -326,7 +326,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
         return launchesBrowserSwitchAsNewTask
     }
 
-    private fun sendAnalyticsTimingEvent(endpoint: String, timing: HttpResponseTiming) {
+    private fun sendRESTTimingEvent(endpoint: String, timing: HttpResponseTiming) {
         var cleanedPath = endpoint.replace(Regex("/merchants/([A-Za-z0-9]+)/client_api"), "")
         cleanedPath = cleanedPath.replace(
             Regex("payment_methods/.*/three_d_secure"), "payment_methods/three_d_secure"
@@ -340,6 +340,18 @@ class BraintreeClient @VisibleForTesting internal constructor(
                 endpoint = cleanedPath
             )
         )
+    }
+
+    private fun sendGraphQLTimingEvent(
+        graphQLRequestBody: JSONObject?,
+        timing: HttpResponseTiming
+    ) = graphQLRequestBody?.optString(GraphQLConstants.Keys.QUERY)?.let { query ->
+        val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
+        val endpoint = query.replace(queryDiscardHolder, "")
+        val params = timing.run {
+            AnalyticsEventParams(startTime = startTime, endTime = endTime, endpoint = endpoint)
+        }
+        sendAnalyticsEvent(CoreAnalytics.apiRequestLatency, params)
     }
 
     /**
