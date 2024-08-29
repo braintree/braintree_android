@@ -14,15 +14,19 @@ internal class VenmoApi(
     private val braintreeClient: BraintreeClient,
     private val apiClient: ApiClient
 ) {
+
     fun createPaymentContext(
-        request: VenmoRequest, venmoProfileId: String?,
+        request: VenmoRequest,
+        venmoProfileId: String?,
         callback: VenmoApiCallback
     ) {
         val params = JSONObject()
         try {
             params.put(
                 "query",
-                "mutation CreateVenmoPaymentContext(\$input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: \$input) { venmoPaymentContext { id } } }"
+                "mutation CreateVenmoPaymentContext(\$input: " +
+                        "CreateVenmoPaymentContextInput!) { createVenmoPaymentContext" +
+                        "(input: \$input) { venmoPaymentContext { id } } }"
             )
             val input = JSONObject()
             input.put("paymentMethodUsage", request.paymentMethodUsageAsString)
@@ -106,8 +110,13 @@ internal class VenmoApi(
         try {
             params.put(
                 "query",
-                "query PaymentContext(\$id: ID!) { node(id: \$id) { ... on VenmoPaymentContext { paymentMethodId userName payerInfo { firstName lastName phoneNumber email externalId userName " +
-                        "shippingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } billingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } } } } }"
+                "query PaymentContext(\$id: ID!) { node(id: \$id) " +
+                        "{ ... on VenmoPaymentContext { paymentMethodId userName payerInfo " +
+                        "{ firstName lastName phoneNumber email externalId userName " +
+                        "shippingAddress { fullName addressLine1 addressLine2 " +
+                        "adminArea1 adminArea2 postalCode countryCode } " +
+                        "billingAddress { fullName addressLine1 addressLine2 " +
+                        "adminArea1 adminArea2 postalCode countryCode } } } } }"
             )
             val variables = JSONObject()
             variables.put("id", paymentContextId)

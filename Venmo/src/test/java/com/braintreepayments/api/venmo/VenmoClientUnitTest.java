@@ -144,7 +144,7 @@ public class VenmoClientUnitTest {
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
 
         InOrder inOrder = Mockito.inOrder(venmoPaymentAuthRequestCallback, braintreeClient);
-        inOrder.verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_STARTED);
+        inOrder.verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_STARTED,new AnalyticsEventParams());
 
         ArgumentCaptor<VenmoPaymentAuthRequest> captor =
                 ArgumentCaptor.forClass(VenmoPaymentAuthRequest.class);
@@ -154,7 +154,7 @@ public class VenmoClientUnitTest {
         assertTrue(paymentAuthRequest instanceof VenmoPaymentAuthRequest.ReadyToLaunch);
         VenmoPaymentAuthRequestParams params = ((VenmoPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams();
 
-        BrowserSwitchOptions browserSwitchOptions = params.browserSwitchOptions;
+        BrowserSwitchOptions browserSwitchOptions = params.getBrowserSwitchOptions();
         assertEquals(BraintreeRequestCodes.VENMO.getCode(), browserSwitchOptions.getRequestCode());
         assertEquals("com.example", browserSwitchOptions.getReturnUrlScheme());
 
@@ -245,7 +245,7 @@ public class VenmoClientUnitTest {
         VenmoPaymentAuthRequest paymentAuthRequest = captor.getValue();
         assertTrue(paymentAuthRequest instanceof VenmoPaymentAuthRequest.ReadyToLaunch);
         VenmoPaymentAuthRequestParams params = ((VenmoPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams();
-        BrowserSwitchOptions browserSwitchOptions = params.browserSwitchOptions;
+        BrowserSwitchOptions browserSwitchOptions = params.getBrowserSwitchOptions();
 
         Uri url = browserSwitchOptions.getUrl();
         assertEquals("merchant-id", url.getQueryParameter("braintree_merchant_id"));
@@ -278,7 +278,7 @@ public class VenmoClientUnitTest {
         VenmoPaymentAuthRequest paymentAuthRequest = captor.getValue();
         assertTrue(paymentAuthRequest instanceof VenmoPaymentAuthRequest.ReadyToLaunch);
         VenmoPaymentAuthRequestParams params = ((VenmoPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams();
-        BrowserSwitchOptions browserSwitchOptions = params.browserSwitchOptions;
+        BrowserSwitchOptions browserSwitchOptions = params.getBrowserSwitchOptions();
 
         Uri url = browserSwitchOptions.getUrl();
         assertEquals("second-pwv-profile-id", url.getQueryParameter("braintree_merchant_id"));
@@ -299,8 +299,7 @@ public class VenmoClientUnitTest {
         VenmoClient sut =
                 new VenmoClient(braintreeClient, venmoApi, sharedPrefsWriter);
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
-
-        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_STARTED);
+        verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_STARTED,new AnalyticsEventParams());
     }
 
     @Test

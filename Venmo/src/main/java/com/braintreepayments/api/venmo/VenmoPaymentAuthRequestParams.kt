@@ -5,4 +5,6 @@ import com.braintreepayments.api.BrowserSwitchOptions
 /**
  * Used to request Venmo authentication via [VenmoLauncher.launch] )}
  */
-class VenmoPaymentAuthRequestParams internal constructor(@JvmField val browserSwitchOptions: BrowserSwitchOptions)
+class VenmoPaymentAuthRequestParams internal constructor(
+    val browserSwitchOptions: BrowserSwitchOptions
+)

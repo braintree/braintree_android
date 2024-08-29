@@ -25,7 +25,8 @@ import java.util.Objects
  * Used to create and tokenize Venmo accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/venmo/overview)
  */
 class VenmoClient @VisibleForTesting internal constructor(
-    private val braintreeClient: BraintreeClient, private val venmoApi: VenmoApi,
+    private val braintreeClient: BraintreeClient,
+    private val venmoApi: VenmoApi,
     private val sharedPrefsWriter: VenmoSharedPrefsWriter
 ) {
     /**
@@ -215,75 +216,14 @@ class VenmoClient @VisibleForTesting internal constructor(
         callback: VenmoTokenizeCallback
     ) {
         val venmoPaymentAuthResultInfo = paymentAuthResult.paymentAuthInfo
-        val browserSwitchResultInfo: BrowserSwitchFinalResult.Success = venmoPaymentAuthResultInfo.browserSwitchResultInfo
+        val browserSwitchResultInfo: BrowserSwitchFinalResult.Success =
+            venmoPaymentAuthResultInfo.browserSwitchResultInfo
 
         val deepLinkUri: Uri = browserSwitchResultInfo.returnUrl
         if (deepLinkUri != null) {
             braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED, analyticsParams)
             if (Objects.requireNonNull(deepLinkUri.path)!!.contains("success")) {
-                val paymentContextId = parseResourceId(deepLinkUri.toString())
-                val paymentMethodNonce = parsePaymentMethodNonce(deepLinkUri.toString())
-                val username = parseUsername(deepLinkUri.toString())
-
-                val isClientTokenAuth = (braintreeClient.authorization is ClientToken)
-
-                if (paymentContextId != null) {
-                    venmoApi.createNonceFromPaymentContext(paymentContextId) { nonce: VenmoAccountNonce?, error: Exception? ->
-                        if (nonce != null) {
-                            isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(
-                                braintreeClient.applicationContext
-                            )
-                            if (isVaultRequest && isClientTokenAuth) {
-                                vaultVenmoAccountNonce(
-                                    nonce.string
-                                ) { venmoAccountNonce: VenmoAccountNonce?, vaultError: Exception? ->
-                                    if (venmoAccountNonce != null) {
-                                        callbackSuccess(
-                                            callback,
-                                            VenmoResult.Success(venmoAccountNonce)
-                                        )
-                                    } else if (vaultError != null) {
-                                        callbackTokenizeFailure(
-                                            callback,
-                                            VenmoResult.Failure(vaultError)
-                                        )
-                                    }
-                                }
-                            } else {
-                                callbackSuccess(callback, VenmoResult.Success(nonce))
-                            }
-                        } else if (error != null) {
-                            callbackTokenizeFailure(callback, VenmoResult.Failure(error))
-                        }
-                    }
-                } else if (paymentMethodNonce != null && username != null) {
-                    isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(
-                        braintreeClient.applicationContext
-                    )
-                    if (isVaultRequest && isClientTokenAuth) {
-                        vaultVenmoAccountNonce(paymentMethodNonce) { venmoAccountNonce: VenmoAccountNonce?, error: Exception? ->
-                            if (venmoAccountNonce != null) {
-                                callbackSuccess(callback, VenmoResult.Success(venmoAccountNonce))
-                            } else if (error != null) {
-                                callbackTokenizeFailure(callback, VenmoResult.Failure(error))
-                            }
-                        }
-                    } else {
-                        val venmoAccountNonce = VenmoAccountNonce(
-                            paymentMethodNonce,
-                            false,
-                            null,
-                            null,
-                            null,
-                            null,
-                            null,
-                            username,
-                            null,
-                            null
-                        )
-                        callbackSuccess(callback, VenmoResult.Success(venmoAccountNonce))
-                    }
-                }
+                callbackTokenizeSuccess(deepLinkUri, callback)
             } else if (deepLinkUri.path!!.contains("cancel")) {
                 callbackTokenizeCancel(callback)
             } else if (deepLinkUri.path!!.contains("error")) {
@@ -294,6 +234,77 @@ class VenmoClient @VisibleForTesting internal constructor(
             }
         } else {
             callbackTokenizeFailure(callback, VenmoResult.Failure(Exception("Unknown error")))
+        }
+    }
+
+    private fun callbackTokenizeSuccess(deepLinkUri: Uri, callback: VenmoTokenizeCallback) {
+        val paymentContextId = parseResourceId(deepLinkUri.toString())
+        val paymentMethodNonce = parsePaymentMethodNonce(deepLinkUri.toString())
+        val username = parseUsername(deepLinkUri.toString())
+
+        val isClientTokenAuth = (braintreeClient.authorization is ClientToken)
+        if (paymentContextId != null) {
+
+            venmoApi.createNonceFromPaymentContext(paymentContextId) { nonce: VenmoAccountNonce?, error: Exception? ->
+
+                if (nonce != null) {
+                    isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(
+                        braintreeClient.applicationContext
+                    )
+                    if (isVaultRequest && isClientTokenAuth) {
+                        vaultVenmoAccountNonce(
+                            nonce.string
+                        ) { venmoAccountNonce: VenmoAccountNonce?, vaultError: Exception? ->
+                            if (venmoAccountNonce != null) {
+                                callbackSuccess(
+                                    callback,
+                                    VenmoResult.Success(venmoAccountNonce)
+                                )
+                            } else if (vaultError != null) {
+                                callbackTokenizeFailure(
+                                    callback,
+                                    VenmoResult.Failure(vaultError)
+                                )
+                            }
+                        }
+                    } else {
+                        callbackSuccess(callback, VenmoResult.Success(nonce))
+                    }
+                } else if (error != null) {
+                    callbackTokenizeFailure(callback, VenmoResult.Failure(error))
+                }
+            }
+        } else if (paymentMethodNonce != null && username != null) {
+            isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(
+                braintreeClient.applicationContext
+            )
+
+            if (isVaultRequest && isClientTokenAuth) {
+                vaultVenmoAccountNonce(
+                    paymentMethodNonce
+                ) { venmoAccountNonce: VenmoAccountNonce?, error: Exception? ->
+
+                    if (venmoAccountNonce != null) {
+                        callbackSuccess(callback, VenmoResult.Success(venmoAccountNonce))
+                    } else if (error != null) {
+                        callbackTokenizeFailure(callback, VenmoResult.Failure(error))
+                    }
+                }
+            } else {
+                val venmoAccountNonce = VenmoAccountNonce(
+                    paymentMethodNonce,
+                    false,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    username,
+                    null,
+                    null
+                )
+                callbackSuccess(callback, VenmoResult.Success(venmoAccountNonce))
+            }
         }
     }
 
