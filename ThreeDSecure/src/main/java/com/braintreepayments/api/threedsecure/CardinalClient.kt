@@ -59,6 +59,8 @@ internal class CardinalClient {
         threeDSecureParams: ThreeDSecureParams,
         challengeObserver: CardinalChallengeObserver?
     ) {
+        if (challengeObserver == null) throw BraintreeException("challengeObserver is null")
+
         val lookup = threeDSecureParams.lookup
         val transactionId = lookup?.transactionId
         val paReq = lookup?.pareq

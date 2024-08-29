@@ -12,7 +12,8 @@ internal class ThreeDSecureAPI(
 ) {
 
     fun performLookup(
-        request: ThreeDSecureRequest, cardinalConsumerSessionId: String?,
+        request: ThreeDSecureRequest,
+        cardinalConsumerSessionId: String?,
         callback: ThreeDSecureResultCallback
     ) {
         braintreeClient.sendPOST(
@@ -36,7 +37,7 @@ internal class ThreeDSecureAPI(
 
     fun authenticateCardinalJWT(
         threeDSecureParams: ThreeDSecureParams,
-        cardinalJWT: String?,
+        cardinalJWT: String,
         callback: ThreeDSecureResultCallback
     ) {
         val lookupCardNonce = threeDSecureParams.threeDSecureNonce

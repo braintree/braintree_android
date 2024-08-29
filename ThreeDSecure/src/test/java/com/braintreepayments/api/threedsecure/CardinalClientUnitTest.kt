@@ -272,6 +272,17 @@ class CardinalClientUnitTest {
     }
 
     @Test
+    fun `when continueLookup is called with a null challengeObserver, throws BraintreeException`() {
+        val sut = CardinalClient()
+
+        try {
+            sut.continueLookup(mockk(), null)
+        } catch (e: BraintreeException) {
+            assertEquals("challengeObserver is null", e.message)
+        }
+    }
+
+    @Test
     fun cleanup_cleansUpCardinalInstance() {
         every { Cardinal.getInstance() } returns cardinalInstance
 
