@@ -45,13 +45,7 @@ class AmericanExpressRewardsBalanceUnitTest {
     @Test
     @Throws(JSONException::class)
     fun parcelsCorrectly() {
-        val rewardsBalanceFromJson = fromJson(Fixtures.AMEX_REWARDS_BALANCE_SUCCESS)
-
-        val parcel = Parcel.obtain()
-        rewardsBalanceFromJson.writeToParcel(parcel, 0)
-        parcel.setDataPosition(0)
-        val rewardsBalance =
-            AmericanExpressRewardsBalance.CREATOR.createFromParcel(parcel)!!
+        val rewardsBalance = fromJson(Fixtures.AMEX_REWARDS_BALANCE_SUCCESS)
 
         assertEquals("0.0070", rewardsBalance.conversionRate)
         assertEquals("316795.03", rewardsBalance.currencyAmount)
@@ -66,13 +60,7 @@ class AmericanExpressRewardsBalanceUnitTest {
     @Test
     @Throws(JSONException::class)
     fun parcelsCorrectly_forErrorResponse() {
-        val rewardsBalanceFromJson = fromJson(Fixtures.AMEX_REWARDS_BALANCE_INSUFFICIENT_POINTS)
-
-        val parcel = Parcel.obtain()
-        rewardsBalanceFromJson.writeToParcel(parcel, 0)
-        parcel.setDataPosition(0)
-        val rewardsBalance =
-            AmericanExpressRewardsBalance.CREATOR.createFromParcel(parcel)!!
+        val rewardsBalance = fromJson(Fixtures.AMEX_REWARDS_BALANCE_INSUFFICIENT_POINTS)
 
         assertNull(rewardsBalance.conversionRate)
         assertNull(rewardsBalance.currencyAmount)

@@ -1,91 +1,35 @@
 package com.braintreepayments.api.americanexpress
 
-import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.Json
+import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
 
 /**
  * Class to parse and contain American Express rewards balance
+ *
+ * @property errorCode - An error code when there was an issue fetching the rewards balance
+ * @property errorMessage - An error message when there was an issue fetching the rewards balance
+ * @property conversionRate - The conversion rate associated with the rewards balance
+ * @property currencyAmount - The currency amount associated with the rewards balance
+ * @property currencyIsoCode - The currency ISO code associated with the rewards balance
+ * @property requestId - The request ID used when fetching the rewards balance
+ * @property rewardsAmount - The rewards amount associated with the rewards balance
+ * @property rewardsUnit - The rewards unit associated with the rewards balance
  */
-class AmericanExpressRewardsBalance : Parcelable {
-    /**
-     * @return An error code when there was an issue fetching the rewards balance
-     */
-    var errorCode: String? = null
-        private set
-
-    /**
-     * @return An error message when there was an issue fetching the rewards balance
-     */
-    var errorMessage: String? = null
-        private set
-
-    /**
-     * @return The conversion rate associated with the rewards balance
-     */
-    var conversionRate: String? = null
-        private set
-
-    /**
-     * @return The currency amount associated with the rewards balance
-     */
-    var currencyAmount: String? = null
-        private set
-
-    /**
-     * @return The currency ISO code associated with the rewards balance
-     */
-    var currencyIsoCode: String? = null
-        private set
-
-    /**
-     * @return The request ID used when fetching the rewards balance
-     */
-    var requestId: String? = null
-        private set
-
-    /**
-     * @return The rewards amount associated with the rewards balance
-     */
-    var rewardsAmount: String? = null
-        private set
-
-    /**
-     * @return The rewards unit associated with the rewards balance
-     */
+@Parcelize
+data class AmericanExpressRewardsBalance(
+    var errorCode: String? = null,
+    var errorMessage: String? = null,
+    var conversionRate: String? = null,
+    var currencyAmount: String? = null,
+    var currencyIsoCode: String? = null,
+    var requestId: String? = null,
+    var rewardsAmount: String? = null,
     var rewardsUnit: String? = null
-        private set
-
-    private constructor()
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeString(errorCode)
-        dest.writeString(errorMessage)
-        dest.writeString(conversionRate)
-        dest.writeString(currencyAmount)
-        dest.writeString(currencyIsoCode)
-        dest.writeString(requestId)
-        dest.writeString(rewardsAmount)
-        dest.writeString(rewardsUnit)
-    }
-
-    private constructor(`in`: Parcel) {
-        errorCode = `in`.readString()
-        errorMessage = `in`.readString()
-        conversionRate = `in`.readString()
-        currencyAmount = `in`.readString()
-        currencyIsoCode = `in`.readString()
-        requestId = `in`.readString()
-        rewardsAmount = `in`.readString()
-        rewardsUnit = `in`.readString()
-    }
+) : Parcelable {
 
     companion object {
         private const val ERROR_KEY = "error"
@@ -108,8 +52,8 @@ class AmericanExpressRewardsBalance : Parcelable {
         @JvmStatic
         @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         @Throws(JSONException::class)
-        fun fromJson(jsonString: String?): AmericanExpressRewardsBalance {
-            val json = JSONObject(jsonString!!)
+        fun fromJson(jsonString: String): AmericanExpressRewardsBalance {
+            val json = JSONObject(jsonString)
 
             val rewardsBalance = AmericanExpressRewardsBalance()
 
@@ -128,17 +72,5 @@ class AmericanExpressRewardsBalance : Parcelable {
 
             return rewardsBalance
         }
-
-        @JvmField
-        val CREATOR: Parcelable.Creator<AmericanExpressRewardsBalance?> =
-            object : Parcelable.Creator<AmericanExpressRewardsBalance?> {
-                override fun createFromParcel(source: Parcel): AmericanExpressRewardsBalance {
-                    return AmericanExpressRewardsBalance(source)
-                }
-
-                override fun newArray(size: Int): Array<AmericanExpressRewardsBalance?> {
-                    return arrayOfNulls(size)
-                }
-            }
     }
 }

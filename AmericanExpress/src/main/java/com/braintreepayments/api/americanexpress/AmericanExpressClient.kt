@@ -10,8 +10,7 @@ import org.json.JSONException
 /**
  * Used to integrate with Braintree's American Express API
  */
-class AmericanExpressClient {
-    private val braintreeClient: BraintreeClient
+class AmericanExpressClient(private val braintreeClient: BraintreeClient) {
 
     /**
      * Initializes a new [AmericanExpressClient] instance
@@ -19,14 +18,12 @@ class AmericanExpressClient {
      * @param context an Android Context
      * @param authorization a Tokenization Key or Client Token used to authenticate
      */
-    constructor(context: Context, authorization: String) {
-        this.braintreeClient = BraintreeClient(context, authorization)
-    }
-
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    constructor(braintreeClient: BraintreeClient) {
-        this.braintreeClient = braintreeClient
-    }
+    constructor(context: Context, authorization: String) : this(
+        BraintreeClient(
+            context,
+            authorization
+        )
+    )
 
     /**
      * Gets the rewards balance associated with a Braintree nonce. Only for American Express cards.
