@@ -5,7 +5,8 @@ import androidx.annotation.RestrictTo
 /**
  * Error class thrown when a configuration value is invalid
  */
-class ConfigurationException @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) @JvmOverloads constructor(
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+class ConfigurationException @JvmOverloads constructor(
     message: String?,
     cause: Throwable? = null
 ) : BraintreeException(message, cause)

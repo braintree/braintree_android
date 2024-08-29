@@ -11,6 +11,7 @@ import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.ConfigurationException
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
@@ -78,9 +79,8 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
             braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
                 if (configuration != null) {
                     if (!configuration.isPayPalEnabled) {
-                        val errorMessage =
-                            "Local payments are not enabled for this merchant."
-                        authRequestFailure(BraintreeException(errorMessage), callback)
+                        val errorMessage = "Local payments are not enabled for this merchant."
+                        authRequestFailure(ConfigurationException(errorMessage), callback)
                         return@getConfiguration
                     }
 
@@ -111,6 +111,7 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
             }
         }
     }
+
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun buildBrowserSwitchOptions(
         localPaymentAuthRequestParams: LocalPaymentAuthRequestParams,
@@ -143,9 +144,7 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
 
         localPaymentAuthRequestParams.browserSwitchOptions = browserSwitchOptions
         callback.onLocalPaymentAuthRequest(
-            LocalPaymentAuthRequest.ReadyToLaunch(
-                localPaymentAuthRequestParams
-            )
+            LocalPaymentAuthRequest.ReadyToLaunch(localPaymentAuthRequestParams)
         )
         sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED)
     }
