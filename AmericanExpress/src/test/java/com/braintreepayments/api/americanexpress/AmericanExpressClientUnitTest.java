@@ -22,7 +22,7 @@ import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
-        public class AmericanExpressClientUnitTest {
+public class AmericanExpressClientUnitTest {
 
     private AmericanExpressGetRewardsBalanceCallback amexRewardsCallback;
 
@@ -42,21 +42,21 @@ import org.robolectric.RobolectricTestRunner;
 
         String url = urlCaptor.getValue();
         assertEquals(
-            "/v1/payment_methods/amex_rewards_balance?paymentMethodNonce=fake-nonce&currencyIsoCode=USD",
-            url);
+                "/v1/payment_methods/amex_rewards_balance?paymentMethodNonce=fake-nonce&currencyIsoCode=USD",
+                url);
     }
 
     @Test
     public void getRewardsBalance_callsListenerWithRewardsBalanceOnSuccess() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .sendGETSuccessfulResponse(Fixtures.AMEX_REWARDS_BALANCE_SUCCESS)
-            .build();
+                .sendGETSuccessfulResponse(Fixtures.AMEX_REWARDS_BALANCE_SUCCESS)
+                .build();
 
         AmericanExpressClient sut = new AmericanExpressClient(braintreeClient);
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
         ArgumentCaptor<AmericanExpressResult> amexRewardsCaptor =
-        ArgumentCaptor.forClass(AmericanExpressResult.class);
+                ArgumentCaptor.forClass(AmericanExpressResult.class);
         verify(amexRewardsCallback).onAmericanExpressResult(amexRewardsCaptor.capture());
 
         AmericanExpressResult result = amexRewardsCaptor.getValue();
@@ -76,14 +76,14 @@ import org.robolectric.RobolectricTestRunner;
     @Test
     public void getRewardsBalance_callsListenerWithRewardsBalanceWithErrorCode_OnIneligibleCard() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .sendGETSuccessfulResponse(Fixtures.AMEX_REWARDS_BALANCE_INELIGIBLE_CARD)
-            .build();
+                .sendGETSuccessfulResponse(Fixtures.AMEX_REWARDS_BALANCE_INELIGIBLE_CARD)
+                .build();
 
         AmericanExpressClient sut = new AmericanExpressClient(braintreeClient);
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
         ArgumentCaptor<AmericanExpressResult> amexRewardsCaptor =
-        ArgumentCaptor.forClass(AmericanExpressResult.class);
+                ArgumentCaptor.forClass(AmericanExpressResult.class);
         verify(amexRewardsCallback).onAmericanExpressResult(amexRewardsCaptor.capture());
 
         AmericanExpressResult result = amexRewardsCaptor.getValue();
@@ -103,14 +103,14 @@ import org.robolectric.RobolectricTestRunner;
     @Test
     public void getRewardsBalance_callsListenerWithRewardsBalanceWithErrorCode_OnInsufficientPoints() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .sendGETSuccessfulResponse(Fixtures.AMEX_REWARDS_BALANCE_INSUFFICIENT_POINTS)
-            .build();
+                .sendGETSuccessfulResponse(Fixtures.AMEX_REWARDS_BALANCE_INSUFFICIENT_POINTS)
+                .build();
 
         AmericanExpressClient sut = new AmericanExpressClient(braintreeClient);
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
         ArgumentCaptor<AmericanExpressResult> amexRewardsCaptor =
-        ArgumentCaptor.forClass(AmericanExpressResult.class);
+                ArgumentCaptor.forClass(AmericanExpressResult.class);
         verify(amexRewardsCallback).onAmericanExpressResult(amexRewardsCaptor.capture());
 
         AmericanExpressResult result = amexRewardsCaptor.getValue();
@@ -132,14 +132,14 @@ import org.robolectric.RobolectricTestRunner;
     public void getRewardsBalance_callsBackFailure_OnHttpError() {
         Exception expectedError = new Exception("error");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .sendGETErrorResponse(expectedError)
-            .build();
+                .sendGETErrorResponse(expectedError)
+                .build();
 
         AmericanExpressClient sut = new AmericanExpressClient(braintreeClient);
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
         ArgumentCaptor<AmericanExpressResult> amexRewardsCaptor =
-        ArgumentCaptor.forClass(AmericanExpressResult.class);
+                ArgumentCaptor.forClass(AmericanExpressResult.class);
         verify(amexRewardsCallback).onAmericanExpressResult(amexRewardsCaptor.capture());
 
         AmericanExpressResult result = amexRewardsCaptor.getValue();
@@ -152,38 +152,41 @@ import org.robolectric.RobolectricTestRunner;
     @Test
     public void getRewardsBalance_sendsAnalyticsEventOnSuccess() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .sendGETSuccessfulResponse(Fixtures.AMEX_REWARDS_BALANCE_SUCCESS)
-            .build();
+                .sendGETSuccessfulResponse(Fixtures.AMEX_REWARDS_BALANCE_SUCCESS)
+                .build();
 
         AmericanExpressClient sut = new AmericanExpressClient(braintreeClient);
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, new AnalyticsEventParams(null, null, false, null, null,null));
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_SUCCEEDED,new AnalyticsEventParams(null, null, false, null, null, null));
+        AnalyticsEventParams params = new AnalyticsEventParams();
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, params);
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_SUCCEEDED, params);
     }
 
     @Test
     public void getRewardsBalance_sendsAnalyticsEventOnFailure() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .sendGETErrorResponse(new AuthorizationException("Bad fingerprint"))
-            .build();
+                .sendGETErrorResponse(new AuthorizationException("Bad fingerprint"))
+                .build();
 
         AmericanExpressClient sut = new AmericanExpressClient(braintreeClient);
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED,new AnalyticsEventParams(null, null, false, null, null, null));
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED,new AnalyticsEventParams(null, null, false, null, null, null));
+        AnalyticsEventParams params = new AnalyticsEventParams();
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, params);
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED, params);
     }
 
     @Test
     public void getRewardsBalance_sendsAnalyticsEventOnParseError() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .sendGETSuccessfulResponse("-- not json --")
-            .build();
+                .sendGETSuccessfulResponse("-- not json --")
+                .build();
         AmericanExpressClient sut = new AmericanExpressClient(braintreeClient);
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED,new AnalyticsEventParams(null, null, false, null, null, null));
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED,new AnalyticsEventParams(null, null, false, null, null, null));
+        AnalyticsEventParams params = new AnalyticsEventParams();
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, params);
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED, params);
     }
 }
