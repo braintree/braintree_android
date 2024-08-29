@@ -55,7 +55,7 @@ Next, read the [**full documentation**](https://developer.paypal.com/braintree/d
 
 ## Upgrade Your SDK Version
 
-See [**Android Developer Guidelines**](https://developer.android.com/build/dependencies) for details on how to add and manage build dependencies. 
+We always recommend updating to the latest version of the SDK which can be found in our [CHANGELOG](https://github.com/braintree/braintree_android/blob/main/CHANGELOG.md). See the [**Android Developer Guidelines**](https://developer.android.com/build/dependencies) for details on how to add and manage build dependencies. 
 
 ## Versions
 
