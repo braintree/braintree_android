@@ -31,8 +31,6 @@ class VenmoLineItem @JvmOverloads constructor(
     var unitTaxAmount: String? = null,
     var url: String? = null
 ) : Parcelable {
-
-
     /**
      * The type of Venmo line item.
      *
@@ -40,7 +38,7 @@ class VenmoLineItem @JvmOverloads constructor(
      * debits.
      */
     @Retention(AnnotationRetention.SOURCE)
-    @StringDef(*[KIND_CREDIT, KIND_DEBIT])
+    @StringDef(KIND_CREDIT, KIND_DEBIT)
     internal annotation class VenmoLineItemKind
 
     fun toJson(): JSONObject {

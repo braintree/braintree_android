@@ -238,9 +238,9 @@ class VenmoClient @VisibleForTesting internal constructor(
     }
 
     private fun callbackTokenizeSuccess(deepLinkUri: Uri, callback: VenmoTokenizeCallback) {
-        val paymentContextId = parseResourceId(deepLinkUri.toString())
-        val paymentMethodNonce = parsePaymentMethodNonce(deepLinkUri.toString())
-        val username = parseUsername(deepLinkUri.toString())
+        val paymentContextId = parse(deepLinkUri.toString(), "resource_id")
+        val paymentMethodNonce = parse(deepLinkUri.toString(), "payment_method_nonce")
+        val username = parse(deepLinkUri.toString(), "username")
 
         val isClientTokenAuth = (braintreeClient.authorization is ClientToken)
         if (paymentContextId != null) {
@@ -292,50 +292,22 @@ class VenmoClient @VisibleForTesting internal constructor(
                 }
             } else {
                 val venmoAccountNonce = VenmoAccountNonce(
-                    paymentMethodNonce,
-                    false,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    username,
-                    null,
-                    null
+                    paymentMethodNonce, false, null, null,
+                    null, null, null, username,
+                    null, null
                 )
                 callbackSuccess(callback, VenmoResult.Success(venmoAccountNonce))
             }
         }
     }
 
-    private fun parseResourceId(deepLinkUri: String): String? {
-        val resourceIdFromBrowserSwitch = Uri.parse(deepLinkUri).getQueryParameter("resource_id")
-        if (resourceIdFromBrowserSwitch != null) {
-            return resourceIdFromBrowserSwitch
+    private fun parse(deepLinkUri: String, key: String): String? {
+        val keyFromBrowserSwitch = Uri.parse(deepLinkUri).getQueryParameter(key)
+        if (keyFromBrowserSwitch != null) {
+            return keyFromBrowserSwitch
         } else {
             val cleanedAppSwitchUri = deepLinkUri.replaceFirst("&".toRegex(), "?")
-            return Uri.parse(cleanedAppSwitchUri).getQueryParameter("resource_id")
-        }
-    }
-
-    private fun parsePaymentMethodNonce(deepLinkUri: String): String? {
-        val paymentMethodNonceFromBrowserSwitch =
-            Uri.parse(deepLinkUri).getQueryParameter("payment_method_nonce")
-        if (paymentMethodNonceFromBrowserSwitch != null) {
-            return paymentMethodNonceFromBrowserSwitch
-        } else {
-            val cleanedAppSwitchUri = deepLinkUri.replaceFirst("&".toRegex(), "?")
-            return Uri.parse(cleanedAppSwitchUri).getQueryParameter("payment_method_nonce")
-        }
-    }
-
-    private fun parseUsername(deepLinkUri: String): String? {
-        val usernameFromBrowserSwitch = Uri.parse(deepLinkUri).getQueryParameter("username")
-        if (usernameFromBrowserSwitch != null) {
-            return usernameFromBrowserSwitch
-        } else {
-            val cleanedAppSwitchUri = deepLinkUri.replaceFirst("&".toRegex(), "?")
-            return Uri.parse(cleanedAppSwitchUri).getQueryParameter("username")
+            return Uri.parse(cleanedAppSwitchUri).getQueryParameter(key)
         }
     }
 

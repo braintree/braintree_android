@@ -22,9 +22,7 @@ internal class VenmoApi(
     ) {
         val params = JSONObject()
         try {
-            params.put(
-                "query",
-                "mutation CreateVenmoPaymentContext(\$input: " +
+            params.put("query", "mutation CreateVenmoPaymentContext(\$input: " +
                         "CreateVenmoPaymentContextInput!) { createVenmoPaymentContext" +
                         "(input: \$input) { venmoPaymentContext { id } } }"
             )
@@ -56,7 +54,6 @@ internal class VenmoApi(
                 for (lineItem in request.lineItems) {
                     if (lineItem.unitTaxAmount == null || lineItem.unitTaxAmount == "") {
                         lineItem.unitTaxAmount = "0"
-
                     }
                     lineItems.put(lineItem.toJson())
                 }
@@ -86,20 +83,28 @@ internal class VenmoApi(
         }
 
         braintreeClient.sendGraphQLPOST(params) { responseBody: String?, httpError: Exception? ->
-            if (responseBody != null) {
-                val paymentContextId = parsePaymentContextId(responseBody)
-                if (TextUtils.isEmpty(paymentContextId)) {
-                    callback.onResult(
-                        null, BraintreeException(
-                            "Failed to fetch a Venmo paymentContextId while constructing the requestURL."
-                        )
+            paymentContextResponse(responseBody, callback, httpError)
+        }
+    }
+
+    private fun paymentContextResponse(
+        responseBody: String?,
+        callback: VenmoApiCallback,
+        httpError: Exception?
+    ) {
+        if (responseBody != null) {
+            val paymentContextId = parsePaymentContextId(responseBody)
+            if (TextUtils.isEmpty(paymentContextId)) {
+                callback.onResult(
+                    null, BraintreeException(
+                        "Failed to fetch a Venmo paymentContextId while constructing the requestURL."
                     )
-                    return@sendGraphQLPOST
-                }
-                callback.onResult(paymentContextId, null)
-            } else {
-                callback.onResult(null, httpError)
+                )
+                return
             }
+            callback.onResult(paymentContextId, null)
+        } else {
+            callback.onResult(null, httpError)
         }
     }
 
