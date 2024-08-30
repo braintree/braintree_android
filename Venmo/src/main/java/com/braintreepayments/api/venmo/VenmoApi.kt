@@ -55,7 +55,8 @@ internal class VenmoApi(
                 val lineItems = JSONArray()
                 for (lineItem in request.lineItems) {
                     if (lineItem.unitTaxAmount == null || lineItem.unitTaxAmount == "") {
-                        lineItem.setUnitTaxAmount("0")
+                        lineItem.unitTaxAmount = "0"
+
                     }
                     lineItems.put(lineItem.toJson())
                 }
