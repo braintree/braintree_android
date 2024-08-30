@@ -51,10 +51,10 @@ public class VenmoRequestUnitTest {
     @Test
     public void getIsFinalAmountAsString_returnsStringEquivalent() {
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.MULTI_USE);
-        request.setIsFinalAmount(true);
+        request.setFinalAmount(true);
         assertEquals("true", request.getIsFinalAmountAsString());
 
-        request.setIsFinalAmount(false);
+        request.setFinalAmount(false);
         assertEquals("false", request.getIsFinalAmountAsString());
     }
 
@@ -71,11 +71,11 @@ public class VenmoRequestUnitTest {
         request.setDiscountAmount("2.00");
         request.setShippingAmount("1.00");
         request.setTotalAmount("10.00");
-        request.setIsFinalAmount(true);
+        request.setFinalAmount(true);
 
         ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
         lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "An Item", 1, "10.00"));
-        request.setLineItems(lineItems);
+        request.setVenmoLineItem(lineItems);
 
         Parcel parcel = Parcel.obtain();
         request.writeToParcel(parcel, 0);
@@ -93,8 +93,8 @@ public class VenmoRequestUnitTest {
         assertEquals("2.00", result.getDiscountAmount());
         assertEquals("1.00", result.getShippingAmount());
         assertEquals("10.00", result.getTotalAmount());
-        assertEquals(1, result.getLineItems().size());
-        assertEquals("An Item", result.getLineItems().get(0).getName());
-        assertTrue(result.getIsFinalAmount());
+        assertEquals(1, result.getVenmoLineItem().size());
+        assertEquals("An Item", result.getVenmoLineItem().get(0).getName());
+        assertTrue(result.isFinalAmount());
     }
 }

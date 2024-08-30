@@ -31,15 +31,15 @@ internal class VenmoApi(
             input.put("merchantProfileId", venmoProfileId)
             input.put("customerClient", "MOBILE_APP")
             input.put("intent", "CONTINUE")
-            input.put("isFinalAmount", request.isFinalAmountAsString)
+            input.put("isFinalAmount", request.getIsFinalAmountAsString())
             val paysheetDetails = JSONObject()
             paysheetDetails.put(
                 "collectCustomerShippingAddress",
-                request.collectCustomerShippingAddressAsString
+                request.getCollectCustomerShippingAddressAsString()
             )
             paysheetDetails.put(
                 "collectCustomerBillingAddress",
-                request.collectCustomerBillingAddressAsString
+                request.getCollectCustomerBillingAddressAsString()
             )
 
             val transactionDetails = JSONObject()

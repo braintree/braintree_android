@@ -58,7 +58,7 @@ public class VenmoApiUnitTest {
         request.setShippingAmount("1");
         ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
         lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Some Item", 1, "1"));
-        request.setLineItems(lineItems);
+        request.setVenmoLineItem(lineItems);
 
         venmoAPI.createPaymentContext(request, request.getProfileId(),
                 mock(VenmoApiCallback.class));
@@ -193,7 +193,7 @@ public class VenmoApiUnitTest {
 
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId("sample-venmo-merchant");
-        request.setIsFinalAmount(true);
+        request.setFinalAmount(true);
         request.setTotalAmount("5.99");
 
         venmoAPI.createPaymentContext(request, request.getProfileId(), mock(VenmoApiCallback.class));
@@ -221,7 +221,7 @@ public class VenmoApiUnitTest {
 
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId("sample-venmo-merchant");
-        request.setIsFinalAmount(false);
+        request.setFinalAmount(false);
         request.setTotalAmount("5.99");
 
         venmoAPI.createPaymentContext(request, request.getProfileId(), mock(VenmoApiCallback.class));

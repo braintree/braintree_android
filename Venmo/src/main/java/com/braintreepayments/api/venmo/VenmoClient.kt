@@ -84,7 +84,8 @@ class VenmoClient @VisibleForTesting internal constructor(
                 callbackPaymentAuthFailure(callback, VenmoPaymentAuthRequest.Failure(error))
                 return@getConfiguration
             }
-            if (!configuration!!.isVenmoEnabled) {
+            val isVenmoEnabled = configuration?.isVenmoEnabled ?: false
+            if (!isVenmoEnabled) {
                 callbackPaymentAuthFailure(
                     callback,
                     VenmoPaymentAuthRequest.Failure(AppSwitchNotAvailableException("Venmo is not enabled"))
@@ -94,9 +95,9 @@ class VenmoClient @VisibleForTesting internal constructor(
 
             // Merchants are not allowed to collect user addresses unless ECD (Enriched Customer
             // Data) is enabled on the BT Control Panel.
+            val customerDataEnabled = configuration?.venmoEnrichedCustomerDataEnabled ?: false
             if ((request.collectCustomerShippingAddress ||
-                        request.collectCustomerBillingAddress) &&
-                !configuration.venmoEnrichedCustomerDataEnabled
+                        request.collectCustomerBillingAddress) && !customerDataEnabled
             ) {
                 callbackPaymentAuthFailure(
                     callback, VenmoPaymentAuthRequest.Failure(
@@ -111,7 +112,7 @@ class VenmoClient @VisibleForTesting internal constructor(
 
             var venmoProfileId = request.profileId
             if (TextUtils.isEmpty(venmoProfileId)) {
-                venmoProfileId = configuration.venmoMerchantId
+                venmoProfileId = configuration?.venmoMerchantId
             }
 
             val finalVenmoProfileId = venmoProfileId
@@ -165,24 +166,22 @@ class VenmoClient @VisibleForTesting internal constructor(
             context.packageManager.getApplicationLabel(context.applicationInfo)
                 .toString()
 
+        val returnUrlScheme = braintreeClient.getReturnUrlScheme()
         val venmoBaseURL = Uri.parse("https://venmo.com/go/checkout")
             .buildUpon()
             .appendQueryParameter(
-                "x-success",
-                braintreeClient.getReturnUrlScheme() + "://x-callback-url/vzero/auth/venmo/success"
+                "x-success", "$returnUrlScheme://x-callback-url/vzero/auth/venmo/success"
             )
             .appendQueryParameter(
-                "x-error",
-                braintreeClient.getReturnUrlScheme() + "://x-callback-url/vzero/auth/venmo/error"
+                "x-error", "$returnUrlScheme://x-callback-url/vzero/auth/venmo/error"
             )
             .appendQueryParameter(
-                "x-cancel",
-                braintreeClient.getReturnUrlScheme() + "://x-callback-url/vzero/auth/venmo/cancel"
+                "x-cancel", "$returnUrlScheme://x-callback-url/vzero/auth/venmo/cancel"
             )
             .appendQueryParameter("x-source", applicationName)
             .appendQueryParameter("braintree_merchant_id", venmoProfileId)
-            .appendQueryParameter("braintree_access_token", configuration!!.venmoAccessToken)
-            .appendQueryParameter("braintree_environment", configuration.venmoEnvironment)
+            .appendQueryParameter("braintree_access_token", configuration?.venmoAccessToken)
+            .appendQueryParameter("braintree_environment", configuration?.venmoEnvironment)
             .appendQueryParameter("resource_id", paymentContextId)
             .appendQueryParameter(
                 "braintree_sdk_data",
@@ -194,7 +193,7 @@ class VenmoClient @VisibleForTesting internal constructor(
         val browserSwitchOptions = BrowserSwitchOptions()
             .requestCode(BraintreeRequestCodes.VENMO.code)
             .url(venmoBaseURL)
-            .returnUrlScheme(braintreeClient.getReturnUrlScheme())
+            .returnUrlScheme(returnUrlScheme)
         val params = VenmoPaymentAuthRequestParams(
             browserSwitchOptions
         )
@@ -222,11 +221,11 @@ class VenmoClient @VisibleForTesting internal constructor(
         val deepLinkUri: Uri = browserSwitchResultInfo.returnUrl
         if (deepLinkUri != null) {
             braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED, analyticsParams)
-            if (Objects.requireNonNull(deepLinkUri.path)!!.contains("success")) {
+            if (Objects.requireNonNull(deepLinkUri.path?.contains("success")) == true) {
                 callbackTokenizeSuccess(deepLinkUri, callback)
-            } else if (deepLinkUri.path!!.contains("cancel")) {
+            } else if (deepLinkUri.path?.contains("cancel") == true) {
                 callbackTokenizeCancel(callback)
-            } else if (deepLinkUri.path!!.contains("error")) {
+            } else if (deepLinkUri.path?.contains("error") == true) {
                 callbackTokenizeFailure(
                     callback,
                     VenmoResult.Failure(Exception("Error returned from Venmo."))
