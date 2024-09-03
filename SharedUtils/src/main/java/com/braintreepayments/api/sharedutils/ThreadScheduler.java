@@ -3,18 +3,20 @@ package com.braintreepayments.api.sharedutils;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.RestrictTo;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-class ThreadScheduler implements Scheduler {
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+public class ThreadScheduler implements Scheduler {
 
     private final Handler mainThreadHandler;
     private final ExecutorService backgroundThreadService;
 
-    ThreadScheduler() {
-        this(new Handler(Looper.getMainLooper()), Executors.newCachedThreadPool());
+    public ThreadScheduler(int threadPoolSize) {
+        this(new Handler(Looper.getMainLooper()), Executors.newFixedThreadPool(threadPoolSize));
     }
 
     @VisibleForTesting

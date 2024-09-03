@@ -8,12 +8,15 @@ import javax.net.ssl.SSLSocketFactory;
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class HttpClient {
 
+    // NOTE: a single thread pool makes the ThreadScheduler behave like a serial dispatch queue
+    private static final int SERIAL_DISPATCH_QUEUE_POOL_SIZE = 1;
+
     private final Scheduler scheduler;
     private final SynchronousHttpClient syncHttpClient;
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public HttpClient(SSLSocketFactory socketFactory, HttpResponseParser httpResponseParser) {
-        this(new SynchronousHttpClient(socketFactory, httpResponseParser), new ThreadScheduler());
+        this(new SynchronousHttpClient(socketFactory, httpResponseParser), new ThreadScheduler(SERIAL_DISPATCH_QUEUE_POOL_SIZE));
     }
 
     @VisibleForTesting
@@ -23,8 +26,8 @@ public class HttpClient {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    public String sendRequest(HttpRequest request) throws Exception {
-        return syncHttpClient.request(request).getBody();
+    public HttpResponse sendRequest(HttpRequest request) throws Exception {
+        return syncHttpClient.request(request);
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)

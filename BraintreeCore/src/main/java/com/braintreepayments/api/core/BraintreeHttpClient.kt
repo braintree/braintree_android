@@ -4,6 +4,7 @@ import android.net.Uri
 import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.sharedutils.HttpRequest
+import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.sharedutils.TLSSocketFactory
 import org.json.JSONObject
@@ -49,7 +50,7 @@ internal class BraintreeHttpClient(
         request: InternalHttpRequest,
         configuration: Configuration?,
         authorization: Authorization?
-    ): String {
+    ): HttpResponse {
         val httpRequest = buildHttpRequest(request, configuration, authorization)
         return httpClient.sendRequest(httpRequest)
     }
@@ -107,7 +108,9 @@ internal class BraintreeHttpClient(
             result.addHeader(CLIENT_KEY_HEADER, authorization.bearer)
         }
 
-        authorization?.bearer?.let { token -> result.addHeader("Authorization", "Bearer $token") }
+        if (method == HttpMethod.POST) {
+            authorization?.bearer?.let { token -> result.addHeader("Authorization", "Bearer $token") }
+        }
         additionalHeaders.forEach { (name, value) -> result.addHeader(name, value) }
         return result
     }

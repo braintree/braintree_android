@@ -5,10 +5,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+import com.braintreepayments.api.testutils.MockThreadScheduler;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -109,7 +110,7 @@ public class HttpClientUnitTest {
 
         when(syncHttpClient.request(httpRequest)).thenReturn(response);
 
-        String result = sut.sendRequest(httpRequest);
-        assertEquals("response body", result);
+        HttpResponse result = sut.sendRequest(httpRequest);
+        assertEquals("response body", result.getBody());
     }
 }

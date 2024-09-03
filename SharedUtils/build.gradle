@@ -40,6 +40,7 @@ dependencies {
     testImplementation libs.androidx.test.core
     testImplementation libs.mockito.core
     testImplementation libs.robolectric
+    testImplementation project(':TestUtils')
 
     androidTestImplementation libs.androidx.test.runner
     androidTestImplementation libs.androidx.junit

@@ -4,6 +4,8 @@ import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.sharedutils.HttpRequest
+import com.braintreepayments.api.sharedutils.HttpResponse
+import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import io.mockk.every
 import io.mockk.mockk
@@ -84,7 +86,8 @@ class BraintreeGraphQLClientUnitTest {
     @Throws(Exception::class)
     fun post_withPathAndDataAndConfiguration_sendsHttpRequest() {
         val httpRequestSlot = slot<HttpRequest>()
-        every { httpClient.sendRequest(capture(httpRequestSlot)) } returns "sample response"
+        val httpResponse = HttpResponse(body = "sample response", HttpResponseTiming(123L, 456L))
+        every { httpClient.sendRequest(capture(httpRequestSlot)) } returns httpResponse
 
         val sut = BraintreeGraphQLClient(httpClient)
         val result = sut.post("sample/path", "data", configuration, authorization)

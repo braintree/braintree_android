@@ -3,6 +3,7 @@ package com.braintreepayments.api.core
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.braintreepayments.api.core.Authorization.Companion.fromString
 import com.braintreepayments.api.sharedutils.AuthorizationException
+import com.braintreepayments.api.sharedutils.HttpMethod
 import com.braintreepayments.api.testutils.Fixtures
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -28,7 +29,8 @@ class BraintreeHttpClientTest {
         val braintreeHttpClient = BraintreeHttpClient()
 
         val path = "https://api.sandbox.braintreegateway.com/"
-        braintreeHttpClient.get(path, null, authorization) { _, httpError ->
+        val request = InternalHttpRequest(method = HttpMethod.GET, path = path)
+        braintreeHttpClient.sendRequest(request, authorization = authorization) { _, httpError ->
             // Make sure exception is due to authorization not SSL handshake
             assertTrue(httpError is AuthorizationException)
             countDownLatch.countDown()
@@ -44,7 +46,8 @@ class BraintreeHttpClientTest {
         val braintreeHttpClient = BraintreeHttpClient()
 
         val path = "https://gateway.qa.braintreepayments.com/"
-        braintreeHttpClient.get(path, null, authorization) { _, httpError ->
+        val request = InternalHttpRequest(method = HttpMethod.GET, path = path)
+        braintreeHttpClient.sendRequest(request, authorization = authorization) { _, httpError ->
             // Make sure http request to qa works to verify certificate pinning strategy
             assertNull(httpError)
             countDownLatch.countDown()
@@ -60,7 +63,8 @@ class BraintreeHttpClientTest {
         val braintreeHttpClient = BraintreeHttpClient()
 
         val path = "https://api.braintreegateway.com/"
-        braintreeHttpClient.get(path, null, authorization) { _, httpError ->
+        val request = InternalHttpRequest(method = HttpMethod.GET, path = path)
+        braintreeHttpClient.sendRequest(request, authorization = authorization) { _, httpError ->
             // Make sure exception is due to authorization not SSL handshake
             assertTrue(httpError is AuthorizationException)
             countDownLatch.countDown()
