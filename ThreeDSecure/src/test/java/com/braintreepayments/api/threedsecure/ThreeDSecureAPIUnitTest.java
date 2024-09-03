@@ -6,6 +6,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
@@ -43,7 +45,7 @@ public class ThreeDSecureAPIUnitTest {
 
         ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(urlCaptor.capture(), dataCaptor.capture(),
+        verify(braintreeClient).sendPOST(urlCaptor.capture(), dataCaptor.capture(), anyMap(),
                 any(HttpResponseCallback.class));
 
         String url = urlCaptor.getValue();
@@ -116,7 +118,7 @@ public class ThreeDSecureAPIUnitTest {
 
         ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(urlCaptor.capture(), dataCaptor.capture(),
+        verify(braintreeClient).sendPOST(urlCaptor.capture(), dataCaptor.capture(), anyMap(),
                 any(HttpResponseCallback.class));
 
         String url = urlCaptor.getValue();
