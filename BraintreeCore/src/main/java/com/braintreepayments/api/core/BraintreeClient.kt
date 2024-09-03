@@ -228,6 +228,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     @WorkerThread
     private fun sendHttpRequestSync(
         request: InternalHttpRequest,
@@ -266,6 +267,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
+    @Suppress("TooGenericExceptionCaught")
     private fun sendGraphQLPOSTSync(
         json: JSONObject?,
         configuration: Configuration
