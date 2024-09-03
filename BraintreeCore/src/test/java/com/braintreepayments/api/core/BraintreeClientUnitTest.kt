@@ -8,10 +8,10 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.sharedutils.HttpMethod
-import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.ManifestValidator
-import com.braintreepayments.api.sharedutils.NetworkResponseCallback
+import com.braintreepayments.api.testutils.Fixtures
+import com.braintreepayments.api.testutils.MockThreadScheduler
 import io.mockk.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -34,6 +34,7 @@ class BraintreeClientUnitTest {
     private lateinit var manifestValidator: ManifestValidator
     private lateinit var browserSwitchClient: BrowserSwitchClient
     private lateinit var expectedAuthException: BraintreeException
+    private lateinit var threadScheduler: MockThreadScheduler
 
     @Before
     fun beforeEach() {
@@ -48,6 +49,7 @@ class BraintreeClientUnitTest {
         analyticsClient = mockk(relaxed = true)
         manifestValidator = mockk(relaxed = true)
         browserSwitchClient = mockk(relaxed = true)
+        threadScheduler = MockThreadScheduler()
 
         val clientSDKSetupURL =
             "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization"
@@ -132,23 +134,23 @@ class BraintreeClientUnitTest {
         val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        val networkResponseCallbackSlot = slot<NetworkResponseCallback>()
 
         sut.sendGET("sample-url", httpResponseCallback)
+        threadScheduler.flushBackgroundThread()
+        threadScheduler.flushMainThread()
 
         val httpRequestSlot = slot<InternalHttpRequest>()
         verify {
-            braintreeHttpClient.sendRequest(
+            braintreeHttpClient.sendRequestSync(
                 capture(httpRequestSlot),
                 configuration,
                 authorization,
-                capture(networkResponseCallbackSlot)
             )
         }
 
         assertEquals(HttpMethod.GET, httpRequestSlot.captured.method)
         assertEquals("sample-url", httpRequestSlot.captured.path)
-        assertTrue(networkResponseCallbackSlot.isCaptured)
+        verify { httpResponseCallback.onResult(any(), any()) }
     }
 
     @Test
@@ -190,24 +192,25 @@ class BraintreeClientUnitTest {
         val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
 
-        val networkResponseCallbackSlot = slot<NetworkResponseCallback>()
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
         sut.sendPOST("sample-url", "{}", emptyMap(), httpResponseCallback)
+        threadScheduler.flushBackgroundThread()
+        threadScheduler.flushMainThread()
 
         val httpRequestSlot = slot<InternalHttpRequest>()
         verify {
-            braintreeHttpClient.sendRequest(
+            braintreeHttpClient.sendRequestSync(
                 capture(httpRequestSlot),
                 configuration,
                 authorization,
-                capture(networkResponseCallbackSlot)
             )
         }
 
         assertEquals(HttpMethod.POST, httpRequestSlot.captured.method)
         assertEquals("sample-url", httpRequestSlot.captured.path)
         assertEquals("{}", httpRequestSlot.captured.data)
-        assertTrue(networkResponseCallbackSlot.isCaptured)
+
+        verify { httpResponseCallback.onResult(any(), any()) }
     }
 
     @Test
@@ -238,15 +241,11 @@ class BraintreeClientUnitTest {
             data = "{}",
             responseCallback = mockk(relaxed = true)
         )
+        threadScheduler.flushBackgroundThread()
 
         val httpRequestSlot = slot<InternalHttpRequest>()
         verify {
-            braintreeHttpClient.sendRequest(
-                capture(httpRequestSlot),
-                any(),
-                authorization,
-                any()
-            )
+            braintreeHttpClient.sendRequestSync(capture(httpRequestSlot), any(), authorization)
         }
 
         assertEquals(emptyMap<String, String>(), httpRequestSlot.captured.additionalHeaders)
@@ -267,15 +266,11 @@ class BraintreeClientUnitTest {
             additionalHeaders = headers,
             responseCallback = mockk(relaxed = true)
         )
+        threadScheduler.flushBackgroundThread()
 
         val httpRequestSlot = slot<InternalHttpRequest>()
         verify {
-            braintreeHttpClient.sendRequest(
-                capture(httpRequestSlot),
-                any(),
-                authorization,
-                any()
-            )
+            braintreeHttpClient.sendRequestSync(capture(httpRequestSlot), any(), authorization)
         }
         assertEquals(headers, httpRequestSlot.captured.additionalHeaders)
     }
@@ -303,19 +298,16 @@ class BraintreeClientUnitTest {
         val params = createDefaultParams(configurationLoader)
         val sut = BraintreeClient(params)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        val networkResponseCallbackSlot = slot<NetworkResponseCallback>()
 
         sut.sendGraphQLPOST(JSONObject(), httpResponseCallback)
+        threadScheduler.flushBackgroundThread()
+        threadScheduler.flushMainThread()
+
         verify {
-            braintreeGraphQLClient.post(
-                "{}",
-                configuration,
-                authorization,
-                capture(networkResponseCallbackSlot)
-            )
+            braintreeGraphQLClient.post("", "{}", configuration, authorization)
         }
 
-        assertTrue(networkResponseCallbackSlot.isCaptured)
+        verify { httpResponseCallback.onResult(any(), any()) }
     }
 
     @Test
@@ -509,6 +501,7 @@ class BraintreeClientUnitTest {
             browserSwitchClient = browserSwitchClient,
             manifestValidator = manifestValidator,
             configurationLoader = configurationLoader,
-            integrationType = IntegrationType.CUSTOM
+            integrationType = IntegrationType.CUSTOM,
+            threadScheduler = threadScheduler
         )
 }
