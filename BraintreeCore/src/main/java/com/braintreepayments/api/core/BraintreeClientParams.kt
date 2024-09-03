@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.Uri
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.sharedutils.ManifestValidator
+import com.braintreepayments.api.sharedutils.Scheduler
+import com.braintreepayments.api.sharedutils.ThreadScheduler
 
 internal data class BraintreeClientParams(
     val context: Context,
@@ -19,6 +21,7 @@ internal data class BraintreeClientParams(
     val uuidHelper: UUIDHelper = UUIDHelper(),
     val configurationLoader: ConfigurationLoader = ConfigurationLoader(context, httpClient),
     val integrationType: IntegrationType,
+    val threadScheduler: Scheduler = ThreadScheduler(SERIAL_DISPATCH_QUEUE_POOL_SIZE)
 ) {
 
     constructor(options: BraintreeOptions) : this(
@@ -35,6 +38,9 @@ internal data class BraintreeClientParams(
         "${getAppPackageNameWithoutUnderscores(context)}.braintree.deeplinkhandler"
 
     companion object {
+        // NOTE: a single thread pool makes the ThreadScheduler behave like a serial dispatch queue
+        const val SERIAL_DISPATCH_QUEUE_POOL_SIZE = 1
+
         private fun createUniqueSessionId() = UUIDHelper().formattedUUID
 
         private fun getAppPackageNameWithoutUnderscores(context: Context) =

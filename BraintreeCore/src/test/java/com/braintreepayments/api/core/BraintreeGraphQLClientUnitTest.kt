@@ -12,6 +12,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import org.json.JSONException
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertSame
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -91,7 +92,7 @@ class BraintreeGraphQLClientUnitTest {
 
         val sut = BraintreeGraphQLClient(httpClient)
         val result = sut.post("sample/path", "data", configuration, authorization)
-        assertEquals("sample response", result)
+        assertSame(httpResponse, result)
 
         val httpRequest = httpRequestSlot.captured
         assertEquals(URL("https://example-graphql.com/graphql/sample/path"), httpRequest.url)
