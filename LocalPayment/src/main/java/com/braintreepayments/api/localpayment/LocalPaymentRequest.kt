@@ -72,13 +72,13 @@ data class LocalPaymentRequest @JvmOverloads constructor(
                 .putOpt(PAYMENT_TYPE_COUNTRY_CODE_KEY, paymentTypeCountryCode)
                 .putOpt(BIC_KEY, bankIdentificationCode)
 
-            if (address != null) {
-                payload.put(STREET_ADDRESS_KEY, address!!.streetAddress)
-                    .put(EXTENDED_ADDRESS_KEY, address!!.extendedAddress)
-                    .put(LOCALITY_KEY, address!!.locality)
-                    .put(REGION_KEY, address!!.region)
-                    .put(POSTAL_CODE_KEY, address!!.postalCode)
-                    .put(COUNTRY_CODE_KEY, address!!.countryCodeAlpha2)
+            address?.let {
+                payload.put(STREET_ADDRESS_KEY, it.streetAddress)
+                    .put(EXTENDED_ADDRESS_KEY, it.extendedAddress)
+                    .put(LOCALITY_KEY, it.locality)
+                    .put(REGION_KEY, it.region)
+                    .put(POSTAL_CODE_KEY, it.postalCode)
+                    .put(COUNTRY_CODE_KEY, it.countryCodeAlpha2)
             }
 
             val experienceProfile = JSONObject()

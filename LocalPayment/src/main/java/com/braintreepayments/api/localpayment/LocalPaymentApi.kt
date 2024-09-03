@@ -10,12 +10,12 @@ internal class LocalPaymentApi(private val braintreeClient: BraintreeClient) {
         request: LocalPaymentRequest,
         callback: LocalPaymentInternalAuthRequestCallback
     ) {
-        val returnUrl =
-            braintreeClient.getReturnUrlScheme() + "://" + LocalPaymentClient.LOCAL_PAYMENT_SUCCESS
-        val cancel =
-            braintreeClient.getReturnUrlScheme() + "://" + LocalPaymentClient.LOCAL_PAYMENT_CANCEL
+        val returnUrlScheme = braintreeClient.getReturnUrlScheme()
+        val returnUrl = "$returnUrlScheme://${LocalPaymentClient.LOCAL_PAYMENT_SUCCESS}"
+        val cancel = "$returnUrlScheme://${LocalPaymentClient.LOCAL_PAYMENT_CANCEL}"
 
         val url = "/v1/local_payments/create"
+
         braintreeClient.sendPOST(
             url = url,
             data = request.build(returnUrl, cancel)

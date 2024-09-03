@@ -1,6 +1,5 @@
 package com.braintreepayments.demo;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.PostalAddress;
+import com.braintreepayments.api.core.UserCanceledException;
 import com.braintreepayments.api.localpayment.LocalPaymentAuthRequest;
 import com.braintreepayments.api.localpayment.LocalPaymentAuthResult;
 import com.braintreepayments.api.localpayment.LocalPaymentClient;
@@ -19,9 +21,6 @@ import com.braintreepayments.api.localpayment.LocalPaymentNonce;
 import com.braintreepayments.api.localpayment.LocalPaymentPendingRequest;
 import com.braintreepayments.api.localpayment.LocalPaymentRequest;
 import com.braintreepayments.api.localpayment.LocalPaymentResult;
-import com.braintreepayments.api.core.BraintreeException;
-import com.braintreepayments.api.core.PostalAddress;
-import com.braintreepayments.api.core.UserCanceledException;
 
 public class LocalPaymentFragment extends BaseFragment {
 
@@ -41,7 +40,6 @@ public class LocalPaymentFragment extends BaseFragment {
         return view;
     }
 
-    @SuppressLint("VisibleForTests")
     @Override
     public void onResume() {
         super.onResume();
