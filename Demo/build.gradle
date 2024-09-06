@@ -66,9 +66,8 @@ android {
 dependencies {
     implementation libs.kotlin.stdlib
 
-    implementation(libs.retrofit) {
-        exclude module: 'com.google.gson'
-    }
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
 
     implementation project(':AmericanExpress')
     implementation project(':Card')
