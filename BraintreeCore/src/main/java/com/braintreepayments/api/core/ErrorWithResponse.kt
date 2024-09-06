@@ -1,8 +1,10 @@
 package com.braintreepayments.api.core
 
 import android.os.Parcelable
+import android.util.Log
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.GraphQLConstants.ErrorMessages
+import com.braintreepayments.api.sharedutils.LoggingUtils
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
@@ -31,7 +33,7 @@ data class ErrorWithResponse internal constructor(
         try {
             parseJson(errorResponse)
         } catch (e: JSONException) {
-            message = "Parsing error response failed"
+            Log.d(LoggingUtils.TAG, e.message.toString())
             fieldErrors = ArrayList()
         }
     }
@@ -39,7 +41,11 @@ data class ErrorWithResponse internal constructor(
     @Throws(JSONException::class)
     private fun parseJson(jsonString: String?) {
         jsonString?.let { JSONObject(it) }?.let { json ->
-            message = json.getJSONObject(ERROR_KEY).getString(MESSAGE_KEY)
+            message = json.optJSONObject(ERROR_KEY)
+                ?.let { jsonObject ->
+                    jsonObject.optString(MESSAGE_KEY, "").takeIf { it.isNotEmpty() }
+                        ?: jsonObject.optString(DEV_MESSAGE_KEY, "")
+                } ?: throw JSONException("Error key not found in JSON")
             fieldErrors = BraintreeError.fromJsonArray(json.optJSONArray(FIELD_ERRORS_KEY))
         }
     }
@@ -76,6 +82,7 @@ data class ErrorWithResponse internal constructor(
     companion object {
         private const val ERROR_KEY = "error"
         private const val MESSAGE_KEY = "message"
+        private const val DEV_MESSAGE_KEY = "developer_message"
         private const val FIELD_ERRORS_KEY = "fieldErrors"
         private const val GRAPHQL_ERROR_CODE = 422
 
@@ -98,18 +105,19 @@ data class ErrorWithResponse internal constructor(
             try {
                 val errors = json
                     ?.let { JSONObject(it) }
-                    ?.getJSONArray(GraphQLConstants.Keys.ERRORS)
+                    ?.optJSONArray(GraphQLConstants.Keys.ERRORS)
+                    ?: throw JSONException("Errors key not found in JSON")
                 errorWithResponse.fieldErrors = BraintreeError.fromGraphQLJsonArray(errors)
 
                 val fieldErrorsEmpty = errorWithResponse.fieldErrors?.isEmpty() ?: true
                 errorWithResponse.message = if (fieldErrorsEmpty) {
-                    errors?.getJSONObject(0)?.getString(GraphQLConstants.Keys.MESSAGE)
+                    errors.getJSONObject(0)?.getString(GraphQLConstants.Keys.MESSAGE)
                 } else {
                     ErrorMessages.USER
                 }
             } catch (e: JSONException) {
                 errorWithResponse.apply {
-                    message = "Parsing error response failed"
+                    Log.d(LoggingUtils.TAG, e.message.toString())
                     fieldErrors = ArrayList()
                 }
             }

@@ -52,10 +52,21 @@ class ErrorsWithResponseUnitTest {
     }
 
     @Test
+    fun constructor_parsesApiErrorResponseCorrectly() {
+        val response = Fixtures.ERRORS_BRAINTREE_API_ERROR_RESPONSE
+        val errorWithResponse = ErrorWithResponse(422, response)
+        assertEquals(
+            "The provided parameters are invalid; see details for field-specific error messages.",
+            errorWithResponse.message
+        )
+        assertEquals(422, errorWithResponse.statusCode)
+    }
+
+    @Test
     fun constructor_doesNotBlowUpParsingBadJson() {
         val badJson = Fixtures.RANDOM_JSON
         val errorWithResponse = ErrorWithResponse(422, badJson)
-        assertEquals("Parsing error response failed", errorWithResponse.message)
+        assertEquals(null, errorWithResponse.message)
     }
 
     @Test
@@ -117,10 +128,21 @@ class ErrorsWithResponseUnitTest {
     }
 
     @Test
+    fun fromGraphQLJson_parsesApiErrorResponseCorrectly() {
+        val response = Fixtures.ERRORS_BRAINTREE_API_ERROR_RESPONSE
+        val errorWithResponse = ErrorWithResponse.fromGraphQLJson(response)
+        assertEquals(
+            "The provided parameters are invalid; see details for field-specific error messages.",
+            errorWithResponse.message
+        )
+        assertEquals(422, errorWithResponse.statusCode)
+    }
+
+    @Test
     fun fromGraphQLJson_doesNotBlowUpParsingBadJson() {
         val badJson = Fixtures.RANDOM_JSON
         val errorWithResponse = ErrorWithResponse.fromGraphQLJson(badJson)
-        assertEquals("Parsing error response failed", errorWithResponse.message)
+        assertEquals(null, errorWithResponse.message)
     }
 
     @Test
