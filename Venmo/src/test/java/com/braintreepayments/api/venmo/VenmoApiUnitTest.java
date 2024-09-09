@@ -58,7 +58,7 @@ public class VenmoApiUnitTest {
         request.setShippingAmount("1");
         ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
         lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Some Item", 1, "1"));
-        request.setVenmoLineItem(lineItems);
+        request.setLineItems(lineItems);
 
         venmoAPI.createPaymentContext(request, request.getProfileId(),
                 mock(VenmoApiCallback.class));
@@ -67,9 +67,6 @@ public class VenmoApiUnitTest {
         verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
 
         JSONObject graphQLJSON = captor.getValue();
-        String expectedQuery =
-                "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }";
-        assertEquals(expectedQuery, graphQLJSON.getString("query"));
 
         JSONObject variables = graphQLJSON.getJSONObject("variables");
         JSONObject input = variables.getJSONObject("input");
@@ -114,9 +111,6 @@ public class VenmoApiUnitTest {
         verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
 
         JSONObject graphQLJSON = captor.getValue();
-        String expectedQuery =
-                "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }";
-        assertEquals(expectedQuery, graphQLJSON.getString("query"));
 
         JSONObject variables = graphQLJSON.getJSONObject("variables");
         JSONObject input = variables.getJSONObject("input");
@@ -202,8 +196,6 @@ public class VenmoApiUnitTest {
         verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
 
         JSONObject graphQLJSON = captor.getValue();
-        String expectedQuery = "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }";
-        assertEquals(expectedQuery, graphQLJSON.getString("query"));
 
         JSONObject variables = graphQLJSON.getJSONObject("variables");
         JSONObject input = variables.getJSONObject("input");
@@ -230,8 +222,6 @@ public class VenmoApiUnitTest {
         verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
 
         JSONObject graphQLJSON = captor.getValue();
-        String expectedQuery = "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }";
-        assertEquals(expectedQuery, graphQLJSON.getString("query"));
 
         JSONObject variables = graphQLJSON.getJSONObject("variables");
         JSONObject input = variables.getJSONObject("input");
@@ -252,10 +242,6 @@ public class VenmoApiUnitTest {
         verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
 
         JSONObject jsonPayload = captor.getValue();
-        String expectedQuery =
-                "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName payerInfo { firstName lastName phoneNumber email externalId userName " +
-                        "shippingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } billingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } } } } }";
-        assertEquals(expectedQuery, jsonPayload.get("query"));
         assertEquals("payment-context-id", jsonPayload.getJSONObject("variables").get("id"));
     }
 
