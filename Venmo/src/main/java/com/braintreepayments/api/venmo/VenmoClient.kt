@@ -283,15 +283,15 @@ class VenmoClient @VisibleForTesting internal constructor(
             } else {
                 val venmoAccountNonce = VenmoAccountNonce(
                     paymentMethodNonce,
-                    false,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
+                    /* isDefault */false,
+                    /* email */ null,
+                    /* externalId */ null,
+                    /* firstName */ null,
+                    /* lastName */ null,
+                    /* phoneNumber */ null,
                     username,
-                    null,
-                    null
+                    /* billingAddress */ null,
+                    /* shippingAddress */ null
                 )
                 callbackSuccess(callback, VenmoResult.Success(venmoAccountNonce))
             }

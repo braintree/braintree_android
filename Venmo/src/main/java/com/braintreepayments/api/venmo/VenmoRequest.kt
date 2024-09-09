@@ -9,7 +9,8 @@ import kotlinx.parcelize.Parcelize
  * @property paymentMethodUsage - [VenmoPaymentMethodUsage] for the tokenized Venmo account: either
  * multi-use or single use.
  *
- * @property setVenmoLineItem - The line items for this transaction. Can include up to 249 line items.
+ * @property lineItems - Optional - The line items for this transaction. Can include up to 249 line
+ * items. If this value is set, `totalAmount` must also be set.
  *
  * @property shouldVault Optional - Whether or not to automatically vault the Venmo Account.
  * Whether or not to automatically vault the Venmo Account.
@@ -60,14 +61,11 @@ import kotlinx.parcelize.Parcelize
  * @property isFinalAmount Optional - The boolean value of the flag that signifies whether the purchase
  * amount is the final amount. Indicates whether the purchase amount is the final amount.
  * Defaults to false.
- *
- * @property isFinalAmountAsString - Whether or not the purchase amount is the final amount as a
- * string value.
  */
 @Parcelize
 class VenmoRequest @JvmOverloads constructor(
-    @VenmoPaymentMethodUsage val paymentMethodUsage: Int,
-    var lineItems: ArrayList<VenmoLineItem> = ArrayList(),
+    val paymentMethodUsage: VenmoPaymentMethodUsage,
+    var lineItems: ArrayList<VenmoLineItem>? = null,
     var shouldVault: Boolean = false,
     var profileId: String? = null,
     var displayName: String? = null,
@@ -79,45 +77,4 @@ class VenmoRequest @JvmOverloads constructor(
     var taxAmount: String? = null,
     var shippingAmount: String? = null,
     var isFinalAmount: Boolean = false
-) : Parcelable {
-
-    val paymentMethodUsageAsString: String?
-        get() = when (paymentMethodUsage) {
-            VenmoPaymentMethodUsage.SINGLE_USE -> "SINGLE_USE"
-            VenmoPaymentMethodUsage.MULTI_USE -> "MULTI_USE"
-            else -> null
-        }
-    /**
-     * Optional: The line items for this transaction. Can include up to 249 line items.
-     *
-     * If this value is set, `totalAmount` must also be set.
-     *
-     * @param lineItems a collection of [VenmoLineItem]
-     */
-    fun setVenmoLineItem(lineItems: Collection<VenmoLineItem>) {
-        this.lineItems.clear()
-        this.lineItems.addAll(lineItems)
-    }
-
-    /**
-     * @return The line items for this transaction. Can include up to 249 line items.
-     */
-    fun getVenmoLineItem(): ArrayList<VenmoLineItem> {
-        return lineItems
-    }
-
-    fun getCollectCustomerShippingAddressAsString(): String {
-        return collectCustomerShippingAddress.toString()
-    }
-
-    fun getCollectCustomerBillingAddressAsString(): String {
-        return collectCustomerBillingAddress.toString()
-    }
-
-    /**
-     * @return Whether or not the purchase amount is the final amount as a string value.
-     */
-    fun getIsFinalAmountAsString(): String {
-        return isFinalAmount.toString()
-    }
-}
+) : Parcelable

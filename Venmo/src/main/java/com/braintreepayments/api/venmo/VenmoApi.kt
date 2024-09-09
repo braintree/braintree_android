@@ -34,19 +34,19 @@ internal class VenmoApi(
 
             )
             val input = JSONObject()
-            input.put("paymentMethodUsage", request.paymentMethodUsageAsString)
+            input.put("paymentMethodUsage", request.paymentMethodUsage.name)
             input.put("merchantProfileId", venmoProfileId)
             input.put("customerClient", "MOBILE_APP")
             input.put("intent", "CONTINUE")
-            input.put("isFinalAmount", request.getIsFinalAmountAsString())
+            input.put("isFinalAmount", request.isFinalAmount.toString())
             val paysheetDetails = JSONObject()
             paysheetDetails.put(
                 "collectCustomerShippingAddress",
-                request.getCollectCustomerShippingAddressAsString()
+                request.collectCustomerShippingAddress.toString()
             )
             paysheetDetails.put(
                 "collectCustomerBillingAddress",
-                request.getCollectCustomerBillingAddressAsString()
+                request.collectCustomerBillingAddress.toString()
             )
 
             val transactionDetails = JSONObject()
@@ -56,9 +56,9 @@ internal class VenmoApi(
             transactionDetails.put("shippingAmount", request.shippingAmount)
             transactionDetails.put("totalAmount", request.totalAmount)
 
-            if (request.lineItems.isNotEmpty()) {
+            if (!request.lineItems.isNullOrEmpty()) {
                 val lineItems = JSONArray()
-                for (lineItem in request.lineItems) {
+                for (lineItem in request.lineItems!!) {
                     if (lineItem.unitTaxAmount == null || lineItem.unitTaxAmount == "") {
                         lineItem.unitTaxAmount = "0"
                     }
