@@ -26,8 +26,9 @@ import java.util.Objects
  */
 class VenmoClient @VisibleForTesting internal constructor(
     private val braintreeClient: BraintreeClient,
-    private val venmoApi: VenmoApi,
-    private val sharedPrefsWriter: VenmoSharedPrefsWriter
+    private val apiClient: ApiClient = ApiClient(braintreeClient),
+    private val venmoApi: VenmoApi = VenmoApi(braintreeClient, apiClient),
+    private val sharedPrefsWriter: VenmoSharedPrefsWriter = VenmoSharedPrefsWriter(),
 ) {
     /**
      * Used for linking events from the client to server side request
@@ -39,11 +40,6 @@ class VenmoClient @VisibleForTesting internal constructor(
      * True if `tokenize()` was called with a Vault request object type
      */
     private var isVaultRequest = false
-
-    private constructor(braintreeClient: BraintreeClient, apiClient: ApiClient) : this(
-        braintreeClient, VenmoApi(braintreeClient, apiClient),
-        VenmoSharedPrefsWriter()
-    )
 
     /**
      * Initializes a new [VenmoClient] instance
@@ -57,12 +53,6 @@ class VenmoClient @VisibleForTesting internal constructor(
         authorization: String,
         returnUrlScheme: String?
     ) : this(BraintreeClient(context, authorization, returnUrlScheme))
-
-    @VisibleForTesting
-    internal constructor(braintreeClient: BraintreeClient) : this(
-        braintreeClient,
-        ApiClient(braintreeClient)
-    )
 
     /**
      * Start the Pay With Venmo flow. This will return a [VenmoPaymentAuthRequestParams] that
