@@ -3,7 +3,7 @@ name: Deploy to Preview Channel
 on:
   push:
     branches:
-      - main
+      - paypal-app-switch-feature
 jobs:
   build_and_preview:
     runs-on: ubuntu-latest
