@@ -2,10 +2,10 @@ package com.braintreepayments.api.paypal
 
 import android.content.Context
 import android.net.Uri
-import com.braintreepayments.api.ExperimentalBetaApi
 import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
@@ -143,11 +143,6 @@ internal class PayPalInternalClient(
         fun parameters(): Map<String, Any> {
 
             parameters["edit_paypal_vault_id"] = payPalVaultEditRequest.editPayPalVaultId
-
-            if (payPalVaultEditRequest.correlationId != null) {
-                parameters["correlation_id"] = payPalVaultEditRequest.correlationId!!
-            }
-
             parameters["return_url"] = payPalVaultEditRequest.returnScheme
             parameters["cancel_url"] = payPalVaultEditRequest.cancelScheme
 
