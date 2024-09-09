@@ -1,8 +1,6 @@
 package com.braintreepayments.api.venmo
 
 import android.os.Parcelable
-import androidx.annotation.StringDef
-import com.braintreepayments.api.venmo.VenmoLineItem.VenmoLineItemKind
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
@@ -22,7 +20,7 @@ import org.json.JSONObject
  */
 @Parcelize
 class VenmoLineItem @JvmOverloads constructor(
-    @VenmoLineItemKind val kind: String,
+    val kind: VenmoLineItemKind,
     val name: String,
     val quantity: Int,
     val unitAmount: String,
@@ -31,15 +29,6 @@ class VenmoLineItem @JvmOverloads constructor(
     var unitTaxAmount: String? = null,
     var url: String? = null
 ) : Parcelable {
-    /**
-     * The type of Venmo line item.
-     *
-     * [.KIND_CREDIT] A line item that is a credit. [.KIND_DEBIT] A line item that
-     * debits.
-     */
-    @Retention(AnnotationRetention.SOURCE)
-    @StringDef(KIND_CREDIT, KIND_DEBIT)
-    internal annotation class VenmoLineItemKind
 
     fun toJson(): JSONObject {
         return try {
@@ -58,16 +47,13 @@ class VenmoLineItem @JvmOverloads constructor(
     }
 
     companion object {
-        const val KIND_CREDIT: String = "CREDIT"
-        const val KIND_DEBIT: String = "DEBIT"
-
         internal const val DESCRIPTION_KEY = "description"
-        const val KIND_KEY = "type"
-        const val NAME_KEY = "name"
-        const val PRODUCT_CODE_KEY = "productCode"
-        const val QUANTITY_KEY = "quantity"
-        const val UNIT_AMOUNT_KEY = "unitAmount"
-        const val UNIT_TAX_AMOUNT_KEY = "unitTaxAmount"
-        const val URL_KEY = "url"
+        internal const val KIND_KEY = "type"
+        internal const val NAME_KEY = "name"
+        internal const val PRODUCT_CODE_KEY = "productCode"
+        internal const val QUANTITY_KEY = "quantity"
+        internal const val UNIT_AMOUNT_KEY = "unitAmount"
+        internal const val UNIT_TAX_AMOUNT_KEY = "unitTaxAmount"
+        internal const val URL_KEY = "url"
     }
 }

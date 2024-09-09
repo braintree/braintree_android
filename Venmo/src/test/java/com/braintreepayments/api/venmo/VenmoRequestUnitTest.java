@@ -30,7 +30,7 @@ public class VenmoRequestUnitTest {
         request.setFinalAmount(true);
 
         ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
-        lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "An Item", 1, "10.00"));
+        lineItems.add(new VenmoLineItem(VenmoLineItemKind.DEBIT, "An Item", 1, "10.00"));
         request.setLineItems(lineItems);
 
         Parcel parcel = Parcel.obtain();

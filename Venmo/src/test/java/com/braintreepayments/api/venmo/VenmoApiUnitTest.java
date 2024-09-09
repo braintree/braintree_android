@@ -57,7 +57,7 @@ public class VenmoApiUnitTest {
         request.setTaxAmount("9.00");
         request.setShippingAmount("1");
         ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
-        lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Some Item", 1, "1"));
+        lineItems.add(new VenmoLineItem(VenmoLineItemKind.DEBIT, "Some Item", 1, "1"));
         request.setLineItems(lineItems);
 
         venmoAPI.createPaymentContext(request, request.getProfileId(),
