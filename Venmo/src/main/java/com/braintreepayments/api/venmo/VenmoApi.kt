@@ -15,6 +15,7 @@ internal class VenmoApi(
     private val apiClient: ApiClient
 ) {
 
+    @Suppress("LongMethod")
     fun createPaymentContext(
         request: VenmoRequest,
         venmoProfileId: String?,
@@ -22,9 +23,15 @@ internal class VenmoApi(
     ) {
         val params = JSONObject()
         try {
-            params.put("query", "mutation CreateVenmoPaymentContext(\$input: " +
-                        "CreateVenmoPaymentContextInput!) { createVenmoPaymentContext" +
-                        "(input: \$input) { venmoPaymentContext { id } } }"
+            params.put(
+                "query", """
+                mutation CreateVenmoPaymentContext(${'$'}input: CreateVenmoPaymentContextInput!) { 
+                    createVenmoPaymentContext(input: ${'$'}input) { 
+                        venmoPaymentContext { id } 
+                    } 
+                }
+                """.trimIndent()
+
             )
             val input = JSONObject()
             input.put("paymentMethodUsage", request.paymentMethodUsageAsString)
@@ -49,7 +56,7 @@ internal class VenmoApi(
             transactionDetails.put("shippingAmount", request.shippingAmount)
             transactionDetails.put("totalAmount", request.totalAmount)
 
-            if (!request.lineItems.isEmpty()) {
+            if (request.lineItems.isNotEmpty()) {
                 val lineItems = JSONArray()
                 for (lineItem in request.lineItems) {
                     if (lineItem.unitTaxAmount == null || lineItem.unitTaxAmount == "") {
@@ -116,13 +123,28 @@ internal class VenmoApi(
         try {
             params.put(
                 "query",
-                "query PaymentContext(\$id: ID!) { node(id: \$id) " +
-                        "{ ... on VenmoPaymentContext { paymentMethodId userName payerInfo " +
-                        "{ firstName lastName phoneNumber email externalId userName " +
-                        "shippingAddress { fullName addressLine1 addressLine2 " +
-                        "adminArea1 adminArea2 postalCode countryCode } " +
-                        "billingAddress { fullName addressLine1 addressLine2 " +
-                        "adminArea1 adminArea2 postalCode countryCode } } } } }"
+                """
+                query PaymentContext(${'$'}id: ID!) { 
+                    node(id: ${'$'}id) { 
+                        ... on VenmoPaymentContext { 
+                            paymentMethodId 
+                            userName 
+                            payerInfo { 
+                                firstName lastName phoneNumber email externalId userName  
+                                shippingAddress { 
+                                    fullName addressLine1 addressLine2 adminArea1 adminArea2 
+                                    postalCode countryCode 
+                                } 
+                                billingAddress { 
+                                    fullName addressLine1 addressLine2 adminArea1 adminArea2 
+                                    postalCode countryCode 
+                                } 
+                            } 
+                        } 
+                    } 
+                }
+                """.trimIndent()
+
             )
             val variables = JSONObject()
             variables.put("id", paymentContextId)

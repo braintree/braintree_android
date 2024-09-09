@@ -226,6 +226,7 @@ class VenmoClient @VisibleForTesting internal constructor(
         }
     }
 
+    @Suppress("LongMethod")
     private fun callbackTokenizeSuccess(deepLinkUri: Uri, callback: VenmoTokenizeCallback) {
         val paymentContextId = parse(deepLinkUri.toString(), "resource_id")
         val paymentMethodNonce = parse(deepLinkUri.toString(), "payment_method_nonce")
