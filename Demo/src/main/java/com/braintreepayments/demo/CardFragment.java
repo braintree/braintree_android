@@ -30,9 +30,13 @@ import com.braintreepayments.api.threedsecure.ThreeDSecureLauncher;
 import com.braintreepayments.api.threedsecure.ThreeDSecureNonce;
 import com.braintreepayments.api.threedsecure.ThreeDSecurePaymentAuthRequest;
 import com.braintreepayments.api.threedsecure.ThreeDSecurePostalAddress;
+import com.braintreepayments.api.threedsecure.ThreeDSecureRenderType;
 import com.braintreepayments.api.threedsecure.ThreeDSecureRequest;
+import com.braintreepayments.api.threedsecure.ThreeDSecureRequestedExemptionType;
 import com.braintreepayments.api.threedsecure.ThreeDSecureResult;
+import com.braintreepayments.api.threedsecure.ThreeDSecureUiType;
 import com.braintreepayments.api.threedsecure.ThreeDSecureV2ButtonCustomization;
+import com.braintreepayments.api.threedsecure.ThreeDSecureV2ButtonType;
 import com.braintreepayments.api.threedsecure.ThreeDSecureV2LabelCustomization;
 import com.braintreepayments.api.threedsecure.ThreeDSecureV2TextBoxCustomization;
 import com.braintreepayments.api.threedsecure.ThreeDSecureV2ToolbarCustomization;
@@ -197,7 +201,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         card.setExpirationYear(cardForm.getExpirationYear());
         card.setCvv(cardForm.getCvv());
         // TODO: GQL currently only returns the bin if validate = false
-        card.setShouldValidate(false); 
+        card.setShouldValidate(false);
         card.setPostalCode(cardForm.getPostalCode());
 
         cardClient.tokenize(card, (cardResult) -> {
@@ -322,26 +326,26 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         v2UiCustomization.setLabelCustomization(labelCustomization);
         v2UiCustomization.setTextBoxCustomization(textBoxCustomization);
         v2UiCustomization.setToolbarCustomization(toolbarCustomization);
-        v2UiCustomization.setButtonCustomization(submitButtonCustomization,
-                ThreeDSecureV2UiCustomization.BUTTON_TYPE_VERIFY);
+        v2UiCustomization.setButtonCustomization(submitButtonCustomization);
+        v2UiCustomization.setButtonType(ThreeDSecureV2ButtonType.BUTTON_TYPE_VERIFY);
 
         ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest();
         threeDSecureRequest.setAmount("10");
         threeDSecureRequest.setEmail("test@email.com");
         threeDSecureRequest.setBillingAddress(billingAddress);
         threeDSecureRequest.setNonce(cardNonce.getString());
-        threeDSecureRequest.setRequestedExemptionType(ThreeDSecureRequest.LOW_VALUE);
+        threeDSecureRequest.setRequestedExemptionType(ThreeDSecureRequestedExemptionType.LOW_VALUE);
         threeDSecureRequest.setAdditionalInformation(additionalInformation);
         threeDSecureRequest.setV2UiCustomization(v2UiCustomization);
 
-        threeDSecureRequest.setUiType(ThreeDSecureRequest.BOTH);
+        threeDSecureRequest.setUiType(ThreeDSecureUiType.BOTH);
 
         threeDSecureRequest.setRenderTypes(Arrays.asList(
-                ThreeDSecureRequest.OTP,
-                ThreeDSecureRequest.SINGLE_SELECT,
-                ThreeDSecureRequest.MULTI_SELECT,
-                ThreeDSecureRequest.OOB,
-                ThreeDSecureRequest.RENDER_HTML
+            ThreeDSecureRenderType.OTP,
+            ThreeDSecureRenderType.SINGLE_SELECT,
+            ThreeDSecureRenderType.MULTI_SELECT,
+            ThreeDSecureRenderType.OOB,
+            ThreeDSecureRenderType.RENDER_HTML
         ));
 
         return threeDSecureRequest;

@@ -15,7 +15,7 @@ import org.json.JSONObject
  * @property isTouchDisabled `true` if PayPal touch is currently disabled, `false` otherwise.
  * @property currencyIsoCode the PayPal currency code.
  */
-internal class PayPalConfiguration constructor(
+internal class PayPalConfiguration(
     val directBaseUrl: String?,
     val displayName: String?,
     val clientId: String?,

@@ -1,8 +1,8 @@
 plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
-    id 'org.jetbrains.dokka'
-    id 'kotlin-parcelize'
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.android
+    alias libs.plugins.dokka
+    alias libs.plugins.kotlin.parcelize
 }
 
 android {
@@ -30,36 +30,26 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
-
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
-    kotlin {
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of("11"))
-        }
-    }
 }
 
 dependencies {
     api project(':BraintreeCore')
     api project(':Card')
-    implementation deps.cardinal
+    implementation libs.cardinal
 
-    implementation deps.appCompat
-    implementation deps.lifecycleRuntime
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.lifecycle.runtime
 
-    testImplementation deps.robolectric
-    testImplementation deps.mockk
-    testImplementation deps.mockitoCore
-    testImplementation deps.jsonAssert
-    testImplementation deps.androidxTestCore
+    testImplementation libs.robolectric
+    testImplementation libs.mockk
+    testImplementation libs.mockito.core
+    testImplementation libs.json.assert
+    testImplementation libs.androidx.test.core
     testImplementation project(':TestUtils')
 
-    androidTestImplementation deps.androidxTestRules
-    androidTestImplementation deps.androidxTestRunner
-    androidTestImplementation deps.junitTest
+    androidTestImplementation libs.androidx.test.rules
+    androidTestImplementation libs.androidx.test.runner
+    androidTestImplementation libs.androidx.junit
     androidTestImplementation project(':TestUtils')
 }
 

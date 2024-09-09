@@ -1,8 +1,8 @@
 plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
-    id 'org.jetbrains.dokka'
-    id 'kotlin-parcelize'
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.android
+    alias libs.plugins.dokka
+    alias libs.plugins.kotlin.parcelize
 }
 
 android {
@@ -29,36 +29,26 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
-
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
-    kotlin {
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of("11"))
-        }
-    }
 }
 
 dependencies {
     api project(':BraintreeCore')
 
-    implementation deps.annotation
+    implementation libs.androidx.annotation
 
-    testImplementation deps.robolectric
-    testImplementation deps.mockitoCore
-    testImplementation deps.jsonAssert
+    testImplementation libs.robolectric
+    testImplementation libs.mockito.core
+    testImplementation libs.json.assert
     testImplementation project(':TestUtils')
     testImplementation project(':ThreeDSecure')
-    testImplementation deps.coreKtx
-    testImplementation deps.kotlinStdLib
-    testImplementation deps.kotlinTest
+    testImplementation libs.androidx.core.ktx
+    testImplementation libs.kotlin.stdlib
+    testImplementation libs.kotlin.test
 
     androidTestImplementation project(':TestUtils')
-    androidTestImplementation deps.androidxTestRules
-    androidTestImplementation deps.androidxTestRunner
-    androidTestImplementation deps.junitTest
+    androidTestImplementation libs.androidx.test.rules
+    androidTestImplementation libs.androidx.test.runner
+    androidTestImplementation libs.androidx.junit
 }
 
 // region signing and publishing

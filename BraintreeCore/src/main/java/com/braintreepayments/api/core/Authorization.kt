@@ -11,7 +11,7 @@ import androidx.annotation.RestrictTo
  * @suppress
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-abstract class Authorization(private val rawValue: String) {
+abstract class Authorization internal constructor(private val rawValue: String) {
 
     abstract val configUrl: String?
     abstract val bearer: String?

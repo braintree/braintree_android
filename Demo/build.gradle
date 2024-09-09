@@ -1,7 +1,7 @@
 plugins {
-    id 'com.android.application'
-    id 'androidx.navigation.safeargs'
-    id 'kotlin-android'
+    alias libs.plugins.android.application
+    alias libs.plugins.androidx.safeargs
+    alias libs.plugins.kotlin.android
 }
 
 android {
@@ -52,34 +52,22 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.1"
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
-    kotlin {
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of("11"))
-        }
+        sourceCompatibility versions.javaSourceCompatibility
+        targetCompatibility versions.javaTargetCompatibility
     }
 
     namespace 'com.braintreepayments.demo'
 }
 
 dependencies {
-    implementation 'androidx.preference:preference:1.2.1'
-    implementation deps.kotlinStdLib
+    implementation libs.kotlin.stdlib
 
-    implementation('com.squareup.retrofit:retrofit:1.9.0') {
-        exclude module: 'com.google.gson'
-    }
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
 
     implementation project(':AmericanExpress')
     implementation project(':Card')
@@ -94,34 +82,30 @@ dependencies {
     implementation project(':Venmo')
     implementation project(':VisaCheckout')
 
-    implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'de.greenrobot:eventbus:2.4.1'
-    implementation deps.appCompat
-    implementation 'androidx.preference:preference:1.2.1'
-    implementation 'com.google.android.material:material:1.10.0'
-    implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation libs.gson
+    implementation libs.eventbus
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.preference
+    implementation libs.material
+    implementation libs.androidx.cardview
+    implementation libs.androidx.fragment
+    implementation libs.androidx.navigation.fragment
+    implementation libs.androidx.navigation.ui
+    implementation libs.androidx.legacy.support.v4
+    implementation libs.androidx.lifecycle.extensions
+    implementation libs.androidx.lifecycle.viewmodel.ktx
+    implementation libs.bt.card.form
 
-    implementation 'io.card:android-sdk:5.5.1'
-    implementation 'com.braintreepayments:card-form:5.4.0'
-
-    implementation 'androidx.fragment:fragment:1.6.2'
-    implementation 'androidx.navigation:navigation-fragment:2.7.5'
-    implementation 'androidx.navigation:navigation-ui:2.7.5'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
-
-    def composeBom = platform('androidx.compose:compose-bom:2024.06.00')
+    def composeBom = platform(libs.androidx.compose.bom)
     implementation composeBom
-    implementation 'androidx.compose.material3:material3'
+    implementation libs.androidx.material3
 
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
+    debugImplementation libs.leakcanary
 
-    androidTestImplementation 'com.braintreepayments:device-automator:1.0.0'
+    androidTestImplementation libs.device.automator
     androidTestImplementation project(':TestUtils')
 
-    testImplementation 'junit:junit:4.13.2'
+    testImplementation libs.junit
 }
 
 task demoApkSize {

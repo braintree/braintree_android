@@ -1,6 +1,6 @@
 package com.braintreepayments.api.paypalmessaging
 
-import com.braintreepayments.api.ExperimentalBetaApi
+import com.braintreepayments.api.core.ExperimentalBetaApi
 
 /**
  * Callback used to communicate [PayPalMessagingView] events

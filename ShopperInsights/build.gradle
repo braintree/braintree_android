@@ -1,7 +1,7 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
-    id 'org.jetbrains.dokka'
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.android
+    alias libs.plugins.dokka
 }
 
 android {
@@ -28,28 +28,18 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
-
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
-    kotlin {
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of("11"))
-        }
-    }
 }
 
 dependencies {
-    implementation deps.coreKtx
+    implementation libs.androidx.core.ktx
 
     api project(':BraintreeCore')
 
-    testImplementation deps.jsonAssert
-    testImplementation deps.kotlinTest
-    testImplementation deps.mockk
-    testImplementation deps.robolectric
-    testImplementation deps.junitTest
+    testImplementation libs.json.assert
+    testImplementation libs.kotlin.test
+    testImplementation libs.mockk
+    testImplementation libs.robolectric
+    testImplementation libs.androidx.junit
     testImplementation project(':TestUtils')
 }
 

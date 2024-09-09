@@ -1,9 +1,6 @@
 package com.braintreepayments.api.threedsecure;
 
 import static com.braintreepayments.api.testutils.Assertions.assertBinDataEqual;
-import static com.braintreepayments.api.card.BinData.NO;
-import static com.braintreepayments.api.card.BinData.UNKNOWN;
-import static com.braintreepayments.api.card.BinData.YES;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -12,6 +9,7 @@ import static org.junit.Assert.assertNull;
 
 import android.os.Parcel;
 
+import com.braintreepayments.api.card.BinType;
 import com.braintreepayments.api.testutils.Fixtures;
 
 import org.json.JSONException;
@@ -31,16 +29,16 @@ public class ThreeDSecureNonceUnitTest {
         assertEquals("11", threeDSecureNonce.getLastTwo());
         assertEquals("1111", threeDSecureNonce.getLastFour());
         assertNotNull(threeDSecureNonce.getThreeDSecureInfo());
-        assertFalse(threeDSecureNonce.getThreeDSecureInfo().isLiabilityShifted());
-        assertTrue(threeDSecureNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertFalse(threeDSecureNonce.getThreeDSecureInfo().getLiabilityShifted());
+        assertTrue(threeDSecureNonce.getThreeDSecureInfo().getLiabilityShiftPossible());
         assertNotNull(threeDSecureNonce.getBinData());
-        assertEquals(UNKNOWN, threeDSecureNonce.getBinData().getPrepaid());
-        assertEquals(YES, threeDSecureNonce.getBinData().getHealthcare());
-        assertEquals(NO, threeDSecureNonce.getBinData().getDebit());
-        assertEquals(UNKNOWN, threeDSecureNonce.getBinData().getDurbinRegulated());
-        assertEquals(UNKNOWN, threeDSecureNonce.getBinData().getCommercial());
-        assertEquals(UNKNOWN, threeDSecureNonce.getBinData().getPayroll());
-        assertEquals(UNKNOWN, threeDSecureNonce.getBinData().getIssuingBank());
+        assertEquals(BinType.Unknown, threeDSecureNonce.getBinData().getPrepaid());
+        assertEquals(BinType.Yes, threeDSecureNonce.getBinData().getHealthcare());
+        assertEquals(BinType.No, threeDSecureNonce.getBinData().getDebit());
+        assertEquals(BinType.Unknown, threeDSecureNonce.getBinData().getDurbinRegulated());
+        assertEquals(BinType.Unknown, threeDSecureNonce.getBinData().getCommercial());
+        assertEquals(BinType.Unknown, threeDSecureNonce.getBinData().getPayroll());
+        assertEquals(BinType.Unknown.name(), threeDSecureNonce.getBinData().getIssuingBank());
         assertEquals("Something", threeDSecureNonce.getBinData().getCountryOfIssuance());
         assertEquals("123", threeDSecureNonce.getBinData().getProductId());
         assertEquals("unregulated",
@@ -59,15 +57,15 @@ public class ThreeDSecureNonceUnitTest {
         assertEquals("11", threeDSecureNonce.getLastTwo());
         assertEquals("1111", threeDSecureNonce.getLastFour());
         assertNotNull(threeDSecureNonce.getThreeDSecureInfo());
-        assertFalse(threeDSecureNonce.getThreeDSecureInfo().isLiabilityShifted());
-        assertFalse(threeDSecureNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertFalse(threeDSecureNonce.getThreeDSecureInfo().getLiabilityShifted());
+        assertFalse(threeDSecureNonce.getThreeDSecureInfo().getLiabilityShiftPossible());
         assertNotNull(threeDSecureNonce.getBinData());
-        assertEquals(YES, threeDSecureNonce.getBinData().getPrepaid());
-        assertEquals(YES, threeDSecureNonce.getBinData().getHealthcare());
-        assertEquals(NO, threeDSecureNonce.getBinData().getDebit());
-        assertEquals(YES, threeDSecureNonce.getBinData().getDurbinRegulated());
-        assertEquals(NO, threeDSecureNonce.getBinData().getCommercial());
-        assertEquals(YES, threeDSecureNonce.getBinData().getPayroll());
+        assertEquals(BinType.Yes, threeDSecureNonce.getBinData().getPrepaid());
+        assertEquals(BinType.Yes, threeDSecureNonce.getBinData().getHealthcare());
+        assertEquals(BinType.No, threeDSecureNonce.getBinData().getDebit());
+        assertEquals(BinType.Yes, threeDSecureNonce.getBinData().getDurbinRegulated());
+        assertEquals(BinType.No, threeDSecureNonce.getBinData().getCommercial());
+        assertEquals(BinType.Yes, threeDSecureNonce.getBinData().getPayroll());
         assertEquals("Bank of America", threeDSecureNonce.getBinData().getIssuingBank());
         assertEquals("USA", threeDSecureNonce.getBinData().getCountryOfIssuance());
         assertEquals("123", threeDSecureNonce.getBinData().getProductId());
@@ -108,18 +106,18 @@ public class ThreeDSecureNonceUnitTest {
         assertEquals("", threeDSecureNonce.getExpirationYear());
         assertEquals("", threeDSecureNonce.getCardholderName());
         assertNotNull(threeDSecureNonce.getThreeDSecureInfo());
-        assertFalse(threeDSecureNonce.getThreeDSecureInfo().isLiabilityShifted());
-        assertFalse(threeDSecureNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertFalse(threeDSecureNonce.getThreeDSecureInfo().getLiabilityShifted());
+        assertFalse(threeDSecureNonce.getThreeDSecureInfo().getLiabilityShiftPossible());
         assertNotNull(threeDSecureNonce.getBinData());
-        assertEquals(UNKNOWN, threeDSecureNonce.getBinData().getPrepaid());
-        assertEquals(UNKNOWN, threeDSecureNonce.getBinData().getHealthcare());
-        assertEquals(UNKNOWN, threeDSecureNonce.getBinData().getDebit());
-        assertEquals(UNKNOWN, threeDSecureNonce.getBinData().getDurbinRegulated());
-        assertEquals(UNKNOWN, threeDSecureNonce.getBinData().getCommercial());
-        assertEquals(UNKNOWN, threeDSecureNonce.getBinData().getPayroll());
-        assertEquals(UNKNOWN, threeDSecureNonce.getBinData().getIssuingBank());
-        assertEquals(UNKNOWN, threeDSecureNonce.getBinData().getCountryOfIssuance());
-        assertEquals(UNKNOWN, threeDSecureNonce.getBinData().getProductId());
+        assertEquals(BinType.Unknown, threeDSecureNonce.getBinData().getPrepaid());
+        assertEquals(BinType.Unknown, threeDSecureNonce.getBinData().getHealthcare());
+        assertEquals(BinType.Unknown, threeDSecureNonce.getBinData().getDebit());
+        assertEquals(BinType.Unknown, threeDSecureNonce.getBinData().getDurbinRegulated());
+        assertEquals(BinType.Unknown, threeDSecureNonce.getBinData().getCommercial());
+        assertEquals(BinType.Unknown, threeDSecureNonce.getBinData().getPayroll());
+        assertEquals(BinType.Unknown.name(), threeDSecureNonce.getBinData().getIssuingBank());
+        assertEquals(BinType.Unknown.name(), threeDSecureNonce.getBinData().getCountryOfIssuance());
+        assertEquals(BinType.Unknown.name(), threeDSecureNonce.getBinData().getProductId());
     }
 
     @Test
@@ -143,7 +141,7 @@ public class ThreeDSecureNonceUnitTest {
         assertBinDataEqual(threeDSecureNonce.getBinData(), parceled.getBinData());
         assertEquals(threeDSecureNonce.getAuthenticationInsight().getRegulationEnvironment(),
                 parceled.getAuthenticationInsight().getRegulationEnvironment());
-        assertEquals(threeDSecureNonce.getThreeDSecureInfo().isLiabilityShifted(), parceled.getThreeDSecureInfo().isLiabilityShifted());
-        assertEquals(threeDSecureNonce.getThreeDSecureInfo().isLiabilityShiftPossible(), parceled.getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertEquals(threeDSecureNonce.getThreeDSecureInfo().getLiabilityShifted(), parceled.getThreeDSecureInfo().getLiabilityShifted());
+        assertEquals(threeDSecureNonce.getThreeDSecureInfo().getLiabilityShiftPossible(), parceled.getThreeDSecureInfo().getLiabilityShiftPossible());
     }
 }

@@ -1,12 +1,11 @@
 package com.braintreepayments.api.core
 
 import androidx.annotation.IntDef
-import androidx.annotation.VisibleForTesting
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.lang.ref.WeakReference
 
-internal class CrashReporter @VisibleForTesting constructor(
+internal class CrashReporter(
     private val braintreeClientRef: WeakReference<BraintreeClient>
 ) : Thread.UncaughtExceptionHandler {
 

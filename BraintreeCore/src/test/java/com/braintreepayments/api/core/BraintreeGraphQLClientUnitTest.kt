@@ -54,7 +54,7 @@ class BraintreeGraphQLClientUnitTest {
         val headers = httpRequest.headers
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
         assertEquals("Bearer encoded_auth_fingerprint", headers["Authorization"])
-        assertEquals("2018-03-06", headers["Braintree-Version"])
+        assertEquals("2024-08-23", headers["Braintree-Version"])
     }
 
     @Test
@@ -76,7 +76,7 @@ class BraintreeGraphQLClientUnitTest {
         val headers = httpRequest.headers
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
         assertEquals("Bearer encoded_auth_fingerprint", headers["Authorization"])
-        assertEquals("2018-03-06", headers["Braintree-Version"])
+        assertEquals("2024-08-23", headers["Braintree-Version"])
     }
 
     @Test
@@ -97,7 +97,7 @@ class BraintreeGraphQLClientUnitTest {
         val headers = httpRequest.headers
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
         assertEquals("Bearer encoded_auth_fingerprint", headers["Authorization"])
-        assertEquals("2018-03-06", headers["Braintree-Version"])
+        assertEquals("2024-08-23", headers["Braintree-Version"])
     }
 
     @Test

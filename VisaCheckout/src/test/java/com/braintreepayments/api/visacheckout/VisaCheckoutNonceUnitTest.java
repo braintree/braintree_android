@@ -1,15 +1,14 @@
 package com.braintreepayments.api.visacheckout;
 
 import static com.braintreepayments.api.testutils.Assertions.assertBinDataEqual;
-import static com.braintreepayments.api.card.BinData.NO;
-import static com.braintreepayments.api.card.BinData.UNKNOWN;
-import static com.braintreepayments.api.card.BinData.YES;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 
 import android.os.Parcel;
 
+import com.braintreepayments.api.card.BinData;
+import com.braintreepayments.api.card.BinType;
 import com.braintreepayments.api.testutils.Fixtures;
 
 import org.json.JSONArray;
@@ -66,13 +65,13 @@ public class VisaCheckoutNonceUnitTest {
         assertEquals("userEmail", visaCheckoutNonce.getUserData().getUserEmail());
 
         assertNotNull(visaCheckoutNonce.getBinData());
-        assertEquals(UNKNOWN, visaCheckoutNonce.getBinData().getPrepaid());
-        assertEquals(YES, visaCheckoutNonce.getBinData().getHealthcare());
-        assertEquals(NO, visaCheckoutNonce.getBinData().getDebit());
-        assertEquals(UNKNOWN, visaCheckoutNonce.getBinData().getDurbinRegulated());
-        assertEquals(UNKNOWN, visaCheckoutNonce.getBinData().getCommercial());
-        assertEquals(UNKNOWN, visaCheckoutNonce.getBinData().getPayroll());
-        assertEquals(UNKNOWN, visaCheckoutNonce.getBinData().getIssuingBank());
+        assertEquals(BinType.Unknown, visaCheckoutNonce.getBinData().getPrepaid());
+        assertEquals(BinType.Yes, visaCheckoutNonce.getBinData().getHealthcare());
+        assertEquals(BinType.No, visaCheckoutNonce.getBinData().getDebit());
+        assertEquals(BinType.Unknown, visaCheckoutNonce.getBinData().getDurbinRegulated());
+        assertEquals(BinType.Unknown, visaCheckoutNonce.getBinData().getCommercial());
+        assertEquals(BinType.Unknown, visaCheckoutNonce.getBinData().getPayroll());
+        assertEquals(BinType.Unknown.name(), visaCheckoutNonce.getBinData().getIssuingBank());
         assertEquals("Something", visaCheckoutNonce.getBinData().getCountryOfIssuance());
         assertEquals("123", visaCheckoutNonce.getBinData().getProductId());
     }
