@@ -16,9 +16,6 @@ data class PayPalVaultEditRequest(
     val merchantAccountId: String? = null,
 ) {
     val hermesPath: String = "v1/paypal_hermes/generate_edit_fi_url"
-
-    val returnScheme = "sdk.android.braintree" + "://" + "onetouch/v1/success"
-    val cancelScheme = "sdk.android.braintree" + "://" + "onetouch/v1/cancel"
 }
 
 

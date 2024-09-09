@@ -136,15 +136,31 @@ internal class PayPalInternalClient(
     }
 
     @ExperimentalBetaApi
-    fun sendVaultEditRequest(payPalVaultEditRequest: PayPalVaultEditRequest, payPalVaultEditAuthCallback: PayPalVaultEditAuthCallback) {
+    fun sendVaultEditRequest(
+        context: Context,
+        payPalVaultEditRequest: PayPalVaultEditRequest,
+        payPalVaultEditAuthCallback: PayPalVaultEditAuthCallback,
+        riskCorrelationId: String? = null
+    ) {
 
         val parameters = mutableMapOf<String, Any>()
+
+        getClientMetadataId(null, context, braintreeClient, dataCollector) { clientMetadataId ->
+            if (clientMetadataId != null) {
+                println("Client Metadata ID: $clientMetadataId")
+                parameters["risk_correlation_id"] = clientMetadataId
+            } else {
+                println("Failed to obtain Client Metadata ID")
+                // Handle the failure
+            }
+        }
 
         fun parameters(): Map<String, Any> {
 
             parameters["edit_paypal_vault_id"] = payPalVaultEditRequest.editPayPalVaultId
-            parameters["return_url"] = payPalVaultEditRequest.returnScheme
-            parameters["cancel_url"] = payPalVaultEditRequest.cancelScheme
+            parameters["return_url"] = successUrl
+            parameters["cancel_url"] = cancelUrl
+
 
             return parameters
         }
@@ -152,6 +168,27 @@ internal class PayPalInternalClient(
         val jsonObject = JSONObject(parameters())
 
         braintreeClient.sendPOST(payPalVaultEditRequest.hermesPath, jsonObject.toString()) { response, error ->
+        }
+    }
+
+    fun getClientMetadataId(
+        riskCorrelationId: String?,
+        context: Context,
+        braintreeClient: BraintreeClient,
+        dataCollector: DataCollector,
+        callback: (String?) -> Unit
+    ) {
+        val clientMetadataId = riskCorrelationId ?: run {
+            braintreeClient.getConfiguration { configuration: Configuration?, configError: Exception? ->
+                val clientMetadataId = dataCollector.getClientMetadataId(context, configuration, false)
+                callback(clientMetadataId) // Return the result via callback
+            }
+            null // Return null here because the actual result will come from the callback
+        }
+
+        // If riskCorrelationId is not null, call the callback with it
+        if (clientMetadataId != null) {
+            callback(clientMetadataId)
         }
     }
 
@@ -163,8 +200,8 @@ internal class PayPalInternalClient(
         fun parameters(): Map<String, Any> {
 
             parameters["edit_paypal_vault_id"] = payPalVaultEditErrorRequest.editPayPalVaultId
-            parameters["return_url"] = payPalVaultEditErrorRequest.returnScheme
-            parameters["cancel_url"] = payPalVaultEditErrorRequest.cancelScheme
+            parameters["return_url"] = successUrl
+            parameters["cancel_url"] = cancelUrl
             parameters["correlation_id"] = payPalVaultEditErrorRequest.riskCorrelationId!!
 
             return parameters
@@ -174,20 +211,6 @@ internal class PayPalInternalClient(
         braintreeClient.sendPOST(payPalVaultEditErrorRequest.hermesPath, jsonObject.toString()) { response, error ->
         }
     }
-
-
-//public func parameters() -> [String: Any] {
-//    var parameters: [String: Any] = [:]
-//
-//    parameters["edit_paypal_vault_id"] = editPayPalVaultID
-//
-//    parameters["return_url"] = BTCoreConstants.callbackURLScheme + "://\(BTPayPalRequest.callbackURLHostAndPath)success"
-//    parameters["cancel_url"] = BTCoreConstants.callbackURLScheme + "://\(BTPayPalRequest.callbackURLHostAndPath)cancel"
-//    parameters["risk_correlation_id"] = riskCorrelationID
-//
-//    return parameters
-//}
-
 
     companion object {
         private const val CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource"

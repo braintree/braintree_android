@@ -233,7 +233,7 @@ class PayPalClient @VisibleForTesting internal constructor(
         payPalVaultEditRequest: PayPalVaultEditRequest,
         payPalVaultEditAuthCallback: PayPalVaultEditAuthCallback
     ) {
-        internalPayPalClient.sendVaultEditRequest(payPalVaultEditRequest, payPalVaultEditAuthCallback)
+        internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest, payPalVaultEditAuthCallback)
     }
 
     /**

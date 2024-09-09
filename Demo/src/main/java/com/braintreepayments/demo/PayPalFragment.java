@@ -129,6 +129,8 @@ public class PayPalFragment extends BaseFragment {
             dataCollector.collectDeviceData(requireActivity(), new DataCollectorRequest(true), (dataCollectorResult) -> {
                 if (dataCollectorResult instanceof DataCollectorResult.Success) {
                     deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
+
+
                 }
 
                 // The Vault ID is encrypted and shared with us
