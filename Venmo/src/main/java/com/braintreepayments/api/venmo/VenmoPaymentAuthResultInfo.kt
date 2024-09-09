@@ -8,5 +8,5 @@ import com.braintreepayments.api.BrowserSwitchFinalResult
  */
 data class VenmoPaymentAuthResultInfo internal constructor(
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val browserSwitchSuccess: BrowserSwitchFinalResult.Success
+    internal val browserSwitchSuccess: BrowserSwitchFinalResult.Success
 )
