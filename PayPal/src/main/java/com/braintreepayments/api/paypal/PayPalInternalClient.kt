@@ -141,10 +141,10 @@ internal class PayPalInternalClient(
 
         fun parameters(): Map<String, Any> {
 
-            parameters["edit_paypal_vault_id"] = editPaypalVaultId
+            parameters["edit_paypal_vault_id"] = payPalVaultEditRequest.editPaypalVaultId
 
-            if (correlationId != null) {
-                parameters["correlation_id"] = correlationId!!
+            if (payPalVaultEditRequest.correlationId != null) {
+                parameters["correlation_id"] = payPalVaultEditRequest.correlationId!!
             }
 
             parameters["return_url"] = "sdk.android.braintree"
@@ -153,7 +153,9 @@ internal class PayPalInternalClient(
             return parameters
         }
 
-        braintreeClient.sendPOST("URL", JSONObject("").toString()) { response, error ->
+        val jsonObject = JSONObject(parameters())
+
+        braintreeClient.sendPOST(payPalVaultEditRequest.hermesPath, jsonObject.toString()) { response, error ->
 
         }
     }
@@ -165,15 +167,16 @@ internal class PayPalInternalClient(
 
         fun parameters(): Map<String, Any> {
 
-            parameters["edit_paypal_vault_id"] = editPaypalVaultId
+            parameters["edit_paypal_vault_id"] = payPalVaultEditRequest.editPaypalVaultId
             parameters["return_url"] = "sdk.android.braintree"
             parameters["cancel_url"] = "onetouch/v1"
-            parameters["correlation_id"] = correlationId!!
+            parameters["correlation_id"] = payPalVaultEditRequest.correlationId!!
 
             return parameters
         }
 
-        braintreeClient.sendPOST("URL", JSONObject("").toString()) { response, error ->
+        val jsonObject = JSONObject(parameters())
+        braintreeClient.sendPOST("URL", jsonObject.toString()) { response, error ->
 
         }
     }
