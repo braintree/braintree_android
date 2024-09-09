@@ -10,11 +10,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Decrypt large secret
-        run: ./decrypt_secret.sh
+        run: ./.github/executables/decrypt_secret.sh
         env:
           LARGE_SECRET_PASSPHRASE: ${{ secrets.FIREBASE_PRIVATE_KEY_GPG_PASSPHRASE }}
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Deploy to Firebase
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          firebaseServiceAccount: "${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}"
+          firebaseServiceAccount: $HOME/secrets/braintree_demo_app.json
           expires: 30d
           projectId: braintree-demo-app
