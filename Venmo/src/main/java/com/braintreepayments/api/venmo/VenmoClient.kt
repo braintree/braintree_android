@@ -110,7 +110,7 @@ class VenmoClient @VisibleForTesting internal constructor(
                 request, venmoProfileId
             ) { paymentContextId: String?, exception: Exception? ->
                 if (exception == null) {
-                    if (paymentContextId != null && !paymentContextId.isEmpty()) {
+                    if (!paymentContextId.isNullOrEmpty()) {
                         payPalContextId = paymentContextId
                     }
                     try {
@@ -281,9 +281,16 @@ class VenmoClient @VisibleForTesting internal constructor(
                 }
             } else {
                 val venmoAccountNonce = VenmoAccountNonce(
-                    paymentMethodNonce, false, null, null,
-                    null, null, null, username,
-                    null, null
+                    paymentMethodNonce,
+                    false,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    username,
+                    null,
+                    null
                 )
                 callbackSuccess(callback, VenmoResult.Success(venmoAccountNonce))
             }
