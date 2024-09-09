@@ -17,5 +17,6 @@ data class PayPalVaultErrorHandlingEditRequest(
     val riskCorrelationId: String,
 ){
     val hermesPath: String = "v1/paypal_hermes/generate_edit_fi_url"
-    val callbackURLHostAndPath: String = "onetouch/v1"
+    val returnScheme = "sdk.android.braintree" + "://" + "onetouch/v1success"
+    val cancelScheme = "sdk.android.braintree" + "://" + "onetouch/v1cancel"
 }

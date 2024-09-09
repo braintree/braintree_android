@@ -148,8 +148,8 @@ internal class PayPalInternalClient(
                 parameters["correlation_id"] = payPalVaultEditRequest.correlationId!!
             }
 
-            parameters["return_url"] = "sdk.android.braintree"
-            parameters["cancel_url"] = "onetouch/v1"
+            parameters["return_url"] = payPalVaultEditRequest.returnScheme
+            parameters["cancel_url"] = payPalVaultEditRequest.cancelScheme
 
             return parameters
         }
@@ -169,8 +169,8 @@ internal class PayPalInternalClient(
         fun parameters(): Map<String, Any> {
 
             parameters["edit_paypal_vault_id"] = payPalVaultEditErrorRequest.editPayPalVaultId
-            parameters["return_url"] = "sdk.android.braintree"
-            parameters["cancel_url"] = "onetouch/v1"
+            parameters["return_url"] = payPalVaultEditErrorRequest.returnScheme
+            parameters["cancel_url"] = payPalVaultEditErrorRequest.cancelScheme
             parameters["correlation_id"] = payPalVaultEditErrorRequest.riskCorrelationId!!
 
             return parameters
