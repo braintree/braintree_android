@@ -157,7 +157,6 @@ internal class PayPalInternalClient(
         val jsonObject = JSONObject(parameters())
 
         braintreeClient.sendPOST(payPalVaultEditRequest.hermesPath, jsonObject.toString()) { response, error ->
-
         }
     }
 
@@ -178,7 +177,6 @@ internal class PayPalInternalClient(
 
         val jsonObject = JSONObject(parameters())
         braintreeClient.sendPOST(payPalVaultEditErrorRequest.hermesPath, jsonObject.toString()) { response, error ->
-
         }
     }
 
