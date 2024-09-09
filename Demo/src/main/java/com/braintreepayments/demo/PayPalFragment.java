@@ -16,7 +16,7 @@ import androidx.annotation.OptIn;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.ExperimentalBetaApi;
+import com.braintreepayments.api.core.ExperimentalBetaApi;
 import com.braintreepayments.api.core.PaymentMethodNonce;
 import com.braintreepayments.api.datacollector.DataCollector;
 import com.braintreepayments.api.datacollector.DataCollectorRequest;
@@ -133,7 +133,7 @@ public class PayPalFragment extends BaseFragment {
 
                 // The Vault ID is encrypted and shared with us
                 // Server SDK call with a customer ID or PayPal account to get encrypted Billing Id and optional merchant account Id
-                PayPalVaultEditRequest request = new PayPalVaultEditRequest("YJbRTegvI/dIDEyFZRa52Twflbn0q2pSktu1llbZmMg=", null, null);
+                PayPalVaultEditRequest request = new PayPalVaultEditRequest("YJbRTegvI/dIDEyFZRa52Twflbn0q2pSktu1llbZmMg=", null);
 
                 payPalClient.createEditAuthRequest(requireContext(), request,(PayPalVaultEditAuthCallback) -> {
 
@@ -141,7 +141,7 @@ public class PayPalFragment extends BaseFragment {
             });
         } else {
 
-            PayPalVaultEditRequest request = new PayPalVaultEditRequest("YJbRTegvI/dIDEyFZRa52Twflbn0q2pSktu1llbZmMg=", null, null);
+            PayPalVaultEditRequest request = new PayPalVaultEditRequest("YJbRTegvI/dIDEyFZRa52Twflbn0q2pSktu1llbZmMg=", null);
         }
     }
 

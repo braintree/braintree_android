@@ -1,6 +1,6 @@
 package com.braintreepayments.api.paypal.vaultedit
 
-import com.braintreepayments.api.ExperimentalBetaApi
+import com.braintreepayments.api.core.ExperimentalBetaApi
 
 /**
  * Initializes a PayPal Edit Request for the edit funding instrument flow
