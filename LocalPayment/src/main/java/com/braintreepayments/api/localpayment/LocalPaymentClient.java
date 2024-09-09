@@ -139,7 +139,7 @@ public class LocalPaymentClient {
             @NonNull LocalPaymentAuthCallback callback
     ) {
         BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
-                .requestCode(BraintreeRequestCodes.LOCAL_PAYMENT)
+                .requestCode(BraintreeRequestCodes.LOCAL_PAYMENT.getCode())
                 .returnUrlScheme(braintreeClient.getReturnUrlScheme())
                 .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
                 .url(Uri.parse(localPaymentAuthRequestParams.getApprovalUrl()));

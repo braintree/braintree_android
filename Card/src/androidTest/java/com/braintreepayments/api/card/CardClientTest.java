@@ -11,11 +11,12 @@ import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.braintreepayments.api.Authorization;
+import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.sharedutils.AuthorizationException;
-import com.braintreepayments.api.BraintreeClient;
+import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.Configuration;
-import com.braintreepayments.api.ErrorWithResponse;
+import com.braintreepayments.api.core.ErrorWithResponse;
+import com.braintreepayments.api.testutils.ExpirationDateHelper;
 import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.testutils.SharedPreferencesHelper;
 import com.braintreepayments.api.testutils.TestClientTokenBuilder;
@@ -54,7 +55,8 @@ public class CardClientTest {
 
         Card card = new Card();
         card.setNumber(VISA);
-        card.setExpirationDate("08/20");
+        card.setExpirationMonth("08");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         assertTokenizationSuccessful(authorization, card);
     }
@@ -66,7 +68,8 @@ public class CardClientTest {
 
         Card card = new Card();
         card.setNumber(VISA);
-        card.setExpirationDate("08/20");
+        card.setExpirationMonth("08");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         assertTokenizationSuccessful(authorization, card);
     }
@@ -78,8 +81,9 @@ public class CardClientTest {
 
         Card card = new Card();
         card.setNumber(VISA);
-        card.setExpirationDate("08/20");
         card.setShouldValidate(true);
+        card.setExpirationMonth("08");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         assertTokenizationSuccessful(authorization, card);
     }
@@ -91,8 +95,9 @@ public class CardClientTest {
 
         Card card = new Card();
         card.setNumber(VISA);
-        card.setExpirationDate("08/20");
         card.setShouldValidate(false);
+        card.setExpirationMonth("08");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         assertTokenizationSuccessful(authorization, card);
     }
@@ -103,7 +108,8 @@ public class CardClientTest {
 
         Card card = new Card();
         card.setNumber(VISA);
-        card.setExpirationDate("08/20");
+        card.setExpirationMonth("08");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         assertTokenizationSuccessful(TOKENIZATION_KEY, card);
     }
@@ -114,8 +120,9 @@ public class CardClientTest {
 
         Card card = new Card();
         card.setNumber(VISA);
-        card.setExpirationDate("08/20");
         card.setShouldValidate(false);
+        card.setExpirationMonth("08");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         assertTokenizationSuccessful(TOKENIZATION_KEY, card);
     }
@@ -126,8 +133,9 @@ public class CardClientTest {
 
         Card card = new Card();
         card.setNumber(VISA);
-        card.setExpirationDate("08/20");
         card.setShouldValidate(true);
+        card.setExpirationMonth("08");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(TOKENIZATION_KEY);
@@ -157,8 +165,9 @@ public class CardClientTest {
 
         Card card = new Card();
         card.setNumber(VISA);
-        card.setExpirationDate("08/20");
         card.setCvv("123");
+        card.setExpirationMonth("08");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         assertTokenizationSuccessful(authorization, card);
     }
@@ -171,6 +180,8 @@ public class CardClientTest {
 
         Card card = new Card();
         card.setCvv("123");
+        card.setExpirationMonth("08");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         CardClient sut = setupCardClient(TOKENIZATION_KEY);
         sut.tokenize(card, cardResult -> {
@@ -198,8 +209,9 @@ public class CardClientTest {
 
         Card card = new Card();
         card.setNumber(VISA);
-        card.setExpirationDate("08/20");
         card.setCvv("200");
+        card.setExpirationMonth("08");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(authorization);
@@ -221,8 +233,9 @@ public class CardClientTest {
 
         Card card = new Card();
         card.setNumber(VISA);
-        card.setExpirationDate("08/20");
         card.setCvv("123");
+        card.setExpirationMonth("08");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         assertTokenizationSuccessful(authorization, card);
     }
@@ -235,8 +248,9 @@ public class CardClientTest {
 
         Card card = new Card();
         card.setNumber(VISA);
-        card.setExpirationDate("08/20");
         card.setPostalCode("20000");
+        card.setExpirationMonth("08");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(authorization);
@@ -259,9 +273,10 @@ public class CardClientTest {
 
         Card card = new Card();
         card.setNumber(VISA);
-        card.setExpirationDate("08/20");
         card.setCountryCode("ABC");
         card.setShouldValidate(true);
+        card.setExpirationMonth("08");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         CardClient sut = setupCardClient(authorization);
@@ -284,7 +299,6 @@ public class CardClientTest {
 
         Card card = new Card();
         card.setNumber(VISA);
-        card.setExpirationDate("08/20");
         card.setCvv("123");
         card.setCardholderName("Joe Smith");
         card.setFirstName("Joe");
@@ -296,6 +310,8 @@ public class CardClientTest {
         card.setPostalCode("12345");
         card.setRegion("Some Region");
         card.setCountryCode("USA");
+        card.setExpirationMonth("08");
+        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         assertTokenizationSuccessful(authorization, card);
     }
@@ -313,17 +329,15 @@ public class CardClientTest {
             assertEquals("Visa", cardNonce.getCardType());
             assertEquals("1111", cardNonce.getLastFour());
             assertEquals("11", cardNonce.getLastTwo());
-            assertEquals("08", cardNonce.getExpirationMonth());
-            assertEquals("20", cardNonce.getExpirationYear());
-            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getPrepaid());
-            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getHealthcare());
-            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getDebit());
-            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getDurbinRegulated());
-            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getCommercial());
-            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getPayroll());
-            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getIssuingBank());
-            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getCountryOfIssuance());
-            assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getProductId());
+            assertEquals(BinType.Unknown, cardNonce.getBinData().getPrepaid());
+            assertEquals(BinType.Unknown, cardNonce.getBinData().getHealthcare());
+            assertEquals(BinType.Unknown, cardNonce.getBinData().getDebit());
+            assertEquals(BinType.Unknown, cardNonce.getBinData().getDurbinRegulated());
+            assertEquals(BinType.Unknown, cardNonce.getBinData().getCommercial());
+            assertEquals(BinType.Unknown, cardNonce.getBinData().getPayroll());
+            assertEquals(BinType.Unknown.name(), cardNonce.getBinData().getIssuingBank());
+            assertEquals(BinType.Unknown.name(), cardNonce.getBinData().getCountryOfIssuance());
+            assertEquals(BinType.Unknown.name(), cardNonce.getBinData().getProductId());
 
             countDownLatch.countDown();
         });

@@ -2,7 +2,7 @@ package com.braintreepayments.api.shopperinsights
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.braintreepayments.api.ExperimentalBetaApi
+import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException

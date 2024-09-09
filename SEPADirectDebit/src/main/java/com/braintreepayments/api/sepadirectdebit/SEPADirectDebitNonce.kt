@@ -44,7 +44,7 @@ class SEPADirectDebitNonce internal constructor(
             if (details != null) {
                 ibanLastFour = details.optString(IBAN_LAST_FOUR_KEY)
                 customerId = details.optString(CUSTOMER_ID_KEY)
-                mandateType = SEPADirectDebitMandateType.fromString(
+                mandateType = SEPADirectDebitMandateType.valueOf(
                     details.optString(MANDATE_TYPE_KEY)
                 )
             }

@@ -1,6 +1,6 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.android
 }
 
 android {
@@ -31,31 +31,21 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
-
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
-    kotlin {
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of("11"))
-        }
-    }
 }
 
 dependencies {
     api project(':BraintreeCore')
 
-    implementation deps.coreKtx
-    implementation deps.kotlinStdLib
-    implementation deps.appCompat
+    implementation libs.androidx.core.ktx
+    implementation libs.kotlin.stdlib
+    implementation libs.androidx.appcompat
     implementation('com.paypal.messages:paypal-messages:1.0.1')
 
-    testImplementation deps.robolectric
-    testImplementation deps.jsonAssert
-    testImplementation deps.junitTest
-    testImplementation deps.mockk
-    testImplementation deps.mockitoCore
+    testImplementation libs.robolectric
+    testImplementation libs.json.assert
+    testImplementation libs.androidx.junit
+    testImplementation libs.mockk
+    testImplementation libs.mockito.core
     testImplementation project(':TestUtils')
 }
 

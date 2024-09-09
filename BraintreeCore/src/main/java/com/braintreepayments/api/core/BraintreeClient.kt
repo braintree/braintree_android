@@ -5,7 +5,6 @@ import android.content.pm.ActivityInfo
 import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
-import com.braintreepayments.api.core.IntegrationType.Integration
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
@@ -22,25 +21,21 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val applicationContext: Context,
 
     /**
      * @suppress
      */
-    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val integrationType: String,
+    val integrationType: IntegrationType,
 
     /**
      * @suppress
      */
-    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val sessionId: String,
 
     /**
      * @suppress
      */
-    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val authorization: Authorization,
 
     private val analyticsClient: AnalyticsClient,
@@ -53,13 +48,11 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val appLinkReturnUri: Uri?,
 ) {
 
     private val crashReporter: CrashReporter
     private var launchesBrowserSwitchAsNewTask: Boolean = false
-    private val deviceInspector: DeviceInspector
 
     // NOTE: this constructor is used to make dependency injection easy
     internal constructor(params: BraintreeClientParams) : this(
@@ -80,7 +73,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @JvmOverloads
     constructor (
         context: Context,
@@ -96,17 +88,13 @@ class BraintreeClient @VisibleForTesting internal constructor(
         )
     )
 
-    /**
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    constructor(options: BraintreeOptions) : this(BraintreeClientParams(options))
+    internal constructor(options: BraintreeOptions) : this(BraintreeClientParams(options))
 
     internal constructor(
         context: Context,
         authorization: Authorization,
         sessionId: String?,
-        @Integration integrationType: String
+        integrationType: IntegrationType
     ) : this(
         BraintreeOptions(
             context = context,
@@ -124,7 +112,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
         // statistics access via the sdk console
         crashReporter = CrashReporter(this)
         crashReporter.start()
-        deviceInspector = DeviceInspector()
     }
 
     /**
@@ -143,7 +130,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
             } else {
                 callback.onResult(null, configError)
             }
-            timing?.let { sendAnalyticsTimingEvent("v1/configuration", it) }
+            timing?.let { sendAnalyticsTimingEvent("/v1/configuration", it) }
         }
     }
 
@@ -151,18 +138,15 @@ class BraintreeClient @VisibleForTesting internal constructor(
      * @suppress
      */
     @JvmOverloads
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendAnalyticsEvent(
         eventName: String,
         params: AnalyticsEventParams = AnalyticsEventParams()
     ) {
         getConfiguration { configuration, _ ->
-            val isVenmoInstalled = deviceInspector.isVenmoInstalled(applicationContext)
             val event = AnalyticsEvent(
                 eventName,
                 params.payPalContextId,
                 params.linkType,
-                isVenmoInstalled,
                 params.isVaultRequest,
                 params.startTime,
                 params.endTime,
@@ -191,7 +175,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendGET(url: String, responseCallback: HttpResponseCallback) {
         if (authorization is InvalidAuthorization) {
             responseCallback.onResult(null, createAuthError())
@@ -220,7 +203,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @JvmOverloads
     fun sendPOST(
         url: String,
@@ -261,7 +243,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendGraphQLPOST(json: JSONObject?, responseCallback: HttpResponseCallback) {
         if (authorization is InvalidAuthorization) {
             responseCallback.onResult(null, createAuthError())
@@ -307,7 +288,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun getReturnUrlScheme(): String {
         return if (launchesBrowserSwitchAsNewTask) {
             braintreeDeepLinkReturnUrlScheme
@@ -319,7 +299,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun <T> isUrlSchemeDeclaredInAndroidManifest(urlScheme: String?, klass: Class<T>?): Boolean {
         return manifestValidator.isUrlSchemeDeclaredInAndroidManifest(
             applicationContext,
@@ -331,7 +310,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun <T> getManifestActivityInfo(klass: Class<T>?): ActivityInfo? {
         return manifestValidator.getActivityInfo(applicationContext, klass)
     }
@@ -339,7 +317,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun reportCrash() =
         getConfiguration { configuration, _ ->
             analyticsClient.reportCrash(

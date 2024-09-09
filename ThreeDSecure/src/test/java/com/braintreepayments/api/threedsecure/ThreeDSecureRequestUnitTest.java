@@ -67,8 +67,8 @@ public class ThreeDSecureRequestUnitTest {
         ThreeDSecureV2UiCustomization v2UiCustomization = new ThreeDSecureV2UiCustomization();
         v2UiCustomization.setLabelCustomization(labelCustomization);
         v2UiCustomization.setTextBoxCustomization(textBoxCustomization);
-        v2UiCustomization.setButtonCustomization(buttonCustomization,
-                ThreeDSecureV2UiCustomization.BUTTON_TYPE_VERIFY);
+        v2UiCustomization.setButtonCustomization(buttonCustomization);
+        v2UiCustomization.setButtonType(ThreeDSecureV2ButtonType.BUTTON_TYPE_VERIFY);
         v2UiCustomization.setToolbarCustomization(toolbarCustomization);
 
         Map<String, String> customFields = new HashMap<>();
@@ -87,17 +87,17 @@ public class ThreeDSecureRequestUnitTest {
         expected.setChallengeRequested(true);
         expected.setDataOnlyRequested(true);
         expected.setExemptionRequested(true);
-        expected.setRequestedExemptionType(ThreeDSecureRequest.LOW_VALUE);
+        expected.setRequestedExemptionType(ThreeDSecureRequestedExemptionType.LOW_VALUE);
         expected.setCardAddChallengeRequested(true);
         expected.setV2UiCustomization(v2UiCustomization);
-        expected.setAccountType(ThreeDSecureRequest.CREDIT);
+        expected.setAccountType(ThreeDSecureAccountType.CREDIT);
         expected.setCustomFields(customFields);
 
         Parcel parcel = Parcel.obtain();
         expected.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        ThreeDSecureRequest actual = new ThreeDSecureRequest(parcel);
+        ThreeDSecureRequest actual = ThreeDSecureRequest.CREATOR.createFromParcel(parcel);
 
         assertEquals(expected.getAmount(), actual.getAmount());
         assertEquals(expected.getAccountType(), actual.getAccountType());
@@ -127,11 +127,11 @@ public class ThreeDSecureRequestUnitTest {
                 actual.getBillingAddress().getPostalCode());
         assertEquals(expected.getAdditionalInformation().getAccountId(),
                 actual.getAdditionalInformation().getAccountId());
-        assertEquals(expected.isChallengeRequested(), actual.isChallengeRequested());
-        assertEquals(expected.isDataOnlyRequested(), actual.isDataOnlyRequested());
-        assertEquals(expected.isExemptionRequested(), actual.isExemptionRequested());
+        assertEquals(expected.getChallengeRequested(), actual.getChallengeRequested());
+        assertEquals(expected.getDataOnlyRequested(), actual.getDataOnlyRequested());
+        assertEquals(expected.getExemptionRequested(), actual.getExemptionRequested());
         assertEquals(expected.getRequestedExemptionType(), actual.getRequestedExemptionType());
-        assertEquals(expected.isCardAddChallengeRequested(), actual.isCardAddChallengeRequested());
+        assertEquals(expected.getCardAddChallengeRequested(), actual.getCardAddChallengeRequested());
 
         assertEquals(expected.getV2UiCustomization().getLabelCustomization().getHeadingTextColor(),
                 actual.getV2UiCustomization().getLabelCustomization().getHeadingTextColor());
@@ -162,8 +162,8 @@ public class ThreeDSecureRequestUnitTest {
         expected.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        ThreeDSecureRequest actual = new ThreeDSecureRequest(parcel);
-        assertNull(actual.isCardAddChallengeRequested());
+        ThreeDSecureRequest actual = ThreeDSecureRequest.CREATOR.createFromParcel(parcel);
+        assertNull(actual.getCardAddChallengeRequested());
     }
 
     @Test
@@ -195,7 +195,7 @@ public class ThreeDSecureRequestUnitTest {
         request.setDataOnlyRequested(true);
         request.setExemptionRequested(true);
         request.setCardAddChallengeRequested(true);
-        request.setAccountType(ThreeDSecureRequest.CREDIT);
+        request.setAccountType(ThreeDSecureAccountType.CREDIT);
 
         Map<String, String> customFields = new HashMap<>();
         customFields.put("custom_key1", "custom_value1");

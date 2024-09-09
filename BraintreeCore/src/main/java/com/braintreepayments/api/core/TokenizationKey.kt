@@ -6,7 +6,9 @@ import androidx.annotation.RestrictTo
  * @suppress
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class TokenizationKey(tokenizationKey: String) : Authorization(tokenizationKey) {
+class TokenizationKey internal constructor(
+    tokenizationKey: String
+) : Authorization(tokenizationKey) {
 
     override val configUrl: String
     override val bearer: String = toString()

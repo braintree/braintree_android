@@ -1,9 +1,9 @@
 package com.braintreepayments.api.core
 
-import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.GraphQLConstants.ErrorMessages
+import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -19,35 +19,19 @@ import org.json.JSONObject
  * @property errorResponse The full error response as a [String].
  * @property fieldErrors All the field errors.
  */
-class ErrorWithResponse : Exception, Parcelable {
+@Parcelize
+data class ErrorWithResponse internal constructor(
+    var statusCode: Int = 0,
+    var errorResponse: String?,
+    var fieldErrors: List<BraintreeError>? = null,
+    override var message: String? = null,
+) : Exception(), Parcelable {
 
-    var statusCode: Int = 0
-        internal set
-
-    private var _message: String? = null
-    override val message: String?
-        get() = _message
-
-    private var _originalResponse: String? = null
-    val errorResponse: String?
-        get() = _originalResponse
-
-    var fieldErrors: List<BraintreeError>? = null
-        internal set
-
-    private constructor()
-
-    /**
-     * @suppress
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    constructor(statusCode: Int, jsonString: String?) {
-        this.statusCode = statusCode
-        _originalResponse = jsonString
+    init {
         try {
-            parseJson(jsonString)
+            parseJson(errorResponse)
         } catch (e: JSONException) {
-            _message = "Parsing error response failed"
+            message = "Parsing error response failed"
             fieldErrors = ArrayList()
         }
     }
@@ -55,7 +39,7 @@ class ErrorWithResponse : Exception, Parcelable {
     @Throws(JSONException::class)
     private fun parseJson(jsonString: String?) {
         jsonString?.let { JSONObject(it) }?.let { json ->
-            _message = json.getJSONObject(ERROR_KEY).getString(MESSAGE_KEY)
+            message = json.getJSONObject(ERROR_KEY).getString(MESSAGE_KEY)
             fieldErrors = BraintreeError.fromJsonArray(json.optJSONArray(FIELD_ERRORS_KEY))
         }
     }
@@ -89,24 +73,6 @@ class ErrorWithResponse : Exception, Parcelable {
         """.trimIndent()
     }
 
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeInt(statusCode)
-        dest.writeString(message)
-        dest.writeString(_originalResponse)
-        dest.writeTypedList(fieldErrors)
-    }
-
-    private constructor(inParcel: Parcel) {
-        statusCode = inParcel.readInt()
-        _message = inParcel.readString()
-        _originalResponse = inParcel.readString()
-        fieldErrors = inParcel.createTypedArrayList(BraintreeError.CREATOR)
-    }
-
     companion object {
         private const val ERROR_KEY = "error"
         private const val MESSAGE_KEY = "message"
@@ -119,43 +85,35 @@ class ErrorWithResponse : Exception, Parcelable {
         @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         @Throws(JSONException::class)
         @JvmStatic
-        fun fromJson(json: String?) = ErrorWithResponse().apply {
-            _originalResponse = json
+        fun fromJson(json: String?) = ErrorWithResponse(errorResponse = json).apply {
             parseJson(json)
         }
 
         internal fun fromGraphQLJson(json: String?): ErrorWithResponse {
-            val errorWithResponse = ErrorWithResponse().apply {
-                _originalResponse = json
+            val errorWithResponse = ErrorWithResponse(
+                errorResponse = json,
                 statusCode = GRAPHQL_ERROR_CODE
-            }
+            )
 
             try {
-                val errors =
-                    json?.let { JSONObject(it) }?.getJSONArray(GraphQLConstants.Keys.ERRORS)
+                val errors = json
+                    ?.let { JSONObject(it) }
+                    ?.getJSONArray(GraphQLConstants.Keys.ERRORS)
                 errorWithResponse.fieldErrors = BraintreeError.fromGraphQLJsonArray(errors)
 
                 val fieldErrorsEmpty = errorWithResponse.fieldErrors?.isEmpty() ?: true
-                if (fieldErrorsEmpty) {
-                    errorWithResponse._message =
-                        errors?.getJSONObject(0)?.getString(GraphQLConstants.Keys.MESSAGE)
+                errorWithResponse.message = if (fieldErrorsEmpty) {
+                    errors?.getJSONObject(0)?.getString(GraphQLConstants.Keys.MESSAGE)
                 } else {
-                    errorWithResponse._message = ErrorMessages.USER
+                    ErrorMessages.USER
                 }
             } catch (e: JSONException) {
                 errorWithResponse.apply {
-                    _message = "Parsing error response failed"
+                    message = "Parsing error response failed"
                     fieldErrors = ArrayList()
                 }
             }
             return errorWithResponse
-        }
-
-        // Ref: https://medium.com/the-lazy-coders-journal/easy-parcelable-in-kotlin-the-lazy-coders-way-9683122f4c00
-        @JvmField
-        val CREATOR = object : Parcelable.Creator<ErrorWithResponse> {
-            override fun createFromParcel(source: Parcel) = ErrorWithResponse(source)
-            override fun newArray(size: Int) = arrayOfNulls<ErrorWithResponse>(size)
         }
     }
 }

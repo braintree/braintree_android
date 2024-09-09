@@ -27,9 +27,9 @@ class MetadataBuilder {
         return this
     }
 
-    fun integration(integration: String?): MetadataBuilder {
+    fun integration(integration: IntegrationType?): MetadataBuilder {
         try {
-            json.put(INTEGRATION_KEY, integration)
+            json.put(INTEGRATION_KEY, integration?.stringValue)
         } catch (ignored: JSONException) {
         }
         return this

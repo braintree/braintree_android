@@ -4,6 +4,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 
+import com.braintreepayments.api.core.IntegrationType;
 import com.braintreepayments.api.core.MetadataBuilder;
 
 import org.json.JSONException;
@@ -23,7 +24,10 @@ public class PayPalAccountUnitTest {
             new JSONObject(),
             PayPalPaymentIntent.SALE,
             "alt_merchant_account_id",
-            "single-payment"
+            "single-payment",
+                "session_id",
+                "form",
+                IntegrationType.CUSTOM
         );
         sut.setSource("paypal-sdk");
 
@@ -47,7 +51,10 @@ public class PayPalAccountUnitTest {
             new JSONObject(),
             PayPalPaymentIntent.SALE,
             "alt_merchant_account_id",
-            "single-payment"
+            "single-payment",
+                "session_id",
+                "form",
+                IntegrationType.CUSTOM
         );
         sut.setSource("paypal-app");
 
@@ -65,14 +72,17 @@ public class PayPalAccountUnitTest {
             new JSONObject(),
             PayPalPaymentIntent.SALE,
             "alt_merchant_account_id",
-            "single-payment"
+            "single-payment",
+                "session_id",
+                "form",
+                IntegrationType.CUSTOM
         );
-        sut.setIntegration("test-integration");
+        sut.setIntegration(IntegrationType.CUSTOM);
 
         JSONObject json = sut.buildJSON();
         JSONObject metadata = json.getJSONObject(MetadataBuilder.META_KEY);
 
-        assertEquals("test-integration", metadata.getString("integration"));
+        assertEquals(IntegrationType.CUSTOM.getStringValue(), metadata.getString("integration"));
     }
 
     @Test
@@ -83,7 +93,10 @@ public class PayPalAccountUnitTest {
             new JSONObject(),
             PayPalPaymentIntent.SALE,
             "alt_merchant_account_id",
-            "single-payment"
+            "single-payment",
+                "session_id",
+                "form",
+                IntegrationType.CUSTOM
         );
 
         JSONObject json = sut.buildJSON();
@@ -100,7 +113,10 @@ public class PayPalAccountUnitTest {
             new JSONObject(),
             PayPalPaymentIntent.SALE,
             "alt_merchant_account_id",
-            "billing-agreement"
+            "billing-agreement",
+                "session_id",
+                "form",
+                IntegrationType.CUSTOM
         );
 
         JSONObject json = sut.buildJSON();
@@ -116,7 +132,10 @@ public class PayPalAccountUnitTest {
             new JSONObject(),
             null,
             null,
-            null
+            null,
+                null,
+                null,
+                null
         );
 
         JSONObject json = sut.buildJSON();
@@ -137,7 +156,10 @@ public class PayPalAccountUnitTest {
             urlResponseData,
             null,
             null,
-            null
+            null,
+                null,
+                null,
+                null
         );
 
         JSONObject json = sut.buildJSON();
@@ -158,7 +180,10 @@ public class PayPalAccountUnitTest {
             new JSONObject(),
             null,
             null,
-            null
+            null,
+                null,
+                null,
+                null
         );
 
         JSONObject jsonObject = sut.buildJSON();
