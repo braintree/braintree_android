@@ -33,10 +33,10 @@ androidxCardview = "1.0.0"
 androidxLegacySupportV4 = "1.0.0"
 androidxLifecycleExtensions = "2.2.0"
 androidxComposeBom = "2024.06.00"
-retrofit = "1.9.0"
+retrofit = "2.11.0"
 gson = "2.10.1"
 eventbus = "2.4.1"
-material = "1.10.0"
+material = "1.12.0"
 leakcanary = "2.12"
 deviceAutomator = "1.0.0"
 btCardForm = "5.4.0"
@@ -89,7 +89,8 @@ androidx-lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensi
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidxLifecycleExtensions" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidxComposeBom" }
 androidx-material3 = { module = "androidx.compose.material3:material3" }
-retrofit = { module = "com.squareup.retrofit:retrofit", version.ref = "retrofit" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 eventbus = { module = "de.greenrobot:eventbus", version.ref = "eventbus" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
