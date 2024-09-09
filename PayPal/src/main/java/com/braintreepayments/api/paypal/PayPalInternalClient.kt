@@ -147,8 +147,8 @@ internal class PayPalInternalClient(
                 parameters["correlation_id"] = correlationId!!
             }
 
-            parameters["return_url"] = "sdk.ios.braintree"
-            parameters["return_url"] = "onetouch/v1"
+            parameters["return_url"] = "sdk.android.braintree"
+            parameters["cancel_url"] = "onetouch/v1"
 
             return parameters
         }
@@ -157,6 +157,39 @@ internal class PayPalInternalClient(
 
         }
     }
+
+    @ExperimentalBetaApi
+    fun sendVaultEditErrorRequest(payPalVaultEditRequest: PayPalVaultEditRequest, payPalVaultEditAuthCallback: PayPalVaultEditAuthCallback) {
+
+        val parameters = mutableMapOf<String, Any>()
+
+        fun parameters(): Map<String, Any> {
+
+            parameters["edit_paypal_vault_id"] = editPaypalVaultId
+            parameters["return_url"] = "sdk.android.braintree"
+            parameters["cancel_url"] = "onetouch/v1"
+            parameters["correlation_id"] = correlationId!!
+
+            return parameters
+        }
+
+        braintreeClient.sendPOST("URL", JSONObject("").toString()) { response, error ->
+
+        }
+    }
+
+
+//public func parameters() -> [String: Any] {
+//    var parameters: [String: Any] = [:]
+//
+//    parameters["edit_paypal_vault_id"] = editPayPalVaultID
+//
+//    parameters["return_url"] = BTCoreConstants.callbackURLScheme + "://\(BTPayPalRequest.callbackURLHostAndPath)success"
+//    parameters["cancel_url"] = BTCoreConstants.callbackURLScheme + "://\(BTPayPalRequest.callbackURLHostAndPath)cancel"
+//    parameters["risk_correlation_id"] = riskCorrelationID
+//
+//    return parameters
+//}
 
 
     companion object {
