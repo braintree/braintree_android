@@ -42,8 +42,8 @@ class VenmoLineItem @JvmOverloads constructor(
     internal annotation class VenmoLineItemKind
 
     fun toJson(): JSONObject {
-        try {
-            return JSONObject()
+        return try {
+            JSONObject()
                 .putOpt(DESCRIPTION_KEY, description)
                 .putOpt(KIND_KEY, kind)
                 .putOpt(NAME_KEY, name)
@@ -53,9 +53,8 @@ class VenmoLineItem @JvmOverloads constructor(
                 .putOpt(UNIT_TAX_AMOUNT_KEY, unitTaxAmount)
                 .putOpt(URL_KEY, url)
         } catch (ignored: JSONException) {
+            JSONObject()
         }
-
-        return JSONObject()
     }
 
     companion object {
