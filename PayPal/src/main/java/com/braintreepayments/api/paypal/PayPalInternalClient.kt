@@ -11,6 +11,7 @@ import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -141,7 +142,7 @@ internal class PayPalInternalClient(
 
         fun parameters(): Map<String, Any> {
 
-            parameters["edit_paypal_vault_id"] = payPalVaultEditRequest.editPaypalVaultId
+            parameters["edit_paypal_vault_id"] = payPalVaultEditRequest.editPayPalVaultId
 
             if (payPalVaultEditRequest.correlationId != null) {
                 parameters["correlation_id"] = payPalVaultEditRequest.correlationId!!
@@ -161,22 +162,22 @@ internal class PayPalInternalClient(
     }
 
     @ExperimentalBetaApi
-    fun sendVaultEditErrorRequest(payPalVaultEditRequest: PayPalVaultEditRequest, payPalVaultEditAuthCallback: PayPalVaultEditAuthCallback) {
+    fun sendVaultEditErrorRequest(payPalVaultEditErrorRequest: PayPalVaultErrorHandlingEditRequest, payPalVaultEditAuthCallback: PayPalVaultEditAuthCallback) {
 
         val parameters = mutableMapOf<String, Any>()
 
         fun parameters(): Map<String, Any> {
 
-            parameters["edit_paypal_vault_id"] = payPalVaultEditRequest.editPaypalVaultId
+            parameters["edit_paypal_vault_id"] = payPalVaultEditErrorRequest.editPayPalVaultId
             parameters["return_url"] = "sdk.android.braintree"
             parameters["cancel_url"] = "onetouch/v1"
-            parameters["correlation_id"] = payPalVaultEditRequest.correlationId!!
+            parameters["correlation_id"] = payPalVaultEditErrorRequest.riskCorrelationId!!
 
             return parameters
         }
 
         val jsonObject = JSONObject(parameters())
-        braintreeClient.sendPOST("URL", jsonObject.toString()) { response, error ->
+        braintreeClient.sendPOST(payPalVaultEditErrorRequest.hermesPath, jsonObject.toString()) { response, error ->
 
         }
     }
