@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchStartResult
+import com.braintreepayments.api.core.BraintreeException
 
 /**
  * Responsible for launching local payment user authentication in a web browser
@@ -43,7 +44,7 @@ class LocalPaymentLauncher internal constructor(private val browserSwitchClient:
                 LocalPaymentPendingRequest.Failure(browserSwitchPendingRequest.error)
             }
 
-            null -> LocalPaymentPendingRequest.Failure(Exception("Parameters not valid"))
+            null -> LocalPaymentPendingRequest.Failure(BraintreeException("An unexpected error occurred"))
         }
     }
 
