@@ -28,7 +28,9 @@ import com.braintreepayments.api.paypal.PayPalPaymentAuthResult;
 import com.braintreepayments.api.paypal.PayPalPendingRequest;
 import com.braintreepayments.api.paypal.PayPalRequest;
 import com.braintreepayments.api.paypal.PayPalResult;
+import com.braintreepayments.api.paypal.vaultedit.EditFIAgreementSetup;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResult;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class PayPalFragment extends BaseFragment {
@@ -140,7 +142,7 @@ public class PayPalFragment extends BaseFragment {
                         null
                 );
 
-                payPalClient.createEditRequest(requireContext(), request,(PayPalVaultEditCallback) -> {
+                payPalClient.createEditRequest(requireContext(), request,(result) -> {
                     // TODO: capture the correlationId
                 });
             });
@@ -151,8 +153,23 @@ public class PayPalFragment extends BaseFragment {
                     null
             );
 
-            payPalClient.createEditRequest(requireContext(), request,(PayPalVaultEditCallback) -> {
-                // TODO: capture the correlationId
+            payPalClient.createEditRequest(requireContext(), request, (result) -> {
+                if (result instanceof PayPalVaultEditResult.Failure) {
+                    PayPalVaultEditResult.Failure.Failure failure = (PayPalVaultEditResult.Failure) result;
+                    String correlationId = failure.getRiskCorrelationId();
+                    //TODO: PayPalVaultErrorHandlingEditRequest and Analytics
+                }
+
+                if (result instanceof PayPalVaultEditResult.Success) {
+                    PayPalVaultEditResult.Success success = (PayPalVaultEditResult.Success) result;
+                    String correlationId = success.getRiskCorrelationId();
+
+                    EditFIAgreementSetup response = success.getResponse();
+
+                    payPalLauncher.launch(requireActivity(), response.getApprovalURL(), "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/");
+
+                    //TODO: Launcher? and Analytics
+                }
             });
         }
     }
