@@ -31,6 +31,6 @@ jobs:
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{secrets.FIREBASE_APP_ID}}
-          serviceCredentialsFileContent: $HOME/secrets/braintree_demo_app-eb501d54ba5f.json
+          serviceCredentialsFile: $HOME/secrets/braintree_demo_app-eb501d54ba5f.json
           groups: testers
           file: Demo/build/outputs/apk/release/Demo-release-unsigned.apk
