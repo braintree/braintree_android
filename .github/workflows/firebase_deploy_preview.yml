@@ -18,9 +18,9 @@ jobs:
       - name: Create directory to store secrets
         run: mkdir $HOME/secrets
       - name: Decrypt large secret
-        run: ./.github/executables/decrypt_secret.sh \ 
-          -p $LARGE_SECRET_PASSPHRASE \ 
-          -i ./.github/files/braintree-demo-app-eb501d54ba5f.json.gpg \
+        run: ./.github/executables/decrypt_secret.sh 
+          -p "$LARGE_SECRET_PASSPHRASE" 
+          -i ./.github/files/braintree-demo-app-eb501d54ba5f.json.gpg 
           -o $HOME/secrets/braintree_demo_app-eb501d54ba5f.json
         env:
           LARGE_SECRET_PASSPHRASE: ${{ secrets.FIREBASE_PRIVATE_KEY_GPG_PASSPHRASE }}
