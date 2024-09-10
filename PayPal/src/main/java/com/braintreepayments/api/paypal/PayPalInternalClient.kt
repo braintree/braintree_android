@@ -10,6 +10,7 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
+import com.braintreepayments.api.paypal.vaultedit.EditFIAgreementSetup
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
@@ -187,15 +188,23 @@ internal class PayPalInternalClient(
                 val result = PayPalVaultEditResult.Failure(error)
                 callback.onPayPalVaultEditResult(result)
             } else {
-                val result = PayPalVaultEditResult.Success(error)
-                callback.onPayPalVaultEditResult(result)
+                try {
+                    val responseBody = JSONObject(response)
+                    val agreementSetup = responseBody.getJSONObject("agreementSetup")
+
+                    val editFIAgreementSetup = EditFIAgreementSetup(
+                        agreementSetup.getString("tokenId"),
+                        agreementSetup.getString("approvalUrl"),
+                        agreementSetup.getString("paypalAppApprovalUrl")
+                    )
+
+                    val result = PayPalVaultEditResult.Success(riskCorrelationId, editFIAgreementSetup)
+                    callback.onPayPalVaultEditResult(result)
+                } catch (jsonException: JSONException) {
+                    val result = PayPalVaultEditResult.Failure(jsonException)
+                    callback.onPayPalVaultEditResult(result)
+                }
             }
-
-            // TODO: use payPalVaultEditAuthCallback
-            println("EditFI response: $response")
-            println("EditFI error: $error")
-
-            println("EditFI done")
         }
     }
 

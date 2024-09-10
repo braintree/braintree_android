@@ -12,15 +12,8 @@ sealed class PayPalVaultEditResult {
      */
     class Success internal constructor(
         val riskCorrelationId: String,
+        val response: EditFIAgreementSetup
     ) : PayPalVaultEditResult()
-
-//    {
-//        "agreementSetup": {
-//        "tokenId": "BA-3178271115069990W",
-//        "approvalUrl": "https://www.sandbox.paypal.com/agreements/approve?ba_token=BA-3178271115069990W&platform=android",
-//        "paypalAppApprovalUrl": null
-//    }
-//    }
 
     /**
      * There was an [error] in the PayPal vault edit flow.
@@ -37,3 +30,9 @@ sealed class PayPalVaultEditResult {
         val riskCorrelationIdZ: String
     ) : PayPalVaultEditResult()
 }
+
+data class EditFIAgreementSetup(
+    val tokenId: String,
+    val approvalURL: String,
+    val paypalApprovalUrl: String?
+)
