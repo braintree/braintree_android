@@ -16,7 +16,10 @@ jobs:
       - name: Assemble
         run: ./gradlew --stacktrace :demo:assembleRelease
       - name: Decrypt large secret
-        run: ./.github/executables/decrypt_secret.sh
+        run: ./.github/executables/decrypt_secret.sh \ 
+          -passphrase $LARGE_SECRET_PASSPHRASE \ 
+          -input ./.github/files/braintree-demo-app-eb501d54ba5f.json.gpg \
+          -output $HOME/secrets/braintree_demo_app-eb501d54ba5f.json
         env:
           LARGE_SECRET_PASSPHRASE: ${{ secrets.FIREBASE_PRIVATE_KEY_GPG_PASSPHRASE }}
 #      - name: Deploy to Firebase
