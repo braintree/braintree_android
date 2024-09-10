@@ -183,12 +183,12 @@ internal class PayPalInternalClient(
         val clientMetadataId = riskCorrelationId ?: run {
             braintreeClient.getConfiguration { configuration: Configuration?, configError: Exception? ->
                 val clientMetadataId = dataCollector.getClientMetadataId(context, configuration, false)
-                callback(clientMetadataId) // Return the result via callback
+                callback(clientMetadataId)
             }
-            null // Return null here because the actual result will come from the callback
+            null
         }
 
-        // If riskCorrelationId is not null, call the callback with it
+
         if (clientMetadataId != null) {
             callback(clientMetadataId)
         }
@@ -204,7 +204,7 @@ internal class PayPalInternalClient(
             parameters["edit_paypal_vault_id"] = payPalVaultEditErrorRequest.editPayPalVaultId
             parameters["return_url"] = successUrl
             parameters["cancel_url"] = cancelUrl
-            parameters["correlation_id"] = payPalVaultEditErrorRequest.riskCorrelationId!!
+            parameters["correlation_id"] = payPalVaultEditErrorRequest.riskCorrelationId
 
             return parameters
         }
