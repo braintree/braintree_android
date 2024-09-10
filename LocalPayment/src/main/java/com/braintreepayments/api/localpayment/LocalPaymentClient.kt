@@ -54,20 +54,13 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
      * @param callback [LocalPaymentAuthCallback]
      */
     fun createPaymentAuthRequest(
-        request: LocalPaymentRequest?,
-        callback: LocalPaymentAuthCallback?
+        request: LocalPaymentRequest,
+        callback: LocalPaymentAuthCallback
     ) {
         braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED)
 
         var exception: Exception? = null
-
-        if (callback == null) {
-            throw IllegalArgumentException("A LocalPaymentAuthRequestCallback is required.")
-        }
-
-        if (request == null) {
-            exception = BraintreeException("A LocalPaymentRequest is required.")
-        } else if (request.paymentType == null || request.amount == null) {
+        if (request.paymentType == null || request.amount == null) {
             exception = BraintreeException(
                 "LocalPaymentRequest is invalid, paymentType and amount are required."
             )

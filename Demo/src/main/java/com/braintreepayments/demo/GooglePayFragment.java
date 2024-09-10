@@ -108,7 +108,7 @@ public class GooglePayFragment extends BaseFragment {
         googlePayClient.createPaymentAuthRequest(googlePayRequest, (paymentAuthRequest) -> {
             if (paymentAuthRequest instanceof GooglePayPaymentAuthRequest.ReadyToLaunch) {
                 googlePayLauncher.launch(
-                        ((GooglePayPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams());
+                        ((GooglePayPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
             } else if (paymentAuthRequest instanceof GooglePayPaymentAuthRequest.Failure) {
                 handleError(((GooglePayPaymentAuthRequest.Failure) paymentAuthRequest).getError());
             }

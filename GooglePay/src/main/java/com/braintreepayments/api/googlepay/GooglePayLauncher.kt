@@ -59,12 +59,11 @@ class GooglePayLauncher @VisibleForTesting internal constructor(
      * the Fragment or Activity used to instantiate your [GooglePayLauncher] has reached the
      * CREATED state.
      *
-     * @param googlePayPaymentAuthRequestParams the [GooglePayPaymentAuthRequestParams]
-     * received from invoking
-     * [GooglePayClient.createPaymentAuthRequest]
+     * @param paymentAuthRequest the [GooglePayPaymentAuthRequestParams]
+     * received from invoking [GooglePayClient.createPaymentAuthRequest]
      */
-    fun launch(googlePayPaymentAuthRequestParams: GooglePayPaymentAuthRequestParams) {
-        activityLauncher.launch(googlePayPaymentAuthRequestParams)
+    fun launch(paymentAuthRequest: GooglePayPaymentAuthRequest.ReadyToLaunch) {
+        activityLauncher.launch(paymentAuthRequest.requestParams)
     }
 
     companion object {

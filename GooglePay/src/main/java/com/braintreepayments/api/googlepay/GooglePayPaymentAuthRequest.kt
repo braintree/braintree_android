@@ -8,7 +8,7 @@ sealed class GooglePayPaymentAuthRequest {
     /**
      * The request was successfully created and is ready to be launched by [GooglePayLauncher]
      */
-    class ReadyToLaunch(val requestParams: GooglePayPaymentAuthRequestParams) : GooglePayPaymentAuthRequest()
+    class ReadyToLaunch(internal val requestParams: GooglePayPaymentAuthRequestParams) : GooglePayPaymentAuthRequest()
 
     /**
      * There was an [error] creating the request
