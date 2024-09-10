@@ -139,7 +139,7 @@ public class PayPalVaultRequestUnitTest {
 
         assertTrue(requestBody.contains("\"launch_paypal_app\":true"));
         assertTrue(requestBody.contains("\"os_type\":" + "\"Android\""));
-        assertTrue(requestBody.contains("\"os_version\":" + versionSDK));
+        assertTrue(requestBody.contains("\"os_version\":" + "\"" + versionSDK + "\""));
         assertTrue(requestBody.contains("\"merchant_app_return_url\":" + "\"universal_url\""));
     }
 }
