@@ -14,7 +14,7 @@ jobs:
       - name: Setup Java
         uses: ./.github/actions/setup
       - name: Assemble
-        run: ./gradlew --stacktrace :demo:assembleRelease
+        run: ./gradlew --stacktrace :demo:assembleDebug
       - name: Create directory to store secrets
         run: mkdir $HOME/secrets
       - name: Decrypt GPG secret
@@ -38,4 +38,4 @@ jobs:
           appId: ${{ secrets.FIREBASE_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
           groups: testers
-          file: Demo/build/outputs/apk/release/Demo-release-unsigned.apk
+          file: Demo/build/outputs/apk/debug/Demo-debug.apk
