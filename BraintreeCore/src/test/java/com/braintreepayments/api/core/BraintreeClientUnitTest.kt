@@ -58,22 +58,6 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun constructor_usesSessionIdFromParams() {
-        val params = BraintreeOptions(context = context, sessionId = "session-id", authorization =
-        authorization)
-        val sut = BraintreeClient(params)
-        assertEquals("session-id", sut.sessionId)
-    }
-
-    @Test
-    fun constructor_setsSessionIdFromUUIDHelperIfSessionIdNotIncluded() {
-        val uuidRegex = """[a-fA-F0-9]{32}""".toRegex()
-
-        val sut = BraintreeClient(BraintreeOptions(context = context, authorization = authorization))
-        assertTrue(uuidRegex.matches(sut.sessionId))
-    }
-
-    @Test
     @Throws(JSONException::class)
     fun configuration_onAuthorizationAndConfigurationLoadSuccess_forwardsResult() {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
@@ -350,7 +334,6 @@ class BraintreeClientUnitTest {
             analyticsClient.sendEvent(
                 configuration,
                 match { it.name == "event.started" },
-                "session-id",
                 IntegrationType.CUSTOM,
                 authorization
             )
@@ -427,14 +410,6 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sessionId_returnsSessionIdDefinedInConstructor() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val sessionId = "custom-session-id"
-        val sut = BraintreeClient(context, authorization, sessionId, IntegrationType.DROP_IN)
-        assertEquals("custom-session-id", sut.sessionId)
-    }
-
-    @Test
     fun integrationType_returnsCustomByDefault() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val sut = BraintreeClient(BraintreeOptions(context, authorization))
@@ -445,7 +420,7 @@ class BraintreeClientUnitTest {
     fun integrationType_returnsIntegrationTypeDefinedInConstructor() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val sessionId = "custom-session-id"
-        val sut = BraintreeClient(context, authorization, sessionId, IntegrationType.DROP_IN)
+        val sut = BraintreeClient(context, authorization, IntegrationType.DROP_IN)
         assertEquals("dropin", sut.integrationType.stringValue)
     }
 
@@ -471,7 +446,6 @@ class BraintreeClientUnitTest {
             analyticsClient.reportCrash(
                 applicationContext,
                 any(),
-                "session-id",
                 IntegrationType.CUSTOM,
                 authorization
             )
@@ -483,7 +457,6 @@ class BraintreeClientUnitTest {
     ): BraintreeClientParams =
         BraintreeClientParams(
             context = context,
-            sessionId = "session-id",
             authorization = authorization,
             returnUrlScheme = "sample-return-url-scheme",
             appLinkReturnUri = Uri.parse("https://example.com"),

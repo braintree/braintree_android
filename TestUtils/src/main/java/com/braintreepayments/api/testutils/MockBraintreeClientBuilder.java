@@ -35,7 +35,6 @@ public class MockBraintreeClientBuilder {
 
     private Authorization authorization;
 
-    private String sessionId;
     private IntegrationType integration;
     private String returnUrlScheme;
     private Uri appLinkReturnUri;
@@ -94,11 +93,6 @@ public class MockBraintreeClientBuilder {
         return this;
     }
 
-    public MockBraintreeClientBuilder sessionId(String sessionId) {
-        this.sessionId = sessionId;
-        return this;
-    }
-
     public MockBraintreeClientBuilder integration(IntegrationType integration) {
         this.integration = integration;
         return this;
@@ -123,7 +117,6 @@ public class MockBraintreeClientBuilder {
 
     public BraintreeClient build() {
         BraintreeClient braintreeClient = mock(BraintreeClient.class);
-        when(braintreeClient.getSessionId()).thenReturn(sessionId);
         when(braintreeClient.getIntegrationType()).thenReturn(integration);
         when(braintreeClient.getAuthorization()).thenReturn(authorization);
         when(braintreeClient.getReturnUrlScheme()).thenReturn(returnUrlScheme);
