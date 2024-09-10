@@ -8,7 +8,7 @@ sealed class LocalPaymentAuthRequest {
     /**
      * The request was successfully created and is ready to be launched by [LocalPaymentLauncher]
      */
-    class ReadyToLaunch(val requestParams: LocalPaymentAuthRequestParams) :
+    class ReadyToLaunch(internal val requestParams: LocalPaymentAuthRequestParams) :
         LocalPaymentAuthRequest()
 
     /**

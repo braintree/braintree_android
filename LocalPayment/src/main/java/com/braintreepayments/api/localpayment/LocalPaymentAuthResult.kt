@@ -8,7 +8,7 @@ sealed class LocalPaymentAuthResult {
     /**
      * A successful result that should be passed to [LocalPaymentClient.tokenize] to complete the flow
      */
-    class Success(val paymentAuthInfo: LocalPaymentAuthResultInfo) : LocalPaymentAuthResult()
+    class Success(internal val paymentAuthInfo: LocalPaymentAuthResultInfo) : LocalPaymentAuthResult()
 
     /**
      * The browser switch failed.
@@ -22,5 +22,5 @@ sealed class LocalPaymentAuthResult {
      * browser to cancel the payment flow, or returns to the app without completing the
      * authentication flow.
      */
-    object NoResult : LocalPaymentAuthResult()
+    data object NoResult : LocalPaymentAuthResult()
 }

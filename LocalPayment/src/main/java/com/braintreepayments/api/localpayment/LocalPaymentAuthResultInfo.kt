@@ -1,13 +1,12 @@
 package com.braintreepayments.api.localpayment
 
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.BrowserSwitchFinalResult
 
 /**
  * Details of a [LocalPaymentAuthResult.Success]
  */
-class LocalPaymentAuthResultInfo internal constructor
-    (private val browserSwitchSuccess: BrowserSwitchFinalResult.Success) {
-
-    val browserSwitchResultInfo: BrowserSwitchFinalResult.Success
-        get() = browserSwitchSuccess
-}
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+class LocalPaymentAuthResultInfo internal constructor(
+    internal val browserSwitchSuccess: BrowserSwitchFinalResult.Success
+)

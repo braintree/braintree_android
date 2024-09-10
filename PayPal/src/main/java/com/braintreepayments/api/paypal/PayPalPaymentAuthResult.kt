@@ -8,7 +8,7 @@ sealed class PayPalPaymentAuthResult {
     /**
      * A successful result that should be passed to [PayPalClient.tokenize] to complete the flow
      */
-    class Success(val paymentAuthInfo: PayPalPaymentAuthResultInfo) : PayPalPaymentAuthResult()
+    class Success(internal val paymentAuthInfo: PayPalPaymentAuthResultInfo) : PayPalPaymentAuthResult()
 
     /**
      * The browser switch failed.
@@ -22,5 +22,5 @@ sealed class PayPalPaymentAuthResult {
      * browser to cancel the payment flow, or returns to the app without completing the
      * authentication flow.
      */
-    object NoResult : PayPalPaymentAuthResult()
+    data object NoResult : PayPalPaymentAuthResult()
 }

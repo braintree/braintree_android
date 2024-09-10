@@ -8,7 +8,7 @@ sealed class PayPalPaymentAuthRequest {
     /**
      * The request was successfully created and is ready to be launched by [PayPalLauncher]
      */
-    class ReadyToLaunch(val requestParams: PayPalPaymentAuthRequestParams) :
+    class ReadyToLaunch(internal val requestParams: PayPalPaymentAuthRequestParams) :
         PayPalPaymentAuthRequest()
 
     /**
