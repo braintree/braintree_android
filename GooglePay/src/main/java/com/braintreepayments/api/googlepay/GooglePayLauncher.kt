@@ -19,10 +19,10 @@ class GooglePayLauncher @VisibleForTesting internal constructor(
     private val activityLauncher: ActivityResultLauncher<GooglePayPaymentAuthRequestParams> = registry.register(
         GOOGLE_PAY_RESULT, lifecycleOwner,
         GooglePayActivityResultContract()
-    ) { googlePayPaymentAuthResult: GooglePayPaymentAuthResult? ->
-        callback.onGooglePayLauncherResult(
-            googlePayPaymentAuthResult
-        )
+    ) { googlePayPaymentAuthResult: GooglePayPaymentAuthResult ->
+            callback.onGooglePayLauncherResult(
+                googlePayPaymentAuthResult
+            )
     }
 
     /**

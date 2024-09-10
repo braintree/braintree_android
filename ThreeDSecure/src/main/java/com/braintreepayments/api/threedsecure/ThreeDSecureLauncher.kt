@@ -24,12 +24,6 @@ class ThreeDSecureLauncher internal constructor(
     ) { paymentAuthResult: ThreeDSecurePaymentAuthResult? ->
         if (paymentAuthResult != null) {
             callback.onThreeDSecurePaymentAuthResult(paymentAuthResult)
-        } else {
-            callback.onThreeDSecurePaymentAuthResult(
-                ThreeDSecurePaymentAuthResult(
-                    error = BraintreeException("Payment Auth Result is null")
-                )
-            )
         }
     }
 
