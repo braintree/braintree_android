@@ -166,9 +166,8 @@ public class PayPalFragment extends BaseFragment {
 
                     EditFIAgreementSetup response = success.getResponse();
 
-                    payPalLauncher.launch(requireActivity(), response.getApprovalURL(), "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/");
-
                     //TODO: Launcher? and Analytics
+                    payPalLauncher.launch(requireActivity(), response.getApprovalURL(), "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/");
                 }
             });
         }
