@@ -156,8 +156,12 @@ internal class PayPalInternalClient(
 
                 braintreeClient.sendPOST(payPalVaultEditRequest.hermesPath, jsonObject.toString()) { response, error ->
 
-                    println("Client Metadata ID: $clientMetadataId")// TODO: use payPalVaultEditAuthCallback
-                    
+                    // TODO: use payPalVaultEditAuthCallback
+                    println("EditFI response: $response")
+                    println("EditFI error: $error")
+
+                    println("EditFI done")
+
                 }
 
             } else {
