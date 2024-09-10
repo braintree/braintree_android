@@ -14,7 +14,7 @@ jobs:
       - name: Setup Java
         uses: ./.github/actions/setup
       - name: Assemble
-        run: ./gradlew --stacktrace assembleRelease
+        run: ./gradlew --stacktrace :demo:assembleRelease
       - name: Decrypt large secret
         run: ./.github/executables/decrypt_secret.sh
         env:
