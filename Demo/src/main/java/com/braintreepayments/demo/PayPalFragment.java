@@ -146,7 +146,14 @@ public class PayPalFragment extends BaseFragment {
             });
         } else {
 
-            PayPalVaultEditRequest request = new PayPalVaultEditRequest("YJbRTegvI/dIDEyFZRa52Twflbn0q2pSktu1llbZmMg=", null);
+            PayPalVaultEditRequest request = new PayPalVaultEditRequest(
+                    "YJbRTegvI/dIDEyFZRa52Twflbn0q2pSktu1llbZmMg=",
+                    null
+            );
+
+            payPalClient.createEditRequest(requireContext(), request,(PayPalVaultEditCallback) -> {
+                // TODO: capture the correlationId
+            });
         }
     }
 
