@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.datacollector.DataCollector
@@ -12,6 +13,7 @@ import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResult
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest
 import org.json.JSONException
 import org.json.JSONObject
@@ -143,34 +145,61 @@ internal class PayPalInternalClient(
         callback: PayPalVaultEditCallback,
         riskCorrelationId: String? = null
     ) {
-
-        getClientMetadataId(riskCorrelationId, context, braintreeClient, dataCollector) { clientMetadataId ->
-            if (clientMetadataId != null) {
-                println("Client Metadata ID: $clientMetadataId")
-
-                val params = parameters(payPalVaultEditRequest.editPayPalVaultId).toMutableMap()
-
-                params["risk_correlation_id"] = clientMetadataId
-
-                val jsonObject = JSONObject(params.toMap())
-
-                braintreeClient.sendPOST(payPalVaultEditRequest.hermesPath, jsonObject.toString()) { response, error ->
-
-                    // TODO: use payPalVaultEditAuthCallback
-                    println("EditFI response: $response")
-                    println("EditFI error: $error")
-
-                    println("EditFI done")
-
+        if (riskCorrelationId != null) {
+            sendVaultEditRequestWithRiskCorrelationId(
+                context,
+                payPalVaultEditRequest,
+                riskCorrelationId,
+                callback
+            )
+        } else {
+            getClientMetadataId(riskCorrelationId, context) { clientMetadataId ->
+                if (clientMetadataId == null) {
+                    val result = PayPalVaultEditResult.Failure(BraintreeException("Could not retrieve clientMetaDataId"))
+                    callback.onPayPalVaultEditResult(result)
+                } else {
+                    sendVaultEditRequestWithRiskCorrelationId(
+                        context,
+                        payPalVaultEditRequest,
+                        clientMetadataId,
+                        callback
+                    )
                 }
-
-            } else {
-                println("Failed to obtain Client Metadata ID")
-                // Handle the failure
             }
         }
     }
 
+    @ExperimentalBetaApi
+    private fun sendVaultEditRequestWithRiskCorrelationId(
+        context: Context,
+        payPalVaultEditRequest: PayPalVaultEditRequest,
+        riskCorrelationId: String,
+        callback: PayPalVaultEditCallback
+    ) {
+        val params = parameters(payPalVaultEditRequest.editPayPalVaultId).toMutableMap()
+
+        params["risk_correlation_id"] = riskCorrelationId
+
+        val jsonObject = JSONObject(params.toMap())
+
+        braintreeClient.sendPOST(payPalVaultEditRequest.hermesPath, jsonObject.toString()) { response, error ->
+            if (error != null) {
+                val result = PayPalVaultEditResult.Failure(error)
+                callback.onPayPalVaultEditResult(result)
+            } else {
+                val result = PayPalVaultEditResult.Success(error)
+                callback.onPayPalVaultEditResult(result)
+            }
+
+            // TODO: use payPalVaultEditAuthCallback
+            println("EditFI response: $response")
+            println("EditFI error: $error")
+
+            println("EditFI done")
+        }
+    }
+
+    // TODO: improve method name
     fun parameters(editPayPalVaultId: String): Map<String, Any> {
         val parameters = mutableMapOf<String, Any>()
 
@@ -185,18 +214,17 @@ internal class PayPalInternalClient(
     fun getClientMetadataId(
         riskCorrelationId: String?,
         context: Context,
-        braintreeClient: BraintreeClient,
-        dataCollector: DataCollector,
         callback: (String?) -> Unit
     ) {
         val clientMetadataId = riskCorrelationId ?: run {
             braintreeClient.getConfiguration { configuration: Configuration?, configError: Exception? ->
+
+                // TODO: what to do with hasUserLocationConsent
                 val clientMetadataId = dataCollector.getClientMetadataId(context, configuration, false)
                 callback(clientMetadataId)
             }
             null
         }
-
 
         if (clientMetadataId != null) {
             callback(clientMetadataId)

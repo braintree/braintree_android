@@ -14,12 +14,20 @@ sealed class PayPalVaultEditResult {
         val riskCorrelationId: String,
     ) : PayPalVaultEditResult()
 
+//    {
+//        "agreementSetup": {
+//        "tokenId": "BA-3178271115069990W",
+//        "approvalUrl": "https://www.sandbox.paypal.com/agreements/approve?ba_token=BA-3178271115069990W&platform=android",
+//        "paypalAppApprovalUrl": null
+//    }
+//    }
+
     /**
      * There was an [error] in the PayPal vault edit flow.
      */
     class Failure internal constructor(
-        val riskCorrelationId: String,
-        val error: Exception
+        val error: Exception,
+        val riskCorrelationId: String? = null,
     ) : PayPalVaultEditResult()
 
     /**
