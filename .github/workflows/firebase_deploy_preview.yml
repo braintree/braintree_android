@@ -17,7 +17,7 @@ jobs:
         run: ./gradlew --stacktrace :demo:assembleRelease
       - name: Create directory to store secrets
         run: mkdir $HOME/secrets
-      - name: Decrypt large secret
+      - name: Decrypt GPG secret
         run: ./.github/executables/decrypt_secret.sh 
           -p "$LARGE_SECRET_PASSPHRASE" 
           -i ./.github/files/braintree-demo-app-eb501d54ba5f.json.gpg 
