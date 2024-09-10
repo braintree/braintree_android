@@ -135,10 +135,13 @@ public class PayPalFragment extends BaseFragment {
 
                 // The Vault ID is encrypted and shared with us
                 // Server SDK call with a customer ID or PayPal account to get encrypted Billing Id and optional merchant account Id
-                PayPalVaultEditRequest request = new PayPalVaultEditRequest("YJbRTegvI/dIDEyFZRa52Twflbn0q2pSktu1llbZmMg=", null);
+                PayPalVaultEditRequest request = new PayPalVaultEditRequest(
+                        "YJbRTegvI/dIDEyFZRa52Twflbn0q2pSktu1llbZmMg=",
+                        null
+                );
 
-                payPalClient.createEditAuthRequest(requireContext(), request,(PayPalVaultEditAuthCallback) -> {
-
+                payPalClient.createEditRequest(requireContext(), request,(PayPalVaultEditCallback) -> {
+                    // TODO: capture the correlationId
                 });
             });
         } else {

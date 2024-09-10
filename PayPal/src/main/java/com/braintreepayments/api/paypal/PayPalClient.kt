@@ -225,15 +225,19 @@ class PayPalClient @VisibleForTesting internal constructor(
      *
      * @param context an Android Context
      * @param payPalVaultEditRequest a [PayPalVaultEditRequest] containing the edit request
-     * @param payPalVaultEditAuthCallback a [PayPalVaultEditAuthCallback]
+     * @param payPalVaultEditCallback a [PayPalVaultEditCallback]
      */
     @ExperimentalBetaApi
-    fun createEditAuthRequest(
+    fun createEditRequest(
         context: Context,
         payPalVaultEditRequest: PayPalVaultEditRequest,
-        payPalVaultEditAuthCallback: PayPalVaultEditAuthCallback
+        callback: PayPalVaultEditCallback
     ) {
-        internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest, payPalVaultEditAuthCallback)
+        internalPayPalClient.sendVaultEditRequest(
+            context,
+            payPalVaultEditRequest,
+            callback
+        )
     }
 
     /**

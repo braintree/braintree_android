@@ -10,6 +10,7 @@ import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthCallback
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest
 import org.json.JSONException
@@ -139,13 +140,13 @@ internal class PayPalInternalClient(
     fun sendVaultEditRequest(
         context: Context,
         payPalVaultEditRequest: PayPalVaultEditRequest,
-        payPalVaultEditAuthCallback: PayPalVaultEditAuthCallback,
+        callback: PayPalVaultEditCallback,
         riskCorrelationId: String? = null
     ) {
 
         val parameters = mutableMapOf<String, Any>()
 
-        getClientMetadataId(null, context, braintreeClient, dataCollector) { clientMetadataId ->
+        getClientMetadataId(riskCorrelationId, context, braintreeClient, dataCollector) { clientMetadataId ->
             if (clientMetadataId != null) {
                 println("Client Metadata ID: $clientMetadataId")
                 parameters["risk_correlation_id"] = clientMetadataId
@@ -168,6 +169,7 @@ internal class PayPalInternalClient(
         val jsonObject = JSONObject(parameters())
 
         braintreeClient.sendPOST(payPalVaultEditRequest.hermesPath, jsonObject.toString()) { response, error ->
+            // TODO: use payPalVaultEditAuthCallback
         }
     }
 
