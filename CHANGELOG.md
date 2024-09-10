@@ -1,6 +1,14 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Breaking Changes
+  * Venmo
+    * Convert `VenmoPaymentMethodUsage` to an enum
+    * Convert `VenmoLineItemKind` to an enum
+
 ## 5.0.0-beta2 (2024-08-28)
+
 * All Modules
   * Upgrade Gradle version to `8.5.2`
   * Upgrade `compileSdkVersion` and `targetSdkVersion` to API 35
