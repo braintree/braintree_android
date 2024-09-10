@@ -8,7 +8,7 @@ sealed class SEPADirectDebitPaymentAuthRequest {
     /**
      * The request was successfully created and is ready to be launched by [SEPADirectDebitLauncher]
      */
-    class ReadyToLaunch(internal val requestParams: SEPADirectDebitPaymentAuthRequestParams) :
+    class ReadyToLaunch(val requestParams: SEPADirectDebitPaymentAuthRequestParams) :
         SEPADirectDebitPaymentAuthRequest()
 
     /**

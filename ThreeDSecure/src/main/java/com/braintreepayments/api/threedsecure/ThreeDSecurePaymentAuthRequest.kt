@@ -8,7 +8,7 @@ sealed class ThreeDSecurePaymentAuthRequest {
     /**
      * The request was successfully created and is ready to be launched by [ThreeDSecureLauncher]
      */
-    class ReadyToLaunch(internal val requestParams: ThreeDSecureParams) :
+    class ReadyToLaunch(val requestParams: ThreeDSecureParams) :
         ThreeDSecurePaymentAuthRequest()
 
     /**

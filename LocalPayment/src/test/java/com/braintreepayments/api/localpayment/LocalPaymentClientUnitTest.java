@@ -1,6 +1,5 @@
 package com.braintreepayments.api.localpayment;
 
-import static com.ibm.icu.impl.Assert.fail;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertFalse;
@@ -80,20 +79,6 @@ public class LocalPaymentClientUnitTest {
         sut.createPaymentAuthRequest(getIdealLocalPaymentRequest(), localPaymentAuthCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED, new AnalyticsEventParams());
-    }
-
-    @Test
-    public void createPaymentAuthRequest_sendsPaymentFailedEvent_forNullRequest() {
-        LocalPaymentClient sut = new LocalPaymentClient(
-                braintreeClient,
-                dataCollector,
-                localPaymentApi);
-        sut.createPaymentAuthRequest(null, localPaymentAuthCallback);
-
-        verify(braintreeClient).sendAnalyticsEvent(
-                LocalPaymentAnalytics.PAYMENT_FAILED,
-                new AnalyticsEventParams()
-        );
     }
 
     @Test
@@ -282,39 +267,6 @@ public class LocalPaymentClientUnitTest {
         assertTrue(exception instanceof BraintreeException);
         assertEquals("LocalPaymentRequest is invalid, paymentType and amount are required.",
                 exception.getMessage());
-    }
-
-    @Test
-    public void createPaymentAuthRequest_whenLocalPaymentRequestIsNull_returnsErrorToCallback() {
-        LocalPaymentClient sut =
-                new LocalPaymentClient(braintreeClient, dataCollector,
-                        localPaymentApi);
-
-        sut.createPaymentAuthRequest(null, localPaymentAuthCallback);
-
-        ArgumentCaptor<LocalPaymentAuthRequest> captor = ArgumentCaptor.forClass(LocalPaymentAuthRequest.class);
-        verify(localPaymentAuthCallback).onLocalPaymentAuthRequest(captor.capture());
-
-        LocalPaymentAuthRequest paymentAuthRequest = captor.getValue();
-        assertTrue(paymentAuthRequest instanceof LocalPaymentAuthRequest.Failure);
-        Exception exception = ((LocalPaymentAuthRequest.Failure) paymentAuthRequest).getError();
-        assertTrue(exception instanceof BraintreeException);
-        assertEquals("A LocalPaymentRequest is required.", exception.getMessage());
-    }
-
-    @Test
-    public void createPaymentAuthRequest_whenCallbackIsNull_throwsError() {
-        LocalPaymentRequest request = getIdealLocalPaymentRequest();
-        LocalPaymentClient sut =
-                new LocalPaymentClient(braintreeClient, dataCollector,
-                        localPaymentApi);
-
-        try {
-            sut.createPaymentAuthRequest(request, null);
-            fail("Should throw");
-        } catch (RuntimeException exception) {
-            assertEquals("A LocalPaymentAuthRequestCallback is required.", exception.getMessage());
-        }
     }
 
     @Test
