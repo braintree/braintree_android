@@ -185,7 +185,7 @@ internal class PayPalInternalClient(
 
         braintreeClient.sendPOST(payPalVaultEditRequest.hermesPath, jsonObject.toString()) { response, error ->
             if (error != null) {
-                val result = PayPalVaultEditResult.Failure(error)
+                val result = PayPalVaultEditResult.Failure(error, riskCorrelationId)
                 callback.onPayPalVaultEditResult(result)
             } else {
                 try {
@@ -201,7 +201,7 @@ internal class PayPalInternalClient(
                     val result = PayPalVaultEditResult.Success(riskCorrelationId, editFIAgreementSetup)
                     callback.onPayPalVaultEditResult(result)
                 } catch (jsonException: JSONException) {
-                    val result = PayPalVaultEditResult.Failure(jsonException)
+                    val result = PayPalVaultEditResult.Failure(jsonException, riskCorrelationId)
                     callback.onPayPalVaultEditResult(result)
                 }
             }
