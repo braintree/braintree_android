@@ -22,6 +22,8 @@ jobs:
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
+          # location of google-service.json file relative to root
+          entryPoint : './Demo'
           firebaseServiceAccount: $HOME/secrets/braintree_demo_app.json
           expires: 30d
           projectId: braintree-demo-app
