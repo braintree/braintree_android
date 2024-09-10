@@ -6,6 +6,9 @@
   * Venmo
     * Convert `VenmoPaymentMethodUsage` to an enum
     * Convert `VenmoLineItemKind` to an enum
+  * BraintreeCore
+    * Remove `BraintreeDeepLinkActivity`
+    * Remove `authorizationFingerprint` from `ClientToken`
 
 ## 5.0.0-beta2 (2024-08-28)
 
