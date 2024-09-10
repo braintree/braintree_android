@@ -6,4 +6,4 @@ mkdir $HOME/secrets
 # --yes to assume "yes" for questions
 gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" \
 --output $HOME/secrets/braintree_demo_app.json \
-../files/braintree-demo-app-7789ca8ae9e9.json.gpg
+./.github/files/braintree-demo-app-7789ca8ae9e9.json.gpg
