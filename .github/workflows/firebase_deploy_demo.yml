@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - paypal-app-switch-feature
-      - firebase-publish
 jobs:
   build_and_preview:
     runs-on: ubuntu-latest
