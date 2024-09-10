@@ -1,0 +1,23 @@
+name: Deploy to Preview Channel
+
+on:
+  push:
+    branches:
+      - paypal-app-switch-feature
+jobs:
+  build_and_preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Setup Java
+        uses: ./.github/actions/setup
+      - name: Assemble
+        run: ./gradlew --stacktrace :demo:assembleDebug
+      - name: Upload artifact to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_CREDENTIAL_FILE_CONTENT }}
+          groups: testers
+          file: Demo/build/outputs/apk/debug/Demo-debug.apk
