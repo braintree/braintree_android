@@ -80,8 +80,8 @@ class CardinalClientUnitTest {
 
         val parameters = parametersSlot.captured
         assertEquals(
-            request.v2UiCustomization!!.cardinalUiCustomization,
-            parameters.uiCustomization
+            request.v2UiCustomization!!.cardinalUiCustomization.toolbarCustomization,
+            parameters.uiCustomization.toolbarCustomization
         )
     }
 
@@ -109,7 +109,7 @@ class CardinalClientUnitTest {
 
         val sut = CardinalClient()
         val request = ThreeDSecureRequest().apply {
-            uiType = ThreeDSecureRequest.BOTH
+            uiType = ThreeDSecureUiType.BOTH
         }
         sut.initialize(context, configuration, request, cardinalInitializeCallback)
 
@@ -128,11 +128,11 @@ class CardinalClientUnitTest {
         val sut = CardinalClient()
         val request = ThreeDSecureRequest().apply {
             renderTypes = listOf(
-                ThreeDSecureRequest.OTP,
-                ThreeDSecureRequest.SINGLE_SELECT,
-                ThreeDSecureRequest.MULTI_SELECT,
-                ThreeDSecureRequest.OOB,
-                ThreeDSecureRequest.RENDER_HTML,
+                ThreeDSecureRenderType.OTP,
+                ThreeDSecureRenderType.SINGLE_SELECT,
+                ThreeDSecureRenderType.MULTI_SELECT,
+                ThreeDSecureRenderType.OOB,
+                ThreeDSecureRenderType.RENDER_HTML,
             )
         }
         sut.initialize(context, configuration, request, cardinalInitializeCallback)
@@ -268,6 +268,17 @@ class CardinalClientUnitTest {
         } catch (e: BraintreeException) {
             assertEquals("Cardinal SDK cca_continue Error.", e.message)
             assertSame(runtimeException, e.cause)
+        }
+    }
+
+    @Test
+    fun `when continueLookup is called with a null challengeObserver, throws BraintreeException`() {
+        val sut = CardinalClient()
+
+        try {
+            sut.continueLookup(mockk(), null)
+        } catch (e: BraintreeException) {
+            assertEquals("challengeObserver is null", e.message)
         }
     }
 

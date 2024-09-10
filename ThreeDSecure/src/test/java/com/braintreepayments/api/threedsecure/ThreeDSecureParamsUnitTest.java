@@ -22,9 +22,9 @@ public class ThreeDSecureParamsUnitTest {
                 Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE);
 
         assertEquals("11", authResponse.getThreeDSecureNonce().getLastTwo());
-        assertTrue(authResponse.getThreeDSecureNonce().getThreeDSecureInfo().isLiabilityShifted());
+        assertTrue(authResponse.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShifted());
         assertTrue(
-                authResponse.getThreeDSecureNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
+                authResponse.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShiftPossible());
         assertNull(authResponse.getErrorMessage());
     }
 
@@ -34,9 +34,9 @@ public class ThreeDSecureParamsUnitTest {
                 Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE);
 
         assertEquals("91", authResponse.getThreeDSecureNonce().getLastTwo());
-        assertTrue(authResponse.getThreeDSecureNonce().getThreeDSecureInfo().isLiabilityShifted());
+        assertTrue(authResponse.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShifted());
         assertTrue(
-                authResponse.getThreeDSecureNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
+                authResponse.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShiftPossible());
         assertNull(authResponse.getErrorMessage());
     }
 
@@ -72,15 +72,15 @@ public class ThreeDSecureParamsUnitTest {
 
         assertEquals(authResponse.getThreeDSecureNonce().getLastTwo(),
                 parceled.getThreeDSecureNonce().getLastTwo());
-        assertEquals(authResponse.getThreeDSecureNonce().getThreeDSecureInfo().isLiabilityShifted(),
-                parceled.getThreeDSecureNonce().getThreeDSecureInfo().isLiabilityShifted());
+        assertEquals(authResponse.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShifted(),
+                parceled.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShifted());
         assertEquals(
-                authResponse.getThreeDSecureNonce().getThreeDSecureInfo().isLiabilityShiftPossible(),
-                parceled.getThreeDSecureNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
-        assertEquals(authResponse.getThreeDSecureNonce().getThreeDSecureInfo().isLiabilityShifted(),
-                parceled.getThreeDSecureNonce().getThreeDSecureInfo().isLiabilityShifted());
+                authResponse.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShiftPossible(),
+                parceled.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShiftPossible());
+        assertEquals(authResponse.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShifted(),
+                parceled.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShifted());
         assertEquals(
-                authResponse.getThreeDSecureNonce().getThreeDSecureInfo().isLiabilityShiftPossible(),
-                parceled.getThreeDSecureNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
+                authResponse.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShiftPossible(),
+                parceled.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShiftPossible());
     }
 }

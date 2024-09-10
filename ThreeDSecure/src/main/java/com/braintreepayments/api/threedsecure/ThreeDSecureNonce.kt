@@ -47,17 +47,17 @@ data class ThreeDSecureNonce internal constructor(
         @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         @Throws(JSONException::class)
         @JvmStatic
-        fun JSONObject.fromJSON(): ThreeDSecureNonce {
-            val cardNonce = fromJSON(this)
+        fun fromJSON(json: JSONObject): ThreeDSecureNonce {
+            val cardNonce = CardNonce.fromJSON(json)
             val threeDSecureInfo: ThreeDSecureInfo
-            if (has(DATA_KEY)) { // graphQL
+            if (json.has(DATA_KEY)) { // graphQL
                 threeDSecureInfo = ThreeDSecureInfo.fromJson(null)
-            } else if (has(API_RESOURCE_KEY)) { // REST
-                val json = getJSONArray(API_RESOURCE_KEY).getJSONObject(0)
+            } else if (json.has(API_RESOURCE_KEY)) { // REST
+                val json = json.getJSONArray(API_RESOURCE_KEY).getJSONObject(0)
                 threeDSecureInfo =
                     ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY))
             } else { // plain JSON
-                threeDSecureInfo = ThreeDSecureInfo.fromJson(optJSONObject(THREE_D_SECURE_INFO_KEY))
+                threeDSecureInfo = ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY))
             }
             return ThreeDSecureNonce(
                 cardType = cardNonce.cardType,

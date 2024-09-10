@@ -110,9 +110,9 @@ internal class PayPalInternalClient(
                 val clientMetadataId = payPalRequest.riskCorrelationId ?: run {
                     val dataCollectorRequest = DataCollectorInternalRequest(
                         payPalRequest.hasUserLocationConsent
-                    ).setApplicationGuid(dataCollector.getPayPalInstallationGUID(context))
-                    pairingId?.let {
-                        dataCollectorRequest.setRiskCorrelationId(pairingId)
+                    ).apply {
+                        applicationGuid = dataCollector.getPayPalInstallationGUID(context)
+                        clientMetadataId = pairingId
                     }
                     dataCollector.getClientMetadataId(
                         context = context,

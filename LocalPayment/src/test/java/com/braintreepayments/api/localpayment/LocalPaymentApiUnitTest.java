@@ -1,10 +1,11 @@
 package com.braintreepayments.api.localpayment;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
@@ -13,12 +14,12 @@ import static org.mockito.Mockito.verify;
 
 import android.net.Uri;
 
-import com.braintreepayments.api.core.IntegrationType;
-import com.braintreepayments.api.testutils.Fixtures;
-import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.core.IntegrationType;
 import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
+import com.braintreepayments.api.testutils.Fixtures;
+import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,7 +38,8 @@ public class LocalPaymentApiUnitTest {
 
     @Before
     public void beforeEach() {
-        localPaymentInternalAuthRequestCallback = mock(LocalPaymentInternalAuthRequestCallback.class);
+        localPaymentInternalAuthRequestCallback =
+                mock(LocalPaymentInternalAuthRequestCallback.class);
         localPaymentInternalTokenizeCallback =
                 mock(LocalPaymentInternalTokenizeCallback.class);
     }
@@ -49,12 +51,15 @@ public class LocalPaymentApiUnitTest {
                 .build();
 
         LocalPaymentApi sut = new LocalPaymentApi(braintreeClient);
-        sut.createPaymentMethod(getIdealLocalPaymentRequest(),
-                localPaymentInternalAuthRequestCallback);
+        sut.createPaymentMethod(
+                getIdealLocalPaymentRequest(),
+                localPaymentInternalAuthRequestCallback
+        );
 
         String expectedPath = "/v1/local_payments/create";
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(eq(expectedPath), bodyCaptor.capture(),
+        verify(braintreeClient).sendPOST(
+                eq(expectedPath), bodyCaptor.capture(), anyMap(),
                 any(HttpResponseCallback.class));
 
         String requestBody = bodyCaptor.getValue();
@@ -75,7 +80,10 @@ public class LocalPaymentApiUnitTest {
         assertEquals("CA", json.getString("state"));
         assertEquals("local-merchant-account-id", json.getString("merchantAccountId"));
         assertTrue(json.getJSONObject("experienceProfile").getBoolean("noShipping"));
-        assertEquals("My Brand!", json.getJSONObject("experienceProfile").getString("brandName"));
+        assertEquals(
+                "My Brand!",
+                json.getJSONObject("experienceProfile").getString("brandName")
+        );
         String expectedCancelUrl = Uri.parse("sample-scheme://local-payment-cancel").toString();
         String expectedReturnUrl = Uri.parse("sample-scheme://local-payment-success").toString();
         assertEquals(expectedCancelUrl, json.getString("cancelUrl"));
@@ -90,10 +98,15 @@ public class LocalPaymentApiUnitTest {
                 .build();
 
         LocalPaymentApi sut = new LocalPaymentApi(braintreeClient);
-        sut.createPaymentMethod(getIdealLocalPaymentRequest(),
-                localPaymentInternalAuthRequestCallback);
+        sut.createPaymentMethod(
+                getIdealLocalPaymentRequest(),
+                localPaymentInternalAuthRequestCallback
+        );
 
-        verify(localPaymentInternalAuthRequestCallback).onLocalPaymentInternalAuthResult(isNull(), same(error));
+        verify(localPaymentInternalAuthRequestCallback).onLocalPaymentInternalAuthResult(
+                isNull(),
+                same(error)
+        );
 
     }
 
@@ -104,11 +117,16 @@ public class LocalPaymentApiUnitTest {
                 .build();
 
         LocalPaymentApi sut = new LocalPaymentApi(braintreeClient);
-        sut.createPaymentMethod(getIdealLocalPaymentRequest(),
-                localPaymentInternalAuthRequestCallback);
+        sut.createPaymentMethod(
+                getIdealLocalPaymentRequest(),
+                localPaymentInternalAuthRequestCallback
+        );
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(localPaymentInternalAuthRequestCallback).onLocalPaymentInternalAuthResult(isNull(), captor.capture());
+        verify(localPaymentInternalAuthRequestCallback).onLocalPaymentInternalAuthResult(
+                isNull(),
+                captor.capture()
+        );
 
         assertTrue(captor.getValue() instanceof JSONException);
     }
@@ -125,13 +143,18 @@ public class LocalPaymentApiUnitTest {
 
         ArgumentCaptor<LocalPaymentAuthRequestParams> captor =
                 ArgumentCaptor.forClass(LocalPaymentAuthRequestParams.class);
-        verify(localPaymentInternalAuthRequestCallback).onLocalPaymentInternalAuthResult(captor.capture(), isNull());
+        verify(localPaymentInternalAuthRequestCallback).onLocalPaymentInternalAuthResult(
+                captor.capture(),
+                isNull()
+        );
 
         LocalPaymentAuthRequestParams result = captor.getValue();
         assertNotNull(result);
         assertSame(request, result.getRequest());
-        assertEquals("https://checkout.paypal.com/latinum?token=payment-token",
-                result.getApprovalUrl());
+        assertEquals(
+                "https://checkout.paypal.com/latinum?token=payment-token",
+                result.getApprovalUrl()
+        );
         assertEquals("local-payment-id-123", result.getPaymentId());
     }
 
@@ -144,13 +167,16 @@ public class LocalPaymentApiUnitTest {
 
         LocalPaymentApi sut = new LocalPaymentApi(braintreeClient);
         String webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId";
-        sut.tokenize("local-merchant-account-id", webUrl, "sample-correlation-id",
-                localPaymentInternalTokenizeCallback);
+        sut.tokenize(
+                "local-merchant-account-id", webUrl, "sample-correlation-id",
+                localPaymentInternalTokenizeCallback
+        );
 
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
         String expectedUrl = "/v1/payment_methods/paypal_accounts";
 
-        verify(braintreeClient).sendPOST(eq(expectedUrl), bodyCaptor.capture(),
+        verify(braintreeClient).sendPOST(
+                eq(expectedUrl), bodyCaptor.capture(),anyMap(),
                 any(HttpResponseCallback.class));
         String requestBody = bodyCaptor.getValue();
 
@@ -185,8 +211,10 @@ public class LocalPaymentApiUnitTest {
 
         LocalPaymentApi sut = new LocalPaymentApi(braintreeClient);
         String webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId";
-        sut.tokenize("local-merchant-account-id", webUrl, "sample-correlation-id",
-                localPaymentInternalTokenizeCallback);
+        sut.tokenize(
+                "local-merchant-account-id", webUrl, "sample-correlation-id",
+                localPaymentInternalTokenizeCallback
+        );
 
         verify(localPaymentInternalTokenizeCallback).onResult(isNull(), same(error));
     }
@@ -201,8 +229,10 @@ public class LocalPaymentApiUnitTest {
 
         LocalPaymentApi sut = new LocalPaymentApi(braintreeClient);
         String webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId";
-        sut.tokenize("local-merchant-account-id", webUrl, "sample-correlation-id",
-                localPaymentInternalTokenizeCallback);
+        sut.tokenize(
+                "local-merchant-account-id", webUrl, "sample-correlation-id",
+                localPaymentInternalTokenizeCallback
+        );
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(localPaymentInternalTokenizeCallback).onResult(isNull(), captor.capture());
@@ -220,12 +250,16 @@ public class LocalPaymentApiUnitTest {
 
         LocalPaymentApi sut = new LocalPaymentApi(braintreeClient);
         String webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId";
-        sut.tokenize("local-merchant-account-id", webUrl, "sample-correlation-id",
-                localPaymentInternalTokenizeCallback);
+        sut.tokenize(
+                "local-merchant-account-id", webUrl, "sample-correlation-id",
+                localPaymentInternalTokenizeCallback
+        );
 
         ArgumentCaptor<LocalPaymentNonce> captor = ArgumentCaptor.forClass(LocalPaymentNonce.class);
-        verify(localPaymentInternalTokenizeCallback).onResult(captor.capture(),
-                (Exception) isNull());
+        verify(localPaymentInternalTokenizeCallback).onResult(
+                captor.capture(),
+                (Exception) isNull()
+        );
 
         LocalPaymentNonce result = captor.getValue();
         assertNotNull(result);

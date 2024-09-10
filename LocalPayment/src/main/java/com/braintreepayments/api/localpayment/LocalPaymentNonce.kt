@@ -106,11 +106,11 @@ data class LocalPaymentNonce internal constructor(
                 clientMetadataId = clientMetadataId,
                 billingAddress = billingAddress,
                 shippingAddress = shippingAddress,
-                givenName = givenName ?: throw JSONException("givenName is null"),
-                surname = surname ?: throw JSONException("surname is null"),
-                phone = phone ?: throw JSONException("phone is null"),
+                givenName = givenName ?: "",
+                surname = surname ?: "",
+                phone = phone ?: "",
                 email = email,
-                payerId = payerId ?: throw JSONException("payerId is null"),
+                payerId = payerId ?: "",
             )
         }
     }

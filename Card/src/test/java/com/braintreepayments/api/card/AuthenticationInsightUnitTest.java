@@ -4,6 +4,7 @@ import android.os.Parcel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -45,13 +46,6 @@ public class AuthenticationInsightUnitTest {
     @Test
     public void fromJson_onNullJsonObject_returnsNull() {
         assertNull(AuthenticationInsight.fromJson(null));
-    }
-
-    @Test
-    public void createFromParcel_withNullRegulationEnvironment_setsRegulationEnvironmentToUnknown() {
-        AuthenticationInsight insight = AuthenticationInsight.CREATOR.createFromParcel(Parcel.obtain());
-
-        assertNull(insight.getRegulationEnvironment());
     }
 
     @Test

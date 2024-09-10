@@ -105,11 +105,11 @@ class BraintreeClient @VisibleForTesting internal constructor(
     )
 
     init {
-        // NEXT MAJOR VERSION: CrashReporter isn't a part of BraintreeClientParams
-        // because it requires a reference to BraintreeClient. This is a design flaw that creates
-        // a circular reference. We should consider if we need CrashReporter anymore since
-        // merchants already have access to Crash statistics via GooglePlay. We also have crash
-        // statistics access via the sdk console
+        // TODO: CrashReporter isn't a part of BraintreeClientParams
+        //  because it requires a reference to BraintreeClient. This is a design flaw that creates
+        //  a circular reference. We should consider if we need CrashReporter anymore since
+        //  merchants already have access to Crash statistics via GooglePlay. We also have crash
+        //  statistics access via the sdk console
         crashReporter = CrashReporter(this)
         crashReporter.start()
     }
@@ -130,7 +130,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
             } else {
                 callback.onResult(null, configError)
             }
-            timing?.let { sendAnalyticsTimingEvent("v1/configuration", it) }
+            timing?.let { sendAnalyticsTimingEvent("/v1/configuration", it) }
         }
     }
 
@@ -328,7 +328,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
             )
         }
 
-    // NEXT MAJOR VERSION: Make launches browser switch as new task a property of `BraintreeOptions`
+    // TODO: Make launches browser switch as new task a property of `BraintreeOptions`
     fun launchesBrowserSwitchAsNewTask(): Boolean {
         return launchesBrowserSwitchAsNewTask
     }

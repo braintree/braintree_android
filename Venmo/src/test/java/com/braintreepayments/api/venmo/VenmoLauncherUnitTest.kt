@@ -109,7 +109,7 @@ class VenmoLauncherUnitTest {
         assertTrue(paymentAuthResult is VenmoPaymentAuthResult.Success)
         assertSame(
             browserSwitchFinalResult,
-            (paymentAuthResult as VenmoPaymentAuthResult.Success).paymentAuthInfo.browserSwitchResultInfo
+            (paymentAuthResult as VenmoPaymentAuthResult.Success).paymentAuthInfo.browserSwitchSuccess
         )
     }
 

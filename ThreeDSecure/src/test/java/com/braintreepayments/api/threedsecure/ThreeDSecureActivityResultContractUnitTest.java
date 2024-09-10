@@ -66,9 +66,9 @@ public class ThreeDSecureActivityResultContractUnitTest {
                 paymentAuthResult = sut.parseResult(Activity.RESULT_OK, successIntent);
         assertNotNull(paymentAuthResult);
 
-        assertSame(threeDSecureParams, paymentAuthResult.getThreeSecureResult());
+        assertSame(threeDSecureParams, paymentAuthResult.getThreeDSecureParams());
         assertSame(validateResponse, paymentAuthResult.getValidateResponse());
-        assertSame(jwt, paymentAuthResult.getJWT());
+        assertSame(jwt, paymentAuthResult.getJwt());
     }
 
     @Test

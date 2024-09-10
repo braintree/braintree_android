@@ -10,6 +10,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 import com.braintreepayments.api.testutils.Fixtures;
 
@@ -59,5 +60,27 @@ public class LocalPaymentNonceUnitTest {
         assertEquals("Doe", parceled.getSurname());
         assertEquals("9KQSUZTL7YZQ4", parceled.getPayerId());
         assertEquals("084afbf1db15445587d30bc120a23b09", parceled.getClientMetadataId());
+    }
+
+    @Test
+    public void when_fromJSON_is_called_missing_fields_default_to_an_empty_string() throws JSONException {
+        LocalPaymentNonce result = LocalPaymentNonce.fromJSON(
+            new JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_MISSING_FIELDS_RESPONSE)
+        );
+
+        assertNotNull(result);
+        assertEquals("141b7583-2922-1ce6-1f2e-f352b69115d6", result.getString());
+        assertNull(result.getEmail());
+        assertNull(result.getShippingAddress().getStreetAddress());
+        assertNull(result.getShippingAddress().getExtendedAddress());
+        assertNull(result.getShippingAddress().getLocality());
+        assertNull(result.getShippingAddress().getRegion());
+        assertNull(result.getShippingAddress().getPostalCode());
+        assertNull(result.getShippingAddress().getCountryCodeAlpha2());
+        assertNull(result.getShippingAddress().getRecipientName());
+        assertEquals("", result.getGivenName());
+        assertEquals("", result.getSurname());
+        assertEquals("", result.getPayerId());
+        assertEquals("c7ce54e0cde5406785b13c99086a9f4c", result.getClientMetadataId());
     }
 }

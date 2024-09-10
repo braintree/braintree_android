@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import com.braintreepayments.api.core.AnalyticsEventParams;
 import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 import com.braintreepayments.api.core.BraintreeClient;
@@ -157,8 +158,9 @@ public class AmericanExpressClientUnitTest {
         AmericanExpressClient sut = new AmericanExpressClient(braintreeClient);
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED);
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_SUCCEEDED);
+        AnalyticsEventParams params = new AnalyticsEventParams();
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, params);
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_SUCCEEDED, params);
     }
 
     @Test
@@ -170,8 +172,9 @@ public class AmericanExpressClientUnitTest {
         AmericanExpressClient sut = new AmericanExpressClient(braintreeClient);
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED);
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED);
+        AnalyticsEventParams params = new AnalyticsEventParams();
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, params);
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED, params);
     }
 
     @Test
@@ -182,7 +185,8 @@ public class AmericanExpressClientUnitTest {
         AmericanExpressClient sut = new AmericanExpressClient(braintreeClient);
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED);
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED);
+        AnalyticsEventParams params = new AnalyticsEventParams();
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, params);
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED, params);
     }
 }
