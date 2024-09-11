@@ -8,5 +8,5 @@ import com.braintreepayments.api.BrowserSwitchFinalResult
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 data class PayPalPaymentAuthResultInfo internal constructor(
-    internal val browserSwitchSuccess: BrowserSwitchFinalResult.Success
+    val browserSwitchSuccess: BrowserSwitchFinalResult.Success
 )
