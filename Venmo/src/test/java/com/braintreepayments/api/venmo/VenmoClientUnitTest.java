@@ -89,9 +89,7 @@ public class VenmoClientUnitTest {
         clientToken = Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN);
         tokenizationKey = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
         browserSwitchResult = mock(BrowserSwitchFinalResult.Success.class);
-        VenmoPaymentAuthResultInfo venmoPaymentAuthResultInfo =
-                new VenmoPaymentAuthResultInfo(browserSwitchResult);
-        paymentAuthResult = new VenmoPaymentAuthResult.Success(venmoPaymentAuthResultInfo);
+        paymentAuthResult = new VenmoPaymentAuthResult.Success(browserSwitchResult);
 
         when(analyticsParamRepository.getSessionId()).thenReturn("session-id");
     }

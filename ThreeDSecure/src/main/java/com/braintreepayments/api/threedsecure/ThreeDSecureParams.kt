@@ -1,6 +1,7 @@
 package com.braintreepayments.api.threedsecure
 
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.Json
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
@@ -10,6 +11,7 @@ import org.json.JSONObject
  * Data class to parse and contain 3D Secure authentication responses
  */
 @Parcelize
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 data class ThreeDSecureParams(
     var threeDSecureNonce: ThreeDSecureNonce?,
     val errorMessage: String?,

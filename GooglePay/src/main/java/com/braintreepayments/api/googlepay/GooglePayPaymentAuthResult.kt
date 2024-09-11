@@ -7,6 +7,6 @@ import com.google.android.gms.wallet.PaymentData
  * passed to [GooglePayClient.tokenize]
  */
 class GooglePayPaymentAuthResult internal constructor(
-    val paymentData: PaymentData?,
-    val error: Exception?
+    internal val paymentData: PaymentData?,
+    internal val error: Exception?
 )

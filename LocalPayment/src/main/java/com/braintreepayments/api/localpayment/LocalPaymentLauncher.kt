@@ -73,9 +73,7 @@ class LocalPaymentLauncher internal constructor(private val browserSwitchClient:
     ): LocalPaymentAuthResult {
         return when (val result =
             browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
-            is BrowserSwitchFinalResult.Success -> LocalPaymentAuthResult.Success(
-                LocalPaymentAuthResultInfo(result)
-            )
+            is BrowserSwitchFinalResult.Success -> LocalPaymentAuthResult.Success(result)
 
             is BrowserSwitchFinalResult.Failure -> LocalPaymentAuthResult.Failure(result.error)
 
