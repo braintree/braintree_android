@@ -7,6 +7,7 @@ import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
@@ -24,7 +25,8 @@ import java.util.Locale
 class LocalPaymentClient @VisibleForTesting internal constructor(
     private val braintreeClient: BraintreeClient,
     private val dataCollector: DataCollector = DataCollector(braintreeClient),
-    private val localPaymentApi: LocalPaymentApi = LocalPaymentApi(braintreeClient)
+    private val localPaymentApi: LocalPaymentApi = LocalPaymentApi(braintreeClient),
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
 ) {
     /**
      * Used for linking events from the client to server side request
@@ -57,6 +59,7 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
         request: LocalPaymentRequest,
         callback: LocalPaymentAuthCallback
     ) {
+        analyticsParamRepository.resetSessionId()
         braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED)
 
         var exception: Exception? = null

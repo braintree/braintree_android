@@ -1,6 +1,7 @@
 package com.braintreepayments.api.venmo
 
 import android.text.TextUtils
+import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
@@ -12,7 +13,8 @@ import org.json.JSONObject
 
 internal class VenmoApi(
     private val braintreeClient: BraintreeClient,
-    private val apiClient: ApiClient
+    private val apiClient: ApiClient,
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
 ) {
 
     @Suppress("LongMethod")
@@ -79,7 +81,7 @@ internal class VenmoApi(
             params.put("variables", variables)
 
             val braintreeData = MetadataBuilder()
-                .sessionId(braintreeClient.sessionId)
+                .sessionId(analyticsParamRepository.sessionId)
                 .integration(braintreeClient.integrationType)
                 .version()
                 .build()
