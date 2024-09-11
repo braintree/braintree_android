@@ -1,11 +1,16 @@
 package com.braintreepayments.api.localpayment
 
+import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.localpayment.LocalPaymentNonce.Companion.fromJSON
 import org.json.JSONException
 import org.json.JSONObject
 
-internal class LocalPaymentApi(private val braintreeClient: BraintreeClient) {
+internal class LocalPaymentApi(
+    private val braintreeClient: BraintreeClient,
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
+) {
+
     fun createPaymentMethod(
         request: LocalPaymentRequest,
         callback: LocalPaymentInternalAuthRequestCallback
@@ -62,7 +67,7 @@ internal class LocalPaymentApi(private val braintreeClient: BraintreeClient) {
             val metaData = JSONObject()
                 .put("source", "client")
                 .put("integration", braintreeClient.integrationType.stringValue)
-                .put("sessionId", braintreeClient.sessionId)
+                .put("sessionId", analyticsParamRepository.sessionId)
             payload.put("_meta", metaData)
 
             val url = "/v1/payment_methods/paypal_accounts"

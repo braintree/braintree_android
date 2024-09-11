@@ -11,9 +11,11 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.net.Uri;
 
+import com.braintreepayments.api.core.AnalyticsParamRepository;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.IntegrationType;
 import com.braintreepayments.api.core.PostalAddress;
@@ -36,12 +38,17 @@ public class LocalPaymentApiUnitTest {
     private LocalPaymentInternalAuthRequestCallback localPaymentInternalAuthRequestCallback;
     private LocalPaymentInternalTokenizeCallback localPaymentInternalTokenizeCallback;
 
+    private AnalyticsParamRepository analyticsParamRepository;
+
     @Before
     public void beforeEach() {
+        analyticsParamRepository = mock(AnalyticsParamRepository.class);
         localPaymentInternalAuthRequestCallback =
                 mock(LocalPaymentInternalAuthRequestCallback.class);
         localPaymentInternalTokenizeCallback =
                 mock(LocalPaymentInternalTokenizeCallback.class);
+
+        when(analyticsParamRepository.getSessionId()).thenReturn("sample-session-id");
     }
 
     @Test
@@ -50,7 +57,7 @@ public class LocalPaymentApiUnitTest {
                 .returnUrlScheme("sample-scheme")
                 .build();
 
-        LocalPaymentApi sut = new LocalPaymentApi(braintreeClient);
+        LocalPaymentApi sut = new LocalPaymentApi(braintreeClient, analyticsParamRepository);
         sut.createPaymentMethod(
                 getIdealLocalPaymentRequest(),
                 localPaymentInternalAuthRequestCallback
@@ -97,7 +104,7 @@ public class LocalPaymentApiUnitTest {
                 .sendPOSTErrorResponse(error)
                 .build();
 
-        LocalPaymentApi sut = new LocalPaymentApi(braintreeClient);
+        LocalPaymentApi sut = new LocalPaymentApi(braintreeClient, analyticsParamRepository);
         sut.createPaymentMethod(
                 getIdealLocalPaymentRequest(),
                 localPaymentInternalAuthRequestCallback
@@ -116,7 +123,7 @@ public class LocalPaymentApiUnitTest {
                 .sendPOSTSuccessfulResponse(Fixtures.ERROR_RESPONSE)
                 .build();
 
-        LocalPaymentApi sut = new LocalPaymentApi(braintreeClient);
+        LocalPaymentApi sut = new LocalPaymentApi(braintreeClient, analyticsParamRepository);
         sut.createPaymentMethod(
                 getIdealLocalPaymentRequest(),
                 localPaymentInternalAuthRequestCallback
@@ -137,7 +144,7 @@ public class LocalPaymentApiUnitTest {
                 .sendPOSTSuccessfulResponse(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_CREATE_RESPONSE)
                 .build();
 
-        LocalPaymentApi sut = new LocalPaymentApi(braintreeClient);
+        LocalPaymentApi sut = new LocalPaymentApi(braintreeClient, analyticsParamRepository);
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.createPaymentMethod(request, localPaymentInternalAuthRequestCallback);
 
@@ -161,11 +168,10 @@ public class LocalPaymentApiUnitTest {
     @Test
     public void tokenize_sendsCorrectPostParams() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .sessionId("sample-session-id")
                 .integration(IntegrationType.CUSTOM)
                 .build();
 
-        LocalPaymentApi sut = new LocalPaymentApi(braintreeClient);
+        LocalPaymentApi sut = new LocalPaymentApi(braintreeClient, analyticsParamRepository);
         String webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId";
         sut.tokenize(
                 "local-merchant-account-id", webUrl, "sample-correlation-id",
@@ -204,12 +210,11 @@ public class LocalPaymentApiUnitTest {
     public void tokenize_onPOSTError_forwardsErrorToCallback() {
         Exception error = new Exception("error");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .sessionId("sample-session-id")
                 .integration(IntegrationType.CUSTOM)
                 .sendPOSTErrorResponse(error)
                 .build();
 
-        LocalPaymentApi sut = new LocalPaymentApi(braintreeClient);
+        LocalPaymentApi sut = new LocalPaymentApi(braintreeClient, analyticsParamRepository);
         String webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId";
         sut.tokenize(
                 "local-merchant-account-id", webUrl, "sample-correlation-id",
@@ -222,12 +227,11 @@ public class LocalPaymentApiUnitTest {
     @Test
     public void tokenize_onJSONError_forwardsErrorToCallback() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .sessionId("sample-session-id")
                 .integration(IntegrationType.CUSTOM)
                 .sendPOSTSuccessfulResponse("not-json")
                 .build();
 
-        LocalPaymentApi sut = new LocalPaymentApi(braintreeClient);
+        LocalPaymentApi sut = new LocalPaymentApi(braintreeClient, analyticsParamRepository);
         String webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId";
         sut.tokenize(
                 "local-merchant-account-id", webUrl, "sample-correlation-id",
@@ -243,12 +247,11 @@ public class LocalPaymentApiUnitTest {
     @Test
     public void tokenize_onPOSTSuccess_returnsResultToCallback() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .sessionId("sample-session-id")
                 .integration(IntegrationType.CUSTOM)
                 .sendPOSTSuccessfulResponse(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE)
                 .build();
 
-        LocalPaymentApi sut = new LocalPaymentApi(braintreeClient);
+        LocalPaymentApi sut = new LocalPaymentApi(braintreeClient, analyticsParamRepository);
         String webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId";
         sut.tokenize(
                 "local-merchant-account-id", webUrl, "sample-correlation-id",

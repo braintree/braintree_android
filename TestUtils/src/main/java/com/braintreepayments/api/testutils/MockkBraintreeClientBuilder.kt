@@ -11,8 +11,6 @@ import io.mockk.mockk
 
 class MockkBraintreeClientBuilder {
 
-    private var sessionId: String = "session-id-from-mockk-braintree-client-builder"
-
     private var sendGraphQLPostSuccess: String? = null
     private var sendGraphQLPOSTError: ErrorWithResponse? = null
 
@@ -30,11 +28,6 @@ class MockkBraintreeClientBuilder {
         return this
     }
 
-    fun sessionId(sessionId: String): MockkBraintreeClientBuilder {
-        this.sessionId = sessionId
-        return this
-    }
-
     fun authorizationSuccess(authorizationSuccess: Authorization): MockkBraintreeClientBuilder {
         this.authorizationSuccess = authorizationSuccess
         return this
@@ -42,7 +35,6 @@ class MockkBraintreeClientBuilder {
 
     fun build(): BraintreeClient {
         val braintreeClient = mockk<BraintreeClient>(relaxed = true)
-        every { braintreeClient.sessionId } returns sessionId
 
         every { braintreeClient.getConfiguration(any()) } answers { call ->
             val callback = call.invocation.args[0] as ConfigurationCallback
