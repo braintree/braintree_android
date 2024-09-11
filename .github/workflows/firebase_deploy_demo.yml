@@ -1,6 +1,7 @@
 name: Deploy to Preview Channel
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - paypal-app-switch-feature
