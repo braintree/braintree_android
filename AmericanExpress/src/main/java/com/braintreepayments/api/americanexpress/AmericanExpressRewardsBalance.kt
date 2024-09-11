@@ -20,7 +20,7 @@ import org.json.JSONObject
  * @property rewardsUnit - The rewards unit associated with the rewards balance
  */
 @Parcelize
-data class AmericanExpressRewardsBalance(
+data class AmericanExpressRewardsBalance @JvmOverloads constructor(
     var errorCode: String? = null,
     var errorMessage: String? = null,
     var conversionRate: String? = null,

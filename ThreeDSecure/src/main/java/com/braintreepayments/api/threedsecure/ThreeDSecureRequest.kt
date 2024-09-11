@@ -50,7 +50,7 @@ import org.json.JSONObject
  * which trigger on certain values.
  */
 @Parcelize
-data class ThreeDSecureRequest(
+data class ThreeDSecureRequest @JvmOverloads constructor(
     var nonce: String? = null,
     var amount: String? = null,
     var mobilePhoneNumber: String? = null,
