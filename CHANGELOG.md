@@ -14,6 +14,7 @@
   * GooglePay
     * Make `GooglePayPaymentAuthRequestParams` internal
     * Make `GooglePayPaymentAuthResult` parameters internal
+    * Update `GooglePayLauncher.launch` to take a `GooglePayPaymentAuthRequest.ReadyToLaunch` parameter
   * PayPal
     * Make `PayPalPaymentAuthRequestParams` internal
     * Make `PayPalPaymentAuthResultInfo` internal
