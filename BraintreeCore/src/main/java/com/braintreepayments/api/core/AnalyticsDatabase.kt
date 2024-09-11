@@ -10,7 +10,7 @@ import androidx.room.migration.AutoMigrationSpec
 
 // Ref: https://developer.android.com/training/data-storage/room/migrating-db-versions
 @Database(
-    version = 7,
+    version = 8,
     entities = [AnalyticsEventBlob::class],
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
@@ -18,7 +18,8 @@ import androidx.room.migration.AutoMigrationSpec
         AutoMigration(from = 3, to = 4),
         AutoMigration(from = 4, to = 5),
         AutoMigration(from = 5, to = 6),
-        AutoMigration(from = 6, to = 7, spec = AnalyticsDatabase.DeleteAnalyticsEventTableAutoMigration::class)
+        AutoMigration(from = 6, to = 7, spec = AnalyticsDatabase.DeleteAnalyticsEventTableAutoMigration::class),
+        AutoMigration(from = 7, to = 8)
     ]
 )
 internal abstract class AnalyticsDatabase : RoomDatabase() {
