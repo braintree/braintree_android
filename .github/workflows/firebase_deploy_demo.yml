@@ -1,5 +1,4 @@
-name: Deploy to Preview Channel
-
+name: Deploy demo app to Firebase app distribution
 on:
   workflow_dispatch:
   push:
