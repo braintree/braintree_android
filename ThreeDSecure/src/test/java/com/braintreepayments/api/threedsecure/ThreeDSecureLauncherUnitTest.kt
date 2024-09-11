@@ -7,31 +7,28 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.fragment.app.FragmentActivity
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.testutils.Fixtures
-import com.braintreepayments.api.threedsecure.ThreeDSecureParams
 import com.braintreepayments.api.threedsecure.ThreeDSecureParams.Companion.fromJson
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.json.JSONException
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class ThreeDSecureLauncherUnitTest {
 
-    private var activityResultLauncher: ActivityResultLauncher<ThreeDSecureParams?> = mockk<ActivityResultLauncher<ThreeDSecureParams?>>(relaxed = true)
-    private var callback: ThreeDSecureLauncherCallback? = mockk<ThreeDSecureLauncherCallback>(relaxed = true)
-    private var activityResultRegistry: ActivityResultRegistry? = mockk<ActivityResultRegistry>(relaxed = true)
+    private var activityResultLauncher: ActivityResultLauncher<ThreeDSecureParams?> =
+        mockk<ActivityResultLauncher<ThreeDSecureParams?>>(relaxed = true)
+    private var callback: ThreeDSecureLauncherCallback? =
+        mockk<ThreeDSecureLauncherCallback>(relaxed = true)
+    private var activityResultRegistry: ActivityResultRegistry? =
+        mockk<ActivityResultRegistry>(relaxed = true)
 
     @Before
     fun beforeEach() {
@@ -57,8 +54,8 @@ class ThreeDSecureLauncherUnitTest {
         verify {
             registry.register(
                 ArgumentMatchers.eq(expectedKey), ArgumentMatchers.same(lifecycleOwner),
-                Mockito.any<ActivityResultContract<ThreeDSecureParams, ThreeDSecurePaymentAuthResult>>(),
-                Mockito.any()
+                any<ActivityResultContract<ThreeDSecureParams, ThreeDSecurePaymentAuthResult>>(),
+                any()
             )
         }
     }
@@ -112,8 +109,8 @@ class ThreeDSecureLauncherUnitTest {
 
         val exception = captor.captured.error
         assert(exception is BraintreeException)
-        val expectedMessage = ("The 3D Secure response returned is too large to continue. "
-                + "Please contact Braintree Support for assistance.")
-        assert(expectedMessage ==  exception!!.message)
+        val expectedMessage = ("The 3D Secure response returned is too large to continue. " +
+                "Please contact Braintree Support for assistance.")
+        assert(expectedMessage == exception!!.message)
     }
 }
