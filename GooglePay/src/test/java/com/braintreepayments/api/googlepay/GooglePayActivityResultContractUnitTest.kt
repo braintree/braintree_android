@@ -11,9 +11,11 @@ import com.google.android.gms.wallet.PaymentData
 import com.google.android.gms.wallet.PaymentDataRequest
 import com.google.android.gms.wallet.TransactionInfo
 import com.google.android.gms.wallet.WalletConstants
-import junit.framework.TestCase
+import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertNull
+import junit.framework.TestCase.assertSame
+import junit.framework.TestCase.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -39,8 +41,8 @@ class GooglePayActivityResultContractUnitTest {
         val sut = GooglePayActivityResultContract()
         val intent = sut.createIntent(context, intentData)
 
-        TestCase.assertEquals(1, intent.getIntExtra(GooglePayClient.EXTRA_ENVIRONMENT, 0))
-        TestCase.assertSame(
+        assertEquals(1, intent.getIntExtra(GooglePayClient.EXTRA_ENVIRONMENT, 0))
+        assertSame(
             paymentDataRequest,
             intent.getParcelableExtra(GooglePayClient.EXTRA_PAYMENT_DATA_REQUEST)
         )
@@ -68,8 +70,8 @@ class GooglePayActivityResultContractUnitTest {
         val result = sut.parseResult(Activity.RESULT_CANCELED, data)
 
         val error = result.error
-        TestCase.assertTrue(error is UserCanceledException)
-        TestCase.assertEquals("User canceled Google Pay.", error!!.message)
+        assertTrue(error is UserCanceledException)
+        assertEquals("User canceled Google Pay.", error!!.message)
         assertNull(result.paymentData)
     }
 
@@ -82,8 +84,8 @@ class GooglePayActivityResultContractUnitTest {
         val result = sut.parseResult(AutoResolveHelper.RESULT_ERROR, data)
 
         val error = result.error
-        TestCase.assertTrue(error is GooglePayException)
-        TestCase.assertEquals(
+        assertTrue(error is GooglePayException)
+        assertEquals(
             "An error was encountered during the Google Pay " +
                     "flow. See the status object in this exception for more details.", error!!.message
         )
@@ -99,8 +101,8 @@ class GooglePayActivityResultContractUnitTest {
         val result = sut.parseResult(2, data)
 
         val error = result.error
-        TestCase.assertTrue(error is BraintreeException)
-        TestCase.assertEquals("An unexpected error occurred.", error!!.message)
+        assertTrue(error is BraintreeException)
+        assertEquals("An unexpected error occurred.", error!!.message)
         assertNull(result.paymentData)
     }
 }

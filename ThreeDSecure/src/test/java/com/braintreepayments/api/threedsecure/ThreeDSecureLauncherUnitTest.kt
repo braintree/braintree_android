@@ -34,16 +34,15 @@ class ThreeDSecureLauncherUnitTest {
     fun beforeEach() {
         every {
             activityResultRegistry?.register(
-                ArgumentMatchers.any(),
-                ArgumentMatchers.any(),
-                ArgumentMatchers.any<ActivityResultContract<ThreeDSecureParams, Any>>(),
-                ArgumentMatchers.any()
+                any(),
+                any(),
+                any<ActivityResultContract<ThreeDSecureParams, Any>>(),
+                any()
             )
         } returns activityResultLauncher
     }
 
     @Test
-    @Ignore("TODO: fix")
     fun constructor_createsActivityLauncher() {
         val expectedKey = "com.braintreepayments.api.ThreeDSecure.RESULT"
         val lifecycleOwner = FragmentActivity()
@@ -53,7 +52,7 @@ class ThreeDSecureLauncherUnitTest {
 
         verify {
             registry.register(
-                ArgumentMatchers.eq(expectedKey), ArgumentMatchers.same(lifecycleOwner),
+                eq(expectedKey), eq(lifecycleOwner),
                 any<ActivityResultContract<ThreeDSecureParams, ThreeDSecurePaymentAuthResult>>(),
                 any()
             )

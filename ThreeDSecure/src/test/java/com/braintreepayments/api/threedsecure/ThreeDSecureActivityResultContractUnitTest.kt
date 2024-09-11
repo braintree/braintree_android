@@ -9,6 +9,9 @@ import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.threedsecure.ThreeDSecureParams.Companion.fromJson
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertNotNull
+import junit.framework.TestCase.assertSame
 import org.json.JSONException
 import org.junit.Assert
 import org.junit.Before
@@ -39,7 +42,7 @@ class ThreeDSecureActivityResultContractUnitTest {
 
         val extraThreeDSecureParams =
             result.getParcelableExtra<ThreeDSecureParams>(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT)
-        Assert.assertSame(threeDSecureParams, extraThreeDSecureParams)
+        assertSame(threeDSecureParams, extraThreeDSecureParams)
     }
 
     @Test
@@ -58,11 +61,11 @@ class ThreeDSecureActivityResultContractUnitTest {
         successIntent.putExtra(ThreeDSecureActivity.EXTRA_JWT, jwt)
 
         val paymentAuthResult = sut!!.parseResult(Activity.RESULT_OK, successIntent)
-        Assert.assertNotNull(paymentAuthResult)
+        assertNotNull(paymentAuthResult)
 
-        Assert.assertSame(threeDSecureParams, paymentAuthResult.threeDSecureParams)
-        Assert.assertSame(validateResponse, paymentAuthResult.validateResponse)
-        Assert.assertSame(jwt, paymentAuthResult.jwt)
+        assertSame(threeDSecureParams, paymentAuthResult.threeDSecureParams)
+        assertSame(validateResponse, paymentAuthResult.validateResponse)
+        assertSame(jwt, paymentAuthResult.jwt)
     }
 
     @Test
@@ -70,11 +73,11 @@ class ThreeDSecureActivityResultContractUnitTest {
         sut = ThreeDSecureActivityResultContract()
 
         val paymentAuthResult = sut!!.parseResult(Activity.RESULT_OK, null)
-        Assert.assertNotNull(paymentAuthResult)
+        assertNotNull(paymentAuthResult)
 
         val error = paymentAuthResult.error as BraintreeException
         val expectedMessage = "An unknown Android error occurred with the activity result API."
-        Assert.assertNotNull(expectedMessage, error.message)
+        assertNotNull(expectedMessage, error.message)
     }
 
     @Test
@@ -82,10 +85,10 @@ class ThreeDSecureActivityResultContractUnitTest {
         sut = ThreeDSecureActivityResultContract()
 
         val paymentAuthResult = sut!!.parseResult(Activity.RESULT_CANCELED, Intent())
-        Assert.assertNotNull(paymentAuthResult)
+        assertNotNull(paymentAuthResult)
 
         val error = paymentAuthResult.error as UserCanceledException
-        Assert.assertEquals("User canceled 3DS.", error.message)
+        assertEquals("User canceled 3DS.", error.message)
     }
 
     @Test
@@ -97,9 +100,9 @@ class ThreeDSecureActivityResultContractUnitTest {
 
         val paymentAuthResult =
             sut!!.parseResult(ThreeDSecureActivity.RESULT_COULD_NOT_START_CARDINAL, intent)
-        Assert.assertNotNull(paymentAuthResult)
+        assertNotNull(paymentAuthResult)
 
         val error = paymentAuthResult.error as BraintreeException
-        Assert.assertEquals("sample error message", error.message)
+        assertEquals("sample error message", error.message)
     }
 }
