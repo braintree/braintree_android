@@ -105,7 +105,7 @@ internal class AnalyticsClient(
         val integration = inputData.getString(WORK_INPUT_KEY_INTEGRATION)
         return when (null) {
             configuration, authorization, sessionId, integration -> {
-                return ListenableWorker.Result.failure()
+                ListenableWorker.Result.failure()
             }
 
             else -> {
