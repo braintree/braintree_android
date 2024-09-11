@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.AppSwitchNotAvailableException
 import com.braintreepayments.api.core.Authorization
@@ -29,6 +30,7 @@ class VenmoClient @VisibleForTesting internal constructor(
     private val apiClient: ApiClient = ApiClient(braintreeClient),
     private val venmoApi: VenmoApi = VenmoApi(braintreeClient, apiClient),
     private val sharedPrefsWriter: VenmoSharedPrefsWriter = VenmoSharedPrefsWriter(),
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
 ) {
     /**
      * Used for linking events from the client to server side request
@@ -144,7 +146,7 @@ class VenmoClient @VisibleForTesting internal constructor(
         sharedPrefsWriter.persistVenmoVaultOption(context, isVaultRequest)
 
         val metadata = MetadataBuilder()
-            .sessionId(braintreeClient.sessionId)
+            .sessionId(analyticsParamRepository.sessionId)
             .integration(braintreeClient.integrationType)
             .version()
             .build()

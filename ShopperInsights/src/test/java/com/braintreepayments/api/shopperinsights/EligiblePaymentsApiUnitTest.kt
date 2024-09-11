@@ -1,5 +1,6 @@
 package com.braintreepayments.api.shopperinsights
 
+import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.Configuration
@@ -18,14 +19,16 @@ class EligiblePaymentsApiUnitTest {
     private lateinit var sut: EligiblePaymentsApi
     private lateinit var callback: EligiblePaymentsCallback
     private lateinit var braintreeClient: BraintreeClient
+    private lateinit var analyticsParamRepository: AnalyticsParamRepository
     private val configuration: Configuration = createMockConfiguration()
 
     @Before
     fun setup() {
         callback = mockk(relaxed = true)
         braintreeClient = mockk(relaxed = true)
+        analyticsParamRepository = mockk(relaxed = true)
         setupBraintreeClientToReturnConfiguration()
-        sut = EligiblePaymentsApi(braintreeClient)
+        sut = EligiblePaymentsApi(braintreeClient, analyticsParamRepository)
     }
 
     @Test
@@ -51,7 +54,7 @@ class EligiblePaymentsApiUnitTest {
     @Test
     fun `PAYPAL_CLIENT_METADATA_ID header is sent to the braintreeClient post call`() {
         val sessionId = "session-id-value"
-        every { braintreeClient.sessionId } returns sessionId
+        every { analyticsParamRepository.sessionId } returns sessionId
 
         sut.execute(mockk(relaxed = true), mockk())
 

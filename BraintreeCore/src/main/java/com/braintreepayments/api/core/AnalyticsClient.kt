@@ -19,14 +19,14 @@ internal class AnalyticsClient(
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
     private val analyticsDatabase: AnalyticsDatabase = AnalyticsDatabase.getInstance(context.applicationContext),
     private val workManager: WorkManager = WorkManager.getInstance(context.applicationContext),
-    private val deviceInspector: DeviceInspector = DeviceInspector()
+    private val deviceInspector: DeviceInspector = DeviceInspector(),
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
 ) {
     private val applicationContext = context.applicationContext
 
     fun sendEvent(
         configuration: Configuration,
         event: AnalyticsEvent,
-        sessionId: String?,
         integration: IntegrationType?,
         authorization: Authorization
     ): UUID {
@@ -34,13 +34,13 @@ internal class AnalyticsClient(
         return scheduleAnalyticsUploadInBackground(
             configuration,
             authorization,
-            sessionId,
             integration
         )
     }
 
     private fun scheduleAnalyticsWriteInBackground(
-        event: AnalyticsEvent, authorization: Authorization
+        event: AnalyticsEvent,
+        authorization: Authorization
     ) {
         val json = mapAnalyticsEventToFPTIEventJSON(event)
         val inputData = Data.Builder()
@@ -72,13 +72,12 @@ internal class AnalyticsClient(
     private fun scheduleAnalyticsUploadInBackground(
         configuration: Configuration,
         authorization: Authorization,
-        sessionId: String?,
         integration: IntegrationType?
     ): UUID {
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
-            .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
+            .putString(WORK_INPUT_KEY_SESSION_ID, analyticsParamRepository.sessionId)
             .putString(WORK_INPUT_KEY_INTEGRATION, integration?.stringValue)
             .build()
 
@@ -131,14 +130,12 @@ internal class AnalyticsClient(
     fun reportCrash(
         context: Context?,
         configuration: Configuration?,
-        sessionId: String?,
         integration: IntegrationType?,
         authorization: Authorization?
     ) {
         reportCrash(
             context,
             configuration,
-            sessionId,
             integration,
             System.currentTimeMillis(),
             authorization
@@ -149,7 +146,6 @@ internal class AnalyticsClient(
     fun reportCrash(
         context: Context?,
         configuration: Configuration?,
-        sessionId: String?,
         integration: IntegrationType?,
         timestamp: Long,
         authorization: Authorization?
@@ -157,8 +153,12 @@ internal class AnalyticsClient(
         if (authorization == null) {
             return
         }
-        val metadata =
-            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
+        val metadata = deviceInspector.getDeviceMetadata(
+            context = context,
+            configuration = configuration,
+            sessionId = analyticsParamRepository.sessionId,
+            integration = integration
+        )
         val event = AnalyticsEvent(name = "crash", timestamp = timestamp)
         val eventJSON = mapAnalyticsEventToFPTIEventJSON(event)
         val eventBlobs = listOf(AnalyticsEventBlob(eventJSON))

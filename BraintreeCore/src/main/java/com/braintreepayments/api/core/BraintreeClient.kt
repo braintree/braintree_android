@@ -31,11 +31,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    val sessionId: String,
-
-    /**
-     * @suppress
-     */
     val authorization: Authorization,
 
     private val analyticsClient: AnalyticsClient,
@@ -58,7 +53,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     internal constructor(params: BraintreeClientParams) : this(
         applicationContext = params.applicationContext,
         integrationType = params.integrationType,
-        sessionId = params.sessionId,
         authorization = params.authorization,
         analyticsClient = params.analyticsClient,
         httpClient = params.httpClient,
@@ -93,13 +87,11 @@ class BraintreeClient @VisibleForTesting internal constructor(
     internal constructor(
         context: Context,
         authorization: Authorization,
-        sessionId: String?,
         integrationType: IntegrationType
     ) : this(
         BraintreeOptions(
             context = context,
             authorization = authorization,
-            sessionId = sessionId,
             integrationType = integrationType,
         )
     )
@@ -165,7 +157,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
             analyticsClient.sendEvent(
                 it,
                 event,
-                sessionId,
                 integrationType,
                 authorization
             )
@@ -322,7 +313,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
             analyticsClient.reportCrash(
                 applicationContext,
                 configuration,
-                sessionId,
                 integrationType,
                 authorization
             )
