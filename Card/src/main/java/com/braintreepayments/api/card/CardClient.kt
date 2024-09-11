@@ -16,7 +16,7 @@ import org.json.JSONObject
  * Used to tokenize credit or debit cards using a [Card]. For more information see the
  * [documentation](https://developer.paypal.com/braintree/docs/guides/credit-cards/overview)
  */
-class CardClient @VisibleForTesting internal constructor(
+class CardClient @VisibleForTesting @JvmOverloads internal constructor(
     private val braintreeClient: BraintreeClient,
     private val apiClient: ApiClient = ApiClient(braintreeClient),
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance

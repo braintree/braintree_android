@@ -49,7 +49,7 @@ import org.json.JSONObject
  * Defaults to custom and does not need to ever be set.
  */
 @Parcelize
-data class Card(
+data class Card @JvmOverloads constructor(
     var merchantAccountId: String? = null,
     var isAuthenticationInsightRequested: Boolean = false,
     var shouldValidate: Boolean = false,
