@@ -134,8 +134,8 @@ class GooglePayClient @VisibleForTesting internal constructor(
      *
      * [PaymentMethodTokenizationParameters] should be supplied to the
      * [PaymentDataRequest] via
-     * [ ][PaymentDataRequest.Builder.setPaymentMethodTokenizationParameters]
-     * and [&lt;Integer&gt;][Collection] allowedCardNetworks should be supplied to the
+     * [PaymentDataRequest.Builder.setPaymentMethodTokenizationParameters]
+     * and [allowedCardNetworks] should be supplied to the
      * [CardRequirements] via
      * [CardRequirements.Builder.addAllowedCardNetworks]}.
      *

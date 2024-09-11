@@ -206,9 +206,8 @@ class VenmoClient @VisibleForTesting internal constructor(
         paymentAuthResult: VenmoPaymentAuthResult.Success,
         callback: VenmoTokenizeCallback
     ) {
-        val venmoPaymentAuthResultInfo = paymentAuthResult.paymentAuthInfo
         val browserSwitchResultInfo: BrowserSwitchFinalResult.Success =
-            venmoPaymentAuthResultInfo.browserSwitchSuccess
+            paymentAuthResult.browserSwitchSuccess
 
         val deepLinkUri: Uri = browserSwitchResultInfo.returnUrl
         if (deepLinkUri != null) {

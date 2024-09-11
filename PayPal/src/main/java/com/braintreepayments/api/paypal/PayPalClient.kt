@@ -157,7 +157,7 @@ class PayPalClient @VisibleForTesting internal constructor(
         paymentAuthResult: PayPalPaymentAuthResult.Success,
         callback: PayPalTokenizeCallback
     ) {
-        val browserSwitchResult = paymentAuthResult.paymentAuthInfo.browserSwitchSuccess
+        val browserSwitchResult = paymentAuthResult.browserSwitchSuccess
         val metadata = browserSwitchResult.requestMetadata
         val clientMetadataId = Json.optString(metadata, "client-metadata-id", null)
         val merchantAccountId = Json.optString(metadata, "merchant-account-id", null)

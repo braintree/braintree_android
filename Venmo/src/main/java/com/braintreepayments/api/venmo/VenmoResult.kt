@@ -18,5 +18,5 @@ sealed class VenmoResult {
     /**
      * The user canceled the Venmo payment flow.
      */
-    object Cancel : VenmoResult()
+    data object Cancel : VenmoResult()
 }

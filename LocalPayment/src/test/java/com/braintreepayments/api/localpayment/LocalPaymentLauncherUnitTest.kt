@@ -81,7 +81,7 @@ class LocalPaymentLauncherUnitTest {
         assertTrue(paymentAuthResult is LocalPaymentAuthResult.Success)
         assertSame(
             browserSwitchFinalResult,
-            (paymentAuthResult as LocalPaymentAuthResult.Success).paymentAuthInfo.browserSwitchResultInfo
+            (paymentAuthResult as LocalPaymentAuthResult.Success).browserSwitchSuccess
         )
     }
 

@@ -19,5 +19,5 @@ sealed class SEPADirectDebitResult {
     /**
      * The user canceled the SEPA Direct Debit flow.
      */
-    object Cancel : SEPADirectDebitResult()
+    data object Cancel : SEPADirectDebitResult()
 }
