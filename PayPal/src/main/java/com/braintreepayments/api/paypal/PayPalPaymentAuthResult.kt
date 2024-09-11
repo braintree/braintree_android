@@ -1,5 +1,7 @@
 package com.braintreepayments.api.paypal
 
+import com.braintreepayments.api.BrowserSwitchFinalResult
+
 /**
  * Result of the PayPal web flow received from [PayPalLauncher.handleReturnToAppFromBrowser].
  */
@@ -8,7 +10,7 @@ sealed class PayPalPaymentAuthResult {
     /**
      * A successful result that should be passed to [PayPalClient.tokenize] to complete the flow
      */
-    class Success(internal val paymentAuthInfo: PayPalPaymentAuthResultInfo) : PayPalPaymentAuthResult()
+    class Success(internal val browserSwitchSuccess: BrowserSwitchFinalResult.Success) : PayPalPaymentAuthResult()
 
     /**
      * The browser switch failed.

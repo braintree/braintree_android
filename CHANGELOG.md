@@ -7,7 +7,7 @@
     * Convert `VenmoPaymentMethodUsage` to an enum
     * Convert `VenmoLineItemKind` to an enum
     * Make `VenmoPaymentAuthRequestParams` internal
-    * Make `VenmoPaymentAuthResultInfo` internal
+    * Remove `VenmoPaymentAuthResultInfo`
   * BraintreeCore
     * Remove `BraintreeDeepLinkActivity`
     * Remove `authorizationFingerprint` from `ClientToken`
@@ -17,7 +17,7 @@
     * Update `GooglePayLauncher.launch` to take a `GooglePayPaymentAuthRequest.ReadyToLaunch` parameter
   * PayPal
     * Make `PayPalPaymentAuthRequestParams` internal
-    * Make `PayPalPaymentAuthResultInfo` internal
+    * Remove `PayPalPaymentAuthResultInfo`
   * SEPADirectDebit
     * Make `SEPADirectDebitPaymentAuthRequestParams` internal
     * Make `SEPADirectDebitPaymentAuthResultInfo` internal

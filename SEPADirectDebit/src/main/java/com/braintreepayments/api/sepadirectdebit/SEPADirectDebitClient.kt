@@ -119,7 +119,7 @@ class SEPADirectDebitClient @VisibleForTesting internal constructor(
         callback: SEPADirectDebitTokenizeCallback
     ) {
         val browserSwitchResult: BrowserSwitchFinalResult.Success =
-            paymentAuthResult.paymentAuthInfo.browserSwitchSuccess
+            paymentAuthResult.browserSwitchSuccess
 
         val deepLinkUri: Uri = browserSwitchResult.returnUrl
         if (deepLinkUri != null) {

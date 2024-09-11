@@ -1,5 +1,7 @@
 package com.braintreepayments.api.venmo
 
+import com.braintreepayments.api.BrowserSwitchFinalResult
+
 /**
  * Result of the Venmo flow received from [VenmoLauncher.handleReturnToApp].
  */
@@ -8,7 +10,7 @@ sealed class VenmoPaymentAuthResult {
     /**
      * A successful result that should be passed to [VenmoClient.tokenize] to complete the flow
      */
-    class Success(internal val paymentAuthInfo: VenmoPaymentAuthResultInfo) : VenmoPaymentAuthResult()
+    class Success(internal val browserSwitchSuccess: BrowserSwitchFinalResult.Success) : VenmoPaymentAuthResult()
 
     /**
      * The browser switch failed.
