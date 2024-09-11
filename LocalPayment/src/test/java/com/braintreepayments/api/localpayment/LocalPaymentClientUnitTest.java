@@ -459,11 +459,10 @@ public class LocalPaymentClientUnitTest {
     }
 
     @Test
-    public void tokenize_whenResultOK_uriNull_notifiesCallbackOfErrorAlongWithAnalyticsEvent()
-        throws JSONException {
+    public void tokenize_whenResultOK_uriNull_notifiesCallbackOfErrorAlongWithAnalyticsEvent() {
         BrowserSwitchFinalResult.Success browserSwitchResult = mock(BrowserSwitchFinalResult.Success.class);
         LocalPaymentAuthResult.Success localPaymentAuthResult = new LocalPaymentAuthResult.Success(
-            new LocalPaymentAuthResultInfo(browserSwitchResult));
+            browserSwitchResult);
 
         LocalPaymentClient sut =
             new LocalPaymentClient(braintreeClient, dataCollector,
@@ -500,7 +499,7 @@ public class LocalPaymentClientUnitTest {
         String webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId";
         when(browserSwitchResult.getReturnUrl()).thenReturn(Uri.parse(webUrl));
         LocalPaymentAuthResult.Success localPaymentAuthResult = new LocalPaymentAuthResult.Success(
-            new LocalPaymentAuthResultInfo(browserSwitchResult));
+            browserSwitchResult);
 
         Exception postError = new Exception("POST failed");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -548,7 +547,7 @@ public class LocalPaymentClientUnitTest {
         String webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId";
         when(browserSwitchResult.getReturnUrl()).thenReturn(Uri.parse(webUrl));
         LocalPaymentAuthResult.Success localPaymentAuthResult = new LocalPaymentAuthResult.Success(
-            new LocalPaymentAuthResultInfo(browserSwitchResult));
+            browserSwitchResult);
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configuration(payPalEnabledConfig)
@@ -579,7 +578,7 @@ public class LocalPaymentClientUnitTest {
         String webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId";
         when(browserSwitchResult.getReturnUrl()).thenReturn(Uri.parse(webUrl));
         LocalPaymentAuthResult.Success localPaymentAuthResult = new LocalPaymentAuthResult.Success(
-            new LocalPaymentAuthResultInfo(browserSwitchResult));
+            browserSwitchResult);
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configuration(payPalEnabledConfig)
@@ -622,7 +621,7 @@ public class LocalPaymentClientUnitTest {
         String webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId";
         when(browserSwitchResult.getReturnUrl()).thenReturn(Uri.parse(webUrl));
         LocalPaymentAuthResult.Success localPaymentAuthResult = new LocalPaymentAuthResult.Success(
-            new LocalPaymentAuthResultInfo(browserSwitchResult));
+           browserSwitchResult);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configuration(payPalEnabledConfig)
             .build();
@@ -660,7 +659,7 @@ public class LocalPaymentClientUnitTest {
         String webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId";
         when(browserSwitchResult.getReturnUrl()).thenReturn(Uri.parse(webUrl));
         LocalPaymentAuthResult.Success localPaymentAuthResult = new LocalPaymentAuthResult.Success(
-            new LocalPaymentAuthResultInfo(browserSwitchResult));
+            browserSwitchResult);
 
         Exception configError = new Exception("config error");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -698,7 +697,7 @@ public class LocalPaymentClientUnitTest {
         String webUrl = "sample-scheme://local-payment-cancel?paymentToken=canceled";
         when(browserSwitchResult.getReturnUrl()).thenReturn(Uri.parse(webUrl));
         LocalPaymentAuthResult.Success localPaymentAuthResult = new LocalPaymentAuthResult.Success(
-            new LocalPaymentAuthResultInfo(browserSwitchResult));
+            browserSwitchResult);
 
         LocalPaymentClient sut =
             new LocalPaymentClient(braintreeClient, dataCollector,
@@ -738,7 +737,7 @@ public class LocalPaymentClientUnitTest {
 
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, dataCollector, localPaymentApi, analyticsParamRepository);
-        LocalPaymentAuthResult.Success localPaymentAuthResult = new LocalPaymentAuthResult.Success(new LocalPaymentAuthResultInfo(browserSwitchResult));
+        LocalPaymentAuthResult.Success localPaymentAuthResult = new LocalPaymentAuthResult.Success(browserSwitchResult);
 
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback);
 

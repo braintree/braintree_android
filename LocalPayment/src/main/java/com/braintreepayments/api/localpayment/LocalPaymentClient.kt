@@ -167,7 +167,7 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
         callback: LocalPaymentTokenizeCallback
     ) {
         val browserSwitchResult: BrowserSwitchFinalResult.Success = localPaymentAuthResult
-            .paymentAuthInfo.browserSwitchSuccess
+            .browserSwitchSuccess
 
         val metadata: JSONObject? = browserSwitchResult.requestMetadata
         val merchantAccountId = Json.optString(metadata, "merchant-account-id", null)

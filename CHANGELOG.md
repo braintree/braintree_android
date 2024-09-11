@@ -20,10 +20,13 @@
     * Remove `PayPalPaymentAuthResultInfo`
   * SEPADirectDebit
     * Make `SEPADirectDebitPaymentAuthRequestParams` internal
-    * Make `SEPADirectDebitPaymentAuthResultInfo` internal
+    * REmove `SEPADirectDebitPaymentAuthResultInfo`
   * ThreeDSecure
     * Make `ThreeDSecureParams` internal
     * Make `ThreeDSecurePaymentAuthResult` parameters internal
+  * LocalPayment
+    * Remove `ThreeDSecurePaymentAuthResultInfo`
+    * Make `LocalPaymentAuthRequestParams` internal
 
 ## 5.0.0-beta2 (2024-08-28)
 
