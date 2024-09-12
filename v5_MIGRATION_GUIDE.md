@@ -277,7 +277,7 @@ class MyActivity : FragmentActivity() {
 +           when (paymentAuthRequest) {
 +            is GooglePayPaymentAuthRequest.Failure -> { /* handle error */ }
 +            is GooglePayPaymentAuthRequest.ReadyToLaunch -> { 
-+               googlePayLauncher.launch(paymentAuthRequest.requestParams) 
++               googlePayLauncher.launch(paymentAuthRequest) 
 +            }
 +       }
     }

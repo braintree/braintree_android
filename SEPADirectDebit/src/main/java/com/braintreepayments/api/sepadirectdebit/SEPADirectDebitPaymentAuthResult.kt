@@ -1,5 +1,7 @@
 package com.braintreepayments.api.sepadirectdebit
 
+import com.braintreepayments.api.BrowserSwitchFinalResult
+
 /**
  * Result of the SEPA Direct Debit web flow received from [SEPADirectDebitLauncher.handleReturnToAppFromBrowser].
  */
@@ -8,7 +10,8 @@ sealed class SEPADirectDebitPaymentAuthResult {
     /**
      * A successful result that should be passed to [SEPADirectDebitClient.tokenize] to complete the flow
      */
-    class Success(val paymentAuthInfo: SEPADirectDebitPaymentAuthResultInfo) : SEPADirectDebitPaymentAuthResult()
+    class Success(internal val browserSwitchSuccess: BrowserSwitchFinalResult.Success) :
+        SEPADirectDebitPaymentAuthResult()
 
     /**
      * The browser switch failed.
@@ -22,5 +25,5 @@ sealed class SEPADirectDebitPaymentAuthResult {
      * browser to cancel the payment flow, or returns to the app without completing the
      * authentication flow.
      */
-    object NoResult : SEPADirectDebitPaymentAuthResult()
+    data object NoResult : SEPADirectDebitPaymentAuthResult()
 }

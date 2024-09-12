@@ -7,7 +7,6 @@ import com.braintreepayments.api.sharedutils.ManifestValidator
 
 internal data class BraintreeClientParams(
     val context: Context,
-    val sessionId: String,
     val authorization: Authorization,
     val returnUrlScheme: String,
     val appLinkReturnUri: Uri?,
@@ -16,7 +15,6 @@ internal data class BraintreeClientParams(
     val analyticsClient: AnalyticsClient = AnalyticsClient(context),
     val browserSwitchClient: BrowserSwitchClient = BrowserSwitchClient(),
     val manifestValidator: ManifestValidator = ManifestValidator(),
-    val uuidHelper: UUIDHelper = UUIDHelper(),
     val configurationLoader: ConfigurationLoader = ConfigurationLoader(context, httpClient),
     val integrationType: IntegrationType,
 ) {
@@ -24,7 +22,6 @@ internal data class BraintreeClientParams(
     constructor(options: BraintreeOptions) : this(
         context = options.context,
         authorization = options.authorization,
-        sessionId = options.sessionId ?: createUniqueSessionId(),
         returnUrlScheme = options.returnUrlScheme ?: createDefaultReturnUrlScheme(options.context),
         appLinkReturnUri = options.appLinkReturnUri,
         integrationType = options.integrationType ?: IntegrationType.CUSTOM
@@ -35,7 +32,6 @@ internal data class BraintreeClientParams(
         "${getAppPackageNameWithoutUnderscores(context)}.braintree.deeplinkhandler"
 
     companion object {
-        private fun createUniqueSessionId() = UUIDHelper().formattedUUID
 
         private fun getAppPackageNameWithoutUnderscores(context: Context) =
             context.applicationContext.packageName.replace("_", "")

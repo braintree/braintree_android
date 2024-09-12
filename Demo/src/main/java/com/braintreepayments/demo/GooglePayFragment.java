@@ -16,10 +16,13 @@ import com.braintreepayments.api.core.PaymentMethodNonce;
 import com.braintreepayments.api.core.UserCanceledException;
 import com.braintreepayments.api.googlepay.GooglePayClient;
 import com.braintreepayments.api.googlepay.GooglePayLauncher;
+import com.braintreepayments.api.googlepay.GooglePayLauncherCallback;
 import com.braintreepayments.api.googlepay.GooglePayPaymentAuthRequest;
+import com.braintreepayments.api.googlepay.GooglePayPaymentAuthResult;
 import com.braintreepayments.api.googlepay.GooglePayReadinessResult;
 import com.braintreepayments.api.googlepay.GooglePayRequest;
 import com.braintreepayments.api.googlepay.GooglePayResult;
+import com.braintreepayments.api.googlepay.GooglePayTokenizeCallback;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
@@ -41,16 +44,16 @@ public class GooglePayFragment extends BaseFragment {
 
         googlePayClient = new GooglePayClient(requireContext(), super.getAuthStringArg());
         googlePayLauncher = new GooglePayLauncher(this,
-                paymentAuthResult -> googlePayClient.tokenize(paymentAuthResult,
-                        (googlePayResult) -> {
-                            if (googlePayResult instanceof GooglePayResult.Failure) {
-                                handleError(((GooglePayResult.Failure) googlePayResult).getError());
-                            } else if (googlePayResult instanceof GooglePayResult.Success){
-                                handleGooglePayActivityResult(((GooglePayResult.Success) googlePayResult).getNonce());
-                            } else if (googlePayResult instanceof GooglePayResult.Cancel) {
-                                handleError(new UserCanceledException("User canceled Google Pay"));
-                            }
-                        }));
+            paymentAuthResult -> googlePayClient.tokenize(paymentAuthResult,
+                (googlePayResult) -> {
+                    if (googlePayResult instanceof GooglePayResult.Failure) {
+                        handleError(((GooglePayResult.Failure) googlePayResult).getError());
+                    } else if (googlePayResult instanceof GooglePayResult.Success){
+                        handleGooglePayActivityResult(((GooglePayResult.Success) googlePayResult).getNonce());
+                    } else if (googlePayResult instanceof GooglePayResult.Cancel) {
+                        handleError(new UserCanceledException("User canceled Google Pay"));
+                    }
+                }));
 
         return view;
     }
@@ -108,7 +111,7 @@ public class GooglePayFragment extends BaseFragment {
         googlePayClient.createPaymentAuthRequest(googlePayRequest, (paymentAuthRequest) -> {
             if (paymentAuthRequest instanceof GooglePayPaymentAuthRequest.ReadyToLaunch) {
                 googlePayLauncher.launch(
-                        ((GooglePayPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams());
+                        ((GooglePayPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
             } else if (paymentAuthRequest instanceof GooglePayPaymentAuthRequest.Failure) {
                 handleError(((GooglePayPaymentAuthRequest.Failure) paymentAuthRequest).getError());
             }

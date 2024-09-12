@@ -79,7 +79,7 @@ public class GooglePayLauncherUnitTest {
         doReturn(activityLauncher).when(activityResultRegistry).register(any(), any(), any(), any());
         GooglePayLauncher sut = new GooglePayLauncher(activityResultRegistry, lifecycleOwner, callback);
 
-        sut.launch(intentData);
+        sut.launch(new GooglePayPaymentAuthRequest.ReadyToLaunch(intentData));
         verify(activityLauncher).launch(intentData);
     }
 }

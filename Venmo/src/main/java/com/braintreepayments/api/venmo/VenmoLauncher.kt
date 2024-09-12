@@ -74,7 +74,7 @@ class VenmoLauncher internal constructor(
         return when (val browserSwitchResult =
             browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
             is BrowserSwitchFinalResult.Success -> VenmoPaymentAuthResult.Success(
-                VenmoPaymentAuthResultInfo(browserSwitchResult)
+                browserSwitchResult
             )
 
             is BrowserSwitchFinalResult.Failure -> VenmoPaymentAuthResult.Failure(browserSwitchResult.error)

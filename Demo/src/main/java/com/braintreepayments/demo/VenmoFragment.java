@@ -17,6 +17,7 @@ import com.braintreepayments.api.venmo.VenmoAccountNonce;
 import com.braintreepayments.api.venmo.VenmoClient;
 import com.braintreepayments.api.venmo.VenmoLauncher;
 import com.braintreepayments.api.venmo.VenmoLineItem;
+import com.braintreepayments.api.venmo.VenmoLineItemKind;
 import com.braintreepayments.api.venmo.VenmoPaymentAuthRequest;
 import com.braintreepayments.api.venmo.VenmoPaymentAuthResult;
 import com.braintreepayments.api.venmo.VenmoPaymentMethodUsage;
@@ -88,7 +89,7 @@ public class VenmoFragment extends BaseFragment {
         boolean shouldVault =
                 Settings.vaultVenmo(activity) && !TextUtils.isEmpty(Settings.getCustomerId(activity));
 
-        int venmoPaymentMethodUsage = shouldVault ?
+        VenmoPaymentMethodUsage venmoPaymentMethodUsage = shouldVault ?
                 VenmoPaymentMethodUsage.MULTI_USE : VenmoPaymentMethodUsage.SINGLE_USE;
         VenmoRequest venmoRequest = new VenmoRequest(venmoPaymentMethodUsage);
         venmoRequest.setProfileId(null);
@@ -100,8 +101,8 @@ public class VenmoFragment extends BaseFragment {
         venmoRequest.setTaxAmount("1");
         venmoRequest.setShippingAmount("1");
         ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
-        lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_CREDIT, "Some Item", 1, "2"));
-        lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Two Items", 2, "10"));
+        lineItems.add(new VenmoLineItem(VenmoLineItemKind.CREDIT, "Some Item", 1, "2"));
+        lineItems.add(new VenmoLineItem(VenmoLineItemKind.DEBIT, "Two Items", 2, "10"));
         venmoRequest.setLineItems(lineItems);
 
         startVenmoFlow(venmoRequest);

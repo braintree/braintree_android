@@ -82,7 +82,7 @@ class SEPADirectDebitLauncherUnitTest {
 
         assertTrue(paymentAuthResult is SEPADirectDebitPaymentAuthResult.Success)
         assertSame(
-            (paymentAuthResult as SEPADirectDebitPaymentAuthResult.Success).paymentAuthInfo.browserSwitchSuccess,
+            (paymentAuthResult as SEPADirectDebitPaymentAuthResult.Success).browserSwitchSuccess,
             browserSwitchFinalResult
         )
     }

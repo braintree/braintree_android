@@ -3,6 +3,7 @@ package com.braintreepayments.api.googlepay
 import android.content.Context
 import android.text.TextUtils
 import androidx.annotation.VisibleForTesting
+import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
@@ -29,7 +30,8 @@ import org.json.JSONObject
 @SuppressWarnings("TooManyFunctions")
 class GooglePayClient @VisibleForTesting internal constructor(
     private val braintreeClient: BraintreeClient,
-    private val internalGooglePayClient: GooglePayInternalClient = GooglePayInternalClient()
+    private val internalGooglePayClient: GooglePayInternalClient = GooglePayInternalClient(),
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
 ) {
     /**
      * Initializes a new [GooglePayClient] instance
@@ -132,8 +134,8 @@ class GooglePayClient @VisibleForTesting internal constructor(
      *
      * [PaymentMethodTokenizationParameters] should be supplied to the
      * [PaymentDataRequest] via
-     * [ ][PaymentDataRequest.Builder.setPaymentMethodTokenizationParameters]
-     * and [&lt;Integer&gt;][Collection] allowedCardNetworks should be supplied to the
+     * [PaymentDataRequest.Builder.setPaymentMethodTokenizationParameters]
+     * and [allowedCardNetworks] should be supplied to the
      * [CardRequirements] via
      * [CardRequirements.Builder.addAllowedCardNetworks]}.
      *
@@ -174,6 +176,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
         request: GooglePayRequest,
         callback: GooglePayPaymentAuthRequestCallback
     ) {
+        analyticsParamRepository.resetSessionId()
         braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_REQUEST_STARTED)
 
         if (!validateManifest()) {
@@ -316,7 +319,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
 
         val metadata =
             MetadataBuilder().integration(braintreeClient.integrationType)
-                .sessionId(braintreeClient.sessionId).version().build()
+                .sessionId(analyticsParamRepository.sessionId).version().build()
 
         val version = try {
             metadata.getString("version")
@@ -467,7 +470,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
                 .put(
                     "braintree:metadata", JSONObject().put("source", "client")
                         .put("integration", braintreeClient.integrationType)
-                        .put("sessionId", braintreeClient.sessionId)
+                        .put("sessionId", analyticsParamRepository.sessionId)
                         .put("version", googlePayVersion)
                         .put("platform", "android").toString()
                 )
@@ -507,7 +510,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
                     .put(
                         "braintree:metadata", JSONObject().put("source", "client")
                             .put("integration", braintreeClient.integrationType)
-                            .put("sessionId", braintreeClient.sessionId)
+                            .put("sessionId", analyticsParamRepository.sessionId)
                             .put("version", googlePayVersion)
                             .put("platform", "android").toString()
                     )

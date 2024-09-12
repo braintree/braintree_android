@@ -59,7 +59,7 @@ import java.util.Locale
  */
 @Suppress("TooManyFunctions")
 @Parcelize
-class GooglePayRequest(
+class GooglePayRequest @JvmOverloads constructor(
     // NEXT_MAJOR_VERSION: allow merchants to set transaction info params individually and build
     // JSON object under the hood
     var transactionInfo: TransactionInfo? = null,

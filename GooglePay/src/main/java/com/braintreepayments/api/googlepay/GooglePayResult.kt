@@ -20,5 +20,5 @@ sealed class GooglePayResult {
     /**
      * The user canceled the Google Pay flow.
      */
-    object Cancel : GooglePayResult()
+    data object Cancel : GooglePayResult()
 }
