@@ -20,6 +20,7 @@ import com.braintreepayments.api.googlepay.GooglePayPaymentAuthRequest;
 import com.braintreepayments.api.googlepay.GooglePayReadinessResult;
 import com.braintreepayments.api.googlepay.GooglePayRequest;
 import com.braintreepayments.api.googlepay.GooglePayResult;
+import com.braintreepayments.api.googlepay.GooglePayShippingAddressParameters;
 import com.braintreepayments.api.googlepay.GooglePayTotalPriceStatus;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.WalletConstants;
@@ -96,9 +97,7 @@ public class GooglePayFragment extends BaseFragment {
         googlePayRequest.setPhoneNumberRequired(Settings.isGooglePayPhoneNumberRequired(activity));
         googlePayRequest.setShippingAddressRequired(
                 Settings.isGooglePayShippingAddressRequired(activity));
-        googlePayRequest.setShippingAddressRequirements(ShippingAddressRequirements.newBuilder()
-                .addAllowedCountryCodes(Settings.getGooglePayAllowedCountriesForShipping(activity))
-                .build());
+        googlePayRequest.setShippingAddressParameters(new GooglePayShippingAddressParameters(Settings.getGooglePayAllowedCountriesForShipping(requireContext())));
 
         googlePayClient.createPaymentAuthRequest(googlePayRequest, (paymentAuthRequest) -> {
             if (paymentAuthRequest instanceof GooglePayPaymentAuthRequest.ReadyToLaunch) {

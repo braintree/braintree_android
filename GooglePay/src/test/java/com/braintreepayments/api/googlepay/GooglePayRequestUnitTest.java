@@ -28,7 +28,7 @@ public class GooglePayRequestUnitTest {
 
     @Test
     public void returnsAllValues() {
-        ShippingAddressRequirements shippingAddressRequirements = ShippingAddressRequirements.newBuilder().build();
+        GooglePayShippingAddressParameters shippingAddressRequirements = new GooglePayShippingAddressParameters();
 
         GooglePayRequest request = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
         request.setTotalPriceLabel("test");
@@ -38,7 +38,7 @@ public class GooglePayRequestUnitTest {
         request.setEmailRequired(true);
         request.setPhoneNumberRequired(true);
         request.setShippingAddressRequired(true);
-        request.setShippingAddressRequirements(shippingAddressRequirements);
+        request.setShippingAddressParameters(shippingAddressRequirements);
         request.setEnvironment("production");
         request.setGoogleMerchantName("google-merchant-name");
 
@@ -48,7 +48,7 @@ public class GooglePayRequestUnitTest {
         assertTrue(request.isEmailRequired());
         assertTrue(request.isPhoneNumberRequired());
         assertTrue(request.isShippingAddressRequired());
-        assertEquals(shippingAddressRequirements, request.getShippingAddressRequirements());
+        assertEquals(shippingAddressRequirements, request.getShippingAddressParameters());
         assertEquals("USD", request.getCurrencyCode());
         assertEquals("1.00", request.getTotalPrice());
         assertEquals(GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL, request.getTotalPriceStatus());
@@ -68,7 +68,7 @@ public class GooglePayRequestUnitTest {
         assertFalse(request.isPhoneNumberRequired());
         assertFalse(request.isShippingAddressRequired());
         assertTrue(request.getAllowCreditCards());
-        assertNull(request.getShippingAddressRequirements());
+        assertNull(request.getShippingAddressParameters());
         assertNull(request.getEnvironment());
         assertNull(request.getEnvironment());
         assertNull(request.getGoogleMerchantName());
@@ -85,11 +85,10 @@ public class GooglePayRequestUnitTest {
         request.setBillingAddressRequired(true);
         request.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
 
-        ShippingAddressRequirements requirements = ShippingAddressRequirements.newBuilder()
-                .addAllowedCountryCode("US")
-                .build();
+        GooglePayShippingAddressParameters requirements = new GooglePayShippingAddressParameters(
+                List.of("US"), true);
 
-        request.setShippingAddressRequirements(requirements);
+        request.setShippingAddressParameters(requirements);
         request.setAllowPrepaidCards(true);
         request.setEnvironment("production");
 
@@ -108,7 +107,7 @@ public class GooglePayRequestUnitTest {
         assertTrue(parceled.isShippingAddressRequired());
         assertTrue(parceled.isBillingAddressRequired());
         assertEquals(WalletConstants.BILLING_ADDRESS_FORMAT_FULL, (int) parceled.getBillingAddressFormat());
-        assertTrue(parceled.getShippingAddressRequirements().getAllowedCountryCodes().contains("US"));
+        assertTrue(parceled.getShippingAddressParameters().getAllowedCountryCodes().contains("US"));
         assertTrue(parceled.getAllowPrepaidCards());
         assertEquals("PRODUCTION", parceled.getEnvironment());
     }
@@ -125,11 +124,10 @@ public class GooglePayRequestUnitTest {
 
         request.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
 
-        ShippingAddressRequirements requirements = ShippingAddressRequirements.newBuilder()
-                .addAllowedCountryCode("US")
-                .build();
+        GooglePayShippingAddressParameters requirements = new GooglePayShippingAddressParameters(
+                List.of("US"), true);
 
-        request.setShippingAddressRequirements(requirements);
+        request.setShippingAddressParameters(requirements);
 
         Parcel parcel = Parcel.obtain();
         request.writeToParcel(parcel, 0);
@@ -145,7 +143,7 @@ public class GooglePayRequestUnitTest {
         assertFalse(parceled.isShippingAddressRequired());
         assertFalse(parceled.isBillingAddressRequired());
         assertEquals(WalletConstants.BILLING_ADDRESS_FORMAT_FULL, parceled.getBillingAddressFormat());
-        assertTrue(parceled.getShippingAddressRequirements().getAllowedCountryCodes().contains("US"));
+        assertTrue(parceled.getShippingAddressParameters().getAllowedCountryCodes().contains("US"));
         assertFalse(parceled.getAllowPrepaidCards());
         assertNull(parceled.getEnvironment());
         assertNull(parceled.getGoogleMerchantName());
@@ -158,9 +156,8 @@ public class GooglePayRequestUnitTest {
         String expected = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_REQUEST;
         List<String> shippingAllowedCountryCodes = Arrays.asList("US", "CA", "MX", "GB");
 
-        ShippingAddressRequirements shippingAddressRequirements = ShippingAddressRequirements.newBuilder()
-                .addAllowedCountryCodes(shippingAllowedCountryCodes)
-                .build();
+        GooglePayShippingAddressParameters requirements = new GooglePayShippingAddressParameters(
+                shippingAllowedCountryCodes, true);
 
         JSONObject tokenizationSpecificationParams = new JSONObject()
                 .put("type", "PAYMENT_GATEWAY")
@@ -194,7 +191,7 @@ public class GooglePayRequestUnitTest {
         request.setPhoneNumberRequired(true);
         request.setEmailRequired(true);
         request.setShippingAddressRequired(true);
-        request.setShippingAddressRequirements(shippingAddressRequirements);
+        request.setShippingAddressParameters(requirements);
         request.setBillingAddressRequired(true);
         request.setAllowPrepaidCards(true);
         request.setAllowCreditCards(true);
@@ -218,9 +215,8 @@ public class GooglePayRequestUnitTest {
         String expected = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_REQUEST_NO_CREDIT_CARDS;
         List<String> shippingAllowedCountryCodes = Arrays.asList("US", "CA", "MX", "GB");
 
-        ShippingAddressRequirements shippingAddressRequirements = ShippingAddressRequirements.newBuilder()
-                .addAllowedCountryCodes(shippingAllowedCountryCodes)
-                .build();
+        GooglePayShippingAddressParameters requirements = new GooglePayShippingAddressParameters(
+                shippingAllowedCountryCodes, true);
 
         JSONObject tokenizationSpecificationParams = new JSONObject()
                 .put("type", "PAYMENT_GATEWAY")
@@ -254,7 +250,7 @@ public class GooglePayRequestUnitTest {
         request.setPhoneNumberRequired(true);
         request.setEmailRequired(true);
         request.setShippingAddressRequired(true);
-        request.setShippingAddressRequirements(shippingAddressRequirements);
+        request.setShippingAddressParameters(requirements);
         request.setBillingAddressRequired(true);
         request.setAllowPrepaidCards(true);
         request.setAllowCreditCards(false);
@@ -276,16 +272,10 @@ public class GooglePayRequestUnitTest {
         GooglePayRequest request = new GooglePayRequest("USD", "12.24", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
         String expected = "{\"apiVersion\":2,\"apiVersionMinor\":0,\"allowedPaymentMethods\":[],\"shippingAddressRequired\":true,\"merchantInfo\":{},\"transactionInfo\":{\"totalPriceStatus\":\"FINAL\",\"totalPrice\":\"12.24\",\"currencyCode\":\"USD\"},\"shippingAddressParameters\":{}}";
 
-        ShippingAddressRequirements nullyShippingAddressRequirements = ShippingAddressRequirements.newBuilder().build();
-
-        TransactionInfo info = TransactionInfo.newBuilder()
-                .setCurrencyCode("USD")
-                .setTotalPrice("12.24")
-                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                .build();
+        GooglePayShippingAddressParameters nullyShippingAddressRequirements = new GooglePayShippingAddressParameters();
 
         request.setShippingAddressRequired(true);
-        request.setShippingAddressRequirements(nullyShippingAddressRequirements);
+        request.setShippingAddressParameters(nullyShippingAddressRequirements);
 
         String actual = request.toJson();
 

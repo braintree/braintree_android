@@ -1,7 +1,6 @@
 package com.braintreepayments.api.googlepay
 
 import android.os.Parcelable
-import android.text.TextUtils
 import com.google.android.gms.wallet.ShippingAddressRequirements
 import com.google.android.gms.wallet.WalletConstants
 import com.google.android.gms.wallet.WalletConstants.BillingAddressFormat
@@ -27,9 +26,7 @@ import java.util.Locale
  * @property billingAddressFormat Optional. The [BillingAddressFormat] billing address format to return.
  * @property isShippingAddressRequired Optional. Set `true` if the buyer's shipping address is
  * required to be returned, `false` otherwise.
- *
- * Optional.
- * @property shippingAddressRequirements the shipping address requirements. [ShippingAddressRequirements]
+ * @property shippingAddressParameters Optional. The shipping address requirements.
  * @property allowPrepaidCards Defaults to `false`. Set`true` prepaid cards are allowed.
  * @property isPayPalEnabled Defaults to `true`. Allows PayPal to be a payment method in Google Pay.
  * @property googleMerchantName Optional. The merchant name that will be presented in Google Pay
@@ -51,9 +48,7 @@ class GooglePayRequest @JvmOverloads constructor(
     @BillingAddressFormat
     var billingAddressFormat: Int = 0,
     var isShippingAddressRequired: Boolean = false,
-    // NEXT_MAJOR_VERSION: allow merchants to set shipping address requirements params individually
-    // and build JSON object under the hood
-    var shippingAddressRequirements: ShippingAddressRequirements? = null,
+    var shippingAddressParameters: GooglePayShippingAddressParameters? = null,
     var allowPrepaidCards: Boolean = false,
     var isPayPalEnabled: Boolean = true,
     var googleMerchantName: String? = null,
@@ -128,12 +123,11 @@ class GooglePayRequest @JvmOverloads constructor(
         val transactionInfoJson = JSONObject()
         val allowedPaymentMethods = JSONArray()
         val shippingAddressParameters = JSONObject()
-        val allowedCountryCodeList: ArrayList<String?>?
 
         if (isShippingAddressRequired) {
-            allowedCountryCodeList = shippingAddressRequirements?.allowedCountryCodes
+            val allowedCountryCodeList = this.shippingAddressParameters?.allowedCountryCodes
 
-            if (allowedCountryCodeList != null && allowedCountryCodeList.size > 0) {
+            if (!allowedCountryCodeList.isNullOrEmpty()) {
                 try {
                     shippingAddressParameters.put(
                         "allowedCountryCodes",
@@ -142,26 +136,14 @@ class GooglePayRequest @JvmOverloads constructor(
                 } catch (ignored: JSONException) {
                 }
             }
-            try {
-                shippingAddressParameters.put("phoneNumberRequired", isPhoneNumberRequired)
-            } catch (ignored: JSONException) {
-            }
+            shippingAddressParameters.putOpt("phoneNumberRequired", this.shippingAddressParameters?.isPhoneNumberRequired)
         }
 
-        try {
-            transactionInfoJson.put("totalPriceStatus", totalPriceStatus.stringValue)
-            transactionInfoJson.put("totalPrice", totalPrice)
-            transactionInfoJson.put("currencyCode", currencyCode)
-
-            countryCode?.let {
-                transactionInfoJson.put("countryCode", it)
-            }
-
-            totalPriceLabel?.let {
-                transactionInfoJson.put("totalPriceLabel", it)
-            }
-        } catch (ignored: JSONException) {
-        }
+        transactionInfoJson.put("totalPriceStatus", totalPriceStatus.stringValue)
+        transactionInfoJson.put("totalPrice", totalPrice)
+        transactionInfoJson.put("currencyCode", currencyCode)
+        transactionInfoJson.putOpt("countryCode", countryCode)
+        transactionInfoJson.putOpt("totalPriceLabel", totalPriceLabel)
 
         for ((key, value) in this.allowedPaymentMethods) {
             try {
@@ -202,13 +184,7 @@ class GooglePayRequest @JvmOverloads constructor(
         }
 
         val merchantInfo = JSONObject()
-
-        try {
-            if (!TextUtils.isEmpty(googleMerchantName)) {
-                merchantInfo.put("merchantName", googleMerchantName)
-            }
-        } catch (ignored: JSONException) {
-        }
+        merchantInfo.putOpt("merchantName", googleMerchantName)
 
         val json = JSONObject()
 

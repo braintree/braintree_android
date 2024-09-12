@@ -33,7 +33,6 @@ import com.google.android.gms.wallet.IsReadyToPayRequest;
 import com.google.android.gms.wallet.PaymentData;
 import com.google.android.gms.wallet.PaymentDataRequest;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
-import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
 
 import org.json.JSONArray;
@@ -48,6 +47,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.Collection;
+import java.util.List;
 
 @RunWith(RobolectricTestRunner.class)
 public class GooglePayClientUnitTest {
@@ -214,8 +214,7 @@ public class GooglePayClientUnitTest {
         googlePayRequest.setEmailRequired(true);
         googlePayRequest.setPhoneNumberRequired(true);
         googlePayRequest.setShippingAddressRequired(true);
-        googlePayRequest.setShippingAddressRequirements(
-                ShippingAddressRequirements.newBuilder().addAllowedCountryCode("USA").build());
+        googlePayRequest.setShippingAddressParameters(new GooglePayShippingAddressParameters(List.of("USA")));
 
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
