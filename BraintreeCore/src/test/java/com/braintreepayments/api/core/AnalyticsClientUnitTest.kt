@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.*
 import com.braintreepayments.api.core.AnalyticsClient.Companion.WORK_INPUT_KEY_ANALYTICS_JSON
+import com.braintreepayments.api.core.AnalyticsClient.Companion.WORK_INPUT_KEY_SESSION_ID
+import com.braintreepayments.api.core.AnalyticsClient.Companion.WORK_NAME_ANALYTICS_UPLOAD
 import com.braintreepayments.api.core.Authorization.Companion.fromString
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
 import com.braintreepayments.api.testutils.Fixtures
@@ -59,6 +61,7 @@ class AnalyticsClientUnitTest {
         workManager = mockk(relaxed = true)
 
         every { analyticsDatabase.analyticsEventBlobDao() } returns analyticsEventBlobDao
+        every { analyticsParamRepository.sessionId } returns sessionId
     }
 
     @Test
@@ -151,6 +154,7 @@ class AnalyticsClientUnitTest {
     fun writeAnalytics_whenAnalyticsJSONIsPresent_returnsSuccess() {
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_ANALYTICS_JSON, JSONObject().toString())
+            .putString(WORK_INPUT_KEY_SESSION_ID, JSONObject().toString())
             .build()
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
@@ -175,6 +179,7 @@ class AnalyticsClientUnitTest {
         val json = JSONObject().put("fake", "json").toString()
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_ANALYTICS_JSON, json)
+            .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
             .build()
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
@@ -203,6 +208,7 @@ class AnalyticsClientUnitTest {
 
     @Test
     @Throws(Exception::class)
+    @Suppress("LongMethod")
     fun uploadAnalytics_whenEventsExist_sendsAllEvents() {
         val inputData = Data.Builder()
             .putString(AnalyticsClient.WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
@@ -217,8 +223,10 @@ class AnalyticsClientUnitTest {
             deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
         } returns metadata
 
-        val blobs = listOf(AnalyticsEventBlob("""{ "fake": "json" }"""))
-        every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
+        val blobs = listOf(
+            AnalyticsEventBlob(jsonString = """{ "fake": "json" }""", sessionId = sessionId)
+        )
+        every { analyticsEventBlobDao.getBlobsBySessionId(sessionId) } returns blobs
 
         val analyticsJSONSlot = slot<String>()
         every {
@@ -321,8 +329,13 @@ class AnalyticsClientUnitTest {
             deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
         } returns createSampleDeviceMetadata()
 
-        val blobs = listOf(AnalyticsEventBlob("""{ "fake": "json" }"""))
-        every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
+        val blobs = listOf(
+            AnalyticsEventBlob(
+                jsonString = """{ "fake": "json" }""",
+                sessionId = sessionId
+            )
+        )
+        every { analyticsEventBlobDao.getBlobsBySessionId(sessionId) } returns blobs
 
         val analyticsJSONSlot = slot<String>()
         every { httpClient.post(any(), capture(analyticsJSONSlot), any(), any()) }
@@ -389,8 +402,13 @@ class AnalyticsClientUnitTest {
             deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
         } returns metadata
 
-        val blobs = listOf(AnalyticsEventBlob("""{ "fake": "json" }"""))
-        every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
+        val blobs = listOf(
+            AnalyticsEventBlob(
+                jsonString = """{ "fake": "json" }""",
+                sessionId = sessionId
+            )
+        )
+        every { analyticsEventBlobDao.getBlobsBySessionId(sessionId) } returns blobs
 
         val sut =
             AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
@@ -413,8 +431,13 @@ class AnalyticsClientUnitTest {
             deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
         } returns createSampleDeviceMetadata()
 
-        val blobs = listOf(AnalyticsEventBlob("""{ "fake": "json" }"""))
-        every { analyticsEventBlobDao.getAllEventBlobs() } returns blobs
+        val blobs = listOf(
+            AnalyticsEventBlob(
+                jsonString = """{ "fake": "json" }""",
+                sessionId = sessionId
+            )
+        )
+        every { analyticsEventBlobDao.getBlobsBySessionId(sessionId) } returns blobs
 
         val httpError = Exception("error")
         every { httpClient.post(any(), any(), any(), any()) } throws httpError
@@ -513,6 +536,28 @@ class AnalyticsClientUnitTest {
 
         // or confirmVerified(httpClient)
         verify { httpClient wasNot Called }
+    }
+
+    @Test
+    fun `sendEvent enqueues work to upload analytic events with sessionId in the name`() {
+        val sut = AnalyticsClient(
+            context = context,
+            httpClient = httpClient,
+            analyticsDatabase = analyticsDatabase,
+            workManager = workManager,
+            deviceInspector = deviceInspector,
+            analyticsParamRepository = analyticsParamRepository
+        )
+
+        sut.sendEvent(configuration, AnalyticsEvent("event-name"), integration, authorization)
+
+        verify {
+            workManager.enqueueUniqueWork(
+                WORK_NAME_ANALYTICS_UPLOAD + sessionId,
+                ExistingWorkPolicy.KEEP,
+                any<OneTimeWorkRequest>()
+            )
+        }
     }
 
     companion object {
