@@ -17,6 +17,9 @@
     * Make `GooglePayPaymentAuthRequestParams` internal
     * Make `GooglePayPaymentAuthResult` parameters internal
     * Update `GooglePayLauncher.launch` to take a `GooglePayPaymentAuthRequest.ReadyToLaunch` parameter
+    * Remove `GooglePayRequest.setTransactionInfo` and replace with `currencyCode`, `totalPrice, and `totalPriceStatus` parameters
+    * Change `GooglePayRequest.billingAddressFormat` to `GooglePayBillingAddressFormat` enum
+    * Change `GooglePayRequest.shippingAddressRequirements` to `GooglePayRequest.shippingAddressParameters` 
   * PayPal
     * Make `PayPalPaymentAuthRequestParams` internal
     * Remove `PayPalPaymentAuthResultInfo`
