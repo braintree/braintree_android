@@ -12,6 +12,6 @@ import kotlinx.parcelize.RawValue
  */
 @Parcelize
 data class GooglePayShippingAddressParameters @JvmOverloads constructor(
-    var allowedCountryCodes: @RawValue Collection<String>? = null,
+    var allowedCountryCodes: @RawValue List<String>? = null,
     var isPhoneNumberRequired: Boolean = false
 ) : Parcelable
