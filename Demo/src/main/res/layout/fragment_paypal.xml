@@ -52,25 +52,21 @@
             android:textColor="@android:color/black"
             android:background="#00000000"
             android:layout_marginBottom="16dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Input your Edit Vault Id below:"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"
-                android:background="#00000000"
-                android:layout_marginBottom="4dp" />
-
-            <EditText
-                android:id="@+id/edit_vault_id_field"
+            
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="editVaultId"
-                android:text="+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA="
-                android:background="#FFFFFF"
-                android:layout_margin="16dp"
-                ></EditText>
+                android:layout_marginBottom="20dp"
+                android:hint="edit Vault Id">
+
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/paypal_edit_vault_id_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
 
             <LinearLayout
@@ -81,7 +77,7 @@
                 android:gravity="center_vertical">
 
                 <Switch
-                    android:id="@+id/edit_error_request_toggle"
+                    android:id="@+id/paypal_edit_error_request_toggle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 

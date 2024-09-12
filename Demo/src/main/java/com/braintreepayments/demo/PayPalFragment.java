@@ -9,11 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ToggleButton;
+import android.widget.Switch;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
+import androidx.compose.foundation.text2.input.internal.undo.TextEditType;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -52,8 +53,9 @@ public class PayPalFragment extends BaseFragment {
         TextInputEditText buyerEmailEditText = view.findViewById(R.id.buyer_email_edit_text);
         Button billingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
-        ToggleButton editFIToggleButton = view.findViewById(R.id.edit_error_request_toggle);
-        TextInputEditText editFIIdTextField = view.findViewById(R.id.edit_vault_id_field);
+        Switch ppSwitch = view.findViewById(R.id.paypal_edit_error_request_toggle);
+        TextInputEditText editText = view.findViewById(R.id.paypal_edit_vault_id_field);
+
         Button editVaultButton = view.findViewById(R.id.paypal_edit_vault_button);
 
         singlePaymentButton.setOnClickListener(v -> {
