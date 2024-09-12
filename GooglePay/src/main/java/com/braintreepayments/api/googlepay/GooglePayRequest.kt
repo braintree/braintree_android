@@ -3,7 +3,6 @@ package com.braintreepayments.api.googlepay
 import android.os.Parcelable
 import android.text.TextUtils
 import com.google.android.gms.wallet.ShippingAddressRequirements
-import com.google.android.gms.wallet.TransactionInfo
 import com.google.android.gms.wallet.WalletConstants
 import com.google.android.gms.wallet.WalletConstants.BillingAddressFormat
 import kotlinx.parcelize.Parcelize
@@ -15,54 +14,37 @@ import java.util.Locale
 /**
  * Represents the parameters that are needed to use the Google Pay API.
  *
- * Details and the price of the transaction. Required.
- * @property transactionInfo See [TransactionInfo].
- *
- * Optional.
- * @property emailRequired `true` if the buyer's email address is required to be returned, `false` otherwise.
- *
- * Optional.
- * @property phoneNumberRequired `true` if the buyer's phone number is required to be returned as part of the
+ * @property currencyCode Required. The ISO 4217 alphabetic currency code of the transaction.
+ * @property totalPrice Required. The total price of this transaction in format: [0-9]+(\.[0-9][0-9])? (ex: "12.34")
+ * @property totalPriceStatus Required. The [GooglePayTotalPriceStatus] status of the transaction's
+ * total price.
+ * @property isEmailRequired Optional. Set`true` if the buyer's email address is required to be
+ * returned, `false` otherwise.
+ * @property isPhoneNumberRequired Optional. Set `true` if the buyer's phone number is required to be returned as part of the
  * billing address and shipping address, `false` otherwise.
- *
- * Optional.
- * @property billingAddressRequired `true` if the buyer's billing address is required to be returned,
+ * @property isBillingAddressRequired Optional. Set`true` if the buyer's billing address is required to be returned,
  * false` otherwise.
- *
- * Optional.
- * @property billingAddressFormat the billing address format to return. [BillingAddressFormat]
- *
- * Optional.
- * @property shippingAddressRequired `true` if the buyer's shipping address is required to be returned,
- * `false` otherwise.
+ * @property billingAddressFormat Optional. The [BillingAddressFormat] billing address format to return.
+ * @property isShippingAddressRequired Optional. Set `true` if the buyer's shipping address is
+ * required to be returned, `false` otherwise.
  *
  * Optional.
  * @property shippingAddressRequirements the shipping address requirements. [ShippingAddressRequirements]
- *
- * Optional.
- * @property allowPrepaidCards `true` prepaid cards are allowed, `false` otherwise.
- *
- * Defines if PayPal should be an available payment method in Google Pay.
- * Defaults to `true`.
- * @property enablePayPal `true` by default. Allows PayPal to be a payment method in Google Pay.
- *
- * Optional.
- * @property merchantName The merchant name that will be presented in Google Pay
- *
- * ISO 3166-1 alpha-2 country code where the transaction is processed. This is required for
- * merchants based in European Economic Area (EEA) countries.
+ * @property allowPrepaidCards Defaults to `false`. Set`true` prepaid cards are allowed.
+ * @property isPayPalEnabled Defaults to `true`. Allows PayPal to be a payment method in Google Pay.
+ * @property googleMerchantName Optional. The merchant name that will be presented in Google Pay
+ * @property countryCode The ISO 3166-1 alpha-2 country code where the transaction is processed.
+ * This is required for merchants based in European Economic Area (EEA) countries.
  * NOTE: to support Elo cards, country code must be set to "BR"
- * @property countryCode The country code where the transaction is processed
- *
- * Optional
- * @property totalPriceLabel Custom label for the total price within the display items
+ * @property totalPriceLabel Optional. Custom label for the total price within the display items
+ * @property allowCreditCards Defaults to `true`.
  */
 @Suppress("TooManyFunctions")
 @Parcelize
 class GooglePayRequest @JvmOverloads constructor(
-    // NEXT_MAJOR_VERSION: allow merchants to set transaction info params individually and build
-    // JSON object under the hood
-    var transactionInfo: TransactionInfo? = null,
+    var currencyCode: String,
+    var totalPrice: String,
+    var totalPriceStatus: GooglePayTotalPriceStatus,
     var isEmailRequired: Boolean = false,
     var isPhoneNumberRequired: Boolean = false,
     var isBillingAddressRequired: Boolean = false,
@@ -144,7 +126,6 @@ class GooglePayRequest @JvmOverloads constructor(
     @SuppressWarnings("LongMethod", "CyclomaticComplexMethod", "NestedBlockDepth")
     fun toJson(): String {
         val transactionInfoJson = JSONObject()
-        val transactionInfo = transactionInfo
         val allowedPaymentMethods = JSONArray()
         val shippingAddressParameters = JSONObject()
         val allowedCountryCodeList: ArrayList<String?>?
@@ -168,14 +149,9 @@ class GooglePayRequest @JvmOverloads constructor(
         }
 
         try {
-            val totalPriceStatus = totalPriceStatusToString()
-            transactionInfoJson
-                .put("totalPriceStatus", totalPriceStatus)
-
-            if (transactionInfo != null) {
-                transactionInfoJson.put("totalPrice", transactionInfo.totalPrice)
-                transactionInfoJson.put("currencyCode", transactionInfo.currencyCode)
-            }
+            transactionInfoJson.put("totalPriceStatus", totalPriceStatus.stringValue)
+            transactionInfoJson.put("totalPrice", totalPrice)
+            transactionInfoJson.put("currencyCode", currencyCode)
 
             countryCode?.let {
                 transactionInfoJson.put("countryCode", it)
@@ -254,20 +230,6 @@ class GooglePayRequest @JvmOverloads constructor(
         }
 
         return json.toString()
-    }
-
-    private fun totalPriceStatusToString(): String {
-
-        return transactionInfo?.let {
-            when (it.totalPriceStatus) {
-                WalletConstants.TOTAL_PRICE_STATUS_NOT_CURRENTLY_KNOWN -> "NOT_CURRENTLY_KNOWN"
-                WalletConstants.TOTAL_PRICE_STATUS_ESTIMATED -> "ESTIMATED"
-                WalletConstants.TOTAL_PRICE_STATUS_FINAL -> "FINAL"
-                else -> "FINAL"
-            }
-        } ?: run {
-            "FINAL"
-        }
     }
 
     fun billingAddressFormatToString(): String {

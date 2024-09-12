@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* GooglePay
+  * Upgrade `play-services-wallet` to `19.4.0`
 * Breaking Changes
   * Venmo
     * Convert `VenmoPaymentMethodUsage` to an enum

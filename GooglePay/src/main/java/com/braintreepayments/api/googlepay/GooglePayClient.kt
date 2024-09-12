@@ -191,17 +191,6 @@ class GooglePayClient @VisibleForTesting internal constructor(
             return
         }
 
-        if (request.transactionInfo == null) {
-            callbackPaymentRequestFailure(
-                GooglePayPaymentAuthRequest.Failure(
-                    BraintreeException(
-                        "Cannot pass null TransactionInfo to requestPayment"
-                    )
-                ), callback
-            )
-            return
-        }
-
         braintreeClient.getConfiguration { configuration: Configuration?, configError: Exception? ->
 
             if (configuration?.isGooglePayEnabled == true) {

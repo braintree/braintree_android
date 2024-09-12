@@ -16,15 +16,12 @@ import com.braintreepayments.api.core.PaymentMethodNonce;
 import com.braintreepayments.api.core.UserCanceledException;
 import com.braintreepayments.api.googlepay.GooglePayClient;
 import com.braintreepayments.api.googlepay.GooglePayLauncher;
-import com.braintreepayments.api.googlepay.GooglePayLauncherCallback;
 import com.braintreepayments.api.googlepay.GooglePayPaymentAuthRequest;
-import com.braintreepayments.api.googlepay.GooglePayPaymentAuthResult;
 import com.braintreepayments.api.googlepay.GooglePayReadinessResult;
 import com.braintreepayments.api.googlepay.GooglePayRequest;
 import com.braintreepayments.api.googlepay.GooglePayResult;
-import com.braintreepayments.api.googlepay.GooglePayTokenizeCallback;
+import com.braintreepayments.api.googlepay.GooglePayTotalPriceStatus;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
-import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
 
 public class GooglePayFragment extends BaseFragment {
@@ -89,12 +86,7 @@ public class GooglePayFragment extends BaseFragment {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
-        GooglePayRequest googlePayRequest = new GooglePayRequest();
-        googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
-                .setCurrencyCode(Settings.getGooglePayCurrency(activity))
-                .setTotalPrice("1.00")
-                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                .build());
+        GooglePayRequest googlePayRequest = new GooglePayRequest(Settings.getGooglePayCurrency(activity), "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
         googlePayRequest.setTotalPriceLabel("Braintree Demo Payment");
         googlePayRequest.setAllowPrepaidCards(Settings.areGooglePayPrepaidCardsAllowed(activity));
         googlePayRequest.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);

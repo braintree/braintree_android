@@ -9,8 +9,6 @@ import com.braintreepayments.api.core.UserCanceledException
 import com.google.android.gms.wallet.AutoResolveHelper
 import com.google.android.gms.wallet.PaymentData
 import com.google.android.gms.wallet.PaymentDataRequest
-import com.google.android.gms.wallet.TransactionInfo
-import com.google.android.gms.wallet.WalletConstants
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertNull
@@ -25,12 +23,7 @@ class GooglePayActivityResultContractUnitTest {
 
     @Test
     fun `createIntent returns Intent with extras`() {
-        val googlePayRequest = GooglePayRequest()
-        googlePayRequest.transactionInfo = TransactionInfo.newBuilder()
-            .setTotalPrice("1.00")
-            .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-            .setCurrencyCode("USD")
-            .build()
+        val googlePayRequest = GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL)
 
         val paymentDataRequest = PaymentDataRequest.fromJson(googlePayRequest.toJson())
 

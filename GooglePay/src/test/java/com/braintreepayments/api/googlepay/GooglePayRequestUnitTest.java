@@ -29,12 +29,8 @@ public class GooglePayRequestUnitTest {
     @Test
     public void returnsAllValues() {
         ShippingAddressRequirements shippingAddressRequirements = ShippingAddressRequirements.newBuilder().build();
-        TransactionInfo transactionInfo = TransactionInfo.newBuilder()
-                .setCurrencyCode("USD")
-                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_NOT_CURRENTLY_KNOWN)
-                .build();
 
-        GooglePayRequest request = new GooglePayRequest();
+        GooglePayRequest request = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
         request.setTotalPriceLabel("test");
         request.setAllowPrepaidCards(true);
         request.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
@@ -43,7 +39,6 @@ public class GooglePayRequestUnitTest {
         request.setPhoneNumberRequired(true);
         request.setShippingAddressRequired(true);
         request.setShippingAddressRequirements(shippingAddressRequirements);
-        request.setTransactionInfo(transactionInfo);
         request.setEnvironment("production");
         request.setGoogleMerchantName("google-merchant-name");
 
@@ -54,7 +49,9 @@ public class GooglePayRequestUnitTest {
         assertTrue(request.isPhoneNumberRequired());
         assertTrue(request.isShippingAddressRequired());
         assertEquals(shippingAddressRequirements, request.getShippingAddressRequirements());
-        assertEquals(transactionInfo, request.getTransactionInfo());
+        assertEquals("USD", request.getCurrencyCode());
+        assertEquals("1.00", request.getTotalPrice());
+        assertEquals(GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL, request.getTotalPriceStatus());
         assertEquals("PRODUCTION", request.getEnvironment());
         assertEquals("google-merchant-name", request.getGoogleMerchantName());
         assertEquals("test", request.getTotalPriceLabel());
@@ -62,7 +59,7 @@ public class GooglePayRequestUnitTest {
 
     @Test
     public void constructor_setsDefaultValues() {
-        GooglePayRequest request = new GooglePayRequest();
+        GooglePayRequest request = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
 
         assertFalse(request.getAllowPrepaidCards());
         assertEquals(WalletConstants.BILLING_ADDRESS_FORMAT_MIN, request.getBillingAddressFormat());
@@ -72,7 +69,6 @@ public class GooglePayRequestUnitTest {
         assertFalse(request.isShippingAddressRequired());
         assertTrue(request.getAllowCreditCards());
         assertNull(request.getShippingAddressRequirements());
-        assertNull(request.getTransactionInfo());
         assertNull(request.getEnvironment());
         assertNull(request.getEnvironment());
         assertNull(request.getGoogleMerchantName());
@@ -80,15 +76,8 @@ public class GooglePayRequestUnitTest {
 
     @Test
     public void parcelsCorrectly() {
-        GooglePayRequest request = new GooglePayRequest();
+        GooglePayRequest request = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
 
-        TransactionInfo info = TransactionInfo.newBuilder()
-                .setCurrencyCode("USD")
-                .setTotalPrice("10")
-                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                .build();
-
-        request.setTransactionInfo(info);
         request.setTotalPriceLabel("test");
         request.setEmailRequired(true);
         request.setPhoneNumberRequired(true);
@@ -110,9 +99,9 @@ public class GooglePayRequestUnitTest {
 
         GooglePayRequest parceled = GooglePayRequest.CREATOR.createFromParcel(parcel);
 
-        assertEquals("USD", parceled.getTransactionInfo().getCurrencyCode());
-        assertEquals("10", parceled.getTransactionInfo().getTotalPrice());
-        assertEquals(WalletConstants.TOTAL_PRICE_STATUS_FINAL, parceled.getTransactionInfo().getTotalPriceStatus());
+        assertEquals("USD", parceled.getCurrencyCode());
+        assertEquals("1.00", parceled.getTotalPrice());
+        assertEquals(GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL, parceled.getTotalPriceStatus());
         assertEquals("test", parceled.getTotalPriceLabel());
         assertTrue(parceled.isEmailRequired());
         assertTrue(parceled.isPhoneNumberRequired());
@@ -126,7 +115,7 @@ public class GooglePayRequestUnitTest {
 
     @Test
     public void parcelsCorrectly_allFieldsPopulated_null() {
-        GooglePayRequest request = new GooglePayRequest();
+        GooglePayRequest request = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
 
         TransactionInfo info = TransactionInfo.newBuilder()
                 .setCurrencyCode("USD")
@@ -134,7 +123,6 @@ public class GooglePayRequestUnitTest {
                 .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                 .build();
 
-        request.setTransactionInfo(info);
         request.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
 
         ShippingAddressRequirements requirements = ShippingAddressRequirements.newBuilder()
@@ -149,9 +137,9 @@ public class GooglePayRequestUnitTest {
 
         GooglePayRequest parceled = GooglePayRequest.CREATOR.createFromParcel(parcel);
 
-        assertEquals("USD", parceled.getTransactionInfo().getCurrencyCode());
-        assertEquals("10", parceled.getTransactionInfo().getTotalPrice());
-        assertEquals(WalletConstants.TOTAL_PRICE_STATUS_FINAL, parceled.getTransactionInfo().getTotalPriceStatus());
+        assertEquals("USD", parceled.getCurrencyCode());
+        assertEquals("1.00", parceled.getTotalPrice());
+        assertEquals(GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL, parceled.getTotalPriceStatus());
         assertFalse(parceled.isEmailRequired());
         assertFalse(parceled.isPhoneNumberRequired());
         assertFalse(parceled.isShippingAddressRequired());
@@ -166,19 +154,12 @@ public class GooglePayRequestUnitTest {
 
     @Test
     public void generatesToJsonRequest() throws JSONException {
-        GooglePayRequest request = new GooglePayRequest();
+        GooglePayRequest request = new GooglePayRequest("USD", "12.24", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
         String expected = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_REQUEST;
         List<String> shippingAllowedCountryCodes = Arrays.asList("US", "CA", "MX", "GB");
 
         ShippingAddressRequirements shippingAddressRequirements = ShippingAddressRequirements.newBuilder()
                 .addAllowedCountryCodes(shippingAllowedCountryCodes)
-                .build();
-
-
-        TransactionInfo info = TransactionInfo.newBuilder()
-                .setCurrencyCode("USD")
-                .setTotalPrice("12.24")
-                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                 .build();
 
         JSONObject tokenizationSpecificationParams = new JSONObject()
@@ -209,7 +190,6 @@ public class GooglePayRequestUnitTest {
         JSONObject paypalAllowedPaymentMethodParams = new JSONObject()
                 .put("purchase_context", "{\"purchase_context\":{\"purchase_units\":[{\"payee\":{\"client_id\":\"FAKE_PAYPAL_CLIENT_ID\"},\"recurring_payment\":false}]}}");
 
-        request.setTransactionInfo(info);
         request.setCountryCode("US");
         request.setPhoneNumberRequired(true);
         request.setEmailRequired(true);
@@ -234,19 +214,12 @@ public class GooglePayRequestUnitTest {
 
     @Test
     public void generatesToJsonRequest_whenCreditCardNotAllowed_billingAddressRequired() throws JSONException {
-        GooglePayRequest request = new GooglePayRequest();
+        GooglePayRequest request = new GooglePayRequest("USD", "12.24", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
         String expected = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_REQUEST_NO_CREDIT_CARDS;
         List<String> shippingAllowedCountryCodes = Arrays.asList("US", "CA", "MX", "GB");
 
         ShippingAddressRequirements shippingAddressRequirements = ShippingAddressRequirements.newBuilder()
                 .addAllowedCountryCodes(shippingAllowedCountryCodes)
-                .build();
-
-
-        TransactionInfo info = TransactionInfo.newBuilder()
-                .setCurrencyCode("USD")
-                .setTotalPrice("12.24")
-                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                 .build();
 
         JSONObject tokenizationSpecificationParams = new JSONObject()
@@ -277,7 +250,6 @@ public class GooglePayRequestUnitTest {
         JSONObject paypalAllowedPaymentMethodParams = new JSONObject()
                 .put("purchase_context", "{\"purchase_context\":{\"purchase_units\":[{\"payee\":{\"client_id\":\"FAKE_PAYPAL_CLIENT_ID\"},\"recurring_payment\":false}]}}");
 
-        request.setTransactionInfo(info);
         request.setCountryCode("US");
         request.setPhoneNumberRequired(true);
         request.setEmailRequired(true);
@@ -301,7 +273,7 @@ public class GooglePayRequestUnitTest {
 
     @Test
     public void allowsNullyOptionalParameters() throws JSONException {
-        GooglePayRequest request = new GooglePayRequest();
+        GooglePayRequest request = new GooglePayRequest("USD", "12.24", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
         String expected = "{\"apiVersion\":2,\"apiVersionMinor\":0,\"allowedPaymentMethods\":[],\"shippingAddressRequired\":true,\"merchantInfo\":{},\"transactionInfo\":{\"totalPriceStatus\":\"FINAL\",\"totalPrice\":\"12.24\",\"currencyCode\":\"USD\"},\"shippingAddressParameters\":{}}";
 
         ShippingAddressRequirements nullyShippingAddressRequirements = ShippingAddressRequirements.newBuilder().build();
@@ -312,7 +284,6 @@ public class GooglePayRequestUnitTest {
                 .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                 .build();
 
-        request.setTransactionInfo(info);
         request.setShippingAddressRequired(true);
         request.setShippingAddressRequirements(nullyShippingAddressRequirements);
 
