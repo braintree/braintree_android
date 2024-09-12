@@ -412,7 +412,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
             if (request.isBillingAddressRequired) {
                 defaultParameters.put(
                     "billingAddressParameters",
-                    JSONObject().put("format", request.billingAddressFormatToString())
+                    JSONObject().put("format", request.billingAddressFormat)
                         .put("phoneNumberRequired", request.isPhoneNumberRequired)
                 )
             }

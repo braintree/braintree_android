@@ -209,7 +209,7 @@ public class GooglePayClientUnitTest {
 
         GooglePayRequest googlePayRequest = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
         googlePayRequest.setAllowPrepaidCards(true);
-        googlePayRequest.setBillingAddressFormat(1);
+        googlePayRequest.setBillingAddressFormat(GooglePayBillingAddressFormat.FULL);
         googlePayRequest.setBillingAddressRequired(true);
         googlePayRequest.setEmailRequired(true);
         googlePayRequest.setPhoneNumberRequired(true);

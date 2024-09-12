@@ -1,9 +1,6 @@
 package com.braintreepayments.api.googlepay
 
 import android.os.Parcelable
-import com.google.android.gms.wallet.ShippingAddressRequirements
-import com.google.android.gms.wallet.WalletConstants
-import com.google.android.gms.wallet.WalletConstants.BillingAddressFormat
 import kotlinx.parcelize.Parcelize
 import org.json.JSONArray
 import org.json.JSONException
@@ -23,7 +20,7 @@ import java.util.Locale
  * billing address and shipping address, `false` otherwise.
  * @property isBillingAddressRequired Optional. Set`true` if the buyer's billing address is required to be returned,
  * false` otherwise.
- * @property billingAddressFormat Optional. The [BillingAddressFormat] billing address format to return.
+ * @property billingAddressFormat Optional. The [GooglePayBillingAddressFormat] billing address format to return. Defaults to [GooglePayBillingAddressFormat.MIN].
  * @property isShippingAddressRequired Optional. Set `true` if the buyer's shipping address is
  * required to be returned, `false` otherwise.
  * @property shippingAddressParameters Optional. The shipping address requirements.
@@ -45,8 +42,7 @@ class GooglePayRequest @JvmOverloads constructor(
     var isEmailRequired: Boolean = false,
     var isPhoneNumberRequired: Boolean = false,
     var isBillingAddressRequired: Boolean = false,
-    @BillingAddressFormat
-    var billingAddressFormat: Int = 0,
+    var billingAddressFormat: GooglePayBillingAddressFormat? = GooglePayBillingAddressFormat.MIN,
     var isShippingAddressRequired: Boolean = false,
     var shippingAddressParameters: GooglePayShippingAddressParameters? = null,
     var allowPrepaidCards: Boolean = false,
@@ -171,7 +167,7 @@ class GooglePayRequest @JvmOverloads constructor(
                             paymentMethodParams
                                 .put(
                                     "billingAddressParameters", JSONObject()
-                                        .put("format", billingAddressFormatToString())
+                                        .put("format", billingAddressFormat)
                                         .put("phoneNumberRequired", isPhoneNumberRequired)
                                 )
                         }
@@ -206,14 +202,6 @@ class GooglePayRequest @JvmOverloads constructor(
         }
 
         return json.toString()
-    }
-
-    fun billingAddressFormatToString(): String {
-        var format = "MIN"
-        if (billingAddressFormat == WalletConstants.BILLING_ADDRESS_FORMAT_FULL) {
-            format = "FULL"
-        }
-        return format
     }
 
     /**

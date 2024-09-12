@@ -33,7 +33,7 @@ public class GooglePayRequestUnitTest {
         GooglePayRequest request = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
         request.setTotalPriceLabel("test");
         request.setAllowPrepaidCards(true);
-        request.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
+        request.setBillingAddressFormat(GooglePayBillingAddressFormat.FULL);
         request.setBillingAddressRequired(true);
         request.setEmailRequired(true);
         request.setPhoneNumberRequired(true);
@@ -43,7 +43,7 @@ public class GooglePayRequestUnitTest {
         request.setGoogleMerchantName("google-merchant-name");
 
         assertTrue(request.getAllowPrepaidCards());
-        assertEquals(WalletConstants.BILLING_ADDRESS_FORMAT_FULL, request.getBillingAddressFormat());
+        assertEquals(GooglePayBillingAddressFormat.FULL, request.getBillingAddressFormat());
         assertTrue(request.isBillingAddressRequired());
         assertTrue(request.isEmailRequired());
         assertTrue(request.isPhoneNumberRequired());
@@ -62,7 +62,7 @@ public class GooglePayRequestUnitTest {
         GooglePayRequest request = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
 
         assertFalse(request.getAllowPrepaidCards());
-        assertEquals(WalletConstants.BILLING_ADDRESS_FORMAT_MIN, request.getBillingAddressFormat());
+        assertEquals(GooglePayBillingAddressFormat.MIN, request.getBillingAddressFormat());
         assertFalse(request.isBillingAddressRequired());
         assertFalse(request.isEmailRequired());
         assertFalse(request.isPhoneNumberRequired());
@@ -83,7 +83,7 @@ public class GooglePayRequestUnitTest {
         request.setPhoneNumberRequired(true);
         request.setShippingAddressRequired(true);
         request.setBillingAddressRequired(true);
-        request.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
+        request.setBillingAddressFormat(GooglePayBillingAddressFormat.FULL);
 
         GooglePayShippingAddressParameters requirements = new GooglePayShippingAddressParameters(
                 List.of("US"), true);
@@ -106,7 +106,7 @@ public class GooglePayRequestUnitTest {
         assertTrue(parceled.isPhoneNumberRequired());
         assertTrue(parceled.isShippingAddressRequired());
         assertTrue(parceled.isBillingAddressRequired());
-        assertEquals(WalletConstants.BILLING_ADDRESS_FORMAT_FULL, (int) parceled.getBillingAddressFormat());
+        assertEquals(GooglePayBillingAddressFormat.FULL, parceled.getBillingAddressFormat());
         assertTrue(parceled.getShippingAddressParameters().getAllowedCountryCodes().contains("US"));
         assertTrue(parceled.getAllowPrepaidCards());
         assertEquals("PRODUCTION", parceled.getEnvironment());
@@ -122,7 +122,7 @@ public class GooglePayRequestUnitTest {
                 .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                 .build();
 
-        request.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
+        request.setBillingAddressFormat(GooglePayBillingAddressFormat.FULL);
 
         GooglePayShippingAddressParameters requirements = new GooglePayShippingAddressParameters(
                 List.of("US"), true);
@@ -142,7 +142,7 @@ public class GooglePayRequestUnitTest {
         assertFalse(parceled.isPhoneNumberRequired());
         assertFalse(parceled.isShippingAddressRequired());
         assertFalse(parceled.isBillingAddressRequired());
-        assertEquals(WalletConstants.BILLING_ADDRESS_FORMAT_FULL, parceled.getBillingAddressFormat());
+        assertEquals(GooglePayBillingAddressFormat.FULL, parceled.getBillingAddressFormat());
         assertTrue(parceled.getShippingAddressParameters().getAllowedCountryCodes().contains("US"));
         assertFalse(parceled.getAllowPrepaidCards());
         assertNull(parceled.getEnvironment());
