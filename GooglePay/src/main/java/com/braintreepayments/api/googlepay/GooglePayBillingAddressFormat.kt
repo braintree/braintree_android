@@ -1,6 +1,5 @@
 package com.braintreepayments.api.googlepay
 
-
 /**
  * The billing address format required for the transaction
  */

@@ -11,16 +11,19 @@ import java.util.Locale
  * Represents the parameters that are needed to use the Google Pay API.
  *
  * @property currencyCode Required. The ISO 4217 alphabetic currency code of the transaction.
- * @property totalPrice Required. The total price of this transaction in format: [0-9]+(\.[0-9][0-9])? (ex: "12.34")
+ * @property totalPrice Required. The total price of this transaction in format:
+ * [0-9]+(\.[0-9][0-9])? (ex: "12.34")
  * @property totalPriceStatus Required. The [GooglePayTotalPriceStatus] status of the transaction's
  * total price.
  * @property isEmailRequired Optional. Set`true` if the buyer's email address is required to be
  * returned, `false` otherwise.
- * @property isPhoneNumberRequired Optional. Set `true` if the buyer's phone number is required to be returned as part of the
+ * @property isPhoneNumberRequired Optional. Set `true` if the buyer's phone number is required to
+ * be returned as part of the
  * billing address and shipping address, `false` otherwise.
- * @property isBillingAddressRequired Optional. Set`true` if the buyer's billing address is required to be returned,
- * false` otherwise.
- * @property billingAddressFormat Optional. The [GooglePayBillingAddressFormat] billing address format to return. Defaults to [GooglePayBillingAddressFormat.MIN].
+ * @property isBillingAddressRequired Optional. Set`true` if the buyer's billing address is required
+ * to be returned, false` otherwise.
+ * @property billingAddressFormat Optional. The [GooglePayBillingAddressFormat] billing address
+ * format to return. Defaults to [GooglePayBillingAddressFormat.MIN].
  * @property isShippingAddressRequired Optional. Set `true` if the buyer's shipping address is
  * required to be returned, `false` otherwise.
  * @property shippingAddressParameters Optional. The shipping address requirements.
@@ -132,7 +135,8 @@ class GooglePayRequest @JvmOverloads constructor(
                 } catch (ignored: JSONException) {
                 }
             }
-            shippingAddressParameters.putOpt("phoneNumberRequired", this.shippingAddressParameters?.isPhoneNumberRequired)
+            shippingAddressParameters.putOpt("phoneNumberRequired",
+                this.shippingAddressParameters?.isPhoneNumberRequired)
         }
 
         transactionInfoJson.put("totalPriceStatus", totalPriceStatus.stringValue)
