@@ -14,14 +14,14 @@ import org.json.JSONObject
 @Parcelize
 data class PayPalBillingPricing @JvmOverloads constructor(
     val pricingModel: PayPalPricingModel,
-    val amount: String,
+    val amount: String? = null,
     var reloadThresholdAmount: String? = null
 ) : Parcelable {
 
     fun toJson(): JSONObject {
         return JSONObject().apply {
             put(KEY_PRICING_MODEL, pricingModel.name)
-            put(KEY_AMOUNT, amount)
+            putOpt(KEY_AMOUNT, amount)
             putOpt(KEY_RELOAD_THRESHOLD_AMOUNT, reloadThresholdAmount)
         }
     }
