@@ -210,28 +210,6 @@ class GooglePayRequest @JvmOverloads constructor(
         return json.toString()
     }
 
-    private fun totalPriceStatusToString(): String {
-
-        return transactionInfo?.let {
-            when (it.totalPriceStatus) {
-                WalletConstants.TOTAL_PRICE_STATUS_NOT_CURRENTLY_KNOWN -> "NOT_CURRENTLY_KNOWN"
-                WalletConstants.TOTAL_PRICE_STATUS_ESTIMATED -> "ESTIMATED"
-                WalletConstants.TOTAL_PRICE_STATUS_FINAL -> "FINAL"
-                else -> "FINAL"
-            }
-        } ?: run {
-            "FINAL"
-        }
-    }
-
-    internal fun billingAddressFormatToString(): String {
-        var format = "MIN"
-        if (billingAddressFormat == WalletConstants.BILLING_ADDRESS_FORMAT_FULL) {
-            format = "FULL"
-        }
-        return format
-    }
-
     /**
      * @return Allowed payment methods for a given payment method type.
      */
