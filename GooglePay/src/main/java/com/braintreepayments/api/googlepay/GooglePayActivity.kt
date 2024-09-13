@@ -9,7 +9,7 @@ import com.google.android.gms.wallet.Wallet
 import com.google.android.gms.wallet.Wallet.WalletOptions
 import com.google.android.gms.wallet.WalletConstants
 
-class GooglePayActivity : AppCompatActivity() {
+internal class GooglePayActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

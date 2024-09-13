@@ -67,7 +67,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @JvmOverloads
     constructor (
         context: Context,
         authorization: String,
@@ -129,7 +128,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @JvmOverloads
     fun sendAnalyticsEvent(
         eventName: String,
         params: AnalyticsEventParams = AnalyticsEventParams()
@@ -308,7 +306,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    fun reportCrash() =
+    internal fun reportCrash() =
         getConfiguration { configuration, _ ->
             analyticsClient.reportCrash(
                 applicationContext,

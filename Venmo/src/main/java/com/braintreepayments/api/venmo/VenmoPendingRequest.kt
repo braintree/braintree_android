@@ -14,10 +14,10 @@ sealed class VenmoPendingRequest {
      * @property pendingRequestString - This String should be stored and passed to
      * [VenmoLauncher.handleReturnToApp].
      */
-    class Started(val pendingRequestString: String) : VenmoPendingRequest()
+    class Started internal constructor(val pendingRequestString: String) : VenmoPendingRequest()
 
     /**
      * An error occurred launching the Venmo flow. See [error] for details.
      */
-    class Failure(val error: Exception) : VenmoPendingRequest()
+    class Failure internal constructor(val error: Exception) : VenmoPendingRequest()
 }

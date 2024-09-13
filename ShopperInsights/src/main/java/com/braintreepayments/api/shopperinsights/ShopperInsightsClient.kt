@@ -1,7 +1,6 @@
 package com.braintreepayments.api.shopperinsights
 
 import android.content.Context
-import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
@@ -24,7 +23,7 @@ import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.VENMO_
  * Note: **This feature is in beta. It's public API may change in future releases.**
  */
 @ExperimentalBetaApi
-class ShopperInsightsClient @VisibleForTesting internal constructor(
+class ShopperInsightsClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
     private val api: ShopperInsightsApi = ShopperInsightsApi(

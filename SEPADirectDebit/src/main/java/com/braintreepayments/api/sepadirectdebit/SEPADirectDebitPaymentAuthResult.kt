@@ -10,14 +10,15 @@ sealed class SEPADirectDebitPaymentAuthResult {
     /**
      * A successful result that should be passed to [SEPADirectDebitClient.tokenize] to complete the flow
      */
-    class Success(internal val browserSwitchSuccess: BrowserSwitchFinalResult.Success) :
-        SEPADirectDebitPaymentAuthResult()
+    class Success internal constructor(
+        internal val browserSwitchSuccess: BrowserSwitchFinalResult.Success
+    ) : SEPADirectDebitPaymentAuthResult()
 
     /**
      * The browser switch failed.
      * @property [error] Error detailing the reason for the browser switch failure.
      */
-    class Failure(val error: Exception) : SEPADirectDebitPaymentAuthResult()
+    class Failure internal constructor(val error: Exception) : SEPADirectDebitPaymentAuthResult()
 
     /**
      * If no matching result can be found for the [SEPADirectDebitPendingRequest.Started] passed to

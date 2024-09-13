@@ -1,8 +1,11 @@
 package com.braintreepayments.api.core
 
+import androidx.annotation.RestrictTo
+
 /**
  * Callback for receiving result of [BraintreeClient.getConfiguration].
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 fun interface ConfigurationCallback {
     /**
      * @param configuration [Configuration]

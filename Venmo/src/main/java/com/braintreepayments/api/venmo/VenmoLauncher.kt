@@ -105,7 +105,7 @@ class VenmoLauncher internal constructor(
     }
 
     companion object {
-        const val VENMO_PACKAGE_NAME = "com.venmo"
+        private const val VENMO_PACKAGE_NAME = "com.venmo"
         private fun createBrowserSwitchError(exception: BrowserSwitchException): Exception {
             return BraintreeException(
                 "AndroidManifest.xml is incorrectly configured or another app defines the same " +

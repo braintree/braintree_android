@@ -3,6 +3,7 @@ package com.braintreepayments.api.datacollector
 import android.content.Context
 import android.util.Log
 import androidx.annotation.MainThread
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.Configuration
 import lib.android.paypal.com.magnessdk.Environment
 import lib.android.paypal.com.magnessdk.InvalidInputException
@@ -10,12 +11,13 @@ import lib.android.paypal.com.magnessdk.MagnesSDK
 import lib.android.paypal.com.magnessdk.MagnesSettings
 import lib.android.paypal.com.magnessdk.MagnesSource
 
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class MagnesInternalClient(
     private val magnesSDK: MagnesSDK = MagnesSDK.getInstance()
 ) {
 
     @MainThread
-    fun getClientMetadataId(
+    internal fun getClientMetadataId(
         context: Context?,
         configuration: Configuration?,
         request: DataCollectorInternalRequest?

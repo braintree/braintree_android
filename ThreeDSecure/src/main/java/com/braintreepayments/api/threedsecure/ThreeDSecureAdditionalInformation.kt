@@ -1,6 +1,7 @@
 package com.braintreepayments.api.threedsecure
 
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
@@ -204,6 +205,7 @@ data class ThreeDSecureAdditionalInformation(
      * @return JSONObject representation of [ThreeDSecureAdditionalInformation].
      */
     @Suppress("LongMethod")
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun toJson(): JSONObject {
         val additionalInformation = JSONObject()
         try {

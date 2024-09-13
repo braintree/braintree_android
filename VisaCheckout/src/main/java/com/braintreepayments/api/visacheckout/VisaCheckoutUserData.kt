@@ -2,6 +2,7 @@ package com.braintreepayments.api.visacheckout
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.Json
 import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
@@ -24,7 +25,9 @@ data class VisaCheckoutUserData internal constructor(
     val userEmail: String?,
 ) : Parcelable {
     companion object {
+
         @JvmStatic
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         fun fromJson(jsonIn: JSONObject?): VisaCheckoutUserData {
             val json = jsonIn ?: JSONObject()
             return VisaCheckoutUserData(

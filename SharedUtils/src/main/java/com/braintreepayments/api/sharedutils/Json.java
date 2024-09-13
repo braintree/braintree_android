@@ -18,7 +18,6 @@ public class Json {
      * @param fallback
      * @return {@link String}
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public static String optString(JSONObject json, String name, String fallback) {
         if (json == null || json.isNull(name)) {
             return fallback;
@@ -27,7 +26,6 @@ public class Json {
         }
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public static Boolean optBoolean(JSONObject json, String name, Boolean fallback) {
         if (json == null || json.isNull(name)) {
             return fallback;

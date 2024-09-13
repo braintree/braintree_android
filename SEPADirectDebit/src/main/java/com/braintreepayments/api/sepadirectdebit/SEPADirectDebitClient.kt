@@ -3,7 +3,6 @@ package com.braintreepayments.api.sepadirectdebit
 import android.content.Context
 import android.net.Uri
 import android.webkit.URLUtil
-import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.BraintreeClient
@@ -15,7 +14,7 @@ import org.json.JSONObject
 /**
  * Used to integrate with SEPA Direct Debit.
  */
-class SEPADirectDebitClient @VisibleForTesting internal constructor(
+class SEPADirectDebitClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val sepaDirectDebitApi: SEPADirectDebitApi = SEPADirectDebitApi(braintreeClient)
 ) {

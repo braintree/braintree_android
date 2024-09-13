@@ -2,6 +2,7 @@ package com.braintreepayments.api.googlepay
 
 import android.os.Parcelable
 import android.text.TextUtils
+import androidx.annotation.RestrictTo
 import com.google.android.gms.wallet.ShippingAddressRequirements
 import com.google.android.gms.wallet.TransactionInfo
 import com.google.android.gms.wallet.WalletConstants
@@ -140,8 +141,8 @@ class GooglePayRequest @JvmOverloads constructor(
      *
      * @return String
      */
-
     @SuppressWarnings("LongMethod", "CyclomaticComplexMethod", "NestedBlockDepth")
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun toJson(): String {
         val transactionInfoJson = JSONObject()
         val transactionInfo = transactionInfo
@@ -270,7 +271,7 @@ class GooglePayRequest @JvmOverloads constructor(
         }
     }
 
-    fun billingAddressFormatToString(): String {
+    internal fun billingAddressFormatToString(): String {
         var format = "MIN"
         if (billingAddressFormat == WalletConstants.BILLING_ADDRESS_FORMAT_FULL) {
             format = "FULL"
@@ -281,7 +282,7 @@ class GooglePayRequest @JvmOverloads constructor(
     /**
      * @return Allowed payment methods for a given payment method type.
      */
-    fun getAllowedPaymentMethod(type: String): JSONObject? {
+    internal fun getAllowedPaymentMethod(type: String): JSONObject? {
         return allowedPaymentMethods[type]?.let {
             JSONObject(it)
         }
@@ -290,7 +291,7 @@ class GooglePayRequest @JvmOverloads constructor(
     /**
      * @return Tokenization specification for a given payment method type.
      */
-    fun getTokenizationSpecificationForType(type: String): JSONObject? {
+    internal fun getTokenizationSpecificationForType(type: String): JSONObject? {
         return tokenizationSpecifications[type]?.let {
             JSONObject(it)
         }
@@ -299,7 +300,7 @@ class GooglePayRequest @JvmOverloads constructor(
     /**
      * @return Allowed authentication methods for a given payment method type.
      */
-    fun getAllowedAuthMethodsForType(type: String): JSONArray? {
+    internal fun getAllowedAuthMethodsForType(type: String): JSONArray? {
         return allowedAuthMethods[type]?.let {
             JSONArray(it)
         }
@@ -308,7 +309,7 @@ class GooglePayRequest @JvmOverloads constructor(
     /**
      * @return Allowed card networks for a given payment method type.
      */
-    fun getAllowedCardNetworksForType(type: String): JSONArray? {
+    internal fun getAllowedCardNetworksForType(type: String): JSONArray? {
         return allowedCardNetworks[type]?.let {
             JSONArray(it)
         }

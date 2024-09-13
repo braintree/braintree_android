@@ -1,7 +1,6 @@
 package com.braintreepayments.api.card
 
 import android.content.Context
-import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.card.CardNonce.Companion.fromJSON
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.ApiClient
@@ -16,7 +15,7 @@ import org.json.JSONObject
  * Used to tokenize credit or debit cards using a [Card]. For more information see the
  * [documentation](https://developer.paypal.com/braintree/docs/guides/credit-cards/overview)
  */
-class CardClient @VisibleForTesting @JvmOverloads internal constructor(
+class CardClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val apiClient: ApiClient = ApiClient(braintreeClient),
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance

@@ -55,7 +55,7 @@ data class LocalPaymentRequest @JvmOverloads constructor(
     var surname: String? = null
 ) {
 
-    fun build(returnUrl: String?, cancelUrl: String?): String {
+    internal fun build(returnUrl: String?, cancelUrl: String?): String {
         try {
             val payload = JSONObject()
                 .put(INTENT_KEY, "sale")

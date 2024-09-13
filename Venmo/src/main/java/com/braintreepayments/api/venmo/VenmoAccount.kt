@@ -1,6 +1,5 @@
 package com.braintreepayments.api.venmo
 
-import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.IntegrationType
 import com.braintreepayments.api.core.MetadataBuilder
 import com.braintreepayments.api.core.PaymentMethod
@@ -9,13 +8,12 @@ import org.json.JSONException
 import org.json.JSONObject
 
 internal class VenmoAccount(
-    var nonce: String? = null,
+    private val nonce: String? = null,
     override var sessionId: String? = null,
     override var source: String? = DEFAULT_SOURCE,
     override var integration: IntegrationType? = IntegrationType.CUSTOM
 ) : PaymentMethod {
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     private fun buildMetadataJSON(): JSONObject {
         return MetadataBuilder()
             .sessionId(sessionId)
@@ -24,10 +22,6 @@ internal class VenmoAccount(
             .build()
     }
 
-    /**
-     * @hide
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @Throws(JSONException::class)
     override fun buildJSON(): JSONObject {
         val paymentMethodNonceJson = JSONObject()
@@ -39,12 +33,7 @@ internal class VenmoAccount(
         }
     }
 
-    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    override val apiPath: String
-        /**
-         * @hide
-         */
-        get() = "venmo_accounts"
+    override val apiPath = "venmo_accounts"
 
     companion object {
         private const val VENMO_ACCOUNT_KEY = "venmoAccount"

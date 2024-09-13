@@ -1,6 +1,7 @@
 package com.braintreepayments.api.threedsecure
 
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import com.cardinalcommerce.shared.userinterfaces.ToolbarCustomization
 import kotlinx.parcelize.Parcelize
 
@@ -15,7 +16,7 @@ import kotlinx.parcelize.Parcelize
  * @property buttonText Text for the button. For example, “Cancel”.
  */
 @Parcelize
-data class ThreeDSecureV2ToolbarCustomization(
+data class ThreeDSecureV2ToolbarCustomization @JvmOverloads constructor(
     var textFontName: String? = null,
     var textColor: String? = null,
     var textFontSize: Int = 0,
@@ -24,6 +25,7 @@ data class ThreeDSecureV2ToolbarCustomization(
     var buttonText: String? = null
 ) : Parcelable {
 
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val cardinalToolbarCustomization: ToolbarCustomization
         get() {
             return ToolbarCustomization().also {
