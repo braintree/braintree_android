@@ -1,6 +1,6 @@
 plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.android
 }
 
 android {
@@ -24,34 +24,24 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
-
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
-    kotlin {
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of("11"))
-        }
-    }
 }
 
 dependencies {
-    api deps.androidxTestRunner
-    api deps.androidxTestRules
-    api deps.appCompat
+    api libs.androidx.test.runner
+    api libs.androidx.test.rules
+    api libs.androidx.appcompat
 
-    implementation deps.junitTest
+    implementation libs.androidx.junit
 
-    compileOnly deps.robolectric
-    compileOnly deps.jsonAssert
-    compileOnly deps.mockk
-    compileOnly deps.mockitoCore
+    compileOnly libs.robolectric
+    compileOnly libs.json.assert
+    compileOnly libs.mockk
+    compileOnly libs.mockito.core
 
     implementation project(':BraintreeCore')
     implementation project(':ThreeDSecure')
-    implementation deps.coreKtx
-    implementation deps.kotlinStdLib
+    implementation libs.androidx.core.ktx
+    implementation libs.kotlin.stdlib
 
 }
 repositories {

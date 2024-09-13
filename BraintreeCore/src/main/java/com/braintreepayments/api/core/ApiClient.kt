@@ -1,7 +1,6 @@
 package com.braintreepayments.api.core
 
 import androidx.annotation.RestrictTo
-import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -9,39 +8,34 @@ import org.json.JSONObject
  * @suppress
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class ApiClient(private val braintreeClient: BraintreeClient) {
+class ApiClient(
+    private val braintreeClient: BraintreeClient,
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
+) {
 
     fun tokenizeGraphQL(tokenizePayload: JSONObject, callback: TokenizeCallback) =
         braintreeClient.run {
-            sendAnalyticsEvent("card.graphql.tokenization.started")
-            sendGraphQLPOST(tokenizePayload, object : HttpResponseCallback {
-                override fun onResult(responseBody: String?, httpError: Exception?) {
-                    parseResponseToJSON(responseBody)?.let { json ->
-                        sendAnalyticsEvent("card.graphql.tokenization.success")
-                        callback.onResult(json, null)
-                    } ?: httpError?.let { error ->
-                        sendAnalyticsEvent("card.graphql.tokenization.failure")
-                        callback.onResult(null, error)
-                    }
+            sendGraphQLPOST(tokenizePayload) { responseBody, httpError ->
+                parseResponseToJSON(responseBody)?.let { json ->
+                    callback.onResult(json, null)
+                } ?: httpError?.let { error ->
+                    callback.onResult(null, error)
                 }
-            })
+            }
         }
 
     fun tokenizeREST(paymentMethod: PaymentMethod, callback: TokenizeCallback) =
         braintreeClient.run {
             val url = versionedPath("$PAYMENT_METHOD_ENDPOINT/${paymentMethod.apiPath}")
-            paymentMethod.setSessionId(braintreeClient.sessionId)
+            paymentMethod.sessionId = analyticsParamRepository.sessionId
 
-            sendAnalyticsEvent("card.rest.tokenization.started")
             sendPOST(
                 url = url,
                 data = paymentMethod.buildJSON().toString(),
             ) { responseBody, httpError ->
                 parseResponseToJSON(responseBody)?.let { json ->
-                    sendAnalyticsEvent("card.rest.tokenization.success")
                     callback.onResult(json, null)
                 } ?: httpError?.let { error ->
-                    sendAnalyticsEvent("card.rest.tokenization.failure")
                     callback.onResult(null, error)
                 }
             }

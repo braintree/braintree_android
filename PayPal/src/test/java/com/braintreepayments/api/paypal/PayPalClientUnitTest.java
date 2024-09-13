@@ -85,7 +85,7 @@ public class PayPalClientUnitTest {
             ((PayPalPaymentAuthRequest.ReadyToLaunch) request).getRequestParams();
 
         BrowserSwitchOptions browserSwitchOptions = paymentAuthRequestCaptured.getBrowserSwitchOptions();
-        assertEquals(BraintreeRequestCodes.PAYPAL, browserSwitchOptions.getRequestCode());
+        assertEquals(BraintreeRequestCodes.PAYPAL.getCode(), browserSwitchOptions.getRequestCode());
         assertFalse(browserSwitchOptions.isLaunchAsNewTask());
 
         assertEquals(Uri.parse("https://example.com/approval/url"), browserSwitchOptions.getUrl());
@@ -304,7 +304,7 @@ public class PayPalClientUnitTest {
         when(browserSwitchResult.getReturnUrl()).thenReturn(uri);
 
         PayPalPaymentAuthResult.Success payPalPaymentAuthResult = new PayPalPaymentAuthResult.Success(
-            new PayPalPaymentAuthResultInfo(browserSwitchResult));
+            browserSwitchResult);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
 
@@ -348,7 +348,7 @@ public class PayPalClientUnitTest {
         when(browserSwitchResult.getReturnUrl()).thenReturn(uri);
 
         PayPalPaymentAuthResult.Success payPalPaymentAuthResult = new PayPalPaymentAuthResult.Success(
-            new PayPalPaymentAuthResultInfo(browserSwitchResult));
+           browserSwitchResult);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
 
@@ -393,7 +393,7 @@ public class PayPalClientUnitTest {
         when(browserSwitchResult.getReturnUrl()).thenReturn(uri);
 
         PayPalPaymentAuthResult.Success payPalPaymentAuthResult = new PayPalPaymentAuthResult.Success(
-            new PayPalPaymentAuthResultInfo(browserSwitchResult));
+            browserSwitchResult);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
 
@@ -433,7 +433,7 @@ public class PayPalClientUnitTest {
         when(browserSwitchResult.getReturnUrl()).thenReturn(uri);
 
         PayPalPaymentAuthResult.Success payPalPaymentAuthResult = new PayPalPaymentAuthResult.Success(
-            new PayPalPaymentAuthResultInfo(browserSwitchResult));
+           browserSwitchResult);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
 

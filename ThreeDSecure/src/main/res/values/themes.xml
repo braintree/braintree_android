@@ -9,9 +9,10 @@
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
+    <!-- Ref: https://stackoverflow.com/a/36355924 -->
     <style name="Theme.Translucent.NoTitleBar">
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
 

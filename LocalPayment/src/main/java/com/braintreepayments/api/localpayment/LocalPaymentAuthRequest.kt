@@ -5,8 +5,11 @@ package com.braintreepayments.api.localpayment
  */
 sealed class LocalPaymentAuthRequest {
 
+    // TODO: make requestParams internal when LocalPaymentClientUnitTest is converted to Kotlin
     /**
      * The request was successfully created and is ready to be launched by [LocalPaymentLauncher]
+     * @param requestParams this parameter is intended for internal use only. It is not covered by
+     * semantic versioning and may be changed or removed at any time.
      */
     class ReadyToLaunch(val requestParams: LocalPaymentAuthRequestParams) :
         LocalPaymentAuthRequest()

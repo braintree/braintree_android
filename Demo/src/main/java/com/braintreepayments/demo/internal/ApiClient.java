@@ -5,15 +5,16 @@ import com.braintreepayments.demo.TransactionRequest;
 import com.braintreepayments.demo.models.ClientToken;
 import com.braintreepayments.demo.models.Transaction;
 
-import retrofit.Callback;
-import retrofit.http.Body;
-import retrofit.http.POST;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.http.Body;
+import retrofit2.http.POST;
 
 public interface ApiClient {
 
-    @POST("/client_tokens")
-    void getClientToken(@Body ClientTokenRequest request, Callback<ClientToken> callback);
+    @POST("client_tokens")
+    Call<ClientToken> getClientToken(@Body ClientTokenRequest request);
 
-    @POST("/transactions")
-    void createTransaction(@Body TransactionRequest request, Callback<Transaction> callback);
+    @POST("transactions")
+    Call<Transaction> createTransaction(@Body TransactionRequest request);
 }

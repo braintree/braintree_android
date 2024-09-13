@@ -2,8 +2,6 @@ package com.braintreepayments.api.venmo;
 
 import static junit.framework.Assert.assertEquals;
 
-import com.braintreepayments.api.venmo.VenmoAccount;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;

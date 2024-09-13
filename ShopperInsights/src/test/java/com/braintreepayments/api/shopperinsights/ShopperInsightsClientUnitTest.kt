@@ -2,10 +2,11 @@ package com.braintreepayments.api.shopperinsights
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.braintreepayments.api.ExperimentalBetaApi
+import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import io.mockk.every
@@ -36,14 +37,23 @@ class ShopperInsightsClientUnitTest {
     private lateinit var sut: ShopperInsightsClient
     private lateinit var api: ShopperInsightsApi
     private lateinit var braintreeClient: BraintreeClient
+    private lateinit var analyticsParamRepository: AnalyticsParamRepository
     private lateinit var context: Context
 
     @Before
     fun beforeEach() {
         api = mockk(relaxed = true)
         braintreeClient = mockk(relaxed = true)
-        sut = ShopperInsightsClient(api, braintreeClient)
+        analyticsParamRepository = mockk(relaxed = true)
+        sut = ShopperInsightsClient(braintreeClient, analyticsParamRepository, api)
         context = ApplicationProvider.getApplicationContext()
+    }
+
+    @Test
+    fun `when getRecommendedPaymentMethods is called, session id is reset`() {
+        sut.getRecommendedPaymentMethods(mockk(relaxed = true), mockk(relaxed = true))
+
+        verify { analyticsParamRepository.resetSessionId() }
     }
 
     @Test
@@ -384,7 +394,7 @@ class ShopperInsightsClientUnitTest {
             .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
             .build()
 
-        sut = ShopperInsightsClient(api, braintreeClient)
+        sut = ShopperInsightsClient(braintreeClient, analyticsParamRepository, api)
 
         val request = ShopperInsightsRequest("some-email", null)
         sut.getRecommendedPaymentMethods(request) { result ->

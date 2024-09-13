@@ -1,5 +1,5 @@
 package com.braintreepayments.api.sepadirectdebit
 
-internal interface SEPADirectDebitInternalTokenizeCallback {
+internal fun interface SEPADirectDebitInternalTokenizeCallback {
     fun onResult(sepaDirectDebitNonce: SEPADirectDebitNonce?, error: Exception?)
 }

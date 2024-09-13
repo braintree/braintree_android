@@ -1,7 +1,9 @@
 package com.braintreepayments.api.paypal
 
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.BrowserSwitchOptions
 
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 data class PayPalPaymentAuthRequestParams @JvmOverloads internal constructor(
     private val payPalRequest: PayPalRequest,
     var browserSwitchOptions: BrowserSwitchOptions?,

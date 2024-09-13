@@ -1,7 +1,7 @@
 plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
-    id 'kotlin-parcelize'
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.android
+    alias libs.plugins.kotlin.parcelize
 }
 
 android {
@@ -31,16 +31,6 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
-
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
-    kotlin {
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of("11"))
-        }
-    }
 }
 
 dependencies {
@@ -48,17 +38,17 @@ dependencies {
     api project(':Card')
     api(group: 'com.visa.checkout', name: 'visacheckout-android-sdk', version: '6.6.1', ext: 'aar')
 
-    implementation deps.appCompat
+    implementation libs.androidx.appcompat
 
     testImplementation project(':TestUtils')
-    testImplementation deps.playServicesWallet
-    testImplementation deps.androidxTestCore
-    testImplementation deps.androidxTestRules
-    testImplementation deps.androidxTestRunner
-    testImplementation deps.robolectric
-    testImplementation deps.mockk
-    testImplementation deps.mockitoCore
-    testImplementation deps.jsonAssert
+    testImplementation libs.play.services.wallet
+    testImplementation libs.androidx.test.core
+    testImplementation libs.androidx.test.rules
+    testImplementation libs.androidx.test.runner
+    testImplementation libs.robolectric
+    testImplementation libs.mockk
+    testImplementation libs.mockito.core
+    testImplementation libs.json.assert
 }
 
 /* maven deploy + signing */

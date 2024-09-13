@@ -45,9 +45,9 @@ public class PaymentMethodNonceFormatter {
         return "Card Last Two: " + nonce.getLastTwo() + "\n" +
                 convertBinDataToString(nonce.getBinData()) + "\n" +
                 "3DS: \n" +
-                "         - isLiabilityShifted: " + nonce.getThreeDSecureInfo().isLiabilityShifted() + "\n" +
-                "         - isLiabilityShiftPossible: " + nonce.getThreeDSecureInfo().isLiabilityShiftPossible() + "\n" +
-                "         - wasVerified: " + nonce.getThreeDSecureInfo().wasVerified();
+                "         - isLiabilityShifted: " + nonce.getThreeDSecureInfo().getLiabilityShifted() + "\n" +
+                "         - isLiabilityShiftPossible: " + nonce.getThreeDSecureInfo().getLiabilityShiftPossible() + "\n" +
+                "         - wasVerified: " + nonce.getThreeDSecureInfo().getWasVerified();
     }
 
     private static String convertPayPalNonceToString(PayPalAccountNonce nonce) {

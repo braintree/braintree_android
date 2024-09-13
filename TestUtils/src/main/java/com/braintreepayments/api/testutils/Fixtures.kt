@@ -55,7 +55,8 @@ object Fixtures {
             "md": "merchant-descriptor",
             "termUrl": "https://term-url/",
             "pareq": "sample-pareq",
-            "transactionId": "sample-transaction-id"
+            "transactionId": "sample-transaction-id",
+            "threeDSecureVersion": "2.1.0"
           },
           "paymentMethod": {
             "type": "CreditCard",
@@ -1585,6 +1586,23 @@ object Fixtures {
               }
             }
           ]
+        }
+    """
+
+    // language=JSON
+    const val PAYMENT_METHODS_LOCAL_PAYMENT_MISSING_FIELDS_RESPONSE = """
+        {
+           "paypalAccounts": [
+              {
+                 "consumed": false,
+                 "description": "PayPal",
+                 "details": {
+                    "correlationId": "c7ce54e0cde5406785b13c99086a9f4c"
+                 },
+                 "nonce": "141b7583-2922-1ce6-1f2e-f352b69115d6",
+                 "type": "PayPalAccount"
+              }
+           ]
         }
     """
 

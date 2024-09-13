@@ -25,11 +25,11 @@ public class ThreeDSecureInfoUnitTest {
         assertEquals("fake-txn-id", info.getDsTransactionId());
         assertEquals("07", info.getEciFlag());
         assertEquals("Y", info.getEnrolled());
-        assertTrue(info.isLiabilityShiftPossible());
-        assertFalse(info.isLiabilityShifted());
+        assertTrue(info.getLiabilityShiftPossible());
+        assertFalse(info.getLiabilityShifted());
         assertEquals("lookup_enrolled", info.getStatus());
         assertEquals("2.2.0", info.getThreeDSecureVersion());
-        assertTrue(info.wasVerified());
+        assertTrue(info.getWasVerified());
         assertEquals("fake-xid", info.getXid());
         assertEquals("fake-acs-transaction-id", info.getAcsTransactionId());
         assertEquals("fake-threedsecure-authentication-id", info.getThreeDSecureAuthenticationId());

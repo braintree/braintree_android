@@ -4,7 +4,6 @@ $dokka.linkExtension:html
 module:AmericanExpress
 com.braintreepayments.api.americanexpress
 module:BraintreeCore
-com.braintreepayments.api
 com.braintreepayments.api.core
 module:Card
 com.braintreepayments.api.card

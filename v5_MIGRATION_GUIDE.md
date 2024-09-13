@@ -39,7 +39,7 @@ are required.
 
 ```diff
 - implementation 'com.braintreepayments.api:card:4.x.x'
-+ implementation 'com.braintreepayments.api:card:5.0.0-beta1'
++ implementation 'com.braintreepayments.api:card:5.0.0-beta2'
 ```
 
 ## Braintree Client
@@ -234,6 +234,9 @@ of your Fragment.
 `BraintreeClient` and `GooglePayClient` no longer require references to Fragment or Activity and
 do not need to be instantiated in `OnCreate`.
 
+The `TransactionInfo` object has been replaced with individual parameters on the `GooglePayRequest` 
+for transaction info: `currencyCode`, `totalPrice`, and `totalPriceStatus`.
+
 ```diff
 class MyActivity : FragmentActivity() {
     
@@ -277,7 +280,7 @@ class MyActivity : FragmentActivity() {
 +           when (paymentAuthRequest) {
 +            is GooglePayPaymentAuthRequest.Failure -> { /* handle error */ }
 +            is GooglePayPaymentAuthRequest.ReadyToLaunch -> { 
-+               googlePayLauncher.launch(paymentAuthRequest.requestParams) 
++               googlePayLauncher.launch(paymentAuthRequest) 
 +            }
 +       }
     }
