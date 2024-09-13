@@ -161,9 +161,7 @@ class GooglePayClient internal constructor(
             } else {
                 if (e != null) {
                     callback.onTokenizationParametersResult(
-                        GooglePayTokenizationParameters.Failure(
-                            e
-                        )
+                        GooglePayTokenizationParameters.Failure(e)
                     )
                 } else {
                     callback.onTokenizationParametersResult(null)
