@@ -234,6 +234,9 @@ of your Fragment.
 `BraintreeClient` and `GooglePayClient` no longer require references to Fragment or Activity and
 do not need to be instantiated in `OnCreate`.
 
+The `TransactionInfo` object has been replaced with individual parameters on the `GooglePayRequest` 
+for transaction info: `currencyCode`, `totalPrice`, and `totalPriceStatus`.
+
 ```diff
 class MyActivity : FragmentActivity() {
     

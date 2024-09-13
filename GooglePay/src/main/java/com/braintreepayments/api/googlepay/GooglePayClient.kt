@@ -200,17 +200,6 @@ class GooglePayClient internal constructor(
             return
         }
 
-        if (request.transactionInfo == null) {
-            callbackPaymentRequestFailure(
-                GooglePayPaymentAuthRequest.Failure(
-                    BraintreeException(
-                        "Cannot pass null TransactionInfo to requestPayment"
-                    )
-                ), callback
-            )
-            return
-        }
-
         braintreeClient.getConfiguration { configuration: Configuration?, configError: Exception? ->
 
             if (configuration?.isGooglePayEnabled == true) {
@@ -434,7 +423,7 @@ class GooglePayClient internal constructor(
             if (request.isBillingAddressRequired) {
                 defaultParameters.put(
                     "billingAddressParameters",
-                    JSONObject().put("format", request.billingAddressFormatToString())
+                    JSONObject().put("format", request.billingAddressFormat)
                         .put("phoneNumberRequired", request.isPhoneNumberRequired)
                 )
             }

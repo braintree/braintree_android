@@ -33,7 +33,6 @@ import com.google.android.gms.wallet.IsReadyToPayRequest;
 import com.google.android.gms.wallet.PaymentData;
 import com.google.android.gms.wallet.PaymentDataRequest;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
-import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
 
 import org.json.JSONArray;
@@ -48,6 +47,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.Collection;
+import java.util.List;
 
 @RunWith(RobolectricTestRunner.class)
 public class GooglePayClientUnitTest {
@@ -60,7 +60,7 @@ public class GooglePayClientUnitTest {
     private GooglePayPaymentAuthRequestCallback intentDataCallback;
     private GooglePayTokenizeCallback activityResultCallback;
     private ActivityInfo activityInfo;
-    
+
     private AnalyticsParamRepository analyticsParamRepository;
 
     @Before
@@ -72,13 +72,7 @@ public class GooglePayClientUnitTest {
         activityInfo = mock(ActivityInfo.class);
         analyticsParamRepository = mock(AnalyticsParamRepository.class);
 
-        baseRequest = new GooglePayRequest();
-        baseRequest.setTransactionInfo(TransactionInfo.newBuilder()
-                .setTotalPrice("1.00")
-                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                .setCurrencyCode("USD")
-                .build());
-
+        baseRequest = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
         when(activityInfo.getThemeResource()).thenReturn(R.style.bt_transparent_activity);
     }
 
@@ -213,20 +207,14 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = new GooglePayRequest();
+        GooglePayRequest googlePayRequest = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
         googlePayRequest.setAllowPrepaidCards(true);
-        googlePayRequest.setBillingAddressFormat(1);
+        googlePayRequest.setBillingAddressFormat(GooglePayBillingAddressFormat.FULL);
         googlePayRequest.setBillingAddressRequired(true);
         googlePayRequest.setEmailRequired(true);
         googlePayRequest.setPhoneNumberRequired(true);
         googlePayRequest.setShippingAddressRequired(true);
-        googlePayRequest.setShippingAddressRequirements(
-                ShippingAddressRequirements.newBuilder().addAllowedCountryCode("USA").build());
-        googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
-                .setTotalPrice("1.00")
-                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                .setCurrencyCode("USD")
-                .build());
+        googlePayRequest.setShippingAddressParameters(new GooglePayShippingAddressParameters(List.of("USA")));
 
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
@@ -345,12 +333,7 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = new GooglePayRequest();
-        googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
-                .setTotalPrice("1.00")
-                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                .setCurrencyCode("USD")
-                .build());
+        GooglePayRequest googlePayRequest = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
 
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
@@ -396,12 +379,7 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = new GooglePayRequest();
-        googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
-                .setTotalPrice("1.00")
-                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                .setCurrencyCode("USD")
-                .build());
+        GooglePayRequest googlePayRequest = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
 
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
@@ -447,12 +425,7 @@ public class GooglePayClientUnitTest {
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayRequest googlePayRequest = new GooglePayRequest();
-        googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
-                .setTotalPrice("1.00")
-                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                .setCurrencyCode("USD")
-                .build());
+        GooglePayRequest googlePayRequest = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
 
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
@@ -463,36 +436,6 @@ public class GooglePayClientUnitTest {
         InOrder order = inOrder(braintreeClient);
         order.verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.PAYMENT_REQUEST_STARTED), any());
         order.verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.PAYMENT_REQUEST_SUCCEEDED), any());
-    }
-
-    @Test
-    public void createPaymentAuthRequest_postsExceptionWhenTransactionInfoIsNull() {
-        Configuration configuration = new TestConfigurationBuilder()
-                .googlePay(new TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
-                        .environment("sandbox")
-                        .googleAuthorizationFingerprint("google-auth-fingerprint")
-                        .paypalClientId("paypal-client-id-for-google-payment")
-                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
-                        .enabled(true))
-                .withAnalytics()
-                .buildConfiguration();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
-                .activityInfo(activityInfo)
-                .build();
-
-        GooglePayInternalClient internalGooglePayClient =
-                new MockGooglePayInternalClientBuilder().build();
-        GooglePayRequest googlePayRequest = new GooglePayRequest();
-
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
-        sut.createPaymentAuthRequest(googlePayRequest, intentDataCallback);
-
-        InOrder order = inOrder(braintreeClient);
-        order.verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.PAYMENT_REQUEST_STARTED), any());
-        order.verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.PAYMENT_REQUEST_FAILED), any());
     }
 
     @Test
