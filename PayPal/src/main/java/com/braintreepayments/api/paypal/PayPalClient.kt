@@ -255,7 +255,6 @@ class PayPalClient @VisibleForTesting internal constructor(
 
     @ExperimentalBetaApi
     fun createEditErrorRequest(
-        context: Context,
         payPalVaultErrorHandlingEditRequest: PayPalVaultErrorHandlingEditRequest,
         callback: PayPalVaultEditCallback
     ) {

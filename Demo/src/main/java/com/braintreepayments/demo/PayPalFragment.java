@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import androidx.annotation.NonNull;
@@ -55,6 +56,7 @@ public class PayPalFragment extends BaseFragment {
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
         Switch ppSwitch = view.findViewById(R.id.paypal_edit_error_request_toggle);
         TextInputEditText editText = view.findViewById(R.id.paypal_edit_vault_id_field);
+        TextInputEditText riskCorrelationIdText = view.findViewById(R.id.paypal_edit_fi_risk_correlation_id_field);
 
         Button editVaultButton = view.findViewById(R.id.paypal_edit_vault_button);
 
@@ -66,8 +68,28 @@ public class PayPalFragment extends BaseFragment {
         });
 
         editVaultButton.setOnClickListener(v -> {
-            launchPayPalEditFIVault(true, editText.getText().toString());
+            boolean isEditFIErrorRequestOn = ppSwitch.isChecked();
+
+            if(isEditFIErrorRequestOn) {
+                launchEditErrorRequest(editText.getText().toString());
+            } else {
+                launchPayPalEditFIVault(editText.getText().toString());
+            }
+
         });
+
+        ppSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked) {
+                    riskCorrelationIdText.setVisibility(View.VISIBLE);
+                } else {
+                    riskCorrelationIdText.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        riskCorrelationIdText.setVisibility(View.GONE);
 
         payPalClient = new PayPalClient(
                 requireContext(),
@@ -126,7 +148,7 @@ public class PayPalFragment extends BaseFragment {
     }
 
     @OptIn(markerClass = ExperimentalBetaApi.class)
-    private void launchPayPalEditFIVault(boolean isBillingAgreement, String editVaultId) {
+    private void launchPayPalEditFIVault(String editVaultId) {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
@@ -185,7 +207,7 @@ public class PayPalFragment extends BaseFragment {
                 null
         );
 
-        payPalClient.createEditErrorRequest(requireContext(), request, (result) -> {
+        payPalClient.createEditErrorRequest(request, (result) -> {
             if (result instanceof PayPalVaultEditResult.Failure) {
                 PayPalVaultEditResult.Failure.Failure failure = (PayPalVaultEditResult.Failure) result;
                 String correlationId = failure.getRiskCorrelationId();

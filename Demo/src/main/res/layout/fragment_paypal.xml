@@ -90,6 +90,21 @@
                     android:layout_marginStart="8dp" />
             </LinearLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:hint="Risk Correlation Id">
+
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/paypal_edit_fi_risk_correlation_id_field"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="test" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
         <Button
             android:id="@+id/paypal_edit_vault_button"
             android:layout_width="match_parent"
