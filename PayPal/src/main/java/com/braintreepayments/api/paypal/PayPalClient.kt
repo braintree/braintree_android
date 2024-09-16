@@ -251,8 +251,6 @@ class PayPalClient @VisibleForTesting internal constructor(
      * callback from [PayPalLauncher.handleReturnToAppFromBrowser]
      * @param callback [PayPalVaultEditCallback]
      */
-
-
     @ExperimentalBetaApi
     fun createEditErrorRequest(
         payPalVaultErrorHandlingEditRequest: PayPalVaultErrorHandlingEditRequest,

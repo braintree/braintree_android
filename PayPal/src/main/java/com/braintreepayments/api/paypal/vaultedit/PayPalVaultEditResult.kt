@@ -10,7 +10,7 @@ sealed class PayPalVaultEditResult {
      *
      * @property riskCorrelationId This ID is used to link subsequent retry attempts if payment is declined
      */
-    class Success internal constructor(
+    class ReadyToLaunch internal constructor(
         val riskCorrelationId: String,
         val response: EditFIAgreementSetup
     ) : PayPalVaultEditResult()

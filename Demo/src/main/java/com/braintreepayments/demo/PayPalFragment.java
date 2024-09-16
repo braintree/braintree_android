@@ -149,67 +149,28 @@ public class PayPalFragment extends BaseFragment {
 
     @OptIn(markerClass = ExperimentalBetaApi.class)
     private void launchPayPalEditFIVault(String editVaultId) {
-        FragmentActivity activity = getActivity();
-        activity.setProgressBarIndeterminateVisibility(true);
+        PayPalVaultEditRequest request = new PayPalVaultEditRequest(
+                editVaultId,
+                null
+        );
 
-        dataCollector = new DataCollector(requireContext(), super.getAuthStringArg());
+        payPalClient.createEditRequest(requireContext(), request, (result) -> {
+            if (result instanceof PayPalVaultEditResult.Failure) {
+                PayPalVaultEditResult.Failure.Failure failure = (PayPalVaultEditResult.Failure) result;
+                String correlationId = failure.getRiskCorrelationId();
+                //TODO: PayPalVaultErrorHandlingEditRequest and Analytics
+            }
 
-        if (Settings.shouldCollectDeviceData(requireActivity())) {
-            dataCollector.collectDeviceData(requireActivity(), new DataCollectorRequest(true), (dataCollectorResult) -> {
-                if (dataCollectorResult instanceof DataCollectorResult.Success) {
-                    deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
+            if (result instanceof PayPalVaultEditResult.ReadyToLaunch) {
+                PayPalVaultEditResult.ReadyToLaunch success = (PayPalVaultEditResult.ReadyToLaunch) result;
+                String correlationId = success.getRiskCorrelationId();
 
+                EditFIAgreementSetup response = success.getResponse();
 
-                }
-
-                PayPalVaultEditRequest request = new PayPalVaultEditRequest(
-                        editVaultId,
-                        null
-                );
-
-                payPalClient.createEditRequest(requireContext(), request, (result) -> {
-                    if (result instanceof PayPalVaultEditResult.Failure) {
-                        PayPalVaultEditResult.Failure.Failure failure = (PayPalVaultEditResult.Failure) result;
-                        String correlationId = failure.getRiskCorrelationId();
-                        //TODO: PayPalVaultErrorHandlingEditRequest and Analytics
-                    }
-
-                    if (result instanceof PayPalVaultEditResult.Success) {
-                        PayPalVaultEditResult.Success success = (PayPalVaultEditResult.Success) result;
-                        String correlationId = success.getRiskCorrelationId();
-
-                        EditFIAgreementSetup response = success.getResponse();
-
-                        //TODO: Launcher? and Analytics
-                        payPalLauncher.launch(requireActivity(), response.getApprovalURL(), "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/");
-                    }
-                });
-            });
-        } else {
-
-            PayPalVaultEditRequest request = new PayPalVaultEditRequest(
-                    editVaultId,
-                    null
-            );
-
-            payPalClient.createEditRequest(requireContext(), request, (result) -> {
-                if (result instanceof PayPalVaultEditResult.Failure) {
-                    PayPalVaultEditResult.Failure.Failure failure = (PayPalVaultEditResult.Failure) result;
-                    String correlationId = failure.getRiskCorrelationId();
-                    //TODO: PayPalVaultErrorHandlingEditRequest and Analytics
-                }
-
-                if (result instanceof PayPalVaultEditResult.Success) {
-                    PayPalVaultEditResult.Success success = (PayPalVaultEditResult.Success) result;
-                    String correlationId = success.getRiskCorrelationId();
-
-                    EditFIAgreementSetup response = success.getResponse();
-
-                    //TODO: Launcher? and Analytics
-                    payPalLauncher.launch(requireActivity(), response.getApprovalURL(), "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/");
-                }
-            });
-        }
+                //TODO: Launcher? and Analytics
+                payPalLauncher.launch(requireActivity(), response.getApprovalURL(), "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/");
+            }
+        });
     }
 
     @OptIn(markerClass = ExperimentalBetaApi.class)
@@ -226,8 +187,8 @@ public class PayPalFragment extends BaseFragment {
                 //TODO: PayPalVaultErrorHandlingEditRequest and Analytics
             }
 
-            if (result instanceof PayPalVaultEditResult.Success) {
-                PayPalVaultEditResult.Success success = (PayPalVaultEditResult.Success) result;
+            if (result instanceof PayPalVaultEditResult.ReadyToLaunch) {
+                PayPalVaultEditResult.ReadyToLaunch success = (PayPalVaultEditResult.ReadyToLaunch) result;
                 String correlationId = success.getRiskCorrelationId();
 
                 EditFIAgreementSetup response = success.getResponse();
@@ -250,20 +211,19 @@ public class PayPalFragment extends BaseFragment {
         } else {
             payPalRequest = createPayPalCheckoutRequest(activity, amount, buyerEmailAddress);
         }
-        payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest,
-                (paymentAuthRequest) -> {
-                    if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.Failure) {
-                        handleError(((PayPalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
-                    } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch) {
-                        PayPalPendingRequest request = payPalLauncher.launch(requireActivity(),
-                                ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
-                        if (request instanceof PayPalPendingRequest.Started) {
-                            storePendingRequest((PayPalPendingRequest.Started) request);
-                        } else if (request instanceof PayPalPendingRequest.Failure) {
-                            handleError(((PayPalPendingRequest.Failure) request).getError());
-                        }
-                    }
-                });
+        payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest, (paymentAuthRequest) -> {
+            if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.Failure) {
+                handleError(((PayPalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
+            } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch) {
+                PayPalPendingRequest request = payPalLauncher.launch(requireActivity(),
+                        ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
+                if (request instanceof PayPalPendingRequest.Started) {
+                    storePendingRequest((PayPalPendingRequest.Started) request);
+                } else if (request instanceof PayPalPendingRequest.Failure) {
+                    handleError(((PayPalPendingRequest.Failure) request).getError());
+                }
+            }
+        });
     }
 
     private void completePayPalFlow(PayPalPaymentAuthResult.Success paymentAuthResult) {

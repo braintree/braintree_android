@@ -197,7 +197,7 @@ internal class PayPalInternalClient(
                         agreementSetup.getString("paypalAppApprovalUrl")
                     )
 
-                    val result = PayPalVaultEditResult.Success(riskCorrelationId, editFIAgreementSetup)
+                    val result = PayPalVaultEditResult.ReadyToLaunch(riskCorrelationId, editFIAgreementSetup)
                     callback.onPayPalVaultEditResult(result)
                 } catch (jsonException: JSONException) {
                     val result = PayPalVaultEditResult.Failure(jsonException, riskCorrelationId)
@@ -273,7 +273,7 @@ internal class PayPalInternalClient(
                         agreementSetup.getString("paypalAppApprovalUrl")
                     )
 
-                    val result = PayPalVaultEditResult.Success(payPalVaultErrorHandlingEditRequest.riskCorrelationId, editFIAgreementSetup)
+                    val result = PayPalVaultEditResult.ReadyToLaunch(payPalVaultErrorHandlingEditRequest.riskCorrelationId, editFIAgreementSetup)
                     callback.onPayPalVaultEditResult(result)
                 } catch (jsonException: JSONException) {
                     val result = PayPalVaultEditResult.Failure(jsonException, payPalVaultErrorHandlingEditRequest.riskCorrelationId)
