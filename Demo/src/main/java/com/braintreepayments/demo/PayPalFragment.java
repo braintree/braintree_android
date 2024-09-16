@@ -163,12 +163,9 @@ public class PayPalFragment extends BaseFragment {
 
             if (result instanceof PayPalVaultEditResult.ReadyToLaunch) {
                 PayPalVaultEditResult.ReadyToLaunch success = (PayPalVaultEditResult.ReadyToLaunch) result;
-                String correlationId = success.getRiskCorrelationId();
 
-                EditFIAgreementSetup response = success.getResponse();
-
-                //TODO: Launcher? and Analytics
-                payPalLauncher.launch(requireActivity(), response.getApprovalURL(), "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/");
+                //TODO: Analytics
+                payPalLauncher.launch(requireActivity(), success);
             }
         });
     }
@@ -194,7 +191,7 @@ public class PayPalFragment extends BaseFragment {
                 EditFIAgreementSetup response = success.getResponse();
 
                 //TODO: Launcher? and Analytics
-                payPalLauncher.launch(requireActivity(), response.getApprovalURL(), "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/");
+                //payPalLauncher.launch(requireActivity(), response.getApprovalURL(), "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/");
             }
         });
     }

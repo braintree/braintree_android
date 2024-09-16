@@ -142,18 +142,17 @@ internal class PayPalInternalClient(
     fun sendVaultEditRequest(
         context: Context,
         payPalVaultEditRequest: PayPalVaultEditRequest,
-        callback: PayPalVaultEditCallback,
-        riskCorrelationId: String? = null
+        callback: PayPalVaultEditCallback
     ) {
-        if (riskCorrelationId != null) {
+        if (payPalVaultEditRequest.riskCorrelationId != null) {
             sendVaultEditRequestWithRiskCorrelationId(
                 context,
                 payPalVaultEditRequest,
-                riskCorrelationId,
+                payPalVaultEditRequest.riskCorrelationId,
                 callback
             )
         } else {
-            getClientMetadataId(riskCorrelationId, context) { clientMetadataId ->
+            getClientMetadataId(payPalVaultEditRequest.riskCorrelationId, context) { clientMetadataId ->
                 if (clientMetadataId == null) {
                     val result = PayPalVaultEditResult.Failure(BraintreeException("Could not retrieve clientMetaDataId"))
                     callback.onPayPalVaultEditResult(result)

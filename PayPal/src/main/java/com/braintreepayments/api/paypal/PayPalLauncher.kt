@@ -1,15 +1,14 @@
 package com.braintreepayments.api.paypal
 
 import android.content.Intent
-import android.net.Uri
 import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
-import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.BraintreeException
-import com.braintreepayments.api.core.BraintreeRequestCodes
+import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResult
 
 /**
  * Responsible for launching PayPal user authentication in a web browser
@@ -52,18 +51,19 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
         }
     }
 
+    @OptIn(ExperimentalBetaApi::class)
     fun launch(
         activity: ComponentActivity,
-        approvalUrl: String,
-        appLinkUri: String,
+        result: PayPalVaultEditResult.ReadyToLaunch
     ) {
-
-        val browserSwitchOptions = BrowserSwitchOptions()
-            .requestCode(BraintreeRequestCodes.PAYPAL.code)
-            .appLinkUri(Uri.parse(appLinkUri))
-            .url(Uri.parse(approvalUrl))
-
-        browserSwitchClient.start(activity, browserSwitchOptions)
+        result.browserSwitchOptions?.let { options ->
+            when (val request = browserSwitchClient.start(activity, options)) {
+                is BrowserSwitchStartResult.Failure -> PayPalPendingRequest.Failure(request.error)
+                is BrowserSwitchStartResult.Started -> PayPalPendingRequest.Started(request.pendingRequest)
+            }
+        } ?: run {
+            PayPalPendingRequest.Failure(BraintreeException("BrowserSwitchOptions is null"))
+        }
     }
 
     /**

@@ -17,6 +17,7 @@ import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResult
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest
 import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
@@ -97,8 +98,7 @@ class PayPalClient @VisibleForTesting internal constructor(
         internalPayPalClient.sendRequest(
             context,
             payPalRequest
-        ) { payPalResponse: PayPalPaymentAuthRequestParams?,
-            error: Exception? ->
+        ) { payPalResponse: PayPalPaymentAuthRequestParams?, error: Exception? ->
             if (payPalResponse != null) {
                 payPalContextId = payPalResponse.pairingId
                 try {
@@ -147,6 +147,18 @@ class PayPalClient @VisibleForTesting internal constructor(
             .url(Uri.parse(paymentAuthRequest.approvalUrl))
             .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
             .metadata(metadata)
+    }
+
+    @Throws(JSONException::class)
+    private fun buildBrowserSwitchOptionsForEditFI(
+        approvalUrl: String
+    ): BrowserSwitchOptions {
+
+        return BrowserSwitchOptions()
+            .requestCode(BraintreeRequestCodes.PAYPAL.code)
+            .appLinkUri(braintreeClient.appLinkReturnUri)
+            .url(Uri.parse(approvalUrl))
+            .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
     }
 
     /**
@@ -237,8 +249,14 @@ class PayPalClient @VisibleForTesting internal constructor(
         internalPayPalClient.sendVaultEditRequest(
             context,
             payPalVaultEditRequest,
-            callback
-        )
+        { result ->
+
+            if (result is PayPalVaultEditResult.ReadyToLaunch) {
+                result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.response.approvalURL)
+            }
+
+            callback.onPayPalVaultEditResult(result)
+        });
     }
 
     /**
@@ -257,9 +275,15 @@ class PayPalClient @VisibleForTesting internal constructor(
         callback: PayPalVaultEditCallback
     ) {
         internalPayPalClient.sendVaultEditErrorRequest(
-            payPalVaultErrorHandlingEditRequest,
-            callback
-        )
+           payPalVaultErrorHandlingEditRequest,
+         { result ->
+
+            if (result is PayPalVaultEditResult.ReadyToLaunch) {
+                result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.response.approvalURL)
+            }
+
+            callback.onPayPalVaultEditResult(result)
+        });
     }
 
     @Throws(
