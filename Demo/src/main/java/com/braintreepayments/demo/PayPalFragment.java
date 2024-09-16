@@ -14,7 +14,6 @@ import android.widget.Switch;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
-import androidx.compose.foundation.text2.input.internal.undo.TextEditType;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -67,7 +66,7 @@ public class PayPalFragment extends BaseFragment {
         });
 
         editVaultButton.setOnClickListener(v -> {
-            launchPayPalEditFIVault(true, buyerEmailEditText.getText().toString());
+            launchPayPalEditFIVault(true, editText.getText().toString());
         });
 
         payPalClient = new PayPalClient(
@@ -127,7 +126,7 @@ public class PayPalFragment extends BaseFragment {
     }
 
     @OptIn(markerClass = ExperimentalBetaApi.class)
-    private void launchPayPalEditFIVault(boolean isBillingAgreement, String buyerEmailAddress) {
+    private void launchPayPalEditFIVault(boolean isBillingAgreement, String editVaultId) {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
@@ -144,7 +143,7 @@ public class PayPalFragment extends BaseFragment {
                 // The Vault ID is encrypted and shared with us
                 // Server SDK call with a customer ID or PayPal account to get encrypted Billing Id and optional merchant account Id
                 PayPalVaultEditRequest request = new PayPalVaultEditRequest(
-                        "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=",
+                        editVaultId,
                         null
                 );
 
@@ -155,7 +154,7 @@ public class PayPalFragment extends BaseFragment {
         } else {
 
             PayPalVaultEditRequest request = new PayPalVaultEditRequest(
-                    "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=",
+                    editVaultId,
                     null
             );
 
@@ -180,9 +179,9 @@ public class PayPalFragment extends BaseFragment {
     }
 
     @OptIn(markerClass = ExperimentalBetaApi.class)
-    private void launchEditErrorRequest() {
+    private void launchEditErrorRequest(String editVaultId) {
         PayPalVaultErrorHandlingEditRequest request = new PayPalVaultErrorHandlingEditRequest(
-                "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=",
+                editVaultId,
                 null
         );
 

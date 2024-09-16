@@ -260,9 +260,7 @@ class PayPalClient @VisibleForTesting internal constructor(
         callback: PayPalVaultEditCallback
     ) {
         internalPayPalClient.sendVaultEditErrorRequest(
-            context,
             payPalVaultErrorHandlingEditRequest,
-            payPalVaultErrorHandlingEditRequest.riskCorrelationId,
             callback
         )
     }
