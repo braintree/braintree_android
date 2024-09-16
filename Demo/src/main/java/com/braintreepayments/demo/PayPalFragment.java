@@ -33,6 +33,7 @@ import com.braintreepayments.api.paypal.PayPalResult;
 import com.braintreepayments.api.paypal.vaultedit.EditFIAgreementSetup;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResult;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class PayPalFragment extends BaseFragment {
@@ -178,8 +179,30 @@ public class PayPalFragment extends BaseFragment {
         }
     }
 
-    private void launchEditRequest() {
-        // Initialize
+    @OptIn(markerClass = ExperimentalBetaApi.class)
+    private void launchEditErrorRequest() {
+        PayPalVaultErrorHandlingEditRequest request = new PayPalVaultErrorHandlingEditRequest(
+                "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=",
+                null
+        );
+
+        payPalClient.createEditErrorRequest(requireContext(), request, (result) -> {
+            if (result instanceof PayPalVaultEditResult.Failure) {
+                PayPalVaultEditResult.Failure.Failure failure = (PayPalVaultEditResult.Failure) result;
+                String correlationId = failure.getRiskCorrelationId();
+                //TODO: PayPalVaultErrorHandlingEditRequest and Analytics
+            }
+
+            if (result instanceof PayPalVaultEditResult.Success) {
+                PayPalVaultEditResult.Success success = (PayPalVaultEditResult.Success) result;
+                String correlationId = success.getRiskCorrelationId();
+
+                EditFIAgreementSetup response = success.getResponse();
+
+                //TODO: Launcher? and Analytics
+                payPalLauncher.launch(requireActivity(), response.getApprovalURL(), "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/");
+            }
+        });
     }
 
     private void launchPayPal(
