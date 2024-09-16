@@ -10,13 +10,15 @@ sealed class VenmoPaymentAuthResult {
     /**
      * A successful result that should be passed to [VenmoClient.tokenize] to complete the flow
      */
-    class Success(internal val browserSwitchSuccess: BrowserSwitchFinalResult.Success) : VenmoPaymentAuthResult()
+    class Success internal constructor(
+        internal val browserSwitchSuccess: BrowserSwitchFinalResult.Success
+    ) : VenmoPaymentAuthResult()
 
     /**
      * The browser switch failed.
      * @property [error] Error detailing the reason for the browser switch failure.
      */
-    class Failure(val error: Exception) : VenmoPaymentAuthResult()
+    class Failure internal constructor(val error: Exception) : VenmoPaymentAuthResult()
 
     /**
      * If no matching result can be found for the [VenmoPendingRequest.Started] passed to

@@ -59,18 +59,18 @@ internal data class EligiblePaymentsApiRequest(
             }.toString()
         }
 
-        internal const val KEY_COUNTRY_CODE = "country_code"
-        internal const val KEY_NATIONAL_NUMBER = "national_number"
-        internal const val KEY_CUSTOMER = "customer"
-        internal const val KEY_EMAIL = "email"
-        internal const val KEY_PHONE = "phone"
-        internal const val KEY_PURCHASE_UNITS = "purchase_units"
-        internal const val KEY_AMOUNT = "amount"
-        internal const val KEY_CURRENCY_CODE = "currency_code"
-        internal const val KEY_PREFERENCES = "preferences"
-        internal const val KEY_INCLUDE_ACCOUNT_DETAILS = "include_account_details"
-        internal const val KEY_PAYMENT_SOURCE_CONSTRAINT = "payment_source_constraint"
-        internal const val KEY_CONSTRAINT_TYPE = "constraint_type"
-        internal const val KEY_PAYMENT_SOURCES = "payment_sources"
+        private const val KEY_COUNTRY_CODE = "country_code"
+        private const val KEY_NATIONAL_NUMBER = "national_number"
+        private const val KEY_CUSTOMER = "customer"
+        private const val KEY_EMAIL = "email"
+        private const val KEY_PHONE = "phone"
+        private const val KEY_PURCHASE_UNITS = "purchase_units"
+        private const val KEY_AMOUNT = "amount"
+        private const val KEY_CURRENCY_CODE = "currency_code"
+        private const val KEY_PREFERENCES = "preferences"
+        private const val KEY_INCLUDE_ACCOUNT_DETAILS = "include_account_details"
+        private const val KEY_PAYMENT_SOURCE_CONSTRAINT = "payment_source_constraint"
+        private const val KEY_CONSTRAINT_TYPE = "constraint_type"
+        private const val KEY_PAYMENT_SOURCES = "payment_sources"
     }
 }

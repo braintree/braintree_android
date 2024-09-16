@@ -11,7 +11,7 @@ enum class IntegrationType(val stringValue: String) {
     DROP_IN("dropin");
 
     companion object {
-        fun fromString(stringValue: String?): IntegrationType? {
+        internal fun fromString(stringValue: String?): IntegrationType? {
             return values().firstOrNull { it.stringValue == stringValue }
         }
     }

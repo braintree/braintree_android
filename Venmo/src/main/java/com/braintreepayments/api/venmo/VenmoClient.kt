@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Base64
-import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.AnalyticsEventParams
@@ -25,7 +24,7 @@ import java.util.Objects
 /**
  * Used to create and tokenize Venmo accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/venmo/overview)
  */
-class VenmoClient @VisibleForTesting internal constructor(
+class VenmoClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val apiClient: ApiClient = ApiClient(braintreeClient),
     private val venmoApi: VenmoApi = VenmoApi(braintreeClient, apiClient),

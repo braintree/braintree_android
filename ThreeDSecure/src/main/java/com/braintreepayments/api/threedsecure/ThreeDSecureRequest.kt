@@ -1,6 +1,7 @@
 package com.braintreepayments.api.threedsecure
 
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
@@ -73,6 +74,7 @@ data class ThreeDSecureRequest @JvmOverloads constructor(
     /**
      * @return String representation of [ThreeDSecureRequest] for API use.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun build(dfReferenceId: String?): String {
         val additionalInfo: JSONObject = additionalInformation?.toJson() ?: JSONObject()
         val base = JSONObject()

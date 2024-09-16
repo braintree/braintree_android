@@ -11,11 +11,11 @@ sealed class LocalPaymentAuthRequest {
      * @param requestParams this parameter is intended for internal use only. It is not covered by
      * semantic versioning and may be changed or removed at any time.
      */
-    class ReadyToLaunch(val requestParams: LocalPaymentAuthRequestParams) :
+    class ReadyToLaunch internal constructor(val requestParams: LocalPaymentAuthRequestParams) :
         LocalPaymentAuthRequest()
 
     /**
      * There was an [error] creating the request
      */
-    class Failure(val error: Exception) : LocalPaymentAuthRequest()
+    class Failure internal constructor(val error: Exception) : LocalPaymentAuthRequest()
 }

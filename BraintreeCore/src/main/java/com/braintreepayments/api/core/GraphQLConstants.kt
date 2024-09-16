@@ -27,7 +27,6 @@ object GraphQLConstants {
     }
 
     object ErrorMessages {
-        const val UNKNOWN = "An unknown error occurred."
         const val USER = "Input is invalid."
     }
 

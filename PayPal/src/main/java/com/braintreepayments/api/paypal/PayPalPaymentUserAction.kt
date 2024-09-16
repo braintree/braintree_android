@@ -3,7 +3,7 @@ package com.braintreepayments.api.paypal
 /**
  * The call-to-action in the PayPal Checkout flow
  */
-enum class PayPalPaymentUserAction(val stringValue: String) {
+enum class PayPalPaymentUserAction(internal val stringValue: String) {
 
     /**
      * Shows the default call-to-action text on the PayPal Express Checkout page. This option

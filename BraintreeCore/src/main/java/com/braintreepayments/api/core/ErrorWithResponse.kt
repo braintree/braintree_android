@@ -84,7 +84,6 @@ data class ErrorWithResponse internal constructor(
          */
         @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         @Throws(JSONException::class)
-        @JvmStatic
         fun fromJson(json: String?) = ErrorWithResponse(errorResponse = json).apply {
             parseJson(json)
         }

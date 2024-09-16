@@ -14,10 +14,10 @@ sealed class LocalPaymentPendingRequest {
      * @property pendingRequestString - This String should be stored and passed to
      * [LocalPaymentLauncher.handleReturnToAppFromBrowser].
      */
-    class Started(val pendingRequestString: String) : LocalPaymentPendingRequest()
+    class Started internal constructor(val pendingRequestString: String) : LocalPaymentPendingRequest()
 
     /**
      * An error occurred launching the local payment browser flow. See [error] for details.
      */
-    class Failure(val error: Exception) : LocalPaymentPendingRequest()
+    class Failure internal constructor(val error: Exception) : LocalPaymentPendingRequest()
 }

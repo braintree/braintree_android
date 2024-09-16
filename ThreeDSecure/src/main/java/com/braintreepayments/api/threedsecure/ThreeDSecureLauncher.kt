@@ -4,6 +4,7 @@ import android.os.TransactionTooLargeException
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
+import androidx.annotation.RestrictTo
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import com.braintreepayments.api.core.BraintreeException
@@ -17,6 +18,7 @@ class ThreeDSecureLauncher internal constructor(
     private val callback: ThreeDSecureLauncherCallback
 ) {
 
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     var activityLauncher: ActivityResultLauncher<ThreeDSecureParams?> = registry.register(
         THREE_D_SECURE_RESULT,
         lifecycleOwner,

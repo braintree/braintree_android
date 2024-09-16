@@ -14,10 +14,12 @@ sealed class PayPalPendingRequest {
      * @property pendingRequestString - This String should be stored and passed to
      * [PayPalLauncher.handleReturnToAppFromBrowser].
      */
-    class Started(val pendingRequestString: String) : PayPalPendingRequest()
+    class Started internal constructor(
+        val pendingRequestString: String
+    ) : PayPalPendingRequest()
 
     /**
      * An error occurred launching the PayPal browser flow. See [error] for details.
      */
-    class Failure(val error: Exception) : PayPalPendingRequest()
+    class Failure internal constructor(val error: Exception) : PayPalPendingRequest()
 }

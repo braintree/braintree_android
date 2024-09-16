@@ -10,13 +10,15 @@ sealed class PayPalPaymentAuthResult {
     /**
      * A successful result that should be passed to [PayPalClient.tokenize] to complete the flow
      */
-    class Success(internal val browserSwitchSuccess: BrowserSwitchFinalResult.Success) : PayPalPaymentAuthResult()
+    class Success internal constructor(
+        internal val browserSwitchSuccess: BrowserSwitchFinalResult.Success
+    ) : PayPalPaymentAuthResult()
 
     /**
      * The browser switch failed.
      * @property [error] Error detailing the reason for the browser switch failure.
      */
-    class Failure(val error: Exception) : PayPalPaymentAuthResult()
+    class Failure internal constructor(val error: Exception) : PayPalPaymentAuthResult()
 
     /**
      * If no matching result can be found for the [PayPalPendingRequest.Started] passed to

@@ -3,11 +3,13 @@ package com.braintreepayments.api.sharedutils;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.RestrictTo;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class ThreadScheduler implements Scheduler {
 
     private final Handler mainThreadHandler;

@@ -26,6 +26,7 @@ import com.braintreepayments.api.paypal.PayPalPaymentAuthResult;
 import com.braintreepayments.api.paypal.PayPalPendingRequest;
 import com.braintreepayments.api.paypal.PayPalRequest;
 import com.braintreepayments.api.paypal.PayPalResult;
+import com.braintreepayments.api.sharedutils.AppHelper;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class PayPalFragment extends BaseFragment {

@@ -96,7 +96,6 @@ data class Card @JvmOverloads constructor(
         private const val AUTHENTICATION_INSIGHT_INPUT_KEY = "authenticationInsightInput"
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     private fun buildMetadataJSON(): JSONObject {
         return MetadataBuilder()
             .sessionId(sessionId)

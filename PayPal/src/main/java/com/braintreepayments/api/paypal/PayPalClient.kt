@@ -3,7 +3,6 @@ package com.braintreepayments.api.paypal
 import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
-import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeClient
@@ -19,7 +18,7 @@ import org.json.JSONObject
 /**
  * Used to tokenize PayPal accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4)
  */
-class PayPalClient @VisibleForTesting internal constructor(
+class PayPalClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient = PayPalInternalClient(braintreeClient),
 ) {

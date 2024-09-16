@@ -1,6 +1,7 @@
 package com.braintreepayments.api.threedsecure
 
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import com.cardinalcommerce.shared.userinterfaces.LabelCustomization
 import kotlinx.parcelize.Parcelize
 
@@ -16,7 +17,7 @@ import kotlinx.parcelize.Parcelize
  * @property headingTextFontSize Font size for the heading label text.
  */
 @Parcelize
-data class ThreeDSecureV2LabelCustomization(
+data class ThreeDSecureV2LabelCustomization @JvmOverloads constructor(
     var textFontName: String? = null,
     var textColor: String? = null,
     var textFontSize: Int = 0,
@@ -25,6 +26,7 @@ data class ThreeDSecureV2LabelCustomization(
     var headingTextFontSize: Int = 0
 ) : Parcelable {
 
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val cardinalLabelCustomization: LabelCustomization
         get() {
             return LabelCustomization().also {
