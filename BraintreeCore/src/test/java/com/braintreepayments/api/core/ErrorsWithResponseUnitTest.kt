@@ -35,6 +35,27 @@ class ErrorsWithResponseUnitTest {
     }
 
     @Test
+    fun `error_message is parsed to message field`() {
+        val topLevelError = Fixtures.ERRORS_AUTH_FINGERPRINT_WITH_ERROR_MESSAGE_ERROR
+        val errorWithResponse = ErrorWithResponse(422, topLevelError)
+        assertEquals("Authorization fingerprint is invalid", errorWithResponse.message)
+    }
+
+    @Test
+    fun `developer_message is parsed to message field`() {
+        val topLevelError = Fixtures.ERRORS_AUTH_FINGERPRINT_WITH_DEVELOPER_MESSAGE_ERROR
+        val errorWithResponse = ErrorWithResponse(422, topLevelError)
+        assertEquals("Authorization fingerprint is invalid", errorWithResponse.message)
+    }
+
+    @Test
+    fun `message is set to default when message fields are not found`() {
+        val topLevelError = Fixtures.ERRORS_AUTH_FINGERPRINT_WITH_UNKNOWN_MESSAGE_ERROR
+        val errorWithResponse = ErrorWithResponse(422, topLevelError)
+        assertEquals("Parsing error response failed", errorWithResponse.message)
+    }
+
+    @Test
     fun constructor_handlesTopLevelErrors() {
         val topLevelError = Fixtures.ERRORS_AUTH_FINGERPRINT_ERROR
         val errorWithResponse = ErrorWithResponse(422, topLevelError)
