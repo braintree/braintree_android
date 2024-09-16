@@ -71,7 +71,7 @@ public class PayPalFragment extends BaseFragment {
             boolean isEditFIErrorRequestOn = ppSwitch.isChecked();
 
             if(isEditFIErrorRequestOn) {
-                launchEditErrorRequest(editText.getText().toString());
+                launchEditErrorRequest(editText.getText().toString(),riskCorrelationIdText.getText().toString() );
             } else {
                 launchPayPalEditFIVault(editText.getText().toString());
             }
@@ -162,15 +162,27 @@ public class PayPalFragment extends BaseFragment {
 
                 }
 
-                // The Vault ID is encrypted and shared with us
-                // Server SDK call with a customer ID or PayPal account to get encrypted Billing Id and optional merchant account Id
                 PayPalVaultEditRequest request = new PayPalVaultEditRequest(
                         editVaultId,
                         null
                 );
 
-                payPalClient.createEditRequest(requireContext(), request,(result) -> {
-                    // TODO: capture the correlationId
+                payPalClient.createEditRequest(requireContext(), request, (result) -> {
+                    if (result instanceof PayPalVaultEditResult.Failure) {
+                        PayPalVaultEditResult.Failure.Failure failure = (PayPalVaultEditResult.Failure) result;
+                        String correlationId = failure.getRiskCorrelationId();
+                        //TODO: PayPalVaultErrorHandlingEditRequest and Analytics
+                    }
+
+                    if (result instanceof PayPalVaultEditResult.Success) {
+                        PayPalVaultEditResult.Success success = (PayPalVaultEditResult.Success) result;
+                        String correlationId = success.getRiskCorrelationId();
+
+                        EditFIAgreementSetup response = success.getResponse();
+
+                        //TODO: Launcher? and Analytics
+                        payPalLauncher.launch(requireActivity(), response.getApprovalURL(), "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/");
+                    }
                 });
             });
         } else {
@@ -201,10 +213,10 @@ public class PayPalFragment extends BaseFragment {
     }
 
     @OptIn(markerClass = ExperimentalBetaApi.class)
-    private void launchEditErrorRequest(String editVaultId) {
+    private void launchEditErrorRequest(String editVaultId, String riskCorrelationId) {
         PayPalVaultErrorHandlingEditRequest request = new PayPalVaultErrorHandlingEditRequest(
                 editVaultId,
-                null
+                riskCorrelationId
         );
 
         payPalClient.createEditErrorRequest(request, (result) -> {
