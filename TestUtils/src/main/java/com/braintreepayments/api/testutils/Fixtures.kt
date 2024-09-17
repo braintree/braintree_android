@@ -2173,12 +2173,12 @@ object Fixtures {
       "plan_type": "RECURRING",
       "plan_metadata": {
         "billing_cycles": [{
+            "trial": true,
+            "number_of_executions": 2,
             "billing_frequency_unit": "MONTH",
             "billing_frequency": 1,
-            "number_of_executions": 2,
             "sequence": 1,
             "start_date": "2024-04-06T00:00:00Z",
-            "trial": true,
             "pricing_scheme": {
               "pricing_model": "VARIABLE",
               "price": "1.00",
