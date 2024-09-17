@@ -64,7 +64,7 @@ class VenmoLauncher internal constructor(
      * from the Venmo flow
      * @return a [VenmoPaymentAuthResult.Success] that should be passed to [VenmoClient.tokenize]
      * to complete the Venmo payment flow. Returns [VenmoPaymentAuthResult.NoResult] if the user
-     * closed the browser to cancel the payment flow, or returned to the app without completing the
+     * canceled payment flow, or returned to the app without completing the
      * Venmo authentication flow.
      */
     fun handleReturnToApp(

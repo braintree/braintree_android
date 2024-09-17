@@ -105,12 +105,12 @@ class SEPADirectDebitClient internal constructor(
     // TODO: - The wording in this docstring is confusing to me. Let's improve & align across all clients.
     /**
      * After receiving a result from the SEPA mandate web flow via
-     * [SEPADirectDebitLauncher.handleReturnToAppFromBrowser] , pass the
+     * [SEPADirectDebitLauncher.handleReturnToApp] , pass the
      * [SEPADirectDebitPaymentAuthResult.Success] returned to this method to tokenize the SEPA
      * account and receive a [SEPADirectDebitNonce] on success.
      *
      * @param paymentAuthResult a [SEPADirectDebitPaymentAuthResult.Success] received from
-     * [SEPADirectDebitLauncher.handleReturnToAppFromBrowser]
+     * [SEPADirectDebitLauncher.handleReturnToApp]
      * @param callback [SEPADirectDebitInternalTokenizeCallback]
      */
     fun tokenize(

@@ -3,7 +3,7 @@ package com.braintreepayments.api.localpayment
 import com.braintreepayments.api.BrowserSwitchFinalResult
 
 /**
- * Result of the local payment web flow received from [LocalPaymentLauncher.handleReturnToAppFromBrowser].
+ * Result of the local payment web flow received from [LocalPaymentLauncher.handleReturnToApp].
  */
 sealed class LocalPaymentAuthResult {
 
@@ -22,7 +22,7 @@ sealed class LocalPaymentAuthResult {
 
     /**
      * If no matching result can be found for the [LocalPaymentPendingRequest.Started] passed to
-     * [LocalPaymentLauncher.handleReturnToAppFromBrowser]. This is expected if the user closed the
+     * [LocalPaymentLauncher.handleReturnToApp]. This is expected if the user closed the
      * browser to cancel the payment flow, or returns to the app without completing the
      * authentication flow.
      */

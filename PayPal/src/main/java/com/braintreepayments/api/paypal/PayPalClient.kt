@@ -143,12 +143,12 @@ class PayPalClient internal constructor(
 
     /**
      * After receiving a result from the PayPal web authentication flow via
-     * [PayPalLauncher.handleReturnToAppFromBrowser],
+     * [PayPalLauncher.handleReturnToApp],
      * pass the [PayPalPaymentAuthResult.Success] returned to this method to tokenize the PayPal
      * account and receive a [PayPalAccountNonce] on success.
      *
      * @param paymentAuthResult a [PayPalPaymentAuthResult.Success] received in the callback
-     * from  [PayPalLauncher.handleReturnToAppFromBrowser]
+     * from  [PayPalLauncher.handleReturnToApp]
      * @param callback          [PayPalTokenizeCallback]
      */
     @Suppress("SwallowedException")

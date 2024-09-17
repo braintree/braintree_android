@@ -92,7 +92,7 @@ class PayPalLauncherUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun `handleReturnToAppFromBrowser when result exists returns result`() {
+    fun `handleReturnToApp when result exists returns result`() {
         val browserSwitchFinalResult = mockk<BrowserSwitchFinalResult.Success>()
         every {
             browserSwitchClient.completeRequest(
@@ -101,7 +101,7 @@ class PayPalLauncherUnitTest {
             )
         } returns browserSwitchFinalResult
 
-        val paymentAuthResult = sut.handleReturnToAppFromBrowser(
+        val paymentAuthResult = sut.handleReturnToApp(
             PayPalPendingRequest.Started(pendingRequestString), intent
         )
 
@@ -114,12 +114,12 @@ class PayPalLauncherUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun `handleReturnToAppFromBrowser when result does not exist returns null`() {
+    fun `handleReturnToApp when result does not exist returns null`() {
         every {
             browserSwitchClient.completeRequest(intent, pendingRequestString)
         } returns BrowserSwitchFinalResult.NoResult
 
-        val paymentAuthResult = sut.handleReturnToAppFromBrowser(
+        val paymentAuthResult = sut.handleReturnToApp(
             PayPalPendingRequest.Started(pendingRequestString), intent
         )
 
