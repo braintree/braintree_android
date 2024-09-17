@@ -32,7 +32,7 @@ import com.braintreepayments.api.paypal.PayPalPendingRequest;
 import com.braintreepayments.api.paypal.PayPalRequest;
 import com.braintreepayments.api.paypal.PayPalResult;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult;
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResponse;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest;
 import com.google.android.material.textfield.TextInputEditText;
@@ -200,7 +200,7 @@ public class PayPalFragment extends BaseFragment {
 
     @OptIn(markerClass = ExperimentalBetaApi.class)
     private void launchPayPalEditFIVault(String editVaultId) {
-        PayPalVaultEditRequest request = new PayPalVaultEditRequest(
+        PayPalVaultEditAuthRequest request = new PayPalVaultEditAuthRequest(
                 editVaultId,
                 null
         );
@@ -258,14 +258,19 @@ public class PayPalFragment extends BaseFragment {
 
     @OptIn(markerClass = ExperimentalBetaApi.class)
     private void completeEditFiFlow(PayPalVaultEditAuthResult vaultEditAuthResult) {
-        // This function is parsing the browserSwitch results and returns PayPalVaultEditResult
+        payPalClient.edit(vaultEditAuthResult, (result) -> {
 
-        payPalClient.edit(vaultEditAuthResult) { result ->
-                when(result) {
-            is PayPalVaultEditResult.Success -> { /* call server lookup_fi_details */ }
-            is PayPalVaultEditResult.Failure -> { /* handle vaultEditResult.error */ }
-            is PayPalVaultEditResult.Cancel -> { /* handle user canceled */ }
-        }
-        }
+            if (result instanceof PayPalVaultEditResponse.ReadyToLaunch) {
+                // Handle success case
+                // For example, call server lookup_fi_details
+            } else if (result instanceof PayPalVaultEditResponse.Failure) {
+                // Handle failure case
+                PayPalVaultEditResponse.Failure failure = (PayPalVaultEditResponse.Failure) result;
+                // Handle failure.error
+            } else if (result instanceof PayPalVaultEditResponse.Cancel) {
+                // Handle cancel case
+                // Handle user canceled
+            }
+        });
     }
 }

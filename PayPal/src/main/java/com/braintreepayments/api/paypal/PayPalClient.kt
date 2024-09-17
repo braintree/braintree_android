@@ -14,9 +14,8 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthCallback
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditCallback
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResponse
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest
 import com.braintreepayments.api.sharedutils.Json
@@ -329,18 +328,18 @@ class PayPalClient @VisibleForTesting internal constructor(
      * [PayPalLauncher.launch].
      *
      * @param context an Android Context
-     * @param payPalVaultEditRequest a [PayPalVaultEditRequest] containing the edit request
-     * @param payPalVaultEditCallback a [PayPalVaultEditCallback]
+     * @param payPalVaultEditAuthRequest a [PayPalVaultEditAuthRequest] containing the edit request
+     * @param payPalVaultEditCallback a [PayPalVaultEditAuthCallback]
      */
     @ExperimentalBetaApi
     fun createEditAuthRequest(
         context: Context,
-        payPalVaultEditRequest: PayPalVaultEditRequest,
-        callback: PayPalVaultEditCallback
+        payPalVaultEditAuthRequest: PayPalVaultEditAuthRequest,
+        callback: PayPalVaultEditAuthCallback
     ) {
         internalPayPalClient.sendVaultEditRequest(
             context,
-            payPalVaultEditRequest,
+            payPalVaultEditAuthRequest,
             { result ->
 
                 if (result is PayPalVaultEditResponse.ReadyToLaunch) {
@@ -359,12 +358,12 @@ class PayPalClient @VisibleForTesting internal constructor(
      *
      * @param vaultEditAuthResult a [PayPalVaultEditAuthResult.Success] received in the
      * callback from [PayPalLauncher.handleReturnToAppFromBrowser]
-     * @param callback [PayPalVaultEditCallback]
+     * @param callback [PayPalVaultEditAuthCallback]
      */
     @ExperimentalBetaApi
     fun createEditErrorRequest(
         payPalVaultErrorHandlingEditRequest: PayPalVaultErrorHandlingEditRequest,
-        callback: PayPalVaultEditCallback
+        callback: PayPalVaultEditAuthCallback
     ) {
         internalPayPalClient.sendVaultEditErrorRequest(
             payPalVaultErrorHandlingEditRequest,

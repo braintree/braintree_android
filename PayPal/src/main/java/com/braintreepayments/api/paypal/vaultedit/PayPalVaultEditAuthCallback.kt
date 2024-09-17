@@ -3,13 +3,14 @@ package com.braintreepayments.api.paypal.vaultedit
 import com.braintreepayments.api.core.ExperimentalBetaApi
 
 /**
- * Callback for receiving result of [PayPalClient.createEditAuthRequest].
+ * Callback for receiving result of [PayPalClient.edit].
  */
 @ExperimentalBetaApi
 fun interface PayPalVaultEditAuthCallback {
 
     /**
-     * @param payPalVaultEditRequest a request used to launch the PayPal web authentication flow
+     * @param payPalVaultEditResponse a success, failure, or cancel result from the PayPal vault edit
+     * flow
      */
-    fun onPayPalVaultEditAuthRequest(payPalVaultEditRequest: PayPalVaultEditAuthRequest)
+    fun onPayPalVaultEditResult(payPalVaultEditResponse: PayPalVaultEditResponse)
 }

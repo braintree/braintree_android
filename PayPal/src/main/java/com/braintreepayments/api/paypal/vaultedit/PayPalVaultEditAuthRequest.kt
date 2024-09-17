@@ -3,20 +3,20 @@ package com.braintreepayments.api.paypal.vaultedit
 import com.braintreepayments.api.core.ExperimentalBetaApi
 
 /**
- * A request used to launch the continuation of the PayPal Edit Vault flow.
+ * Request containing details for the Edit FI flow.
+ *
+ * Note: **This feature is in beta. It's public API may change in future releases.**
+ *
+ * @property editPayPalVaultId PayPal vault ID to edit
+ * @property riskCorrelationId optional ID;
  */
 @ExperimentalBetaApi
-sealed class PayPalVaultEditAuthRequest {
-
-    /**
-     * The request was successfully created and is ready to be launched by [PayPalLauncher]
-     */
-    class ReadyToLaunch internal constructor(
-        internal val requestParams: PayPalVaultEditAuthRequestParams
-    ) : PayPalVaultEditAuthRequest()
-
-    /**
-     * There was an [error] creating the request.
-     */
-    class Failure internal constructor(val error: Exception) : PayPalVaultEditAuthRequest()
+data class PayPalVaultEditAuthRequest(
+    val editPayPalVaultId: String,
+    val riskCorrelationId: String? = null
+) {
+    val hermesPath: String = "v1/paypal_hermes/generate_edit_fi_url"
 }
+
+
+
