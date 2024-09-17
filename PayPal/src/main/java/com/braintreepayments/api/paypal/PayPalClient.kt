@@ -17,7 +17,7 @@ import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResult
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResponse
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest
 import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
@@ -241,7 +241,7 @@ class PayPalClient @VisibleForTesting internal constructor(
      * @param payPalVaultEditCallback a [PayPalVaultEditCallback]
      */
     @ExperimentalBetaApi
-    fun createEditRequest(
+    fun createEditAuthRequest(
         context: Context,
         payPalVaultEditRequest: PayPalVaultEditRequest,
         callback: PayPalVaultEditCallback
@@ -251,7 +251,7 @@ class PayPalClient @VisibleForTesting internal constructor(
             payPalVaultEditRequest,
         { result ->
 
-            if (result is PayPalVaultEditResult.ReadyToLaunch) {
+            if (result is PayPalVaultEditResponse.ReadyToLaunch) {
                 result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.response.approvalURL)
             }
 
@@ -278,7 +278,7 @@ class PayPalClient @VisibleForTesting internal constructor(
            payPalVaultErrorHandlingEditRequest,
          { result ->
 
-            if (result is PayPalVaultEditResult.ReadyToLaunch) {
+            if (result is PayPalVaultEditResponse.ReadyToLaunch) {
                 result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.response.approvalURL)
             }
 

@@ -3,6 +3,7 @@ package com.braintreepayments.demo;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -30,9 +31,9 @@ import com.braintreepayments.api.paypal.PayPalPaymentAuthResult;
 import com.braintreepayments.api.paypal.PayPalPendingRequest;
 import com.braintreepayments.api.paypal.PayPalRequest;
 import com.braintreepayments.api.paypal.PayPalResult;
-import com.braintreepayments.api.paypal.vaultedit.EditFIAgreementSetup;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest;
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResult;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResponse;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -71,7 +72,7 @@ public class PayPalFragment extends BaseFragment {
             boolean isEditFIErrorRequestOn = ppSwitch.isChecked();
 
             if(isEditFIErrorRequestOn) {
-                launchEditErrorRequest(editText.getText().toString(),riskCorrelationIdText.getText().toString() );
+                edit(editText.getText().toString(),riskCorrelationIdText.getText().toString() );
             } else {
                 launchPayPalEditFIVault(editText.getText().toString());
             }
@@ -117,6 +118,29 @@ public class PayPalFragment extends BaseFragment {
         }
     }
 
+    private void handleReturnToAppFromBrowser(PayPalPendingRequest.Started pendingRequest, Intent intent) {
+
+        PayPalPaymentAuthResult result = payPalLauncher.handleReturnToAppFromBrowser(pendingRequest, intent);
+
+        if (result instanceof PayPalPaymentAuthResult.Success) {
+            completePayPalFlow((PayPalPaymentAuthResult.Success) result);
+        } else if (result instanceof  PayPalPaymentAuthResult.NoResult) {
+            // user returned to app without completing Edit FI flow, handle accordingly
+        }
+    }
+
+    @OptIn(markerClass = ExperimentalBetaApi.class)
+    private void completeEditFiFlow(PayPalVaultEditAuthResult vaultEditAuthResult) {
+        // This function is parsing the browserSwitch results and returns PayPalVaultEditResult
+//        payPalClient.edit(vaultEditAuthResult) { result ->
+//                when(result) {
+//            is PayPalVaultEditResult.Success -> { /* call server lookup_fi_details */ }
+//            is PayPalVaultEditResult.Failure -> { /* handle vaultEditResult.error */ }
+//            is PayPalVaultEditResult.Cancel -> { /* handle user canceled */ }
+//        }
+//        }
+    }
+
     private void storePendingRequest(PayPalPendingRequest.Started request) {
         PendingRequestStore.getInstance().putPayPalPendingRequest(requireContext(), request);
     }
@@ -154,15 +178,15 @@ public class PayPalFragment extends BaseFragment {
                 null
         );
 
-        payPalClient.createEditRequest(requireContext(), request, (result) -> {
-            if (result instanceof PayPalVaultEditResult.Failure) {
-                PayPalVaultEditResult.Failure.Failure failure = (PayPalVaultEditResult.Failure) result;
+        payPalClient.createEditAuthRequest(requireContext(), request, (result) -> {
+            if (result instanceof PayPalVaultEditResponse.Failure) {
+                PayPalVaultEditResponse.Failure.Failure failure = (PayPalVaultEditResponse.Failure) result;
                 String correlationId = failure.getRiskCorrelationId();
                 //TODO: PayPalVaultErrorHandlingEditRequest and Analytics
             }
 
-            if (result instanceof PayPalVaultEditResult.ReadyToLaunch) {
-                PayPalVaultEditResult.ReadyToLaunch success = (PayPalVaultEditResult.ReadyToLaunch) result;
+            if (result instanceof PayPalVaultEditResponse.ReadyToLaunch) {
+                PayPalVaultEditResponse.ReadyToLaunch success = (PayPalVaultEditResponse.ReadyToLaunch) result;
 
                 //TODO: Analytics
                 payPalLauncher.launch(requireActivity(), success);
@@ -171,27 +195,24 @@ public class PayPalFragment extends BaseFragment {
     }
 
     @OptIn(markerClass = ExperimentalBetaApi.class)
-    private void launchEditErrorRequest(String editVaultId, String riskCorrelationId) {
+    private void edit(String editVaultId, String riskCorrelationId) {
         PayPalVaultErrorHandlingEditRequest request = new PayPalVaultErrorHandlingEditRequest(
                 editVaultId,
                 riskCorrelationId
         );
 
         payPalClient.createEditErrorRequest(request, (result) -> {
-            if (result instanceof PayPalVaultEditResult.Failure) {
-                PayPalVaultEditResult.Failure.Failure failure = (PayPalVaultEditResult.Failure) result;
+            if (result instanceof PayPalVaultEditResponse.Failure) {
+                PayPalVaultEditResponse.Failure.Failure failure = (PayPalVaultEditResponse.Failure) result;
                 String correlationId = failure.getRiskCorrelationId();
                 //TODO: PayPalVaultErrorHandlingEditRequest and Analytics
             }
 
-            if (result instanceof PayPalVaultEditResult.ReadyToLaunch) {
-                PayPalVaultEditResult.ReadyToLaunch success = (PayPalVaultEditResult.ReadyToLaunch) result;
-                String correlationId = success.getRiskCorrelationId();
+            if (result instanceof PayPalVaultEditResponse.ReadyToLaunch) {
+                PayPalVaultEditResponse.ReadyToLaunch success = (PayPalVaultEditResponse.ReadyToLaunch) result;
 
-                EditFIAgreementSetup response = success.getResponse();
-
-                //TODO: Launcher? and Analytics
-                //payPalLauncher.launch(requireActivity(), response.getApprovalURL(), "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/");
+                //TODO: Analytics
+                payPalLauncher.launch(requireActivity(), success);
             }
         });
     }

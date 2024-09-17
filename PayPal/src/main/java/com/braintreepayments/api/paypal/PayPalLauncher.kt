@@ -8,7 +8,7 @@ import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResult
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResponse
 
 /**
  * Responsible for launching PayPal user authentication in a web browser
@@ -54,7 +54,7 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
     @OptIn(ExperimentalBetaApi::class)
     fun launch(
         activity: ComponentActivity,
-        result: PayPalVaultEditResult.ReadyToLaunch
+        result: PayPalVaultEditResponse.ReadyToLaunch
     ) {
         result.browserSwitchOptions?.let { options ->
             when (val request = browserSwitchClient.start(activity, options)) {
@@ -103,6 +103,25 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
             is BrowserSwitchFinalResult.NoResult -> PayPalPaymentAuthResult.NoResult
         }
     }
+
+//    @OptIn(ExperimentalBetaApi::class)
+//    fun handleReturnToApp(
+//        pendingRequest: PayPalPendingRequest.Started,
+//        intent: Intent
+//    ): PayPalVaultEditAuthResult {
+//        return when (val browserSwitchResult =
+//            browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
+//            is BrowserSwitchFinalResult.Success -> PayPalVaultEditAuthResult.Success(
+//                PayPalPaymentAuthResultInfo(browserSwitchResult)
+//            )
+//
+//            is BrowserSwitchFinalResult.Failure -> PayPalVaultEditAuthResult.Failure(
+//                browserSwitchResult.error
+//            )
+//
+//            is BrowserSwitchFinalResult.NoResult -> PayPalVaultEditAuthResult.NoResult
+//        }
+//    }
 
     @Throws(BrowserSwitchException::class)
     private fun assertCanPerformBrowserSwitch(
