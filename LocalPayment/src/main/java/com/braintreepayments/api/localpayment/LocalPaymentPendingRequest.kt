@@ -4,7 +4,7 @@ package com.braintreepayments.api.localpayment
  * A pending request for the local payment web-based authentication flow created by invoking
  * [LocalPaymentLauncher.launch]. This pending request should be stored locally within the app or
  * on-device and used to deliver a result of the browser flow in
- * [LocalPaymentLauncher.handleReturnToAppFromBrowser]
+ * [LocalPaymentLauncher.handleReturnToApp]
  */
 sealed class LocalPaymentPendingRequest {
 
@@ -12,7 +12,7 @@ sealed class LocalPaymentPendingRequest {
      * A pending request was successfully started.
      *
      * @property pendingRequestString - This String should be stored and passed to
-     * [LocalPaymentLauncher.handleReturnToAppFromBrowser].
+     * [LocalPaymentLauncher.handleReturnToApp].
      */
     class Started internal constructor(val pendingRequestString: String) : LocalPaymentPendingRequest()
 

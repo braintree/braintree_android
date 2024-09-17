@@ -3,7 +3,7 @@ package com.braintreepayments.api.paypal
 import com.braintreepayments.api.BrowserSwitchFinalResult
 
 /**
- * Result of the PayPal web flow received from [PayPalLauncher.handleReturnToAppFromBrowser].
+ * Result of the PayPal web flow received from [PayPalLauncher.handleReturnToApp].
  */
 sealed class PayPalPaymentAuthResult {
 
@@ -22,7 +22,7 @@ sealed class PayPalPaymentAuthResult {
 
     /**
      * If no matching result can be found for the [PayPalPendingRequest.Started] passed to
-     * [PayPalLauncher.handleReturnToAppFromBrowser]. This is expected if the user closed the
+     * [PayPalLauncher.handleReturnToApp]. This is expected if the user closed the
      * browser to cancel the payment flow, or returns to the app without completing the
      * authentication flow.
      */

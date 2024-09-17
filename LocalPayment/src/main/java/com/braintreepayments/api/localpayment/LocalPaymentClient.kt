@@ -151,13 +151,13 @@ class LocalPaymentClient internal constructor(
 
     /**
      * After receiving a result from the web authentication flow via
-     * [LocalPaymentLauncher.handleReturnToAppFromBrowser], pass the
+     * [LocalPaymentLauncher.handleReturnToApp], pass the
      * [LocalPaymentAuthResult.Success] returned to this method to tokenize the local
      * payment method and receive a [LocalPaymentNonce] on success.
      *
      * @param context Android Context
      * @param localPaymentAuthResult a [LocalPaymentAuthResult.Success] received from
-     * [LocalPaymentLauncher.handleReturnToAppFromBrowser]
+     * [LocalPaymentLauncher.handleReturnToApp]
      * @param callback [LocalPaymentInternalTokenizeCallback]
      */
     fun tokenize(

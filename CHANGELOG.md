@@ -23,9 +23,11 @@
   * PayPal
     * Make `PayPalPaymentAuthRequestParams` internal
     * Remove `PayPalPaymentAuthResultInfo`
+    * Rename `PayPalLauncher.handleReturnToAppFromBrowser()` to `PayPalLauncher.handleReturnToApp()`
   * SEPADirectDebit
     * Make `SEPADirectDebitPaymentAuthRequestParams` internal
     * Remove `SEPADirectDebitPaymentAuthResultInfo`
+    * Rename `SEPADirectDebitLauncher.handleReturnToAppFromBrowser()` to `SEPADirectDebitLauncher.handleReturnToApp()`
   * ThreeDSecure
     * Make `ThreeDSecureParams` internal
     * Make `ThreeDSecurePaymentAuthResult` parameters internal
@@ -33,6 +35,7 @@
   * LocalPayment
     * Remove `LocalPaymentAuthResultInfo`
     * Make `LocalPaymentAuthRequestParams` internal
+    * Rename `LocalPaymentLauncher.handleReturnToAppFromBrowser()` to `LocalPaymentLauncher.handleReturnToApp()`
 
 ## 5.0.0-beta2 (2024-08-28)
 
