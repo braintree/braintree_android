@@ -8,6 +8,8 @@ import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResultInfo
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResponse
 
 /**
@@ -104,24 +106,24 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
         }
     }
 
-//    @OptIn(ExperimentalBetaApi::class)
-//    fun handleReturnToApp(
-//        pendingRequest: PayPalPendingRequest.Started,
-//        intent: Intent
-//    ): PayPalVaultEditAuthResult {
-//        return when (val browserSwitchResult =
-//            browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
-//            is BrowserSwitchFinalResult.Success -> PayPalVaultEditAuthResult.Success(
-//                PayPalPaymentAuthResultInfo(browserSwitchResult)
-//            )
-//
-//            is BrowserSwitchFinalResult.Failure -> PayPalVaultEditAuthResult.Failure(
-//                browserSwitchResult.error
-//            )
-//
-//            is BrowserSwitchFinalResult.NoResult -> PayPalVaultEditAuthResult.NoResult
-//        }
-//    }
+    @OptIn(ExperimentalBetaApi::class)
+    fun handleReturnToApp(
+        pendingRequest: PayPalPendingRequest.Started,
+        intent: Intent
+    ): PayPalVaultEditAuthResult {
+        return when (val browserSwitchResult =
+            browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
+            is BrowserSwitchFinalResult.Success -> PayPalVaultEditAuthResult.Success(
+                PayPalVaultEditAuthResultInfo(browserSwitchResult)
+            )
+
+            is BrowserSwitchFinalResult.Failure -> PayPalVaultEditAuthResult.Failure(
+                browserSwitchResult.error
+            )
+
+            is BrowserSwitchFinalResult.NoResult -> PayPalVaultEditAuthResult.NoResult
+        }
+    }
 
     @Throws(BrowserSwitchException::class)
     private fun assertCanPerformBrowserSwitch(

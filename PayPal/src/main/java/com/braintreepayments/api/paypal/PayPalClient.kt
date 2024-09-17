@@ -230,62 +230,6 @@ class PayPalClient @VisibleForTesting internal constructor(
         }
     }
 
-    /**
-     * Starts the PayPal flow that allows a customer to edit their PayPal payment method. A
-     * [PayPalVaultEditAuthRequestParams] is returned in the
-     * [PayPalVaultEditAuthCallback] that is then passed to
-     * [PayPalLauncher.launch].
-     *
-     * @param context an Android Context
-     * @param payPalVaultEditRequest a [PayPalVaultEditRequest] containing the edit request
-     * @param payPalVaultEditCallback a [PayPalVaultEditCallback]
-     */
-    @ExperimentalBetaApi
-    fun createEditAuthRequest(
-        context: Context,
-        payPalVaultEditRequest: PayPalVaultEditRequest,
-        callback: PayPalVaultEditCallback
-    ) {
-        internalPayPalClient.sendVaultEditRequest(
-            context,
-            payPalVaultEditRequest,
-        { result ->
-
-            if (result is PayPalVaultEditResponse.ReadyToLaunch) {
-                result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.response.approvalURL)
-            }
-
-            callback.onPayPalVaultEditResult(result)
-        });
-    }
-
-    /**
-     * After receiving a result from the PayPal web authentication flow via
-     * [PayPalLauncher.handleReturnToAppFromBrowser],
-     * pass the [PayPalVaultEditAuthResult.Success] returned to this method to complete the
-     * edit vault flow.
-     *
-     * @param vaultEditAuthResult a [PayPalVaultEditAuthResult.Success] received in the
-     * callback from [PayPalLauncher.handleReturnToAppFromBrowser]
-     * @param callback [PayPalVaultEditCallback]
-     */
-    @ExperimentalBetaApi
-    fun createEditErrorRequest(
-        payPalVaultErrorHandlingEditRequest: PayPalVaultErrorHandlingEditRequest,
-        callback: PayPalVaultEditCallback
-    ) {
-        internalPayPalClient.sendVaultEditErrorRequest(
-           payPalVaultErrorHandlingEditRequest,
-         { result ->
-
-            if (result is PayPalVaultEditResponse.ReadyToLaunch) {
-                result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.response.approvalURL)
-            }
-
-            callback.onPayPalVaultEditResult(result)
-        });
-    }
-
     @Throws(
         JSONException::class,
         UserCanceledException::class,
@@ -376,5 +320,69 @@ class PayPalClient @VisibleForTesting internal constructor(
                     "for more information."
             )
         }
+    }
+
+    /**
+     * Starts the PayPal flow that allows a customer to edit their PayPal payment method. A
+     * [PayPalVaultEditAuthRequestParams] is returned in the
+     * [PayPalVaultEditAuthCallback] that is then passed to
+     * [PayPalLauncher.launch].
+     *
+     * @param context an Android Context
+     * @param payPalVaultEditRequest a [PayPalVaultEditRequest] containing the edit request
+     * @param payPalVaultEditCallback a [PayPalVaultEditCallback]
+     */
+    @ExperimentalBetaApi
+    fun createEditAuthRequest(
+        context: Context,
+        payPalVaultEditRequest: PayPalVaultEditRequest,
+        callback: PayPalVaultEditCallback
+    ) {
+        internalPayPalClient.sendVaultEditRequest(
+            context,
+            payPalVaultEditRequest,
+            { result ->
+
+                if (result is PayPalVaultEditResponse.ReadyToLaunch) {
+                    result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.response.approvalURL)
+                }
+
+                callback.onPayPalVaultEditResult(result)
+            });
+    }
+
+    /**
+     * After receiving a result from the PayPal web authentication flow via
+     * [PayPalLauncher.handleReturnToAppFromBrowser],
+     * pass the [PayPalVaultEditAuthResult.Success] returned to this method to complete the
+     * edit vault flow.
+     *
+     * @param vaultEditAuthResult a [PayPalVaultEditAuthResult.Success] received in the
+     * callback from [PayPalLauncher.handleReturnToAppFromBrowser]
+     * @param callback [PayPalVaultEditCallback]
+     */
+    @ExperimentalBetaApi
+    fun createEditErrorRequest(
+        payPalVaultErrorHandlingEditRequest: PayPalVaultErrorHandlingEditRequest,
+        callback: PayPalVaultEditCallback
+    ) {
+        internalPayPalClient.sendVaultEditErrorRequest(
+            payPalVaultErrorHandlingEditRequest,
+            { result ->
+
+                if (result is PayPalVaultEditResponse.ReadyToLaunch) {
+                    result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.response.approvalURL)
+                }
+
+                callback.onPayPalVaultEditResult(result)
+            });
+    }
+
+    @OptIn(ExperimentalBetaApi::class)
+    fun edit(
+        vaultEditAuthResult: PayPalVaultEditAuthResult,
+        callback: PayPalVaultEditAuthCallback) {
+
+        // parse the vaultEditAuthResult and call the callBack
     }
 }

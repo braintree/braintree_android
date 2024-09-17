@@ -72,7 +72,7 @@ public class PayPalFragment extends BaseFragment {
             boolean isEditFIErrorRequestOn = ppSwitch.isChecked();
 
             if(isEditFIErrorRequestOn) {
-                edit(editText.getText().toString(),riskCorrelationIdText.getText().toString() );
+                launchEditFiErrorHandlingRequest(editText.getText().toString(),riskCorrelationIdText.getText().toString() );
             } else {
                 launchPayPalEditFIVault(editText.getText().toString());
             }
@@ -118,29 +118,6 @@ public class PayPalFragment extends BaseFragment {
         }
     }
 
-    private void handleReturnToAppFromBrowser(PayPalPendingRequest.Started pendingRequest, Intent intent) {
-
-        PayPalPaymentAuthResult result = payPalLauncher.handleReturnToAppFromBrowser(pendingRequest, intent);
-
-        if (result instanceof PayPalPaymentAuthResult.Success) {
-            completePayPalFlow((PayPalPaymentAuthResult.Success) result);
-        } else if (result instanceof  PayPalPaymentAuthResult.NoResult) {
-            // user returned to app without completing Edit FI flow, handle accordingly
-        }
-    }
-
-    @OptIn(markerClass = ExperimentalBetaApi.class)
-    private void completeEditFiFlow(PayPalVaultEditAuthResult vaultEditAuthResult) {
-        // This function is parsing the browserSwitch results and returns PayPalVaultEditResult
-//        payPalClient.edit(vaultEditAuthResult) { result ->
-//                when(result) {
-//            is PayPalVaultEditResult.Success -> { /* call server lookup_fi_details */ }
-//            is PayPalVaultEditResult.Failure -> { /* handle vaultEditResult.error */ }
-//            is PayPalVaultEditResult.Cancel -> { /* handle user canceled */ }
-//        }
-//        }
-    }
-
     private void storePendingRequest(PayPalPendingRequest.Started request) {
         PendingRequestStore.getInstance().putPayPalPendingRequest(requireContext(), request);
     }
@@ -169,52 +146,6 @@ public class PayPalFragment extends BaseFragment {
         } else {
             launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress);
         }
-    }
-
-    @OptIn(markerClass = ExperimentalBetaApi.class)
-    private void launchPayPalEditFIVault(String editVaultId) {
-        PayPalVaultEditRequest request = new PayPalVaultEditRequest(
-                editVaultId,
-                null
-        );
-
-        payPalClient.createEditAuthRequest(requireContext(), request, (result) -> {
-            if (result instanceof PayPalVaultEditResponse.Failure) {
-                PayPalVaultEditResponse.Failure.Failure failure = (PayPalVaultEditResponse.Failure) result;
-                String correlationId = failure.getRiskCorrelationId();
-                //TODO: PayPalVaultErrorHandlingEditRequest and Analytics
-            }
-
-            if (result instanceof PayPalVaultEditResponse.ReadyToLaunch) {
-                PayPalVaultEditResponse.ReadyToLaunch success = (PayPalVaultEditResponse.ReadyToLaunch) result;
-
-                //TODO: Analytics
-                payPalLauncher.launch(requireActivity(), success);
-            }
-        });
-    }
-
-    @OptIn(markerClass = ExperimentalBetaApi.class)
-    private void edit(String editVaultId, String riskCorrelationId) {
-        PayPalVaultErrorHandlingEditRequest request = new PayPalVaultErrorHandlingEditRequest(
-                editVaultId,
-                riskCorrelationId
-        );
-
-        payPalClient.createEditErrorRequest(request, (result) -> {
-            if (result instanceof PayPalVaultEditResponse.Failure) {
-                PayPalVaultEditResponse.Failure.Failure failure = (PayPalVaultEditResponse.Failure) result;
-                String correlationId = failure.getRiskCorrelationId();
-                //TODO: PayPalVaultErrorHandlingEditRequest and Analytics
-            }
-
-            if (result instanceof PayPalVaultEditResponse.ReadyToLaunch) {
-                PayPalVaultEditResponse.ReadyToLaunch success = (PayPalVaultEditResponse.ReadyToLaunch) result;
-
-                //TODO: Analytics
-                payPalLauncher.launch(requireActivity(), success);
-            }
-        });
     }
 
     private void launchPayPal(
@@ -264,6 +195,77 @@ public class PayPalFragment extends BaseFragment {
             action.setDeviceData(deviceData);
 
             NavHostFragment.findNavController(this).navigate(action);
+        }
+    }
+
+    @OptIn(markerClass = ExperimentalBetaApi.class)
+    private void launchPayPalEditFIVault(String editVaultId) {
+        PayPalVaultEditRequest request = new PayPalVaultEditRequest(
+                editVaultId,
+                null
+        );
+
+        payPalClient.createEditAuthRequest(requireContext(), request, (result) -> {
+            if (result instanceof PayPalVaultEditResponse.Failure) {
+                PayPalVaultEditResponse.Failure.Failure failure = (PayPalVaultEditResponse.Failure) result;
+                String correlationId = failure.getRiskCorrelationId();
+                //TODO: PayPalVaultErrorHandlingEditRequest and Analytics
+            }
+
+            if (result instanceof PayPalVaultEditResponse.ReadyToLaunch) {
+                PayPalVaultEditResponse.ReadyToLaunch success = (PayPalVaultEditResponse.ReadyToLaunch) result;
+
+                //TODO: Analytics
+                payPalLauncher.launch(requireActivity(), success);
+            }
+        });
+    }
+
+    @OptIn(markerClass = ExperimentalBetaApi.class)
+    private void launchEditFiErrorHandlingRequest(String editVaultId, String riskCorrelationId) {
+        PayPalVaultErrorHandlingEditRequest request = new PayPalVaultErrorHandlingEditRequest(
+                editVaultId,
+                riskCorrelationId
+        );
+
+        payPalClient.createEditErrorRequest(request, (result) -> {
+            if (result instanceof PayPalVaultEditResponse.Failure) {
+                PayPalVaultEditResponse.Failure.Failure failure = (PayPalVaultEditResponse.Failure) result;
+                String correlationId = failure.getRiskCorrelationId();
+                //TODO: PayPalVaultErrorHandlingEditRequest and Analytics
+            }
+
+            if (result instanceof PayPalVaultEditResponse.ReadyToLaunch) {
+                PayPalVaultEditResponse.ReadyToLaunch success = (PayPalVaultEditResponse.ReadyToLaunch) result;
+
+                //TODO: Analytics
+                payPalLauncher.launch(requireActivity(), success);
+            }
+        });
+    }
+
+    @OptIn(markerClass = ExperimentalBetaApi.class)
+    private void handleReturnToAppFromBrowser(PayPalPendingRequest.Started pendingRequest, Intent intent) {
+
+        PayPalVaultEditAuthResult result = payPalLauncher.handleReturnToApp(pendingRequest, intent);
+
+        if (result instanceof PayPalVaultEditAuthResult.Success) {
+            completeEditFiFlow(result);
+        } else if (result instanceof  PayPalVaultEditAuthResult.NoResult) {
+            // user returned to app without completing Edit FI flow, handle accordingly
+        }
+    }
+
+    @OptIn(markerClass = ExperimentalBetaApi.class)
+    private void completeEditFiFlow(PayPalVaultEditAuthResult vaultEditAuthResult) {
+        // This function is parsing the browserSwitch results and returns PayPalVaultEditResult
+
+        payPalClient.edit(vaultEditAuthResult) { result ->
+                when(result) {
+            is PayPalVaultEditResult.Success -> { /* call server lookup_fi_details */ }
+            is PayPalVaultEditResult.Failure -> { /* handle vaultEditResult.error */ }
+            is PayPalVaultEditResult.Cancel -> { /* handle user canceled */ }
+        }
         }
     }
 }
