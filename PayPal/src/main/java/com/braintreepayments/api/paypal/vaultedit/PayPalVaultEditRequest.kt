@@ -8,7 +8,7 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
  * Note: **This feature is in beta. It's public API may change in future releases.**
  *
  * @property editPayPalVaultId PayPal vault ID to edit
- * @property merchantAccountId optional ID of the merchant account; if one is not provided the default will be used
+ * @property riskCorrelationId optional ID;
  */
 @ExperimentalBetaApi
 data class PayPalVaultEditRequest(
