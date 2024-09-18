@@ -24,6 +24,9 @@
     * Make `PayPalPaymentAuthRequestParams` internal
     * Remove `PayPalPaymentAuthResultInfo`
     * Rename `PayPalLauncher.handleReturnToAppFromBrowser()` to `PayPalLauncher.handleReturnToApp()`
+    * Add PayPal vault edit flow (BETA)
+        * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
+        * Add `PayPalClient.createEditAuthRequest()` and `PayPalClient.edit()` for editing a buyers funding instrument
   * SEPADirectDebit
     * Make `SEPADirectDebitPaymentAuthRequestParams` internal
     * Remove `SEPADirectDebitPaymentAuthResultInfo`
