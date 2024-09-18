@@ -17,6 +17,3 @@ data class PayPalVaultEditAuthRequest(
 ) {
     val hermesPath: String = "v1/paypal_hermes/generate_edit_fi_url"
 }
-
-
-

@@ -337,17 +337,13 @@ class PayPalClient @VisibleForTesting internal constructor(
         payPalVaultEditAuthRequest: PayPalVaultEditAuthRequest,
         callback: PayPalVaultEditAuthCallback
     ) {
-        internalPayPalClient.sendVaultEditRequest(
-            context,
-            payPalVaultEditAuthRequest,
-            { result ->
+        internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditAuthRequest) { result ->
+            if (result is PayPalVaultEditResponse.ReadyToLaunch) {
+                result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.response.approvalURL)
+            }
 
-                if (result is PayPalVaultEditResponse.ReadyToLaunch) {
-                    result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.response.approvalURL)
-                }
-
-                callback.onPayPalVaultEditResult(result)
-            });
+            callback.onPayPalVaultEditResult(result)
+        }
     }
 
     /**
@@ -362,26 +358,15 @@ class PayPalClient @VisibleForTesting internal constructor(
      */
     @ExperimentalBetaApi
     fun createEditErrorRequest(
-        payPalVaultErrorHandlingEditRequest: PayPalVaultErrorHandlingEditRequest,
+        request: PayPalVaultErrorHandlingEditRequest,
         callback: PayPalVaultEditAuthCallback
     ) {
-        internalPayPalClient.sendVaultEditErrorRequest(
-            payPalVaultErrorHandlingEditRequest,
-            { result ->
+        internalPayPalClient.sendVaultEditErrorRequest(request) { result ->
+            if (result is PayPalVaultEditResponse.ReadyToLaunch) {
+                result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.response.approvalURL)
+            }
 
-                if (result is PayPalVaultEditResponse.ReadyToLaunch) {
-                    result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.response.approvalURL)
-                }
-
-                callback.onPayPalVaultEditResult(result)
-            });
-    }
-
-    @OptIn(ExperimentalBetaApi::class)
-    fun edit(
-        vaultEditAuthResult: PayPalVaultEditAuthResult,
-        callback: PayPalVaultEditAuthCallback) {
-
-        // parse the vaultEditAuthResult and call the callBack
+            callback.onPayPalVaultEditResult(result)
+        }
     }
 }
