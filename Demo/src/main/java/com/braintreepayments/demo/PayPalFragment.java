@@ -110,7 +110,7 @@ public class PayPalFragment extends BaseFragment {
         super.onResume();
         PayPalPendingRequest.Started pendingRequest = getPendingRequest();
         if (pendingRequest != null) {
-            PayPalPaymentAuthResult paymentAuthResult = payPalLauncher.handleReturnToAppFromBrowser(pendingRequest, requireActivity().getIntent());
+            PayPalPaymentAuthResult paymentAuthResult = payPalLauncher.handleReturnToApp(pendingRequest, requireActivity().getIntent());
 
             if (paymentAuthResult != null) {
                 if (paymentAuthResult instanceof PayPalPaymentAuthResult.Success) {
