@@ -64,12 +64,12 @@ public class PayPalRequestFactory {
             );
 
             PayPalBillingCycle billingCycle = new PayPalBillingCycle(
-                PayPalBillingInterval.MONTH,
+                    false,
                 1,
+                    PayPalBillingInterval.MONTH,
                 1,
                 1,
                 "2024-08-01",
-                false,
                 billingPricing
             );
 

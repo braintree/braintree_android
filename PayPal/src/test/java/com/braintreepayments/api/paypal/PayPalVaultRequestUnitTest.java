@@ -58,10 +58,9 @@ public class PayPalVaultRequestUnitTest {
                 new PayPalBillingPricing(pricingModel, "1.00");
         billingPricing.setReloadThresholdAmount("6.00");
         PayPalBillingCycle billingCycle =
-                new PayPalBillingCycle(billingInterval, 1, 2);
+                new PayPalBillingCycle(true, 2, billingInterval, 1);
         billingCycle.setSequence(1);
         billingCycle.setStartDate("2024-04-06T00:00:00Z");
-        billingCycle.setTrial(true);
         billingCycle.setPricing(billingPricing);
         PayPalRecurringBillingDetails billingDetails =
                 new PayPalRecurringBillingDetails(List.of(billingCycle), "11.00", "USD");
@@ -95,7 +94,7 @@ public class PayPalVaultRequestUnitTest {
         assertEquals("11.00", request.getRecurringBillingDetails().getTotalAmount());
         PayPalBillingCycle requestBillingCycle = request.getRecurringBillingDetails().getBillingCycles().get(0);
         assertEquals(PayPalBillingInterval.MONTH, requestBillingCycle.getInterval());
-        assertEquals(1, requestBillingCycle.getIntervalCount());
+        assertSame(1, requestBillingCycle.getIntervalCount());
         assertEquals(2, requestBillingCycle.getNumberOfExecutions());
         assertEquals("2024-04-06T00:00:00Z", requestBillingCycle.getStartDate());
         assertSame(1, requestBillingCycle.getSequence());
@@ -130,10 +129,9 @@ public class PayPalVaultRequestUnitTest {
                 new PayPalBillingPricing(pricingModel, "1.00");
         billingPricing.setReloadThresholdAmount("6.00");
         PayPalBillingCycle billingCycle =
-                new PayPalBillingCycle(billingInterval, 1, 2);
+                new PayPalBillingCycle(true, 2, billingInterval, 1);
         billingCycle.setSequence(1);
         billingCycle.setStartDate("2024-04-06T00:00:00Z");
-        billingCycle.setTrial(true);
         billingCycle.setPricing(billingPricing);
         PayPalRecurringBillingDetails billingDetails =
                 new PayPalRecurringBillingDetails(List.of(billingCycle), "11.00", "USD");
@@ -181,7 +179,7 @@ public class PayPalVaultRequestUnitTest {
         assertEquals("11.00", result.getRecurringBillingDetails().getTotalAmount());
         PayPalBillingCycle resultBillingCycle = result.getRecurringBillingDetails().getBillingCycles().get(0);
         assertEquals(PayPalBillingInterval.MONTH, resultBillingCycle.getInterval());
-        assertEquals(1, resultBillingCycle.getIntervalCount());
+        assertSame(1, resultBillingCycle.getIntervalCount());
         assertEquals(2, resultBillingCycle.getNumberOfExecutions());
         assertEquals("2024-04-06T00:00:00Z", resultBillingCycle.getStartDate());
         assertSame(1, resultBillingCycle.getSequence());
@@ -233,10 +231,9 @@ public class PayPalVaultRequestUnitTest {
                 new PayPalBillingPricing(pricingModel, "1.00");
         billingPricing.setReloadThresholdAmount("6.00");
         PayPalBillingCycle billingCycle =
-                new PayPalBillingCycle(billingInterval, 1, 2);
+                new PayPalBillingCycle(true, 2, billingInterval, 1);
         billingCycle.setSequence(1);
         billingCycle.setStartDate("2024-04-06T00:00:00Z");
-        billingCycle.setTrial(true);
         billingCycle.setPricing(billingPricing);
         PayPalRecurringBillingDetails billingDetails =
                 new PayPalRecurringBillingDetails(List.of(billingCycle), "11.00", "USD");
