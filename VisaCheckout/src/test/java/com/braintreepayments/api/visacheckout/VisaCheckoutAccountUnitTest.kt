@@ -31,7 +31,7 @@ class VisaCheckoutAccountUnitTest {
         every { visaPaymentSummary.encKey } returns "stubbedEncKey"
         every { visaPaymentSummary.encPaymentData } returns "stubbedEncPaymentData"
         val visaCheckoutAccount = VisaCheckoutAccount(visaPaymentSummary)
-        visaCheckoutAccount.setSessionId("1234")
+        visaCheckoutAccount.sessionId = "1234"
         val json = visaCheckoutAccount.buildJSON()
         val expectedBase = JSONObject()
         val expectedPaymentMethodNonce = JSONObject()

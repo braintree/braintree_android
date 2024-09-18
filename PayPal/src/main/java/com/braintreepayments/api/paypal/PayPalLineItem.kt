@@ -1,6 +1,7 @@
 package com.braintreepayments.api.paypal
 
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
@@ -41,6 +42,7 @@ data class PayPalLineItem
     var url: String? = null
 ) : Parcelable {
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun toJson(): JSONObject {
         return try {
             JSONObject()

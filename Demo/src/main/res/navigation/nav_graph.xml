@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.braintreepayments.demo.MainFragment"
-        tools:layout="@layout/fragment_main">
+        >
         <action
             android:id="@+id/action_mainFragment_to_cardFragment"
             app:destination="@id/cardFragment"

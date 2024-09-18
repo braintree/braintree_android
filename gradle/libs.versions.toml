@@ -1,0 +1,110 @@
+[versions]
+gradle = "8.5.2"
+gradleNexusStagingPlugin = "0.21.2"
+kotlinGradlePlugin = "1.8.0"
+gradleNexusPublish = "1.1.0"
+kotlin = "1.9.10"
+coreKtx = "1.12.0"
+androidxLifecycle = "2.6.2"
+androidxRoom = "2.6.1"
+androidxTest = "1.5.0"
+androidxAppcompat = "1.6.0"
+androidxAnnotation = "1.7.0"
+androidxWork = "2.8.1"
+androidxJunit = "1.1.5"
+coroutines = "1.7.1"
+browserSwitch = "3.0.0-beta1"
+cardinal = "2.2.7-5"
+navigationSafeArgsGradlePlugin = "2.5.0"
+playServices = "19.4.0"
+junit = "4.13.2"
+robolectric = "4.11.1"
+mockito = "5.7.0"
+jsonAssert = "1.5.1"
+mockk = "1.13.8"
+detekt = "1.23.6"
+dokka = "1.9.10"
+
+# Demo App
+androidxFragment = "1.6.2"
+androidxNavigation = "2.7.5"
+androidxPreference = "1.2.1"
+androidxCardview = "1.0.0"
+androidxLegacySupportV4 = "1.0.0"
+androidxLifecycleExtensions = "2.2.0"
+androidxComposeBom = "2024.06.00"
+retrofit = "2.11.0"
+gson = "2.10.1"
+eventbus = "2.4.1"
+material = "1.12.0"
+leakcanary = "2.12"
+deviceAutomator = "1.0.0"
+btCardForm = "5.4.0"
+
+[libraries]
+# Androidx
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidxAnnotation" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppcompat" }
+androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime", version.ref = "androidxLifecycle" }
+androidx-navigation-safe-args-gradle-plugin = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "navigationSafeArgsGradlePlugin" }
+androidx-work-runtime = { group = "androidx.work", name = "work-runtime", version.ref = "androidxWork" }
+androidx-work-testing = { group = "androidx.work", name = "work-testing", version.ref = "androidxWork" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidxRoom" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidxRoom" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTest" }
+androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTest" }
+androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "androidxTest" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }
+
+# Kotlin
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
+coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+
+gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
+gradle-nexus-staging-plugin = { module = "io.codearte.gradle.nexus:gradle-nexus-staging-plugin", version.ref = "gradleNexusStagingPlugin" }
+browser-switch = { group = "com.braintreepayments.api", name = "browser-switch", version.ref = "browserSwitch" }
+cardinal = { group = "org.jfrog.cardinalcommerce.gradle", name = "cardinalmobilesdk", version.ref = "cardinal" }
+play-services-wallet = { group = "com.google.android.gms", name = "play-services-wallet", version.ref = "playServices" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+json-assert = { group = "org.skyscreamer", name = "jsonassert", version.ref = "jsonAssert" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+detekt-rules-libraries = { module = "io.gitlab.arturbosch.detekt:detekt-rules-libraries", version.ref = "detekt" }
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+dokka-android-documentation-plugin = { module = "org.jetbrains.dokka:android-documentation-plugin", version.ref = "dokka" }
+
+# Demo App
+androidx-fragment = { module = "androidx.fragment:fragment", version.ref = "androidxFragment" }
+androidx-navigation-fragment = { module = "androidx.navigation:navigation-fragment", version.ref = "androidxNavigation" }
+androidx-navigation-ui = { module = "androidx.navigation:navigation-ui", version.ref = "androidxNavigation" }
+androidx-preference = { module = "androidx.preference:preference", version.ref = "androidxPreference" }
+androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "androidxCardview" }
+androidx-legacy-support-v4 = { module = "androidx.legacy:legacy-support-v4", version.ref = "androidxLegacySupportV4" }
+androidx-lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensions", version.ref = "androidxLifecycleExtensions" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidxLifecycleExtensions" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidxComposeBom" }
+androidx-material3 = { module = "androidx.compose.material3:material3" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+eventbus = { module = "de.greenrobot:eventbus", version.ref = "eventbus" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
+device-automator = { module = "com.braintreepayments:device-automator", version.ref = "deviceAutomator" }
+bt-card-form = { module = "com.braintreepayments:card-form", version.ref = "btCardForm" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "gradle" }
+android-library = { id = "com.android.library", version.ref = "gradle" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+androidx-safeargs = { id = "androidx.navigation.safeargs", version.ref = "navigationSafeArgsGradlePlugin" }
+gradle-nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "gradleNexusPublish" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

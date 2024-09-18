@@ -1,8 +1,8 @@
 plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
-    id 'org.jetbrains.dokka'
-    id 'kotlin-parcelize'
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.android
+    alias libs.plugins.dokka
+    alias libs.plugins.kotlin.parcelize
 }
 
 android {
@@ -34,38 +34,28 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
-
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
-    kotlin {
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of("11"))
-        }
-    }
 }
 
 dependencies {
-    implementation deps.appCompat
-    api deps.playServicesWallet
+    implementation libs.androidx.appcompat
+    api libs.play.services.wallet
 
     api project(':BraintreeCore')
     api project(':PayPal')
     api project(':Card')
 
     testImplementation project(':TestUtils')
-    testImplementation deps.androidxTestRules
-    testImplementation deps.androidxTestRunner
-    testImplementation deps.playServicesWallet
-    testImplementation deps.mockitoCore
-    testImplementation deps.robolectric
-    testImplementation deps.jsonAssert
-    testImplementation deps.coreKtx
-    testImplementation deps.kotlinStdLib
-    testImplementation deps.kotlinCoroutinesCore
-    testImplementation deps.mockk
-    testImplementation deps.androidxTestCore
+    testImplementation libs.androidx.test.rules
+    testImplementation libs.androidx.test.runner
+    testImplementation libs.play.services.wallet
+    testImplementation libs.mockito.core
+    testImplementation libs.robolectric
+    testImplementation libs.json.assert
+    testImplementation libs.androidx.core.ktx
+    testImplementation libs.kotlin.stdlib
+    testImplementation libs.coroutines.core
+    testImplementation libs.mockk
+    testImplementation libs.androidx.test.core
 }
 
 // region signing and publishing

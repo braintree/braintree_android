@@ -23,7 +23,7 @@ For an integration offering card payments, add the following dependency in your 
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:card:5.0.0-beta1'
+  implementation 'com.braintreepayments.api:card:5.0.0-beta2'
 }
 ```
 
@@ -52,6 +52,14 @@ allprojects {
 Start with [**'Hello, Client!'**](https://developer.paypal.com/braintree/docs/start/hello-client/android/v4) for instructions on basic setup and usage.
 
 Next, read the [**full documentation**](https://developer.paypal.com/braintree/docs/guides/overview) for information about integration options, such as Drop-In UI, PayPal and credit card tokenization.
+
+## Upgrade Your SDK Version
+
+We always recommend updating to the latest version of the SDK which can be found in our [CHANGELOG](https://github.com/braintree/braintree_android/blob/main/CHANGELOG.md). 
+
+For major version upgrades, feel free to check out the [MIGRATION GUIDE](https://github.com/braintree/braintree_android/blob/main/v5_MIGRATION_GUIDE.md).
+
+For more details on how to add and managed build dependencies, see the [**Android Developer Guidelines**](https://developer.android.com/build/dependencies).
 
 ## Versions
 

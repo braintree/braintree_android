@@ -44,7 +44,6 @@ public class TLSSocketFactory extends SSLSocketFactory {
     /**
      * @see <a href="http://developer.android.com/training/articles/security-ssl.html#UnknownCa">Android Documentation</a>
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public TLSSocketFactory(InputStream certificateStream) throws SSLException {
         try {
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());

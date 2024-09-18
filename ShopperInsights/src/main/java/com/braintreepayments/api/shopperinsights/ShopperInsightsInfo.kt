@@ -19,7 +19,7 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
  * Note: **This feature is in beta. It's public API may change in future releases.**
  */
 @ExperimentalBetaApi
-data class ShopperInsightsInfo(
+data class ShopperInsightsInfo internal constructor(
     val isEligibleInPayPalNetwork: Boolean,
     val isPayPalRecommended: Boolean,
     val isVenmoRecommended: Boolean

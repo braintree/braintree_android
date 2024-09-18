@@ -10,6 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.core.BraintreeException;
+import com.braintreepayments.api.core.PostalAddress;
+import com.braintreepayments.api.core.UserCanceledException;
 import com.braintreepayments.api.localpayment.LocalPaymentAuthRequest;
 import com.braintreepayments.api.localpayment.LocalPaymentAuthResult;
 import com.braintreepayments.api.localpayment.LocalPaymentClient;
@@ -18,9 +21,6 @@ import com.braintreepayments.api.localpayment.LocalPaymentNonce;
 import com.braintreepayments.api.localpayment.LocalPaymentPendingRequest;
 import com.braintreepayments.api.localpayment.LocalPaymentRequest;
 import com.braintreepayments.api.localpayment.LocalPaymentResult;
-import com.braintreepayments.api.core.BraintreeException;
-import com.braintreepayments.api.core.PostalAddress;
-import com.braintreepayments.api.core.UserCanceledException;
 
 public class LocalPaymentFragment extends BaseFragment {
 
@@ -46,7 +46,7 @@ public class LocalPaymentFragment extends BaseFragment {
         LocalPaymentPendingRequest.Started pendingRequest = getPendingRequest();
         if (getPendingRequest() != null) {
             LocalPaymentAuthResult paymentAuthResult =
-                    localPaymentLauncher.handleReturnToAppFromBrowser(pendingRequest,
+                    localPaymentLauncher.handleReturnToApp(pendingRequest,
                             requireActivity().getIntent());
             if (paymentAuthResult instanceof LocalPaymentAuthResult.Success) {
                 localPaymentClient.tokenize(requireContext(),
@@ -65,6 +65,24 @@ public class LocalPaymentFragment extends BaseFragment {
             return;
         }
 
+        LocalPaymentRequest request = getLocalPaymentRequest();
+
+        localPaymentClient.createPaymentAuthRequest(request, (paymentAuthRequest) -> {
+            if (paymentAuthRequest instanceof LocalPaymentAuthRequest.ReadyToLaunch) {
+                LocalPaymentPendingRequest pendingRequest = localPaymentLauncher.launch(requireActivity(),
+                        (LocalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
+                if (pendingRequest instanceof LocalPaymentPendingRequest.Started) {
+                    storePendingRequest((LocalPaymentPendingRequest.Started) pendingRequest);
+                } else if (pendingRequest instanceof LocalPaymentPendingRequest.Failure) {
+                    handleError(((LocalPaymentPendingRequest.Failure) pendingRequest).getError());
+                }
+            } else if (paymentAuthRequest instanceof LocalPaymentAuthRequest.Failure) {
+                handleError(((LocalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
+            }
+        });
+    }
+
+    private static LocalPaymentRequest getLocalPaymentRequest() {
         PostalAddress address = new PostalAddress();
         address.setStreetAddress("Stadhouderskade 78");
         address.setCountryCodeAlpha2("NL");
@@ -83,19 +101,7 @@ public class LocalPaymentFragment extends BaseFragment {
         request.setMerchantAccountId("altpay_eur");
         request.setCurrencyCode("EUR");
 
-        localPaymentClient.createPaymentAuthRequest(request, (paymentAuthRequest) -> {
-            if (paymentAuthRequest instanceof LocalPaymentAuthRequest.ReadyToLaunch) {
-                LocalPaymentPendingRequest pendingRequest = localPaymentLauncher.launch(requireActivity(),
-                        (LocalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
-                if (pendingRequest instanceof LocalPaymentPendingRequest.Started) {
-                    storePendingRequest((LocalPaymentPendingRequest.Started) pendingRequest);
-                } else if (pendingRequest instanceof LocalPaymentPendingRequest.Failure) {
-                    handleError(((LocalPaymentPendingRequest.Failure) pendingRequest).getError());
-                }
-            } else if (paymentAuthRequest instanceof LocalPaymentAuthRequest.Failure) {
-                handleError(((LocalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
-            }
-        });
+        return request;
     }
 
     protected void handleLocalPaymentResult(LocalPaymentResult localPaymentResult) {
@@ -120,6 +126,7 @@ public class LocalPaymentFragment extends BaseFragment {
     private void storePendingRequest(LocalPaymentPendingRequest.Started request) {
         PendingRequestStore.getInstance().putLocalPaymentPendingRequest(requireContext(), request);
     }
+
     private LocalPaymentPendingRequest.Started getPendingRequest() {
         return PendingRequestStore.getInstance().getLocalPaymentPendingRequest(requireContext());
     }

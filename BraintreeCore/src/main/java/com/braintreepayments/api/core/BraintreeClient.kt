@@ -31,11 +31,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    val sessionId: String,
-
-    /**
-     * @suppress
-     */
     val authorization: Authorization,
 
     private val analyticsClient: AnalyticsClient,
@@ -58,7 +53,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     internal constructor(params: BraintreeClientParams) : this(
         applicationContext = params.applicationContext,
         integrationType = params.integrationType,
-        sessionId = params.sessionId,
         authorization = params.authorization,
         analyticsClient = params.analyticsClient,
         httpClient = params.httpClient,
@@ -73,7 +67,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @JvmOverloads
     constructor (
         context: Context,
         authorization: String,
@@ -93,23 +86,21 @@ class BraintreeClient @VisibleForTesting internal constructor(
     internal constructor(
         context: Context,
         authorization: Authorization,
-        sessionId: String?,
         integrationType: IntegrationType
     ) : this(
         BraintreeOptions(
             context = context,
             authorization = authorization,
-            sessionId = sessionId,
             integrationType = integrationType,
         )
     )
 
     init {
-        // NEXT MAJOR VERSION: CrashReporter isn't a part of BraintreeClientParams
-        // because it requires a reference to BraintreeClient. This is a design flaw that creates
-        // a circular reference. We should consider if we need CrashReporter anymore since
-        // merchants already have access to Crash statistics via GooglePlay. We also have crash
-        // statistics access via the sdk console
+        // TODO: CrashReporter isn't a part of BraintreeClientParams
+        //  because it requires a reference to BraintreeClient. This is a design flaw that creates
+        //  a circular reference. We should consider if we need CrashReporter anymore since
+        //  merchants already have access to Crash statistics via GooglePlay. We also have crash
+        //  statistics access via the sdk console
         crashReporter = CrashReporter(this)
         crashReporter.start()
     }
@@ -130,14 +121,13 @@ class BraintreeClient @VisibleForTesting internal constructor(
             } else {
                 callback.onResult(null, configError)
             }
-            timing?.let { sendAnalyticsTimingEvent("v1/configuration", it) }
+            timing?.let { sendAnalyticsTimingEvent("/v1/configuration", it) }
         }
     }
 
     /**
      * @suppress
      */
-    @JvmOverloads
     fun sendAnalyticsEvent(
         eventName: String,
         params: AnalyticsEventParams = AnalyticsEventParams()
@@ -165,7 +155,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
             analyticsClient.sendEvent(
                 it,
                 event,
-                sessionId,
                 integrationType,
                 authorization
             )
@@ -317,18 +306,17 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    fun reportCrash() =
+    internal fun reportCrash() =
         getConfiguration { configuration, _ ->
             analyticsClient.reportCrash(
                 applicationContext,
                 configuration,
-                sessionId,
                 integrationType,
                 authorization
             )
         }
 
-    // NEXT MAJOR VERSION: Make launches browser switch as new task a property of `BraintreeOptions`
+    // TODO: Make launches browser switch as new task a property of `BraintreeOptions`
     fun launchesBrowserSwitchAsNewTask(): Boolean {
         return launchesBrowserSwitchAsNewTask
     }

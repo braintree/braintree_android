@@ -1,9 +1,55 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+
+* GooglePay
+  * Upgrade `play-services-wallet` to `19.4.0`
+* Breaking Changes
+  * Venmo
+    * Convert `VenmoPaymentMethodUsage` to an enum
+    * Convert `VenmoLineItemKind` to an enum
+    * Make `VenmoPaymentAuthRequestParams` internal
+    * Remove `VenmoPaymentAuthResultInfo`
+  * BraintreeCore
+    * Remove `BraintreeDeepLinkActivity`
+    * Remove `authorizationFingerprint` from `ClientToken`
+  * GooglePay
+    * Make `GooglePayPaymentAuthRequestParams` internal
+    * Make `GooglePayPaymentAuthResult` parameters internal
+    * Update `GooglePayLauncher.launch` to take a `GooglePayPaymentAuthRequest.ReadyToLaunch` parameter
+    * Remove `GooglePayRequest.setTransactionInfo` and replace with `currencyCode`, `totalPrice, and `totalPriceStatus` parameters
+    * Change `GooglePayRequest.billingAddressFormat` to `GooglePayBillingAddressFormat` enum
+    * Change `GooglePayRequest.shippingAddressRequirements` to `GooglePayRequest.shippingAddressParameters` 
+  * PayPal
+    * Make `PayPalPaymentAuthRequestParams` internal
+    * Remove `PayPalPaymentAuthResultInfo`
+    * Rename `PayPalLauncher.handleReturnToAppFromBrowser()` to `PayPalLauncher.handleReturnToApp()`
+  * SEPADirectDebit
+    * Make `SEPADirectDebitPaymentAuthRequestParams` internal
+    * Remove `SEPADirectDebitPaymentAuthResultInfo`
+    * Rename `SEPADirectDebitLauncher.handleReturnToAppFromBrowser()` to `SEPADirectDebitLauncher.handleReturnToApp()`
+  * ThreeDSecure
+    * Make `ThreeDSecureParams` internal
+    * Make `ThreeDSecurePaymentAuthResult` parameters internal
+    * Remove `ThreeDSecurePaymentAuthResultInfo`
+  * LocalPayment
+    * Remove `LocalPaymentAuthResultInfo`
+    * Make `LocalPaymentAuthRequestParams` internal
+    * Rename `LocalPaymentLauncher.handleReturnToAppFromBrowser()` to `LocalPaymentLauncher.handleReturnToApp()`
+
+## 5.0.0-beta2 (2024-08-28)
+
+* All Modules
+  * Upgrade Gradle version to `8.5.2`
+  * Upgrade `compileSdkVersion` and `targetSdkVersion` to API 35
+  * Bump target Java version to Java 17
 * BraintreeCore
   * Update `endpoint` syntax sent to FPTI for 3D Secure and Venmo flows
+* ThreeDSecure
+  * Update `ThreeDSecureActivity` theme attributes to prevent the Action Bar title from displaying and enforce transparency properly with AppCompat theme attributes
 * Breaking Changes
+    * All Modules
+      * `countryCodeAlpha2` now returns a 2 character country code instead of a 3 character country code 
     * PayPal
         * Remove `appLinkEnabled` from `PayPalRequest` as Android app links are now required
         * Update `PayPalCreditFinancing.hasPayerAcceptance()` to `getHasPayerAcceptance()` (Java)
@@ -15,6 +61,23 @@
         * Change `PayPalLineItemKind` to an enum
         * Rename `PayPalLineItemKind.KIND_CREDIT` to `CREDIT`
         * Rename `PayPalLineItemKind.KIND_DEBIT` to `DEBIT`
+        * Update `ThreeDSSecureInfo.isLiabilityShifted()` to `ThreeDSSecureInfo.getLiabilityShifted()`
+        * Update `ThreeDSSecureInfo.isLiabilityShiftPossible()` to `ThreeDSSecureInfo.getLiabilityShiftPossible()`
+        * Update `ThreeDSSecureInfo.wasVerified()` to `ThreeDSSecureInfo.getWasVerified()`
+        * Update `ThreeDSecurePaymentAuthResult.getThreeSecureResult()` to `ThreeDSecurePaymentAuthResult.getThreeDSecureParams()`
+        * Update `ThreeDSecurePaymentAuthResult.getJWT()` to `ThreeDSecurePaymentAuthResult.getJwt()`
+        * Change `ThreeDSecureShippingMethod` to an enum
+        * Change `ThreeDSecureAccountType` to an enum
+        * Change `ThreeDSecureRenderType` to an enum
+        * Change `ThreeDSecureRequestedExemptionType` to an enum
+        * Change `ThreeDSecureUiType` to an enum
+        * Update `ThreeDSecureRequest.isChallengeRequested()` to `ThreeDSecureRequest.getChallengeRequested()`
+        * Update `ThreeDSecureRequest.isDataOnlyRequested()` to `ThreeDSecureRequest.getDataOnlyRequested()`
+        * Update `ThreeDSecureRequest.isExemptionRequested()` to `ThreeDSecureRequest.getDataOnlyRequested()`
+        * Update `ThreeDSecureRequest.isCardAddChallengeRequested()` to `ThreeDSecureRequest.getCardAddChallengeRequested()`
+    *  ThreeDSecure
+      * Split `ThreeDSecureV2UiCustomization.setButtonCustomization()` to `setButtonCustomization()` and `setButtonType()`
+      * Change `ThreeDSecureV2ButtonType` to an enum
 
 ## 5.0.0-beta1 (2024-07-23)
 
@@ -75,6 +138,7 @@
         * Change `GooglePayGetTokenizationParametersCallback` parameters
         * Rename `GooglePayLauncherCallback#onResult` to
           `GooglePayLauncherCallback#onGooglePayLauncherResult`
+        * Change `GooglePayRequest#isCreditCardsAllowed` to `GooglePayRequest#getAllowCreditCards`
     * ThreeDSecure
         * Remove `ThreeDSecureListener`
         * Add `ThreeDSecureLauncher`, `ThreeDSecurePaymentAuthResult`,
@@ -127,6 +191,7 @@
         * Move `ThreeDSecureInfo` to `three-d-secure` module
         * Add `CardResult` object
         * Change `CardTokenizeCallback` parameters
+        * Change `BinType` from String to enum
     * SEPA Direct Debit
         * Update package name to `com.braintreepayments.api.sepadirectdebit`
         * Remove `SEPADirectDebitLifecycleObserver` and `SEPADirectDebitListener`

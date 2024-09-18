@@ -1,5 +1,6 @@
 package com.braintreepayments.api.localpayment
 
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.PaymentMethodNonce
 import com.braintreepayments.api.core.PostalAddress
 import com.braintreepayments.api.core.PostalAddressParser.fromJson
@@ -60,6 +61,7 @@ data class LocalPaymentNonce internal constructor(
         @Throws(JSONException::class)
         @Suppress("ThrowsCount")
         @JvmStatic
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         fun fromJSON(inputJson: JSONObject): LocalPaymentNonce {
             val json = inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0)
             val details = json.getJSONObject(DETAILS_KEY)
@@ -106,11 +108,11 @@ data class LocalPaymentNonce internal constructor(
                 clientMetadataId = clientMetadataId,
                 billingAddress = billingAddress,
                 shippingAddress = shippingAddress,
-                givenName = givenName ?: throw JSONException("givenName is null"),
-                surname = surname ?: throw JSONException("surname is null"),
-                phone = phone ?: throw JSONException("phone is null"),
+                givenName = givenName ?: "",
+                surname = surname ?: "",
+                phone = phone ?: "",
                 email = email,
-                payerId = payerId ?: throw JSONException("payerId is null"),
+                payerId = payerId ?: "",
             )
         }
     }

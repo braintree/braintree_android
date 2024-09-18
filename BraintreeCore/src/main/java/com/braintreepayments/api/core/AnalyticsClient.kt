@@ -19,14 +19,14 @@ internal class AnalyticsClient(
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
     private val analyticsDatabase: AnalyticsDatabase = AnalyticsDatabase.getInstance(context.applicationContext),
     private val workManager: WorkManager = WorkManager.getInstance(context.applicationContext),
-    private val deviceInspector: DeviceInspector = DeviceInspector()
+    private val deviceInspector: DeviceInspector = DeviceInspector(),
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
 ) {
     private val applicationContext = context.applicationContext
 
     fun sendEvent(
         configuration: Configuration,
         event: AnalyticsEvent,
-        sessionId: String?,
         integration: IntegrationType?,
         authorization: Authorization
     ): UUID {
@@ -34,24 +34,24 @@ internal class AnalyticsClient(
         return scheduleAnalyticsUploadInBackground(
             configuration,
             authorization,
-            sessionId,
             integration
         )
     }
 
     private fun scheduleAnalyticsWriteInBackground(
-        event: AnalyticsEvent, authorization: Authorization
+        event: AnalyticsEvent,
+        authorization: Authorization
     ) {
         val json = mapAnalyticsEventToFPTIEventJSON(event)
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(WORK_INPUT_KEY_ANALYTICS_JSON, json)
+            .putString(WORK_INPUT_KEY_SESSION_ID, analyticsParamRepository.sessionId)
             .build()
 
-        val analyticsWorkRequest =
-            OneTimeWorkRequest.Builder(AnalyticsWriteToDbWorker::class.java)
-                .setInputData(inputData)
-                .build()
+        val analyticsWorkRequest = OneTimeWorkRequest.Builder(AnalyticsWriteToDbWorker::class.java)
+            .setInputData(inputData)
+            .build()
         workManager.enqueueUniqueWork(
             WORK_NAME_ANALYTICS_WRITE, ExistingWorkPolicy.APPEND_OR_REPLACE, analyticsWorkRequest
         )
@@ -59,10 +59,14 @@ internal class AnalyticsClient(
 
     fun performAnalyticsWrite(inputData: Data): ListenableWorker.Result {
         val analyticsJSON = inputData.getString(WORK_INPUT_KEY_ANALYTICS_JSON)
-        return if (analyticsJSON == null) {
+        val sessionId = inputData.getString(WORK_INPUT_KEY_SESSION_ID)
+        return if (analyticsJSON == null || sessionId == null) {
             ListenableWorker.Result.failure()
         } else {
-            val eventBlob = AnalyticsEventBlob(analyticsJSON)
+            val eventBlob = AnalyticsEventBlob(
+                jsonString = analyticsJSON,
+                sessionId = sessionId
+            )
             val analyticsBlobDao = analyticsDatabase.analyticsEventBlobDao()
             analyticsBlobDao.insertEventBlob(eventBlob)
             ListenableWorker.Result.success()
@@ -72,9 +76,9 @@ internal class AnalyticsClient(
     private fun scheduleAnalyticsUploadInBackground(
         configuration: Configuration,
         authorization: Authorization,
-        sessionId: String?,
         integration: IntegrationType?
     ): UUID {
+        val sessionId = analyticsParamRepository.sessionId
         val inputData = Data.Builder()
             .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
             .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
@@ -87,7 +91,9 @@ internal class AnalyticsClient(
             .setInputData(inputData)
             .build()
         workManager.enqueueUniqueWork(
-            WORK_NAME_ANALYTICS_UPLOAD, ExistingWorkPolicy.KEEP, analyticsWorkRequest
+            WORK_NAME_ANALYTICS_UPLOAD + sessionId,
+            ExistingWorkPolicy.KEEP,
+            analyticsWorkRequest
         )
         return analyticsWorkRequest.id
     }
@@ -97,33 +103,36 @@ internal class AnalyticsClient(
         val authorization = getAuthorizationFromData(inputData)
         val sessionId = inputData.getString(WORK_INPUT_KEY_SESSION_ID)
         val integration = inputData.getString(WORK_INPUT_KEY_INTEGRATION)
-        val isMissingInputData =
-            listOf(configuration, authorization, sessionId, integration).contains(null)
-        return if (isMissingInputData) {
-            ListenableWorker.Result.failure()
-        } else {
-            try {
-                val analyticsEventBlobDao = analyticsDatabase.analyticsEventBlobDao()
-                val eventBlobs = analyticsEventBlobDao.getAllEventBlobs()
-                if (eventBlobs.isNotEmpty()) {
-                    val metadata = deviceInspector.getDeviceMetadata(
-                        applicationContext,
-                        configuration,
-                        sessionId,
-                        IntegrationType.fromString(integration)
-                    )
-                    val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
-                    httpClient.post(
-                        FPTI_ANALYTICS_URL,
-                        analyticsRequest.toString(),
-                        configuration,
-                        authorization
-                    )
-                    analyticsEventBlobDao.deleteEventBlobs(eventBlobs)
-                }
-                ListenableWorker.Result.success()
-            } catch (e: Exception) {
+        return when (null) {
+            configuration, authorization, sessionId, integration -> {
                 ListenableWorker.Result.failure()
+            }
+
+            else -> {
+                try {
+                    val analyticsEventBlobDao = analyticsDatabase.analyticsEventBlobDao()
+                    val eventBlobs = analyticsEventBlobDao.getBlobsBySessionId(sessionId)
+                    if (eventBlobs.isNotEmpty()) {
+                        val metadata = deviceInspector.getDeviceMetadata(
+                            applicationContext,
+                            configuration,
+                            sessionId,
+                            IntegrationType.fromString(integration)
+                        )
+                        val analyticsRequest =
+                            createFPTIPayload(authorization, eventBlobs, metadata)
+                        httpClient.post(
+                            FPTI_ANALYTICS_URL,
+                            analyticsRequest.toString(),
+                            configuration,
+                            authorization
+                        )
+                        analyticsEventBlobDao.deleteEventBlobs(eventBlobs)
+                    }
+                    ListenableWorker.Result.success()
+                } catch (e: Exception) {
+                    ListenableWorker.Result.failure()
+                }
             }
         }
     }
@@ -131,14 +140,12 @@ internal class AnalyticsClient(
     fun reportCrash(
         context: Context?,
         configuration: Configuration?,
-        sessionId: String?,
         integration: IntegrationType?,
         authorization: Authorization?
     ) {
         reportCrash(
             context,
             configuration,
-            sessionId,
             integration,
             System.currentTimeMillis(),
             authorization
@@ -149,7 +156,6 @@ internal class AnalyticsClient(
     fun reportCrash(
         context: Context?,
         configuration: Configuration?,
-        sessionId: String?,
         integration: IntegrationType?,
         timestamp: Long,
         authorization: Authorization?
@@ -157,11 +163,20 @@ internal class AnalyticsClient(
         if (authorization == null) {
             return
         }
-        val metadata =
-            deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
+        val metadata = deviceInspector.getDeviceMetadata(
+            context = context,
+            configuration = configuration,
+            sessionId = analyticsParamRepository.sessionId,
+            integration = integration
+        )
         val event = AnalyticsEvent(name = "crash", timestamp = timestamp)
         val eventJSON = mapAnalyticsEventToFPTIEventJSON(event)
-        val eventBlobs = listOf(AnalyticsEventBlob(eventJSON))
+        val eventBlobs = listOf(
+            AnalyticsEventBlob(
+                jsonString = eventJSON,
+                sessionId = ""
+            )
+        )
         try {
             val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
             httpClient.post(

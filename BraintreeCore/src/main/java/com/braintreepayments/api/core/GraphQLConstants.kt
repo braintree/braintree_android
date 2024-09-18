@@ -27,7 +27,6 @@ object GraphQLConstants {
     }
 
     object ErrorMessages {
-        const val UNKNOWN = "An unknown error occurred."
         const val USER = "Input is invalid."
     }
 
@@ -36,7 +35,7 @@ object GraphQLConstants {
     }
 
     object Headers {
-        const val API_VERSION = "2018-03-06"
+        const val API_VERSION = "2024-08-23"
     }
 
     object Features {

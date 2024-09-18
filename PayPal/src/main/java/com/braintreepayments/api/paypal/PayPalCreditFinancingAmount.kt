@@ -1,6 +1,7 @@
 package com.braintreepayments.api.paypal
 
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.Json
 import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
@@ -14,7 +15,7 @@ import org.json.JSONObject
  * [ISO 4217](http://www.iso.org/iso/home/standards/currency_codes.htm) for the given currency.
  */
 @Parcelize
-data class PayPalCreditFinancingAmount(
+data class PayPalCreditFinancingAmount internal constructor(
     val currency: String?,
     val value: String?,
 ) : Parcelable {
@@ -24,6 +25,7 @@ data class PayPalCreditFinancingAmount(
         private const val VALUE_KEY = "value"
 
         @JvmStatic
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         fun fromJson(amount: JSONObject?): PayPalCreditFinancingAmount {
             return PayPalCreditFinancingAmount(
                 currency = Json.optString(amount, CURRENCY_KEY, null),

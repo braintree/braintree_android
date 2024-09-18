@@ -9,7 +9,9 @@ import com.braintreepayments.demo.internal.ApiClientRequestInterceptor;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 
-import retrofit.RestAdapter;
+import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DemoApplication extends Application implements UncaughtExceptionHandler {
 
@@ -33,11 +35,16 @@ public class DemoApplication extends Application implements UncaughtExceptionHan
 
     static ApiClient getApiClient(Context context) {
         if (apiClient == null) {
-            apiClient = new RestAdapter.Builder()
-                    .setEndpoint(Settings.getEnvironmentUrl(context))
-                    .setRequestInterceptor(new ApiClientRequestInterceptor())
-                    .build()
-                    .create(ApiClient.class);
+            OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addInterceptor(new ApiClientRequestInterceptor())
+                .build();
+
+            apiClient = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(Settings.getEnvironmentUrl(context))
+                .client(okHttpClient)
+                .build()
+                .create(ApiClient.class);
         }
 
         return apiClient;

@@ -55,7 +55,8 @@ object Fixtures {
             "md": "merchant-descriptor",
             "termUrl": "https://term-url/",
             "pareq": "sample-pareq",
-            "transactionId": "sample-transaction-id"
+            "transactionId": "sample-transaction-id",
+            "threeDSecureVersion": "2.1.0"
           },
           "paymentMethod": {
             "type": "CreditCard",
@@ -989,24 +990,47 @@ object Fixtures {
     """
 
     // language=JSON
-    const val ERRORS_BRAINTREE_API_ERROR_RESPONSE = """
+    const val ERRORS_AUTH_FINGERPRINT_WITH_ERROR_MESSAGE_ERROR = """
         {
-          "meta": {
-            "braintree_request_id": "fe62f36c-7616-4130-a83f-20dc341d5c79"
-          },
-          "error": {
-            "user_message": "Invalid data detected. Please check your entries and try again.",
-            "developer_message": "The provided parameters are invalid; see details for field-specific error messages.",
-            "details": [
-              {
-                "code": "not_an_integer",
-                "user_message": "must be a number",
-                "developer_message": "The provided value must be a string encoding of a base-10 integer between 1 and 12.",
-                "in": "body",
-                "at": "/expiration_month"
-              }
+            "error": {
+                "errorMessage": "Authorization fingerprint is invalid"
+            },
+            "fieldErrors": [
+                {
+                    "field": "authorizationFingerprint",
+                    "message": "Authorization fingerprint signature did not match"
+                }
             ]
-          }
+        }
+    """
+
+    // language=JSON
+    const val ERRORS_AUTH_FINGERPRINT_WITH_DEVELOPER_MESSAGE_ERROR = """
+        {
+            "error": {
+                "developer_message": "Authorization fingerprint is invalid"
+            },
+            "fieldErrors": [
+                {
+                    "field": "authorizationFingerprint",
+                    "message": "Authorization fingerprint signature did not match"
+                }
+            ]
+        }
+    """
+
+    // language=JSON
+    const val ERRORS_AUTH_FINGERPRINT_WITH_UNKNOWN_MESSAGE_ERROR = """
+        {
+            "error": {
+                "unknown_field": "Authorization fingerprint is invalid"
+            },
+            "fieldErrors": [
+                {
+                    "field": "authorizationFingerprint",
+                    "message": "Authorization fingerprint signature did not match"
+                }
+            ]
         }
     """
 
@@ -1585,6 +1609,23 @@ object Fixtures {
               }
             }
           ]
+        }
+    """
+
+    // language=JSON
+    const val PAYMENT_METHODS_LOCAL_PAYMENT_MISSING_FIELDS_RESPONSE = """
+        {
+           "paypalAccounts": [
+              {
+                 "consumed": false,
+                 "description": "PayPal",
+                 "details": {
+                    "correlationId": "c7ce54e0cde5406785b13c99086a9f4c"
+                 },
+                 "nonce": "141b7583-2922-1ce6-1f2e-f352b69115d6",
+                 "type": "PayPalAccount"
+              }
+           ]
         }
     """
 

@@ -183,8 +183,12 @@ public class SEPADirectDebitApiUnitTest {
         sut.createMandate(request, returnUrl, createMandateCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(mockBraintreeClient).sendPOST(eq("v1/sepa_debit"), String.valueOf(captor.capture()),
-                any(HttpResponseCallback.class));
+        verify(mockBraintreeClient).sendPOST(
+                eq("v1/sepa_debit"),
+                captor.capture(),
+                any(),
+                any(HttpResponseCallback.class)
+        );
 
         String result = captor.getValue();
         JSONObject json = new JSONObject(result);

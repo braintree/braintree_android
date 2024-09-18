@@ -39,7 +39,7 @@ are required.
 
 ```diff
 - implementation 'com.braintreepayments.api:card:4.x.x'
-+ implementation 'com.braintreepayments.api:card:5.0.0-beta1'
++ implementation 'com.braintreepayments.api:card:5.0.0-beta2'
 ```
 
 ## Braintree Client
@@ -159,15 +159,15 @@ class MyActivity : FragmentActivity() {
     
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
     override fun onNewIntent(intent: Intent) {
-+       handleReturnToAppFromBrowser(intent)
++       handleReturnToApp(intent)
     }
     
     // ALL OTHER ACTIVITY LAUNCH MODES 
     override fun onResume() {
-+       handleReturnToAppFromBrowser(intent)
++       handleReturnToApp(intent)
     }
     
-    private fun handleReturnToAppFromBrowser(intent: Intent) {
+    private fun handleReturnToApp(intent: Intent) {
        // fetch stored VenmoPendingRequest.Success 
 +       fetchPendingRequestFromPersistantStore()?.let {
 +          when (val paymentAuthResult = venmoLauncher.handleReturnToApp(VenmoPendingRequest.Started(it), intent)) {
@@ -234,6 +234,9 @@ of your Fragment.
 `BraintreeClient` and `GooglePayClient` no longer require references to Fragment or Activity and
 do not need to be instantiated in `OnCreate`.
 
+The `TransactionInfo` object has been replaced with individual parameters on the `GooglePayRequest` 
+for transaction info: `currencyCode`, `totalPrice`, and `totalPriceStatus`.
+
 ```diff
 class MyActivity : FragmentActivity() {
     
@@ -277,7 +280,7 @@ class MyActivity : FragmentActivity() {
 +           when (paymentAuthRequest) {
 +            is GooglePayPaymentAuthRequest.Failure -> { /* handle error */ }
 +            is GooglePayPaymentAuthRequest.ReadyToLaunch -> { 
-+               googlePayLauncher.launch(paymentAuthRequest.requestParams) 
++               googlePayLauncher.launch(paymentAuthRequest) 
 +            }
 +       }
     }
@@ -402,18 +405,18 @@ class MyActivity : FragmentActivity() {
     
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
     override fun onNewIntent(intent: Intent) {
-+       handleReturnToAppFromBrowser(intent)
++       handleReturnToApp(intent)
     }
     
     // ALL OTHER ACTIVITY LAUNCH MODES 
     override fun onResume() {
-+       handleReturnToAppFromBrowser(intent)
++       handleReturnToApp(intent)
     }
     
-    private fun handleReturnToAppFromBrowser(intent: Intent) {
+    private fun handleReturnToApp(intent: Intent) {
        // fetch stored PayPalPendingRequest.Success 
 +       fetchPendingRequestFromPersistantStore()?.let {
-+          when (val paymentAuthResult = payPalLauncher.handleReturnToAppFromBrowser(PayPalPendingRequest.Started(it), intent)) {
++          when (val paymentAuthResult = payPalLauncher.handleReturnToApp(PayPalPendingRequest.Started(it), intent)) {
 +               is PayPalPaymentAuthResult.Success -> {
 +                   completePayPalFlow(paymentAuthResult)
 +                   // clear stored PayPalPendingRequest.Success
@@ -505,18 +508,18 @@ class MyActivity : FragmentActivity() {
 
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
     override fun onNewIntent(intent: Intent) {
-+       handleReturnToAppFromBrowser(intent)
++       handleReturnToApp(intent)
     }
     
     // ALL OTHER ACTIVITY LAUNCH MODES 
     override fun onResume() {
-+       handleReturnToAppFromBrowser(intent)
++       handleReturnToApp(intent)
     }
     
-    private fun handleReturnToAppFromBrowser(intent: Intent) {
+    private fun handleReturnToApp(intent: Intent) {
        // fetch stored LocalPaymentPendingRequest.Success 
 +       fetchPendingRequestFromPersistantStore()?.let {
-+          when (val paymentAuthResult = localPaymentLauncher.handleReturnToAppFromBrowser(LocalPaymentPendingRequest.Started(it), intent)) {
++          when (val paymentAuthResult = localPaymentLauncher.handleReturnToApp(LocalPaymentPendingRequest.Started(it), intent)) {
 +               is LocalPaymentAuthResult.Success -> {
 +                   completeLocalPaymentFlow(paymentAuthResult)
 +                   // clear stored LocalPaymentPendingRequest.Success
@@ -600,18 +603,18 @@ class MyActivity : FragmentActivity() {
 
     // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
     override fun onNewIntent(intent: Intent) {
-+       handleReturnToAppFromBrowser(intent)
++       handleReturnToApp(intent)
     }
 
     // ALL OTHER ACTIVITY LAUNCH MODES 
     override fun onResume() {
-+       handleReturnToAppFromBrowser(intent)
++       handleReturnToApp(intent)
     }
     
-    private fun handleReturnToAppFromBrowser(intent: Intent) {
+    private fun handleReturnToApp(intent: Intent) {
        // fetch stored SEPADirectDebitPendingRequest.Success 
 +       fetchPendingRequestFromPersistantStore()?.let {
-+          when (val paymentAuthResult = sepaDirectDebitLauncher.handleReturnToAppFromBrowser(SEPADirectDebitPendingRequest.Started(it), intent)) {
++          when (val paymentAuthResult = sepaDirectDebitLauncher.handleReturnToApp(SEPADirectDebitPendingRequest.Started(it), intent)) {
 +               is SEPADirectDebitPaymentAuthResult.Success -> {
 +                   completSEPAFlow(paymentAuthResult)
 +                   // clear stored SEPADirectDebitPendingRequest.Success

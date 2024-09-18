@@ -15,50 +15,6 @@ import java.util.ArrayList;
 public class VenmoRequestUnitTest {
 
     @Test
-    public void getPaymentMethodUsageAsString_whenSingleUse_returnsStringEquivalent() {
-        VenmoRequest sut = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
-        assertEquals("SINGLE_USE", sut.getPaymentMethodUsageAsString());
-    }
-
-    @Test
-    public void getPaymentMethodUsageAsString_whenMultiUse_returnsStringEquivalent() {
-        VenmoRequest sut = new VenmoRequest(VenmoPaymentMethodUsage.MULTI_USE);
-        assertEquals("MULTI_USE", sut.getPaymentMethodUsageAsString());
-    }
-
-    @Test
-    public void getCollectCustomerShippingAddressAsString_returnsStringEquivalent() {
-        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.MULTI_USE);
-        request.setCollectCustomerShippingAddress(true);
-        assertEquals("true", request.getCollectCustomerShippingAddressAsString());
-
-        request = new VenmoRequest(VenmoPaymentMethodUsage.MULTI_USE);
-        request.setCollectCustomerShippingAddress(false);
-        assertEquals("false", request.getCollectCustomerShippingAddressAsString());
-    }
-
-    @Test
-    public void getCollectCustomerBillingAddressAsString_returnsStringEquivalent() {
-        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.MULTI_USE);
-        request.setCollectCustomerBillingAddress(true);
-        assertEquals("true", request.getCollectCustomerBillingAddressAsString());
-
-        request = new VenmoRequest(VenmoPaymentMethodUsage.MULTI_USE);
-        request.setCollectCustomerBillingAddress(false);
-        assertEquals("false", request.getCollectCustomerBillingAddressAsString());
-    }
-
-    @Test
-    public void getIsFinalAmountAsString_returnsStringEquivalent() {
-        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.MULTI_USE);
-        request.setIsFinalAmount(true);
-        assertEquals("true", request.getIsFinalAmountAsString());
-
-        request.setIsFinalAmount(false);
-        assertEquals("false", request.getIsFinalAmountAsString());
-    }
-
-    @Test
     public void parcelsCorrectly() {
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.MULTI_USE);
         request.setDisplayName("venmo-user");
@@ -71,10 +27,10 @@ public class VenmoRequestUnitTest {
         request.setDiscountAmount("2.00");
         request.setShippingAmount("1.00");
         request.setTotalAmount("10.00");
-        request.setIsFinalAmount(true);
+        request.setFinalAmount(true);
 
         ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
-        lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "An Item", 1, "10.00"));
+        lineItems.add(new VenmoLineItem(VenmoLineItemKind.DEBIT, "An Item", 1, "10.00"));
         request.setLineItems(lineItems);
 
         Parcel parcel = Parcel.obtain();
@@ -95,6 +51,6 @@ public class VenmoRequestUnitTest {
         assertEquals("10.00", result.getTotalAmount());
         assertEquals(1, result.getLineItems().size());
         assertEquals("An Item", result.getLineItems().get(0).getName());
-        assertTrue(result.getIsFinalAmount());
+        assertTrue(result.isFinalAmount());
     }
 }

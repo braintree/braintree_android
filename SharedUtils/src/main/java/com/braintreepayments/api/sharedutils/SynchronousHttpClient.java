@@ -1,5 +1,7 @@
 package com.braintreepayments.api.sharedutils;
 
+import androidx.annotation.RestrictTo;
+
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -13,6 +15,7 @@ import javax.net.ssl.SSLSocketFactory;
  * This class performs an http request on the calling thread. The external caller is
  * responsible for thread scheduling to ensure that this is not called on the main thread.
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class SynchronousHttpClient {
 
     private SSLSocketFactory socketFactory;

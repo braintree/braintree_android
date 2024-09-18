@@ -6,5 +6,5 @@ package com.braintreepayments.api.googlepay
  */
 fun interface GooglePayLauncherCallback {
 
-    fun onGooglePayLauncherResult(googlePayPaymentAuthResult: GooglePayPaymentAuthResult?)
+    fun onGooglePayLauncherResult(googlePayPaymentAuthResult: GooglePayPaymentAuthResult)
 }

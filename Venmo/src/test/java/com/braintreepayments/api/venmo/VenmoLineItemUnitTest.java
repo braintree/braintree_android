@@ -8,14 +8,12 @@ import org.robolectric.RobolectricTestRunner;
 
 import static junit.framework.Assert.assertEquals;
 
-import com.braintreepayments.api.venmo.VenmoLineItem;
-
 @RunWith(RobolectricTestRunner.class)
 public class VenmoLineItemUnitTest {
 
     @Test
     public void toJson_setsKeysAndValues() throws JSONException {
-        VenmoLineItem item = new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "An Item", 1, "2");
+        VenmoLineItem item = new VenmoLineItem(VenmoLineItemKind.DEBIT, "An Item", 1, "2");
         item.setDescription("A new item");
         item.setProductCode("abc-123");
         item.setUnitTaxAmount("1.50");

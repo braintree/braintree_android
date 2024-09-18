@@ -10,12 +10,13 @@ sealed class GooglePayTokenizationParameters {
     /**
      * The request was successfully created
      */
-    class Success(val parameters: PaymentMethodTokenizationParameters,
-                  val allowedCardNetworks: Collection<Integer>
+    class Success internal constructor(
+        val parameters: PaymentMethodTokenizationParameters,
+        val allowedCardNetworks: Collection<Int>
     ) : GooglePayTokenizationParameters()
 
     /**
      * There was an [error] creating the request
      */
-    class Failure(val error: Exception) : GooglePayTokenizationParameters()
+    class Failure internal constructor(val error: Exception) : GooglePayTokenizationParameters()
 }

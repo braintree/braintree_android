@@ -9,15 +9,15 @@ sealed class SEPADirectDebitResult {
      * The SEPA Direct Debit flow completed successfully. This [nonce] should be sent to
      * your server.
      */
-    class Success(val nonce: SEPADirectDebitNonce) : SEPADirectDebitResult()
+    class Success internal constructor(val nonce: SEPADirectDebitNonce) : SEPADirectDebitResult()
 
     /**
      * There was an [error] in the SEPA Direct Debit flow.
      */
-    class Failure(val error: Exception) : SEPADirectDebitResult()
+    class Failure internal constructor(val error: Exception) : SEPADirectDebitResult()
 
     /**
      * The user canceled the SEPA Direct Debit flow.
      */
-    object Cancel : SEPADirectDebitResult()
+    data object Cancel : SEPADirectDebitResult()
 }

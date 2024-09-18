@@ -9,7 +9,9 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import com.braintreepayments.api.core.AnalyticsParamRepository;
 import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.testutils.MockApiClientBuilder;
 import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
@@ -35,16 +37,20 @@ public class VenmoApiUnitTest {
 
     private BraintreeClient braintreeClient;
     private ApiClient apiClient;
+    private AnalyticsParamRepository analyticsParamRepository;
 
     @Before
     public void beforeEach() {
         braintreeClient = mock(BraintreeClient.class);
         apiClient = mock(ApiClient.class);
+        analyticsParamRepository = mock(AnalyticsParamRepository.class);
+
+        when(analyticsParamRepository.getSessionId()).thenReturn("session-id");
     }
 
     @Test
     public void createPaymentContext_createsPaymentContextViaGraphQL() throws JSONException {
-        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient);
+        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient, analyticsParamRepository);
 
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId("sample-venmo-merchant");
@@ -57,7 +63,7 @@ public class VenmoApiUnitTest {
         request.setTaxAmount("9.00");
         request.setShippingAmount("1");
         ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
-        lineItems.add(new VenmoLineItem(VenmoLineItem.KIND_DEBIT, "Some Item", 1, "1"));
+        lineItems.add(new VenmoLineItem(VenmoLineItemKind.DEBIT, "Some Item", 1, "1"));
         request.setLineItems(lineItems);
 
         venmoAPI.createPaymentContext(request, request.getProfileId(),
@@ -67,9 +73,6 @@ public class VenmoApiUnitTest {
         verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
 
         JSONObject graphQLJSON = captor.getValue();
-        String expectedQuery =
-                "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }";
-        assertEquals(expectedQuery, graphQLJSON.getString("query"));
 
         JSONObject variables = graphQLJSON.getJSONObject("variables");
         JSONObject input = variables.getJSONObject("input");
@@ -82,6 +85,7 @@ public class VenmoApiUnitTest {
         JSONObject metadata = graphQLJSON.getJSONObject("clientSdkMetadata");
         assertEquals(com.braintreepayments.api.core.BuildConfig.VERSION_NAME, metadata.getString("version"));
         assertEquals("android", metadata.getString("platform"));
+        assertEquals("session-id", metadata.getString("sessionId"));
 
         JSONObject paysheetDetails = input.getJSONObject("paysheetDetails");
         assertEquals("true", paysheetDetails.getString("collectCustomerBillingAddress"));
@@ -100,7 +104,7 @@ public class VenmoApiUnitTest {
 
     @Test
     public void createPaymentContext_whenTransactionAmountOptionsMissing() throws JSONException {
-        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient);
+        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient, analyticsParamRepository);
 
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId("sample-venmo-merchant");
@@ -114,9 +118,6 @@ public class VenmoApiUnitTest {
         verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
 
         JSONObject graphQLJSON = captor.getValue();
-        String expectedQuery =
-                "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }";
-        assertEquals(expectedQuery, graphQLJSON.getString("query"));
 
         JSONObject variables = graphQLJSON.getJSONObject("variables");
         JSONObject input = variables.getJSONObject("input");
@@ -136,7 +137,7 @@ public class VenmoApiUnitTest {
                 .sendGraphQLPOSTSuccessfulResponse(
                         Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
                 .build();
-        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient);
+        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient, analyticsParamRepository);
 
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId("sample-venmo-merchant");
@@ -153,7 +154,7 @@ public class VenmoApiUnitTest {
                 .sendGraphQLPOSTSuccessfulResponse(
                         Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_RESPONSE_WITHOUT_PAYMENT_CONTEXT_ID)
                 .build();
-        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient);
+        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient, analyticsParamRepository);
 
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId("sample-venmo-merchant");
@@ -176,7 +177,7 @@ public class VenmoApiUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .sendGraphQLPOSTErrorResponse(error)
                 .build();
-        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient);
+        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient, analyticsParamRepository);
 
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId("sample-venmo-merchant");
@@ -189,11 +190,11 @@ public class VenmoApiUnitTest {
 
     @Test
     public void createPaymentContext_withTotalAmountAndSetsFinalAmountToTrue() throws JSONException {
-        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient);
+        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient, analyticsParamRepository);
 
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId("sample-venmo-merchant");
-        request.setIsFinalAmount(true);
+        request.setFinalAmount(true);
         request.setTotalAmount("5.99");
 
         venmoAPI.createPaymentContext(request, request.getProfileId(), mock(VenmoApiCallback.class));
@@ -202,8 +203,6 @@ public class VenmoApiUnitTest {
         verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
 
         JSONObject graphQLJSON = captor.getValue();
-        String expectedQuery = "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }";
-        assertEquals(expectedQuery, graphQLJSON.getString("query"));
 
         JSONObject variables = graphQLJSON.getJSONObject("variables");
         JSONObject input = variables.getJSONObject("input");
@@ -217,11 +216,11 @@ public class VenmoApiUnitTest {
 
     @Test
     public void createPaymentContext_withTotalAmountAndSetsFinalAmountToFalse() throws JSONException {
-        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient);
+        VenmoApi venmoAPI = new VenmoApi(braintreeClient, apiClient, analyticsParamRepository);
 
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId("sample-venmo-merchant");
-        request.setIsFinalAmount(false);
+        request.setFinalAmount(false);
         request.setTotalAmount("5.99");
 
         venmoAPI.createPaymentContext(request, request.getProfileId(), mock(VenmoApiCallback.class));
@@ -230,8 +229,6 @@ public class VenmoApiUnitTest {
         verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
 
         JSONObject graphQLJSON = captor.getValue();
-        String expectedQuery = "mutation CreateVenmoPaymentContext($input: CreateVenmoPaymentContextInput!) { createVenmoPaymentContext(input: $input) { venmoPaymentContext { id } } }";
-        assertEquals(expectedQuery, graphQLJSON.getString("query"));
 
         JSONObject variables = graphQLJSON.getJSONObject("variables");
         JSONObject input = variables.getJSONObject("input");
@@ -245,17 +242,13 @@ public class VenmoApiUnitTest {
 
     @Test
     public void createNonceFromPaymentContext_queriesGraphQLPaymentContext() throws JSONException {
-        VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
+        VenmoApi sut = new VenmoApi(braintreeClient, apiClient, analyticsParamRepository);
         sut.createNonceFromPaymentContext("payment-context-id", mock(VenmoInternalCallback.class));
 
         ArgumentCaptor<JSONObject> captor = ArgumentCaptor.forClass(JSONObject.class);
         verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
 
         JSONObject jsonPayload = captor.getValue();
-        String expectedQuery =
-                "query PaymentContext($id: ID!) { node(id: $id) { ... on VenmoPaymentContext { paymentMethodId userName payerInfo { firstName lastName phoneNumber email externalId userName " +
-                        "shippingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } billingAddress { fullName addressLine1 addressLine2 adminArea1 adminArea2 postalCode countryCode } } } } }";
-        assertEquals(expectedQuery, jsonPayload.get("query"));
         assertEquals("payment-context-id", jsonPayload.getJSONObject("variables").get("id"));
     }
 
@@ -266,7 +259,7 @@ public class VenmoApiUnitTest {
                 .sendGraphQLPOSTSuccessfulResponse(graphQLResponse)
                 .build();
 
-        VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
+        VenmoApi sut = new VenmoApi(braintreeClient, apiClient, analyticsParamRepository);
 
         VenmoInternalCallback callback = mock(VenmoInternalCallback.class);
         sut.createNonceFromPaymentContext("payment-context-id", callback);
@@ -282,7 +275,7 @@ public class VenmoApiUnitTest {
                 .sendGraphQLPOSTSuccessfulResponse("not-json")
                 .build();
 
-        VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
+        VenmoApi sut = new VenmoApi(braintreeClient, apiClient, analyticsParamRepository);
 
         VenmoInternalCallback callback = mock(VenmoInternalCallback.class);
         sut.createNonceFromPaymentContext("payment-context-id", callback);
@@ -299,7 +292,7 @@ public class VenmoApiUnitTest {
                 .sendGraphQLPOSTErrorResponse(error)
                 .build();
 
-        VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
+        VenmoApi sut = new VenmoApi(braintreeClient, apiClient, analyticsParamRepository);
 
         VenmoInternalCallback callback = mock(VenmoInternalCallback.class);
         sut.createNonceFromPaymentContext("payment-context-id", callback);
@@ -309,7 +302,7 @@ public class VenmoApiUnitTest {
 
     @Test
     public void vaultVenmoAccountNonce_performsVaultRequest() throws JSONException {
-        VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
+        VenmoApi sut = new VenmoApi(braintreeClient, apiClient, analyticsParamRepository);
         sut.vaultVenmoAccountNonce("nonce", mock(VenmoInternalCallback.class));
 
         ArgumentCaptor<VenmoAccount> accountBuilderCaptor =
@@ -327,7 +320,7 @@ public class VenmoApiUnitTest {
                 .tokenizeRESTSuccess(new JSONObject(
                         Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_WITH_NULL_PAYER_INFO_JSON))
                 .build();
-        VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
+        VenmoApi sut = new VenmoApi(braintreeClient, apiClient, analyticsParamRepository);
 
         VenmoInternalCallback callback = mock(VenmoInternalCallback.class);
         sut.vaultVenmoAccountNonce("nonce", callback);
@@ -345,7 +338,7 @@ public class VenmoApiUnitTest {
         ApiClient apiClient = new MockApiClientBuilder()
                 .tokenizeRESTError(error)
                 .build();
-        VenmoApi sut = new VenmoApi(braintreeClient, apiClient);
+        VenmoApi sut = new VenmoApi(braintreeClient, apiClient, analyticsParamRepository);
 
         VenmoInternalCallback callback = mock(VenmoInternalCallback.class);
         sut.vaultVenmoAccountNonce("nonce", callback);

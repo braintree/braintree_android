@@ -6,7 +6,7 @@ import android.util.Base64
 import com.braintreepayments.api.sharedutils.HttpClient
 import org.json.JSONException
 
-internal class ConfigurationLoader internal constructor(
+internal class ConfigurationLoader(
     private val httpClient: BraintreeHttpClient,
     private val configurationCache: ConfigurationCache
 ) {

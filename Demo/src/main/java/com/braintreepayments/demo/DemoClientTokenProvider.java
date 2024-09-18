@@ -5,9 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import com.braintreepayments.api.core.BraintreeClient;
-
-public class DemoClientTokenProvider  {
+public class DemoClientTokenProvider {
 
     private final Merchant merchant;
     private final Context appContext;
@@ -20,11 +18,15 @@ public class DemoClientTokenProvider  {
     public void getClientToken(@NonNull BraintreeAuthorizationCallback callback) {
         String authType = Settings.getAuthorizationType(appContext);
         if (authType.equals(getString(appContext, R.string.client_token))) {
-            merchant.fetchClientToken(appContext, (clientToken, error) -> {
-                if (clientToken != null) {
-                    callback.onResult(clientToken);
-                } else if (error != null) {
-                    callback.onResult(null);
+            merchant.fetchClientToken(appContext, (result) -> {
+                if (result instanceof FetchClientTokenResult.Success) {
+                    callback.onResult(new BraintreeAuthorizationResult.Success(
+                        ((FetchClientTokenResult.Success) result).getClientToken())
+                    );
+                } else if (result instanceof FetchClientTokenResult.Error) {
+                    callback.onResult(new BraintreeAuthorizationResult.Error(
+                        ((FetchClientTokenResult.Error) result).getError())
+                    );
                 }
             });
         } else {
@@ -34,7 +36,13 @@ public class DemoClientTokenProvider  {
             } else {
                 key = Settings.getTokenizationKey(appContext);
             }
-            callback.onResult(key);
+            if (key != null) {
+                callback.onResult(new BraintreeAuthorizationResult.Success(key));
+            } else {
+                callback.onResult(new BraintreeAuthorizationResult.Error(
+                    new IllegalArgumentException("No tokenization key available")
+                ));
+            }
         }
     }
 

@@ -1,7 +1,6 @@
 package com.braintreepayments.api.core
 
 import android.os.Parcelable
-import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.GraphQLConstants.ErrorTypes
 import com.braintreepayments.api.sharedutils.Json
 import kotlinx.parcelize.Parcelize
@@ -64,12 +63,7 @@ class BraintreeError internal constructor(
             return errors
         }
 
-        /**
-         * @suppress
-         */
-        @JvmStatic
-        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-        fun fromGraphQLJsonArray(graphQLErrors: JSONArray?): List<BraintreeError> {
+        internal fun fromGraphQLJsonArray(graphQLErrors: JSONArray?): List<BraintreeError> {
             val errors = mutableListOf<BraintreeError>()
             if (graphQLErrors == null) {
                 return errors
