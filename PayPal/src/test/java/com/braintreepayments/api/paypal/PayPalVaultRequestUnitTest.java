@@ -58,10 +58,9 @@ public class PayPalVaultRequestUnitTest {
                 new PayPalBillingPricing(pricingModel, "1.00");
         billingPricing.setReloadThresholdAmount("6.00");
         PayPalBillingCycle billingCycle =
-                new PayPalBillingCycle(false, 2, billingInterval, 1);
+                new PayPalBillingCycle(true, 2, billingInterval, 1);
         billingCycle.setSequence(1);
         billingCycle.setStartDate("2024-04-06T00:00:00Z");
-        billingCycle.setTrial(true);
         billingCycle.setPricing(billingPricing);
         PayPalRecurringBillingDetails billingDetails =
                 new PayPalRecurringBillingDetails(List.of(billingCycle), "11.00", "USD");
@@ -130,10 +129,9 @@ public class PayPalVaultRequestUnitTest {
                 new PayPalBillingPricing(pricingModel, "1.00");
         billingPricing.setReloadThresholdAmount("6.00");
         PayPalBillingCycle billingCycle =
-                new PayPalBillingCycle(false, 2, billingInterval, 1);
+                new PayPalBillingCycle(true, 2, billingInterval, 1);
         billingCycle.setSequence(1);
         billingCycle.setStartDate("2024-04-06T00:00:00Z");
-        billingCycle.setTrial(true);
         billingCycle.setPricing(billingPricing);
         PayPalRecurringBillingDetails billingDetails =
                 new PayPalRecurringBillingDetails(List.of(billingCycle), "11.00", "USD");
@@ -233,10 +231,9 @@ public class PayPalVaultRequestUnitTest {
                 new PayPalBillingPricing(pricingModel, "1.00");
         billingPricing.setReloadThresholdAmount("6.00");
         PayPalBillingCycle billingCycle =
-                new PayPalBillingCycle(false, 2, billingInterval, 1);
+                new PayPalBillingCycle(true, 2, billingInterval, 1);
         billingCycle.setSequence(1);
         billingCycle.setStartDate("2024-04-06T00:00:00Z");
-        billingCycle.setTrial(true);
         billingCycle.setPricing(billingPricing);
         PayPalRecurringBillingDetails billingDetails =
                 new PayPalRecurringBillingDetails(List.of(billingCycle), "11.00", "USD");
