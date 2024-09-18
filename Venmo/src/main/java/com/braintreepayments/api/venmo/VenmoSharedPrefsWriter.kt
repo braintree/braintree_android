@@ -1,7 +1,6 @@
 package com.braintreepayments.api.venmo
 
 import android.content.Context
-import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.sharedutils.BraintreeSharedPreferences
 
 internal class VenmoSharedPrefsWriter {
@@ -9,7 +8,6 @@ internal class VenmoSharedPrefsWriter {
         persistVenmoVaultOption(BraintreeSharedPreferences.getInstance(context), shouldVault)
     }
 
-    @VisibleForTesting
     fun persistVenmoVaultOption(
         braintreeSharedPreferences: BraintreeSharedPreferences,
         shouldVault: Boolean
@@ -21,7 +19,6 @@ internal class VenmoSharedPrefsWriter {
         return getVenmoVaultOption(BraintreeSharedPreferences.getInstance(context))
     }
 
-    @VisibleForTesting
     fun getVenmoVaultOption(braintreeSharedPreferences: BraintreeSharedPreferences): Boolean {
         return braintreeSharedPreferences.getBoolean(VAULT_VENMO_KEY)
     }

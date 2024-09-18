@@ -24,9 +24,8 @@ class LocalPaymentLauncher internal constructor(private val browserSwitchClient:
      * [LocalPaymentClient.createPaymentAuthRequest]
      * @return [LocalPaymentPendingRequest] a [LocalPaymentPendingRequest.Started] should
      * be stored to complete the flow upon return to app in
-     * [LocalPaymentLauncher.handleReturnToAppFromBrowser],
-     * or a [LocalPaymentPendingRequest.Failure] with an error if the local payment flow was
-     * unable to be launched in a browser.
+     * [LocalPaymentLauncher.handleReturnToApp], or a [LocalPaymentPendingRequest.Failure]
+     * with an error if the local payment flow was unable to be launched in a browser.
      */
     fun launch(
         activity: ComponentActivity,
@@ -49,7 +48,7 @@ class LocalPaymentLauncher internal constructor(private val browserSwitchClient:
     }
 
     /**
-     * Captures and delivers the result of a the browser-based local payment authentication flow.
+     * Captures and delivers the result of a local payment authentication flow.
      *
      * For most integrations, this method should be invoked in the onResume method of the Activity
      * used to invoke [LocalPaymentLauncher.launch].
@@ -61,21 +60,18 @@ class LocalPaymentLauncher internal constructor(private val browserSwitchClient:
      * @param pendingRequest the [LocalPaymentPendingRequest.Started] stored after successfully
      * invoking [LocalPaymentLauncher.launch]
      * @param intent  the intent to return to your application containing a deep link result
-     * from the local payment browser flow
+     * from the local payment flow
      * @return a [LocalPaymentAuthResult.Success] that should be passed to
      * [LocalPaymentClient.tokenize] to complete the flow, or [LocalPaymentAuthResult.NoResult] if
-     * the user closed the browser to cancel the payment flow, or returned to the app without
-     * completing the authentication flow.
+     * the user canceled the payment flow, or returned to the app without completing the authentication flow.
      */
-    fun handleReturnToAppFromBrowser(
+    fun handleReturnToApp(
         pendingRequest: LocalPaymentPendingRequest.Started,
         intent: Intent
     ): LocalPaymentAuthResult {
         return when (val result =
             browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
-            is BrowserSwitchFinalResult.Success -> LocalPaymentAuthResult.Success(
-                LocalPaymentAuthResultInfo(result)
-            )
+            is BrowserSwitchFinalResult.Success -> LocalPaymentAuthResult.Success(result)
 
             is BrowserSwitchFinalResult.Failure -> LocalPaymentAuthResult.Failure(result.error)
 

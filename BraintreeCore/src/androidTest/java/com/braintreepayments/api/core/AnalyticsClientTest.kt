@@ -41,7 +41,7 @@ class AnalyticsClientTest {
         val event = AnalyticsEvent("event.started")
         val sut = AnalyticsClient(context)
         val workSpecId =
-            sut.sendEvent(configuration, event, "sessionId", IntegrationType.CUSTOM, authorization)
+            sut.sendEvent(configuration, event, IntegrationType.CUSTOM, authorization)
 
         val workInfoBeforeDelay =
             WorkManager.getInstance(context).getWorkInfoById(workSpecId).get()

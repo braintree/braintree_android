@@ -31,11 +31,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    val sessionId: String,
-
-    /**
-     * @suppress
-     */
     val authorization: Authorization,
 
     private val analyticsClient: AnalyticsClient,
@@ -58,7 +53,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     internal constructor(params: BraintreeClientParams) : this(
         applicationContext = params.applicationContext,
         integrationType = params.integrationType,
-        sessionId = params.sessionId,
         authorization = params.authorization,
         analyticsClient = params.analyticsClient,
         httpClient = params.httpClient,
@@ -73,7 +67,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @JvmOverloads
     constructor (
         context: Context,
         authorization: String,
@@ -93,13 +86,11 @@ class BraintreeClient @VisibleForTesting internal constructor(
     internal constructor(
         context: Context,
         authorization: Authorization,
-        sessionId: String?,
         integrationType: IntegrationType
     ) : this(
         BraintreeOptions(
             context = context,
             authorization = authorization,
-            sessionId = sessionId,
             integrationType = integrationType,
         )
     )
@@ -137,7 +128,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @JvmOverloads
     fun sendAnalyticsEvent(
         eventName: String,
         params: AnalyticsEventParams = AnalyticsEventParams()
@@ -165,7 +155,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
             analyticsClient.sendEvent(
                 it,
                 event,
-                sessionId,
                 integrationType,
                 authorization
             )
@@ -317,12 +306,11 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    fun reportCrash() =
+    internal fun reportCrash() =
         getConfiguration { configuration, _ ->
             analyticsClient.reportCrash(
                 applicationContext,
                 configuration,
-                sessionId,
                 integrationType,
                 authorization
             )

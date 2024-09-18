@@ -93,7 +93,7 @@ class VenmoLauncherUnitTest {
     }
 
     @Test
-    fun `handleReturnToAppFromBrowser when result exists returns result`() {
+    fun `handleReturnToApp when result exists returns result`() {
         val browserSwitchFinalResult = mockk<BrowserSwitchFinalResult.Success>()
         every {
             browserSwitchClient.completeRequest(
@@ -109,12 +109,12 @@ class VenmoLauncherUnitTest {
         assertTrue(paymentAuthResult is VenmoPaymentAuthResult.Success)
         assertSame(
             browserSwitchFinalResult,
-            (paymentAuthResult as VenmoPaymentAuthResult.Success).paymentAuthInfo.browserSwitchSuccess
+            (paymentAuthResult as VenmoPaymentAuthResult.Success).browserSwitchSuccess
         )
     }
 
     @Test
-    fun `handleReturnToAppFromBrowser when result does not exist returns null`() {
+    fun `handleReturnToApp when result does not exist returns null`() {
         every {
             browserSwitchClient.completeRequest(
                 intent,

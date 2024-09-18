@@ -1,6 +1,7 @@
 package com.braintreepayments.api.threedsecure
 
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
@@ -54,6 +55,7 @@ data class ThreeDSecurePostalAddress(
     /**
      * @return JSONObject representation of [ThreeDSecurePostalAddress].
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun toJson(): JSONObject {
         val base = JSONObject()
         val billingAddress = JSONObject()

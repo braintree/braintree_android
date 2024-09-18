@@ -1,6 +1,7 @@
 package com.braintreepayments.api.threedsecure
 
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import com.cardinalcommerce.shared.userinterfaces.ButtonCustomization
 import kotlinx.parcelize.Parcelize
 
@@ -15,7 +16,7 @@ import kotlinx.parcelize.Parcelize
  * @property cornerRadius Radius (integer value) for the button corners.
  */
 @Parcelize
-data class ThreeDSecureV2ButtonCustomization(
+data class ThreeDSecureV2ButtonCustomization @JvmOverloads constructor(
     var textFontName: String? = null,
     var textColor: String? = null,
     var textFontSize: Int = 0,
@@ -23,6 +24,7 @@ data class ThreeDSecureV2ButtonCustomization(
     var cornerRadius: Int = 0
 ) : Parcelable {
 
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val cardinalButtonCustomization: ButtonCustomization
         get() {
             return ButtonCustomization().also {

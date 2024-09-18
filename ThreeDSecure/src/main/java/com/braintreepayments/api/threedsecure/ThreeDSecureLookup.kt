@@ -1,6 +1,7 @@
 package com.braintreepayments.api.threedsecure
 
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.Json
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
@@ -36,6 +37,7 @@ data class ThreeDSecureLookup internal constructor(
          */
         @JvmStatic
         @Throws(JSONException::class)
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         fun fromJson(jsonString: String): ThreeDSecureLookup {
             val json = JSONObject(jsonString)
             val pareq = json.optString(PA_REQ_KEY, "")

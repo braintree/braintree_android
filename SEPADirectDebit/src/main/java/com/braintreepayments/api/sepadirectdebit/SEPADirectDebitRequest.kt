@@ -16,7 +16,7 @@ import com.braintreepayments.api.core.PostalAddress
  * @see [Documentation](https://developer.paypal.com/reference/locale-codes/)
  * for possible values. Locale code should be supplied as a BCP-47 formatted locale code.
  */
-data class SEPADirectDebitRequest internal constructor(
+data class SEPADirectDebitRequest @JvmOverloads constructor(
     var accountHolderName: String? = null,
     var iban: String? = null,
     var customerId: String? = null,

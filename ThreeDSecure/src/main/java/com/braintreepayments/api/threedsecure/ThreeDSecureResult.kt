@@ -8,18 +8,20 @@ sealed class ThreeDSecureResult {
     /**
      * The 3DS flow completed successfully. This [nonce] should be sent to your server.
      */
-    class Success(val nonce: ThreeDSecureNonce) :
-        ThreeDSecureResult()
+    class Success internal constructor(val nonce: ThreeDSecureNonce) : ThreeDSecureResult()
 
     /**
      * There was an [error] in the 3DS authentication flow. Optionally may return a [nonce] if
      * the authentication was not successful but the [nonce] from the [ThreeDSecureLookup] can be
      * transacted with.
      */
-    class Failure(val error: Exception, val nonce: ThreeDSecureNonce?) : ThreeDSecureResult()
+    class Failure internal constructor(
+        val error: Exception,
+        val nonce: ThreeDSecureNonce?
+    ) : ThreeDSecureResult()
 
     /**
      * The user canceled the 3DS authentication flow.
      */
-    object Cancel : ThreeDSecureResult()
+    data object Cancel : ThreeDSecureResult()
 }

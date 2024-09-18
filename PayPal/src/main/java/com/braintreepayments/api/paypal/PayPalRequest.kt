@@ -1,6 +1,7 @@
 package com.braintreepayments.api.paypal
 
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.PostalAddress
@@ -87,6 +88,7 @@ abstract class PayPalRequest internal constructor(
 ) : Parcelable {
 
     @Throws(JSONException::class)
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     abstract fun createRequestBody(
         configuration: Configuration?,
         authorization: Authorization?,
@@ -96,33 +98,33 @@ abstract class PayPalRequest internal constructor(
     ): String?
 
     companion object {
-        const val NO_SHIPPING_KEY: String = "no_shipping"
-        const val ADDRESS_OVERRIDE_KEY: String = "address_override"
-        const val LOCALE_CODE_KEY: String = "locale_code"
-        const val REQUEST_BILLING_AGREEMENT_KEY: String = "request_billing_agreement"
-        const val BILLING_AGREEMENT_DETAILS_KEY: String = "billing_agreement_details"
-        const val DESCRIPTION_KEY: String = "description"
-        const val PAYER_EMAIL_KEY: String = "payer_email"
-        const val AUTHORIZATION_FINGERPRINT_KEY: String = "authorization_fingerprint"
-        const val TOKENIZATION_KEY: String = "client_key"
-        const val RETURN_URL_KEY: String = "return_url"
-        const val OFFER_CREDIT_KEY: String = "offer_paypal_credit"
-        const val OFFER_PAY_LATER_KEY: String = "offer_pay_later"
-        const val CANCEL_URL_KEY: String = "cancel_url"
-        const val EXPERIENCE_PROFILE_KEY: String = "experience_profile"
-        const val AMOUNT_KEY: String = "amount"
-        const val CURRENCY_ISO_CODE_KEY: String = "currency_iso_code"
-        const val INTENT_KEY: String = "intent"
-        const val LANDING_PAGE_TYPE_KEY: String = "landing_page_type"
-        const val DISPLAY_NAME_KEY: String = "brand_name"
-        const val SHIPPING_ADDRESS_KEY: String = "shipping_address"
-        const val MERCHANT_ACCOUNT_ID: String = "merchant_account_id"
-        const val CORRELATION_ID_KEY: String = "correlation_id"
-        const val LINE_ITEMS_KEY: String = "line_items"
-        const val USER_ACTION_KEY: String = "user_action"
-        const val ENABLE_APP_SWITCH_KEY: String = "launch_paypal_app"
-        const val OS_VERSION_KEY: String = "os_version"
-        const val OS_TYPE_KEY: String = "os_type"
-        const val MERCHANT_APP_RETURN_URL_KEY: String = "merchant_app_return_url"
+        internal const val NO_SHIPPING_KEY: String = "no_shipping"
+        internal const val ADDRESS_OVERRIDE_KEY: String = "address_override"
+        internal const val LOCALE_CODE_KEY: String = "locale_code"
+        internal const val REQUEST_BILLING_AGREEMENT_KEY: String = "request_billing_agreement"
+        internal const val BILLING_AGREEMENT_DETAILS_KEY: String = "billing_agreement_details"
+        internal const val DESCRIPTION_KEY: String = "description"
+        internal const val PAYER_EMAIL_KEY: String = "payer_email"
+        internal const val AUTHORIZATION_FINGERPRINT_KEY: String = "authorization_fingerprint"
+        internal const val TOKENIZATION_KEY: String = "client_key"
+        internal const val RETURN_URL_KEY: String = "return_url"
+        internal const val OFFER_CREDIT_KEY: String = "offer_paypal_credit"
+        internal const val OFFER_PAY_LATER_KEY: String = "offer_pay_later"
+        internal const val CANCEL_URL_KEY: String = "cancel_url"
+        internal const val EXPERIENCE_PROFILE_KEY: String = "experience_profile"
+        internal const val AMOUNT_KEY: String = "amount"
+        internal const val CURRENCY_ISO_CODE_KEY: String = "currency_iso_code"
+        internal const val INTENT_KEY: String = "intent"
+        internal const val LANDING_PAGE_TYPE_KEY: String = "landing_page_type"
+        internal const val DISPLAY_NAME_KEY: String = "brand_name"
+        internal const val SHIPPING_ADDRESS_KEY: String = "shipping_address"
+        internal const val MERCHANT_ACCOUNT_ID: String = "merchant_account_id"
+        internal const val CORRELATION_ID_KEY: String = "correlation_id"
+        internal const val LINE_ITEMS_KEY: String = "line_items"
+        internal const val USER_ACTION_KEY: String = "user_action"
+        internal const val ENABLE_APP_SWITCH_KEY: String = "launch_paypal_app"
+        internal const val OS_VERSION_KEY: String = "os_version"
+        internal const val OS_TYPE_KEY: String = "os_type"
+        internal const val MERCHANT_APP_RETURN_URL_KEY: String = "merchant_app_return_url"
     }
 }

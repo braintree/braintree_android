@@ -3,14 +3,13 @@ package com.braintreepayments.api.googlepay
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
-import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 
 /**
  * Responsible for launching the Google Pay payment sheet
  */
-class GooglePayLauncher @VisibleForTesting internal constructor(
+class GooglePayLauncher internal constructor(
     registry: ActivityResultRegistry,
     lifecycleOwner: LifecycleOwner,
     callback: GooglePayLauncherCallback
@@ -19,10 +18,10 @@ class GooglePayLauncher @VisibleForTesting internal constructor(
     private val activityLauncher: ActivityResultLauncher<GooglePayPaymentAuthRequestParams> = registry.register(
         GOOGLE_PAY_RESULT, lifecycleOwner,
         GooglePayActivityResultContract()
-    ) { googlePayPaymentAuthResult: GooglePayPaymentAuthResult? ->
-        callback.onGooglePayLauncherResult(
-            googlePayPaymentAuthResult
-        )
+    ) { googlePayPaymentAuthResult: GooglePayPaymentAuthResult ->
+            callback.onGooglePayLauncherResult(
+                googlePayPaymentAuthResult
+            )
     }
 
     /**
@@ -59,12 +58,11 @@ class GooglePayLauncher @VisibleForTesting internal constructor(
      * the Fragment or Activity used to instantiate your [GooglePayLauncher] has reached the
      * CREATED state.
      *
-     * @param googlePayPaymentAuthRequestParams the [GooglePayPaymentAuthRequestParams]
-     * received from invoking
-     * [GooglePayClient.createPaymentAuthRequest]
+     * @param paymentAuthRequest the [GooglePayPaymentAuthRequestParams]
+     * received from invoking [GooglePayClient.createPaymentAuthRequest]
      */
-    fun launch(googlePayPaymentAuthRequestParams: GooglePayPaymentAuthRequestParams) {
-        activityLauncher.launch(googlePayPaymentAuthRequestParams)
+    fun launch(paymentAuthRequest: GooglePayPaymentAuthRequest.ReadyToLaunch) {
+        activityLauncher.launch(paymentAuthRequest.requestParams)
     }
 
     companion object {

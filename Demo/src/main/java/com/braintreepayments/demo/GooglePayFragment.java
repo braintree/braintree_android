@@ -14,14 +14,16 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.core.PaymentMethodNonce;
 import com.braintreepayments.api.core.UserCanceledException;
+import com.braintreepayments.api.googlepay.GooglePayBillingAddressFormat;
 import com.braintreepayments.api.googlepay.GooglePayClient;
 import com.braintreepayments.api.googlepay.GooglePayLauncher;
 import com.braintreepayments.api.googlepay.GooglePayPaymentAuthRequest;
 import com.braintreepayments.api.googlepay.GooglePayReadinessResult;
 import com.braintreepayments.api.googlepay.GooglePayRequest;
 import com.braintreepayments.api.googlepay.GooglePayResult;
+import com.braintreepayments.api.googlepay.GooglePayShippingAddressParameters;
+import com.braintreepayments.api.googlepay.GooglePayTotalPriceStatus;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
-import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
 
 public class GooglePayFragment extends BaseFragment {
@@ -41,16 +43,16 @@ public class GooglePayFragment extends BaseFragment {
 
         googlePayClient = new GooglePayClient(requireContext(), super.getAuthStringArg());
         googlePayLauncher = new GooglePayLauncher(this,
-                paymentAuthResult -> googlePayClient.tokenize(paymentAuthResult,
-                        (googlePayResult) -> {
-                            if (googlePayResult instanceof GooglePayResult.Failure) {
-                                handleError(((GooglePayResult.Failure) googlePayResult).getError());
-                            } else if (googlePayResult instanceof GooglePayResult.Success){
-                                handleGooglePayActivityResult(((GooglePayResult.Success) googlePayResult).getNonce());
-                            } else if (googlePayResult instanceof GooglePayResult.Cancel) {
-                                handleError(new UserCanceledException("User canceled Google Pay"));
-                            }
-                        }));
+            paymentAuthResult -> googlePayClient.tokenize(paymentAuthResult,
+                (googlePayResult) -> {
+                    if (googlePayResult instanceof GooglePayResult.Failure) {
+                        handleError(((GooglePayResult.Failure) googlePayResult).getError());
+                    } else if (googlePayResult instanceof GooglePayResult.Success){
+                        handleGooglePayActivityResult(((GooglePayResult.Success) googlePayResult).getNonce());
+                    } else if (googlePayResult instanceof GooglePayResult.Cancel) {
+                        handleError(new UserCanceledException("User canceled Google Pay"));
+                    }
+                }));
 
         return view;
     }
@@ -86,29 +88,22 @@ public class GooglePayFragment extends BaseFragment {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
 
-        GooglePayRequest googlePayRequest = new GooglePayRequest();
-        googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
-                .setCurrencyCode(Settings.getGooglePayCurrency(activity))
-                .setTotalPrice("1.00")
-                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                .build());
+        GooglePayRequest googlePayRequest = new GooglePayRequest(Settings.getGooglePayCurrency(activity), "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
         googlePayRequest.setTotalPriceLabel("Braintree Demo Payment");
         googlePayRequest.setAllowPrepaidCards(Settings.areGooglePayPrepaidCardsAllowed(activity));
-        googlePayRequest.setBillingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
+        googlePayRequest.setBillingAddressFormat(GooglePayBillingAddressFormat.FULL);
         googlePayRequest.setBillingAddressRequired(
                 Settings.isGooglePayBillingAddressRequired(activity));
         googlePayRequest.setEmailRequired(Settings.isGooglePayEmailRequired(activity));
         googlePayRequest.setPhoneNumberRequired(Settings.isGooglePayPhoneNumberRequired(activity));
         googlePayRequest.setShippingAddressRequired(
                 Settings.isGooglePayShippingAddressRequired(activity));
-        googlePayRequest.setShippingAddressRequirements(ShippingAddressRequirements.newBuilder()
-                .addAllowedCountryCodes(Settings.getGooglePayAllowedCountriesForShipping(activity))
-                .build());
+        googlePayRequest.setShippingAddressParameters(new GooglePayShippingAddressParameters(Settings.getGooglePayAllowedCountriesForShipping(requireContext())));
 
         googlePayClient.createPaymentAuthRequest(googlePayRequest, (paymentAuthRequest) -> {
             if (paymentAuthRequest instanceof GooglePayPaymentAuthRequest.ReadyToLaunch) {
                 googlePayLauncher.launch(
-                        ((GooglePayPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams());
+                        ((GooglePayPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
             } else if (paymentAuthRequest instanceof GooglePayPaymentAuthRequest.Failure) {
                 handleError(((GooglePayPaymentAuthRequest.Failure) paymentAuthRequest).getError());
             }

@@ -14,11 +14,6 @@ import androidx.annotation.RestrictTo;
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public class ManifestValidator {
 
-    <T> boolean isActivityDeclaredInAndroidManifest(Context context, Class<T> klass) {
-        return getActivityInfo(context, klass) != null;
-    }
-
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public <T> boolean isUrlSchemeDeclaredInAndroidManifest(Context context, String urlScheme,
                                                      Class<T> klass) {
         Intent intent = new Intent(Intent.ACTION_VIEW)
@@ -33,7 +28,6 @@ public class ManifestValidator {
                 appHelper.isIntentAvailable(context, intent));
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @Nullable
     public <T> ActivityInfo getActivityInfo(Context context, Class<T> klass) {
         try {

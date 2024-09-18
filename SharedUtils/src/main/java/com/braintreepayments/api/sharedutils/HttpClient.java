@@ -19,13 +19,10 @@ public class HttpClient {
 
     @IntDef({NO_RETRY, RETRY_MAX_3_TIMES})
     @Retention(RetentionPolicy.SOURCE)
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public @interface RetryStrategy {
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public static final int NO_RETRY = 0;
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public static final int RETRY_MAX_3_TIMES = 1;
 
     static final int MAX_RETRY_ATTEMPTS = 3;
@@ -35,7 +32,6 @@ public class HttpClient {
 
     private final Map<URL, Integer> retryCountMap;
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public HttpClient(SSLSocketFactory socketFactory, HttpResponseParser httpResponseParser) {
         this(new SynchronousHttpClient(socketFactory, httpResponseParser), new ThreadScheduler());
     }
@@ -47,17 +43,14 @@ public class HttpClient {
         this.retryCountMap = new HashMap<>();
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public String sendRequest(HttpRequest request) throws Exception {
         return syncHttpClient.request(request).getBody();
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public void sendRequest(HttpRequest request, NetworkResponseCallback callback) {
         sendRequest(request, HttpClient.NO_RETRY, callback);
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public void sendRequest(HttpRequest request, @RetryStrategy int retryStrategy,
                             NetworkResponseCallback callback) {
         scheduleRequest(request, retryStrategy, callback);
