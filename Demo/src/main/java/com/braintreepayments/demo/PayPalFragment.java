@@ -189,10 +189,10 @@ public class PayPalFragment extends BaseFragment {
     }
 
     private void launchPayPal(
-            FragmentActivity activity,
-            boolean isBillingAgreement,
-            String amount,
-            String buyerEmailAddress
+       FragmentActivity activity,
+       boolean isBillingAgreement,
+       String amount,
+       String buyerEmailAddress
     ) {
         PayPalRequest payPalRequest;
         if (isBillingAgreement) {
