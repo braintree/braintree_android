@@ -7,6 +7,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import com.braintreepayments.api.sharedutils.Time
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -20,7 +21,8 @@ internal class AnalyticsClient(
     private val analyticsDatabase: AnalyticsDatabase = AnalyticsDatabase.getInstance(context.applicationContext),
     private val workManager: WorkManager = WorkManager.getInstance(context.applicationContext),
     private val deviceInspector: DeviceInspector = DeviceInspector(),
-    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
+    private val time: Time = Time()
 ) {
     private val applicationContext = context.applicationContext
 
@@ -121,6 +123,7 @@ internal class AnalyticsClient(
                         )
                         val analyticsRequest =
                             createFPTIPayload(authorization, eventBlobs, metadata)
+                        
                         httpClient.post(
                             FPTI_ANALYTICS_URL,
                             analyticsRequest.toString(),
@@ -137,27 +140,11 @@ internal class AnalyticsClient(
         }
     }
 
-    fun reportCrash(
-        context: Context?,
-        configuration: Configuration?,
-        integration: IntegrationType?,
-        authorization: Authorization?
-    ) {
-        reportCrash(
-            context,
-            configuration,
-            integration,
-            System.currentTimeMillis(),
-            authorization
-        )
-    }
-
     @VisibleForTesting
     fun reportCrash(
         context: Context?,
         configuration: Configuration?,
         integration: IntegrationType?,
-        timestamp: Long,
         authorization: Authorization?
     ) {
         if (authorization == null) {
@@ -169,7 +156,10 @@ internal class AnalyticsClient(
             sessionId = analyticsParamRepository.sessionId,
             integration = integration
         )
-        val event = AnalyticsEvent(name = "crash", timestamp = timestamp)
+        val event = AnalyticsEvent(
+            name = "crash",
+            timestamp = time.currentTime
+        )
         val eventJSON = mapAnalyticsEventToFPTIEventJSON(event)
         val eventBlobs = listOf(
             AnalyticsEventBlob(
