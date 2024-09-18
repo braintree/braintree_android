@@ -155,9 +155,14 @@ internal class PayPalInternalClient(
                 callback
             )
         } else {
-            getClientMetadataId(payPalVaultEditAuthRequest.riskCorrelationId, context) { clientMetadataId ->
+            getClientMetadataId(
+                payPalVaultEditAuthRequest.riskCorrelationId,
+                context
+            ) { clientMetadataId ->
                 if (clientMetadataId == null) {
-                    val result = PayPalVaultEditResponse.Failure(BraintreeException("Could not retrieve clientMetaDataId"))
+                    val result = PayPalVaultEditResponse.Failure(
+                        BraintreeException("Could not retrieve clientMetaDataId")
+                    )
                     callback.onPayPalVaultEditResult(result)
                 } else {
                     sendVaultEditRequestWithRiskCorrelationId(
@@ -184,7 +189,10 @@ internal class PayPalInternalClient(
 
         val jsonObject = JSONObject(params.toMap())
 
-        braintreeClient.sendPOST(payPalVaultEditAuthRequest.hermesPath, jsonObject.toString()) { response, error ->
+        braintreeClient.sendPOST(
+            payPalVaultEditAuthRequest.hermesPath,
+            jsonObject.toString()
+        ) { response, error ->
             if (error != null) {
                 val result = PayPalVaultEditResponse.Failure(error, riskCorrelationId)
                 callback.onPayPalVaultEditResult(result)
@@ -199,7 +207,10 @@ internal class PayPalInternalClient(
                         agreementSetup.getString("paypalAppApprovalUrl")
                     )
 
-                    val result = PayPalVaultEditResponse.ReadyToLaunch(riskCorrelationId, editFIAgreementSetup)
+                    val result = PayPalVaultEditResponse.ReadyToLaunch(
+                        riskCorrelationId,
+                        editFIAgreementSetup
+                    )
                     callback.onPayPalVaultEditResult(result)
                 } catch (jsonException: JSONException) {
                     val result = PayPalVaultEditResponse.Failure(jsonException, riskCorrelationId)
@@ -220,16 +231,20 @@ internal class PayPalInternalClient(
         return parameters
     }
 
-    fun getClientMetadataId(
+    private fun getClientMetadataId(
         riskCorrelationId: String?,
         context: Context,
         callback: (String?) -> Unit
     ) {
         val clientMetadataId = riskCorrelationId ?: run {
-            braintreeClient.getConfiguration { configuration: Configuration?, configError: Exception? ->
+            braintreeClient.getConfiguration { configuration, _ ->
 
                 // TODO: what to do with hasUserLocationConsent
-                val clientMetadataId = dataCollector.getClientMetadataId(context, configuration, false)
+                val clientMetadataId = dataCollector.getClientMetadataId(
+                    context, configuration,
+                    false
+                )
+
                 callback(clientMetadataId)
             }
             null
@@ -242,7 +257,7 @@ internal class PayPalInternalClient(
 
     @ExperimentalBetaApi
     fun sendVaultEditErrorRequest(
-        payPalVaultErrorHandlingEditRequest: PayPalVaultErrorHandlingEditRequest,
+        request: PayPalVaultErrorHandlingEditRequest,
         callback: PayPalVaultEditAuthCallback
     ) {
 
@@ -250,18 +265,18 @@ internal class PayPalInternalClient(
 
         fun parameters(): Map<String, Any> {
 
-            parameters["edit_paypal_vault_id"] = payPalVaultErrorHandlingEditRequest.editPayPalVaultId
+            parameters["edit_paypal_vault_id"] = request.editPayPalVaultId
             parameters["return_url"] = editFiSuccessUrl
             parameters["cancel_url"] = editFiCancelUrl
-            parameters["correlation_id"] = payPalVaultErrorHandlingEditRequest.riskCorrelationId
+            parameters["correlation_id"] = request.riskCorrelationId
 
             return parameters
         }
 
         val jsonObject = JSONObject(parameters())
-        braintreeClient.sendPOST(payPalVaultErrorHandlingEditRequest.hermesPath, jsonObject.toString()) { response, error ->
+        braintreeClient.sendPOST(request.hermesPath, jsonObject.toString()) { response, error ->
             if (error != null) {
-                val result = PayPalVaultEditResponse.Failure(error, payPalVaultErrorHandlingEditRequest.riskCorrelationId)
+                val result = PayPalVaultEditResponse.Failure(error, request.riskCorrelationId)
                 callback.onPayPalVaultEditResult(result)
             } else {
                 try {
@@ -274,10 +289,18 @@ internal class PayPalInternalClient(
                         agreementSetup.getString("paypalAppApprovalUrl")
                     )
 
-                    val result = PayPalVaultEditResponse.ReadyToLaunch(payPalVaultErrorHandlingEditRequest.riskCorrelationId, editFIAgreementSetup)
+                    val result = PayPalVaultEditResponse.ReadyToLaunch(
+                        request.riskCorrelationId,
+                        editFIAgreementSetup
+                    )
+
                     callback.onPayPalVaultEditResult(result)
                 } catch (jsonException: JSONException) {
-                    val result = PayPalVaultEditResponse.Failure(jsonException, payPalVaultErrorHandlingEditRequest.riskCorrelationId)
+                    val result = PayPalVaultEditResponse.Failure(
+                        jsonException,
+                        request.riskCorrelationId
+                    )
+
                     callback.onPayPalVaultEditResult(result)
                 }
             }
