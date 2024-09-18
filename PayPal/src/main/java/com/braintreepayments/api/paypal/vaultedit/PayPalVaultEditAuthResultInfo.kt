@@ -1,7 +1,7 @@
 package com.braintreepayments.api.paypal.vaultedit
 
 import com.braintreepayments.api.BrowserSwitchFinalResult
-import com.braintreepayments.api.ExperimentalBetaApi
+import com.braintreepayments.api.core.ExperimentalBetaApi
 
 /**
  * Details of a [PayPalVaultEditAuthResult.Success]
