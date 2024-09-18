@@ -1,6 +1,7 @@
 package com.braintreepayments.api.card
 
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.Json
 import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
@@ -13,13 +14,16 @@ import org.json.JSONObject
  * v4#authentication-insight">Documentation</a> for possible values.
  */
 @Parcelize
-data class AuthenticationInsight(val regulationEnvironment: String) : Parcelable {
+data class AuthenticationInsight internal constructor(
+    val regulationEnvironment: String
+) : Parcelable {
 
     companion object {
 
         private const val GRAPHQL_REGULATION_ENVIRONMENT_KEY = "customerAuthenticationRegulationEnvironment"
         private const val REST_REGULATION_ENVIRONMENT_KEY = "regulationEnvironment"
 
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         @JvmStatic
         fun fromJson(json: JSONObject?): AuthenticationInsight? {
 

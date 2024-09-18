@@ -35,7 +35,6 @@ public class HttpRequest {
         return new HttpRequest();
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public HttpRequest() {
         headers = null;
         additionalHeaders = new HashMap<>();
@@ -45,31 +44,26 @@ public class HttpRequest {
         connectTimeout = THIRTY_SECONDS_MS;
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public HttpRequest path(String path) {
         this.path = path;
         return this;
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public HttpRequest baseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
         return this;
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public HttpRequest data(String dataAsString) {
         this.data = dataAsString.getBytes(StandardCharsets.UTF_8);
         return this;
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public HttpRequest method(String method) {
         this.method = method;
         return this;
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public HttpRequest addHeader(String name, String value) {
         additionalHeaders.put(name, value);
         return this;
@@ -79,7 +73,6 @@ public class HttpRequest {
         return path;
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public byte[] getData() {
         return data;
     }
@@ -91,12 +84,10 @@ public class HttpRequest {
         }
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public String getMethod() {
         return method;
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public Map<String, String> getHeaders() {
         if (headers == null) {
             headers = new HashMap<>();
@@ -115,7 +106,6 @@ public class HttpRequest {
         return connectTimeout;
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public URL getURL() throws MalformedURLException, URISyntaxException {
         URL url;
         if (path.startsWith("http")) {

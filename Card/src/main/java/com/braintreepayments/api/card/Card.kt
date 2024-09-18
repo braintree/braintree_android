@@ -49,7 +49,7 @@ import org.json.JSONObject
  * Defaults to custom and does not need to ever be set.
  */
 @Parcelize
-data class Card(
+data class Card @JvmOverloads constructor(
     var merchantAccountId: String? = null,
     var isAuthenticationInsightRequested: Boolean = false,
     var shouldValidate: Boolean = false,
@@ -96,7 +96,6 @@ data class Card(
         private const val AUTHENTICATION_INSIGHT_INPUT_KEY = "authenticationInsightInput"
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     private fun buildMetadataJSON(): JSONObject {
         return MetadataBuilder()
             .sessionId(sessionId)

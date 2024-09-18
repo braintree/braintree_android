@@ -106,7 +106,7 @@ class ShopperInsightsFragment : BaseFragment() {
     private fun handlePayPalReturnToApp() {
         if (this::paypalStartedPendingRequest.isInitialized) {
             val paypalPaymentAuthResult =
-                paypalLauncher.handleReturnToAppFromBrowser(paypalStartedPendingRequest, requireActivity().intent)
+                paypalLauncher.handleReturnToApp(paypalStartedPendingRequest, requireActivity().intent)
             if (paypalPaymentAuthResult is PayPalPaymentAuthResult.Success) {
                 payPalClient.tokenize(paypalPaymentAuthResult) {
                     when (it) {

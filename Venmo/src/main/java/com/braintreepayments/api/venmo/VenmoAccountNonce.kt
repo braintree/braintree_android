@@ -1,5 +1,6 @@
 package com.braintreepayments.api.venmo
 
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.PaymentMethodNonce
 import com.braintreepayments.api.core.PostalAddress
 import com.braintreepayments.api.core.PostalAddressParser.fromJson
@@ -59,6 +60,7 @@ data class VenmoAccountNonce internal constructor(
 
         @Throws(JSONException::class)
         @JvmStatic
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         fun fromJSON(inputJson: JSONObject): VenmoAccountNonce {
             val json = if (inputJson.has(API_RESOURCE_KEY)) {
                 inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0)

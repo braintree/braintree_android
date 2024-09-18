@@ -23,7 +23,7 @@ class SEPADirectDebitLauncher internal constructor(private val browserSwitchClie
      * [SEPADirectDebitClient.createPaymentAuthRequest]
      * @return [SEPADirectDebitPendingRequest] a [SEPADirectDebitPendingRequest.Started]
      * should be stored to complete the flow upon return to app in
-     * [SEPADirectDebitLauncher.handleReturnToAppFromBrowser],
+     * [SEPADirectDebitLauncher.handleReturnToApp],
      * or a [SEPADirectDebitPendingRequest.Failure] with an error if the SEPA flow was unable
      * to be launched in a browser.
      */
@@ -44,7 +44,7 @@ class SEPADirectDebitLauncher internal constructor(private val browserSwitchClie
     }
 
     /**
-     * Captures and delivers the result of the browser-based SEPA mandate flow.
+     * Captures and delivers the result of the SEPA mandate flow.
      *
      * For most integrations, this method should be invoked in the onResume method of the Activity
      * used to invoke [SEPADirectDebitLauncher.launch].
@@ -59,17 +59,17 @@ class SEPADirectDebitLauncher internal constructor(private val browserSwitchClie
      * the SEPA mandate flow
      * @return a [SEPADirectDebitPaymentAuthResult.Success] that should be passed to
      * [SEPADirectDebitClient.tokenize] to complete the flow. Returns
-     * [SEPADirectDebitPaymentAuthResult.NoResult] if the user closed the browser to cancel the
-     * payment flow, or returned to the app without completing the authentication flow.
+     * [SEPADirectDebitPaymentAuthResult.NoResult] if the user canceled the payment flow, or
+     * returned to the app without completing the authentication flow.
      */
-    fun handleReturnToAppFromBrowser(
+    fun handleReturnToApp(
         pendingRequest: SEPADirectDebitPendingRequest.Started,
         intent: Intent
     ): SEPADirectDebitPaymentAuthResult {
         return when (val result =
             browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
             is BrowserSwitchFinalResult.Success -> SEPADirectDebitPaymentAuthResult.Success(
-                SEPADirectDebitPaymentAuthResultInfo(result)
+                result
             )
 
             is BrowserSwitchFinalResult.Failure -> {

@@ -4,15 +4,10 @@ import android.util.Base64
 import androidx.annotation.RestrictTo
 import org.json.JSONException
 import org.json.JSONObject
-import java.lang.NullPointerException
-import kotlin.jvm.Throws
-
-// NEXT MAJOR VERSION: remove authorizationFingerprint. Keep bearer
 
 /**
  * A class containing the configuration url and authorization for the current Braintree environment.
  * @param clientTokenString A client token from the Braintree Gateway
- * @property authorizationFingerprint The authorizationFingerprint for the current session
  * @property customerId The customer ID in the authorizationFingerprint if it is present
  * @constructor Create a new [ClientToken] instance from a client token
  * @throws InvalidArgumentException when client token is invalid
@@ -27,8 +22,8 @@ class ClientToken @Throws(InvalidArgumentException::class) internal constructor(
     override val configUrl: String
     override val bearer: String
 
-    val authorizationFingerprint: String
-    val customerId: String?
+    internal val authorizationFingerprint: String
+    internal val customerId: String?
 
     init {
         try {

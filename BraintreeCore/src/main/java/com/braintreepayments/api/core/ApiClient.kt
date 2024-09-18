@@ -8,7 +8,10 @@ import org.json.JSONObject
  * @suppress
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class ApiClient(private val braintreeClient: BraintreeClient) {
+class ApiClient(
+    private val braintreeClient: BraintreeClient,
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
+) {
 
     fun tokenizeGraphQL(tokenizePayload: JSONObject, callback: TokenizeCallback) =
         braintreeClient.run {
@@ -24,7 +27,7 @@ class ApiClient(private val braintreeClient: BraintreeClient) {
     fun tokenizeREST(paymentMethod: PaymentMethod, callback: TokenizeCallback) =
         braintreeClient.run {
             val url = versionedPath("$PAYMENT_METHOD_ENDPOINT/${paymentMethod.apiPath}")
-            paymentMethod.sessionId = braintreeClient.sessionId
+            paymentMethod.sessionId = analyticsParamRepository.sessionId
 
             sendPOST(
                 url = url,

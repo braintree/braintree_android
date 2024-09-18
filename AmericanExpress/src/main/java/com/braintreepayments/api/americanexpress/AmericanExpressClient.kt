@@ -2,7 +2,6 @@ package com.braintreepayments.api.americanexpress
 
 import android.content.Context
 import android.net.Uri
-import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.ApiClient.Companion.versionedPath
 import com.braintreepayments.api.core.BraintreeClient
 import org.json.JSONException
@@ -10,7 +9,7 @@ import org.json.JSONException
 /**
  * Used to integrate with Braintree's American Express API
  */
-class AmericanExpressClient @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
+class AmericanExpressClient internal constructor(
     private val braintreeClient: BraintreeClient
 ) {
 

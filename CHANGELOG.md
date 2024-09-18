@@ -2,14 +2,43 @@
 
 ## unreleased
 
-* BraintreeCore
-  * Update `endpoint` syntax sent to FPTI for 3D Secure and Venmo flows
-* PayPal
-    * Add PayPal vault edit flow (BETA)
-        * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
-        * Add `PayPalClient.createEditAuthRequest()` for editing a buyers funding instrument
-        
+* GooglePay
+  * Upgrade `play-services-wallet` to `19.4.0`
+* Breaking Changes
+  * Venmo
+    * Convert `VenmoPaymentMethodUsage` to an enum
+    * Convert `VenmoLineItemKind` to an enum
+    * Make `VenmoPaymentAuthRequestParams` internal
+    * Remove `VenmoPaymentAuthResultInfo`
+  * BraintreeCore
+    * Remove `BraintreeDeepLinkActivity`
+    * Remove `authorizationFingerprint` from `ClientToken`
+  * GooglePay
+    * Make `GooglePayPaymentAuthRequestParams` internal
+    * Make `GooglePayPaymentAuthResult` parameters internal
+    * Update `GooglePayLauncher.launch` to take a `GooglePayPaymentAuthRequest.ReadyToLaunch` parameter
+    * Remove `GooglePayRequest.setTransactionInfo` and replace with `currencyCode`, `totalPrice, and `totalPriceStatus` parameters
+    * Change `GooglePayRequest.billingAddressFormat` to `GooglePayBillingAddressFormat` enum
+    * Change `GooglePayRequest.shippingAddressRequirements` to `GooglePayRequest.shippingAddressParameters` 
+  * PayPal
+    * Make `PayPalPaymentAuthRequestParams` internal
+    * Remove `PayPalPaymentAuthResultInfo`
+    * Rename `PayPalLauncher.handleReturnToAppFromBrowser()` to `PayPalLauncher.handleReturnToApp()`
+  * SEPADirectDebit
+    * Make `SEPADirectDebitPaymentAuthRequestParams` internal
+    * Remove `SEPADirectDebitPaymentAuthResultInfo`
+    * Rename `SEPADirectDebitLauncher.handleReturnToAppFromBrowser()` to `SEPADirectDebitLauncher.handleReturnToApp()`
+  * ThreeDSecure
+    * Make `ThreeDSecureParams` internal
+    * Make `ThreeDSecurePaymentAuthResult` parameters internal
+    * Remove `ThreeDSecurePaymentAuthResultInfo`
+  * LocalPayment
+    * Remove `LocalPaymentAuthResultInfo`
+    * Make `LocalPaymentAuthRequestParams` internal
+    * Rename `LocalPaymentLauncher.handleReturnToAppFromBrowser()` to `LocalPaymentLauncher.handleReturnToApp()`
+
 ## 5.0.0-beta2 (2024-08-28)
+
 * All Modules
   * Upgrade Gradle version to `8.5.2`
   * Upgrade `compileSdkVersion` and `targetSdkVersion` to API 35

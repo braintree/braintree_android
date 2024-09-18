@@ -11,8 +11,8 @@ import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
  * @property error error if the auth request failed
  */
 data class ThreeDSecurePaymentAuthResult internal constructor(
-    val jwt: String? = null,
-    val validateResponse: ValidateResponse? = null,
-    val threeDSecureParams: ThreeDSecureParams? = null,
-    val error: Exception? = null
+    internal val jwt: String? = null,
+    internal val validateResponse: ValidateResponse? = null,
+    internal val threeDSecureParams: ThreeDSecureParams? = null,
+    internal val error: Exception? = null
 )

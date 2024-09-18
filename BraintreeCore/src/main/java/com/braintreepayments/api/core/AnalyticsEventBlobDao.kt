@@ -11,8 +11,8 @@ internal interface AnalyticsEventBlobDao {
     @Insert
     fun insertEventBlob(eventBlob: AnalyticsEventBlob)
 
-    @Query("SELECT * FROM analytics_event_blob")
-    fun getAllEventBlobs(): List<AnalyticsEventBlob>
+    @Query("SELECT * FROM analytics_event_blob WHERE sessionId = :sessionId")
+    fun getBlobsBySessionId(sessionId: String): List<AnalyticsEventBlob>
 
     @Delete
     fun deleteEventBlobs(blobs: List<AnalyticsEventBlob>)

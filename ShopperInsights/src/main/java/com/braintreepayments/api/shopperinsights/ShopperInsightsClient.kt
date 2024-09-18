@@ -1,8 +1,11 @@
 package com.braintreepayments.api.shopperinsights
 
 import android.content.Context
-import androidx.annotation.VisibleForTesting
+import com.braintreepayments.api.core.AnalyticsParamRepository
+import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.core.TokenizationKey
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_FAILED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_STARTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_SUCCEEDED
@@ -10,9 +13,6 @@ import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.PAYPAL
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.PAYPAL_SELECTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.VENMO_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.VENMO_SELECTED
-import com.braintreepayments.api.core.BraintreeClient
-import com.braintreepayments.api.core.BraintreeException
-import com.braintreepayments.api.core.TokenizationKey
 
 /**
  * Use [ShopperInsightsClient] to optimize your checkout experience
@@ -23,18 +23,20 @@ import com.braintreepayments.api.core.TokenizationKey
  * Note: **This feature is in beta. It's public API may change in future releases.**
  */
 @ExperimentalBetaApi
-class ShopperInsightsClient @VisibleForTesting internal constructor(
-    private val api: ShopperInsightsApi,
-    private val braintreeClient: BraintreeClient
+class ShopperInsightsClient internal constructor(
+    private val braintreeClient: BraintreeClient,
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
+    private val api: ShopperInsightsApi = ShopperInsightsApi(
+        EligiblePaymentsApi(braintreeClient, analyticsParamRepository)
+    ),
 ) {
+
     /**
      * @param context: an Android context
      * @param authorization: a Tokenization Key or Client Token used to authenticate
      */
-    constructor(context: Context, authorization: String) : this (BraintreeClient(context, authorization))
-    @VisibleForTesting internal constructor(braintreeClient: BraintreeClient) : this(
-        ShopperInsightsApi(EligiblePaymentsApi(braintreeClient)),
-        braintreeClient,
+    constructor(context: Context, authorization: String) : this(
+        BraintreeClient(context, authorization)
     )
 
     /**
@@ -50,6 +52,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
         request: ShopperInsightsRequest,
         callback: ShopperInsightsCallback
     ) {
+        analyticsParamRepository.resetSessionId()
         braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_STARTED)
 
         if (request.email == null && request.phone == null) {
@@ -57,7 +60,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                 callback = callback,
                 error = IllegalArgumentException(
                     "One of ShopperInsightsRequest.email or ShopperInsightsRequest.phone must be " +
-                            "non-null."
+                        "non-null."
                 )
             )
             return
@@ -113,7 +116,7 @@ class ShopperInsightsClient @VisibleForTesting internal constructor(
                 callbackSuccess(
                     callback = callback,
                     isEligibleInPayPalNetwork = paypalPaymentMethod?.eligibleInPayPalNetwork == true ||
-                            venmoPaymentMethod?.eligibleInPayPalNetwork == true,
+                        venmoPaymentMethod?.eligibleInPayPalNetwork == true,
                     isPayPalRecommended = paypalPaymentMethod?.recommended == true,
                     isVenmoRecommended = venmoPaymentMethod?.recommended == true
                 )

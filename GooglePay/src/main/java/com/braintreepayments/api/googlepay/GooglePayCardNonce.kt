@@ -1,5 +1,6 @@
 package com.braintreepayments.api.googlepay
 
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.card.BinData
 import com.braintreepayments.api.core.PaymentMethodNonce
 import com.braintreepayments.api.core.PostalAddress
@@ -35,7 +36,7 @@ data class GooglePayCardNonce internal constructor(
     val lastFour: String,
     val email: String,
     val cardNetwork: String,
-    var isNetworkTokenized: Boolean,
+    val isNetworkTokenized: Boolean,
     val billingAddress: PostalAddress,
     val shippingAddress: PostalAddress,
     val binData: BinData
@@ -60,6 +61,7 @@ data class GooglePayCardNonce internal constructor(
 
         @Throws(JSONException::class)
         @JvmStatic
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         fun fromJSON(inputJson: JSONObject): PaymentMethodNonce {
             val tokenPayload = JSONObject(
                 inputJson

@@ -225,7 +225,7 @@ public class SEPADirectDebitClientUnitTest {
             new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
         SEPADirectDebitPaymentAuthResult.Success
-            sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult.Success(new SEPADirectDebitPaymentAuthResultInfo(browserSwitchResult));
+            sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult.Success(browserSwitchResult);
 
         sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback);
 
@@ -262,7 +262,7 @@ public class SEPADirectDebitClientUnitTest {
             new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
         SEPADirectDebitPaymentAuthResult.Success
-            sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult.Success(new SEPADirectDebitPaymentAuthResultInfo(browserSwitchResult));
+            sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult.Success(browserSwitchResult);
 
         sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback);
 
@@ -301,7 +301,7 @@ public class SEPADirectDebitClientUnitTest {
             new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
         SEPADirectDebitPaymentAuthResult.Success
-            sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult.Success(new SEPADirectDebitPaymentAuthResultInfo(browserSwitchResult));
+            sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult.Success(browserSwitchResult);
 
         sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback);
 
@@ -344,7 +344,7 @@ public class SEPADirectDebitClientUnitTest {
             new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
         SEPADirectDebitPaymentAuthResult.Success
-            sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult.Success(new SEPADirectDebitPaymentAuthResultInfo(browserSwitchResult));
+            sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult.Success(browserSwitchResult);
 
         sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback);
 
@@ -371,7 +371,7 @@ public class SEPADirectDebitClientUnitTest {
             new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
         SEPADirectDebitPaymentAuthResult.Success
-            sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult.Success(new SEPADirectDebitPaymentAuthResultInfo(browserSwitchResult));
+            sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult.Success(browserSwitchResult);
 
         sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback);
 
@@ -397,7 +397,7 @@ public class SEPADirectDebitClientUnitTest {
             new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
 
         SEPADirectDebitPaymentAuthResult.Success
-            sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult.Success(new SEPADirectDebitPaymentAuthResultInfo(browserSwitchResult));
+            sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult.Success(browserSwitchResult);
 
         sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback);
 

@@ -29,7 +29,7 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
      * calling [PayPalClient.createPaymentAuthRequest]
      * @return [PayPalPendingRequest] a [PayPalPendingRequest.Started] should be stored
      * to complete the flow upon return to app in
-     * [PayPalLauncher.handleReturnToAppFromBrowser],
+     * [PayPalLauncher.handleReturnToApp],
      * or a [PayPalPendingRequest.Failure] with an error if the PayPal flow was unable to be
      * launched in a browser.
      */
@@ -69,7 +69,7 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
     }
 
     /**
-     * Captures and delivers the result of a the browser-based PayPal authentication flow.
+     * Captures and delivers the result of a PayPal authentication flow.
      *
      * For most integrations, this method should be invoked in the onResume method of the Activity
      * used to invoke
@@ -85,17 +85,17 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
      * from the PayPal browser flow
      * @return a [PayPalPaymentAuthResult.Success] that should be passed to [PayPalClient.tokenize]
      * to complete the PayPal payment flow. Returns [PayPalPaymentAuthResult.NoResult] if the user
-     * closed the browser to cancel the payment flow, or returned to the app without completing the
-     * PayPal authentication flow.
+     * canceled the payment flow, or returned to the app without completing the PayPal
+     * authentication flow.
      */
-    fun handleReturnToAppFromBrowser(
+    fun handleReturnToApp(
         pendingRequest: PayPalPendingRequest.Started,
         intent: Intent
     ): PayPalPaymentAuthResult {
         return when (val browserSwitchResult =
             browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
             is BrowserSwitchFinalResult.Success -> PayPalPaymentAuthResult.Success(
-                PayPalPaymentAuthResultInfo(browserSwitchResult)
+                browserSwitchResult
             )
 
             is BrowserSwitchFinalResult.Failure -> PayPalPaymentAuthResult.Failure(

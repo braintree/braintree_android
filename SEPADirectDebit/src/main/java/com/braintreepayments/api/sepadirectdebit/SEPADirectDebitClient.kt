@@ -3,7 +3,6 @@ package com.braintreepayments.api.sepadirectdebit
 import android.content.Context
 import android.net.Uri
 import android.webkit.URLUtil
-import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.BraintreeClient
@@ -15,7 +14,7 @@ import org.json.JSONObject
 /**
  * Used to integrate with SEPA Direct Debit.
  */
-class SEPADirectDebitClient @VisibleForTesting internal constructor(
+class SEPADirectDebitClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val sepaDirectDebitApi: SEPADirectDebitApi = SEPADirectDebitApi(braintreeClient)
 ) {
@@ -106,12 +105,12 @@ class SEPADirectDebitClient @VisibleForTesting internal constructor(
     // TODO: - The wording in this docstring is confusing to me. Let's improve & align across all clients.
     /**
      * After receiving a result from the SEPA mandate web flow via
-     * [SEPADirectDebitLauncher.handleReturnToAppFromBrowser] , pass the
+     * [SEPADirectDebitLauncher.handleReturnToApp] , pass the
      * [SEPADirectDebitPaymentAuthResult.Success] returned to this method to tokenize the SEPA
      * account and receive a [SEPADirectDebitNonce] on success.
      *
      * @param paymentAuthResult a [SEPADirectDebitPaymentAuthResult.Success] received from
-     * [SEPADirectDebitLauncher.handleReturnToAppFromBrowser]
+     * [SEPADirectDebitLauncher.handleReturnToApp]
      * @param callback [SEPADirectDebitInternalTokenizeCallback]
      */
     fun tokenize(
@@ -119,7 +118,7 @@ class SEPADirectDebitClient @VisibleForTesting internal constructor(
         callback: SEPADirectDebitTokenizeCallback
     ) {
         val browserSwitchResult: BrowserSwitchFinalResult.Success =
-            paymentAuthResult.paymentAuthInfo.browserSwitchSuccess
+            paymentAuthResult.browserSwitchSuccess
 
         val deepLinkUri: Uri = browserSwitchResult.returnUrl
         if (deepLinkUri != null) {

@@ -1,9 +1,11 @@
 package com.braintreepayments.api.paypal
 
+import androidx.annotation.RestrictTo
+
 /**
  * The payment intent in the PayPal Checkout flow
  */
-enum class PayPalPaymentIntent(val stringValue: String) {
+enum class PayPalPaymentIntent(internal val stringValue: String) {
 
     /**
      * Payment intent to create an order
@@ -22,6 +24,7 @@ enum class PayPalPaymentIntent(val stringValue: String) {
 
     companion object {
         @JvmStatic
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         fun fromString(string: String?): PayPalPaymentIntent? {
             return PayPalPaymentIntent.values().firstOrNull { it.stringValue == string }
         }

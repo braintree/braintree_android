@@ -2,6 +2,7 @@ package com.braintreepayments.api.visacheckout
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.card.BinData
 import com.braintreepayments.api.core.PaymentMethodNonce
 import com.braintreepayments.api.sharedutils.Json
@@ -51,6 +52,7 @@ data class VisaCheckoutNonce internal constructor(
 
         @Throws(JSONException::class)
         @JvmStatic
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         fun fromJSON(inputJson: JSONObject): VisaCheckoutNonce {
             val json = if (inputJson.has(API_RESOURCE_KEY)) {
                 inputJson.getJSONArray(API_RESOURCE_KEY).getJSONObject(0)

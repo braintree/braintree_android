@@ -62,12 +62,7 @@ public class GooglePayLauncherUnitTest {
 
     @Test
     public void launch_launchesActivity() {
-        GooglePayRequest googlePayRequest = new GooglePayRequest();
-        googlePayRequest.setTransactionInfo(TransactionInfo.newBuilder()
-                .setTotalPrice("1.00")
-                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                .setCurrencyCode("USD")
-                .build());
+        GooglePayRequest googlePayRequest = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
 
         PaymentDataRequest paymentDataRequest =
                 PaymentDataRequest.fromJson(googlePayRequest.toJson());
@@ -79,7 +74,7 @@ public class GooglePayLauncherUnitTest {
         doReturn(activityLauncher).when(activityResultRegistry).register(any(), any(), any(), any());
         GooglePayLauncher sut = new GooglePayLauncher(activityResultRegistry, lifecycleOwner, callback);
 
-        sut.launch(intentData);
+        sut.launch(new GooglePayPaymentAuthRequest.ReadyToLaunch(intentData));
         verify(activityLauncher).launch(intentData);
     }
 }
