@@ -31,10 +31,10 @@ import org.json.JSONObject
  */
 @Parcelize
 data class PayPalBillingCycle @JvmOverloads constructor(
-    var isTrial: Boolean,
+    val isTrial: Boolean,
     val numberOfExecutions: Int,
-    val interval: PayPalBillingInterval? = null,
-    val intervalCount: Int? = null,
+    var interval: PayPalBillingInterval? = null,
+    var intervalCount: Int? = null,
     var sequence: Int? = null,
     var startDate: String? = null,
     var pricing: PayPalBillingPricing? = null
