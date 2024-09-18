@@ -1,7 +1,6 @@
 package com.braintreepayments.api.americanexpress
 
 import android.os.Parcelable
-import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.Json
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
@@ -49,10 +48,8 @@ data class AmericanExpressRewardsBalance @JvmOverloads constructor(
          * @return The [AmericanExpressRewardsBalance] with rewards balance data.
          * @throws JSONException when parsing fails.
          */
-        @JvmStatic
-        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         @Throws(JSONException::class)
-        fun fromJson(jsonString: String): AmericanExpressRewardsBalance {
+        internal fun fromJson(jsonString: String): AmericanExpressRewardsBalance {
             val json = JSONObject(jsonString)
 
             val rewardsBalance = AmericanExpressRewardsBalance()

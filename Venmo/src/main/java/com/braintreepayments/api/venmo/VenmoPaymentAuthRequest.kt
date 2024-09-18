@@ -11,10 +11,12 @@ sealed class VenmoPaymentAuthRequest {
      * @param requestParams this parameter is intended for internal use only. It is not covered by
      * semantic versioning and may be changed or removed at any time.
      */
-    class ReadyToLaunch(val requestParams: VenmoPaymentAuthRequestParams) : VenmoPaymentAuthRequest()
+    class ReadyToLaunch internal constructor(
+        val requestParams: VenmoPaymentAuthRequestParams
+    ) : VenmoPaymentAuthRequest()
 
     /**
      * There was an [error] creating the request
      */
-    class Failure(val error: Exception) : VenmoPaymentAuthRequest()
+    class Failure internal constructor(val error: Exception) : VenmoPaymentAuthRequest()
 }

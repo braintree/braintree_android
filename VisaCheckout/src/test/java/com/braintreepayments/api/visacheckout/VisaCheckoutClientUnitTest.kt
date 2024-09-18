@@ -159,7 +159,6 @@ class VisaCheckoutClientUnitTest {
 
     @Test
     fun `when createProfileBuilder is called and configuration and exception are null, a failure is returned`() {
-        val exception = ConfigurationException("Error getting configuration.")
         val callback = mockk<VisaCheckoutCreateProfileBuilderCallback>(relaxed = true)
         val braintreeClient = MockkBraintreeClientBuilder().build()
         val sut = VisaCheckoutClient(braintreeClient, mockk())

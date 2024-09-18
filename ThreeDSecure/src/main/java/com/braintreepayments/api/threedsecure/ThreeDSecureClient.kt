@@ -1,6 +1,7 @@
 package com.braintreepayments.api.threedsecure
 
 import android.content.Context
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BuildConfig
@@ -248,6 +249,7 @@ class ThreeDSecureClient internal constructor(
         }
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendAnalyticsAndCallbackResult(
         result: ThreeDSecureParams,
         callback: ThreeDSecurePaymentAuthRequestCallback

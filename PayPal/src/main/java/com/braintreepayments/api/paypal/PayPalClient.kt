@@ -3,14 +3,13 @@ package com.braintreepayments.api.paypal
 import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
-import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.BrowserSwitchOptions
-import com.braintreepayments.api.ExperimentalBetaApi
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthCallback
@@ -24,8 +23,8 @@ import org.json.JSONObject
 /**
  * Used to tokenize PayPal accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4)
  */
-@Suppress("TooManyFunctions")
-class PayPalClient @VisibleForTesting internal constructor(
+class PayPalClient internal constructor(
+
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient = PayPalInternalClient(braintreeClient),
 ) {
@@ -150,12 +149,12 @@ class PayPalClient @VisibleForTesting internal constructor(
 
     /**
      * After receiving a result from the PayPal web authentication flow via
-     * [PayPalLauncher.handleReturnToAppFromBrowser],
+     * [PayPalLauncher.handleReturnToApp],
      * pass the [PayPalPaymentAuthResult.Success] returned to this method to tokenize the PayPal
      * account and receive a [PayPalAccountNonce] on success.
      *
      * @param paymentAuthResult a [PayPalPaymentAuthResult.Success] received in the callback
-     * from  [PayPalLauncher.handleReturnToAppFromBrowser]
+     * from  [PayPalLauncher.handleReturnToApp]
      * @param callback          [PayPalTokenizeCallback]
      */
     @Suppress("SwallowedException")

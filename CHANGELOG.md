@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* GooglePay
+  * Upgrade `play-services-wallet` to `19.4.0`
 * Breaking Changes
   * Venmo
     * Convert `VenmoPaymentMethodUsage` to an enum
@@ -15,18 +17,25 @@
     * Make `GooglePayPaymentAuthRequestParams` internal
     * Make `GooglePayPaymentAuthResult` parameters internal
     * Update `GooglePayLauncher.launch` to take a `GooglePayPaymentAuthRequest.ReadyToLaunch` parameter
+    * Remove `GooglePayRequest.setTransactionInfo` and replace with `currencyCode`, `totalPrice, and `totalPriceStatus` parameters
+    * Change `GooglePayRequest.billingAddressFormat` to `GooglePayBillingAddressFormat` enum
+    * Change `GooglePayRequest.shippingAddressRequirements` to `GooglePayRequest.shippingAddressParameters` 
   * PayPal
     * Make `PayPalPaymentAuthRequestParams` internal
     * Remove `PayPalPaymentAuthResultInfo`
+    * Rename `PayPalLauncher.handleReturnToAppFromBrowser()` to `PayPalLauncher.handleReturnToApp()`
   * SEPADirectDebit
     * Make `SEPADirectDebitPaymentAuthRequestParams` internal
     * Remove `SEPADirectDebitPaymentAuthResultInfo`
+    * Rename `SEPADirectDebitLauncher.handleReturnToAppFromBrowser()` to `SEPADirectDebitLauncher.handleReturnToApp()`
   * ThreeDSecure
     * Make `ThreeDSecureParams` internal
     * Make `ThreeDSecurePaymentAuthResult` parameters internal
-  * LocalPayment
     * Remove `ThreeDSecurePaymentAuthResultInfo`
+  * LocalPayment
+    * Remove `LocalPaymentAuthResultInfo`
     * Make `LocalPaymentAuthRequestParams` internal
+    * Rename `LocalPaymentLauncher.handleReturnToAppFromBrowser()` to `LocalPaymentLauncher.handleReturnToApp()`
 
 ## 5.0.0-beta2 (2024-08-28)
 

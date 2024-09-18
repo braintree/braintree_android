@@ -241,22 +241,6 @@ class CardUnitTest {
     @Throws(JSONException::class)
     fun buildJSON_doesNotIncludeEmptyStrings() {
         val card = Card()
-//        card.number = ""
-//        card.expirationDate = ""
-//        card.expirationMonth = ""
-//        card.expirationYear = ""
-//        card.cvv = ""
-//        card.postalCode = ""
-//        card.cardholderName = ""
-//        card.firstName = ""
-//        card.lastName = ""
-//        card.company = ""
-//        card.streetAddress = ""
-//        card.extendedAddress = ""
-//        card.locality = ""
-//        card.postalCode = ""
-//        card.region = ""
-//        card.countryCode = ""
 
         assertEquals(1, card.buildJSON().getJSONObject(CREDIT_CARD_KEY).length())
         assertTrue(card.buildJSON().getJSONObject(CREDIT_CARD_KEY).has("options"))
