@@ -1,5 +1,14 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* BraintreeCore
+  * Update `endpoint` syntax sent to FPTI for 3D Secure and Venmo flows
+* PayPal
+    * Add PayPal vault edit flow (BETA)
+        * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
+        * Add `PayPalClient.createEditAuthRequest()` for editing a buyers funding instrument
+        
 ## 5.0.0-beta2 (2024-08-28)
 * All Modules
   * Upgrade Gradle version to `8.5.2`
