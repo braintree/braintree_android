@@ -4,10 +4,10 @@ import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Base64
-import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.AppSwitchNotAvailableException
 import com.braintreepayments.api.core.Authorization
@@ -24,11 +24,12 @@ import java.util.Objects
 /**
  * Used to create and tokenize Venmo accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/venmo/overview)
  */
-class VenmoClient @VisibleForTesting internal constructor(
+class VenmoClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val apiClient: ApiClient = ApiClient(braintreeClient),
     private val venmoApi: VenmoApi = VenmoApi(braintreeClient, apiClient),
     private val sharedPrefsWriter: VenmoSharedPrefsWriter = VenmoSharedPrefsWriter(),
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
 ) {
     /**
      * Used for linking events from the client to server side request
@@ -144,7 +145,7 @@ class VenmoClient @VisibleForTesting internal constructor(
         sharedPrefsWriter.persistVenmoVaultOption(context, isVaultRequest)
 
         val metadata = MetadataBuilder()
-            .sessionId(braintreeClient.sessionId)
+            .sessionId(analyticsParamRepository.sessionId)
             .integration(braintreeClient.integrationType)
             .version()
             .build()
@@ -204,9 +205,8 @@ class VenmoClient @VisibleForTesting internal constructor(
         paymentAuthResult: VenmoPaymentAuthResult.Success,
         callback: VenmoTokenizeCallback
     ) {
-        val venmoPaymentAuthResultInfo = paymentAuthResult.paymentAuthInfo
         val browserSwitchResultInfo: BrowserSwitchFinalResult.Success =
-            venmoPaymentAuthResultInfo.browserSwitchSuccess
+            paymentAuthResult.browserSwitchSuccess
 
         val deepLinkUri: Uri = browserSwitchResultInfo.returnUrl
         if (deepLinkUri != null) {

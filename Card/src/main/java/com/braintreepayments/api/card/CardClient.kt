@@ -1,8 +1,8 @@
 package com.braintreepayments.api.card
 
 import android.content.Context
-import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.card.CardNonce.Companion.fromJSON
+import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
@@ -15,9 +15,10 @@ import org.json.JSONObject
  * Used to tokenize credit or debit cards using a [Card]. For more information see the
  * [documentation](https://developer.paypal.com/braintree/docs/guides/credit-cards/overview)
  */
-class CardClient @VisibleForTesting internal constructor(
+class CardClient internal constructor(
     private val braintreeClient: BraintreeClient,
-    private val apiClient: ApiClient = ApiClient(braintreeClient)
+    private val apiClient: ApiClient = ApiClient(braintreeClient),
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
 ) {
 
     /**
@@ -60,6 +61,7 @@ class CardClient @VisibleForTesting internal constructor(
      * @param callback [CardTokenizeCallback]
      */
     fun tokenize(card: Card, callback: CardTokenizeCallback) {
+        analyticsParamRepository.resetSessionId()
         braintreeClient.sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_STARTED)
         braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
             if (error != null) {
@@ -73,7 +75,7 @@ class CardClient @VisibleForTesting internal constructor(
                     false
                 }
             if (shouldTokenizeViaGraphQL) {
-                card.sessionId = braintreeClient.sessionId
+                card.sessionId = analyticsParamRepository.sessionId
                 try {
                     val tokenizePayload = card.buildJSONForGraphQL()
                     apiClient.tokenizeGraphQL(

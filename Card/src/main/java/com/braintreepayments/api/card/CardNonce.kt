@@ -173,7 +173,9 @@ constructor(
             }
         }
 
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         const val API_RESOURCE_KEY: String = "creditCards"
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         const val DATA_KEY: String = "data"
 
         private const val PAYMENT_METHOD_NONCE_KEY = "nonce"

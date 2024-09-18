@@ -49,7 +49,7 @@ public class SEPADirectDebitFragment extends BaseFragment {
         SEPADirectDebitPendingRequest.Started pendingRequest = getPendingRequest();
         if (pendingRequest != null) {
             SEPADirectDebitPaymentAuthResult paymentAuthResult =
-                    sepaDirectDebitLauncher.handleReturnToAppFromBrowser(pendingRequest,
+                    sepaDirectDebitLauncher.handleReturnToApp(pendingRequest,
                             requireActivity().getIntent());
             if (paymentAuthResult instanceof SEPADirectDebitPaymentAuthResult.Success) {
                 completeSEPAFlow((SEPADirectDebitPaymentAuthResult.Success) paymentAuthResult);

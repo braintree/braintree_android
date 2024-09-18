@@ -1,6 +1,7 @@
 package com.braintreepayments.api.threedsecure
 
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import com.cardinalcommerce.shared.userinterfaces.TextBoxCustomization
 import kotlinx.parcelize.Parcelize
 
@@ -15,7 +16,7 @@ import kotlinx.parcelize.Parcelize
  * @property cornerRadius Radius (integer value) for the text box corners.
  */
 @Parcelize
-data class ThreeDSecureV2TextBoxCustomization(
+data class ThreeDSecureV2TextBoxCustomization @JvmOverloads constructor(
     var textFontName: String? = null,
     var textColor: String? = null,
     var textFontSize: Int = 0,
@@ -24,6 +25,7 @@ data class ThreeDSecureV2TextBoxCustomization(
     var cornerRadius: Int = 0
 ) : Parcelable {
 
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val cardinalTextBoxCustomization: TextBoxCustomization
         get() {
             return TextBoxCustomization().also {

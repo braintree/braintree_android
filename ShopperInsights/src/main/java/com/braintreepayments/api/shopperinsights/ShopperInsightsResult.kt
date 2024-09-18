@@ -11,10 +11,10 @@ sealed class ShopperInsightsResult {
      * @property response The response object describing the shopper's insights.
      */
     @OptIn(ExperimentalBetaApi::class)
-    class Success(val response: ShopperInsightsInfo) : ShopperInsightsResult()
+    class Success internal constructor(val response: ShopperInsightsInfo) : ShopperInsightsResult()
 
     /**
      * @property error An object that describes the error that occurred.
      */
-    class Failure(val error: Exception) : ShopperInsightsResult()
+    class Failure internal constructor(val error: Exception) : ShopperInsightsResult()
 }

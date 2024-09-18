@@ -4,8 +4,6 @@ import android.util.Base64
 import androidx.annotation.RestrictTo
 import org.json.JSONException
 import org.json.JSONObject
-import java.lang.NullPointerException
-import kotlin.jvm.Throws
 
 /**
  * A class containing the configuration url and authorization for the current Braintree environment.
@@ -24,8 +22,8 @@ class ClientToken @Throws(InvalidArgumentException::class) internal constructor(
     override val configUrl: String
     override val bearer: String
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) internal val authorizationFingerprint: String
-    val customerId: String?
+    internal val authorizationFingerprint: String
+    internal val customerId: String?
 
     init {
         try {

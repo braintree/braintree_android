@@ -70,7 +70,7 @@ class SEPADirectDebitLauncherUnitTest {
     }
 
     @Test
-    fun `handleReturnToAppFromBrowser on browser switch result returns success result`() {
+    fun `handleReturnToApp on browser switch result returns success result`() {
         val browserSwitchFinalResult = mockk<BrowserSwitchFinalResult.Success>()
         val pendingRequest: SEPADirectDebitPendingRequest.Started =
             SEPADirectDebitPendingRequest.Started(pendingRequestString)
@@ -78,25 +78,24 @@ class SEPADirectDebitLauncherUnitTest {
             browserSwitchClient.completeRequest(eq(intent), eq(pendingRequestString))
         } returns browserSwitchFinalResult
 
-        val paymentAuthResult = sut.handleReturnToAppFromBrowser(pendingRequest, intent)
+        val paymentAuthResult = sut.handleReturnToApp(pendingRequest, intent)
 
         assertTrue(paymentAuthResult is SEPADirectDebitPaymentAuthResult.Success)
         assertSame(
-            (paymentAuthResult as SEPADirectDebitPaymentAuthResult.Success).paymentAuthInfo.browserSwitchSuccess,
+            (paymentAuthResult as SEPADirectDebitPaymentAuthResult.Success).browserSwitchSuccess,
             browserSwitchFinalResult
         )
     }
 
     @Test
-    fun `handleReturnToAppFromBrowser when no BrowserSwitchResult returns no result`() {
-        val browserSwitchPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
+    fun `handleReturnToApp when no BrowserSwitchResult returns no result`() {
         val pendingRequest: SEPADirectDebitPendingRequest.Started =
             SEPADirectDebitPendingRequest.Started(pendingRequestString)
         every {
             browserSwitchClient.completeRequest(eq(intent), eq(pendingRequestString))
         } returns BrowserSwitchFinalResult.NoResult
 
-        val paymentAuthResult = sut.handleReturnToAppFromBrowser(pendingRequest, intent)
+        val paymentAuthResult = sut.handleReturnToApp(pendingRequest, intent)
 
         assertTrue(paymentAuthResult is SEPADirectDebitPaymentAuthResult.NoResult)
     }

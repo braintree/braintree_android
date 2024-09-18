@@ -3,10 +3,10 @@ package com.braintreepayments.api.localpayment
 import android.content.Context
 import android.net.Uri
 import androidx.annotation.RestrictTo
-import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
@@ -21,10 +21,11 @@ import java.util.Locale
 /**
  * Used to integrate with local payments.
  */
-class LocalPaymentClient @VisibleForTesting internal constructor(
+class LocalPaymentClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val dataCollector: DataCollector = DataCollector(braintreeClient),
-    private val localPaymentApi: LocalPaymentApi = LocalPaymentApi(braintreeClient)
+    private val localPaymentApi: LocalPaymentApi = LocalPaymentApi(braintreeClient),
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
 ) {
     /**
      * Used for linking events from the client to server side request
@@ -54,20 +55,14 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
      * @param callback [LocalPaymentAuthCallback]
      */
     fun createPaymentAuthRequest(
-        request: LocalPaymentRequest?,
-        callback: LocalPaymentAuthCallback?
+        request: LocalPaymentRequest,
+        callback: LocalPaymentAuthCallback
     ) {
+        analyticsParamRepository.resetSessionId()
         braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED)
 
         var exception: Exception? = null
-
-        if (callback == null) {
-            throw IllegalArgumentException("A LocalPaymentAuthRequestCallback is required.")
-        }
-
-        if (request == null) {
-            exception = BraintreeException("A LocalPaymentRequest is required.")
-        } else if (request.paymentType == null || request.amount == null) {
+        if (request.paymentType == null || request.amount == null) {
             exception = BraintreeException(
                 "LocalPaymentRequest is invalid, paymentType and amount are required."
             )
@@ -156,13 +151,13 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
 
     /**
      * After receiving a result from the web authentication flow via
-     * [LocalPaymentLauncher.handleReturnToAppFromBrowser], pass the
+     * [LocalPaymentLauncher.handleReturnToApp], pass the
      * [LocalPaymentAuthResult.Success] returned to this method to tokenize the local
      * payment method and receive a [LocalPaymentNonce] on success.
      *
      * @param context Android Context
      * @param localPaymentAuthResult a [LocalPaymentAuthResult.Success] received from
-     * [LocalPaymentLauncher.handleReturnToAppFromBrowser]
+     * [LocalPaymentLauncher.handleReturnToApp]
      * @param callback [LocalPaymentInternalTokenizeCallback]
      */
     fun tokenize(
@@ -171,7 +166,7 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
         callback: LocalPaymentTokenizeCallback
     ) {
         val browserSwitchResult: BrowserSwitchFinalResult.Success = localPaymentAuthResult
-            .paymentAuthInfo.browserSwitchResultInfo
+            .browserSwitchSuccess
 
         val metadata: JSONObject? = browserSwitchResult.requestMetadata
         val merchantAccountId = Json.optString(metadata, "merchant-account-id", null)
@@ -234,7 +229,7 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
     }
 
     companion object {
-        const val LOCAL_PAYMENT_CANCEL: String = "local-payment-cancel"
-        const val LOCAL_PAYMENT_SUCCESS: String = "local-payment-success"
+        internal const val LOCAL_PAYMENT_CANCEL: String = "local-payment-cancel"
+        internal const val LOCAL_PAYMENT_SUCCESS: String = "local-payment-success"
     }
 }
