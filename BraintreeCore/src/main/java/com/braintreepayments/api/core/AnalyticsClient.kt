@@ -123,7 +123,7 @@ internal class AnalyticsClient(
                         )
                         val analyticsRequest =
                             createFPTIPayload(authorization, eventBlobs, metadata)
-                        
+
                         httpClient.post(
                             FPTI_ANALYTICS_URL,
                             analyticsRequest.toString(),
