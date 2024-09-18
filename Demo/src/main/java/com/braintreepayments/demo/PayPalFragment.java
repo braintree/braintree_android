@@ -216,7 +216,12 @@ public class PayPalFragment extends BaseFragment {
                 PayPalVaultEditResponse.ReadyToLaunch success = (PayPalVaultEditResponse.ReadyToLaunch) result;
 
                 //TODO: Analytics
-                payPalLauncher.launch(requireActivity(), success);
+                PayPalPendingRequest pendingRequest = payPalLauncher.launch(requireActivity(), success);
+                if (pendingRequest instanceof PayPalPendingRequest.Started) {
+                    storePendingRequest((PayPalPendingRequest.Started) pendingRequest);
+                } else if (pendingRequest instanceof PayPalPendingRequest.Failure) {
+                    handleError(((PayPalPendingRequest.Failure) pendingRequest).getError());
+                }
             }
         });
     }
@@ -239,7 +244,12 @@ public class PayPalFragment extends BaseFragment {
                 PayPalVaultEditResponse.ReadyToLaunch success = (PayPalVaultEditResponse.ReadyToLaunch) result;
 
                 //TODO: Analytics
-                payPalLauncher.launch(requireActivity(), success);
+                PayPalPendingRequest pendingRequest = payPalLauncher.launch(requireActivity(), success);
+                if (pendingRequest instanceof PayPalPendingRequest.Started) {
+                    storePendingRequest((PayPalPendingRequest.Started) pendingRequest);
+                } else if (pendingRequest instanceof PayPalPendingRequest.Failure) {
+                    handleError(((PayPalPendingRequest.Failure) pendingRequest).getError());
+                }
             }
         });
     }
