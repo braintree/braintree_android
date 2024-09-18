@@ -57,14 +57,14 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
     fun launch(
         activity: ComponentActivity,
         result: PayPalVaultEditResponse.ReadyToLaunch
-    ): PayPalPendingRequest {
+    ): PayPalPendingRequestEditFi {
         return result.browserSwitchOptions?.let { options ->
             when (val request = browserSwitchClient.start(activity, options)) {
-                is BrowserSwitchStartResult.Failure -> PayPalPendingRequest.Failure(request.error)
-                is BrowserSwitchStartResult.Started -> PayPalPendingRequest.Started(request.pendingRequest)
+                is BrowserSwitchStartResult.Failure -> PayPalPendingRequestEditFi.Failure(request.error)
+                is BrowserSwitchStartResult.Started -> PayPalPendingRequestEditFi.Started(request.pendingRequest)
             }
         } ?: run {
-            return PayPalPendingRequest.Failure(BraintreeException("BrowserSwitchOptions is null"))
+            return PayPalPendingRequestEditFi.Failure(BraintreeException("BrowserSwitchOptions is null"))
         }
     }
 
@@ -107,8 +107,8 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
     }
 
     @OptIn(ExperimentalBetaApi::class)
-    fun handleReturnToAppForEditFi(
-        pendingRequest: PayPalPendingRequest.Started,
+    fun handleReturnToAppFromBrowser(
+        pendingRequest: PayPalPendingRequestEditFi.Started,
         intent: Intent
     ): PayPalVaultEditAuthResult {
         return when (val browserSwitchResult =

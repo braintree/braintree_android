@@ -29,6 +29,7 @@ import com.braintreepayments.api.paypal.PayPalLauncher;
 import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest;
 import com.braintreepayments.api.paypal.PayPalPaymentAuthResult;
 import com.braintreepayments.api.paypal.PayPalPendingRequest;
+import com.braintreepayments.api.paypal.PayPalPendingRequestEditFi;
 import com.braintreepayments.api.paypal.PayPalRequest;
 import com.braintreepayments.api.paypal.PayPalResult;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult;
@@ -119,18 +120,30 @@ public class PayPalFragment extends BaseFragment {
                 }
             }
 
-            PayPalVaultEditAuthResult editAuthResult = payPalLauncher.handleReturnToAppForEditFi(pendingRequest, requireActivity().getIntent());
-
-            if (editAuthResult != null) {
-                if (editAuthResult instanceof PayPalVaultEditAuthResult.Success) {
-                    completePayPalFlow((PayPalPaymentAuthResult.Success) paymentAuthResult);
-                } else {
-                    handleError(new Exception("User did not complete payment flow"));
-                }
-            }
-
             clearPendingRequest();
         }
+
+        PayPalPendingRequestEditFi.Started pendingRequestEditFi = getPendingRequestEditFi();
+
+        if (pendingRequestEditFi != null) {
+            PayPalVaultEditAuthResult editAuthResult = payPalLauncher.handleReturnToAppFromBrowser(pendingRequestEditFi, requireActivity().getIntent());
+
+            if (editAuthResult != null) {
+
+                if (editAuthResult instanceof PayPalVaultEditAuthResult.Success) {
+                    // For example, call server lookup_fi_details
+                } else if (editAuthResult instanceof PayPalVaultEditAuthResult.Failure) {
+                    // Handle failure.error
+                } else if (editAuthResult instanceof PayPalVaultEditAuthResult.NoResult) {
+                    // Handle user canceled
+                }
+            } else {
+                handleError(new Exception("User did not complete payment flow"));
+            }
+
+            clearPendingRequestEditFi();
+        }
+
     }
 
     private void storePendingRequest(PayPalPendingRequest.Started request) {
@@ -143,6 +156,18 @@ public class PayPalFragment extends BaseFragment {
 
     private void clearPendingRequest() {
         PendingRequestStore.getInstance().clearPayPalPendingRequest(requireContext());
+    }
+
+    private void storePendingRequestForEditFi(PayPalPendingRequestEditFi.Started request) {
+        PendingRequestStore.getInstance().putPayPalPendingRequestEditFi(requireContext(), request);
+    }
+
+    private PayPalPendingRequestEditFi.Started getPendingRequestEditFi() {
+        return PendingRequestStore.getInstance().getPayPalPendingRequestEditFi(requireContext());
+    }
+
+    private void clearPendingRequestEditFi() {
+        PendingRequestStore.getInstance().clearPayPalPendingRequestEditFi(requireContext());
     }
 
     private void launchPayPal(boolean isBillingAgreement, String buyerEmailAddress) {
@@ -231,11 +256,11 @@ public class PayPalFragment extends BaseFragment {
                 PayPalVaultEditResponse.ReadyToLaunch success = (PayPalVaultEditResponse.ReadyToLaunch) result;
 
                 //TODO: Analytics
-                PayPalPendingRequest pendingRequest = payPalLauncher.launch(requireActivity(), success);
-                if (pendingRequest instanceof PayPalPendingRequest.Started) {
-                    storePendingRequest((PayPalPendingRequest.Started) pendingRequest);
-                } else if (pendingRequest instanceof PayPalPendingRequest.Failure) {
-                    handleError(((PayPalPendingRequest.Failure) pendingRequest).getError());
+                PayPalPendingRequestEditFi pendingRequest = payPalLauncher.launch(requireActivity(), success);
+                if (pendingRequest instanceof PayPalPendingRequestEditFi.Started) {
+                    storePendingRequestForEditFi((PayPalPendingRequestEditFi.Started) pendingRequest);
+                } else if (pendingRequest instanceof PayPalPendingRequestEditFi.Failure) {
+                    handleError(((PayPalPendingRequestEditFi.Failure) pendingRequest).getError());
                 }
             }
         });
@@ -259,42 +284,12 @@ public class PayPalFragment extends BaseFragment {
                 PayPalVaultEditResponse.ReadyToLaunch success = (PayPalVaultEditResponse.ReadyToLaunch) result;
 
                 //TODO: Analytics
-                PayPalPendingRequest pendingRequest = payPalLauncher.launch(requireActivity(), success);
-                if (pendingRequest instanceof PayPalPendingRequest.Started) {
-                    storePendingRequest((PayPalPendingRequest.Started) pendingRequest);
-                } else if (pendingRequest instanceof PayPalPendingRequest.Failure) {
-                    handleError(((PayPalPendingRequest.Failure) pendingRequest).getError());
+                PayPalPendingRequestEditFi pendingRequest = payPalLauncher.launch(requireActivity(), success);
+                if (pendingRequest instanceof PayPalPendingRequestEditFi.Started) {
+                    storePendingRequestForEditFi((PayPalPendingRequestEditFi.Started) pendingRequest);
+                } else if (pendingRequest instanceof PayPalPendingRequestEditFi.Failure) {
+                    handleError(((PayPalPendingRequestEditFi.Failure) pendingRequest).getError());
                 }
-            }
-        });
-    }
-
-    @OptIn(markerClass = ExperimentalBetaApi.class)
-    private void handleReturnToAppFromBrowser(PayPalPendingRequest.Started pendingRequest, Intent intent) {
-
-        PayPalVaultEditAuthResult result = payPalLauncher.handleReturnToAppForEditFi(pendingRequest, intent);
-
-        if (result instanceof PayPalVaultEditAuthResult.Success) {
-            completeEditFiFlow(result);
-        } else if (result instanceof  PayPalVaultEditAuthResult.NoResult) {
-            // user returned to app without completing Edit FI flow, handle accordingly
-        }
-    }
-
-    @OptIn(markerClass = ExperimentalBetaApi.class)
-    private void completeEditFiFlow(PayPalVaultEditAuthResult vaultEditAuthResult) {
-        payPalClient.edit(vaultEditAuthResult, (result) -> {
-
-            if (result instanceof PayPalVaultEditResponse.ReadyToLaunch) {
-                // Handle success case
-                // For example, call server lookup_fi_details
-            } else if (result instanceof PayPalVaultEditResponse.Failure) {
-                // Handle failure case
-                PayPalVaultEditResponse.Failure failure = (PayPalVaultEditResponse.Failure) result;
-                // Handle failure.error
-            } else if (result instanceof PayPalVaultEditResponse.Cancel) {
-                // Handle cancel case
-                // Handle user canceled
             }
         });
     }

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.braintreepayments.api.localpayment.LocalPaymentPendingRequest;
 import com.braintreepayments.api.paypal.PayPalPendingRequest;
+import com.braintreepayments.api.paypal.PayPalPendingRequestEditFi;
 import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitPendingRequest;
 import com.braintreepayments.api.venmo.VenmoPendingRequest;
 
@@ -18,6 +19,7 @@ public class PendingRequestStore {
     static final String LOCAL_PAYMENT_PENDING_REQUEST_KEY = "LOCAL_PAYMENT_PENDING_REQUEST";
     static final String SEPA_DIRECT_DEBIT_PENDING_REQUEST_KEY = "SEPA_DIRECT_DEBIT_PENDING_REQUEST";
     static final String VENMO_PENDING_REQUEST_KEY = "VENMO_PENDING_REQUEST";
+    static final String EDITFI_PENDING_REQUEST_KEY = "EDITFI_PENDING_REQUEST";
 
     private static final PendingRequestStore INSTANCE = new PendingRequestStore();
 
@@ -47,6 +49,11 @@ public class PendingRequestStore {
         put(PAYPAL_PENDING_REQUEST_KEY, pendingRequest.getPendingRequestString(), context);
     }
 
+    public void putPayPalPendingRequestEditFi(Context context,
+                                              PayPalPendingRequestEditFi.Started pendingRequest) {
+        put(EDITFI_PENDING_REQUEST_KEY, pendingRequest.getPendingRequestString(), context);
+    }
+
     public PayPalPendingRequest.Started getPayPalPendingRequest(Context context) {
         String requestString = get(PAYPAL_PENDING_REQUEST_KEY, context);
         if (requestString != null) {
@@ -55,8 +62,20 @@ public class PendingRequestStore {
         return null;
     }
 
+    public PayPalPendingRequestEditFi.Started getPayPalPendingRequestEditFi(Context context) {
+        String requestString = get(EDITFI_PENDING_REQUEST_KEY, context);
+        if (requestString != null) {
+            return new PayPalPendingRequestEditFi.Started(requestString);
+        }
+        return null;
+    }
+
     public void clearPayPalPendingRequest(Context context) {
         remove(PAYPAL_PENDING_REQUEST_KEY, context);
+    }
+
+    public void clearPayPalPendingRequestEditFi(Context context) {
+        remove(EDITFI_PENDING_REQUEST_KEY, context);
     }
 
     public void putLocalPaymentPendingRequest(Context context,

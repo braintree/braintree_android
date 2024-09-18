@@ -6,7 +6,7 @@ package com.braintreepayments.api.paypal
  * on-device and used to deliver a result of the browser flow in
  * [PayPalLauncher.handleReturnToAppFromBrowser]
  */
-sealed class PayPalPendingRequest {
+sealed class PayPalPendingRequestEditFi {
 
     /**
      * A pending request was successfully started.
@@ -14,10 +14,10 @@ sealed class PayPalPendingRequest {
      * @property pendingRequestString - This String should be stored and passed to
      * [PayPalLauncher.handleReturnToAppFromBrowser].
      */
-    class Started(val pendingRequestString: String) : PayPalPendingRequest()
+    class Started(val pendingRequestString: String) : PayPalPendingRequestEditFi()
 
     /**
      * An error occurred launching the PayPal browser flow. See [error] for details.
      */
-    class Failure(val error: Exception) : PayPalPendingRequest()
+    class Failure(val error: Exception) : PayPalPendingRequestEditFi()
 }
