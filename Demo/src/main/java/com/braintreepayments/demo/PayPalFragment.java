@@ -241,8 +241,7 @@ public class PayPalFragment extends BaseFragment {
     @OptIn(markerClass = ExperimentalBetaApi.class)
     private void launchPayPalEditFIVault(String editVaultId) {
         PayPalVaultEditAuthRequest request = new PayPalVaultEditAuthRequest(
-                editVaultId,
-                null
+                editVaultId
         );
 
         payPalClient.createEditAuthRequest(requireContext(), request, (result) -> {

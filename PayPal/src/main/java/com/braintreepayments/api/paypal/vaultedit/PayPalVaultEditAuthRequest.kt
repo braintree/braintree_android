@@ -11,9 +11,8 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
  * @property riskCorrelationId optional ID;
  */
 @ExperimentalBetaApi
-data class PayPalVaultEditAuthRequest(
-    val editPayPalVaultId: String,
-    val riskCorrelationId: String? = null
+open class PayPalVaultEditAuthRequest(
+    open val editPayPalVaultId: String
 ) {
-    val hermesPath: String = "v1/paypal_hermes/generate_edit_fi_url"
+    open val hermesPath: String = "v1/paypal_hermes/generate_edit_fi_url"
 }

@@ -147,31 +147,21 @@ internal class PayPalInternalClient(
         payPalVaultEditAuthRequest: PayPalVaultEditAuthRequest,
         callback: PayPalVaultEditAuthCallback
     ) {
-        if (payPalVaultEditAuthRequest.riskCorrelationId != null) {
-            sendVaultEditRequestWithRiskCorrelationId(
-                context,
-                payPalVaultEditAuthRequest,
-                payPalVaultEditAuthRequest.riskCorrelationId,
-                callback
-            )
-        } else {
-            getClientMetadataId(
-                payPalVaultEditAuthRequest.riskCorrelationId,
-                context
-            ) { clientMetadataId ->
-                if (clientMetadataId == null) {
-                    val result = PayPalVaultEditResponse.Failure(
-                        BraintreeException("Could not retrieve clientMetaDataId")
-                    )
-                    callback.onPayPalVaultEditResult(result)
-                } else {
-                    sendVaultEditRequestWithRiskCorrelationId(
-                        context,
-                        payPalVaultEditAuthRequest,
-                        clientMetadataId,
-                        callback
-                    )
-                }
+        getClientMetadataId(
+            context
+        ) { clientMetadataId ->
+            if (clientMetadataId == null) {
+                val result = PayPalVaultEditResponse.Failure(
+                    BraintreeException("Could not retrieve clientMetaDataId")
+                )
+                callback.onPayPalVaultEditResult(result)
+            } else {
+                sendVaultEditRequestWithRiskCorrelationId(
+                    context,
+                    payPalVaultEditAuthRequest,
+                    clientMetadataId,
+                    callback
+                )
             }
         }
     }
@@ -232,12 +222,14 @@ internal class PayPalInternalClient(
     }
 
     private fun getClientMetadataId(
-        riskCorrelationId: String?,
         context: Context,
         callback: (String?) -> Unit
     ) {
-        val clientMetadataId = riskCorrelationId ?: run {
-            braintreeClient.getConfiguration { configuration, _ ->
+        braintreeClient.getConfiguration { configuration, error ->
+
+            if (error != null) {
+                callback(error("No Client Metadata Id"))
+            } else {
 
                 // TODO: what to do with hasUserLocationConsent
                 val clientMetadataId = dataCollector.getClientMetadataId(
@@ -247,11 +239,6 @@ internal class PayPalInternalClient(
 
                 callback(clientMetadataId)
             }
-            null
-        }
-
-        if (clientMetadataId != null) {
-            callback(clientMetadataId)
         }
     }
 
