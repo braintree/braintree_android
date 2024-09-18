@@ -103,17 +103,32 @@ public class PayPalFragment extends BaseFragment {
         return view;
     }
 
+    @OptIn(markerClass = ExperimentalBetaApi.class)
     @Override
     public void onResume() {
         super.onResume();
         PayPalPendingRequest.Started pendingRequest = getPendingRequest();
         if (pendingRequest != null) {
             PayPalPaymentAuthResult paymentAuthResult = payPalLauncher.handleReturnToAppFromBrowser(pendingRequest, requireActivity().getIntent());
-            if (paymentAuthResult instanceof PayPalPaymentAuthResult.Success) {
-                completePayPalFlow((PayPalPaymentAuthResult.Success) paymentAuthResult);
-            } else {
-                handleError(new Exception("User did not complete payment flow"));
+
+            if (paymentAuthResult != null) {
+                if (paymentAuthResult instanceof PayPalPaymentAuthResult.Success) {
+                    completePayPalFlow((PayPalPaymentAuthResult.Success) paymentAuthResult);
+                } else {
+                    handleError(new Exception("User did not complete payment flow"));
+                }
             }
+
+            PayPalVaultEditAuthResult editAuthResult = payPalLauncher.handleReturnToAppForEditFi(pendingRequest, requireActivity().getIntent());
+
+            if (editAuthResult != null) {
+                if (editAuthResult instanceof PayPalVaultEditAuthResult.Success) {
+                    completePayPalFlow((PayPalPaymentAuthResult.Success) paymentAuthResult);
+                } else {
+                    handleError(new Exception("User did not complete payment flow"));
+                }
+            }
+
             clearPendingRequest();
         }
     }
@@ -257,7 +272,7 @@ public class PayPalFragment extends BaseFragment {
     @OptIn(markerClass = ExperimentalBetaApi.class)
     private void handleReturnToAppFromBrowser(PayPalPendingRequest.Started pendingRequest, Intent intent) {
 
-        PayPalVaultEditAuthResult result = payPalLauncher.handleReturnToApp(pendingRequest, intent);
+        PayPalVaultEditAuthResult result = payPalLauncher.handleReturnToAppForEditFi(pendingRequest, intent);
 
         if (result instanceof PayPalVaultEditAuthResult.Success) {
             completeEditFiFlow(result);
