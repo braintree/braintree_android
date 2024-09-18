@@ -26,6 +26,11 @@ internal class PayPalInternalClient(
     private val cancelUrl = "${braintreeClient.appLinkReturnUri}://onetouch/v1/cancel"
     private val successUrl = "${braintreeClient.appLinkReturnUri}://onetouch/v1/success"
 
+    private val editFiCancelUrl = "${braintreeClient.appLinkReturnUri}"
+    private val editFiSuccessUrl = "${braintreeClient.appLinkReturnUri}"
+
+    //https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/://onetouch/v1/success?ba_token=BA-3P105310YD715013Y&token=EC-2JT34968PX5579815&PayerID=DSJTDS76VN8H2
+
     fun sendRequest(
         context: Context,
         payPalRequest: PayPalRequest,
@@ -211,8 +216,8 @@ internal class PayPalInternalClient(
         val parameters = mutableMapOf<String, Any>()
 
         parameters["edit_paypal_vault_id"] = editPayPalVaultId
-        parameters["return_url"] = successUrl
-        parameters["cancel_url"] = cancelUrl
+        parameters["return_url"] = editFiSuccessUrl
+        parameters["cancel_url"] = editFiCancelUrl
 
 
         return parameters
@@ -249,8 +254,8 @@ internal class PayPalInternalClient(
         fun parameters(): Map<String, Any> {
 
             parameters["edit_paypal_vault_id"] = payPalVaultErrorHandlingEditRequest.editPayPalVaultId
-            parameters["return_url"] = successUrl
-            parameters["cancel_url"] = cancelUrl
+            parameters["return_url"] = editFiSuccessUrl
+            parameters["cancel_url"] = editFiCancelUrl
             parameters["correlation_id"] = payPalVaultErrorHandlingEditRequest.riskCorrelationId
 
             return parameters
