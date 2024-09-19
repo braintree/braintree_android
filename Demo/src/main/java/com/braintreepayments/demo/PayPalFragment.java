@@ -246,14 +246,11 @@ public class PayPalFragment extends BaseFragment {
         payPalClient.createEditAuthRequest(requireContext(), request, (result) -> {
             if (result instanceof PayPalVaultEditAuthRequest.Failure) {
                 PayPalVaultEditAuthRequest.Failure.Failure failure = (PayPalVaultEditAuthRequest.Failure) result;
-                String correlationId = failure.getRiskCorrelationId();
-                //TODO: PayPalVaultErrorHandlingEditRequest and Analytics
             }
 
             if (result instanceof PayPalVaultEditAuthRequest.ReadyToLaunch) {
                 PayPalVaultEditAuthRequest.ReadyToLaunch success = (PayPalVaultEditAuthRequest.ReadyToLaunch) result;
 
-                //TODO: Analytics
                 PayPalEditPendingRequest pendingRequest = payPalLauncher.launch(requireActivity(), success);
                 if (pendingRequest instanceof PayPalEditPendingRequest.Started) {
                     storePendingRequestForEditFi((PayPalEditPendingRequest.Started) pendingRequest);
@@ -274,14 +271,11 @@ public class PayPalFragment extends BaseFragment {
         payPalClient.createEditAuthRequest(requireContext(), request, (result) -> {
             if (result instanceof PayPalVaultEditAuthRequest.Failure) {
                 PayPalVaultEditAuthRequest.Failure.Failure failure = (PayPalVaultEditAuthRequest.Failure) result;
-                String correlationId = failure.getRiskCorrelationId();
-                //TODO: PayPalVaultErrorHandlingEditRequest and Analytics
             }
 
             if (result instanceof PayPalVaultEditAuthRequest.ReadyToLaunch) {
                 PayPalVaultEditAuthRequest.ReadyToLaunch success = (PayPalVaultEditAuthRequest.ReadyToLaunch) result;
 
-                //TODO: Analytics
                 PayPalEditPendingRequest pendingRequest = payPalLauncher.launch(requireActivity(), success);
                 if (pendingRequest instanceof PayPalEditPendingRequest.Started) {
                     storePendingRequestForEditFi((PayPalEditPendingRequest.Started) pendingRequest);

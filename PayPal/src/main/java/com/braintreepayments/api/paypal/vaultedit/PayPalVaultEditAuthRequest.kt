@@ -21,16 +21,13 @@ sealed class PayPalVaultEditAuthRequest {
      * There was an [error] in the PayPal vault edit flow.
      */
     class Failure internal constructor(
-        val error: Exception,
-        val riskCorrelationId: String? = null,
+        val error: Exception
     ) : PayPalVaultEditAuthRequest()
 
     /**
      * The user canceled the PayPal vault edit flow.
      */
-    class Cancel internal constructor(
-        val riskCorrelationIdZ: String
-    ) : PayPalVaultEditAuthRequest()
+    class Cancel internal constructor() : PayPalVaultEditAuthRequest()
 }
 
 data class EditFIAgreementSetup(

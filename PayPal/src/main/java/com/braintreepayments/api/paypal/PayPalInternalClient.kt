@@ -11,9 +11,9 @@ import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
 import com.braintreepayments.api.paypal.vaultedit.EditFIAgreementSetup
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest
 import org.json.JSONException
 import org.json.JSONObject
@@ -187,7 +187,7 @@ internal class PayPalInternalClient(
             jsonObject.toString()
         ) { response, error ->
             if (error != null) {
-                val result = PayPalVaultEditAuthRequest.Failure(error, riskCorrelationId)
+                val result = PayPalVaultEditAuthRequest.Failure(error)
                 callback.onPayPalVaultEditResult(result)
             } else {
                 try {
@@ -206,7 +206,7 @@ internal class PayPalInternalClient(
                     )
                     callback.onPayPalVaultEditResult(result)
                 } catch (jsonException: JSONException) {
-                    val result = PayPalVaultEditAuthRequest.Failure(jsonException, riskCorrelationId)
+                    val result = PayPalVaultEditAuthRequest.Failure(jsonException)
                     callback.onPayPalVaultEditResult(result)
                 }
             }
