@@ -42,7 +42,7 @@ internal class ThreeDSecureAPI(
         callback: ThreeDSecureResultCallback
     ) {
         if (threeDSecureParams == null || cardinalJWT == null) {
-            callback.onThreeDSecureResult(null, BraintreeException("threeDSecureParams or jwt is null"))
+            callback.onThreeDSecureResult(null, BraintreeException("An unexpected error occurred"))
         }
 
         val lookupCardNonce = threeDSecureParams?.threeDSecureNonce

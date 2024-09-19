@@ -6,7 +6,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -15,6 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
@@ -308,5 +308,40 @@ public class ThreeDSecureAPIUnitTest {
         sut.authenticateCardinalJWT(threeDSecureParams, "jwt", threeDSecureResultCallback);
 
         verify(threeDSecureResultCallback).onThreeDSecureResult(null, exception);
+    }
+
+    @Test
+    public void authenticateCardinalJWT_whenJWTNull_returnsException()
+            throws JSONException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .build();
+
+        ThreeDSecureResultCallback threeDSecureResultCallback =
+                mock(ThreeDSecureResultCallback.class);
+        ThreeDSecureParams threeDSecureParams =
+                ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+
+        ThreeDSecureAPI sut = new ThreeDSecureAPI(braintreeClient);
+        sut.authenticateCardinalJWT(threeDSecureParams, null, threeDSecureResultCallback);
+
+        ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
+        verify(threeDSecureResultCallback).onThreeDSecureResult(isNull(), captor.capture());
+        assertEquals(captor.getValue().getMessage(), "An unexpected error occurred");
+    }
+
+    @Test
+    public void authenticateCardinalJWT_whenThreeDSecureParamsNull_returnsException() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .build();
+
+        ThreeDSecureResultCallback threeDSecureResultCallback =
+                mock(ThreeDSecureResultCallback.class);
+
+        ThreeDSecureAPI sut = new ThreeDSecureAPI(braintreeClient);
+        sut.authenticateCardinalJWT(null, "jwt", threeDSecureResultCallback);
+
+        ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
+        verify(threeDSecureResultCallback).onThreeDSecureResult(isNull(), captor.capture());
+        assertEquals(captor.getValue().getMessage(), "An unexpected error occurred");
     }
 }
