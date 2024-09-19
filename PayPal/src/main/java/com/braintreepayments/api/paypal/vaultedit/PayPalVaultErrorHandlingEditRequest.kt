@@ -9,7 +9,8 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
  *
  * @property editPayPalVaultId The `edit_paypal_vault_id` returned from the server side requests,
  * `gateway.payment_method.find("payment_method_token")` or `gateway.customer.find("customer_id")`
- * @property riskCorrelationID Unique id for each transaction used in subsequent retry in case of failure
+ * @property riskCorrelationID Unique id for each transaction used in subsequent retry in case of
+ * failure
  */
 @ExperimentalBetaApi
 data class PayPalVaultErrorHandlingEditRequest(

@@ -8,6 +8,7 @@ import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.paypal.vaultedit.InternalPayPalVaultEditAuthRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResultInfo

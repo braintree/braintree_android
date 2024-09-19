@@ -10,9 +10,8 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
-import com.braintreepayments.api.paypal.vaultedit.EditFIAgreementSetup
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditCallback
+import com.braintreepayments.api.paypal.vaultedit.InternalPayPalVaultEditAuthRequest
+import com.braintreepayments.api.paypal.vaultedit.InternalPayPalVaultEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest
 import org.json.JSONException
@@ -144,24 +143,26 @@ internal class PayPalInternalClient(
     @ExperimentalBetaApi
     fun sendVaultEditRequest(
         context: Context,
-        payPalVaultEditRequest: PayPalVaultEditRequest,
-        callback: PayPalVaultEditCallback
+        request: PayPalVaultEditRequest,
+        callback: InternalPayPalVaultEditCallback
     ) {
         getClientMetadataId(
             context
         ) { clientMetadataId ->
             if (clientMetadataId == null) {
-                val result = PayPalVaultEditAuthRequest.Failure(
+                val result = InternalPayPalVaultEditAuthRequest.Failure(
                     BraintreeException("An unexpected error occurred")
                 )
                 callback.onPayPalVaultEditResult(result)
             } else {
 
-                val riskCorrelationId = (payPalVaultEditRequest as? PayPalVaultErrorHandlingEditRequest)?.riskCorrelationId ?: clientMetadataId
+                val riskCorrelationId =
+                    (request as? PayPalVaultErrorHandlingEditRequest)
+                        ?.riskCorrelationId ?: clientMetadataId
 
                 sendVaultEditRequestWithRiskCorrelationId(
                     context,
-                    payPalVaultEditRequest,
+                    request,
                     riskCorrelationId,
                     callback
                 )
@@ -174,7 +175,7 @@ internal class PayPalInternalClient(
         context: Context,
         payPalVaultEditRequest: PayPalVaultEditRequest,
         riskCorrelationId: String,
-        callback: PayPalVaultEditCallback
+        callback: InternalPayPalVaultEditCallback
     ) {
         val params = parameters(payPalVaultEditRequest.editPayPalVaultId).toMutableMap()
 
@@ -187,25 +188,20 @@ internal class PayPalInternalClient(
             jsonObject.toString()
         ) { response, error ->
             if (error != null) {
-                val result = PayPalVaultEditAuthRequest.Failure(error)
+                val result = InternalPayPalVaultEditAuthRequest.Failure(error)
                 callback.onPayPalVaultEditResult(result)
             } else {
                 try {
                     val responseBody = JSONObject(response)
                     val agreementSetup = responseBody.getJSONObject("agreementSetup")
 
-                    val editFIAgreementSetup = EditFIAgreementSetup(
-                        agreementSetup.getString("tokenId"),
-                        agreementSetup.getString("approvalUrl")
-                    )
-
-                    val result = PayPalVaultEditAuthRequest.ReadyToLaunch(
+                    val result = InternalPayPalVaultEditAuthRequest.ReadyToLaunch(
                         riskCorrelationId,
-                        editFIAgreementSetup
+                        agreementSetup.getString("approvalUrl")
                     )
                     callback.onPayPalVaultEditResult(result)
                 } catch (jsonException: JSONException) {
-                    val result = PayPalVaultEditAuthRequest.Failure(jsonException)
+                    val result = InternalPayPalVaultEditAuthRequest.Failure(jsonException)
                     callback.onPayPalVaultEditResult(result)
                 }
             }

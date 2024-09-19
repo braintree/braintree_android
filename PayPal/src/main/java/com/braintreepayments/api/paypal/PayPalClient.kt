@@ -12,9 +12,11 @@ import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
+import com.braintreepayments.api.paypal.vaultedit.InternalPayPalVaultEditAuthRequest
+import com.braintreepayments.api.paypal.vaultedit.InternalPayPalVaultEditCallback
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
 import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
 import org.json.JSONObject
@@ -321,12 +323,12 @@ class PayPalClient internal constructor(
     /**
      * Starts the PayPal flow that allows a customer to edit their PayPal payment method. A
      * [PayPalVaultEditAuthRequestParams] is returned in the
-     * [PayPalVaultEditCallback] that is then passed to
+     * [InternalPayPalVaultEditCallback] that is then passed to
      * [PayPalLauncher.launch].
      *
      * @param context an Android Context
      * @param payPalVaultEditRequest a [PayPalVaultEditRequest] containing the edit request
-     * @param payPalVaultEditCallback a [PayPalVaultEditCallback]
+     * @param payPalVaultEditCallback a [InternalPayPalVaultEditCallback]
      */
     @ExperimentalBetaApi
     fun createEditAuthRequest(
@@ -335,11 +337,24 @@ class PayPalClient internal constructor(
         callback: PayPalVaultEditCallback
     ) {
         internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest) { result ->
-            if (result is PayPalVaultEditAuthRequest.ReadyToLaunch) {
-                result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.response.approvalURL)
+            if (result is InternalPayPalVaultEditAuthRequest.ReadyToLaunch) {
+                result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.approvalURL)
+
+                callback.onPayPalVaultEditResult(
+                    PayPalVaultEditAuthRequest.ReadyToLaunch(
+                        result.riskCorrelationId,
+                        result.browserSwitchOptions
+                    )
+                )
             }
 
-            callback.onPayPalVaultEditResult(result)
+            if (result is InternalPayPalVaultEditAuthRequest.Failure) {
+                callback.onPayPalVaultEditResult(PayPalVaultEditAuthRequest.Failure(result.error))
+            }
+
+            if (result is InternalPayPalVaultEditAuthRequest.Cancel) {
+                callback.onPayPalVaultEditResult(PayPalVaultEditAuthRequest.Cancel())
+            }
         }
     }
 }

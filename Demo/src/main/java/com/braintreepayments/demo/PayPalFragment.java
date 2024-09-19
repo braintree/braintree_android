@@ -31,9 +31,10 @@ import com.braintreepayments.api.paypal.PayPalPendingRequest;
 import com.braintreepayments.api.paypal.PayPalEditPendingRequest;
 import com.braintreepayments.api.paypal.PayPalRequest;
 import com.braintreepayments.api.paypal.PayPalResult;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest;
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest;
+import com.braintreepayments.api.paypal.vaultedit.InternalPayPalVaultEditAuthRequest;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest;
 import com.google.android.material.textfield.TextInputEditText;
 
