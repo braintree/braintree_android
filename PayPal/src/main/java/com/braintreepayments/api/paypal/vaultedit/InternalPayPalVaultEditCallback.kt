@@ -14,16 +14,3 @@ internal fun interface InternalPayPalVaultEditCallback {
      */
     fun onPayPalVaultEditResult(internalPayPalVaultEditAuthRequest: InternalPayPalVaultEditAuthRequest)
 }
-
-/**
- * Callback for receiving result of [PayPalClient.edit].
- */
-@ExperimentalBetaApi
-fun interface PayPalVaultEditCallback {
-
-    /**
-     * @param internalPayPalVaultEditAuthRequest a success, failure, or cancel result from the PayPal vault edit
-     * flow
-     */
-    fun onPayPalVaultEditResult(payPalVaultEditAuthRequest: PayPalVaultEditAuthRequest)
-}

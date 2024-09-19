@@ -4,7 +4,7 @@ import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.ExperimentalBetaApi
 
 @ExperimentalBetaApi
-internal sealed class InternalPayPalVaultEditAuthRequest {
+sealed class PayPalVaultEditAuthRequest {
 
     /**
      * The PayPal vault edit flow completed successfully.
@@ -13,19 +13,18 @@ internal sealed class InternalPayPalVaultEditAuthRequest {
      */
     class ReadyToLaunch internal constructor(
         val riskCorrelationId: String,
-        val approvalURL: String,
-        internal var browserSwitchOptions: BrowserSwitchOptions? = null
-    ) : InternalPayPalVaultEditAuthRequest()
+        internal var browserSwitchOptions: BrowserSwitchOptions?,
+    ) : PayPalVaultEditAuthRequest()
 
     /**
      * There was an [error] in the PayPal vault edit flow.
      */
     class Failure internal constructor(
         val error: Exception
-    ) : InternalPayPalVaultEditAuthRequest()
+    ) : PayPalVaultEditAuthRequest()
 
     /**
      * The user canceled the PayPal vault edit flow.
      */
-    class Cancel internal constructor() : InternalPayPalVaultEditAuthRequest()
+    class Cancel internal constructor() : PayPalVaultEditAuthRequest()
 }

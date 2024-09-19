@@ -4,7 +4,7 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 
 @ExperimentalBetaApi
 sealed class PayPalVaultEditResult {
-    class Success(val riskCorrelationId: String) : PayPalVaultEditResult()
-    class Failure(val error: Exception) : PayPalVaultEditResult()
+    class Success internal constructor(val riskCorrelationId: String) : PayPalVaultEditResult()
+    class Failure internal constructor(val error: Exception) : PayPalVaultEditResult()
     object Cancel : PayPalVaultEditResult()
 }
