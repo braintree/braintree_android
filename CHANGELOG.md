@@ -2,6 +2,9 @@
 
 ## unreleased
 
+* Add PayPal vault edit flow (BETA)
+  * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
+  * Add `PayPalClient.createEditAuthRequest()` for editing a buyers funding instrument
 * GooglePay
   * Upgrade `play-services-wallet` to `19.4.0`
 * Breaking Changes
@@ -24,9 +27,6 @@
     * Make `PayPalPaymentAuthRequestParams` internal
     * Remove `PayPalPaymentAuthResultInfo`
     * Rename `PayPalLauncher.handleReturnToAppFromBrowser()` to `PayPalLauncher.handleReturnToApp()`
-    * Add PayPal vault edit flow (BETA)
-        * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
-        * Add `PayPalClient.createEditAuthRequest()` and `PayPalClient.edit()` for editing a buyers funding instrument
   * SEPADirectDebit
     * Make `SEPADirectDebitPaymentAuthRequestParams` internal
     * Remove `SEPADirectDebitPaymentAuthResultInfo`
