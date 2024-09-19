@@ -10,6 +10,7 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditPendingRequest
 
 /**
  * Responsible for launching PayPal user authentication in a web browser
@@ -58,24 +59,24 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
      * @param activity the Android Activity from which you will launch the web browser
      * @param result a [PayPalVaultEditAuthRequest.ReadyToLaunch] received from
      * calling [PayPalClient.createEditAuthRequest]
-     * @return [PayPalEditPendingRequest] a [PayPalEditPendingRequest.Started] should be stored
+     * @return [PayPalVaultEditPendingRequest] a [PayPalVaultEditPendingRequest.Started] should be stored
      * to complete the flow upon return to app in
      * [PayPalLauncher.handleReturnToApp],
-     * or a [PayPalEditPendingRequest.Failure] with an error if the PayPal flow was unable to be
+     * or a [PayPalVaultEditPendingRequest.Failure] with an error if the PayPal flow was unable to be
      * launched in a browser.
      */
     @OptIn(ExperimentalBetaApi::class)
     fun launch(
         activity: ComponentActivity,
         result: PayPalVaultEditAuthRequest.ReadyToLaunch
-    ): PayPalEditPendingRequest {
+    ): PayPalVaultEditPendingRequest {
         return result.browserSwitchOptions?.let { options ->
             when (val request = browserSwitchClient.start(activity, options)) {
-                is BrowserSwitchStartResult.Failure -> PayPalEditPendingRequest.Failure(request.error)
-                is BrowserSwitchStartResult.Started -> PayPalEditPendingRequest.Started(request.pendingRequest)
+                is BrowserSwitchStartResult.Failure -> PayPalVaultEditPendingRequest.Failure(request.error)
+                is BrowserSwitchStartResult.Started -> PayPalVaultEditPendingRequest.Started(request.pendingRequest)
             }
         } ?: run {
-            return PayPalEditPendingRequest.Failure(BraintreeException("BrowserSwitchOptions is null"))
+            return PayPalVaultEditPendingRequest.Failure(BraintreeException("BrowserSwitchOptions is null"))
         }
     }
 
@@ -119,7 +120,7 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
 
     @OptIn(ExperimentalBetaApi::class)
     fun handleReturnToApp(
-        pendingRequest: PayPalEditPendingRequest.Started,
+        pendingRequest: PayPalVaultEditPendingRequest.Started,
         intent: Intent
     ): PayPalVaultEditAuthResult {
         return when (val browserSwitchResult =
