@@ -5,6 +5,7 @@ import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultR
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ import com.braintreepayments.api.paypal.PayPalResult;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResult;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -128,7 +130,10 @@ public class PayPalFragment extends BaseFragment {
 
             if (editAuthResult != null) {
                 if (editAuthResult instanceof PayPalVaultEditAuthResult.Success) {
-                    // For example, call server lookup_fi_details
+                    PayPalVaultEditResult result = payPalClient.edit((PayPalVaultEditAuthResult.Success) editAuthResult);
+
+                    handleVaultEditParsing(result);
+
                 } else if (editAuthResult instanceof PayPalVaultEditAuthResult.Failure) {
                     handleError(((PayPalVaultEditAuthResult.Failure) editAuthResult).getError());
                 } else if (editAuthResult instanceof PayPalVaultEditAuthResult.NoResult) {
@@ -140,7 +145,17 @@ public class PayPalFragment extends BaseFragment {
 
             clearEditFiPendingRequest();
         }
+    }
 
+    @OptIn(markerClass = ExperimentalBetaApi.class)
+    private void handleVaultEditParsing(PayPalVaultEditResult result) {
+        if (result instanceof PayPalVaultEditResult.Success) {
+            // call server lookup_fi_details
+        } else if (result instanceof PayPalVaultEditResult.Failure) {
+            handleError(new Exception(((PayPalVaultEditResult.Failure) result).getError().toString()));
+        } else if (result instanceof  PayPalVaultEditResult.Cancel) {
+            handleError(new Exception("User Canceled the flow"));
+        }
     }
 
     private void storePendingRequest(PayPalPendingRequest.Started request) {

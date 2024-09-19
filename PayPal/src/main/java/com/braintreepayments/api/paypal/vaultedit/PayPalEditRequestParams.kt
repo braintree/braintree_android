@@ -5,7 +5,8 @@ import com.braintreepayments.api.BrowserSwitchOptions
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 data class PayPalVaultEditAuthRequestParams @JvmOverloads internal constructor(
-    val riskCorrelationId: String,
+    val clientMetadataId: String,
     var browserSwitchOptions: BrowserSwitchOptions?,
-    val approvalUrl: String
+    val approvalUrl: String,
+    val successUrl: String? = null,
 )

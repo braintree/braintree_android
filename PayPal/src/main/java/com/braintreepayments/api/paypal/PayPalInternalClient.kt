@@ -25,9 +25,6 @@ internal class PayPalInternalClient(
     private val cancelUrl = "${braintreeClient.appLinkReturnUri}://onetouch/v1/cancel"
     private val successUrl = "${braintreeClient.appLinkReturnUri}://onetouch/v1/success"
 
-    private val editFiCancelUrl = "${braintreeClient.appLinkReturnUri}"
-    private val editFiSuccessUrl = "${braintreeClient.appLinkReturnUri}"
-
     fun sendRequest(
         context: Context,
         payPalRequest: PayPalRequest,
@@ -192,7 +189,8 @@ internal class PayPalInternalClient(
                     val params = PayPalVaultEditAuthRequestParams(
                         riskCorrelationId,
                         null,
-                        agreementSetup.getString("approvalUrl")
+                        agreementSetup.getString("approvalUrl"),
+                        successUrl
                     )
 
                     callback.onPayPalVaultEditResult(params, null)
@@ -208,8 +206,8 @@ internal class PayPalInternalClient(
         val parameters = mutableMapOf<String, Any>()
 
         parameters["edit_paypal_vault_id"] = editPayPalVaultId
-        parameters["return_url"] = editFiSuccessUrl
-        parameters["cancel_url"] = editFiCancelUrl
+        parameters["return_url"] = successUrl
+        parameters["cancel_url"] = cancelUrl
 
         return parameters
     }

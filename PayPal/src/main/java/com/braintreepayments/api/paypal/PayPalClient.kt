@@ -15,8 +15,10 @@ import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.paypal.vaultedit.InternalPayPalVaultEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequestParams
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResult
 import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
 import org.json.JSONObject
@@ -149,14 +151,20 @@ class PayPalClient internal constructor(
 
     @Throws(JSONException::class)
     private fun buildBrowserSwitchOptionsForEditFI(
-        approvalUrl: String
+        params: PayPalVaultEditAuthRequestParams
     ): BrowserSwitchOptions {
+        val metadata = JSONObject().apply {
+            put("approval-url", params.approvalUrl)
+            put("success-url", params.successUrl)
+            put("client-metadata-id", params.clientMetadataId)
+        }
 
         return BrowserSwitchOptions()
             .requestCode(BraintreeRequestCodes.PAYPAL.code)
             .appLinkUri(braintreeClient.appLinkReturnUri)
-            .url(Uri.parse(approvalUrl))
+            .url(Uri.parse(params.approvalUrl))
             .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
+            .metadata(metadata)
     }
 
     /**
@@ -266,6 +274,70 @@ class PayPalClient internal constructor(
         }
     }
 
+    @ExperimentalBetaApi
+    fun edit(
+        result: PayPalVaultEditAuthResult.Success
+    ): PayPalVaultEditResult {
+        val browserSwitchResult = result.browserSwitchSuccess
+        val metadata = browserSwitchResult.requestMetadata
+        val clientMetadataId = Json.optString(metadata, "client-metadata-id", null)
+        val approvalUrl = Json.optString(metadata, "approval-url", null)
+        val successUrl = Json.optString(metadata, "success-url", null)
+        val tokenKey = "ba_token"
+
+        try {
+            val urlResponseData = parseUrlResponseData(
+                uri = browserSwitchResult.returnUrl,
+                successUrl = successUrl,
+                approvalUrl = approvalUrl,
+                tokenKey = tokenKey
+            )
+
+            return PayPalVaultEditResult.Success(clientMetadataId)
+
+        } catch (e: UserCanceledException) {
+            return PayPalVaultEditResult.Cancel
+        } catch (e: JSONException) {
+            return PayPalVaultEditResult.Failure(e)
+        } catch (e: PayPalBrowserSwitchException) {
+            return PayPalVaultEditResult.Failure(e)
+        }
+    }
+
+    /**
+     * Starts the PayPal flow that allows a customer to edit their PayPal payment method. A
+     * [PayPalVaultEditAuthRequestParams] is returned in the
+     * [InternalPayPalVaultEditCallback] that is then passed to
+     * [PayPalLauncher.launch].
+     *
+     * @param context an Android Context
+     * @param payPalVaultEditRequest a [PayPalVaultEditRequest] containing the edit request
+     * @param payPalVaultEditCallback a [InternalPayPalVaultEditCallback]
+     */
+    @ExperimentalBetaApi
+    fun createEditAuthRequest(
+        context: Context,
+        payPalVaultEditRequest: PayPalVaultEditRequest,
+        callback: PayPalVaultEditCallback
+    ) {
+        internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest) { result, error ->
+            if (error != null) {
+                callback.onPayPalVaultEditResult(PayPalVaultEditAuthRequest.Failure(error))
+            }
+
+            if (result is PayPalVaultEditAuthRequestParams) {
+                result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result)
+
+                callback.onPayPalVaultEditResult(
+                    PayPalVaultEditAuthRequest.ReadyToLaunch(
+                        result.clientMetadataId,
+                        result.browserSwitchOptions
+                    )
+                )
+            }
+        }
+    }
+
     private fun callbackCreatePaymentAuthFailure(
         callback: PayPalPaymentAuthCallback,
         failure: PayPalPaymentAuthRequest.Failure
@@ -317,40 +389,6 @@ class PayPalClient internal constructor(
                     "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
                     "for more information."
             )
-        }
-    }
-
-    /**
-     * Starts the PayPal flow that allows a customer to edit their PayPal payment method. A
-     * [PayPalVaultEditAuthRequestParams] is returned in the
-     * [InternalPayPalVaultEditCallback] that is then passed to
-     * [PayPalLauncher.launch].
-     *
-     * @param context an Android Context
-     * @param payPalVaultEditRequest a [PayPalVaultEditRequest] containing the edit request
-     * @param payPalVaultEditCallback a [InternalPayPalVaultEditCallback]
-     */
-    @ExperimentalBetaApi
-    fun createEditAuthRequest(
-        context: Context,
-        payPalVaultEditRequest: PayPalVaultEditRequest,
-        callback: PayPalVaultEditCallback
-    ) {
-        internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest) { result, error ->
-            if (error != null) {
-                callback.onPayPalVaultEditResult(PayPalVaultEditAuthRequest.Failure(error))
-            }
-
-            if (result is PayPalVaultEditAuthRequestParams) {
-                result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.approvalUrl)
-
-                callback.onPayPalVaultEditResult(
-                    PayPalVaultEditAuthRequest.ReadyToLaunch(
-                        result.riskCorrelationId,
-                        result.browserSwitchOptions
-                    )
-                )
-            }
         }
     }
 }

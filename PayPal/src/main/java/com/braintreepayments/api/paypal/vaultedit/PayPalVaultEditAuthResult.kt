@@ -13,7 +13,7 @@ sealed class PayPalVaultEditAuthResult {
      * A successful result
      */
     class Success internal constructor(
-        var browserSwitchFinalResult: BrowserSwitchFinalResult,
+        var browserSwitchSuccess: BrowserSwitchFinalResult.Success,
     ) : PayPalVaultEditAuthResult()
 
     /**
