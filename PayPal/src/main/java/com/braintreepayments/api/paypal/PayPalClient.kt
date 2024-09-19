@@ -106,6 +106,11 @@ class PayPalClient internal constructor(
                 payPalContextId = payPalResponse.pairingId
                 try {
                     payPalResponse.browserSwitchOptions = buildBrowserSwitchOptions(payPalResponse)
+
+                    if (internalPayPalClient.isAppSwitchEnabled(payPalRequest)) {
+                        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_STARTED, analyticsParams)
+                    }
+                    
                     callback.onPayPalPaymentAuthRequest(
                         PayPalPaymentAuthRequest.ReadyToLaunch(payPalResponse)
                     )
