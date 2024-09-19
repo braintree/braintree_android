@@ -14,7 +14,7 @@ import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResponse
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
 import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
 import org.json.JSONObject
@@ -335,7 +335,7 @@ class PayPalClient internal constructor(
         callback: PayPalVaultEditCallback
     ) {
         internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest) { result ->
-            if (result is PayPalVaultEditResponse.ReadyToLaunch) {
+            if (result is PayPalVaultEditAuthRequest.ReadyToLaunch) {
                 result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.response.approvalURL)
             }
 

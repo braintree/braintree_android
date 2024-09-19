@@ -10,7 +10,7 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResultInfo
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResponse
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
 
 /**
  * Responsible for launching PayPal user authentication in a web browser
@@ -56,15 +56,15 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
     @OptIn(ExperimentalBetaApi::class)
     fun launch(
         activity: ComponentActivity,
-        result: PayPalVaultEditResponse.ReadyToLaunch
-    ): PayPalPendingRequestEditFi {
+        result: PayPalVaultEditAuthRequest.ReadyToLaunch
+    ): PayPalEditPendingRequest {
         return result.browserSwitchOptions?.let { options ->
             when (val request = browserSwitchClient.start(activity, options)) {
-                is BrowserSwitchStartResult.Failure -> PayPalPendingRequestEditFi.Failure(request.error)
-                is BrowserSwitchStartResult.Started -> PayPalPendingRequestEditFi.Started(request.pendingRequest)
+                is BrowserSwitchStartResult.Failure -> PayPalEditPendingRequest.Failure(request.error)
+                is BrowserSwitchStartResult.Started -> PayPalEditPendingRequest.Started(request.pendingRequest)
             }
         } ?: run {
-            return PayPalPendingRequestEditFi.Failure(BraintreeException("BrowserSwitchOptions is null"))
+            return PayPalEditPendingRequest.Failure(BraintreeException("BrowserSwitchOptions is null"))
         }
     }
 
@@ -108,7 +108,7 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
 
     @OptIn(ExperimentalBetaApi::class)
     fun handleReturnToAppFromBrowser(
-        pendingRequest: PayPalPendingRequestEditFi.Started,
+        pendingRequest: PayPalEditPendingRequest.Started,
         intent: Intent
     ): PayPalVaultEditAuthResult {
         return when (val browserSwitchResult =

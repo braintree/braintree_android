@@ -13,7 +13,7 @@ import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
 import com.braintreepayments.api.paypal.vaultedit.EditFIAgreementSetup
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResponse
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest
 import org.json.JSONException
 import org.json.JSONObject
@@ -151,7 +151,7 @@ internal class PayPalInternalClient(
             context
         ) { clientMetadataId ->
             if (clientMetadataId == null) {
-                val result = PayPalVaultEditResponse.Failure(
+                val result = PayPalVaultEditAuthRequest.Failure(
                     BraintreeException("Could not retrieve clientMetaDataId")
                 )
                 callback.onPayPalVaultEditResult(result)
@@ -187,7 +187,7 @@ internal class PayPalInternalClient(
             jsonObject.toString()
         ) { response, error ->
             if (error != null) {
-                val result = PayPalVaultEditResponse.Failure(error, riskCorrelationId)
+                val result = PayPalVaultEditAuthRequest.Failure(error, riskCorrelationId)
                 callback.onPayPalVaultEditResult(result)
             } else {
                 try {
@@ -200,13 +200,13 @@ internal class PayPalInternalClient(
                         agreementSetup.getString("paypalAppApprovalUrl")
                     )
 
-                    val result = PayPalVaultEditResponse.ReadyToLaunch(
+                    val result = PayPalVaultEditAuthRequest.ReadyToLaunch(
                         riskCorrelationId,
                         editFIAgreementSetup
                     )
                     callback.onPayPalVaultEditResult(result)
                 } catch (jsonException: JSONException) {
-                    val result = PayPalVaultEditResponse.Failure(jsonException, riskCorrelationId)
+                    val result = PayPalVaultEditAuthRequest.Failure(jsonException, riskCorrelationId)
                     callback.onPayPalVaultEditResult(result)
                 }
             }

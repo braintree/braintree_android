@@ -5,11 +5,9 @@ import android.content.SharedPreferences;
 
 import com.braintreepayments.api.localpayment.LocalPaymentPendingRequest;
 import com.braintreepayments.api.paypal.PayPalPendingRequest;
-import com.braintreepayments.api.paypal.PayPalPendingRequestEditFi;
+import com.braintreepayments.api.paypal.PayPalEditPendingRequest;
 import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitPendingRequest;
 import com.braintreepayments.api.venmo.VenmoPendingRequest;
-
-import org.json.JSONException;
 
 public class PendingRequestStore {
 
@@ -50,7 +48,7 @@ public class PendingRequestStore {
     }
 
     public void putPayPalPendingRequestEditFi(Context context,
-                                              PayPalPendingRequestEditFi.Started pendingRequest) {
+                                              PayPalEditPendingRequest.Started pendingRequest) {
         put(EDITFI_PENDING_REQUEST_KEY, pendingRequest.getPendingRequestString(), context);
     }
 
@@ -62,10 +60,10 @@ public class PendingRequestStore {
         return null;
     }
 
-    public PayPalPendingRequestEditFi.Started getPayPalPendingRequestEditFi(Context context) {
+    public PayPalEditPendingRequest.Started getPayPalPendingRequestEditFi(Context context) {
         String requestString = get(EDITFI_PENDING_REQUEST_KEY, context);
         if (requestString != null) {
-            return new PayPalPendingRequestEditFi.Started(requestString);
+            return new PayPalEditPendingRequest.Started(requestString);
         }
         return null;
     }

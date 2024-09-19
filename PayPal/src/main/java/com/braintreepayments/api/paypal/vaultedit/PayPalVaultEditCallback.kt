@@ -9,8 +9,8 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 fun interface PayPalVaultEditCallback {
 
     /**
-     * @param payPalVaultEditResponse a success, failure, or cancel result from the PayPal vault edit
+     * @param payPalVaultEditAuthRequest a success, failure, or cancel result from the PayPal vault edit
      * flow
      */
-    fun onPayPalVaultEditResult(payPalVaultEditResponse: PayPalVaultEditResponse)
+    fun onPayPalVaultEditResult(payPalVaultEditAuthRequest: PayPalVaultEditAuthRequest)
 }

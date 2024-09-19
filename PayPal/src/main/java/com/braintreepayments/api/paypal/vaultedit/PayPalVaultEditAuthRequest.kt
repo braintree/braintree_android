@@ -4,7 +4,7 @@ import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.ExperimentalBetaApi
 
 @ExperimentalBetaApi
-sealed class PayPalVaultEditResponse {
+sealed class PayPalVaultEditAuthRequest {
 
     /**
      * The PayPal vault edit flow completed successfully.
@@ -15,7 +15,7 @@ sealed class PayPalVaultEditResponse {
         val riskCorrelationId: String,
         val response: EditFIAgreementSetup,
         internal var browserSwitchOptions: BrowserSwitchOptions? = null
-    ) : PayPalVaultEditResponse()
+    ) : PayPalVaultEditAuthRequest()
 
     /**
      * There was an [error] in the PayPal vault edit flow.
@@ -23,14 +23,14 @@ sealed class PayPalVaultEditResponse {
     class Failure internal constructor(
         val error: Exception,
         val riskCorrelationId: String? = null,
-    ) : PayPalVaultEditResponse()
+    ) : PayPalVaultEditAuthRequest()
 
     /**
      * The user canceled the PayPal vault edit flow.
      */
     class Cancel internal constructor(
         val riskCorrelationIdZ: String
-    ) : PayPalVaultEditResponse()
+    ) : PayPalVaultEditAuthRequest()
 }
 
 data class EditFIAgreementSetup(
