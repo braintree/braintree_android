@@ -257,7 +257,7 @@ public class PayPalFragment extends BaseFragment {
 
         payPalClient.createEditAuthRequest(requireContext(), request, (result) -> {
             if (result instanceof PayPalVaultEditAuthRequest.Failure) {
-                PayPalVaultEditAuthRequest.Failure.Failure failure = (PayPalVaultEditAuthRequest.Failure) result;
+                handleError(((PayPalVaultEditAuthRequest.Failure) result).getError());
             }
 
             if (result instanceof PayPalVaultEditAuthRequest.ReadyToLaunch) {
@@ -282,7 +282,7 @@ public class PayPalFragment extends BaseFragment {
 
         payPalClient.createEditAuthRequest(requireContext(), request, (result) -> {
             if (result instanceof PayPalVaultEditAuthRequest.Failure) {
-                PayPalVaultEditAuthRequest.Failure.Failure failure = (PayPalVaultEditAuthRequest.Failure) result;
+                handleError(((PayPalVaultEditAuthRequest.Failure) result).getError());
             }
 
             if (result instanceof PayPalVaultEditAuthRequest.ReadyToLaunch) {
