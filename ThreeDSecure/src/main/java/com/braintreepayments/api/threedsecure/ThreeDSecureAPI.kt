@@ -3,6 +3,7 @@ package com.braintreepayments.api.threedsecure
 import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.ApiClient.Companion.versionedPath
 import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.threedsecure.ThreeDSecureParams.Companion.fromJson
 import org.json.JSONException
 import org.json.JSONObject
@@ -36,12 +37,16 @@ internal class ThreeDSecureAPI(
     }
 
     fun authenticateCardinalJWT(
-        threeDSecureParams: ThreeDSecureParams,
-        cardinalJWT: String,
+        threeDSecureParams: ThreeDSecureParams?,
+        cardinalJWT: String?,
         callback: ThreeDSecureResultCallback
     ) {
-        val lookupCardNonce = threeDSecureParams.threeDSecureNonce
-        val lookupNonce = threeDSecureParams.threeDSecureNonce?.string
+        if (threeDSecureParams == null || cardinalJWT == null) {
+            callback.onThreeDSecureResult(null, BraintreeException("threeDSecureParams or jwt is null"))
+        }
+
+        val lookupCardNonce = threeDSecureParams?.threeDSecureNonce
+        val lookupNonce = threeDSecureParams?.threeDSecureNonce?.string
 
         val body = JSONObject()
         try {
