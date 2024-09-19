@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypal.vaultedit
 
+import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.core.ExperimentalBetaApi
 
 /**
@@ -12,7 +13,7 @@ sealed class PayPalVaultEditAuthResult {
      * A successful result that should be passed to [PayPalClient.edit] to complete the flow
      */
     class Success internal constructor(
-        val vaultEditAuthInfo: PayPalVaultEditAuthResultInfo
+        var browserSwitchFinalResult: BrowserSwitchFinalResult,
     ) : PayPalVaultEditAuthResult()
 
     /**
