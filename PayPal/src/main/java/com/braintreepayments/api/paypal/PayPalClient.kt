@@ -12,9 +12,9 @@ import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
-import com.braintreepayments.api.paypal.vaultedit.InternalPayPalVaultEditAuthRequest
 import com.braintreepayments.api.paypal.vaultedit.InternalPayPalVaultEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequestParams
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
 import com.braintreepayments.api.sharedutils.Json
@@ -336,9 +336,13 @@ class PayPalClient internal constructor(
         payPalVaultEditRequest: PayPalVaultEditRequest,
         callback: PayPalVaultEditCallback
     ) {
-        internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest) { result ->
-            if (result is InternalPayPalVaultEditAuthRequest.ReadyToLaunch) {
-                result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.approvalURL)
+        internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest) { result, error ->
+            if (error != null) {
+                callback.onPayPalVaultEditResult(PayPalVaultEditAuthRequest.Failure(error))
+            }
+
+            if (result is PayPalVaultEditAuthRequestParams) {
+                result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.approvalUrl)
 
                 callback.onPayPalVaultEditResult(
                     PayPalVaultEditAuthRequest.ReadyToLaunch(
@@ -346,14 +350,6 @@ class PayPalClient internal constructor(
                         result.browserSwitchOptions
                     )
                 )
-            }
-
-            if (result is InternalPayPalVaultEditAuthRequest.Failure) {
-                callback.onPayPalVaultEditResult(PayPalVaultEditAuthRequest.Failure(result.error))
-            }
-
-            if (result is InternalPayPalVaultEditAuthRequest.Cancel) {
-                callback.onPayPalVaultEditResult(PayPalVaultEditAuthRequest.Cancel())
             }
         }
     }

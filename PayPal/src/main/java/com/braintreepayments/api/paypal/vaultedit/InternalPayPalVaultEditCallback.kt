@@ -9,8 +9,11 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 internal fun interface InternalPayPalVaultEditCallback {
 
     /**
-     * @param internalPayPalVaultEditAuthRequest a success, failure, or cancel result internally
-     * flow
+     * @param internalPayPalVaultEditAuthRequestå
+     * @param error a success, failure, or cancel result internally
      */
-    fun onPayPalVaultEditResult(internalPayPalVaultEditAuthRequest: InternalPayPalVaultEditAuthRequest)
+    fun onPayPalVaultEditResult(
+        internalPayPalVaultEditAuthRequest: PayPalVaultEditAuthRequestParams?,
+        error: Exception?
+    )
 }
