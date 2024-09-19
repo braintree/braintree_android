@@ -8,7 +8,6 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
  * Note: **This feature is in beta. It's public API may change in future releases.**
  *
  * @property editPayPalVaultId PayPal vault ID to edit
- * @property riskCorrelationId optional ID;
  */
 @ExperimentalBetaApi
 open class PayPalVaultEditRequest(
