@@ -243,13 +243,13 @@ class PayPalClient internal constructor(
         tokenKey: String
     ): JSONObject {
         val status = uri.lastPathSegment
-        /*if (Uri.parse(successUrl).lastPathSegment != status) {
+        if (Uri.parse(successUrl).lastPathSegment != status) {
             throw UserCanceledException("User canceled PayPal.")
-        }*/
+        }
 
         val requestXoToken = Uri.parse(approvalUrl).getQueryParameter(tokenKey)
         val responseXoToken = uri.getQueryParameter(tokenKey)
-        //if (TextUtils.equals(requestXoToken, responseXoToken)) {
+        if (TextUtils.equals(requestXoToken, responseXoToken)) {
             val client = JSONObject().apply {
                 put("environment", null)
             }
@@ -264,9 +264,9 @@ class PayPalClient internal constructor(
                 put("response_type", "web")
             }
             return urlResponseData
-        /*} else {
+        } else {
             throw PayPalBrowserSwitchException("The response contained inconsistent data.")
-        }*/
+        }
     }
 
     private fun callbackCreatePaymentAuthFailure(
