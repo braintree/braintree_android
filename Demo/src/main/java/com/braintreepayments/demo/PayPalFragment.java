@@ -125,7 +125,7 @@ public class PayPalFragment extends BaseFragment {
         PayPalEditPendingRequest.Started pendingRequestEditFi = getPendingRequestEditFi();
 
         if (pendingRequestEditFi != null) {
-            PayPalVaultEditAuthResult editAuthResult = payPalLauncher.handleReturnToAppFromBrowser(pendingRequestEditFi, requireActivity().getIntent());
+            PayPalVaultEditAuthResult editAuthResult = payPalLauncher.handleReturnToApp(pendingRequestEditFi, requireActivity().getIntent());
 
             if (editAuthResult != null) {
 
