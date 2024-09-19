@@ -152,7 +152,7 @@ internal class PayPalInternalClient(
         ) { clientMetadataId ->
             if (clientMetadataId == null) {
                 val result = PayPalVaultEditAuthRequest.Failure(
-                    BraintreeException("Could not retrieve clientMetaDataId")
+                    BraintreeException("An unexpected error occurred")
                 )
                 callback.onPayPalVaultEditResult(result)
             } else {
