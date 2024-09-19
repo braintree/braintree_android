@@ -156,10 +156,13 @@ internal class PayPalInternalClient(
                 )
                 callback.onPayPalVaultEditResult(result)
             } else {
+
+                val riskCorrelationId = (payPalVaultEditRequest as? PayPalVaultErrorHandlingEditRequest)?.riskCorrelationId ?: clientMetadataId
+
                 sendVaultEditRequestWithRiskCorrelationId(
                     context,
                     payPalVaultEditRequest,
-                    clientMetadataId,
+                    riskCorrelationId,
                     callback
                 )
             }
@@ -238,58 +241,6 @@ internal class PayPalInternalClient(
                 )
 
                 callback(clientMetadataId)
-            }
-        }
-    }
-
-    @ExperimentalBetaApi
-    fun sendVaultEditErrorRequest(
-        request: PayPalVaultErrorHandlingEditRequest,
-        callback: PayPalVaultEditCallback
-    ) {
-
-        val parameters = mutableMapOf<String, Any>()
-
-        fun parameters(): Map<String, Any> {
-
-            parameters["edit_paypal_vault_id"] = request.editPayPalVaultId
-            parameters["return_url"] = editFiSuccessUrl
-            parameters["cancel_url"] = editFiCancelUrl
-            parameters["correlation_id"] = request.riskCorrelationId
-
-            return parameters
-        }
-
-        val jsonObject = JSONObject(parameters())
-        braintreeClient.sendPOST(request.hermesPath, jsonObject.toString()) { response, error ->
-            if (error != null) {
-                val result = PayPalVaultEditResponse.Failure(error, request.riskCorrelationId)
-                callback.onPayPalVaultEditResult(result)
-            } else {
-                try {
-                    val responseBody = JSONObject(response)
-                    val agreementSetup = responseBody.getJSONObject("agreementSetup")
-
-                    val editFIAgreementSetup = EditFIAgreementSetup(
-                        agreementSetup.getString("tokenId"),
-                        agreementSetup.getString("approvalUrl"),
-                        agreementSetup.getString("paypalAppApprovalUrl")
-                    )
-
-                    val result = PayPalVaultEditResponse.ReadyToLaunch(
-                        request.riskCorrelationId,
-                        editFIAgreementSetup
-                    )
-
-                    callback.onPayPalVaultEditResult(result)
-                } catch (jsonException: JSONException) {
-                    val result = PayPalVaultEditResponse.Failure(
-                        jsonException,
-                        request.riskCorrelationId
-                    )
-
-                    callback.onPayPalVaultEditResult(result)
-                }
             }
         }
     }

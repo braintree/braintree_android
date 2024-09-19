@@ -13,10 +13,8 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditCallback
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResponse
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest
 import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
 import org.json.JSONObject
@@ -337,30 +335,6 @@ class PayPalClient internal constructor(
         callback: PayPalVaultEditCallback
     ) {
         internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest) { result ->
-            if (result is PayPalVaultEditResponse.ReadyToLaunch) {
-                result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.response.approvalURL)
-            }
-
-            callback.onPayPalVaultEditResult(result)
-        }
-    }
-
-    /**
-     * After receiving a result from the PayPal web authentication flow via
-     * [PayPalLauncher.handleReturnToAppFromBrowser],
-     * pass the [PayPalVaultEditAuthResult.Success] returned to this method to complete the
-     * edit vault flow.
-     *
-     * @param vaultEditAuthResult a [PayPalVaultEditAuthResult.Success] received in the
-     * callback from [PayPalLauncher.handleReturnToAppFromBrowser]
-     * @param callback [PayPalVaultEditCallback]
-     */
-    @ExperimentalBetaApi
-    fun createEditErrorRequest(
-        request: PayPalVaultErrorHandlingEditRequest,
-        callback: PayPalVaultEditCallback
-    ) {
-        internalPayPalClient.sendVaultEditErrorRequest(request) { result ->
             if (result is PayPalVaultEditResponse.ReadyToLaunch) {
                 result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result.response.approvalURL)
             }

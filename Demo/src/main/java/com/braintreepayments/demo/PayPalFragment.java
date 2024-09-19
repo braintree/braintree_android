@@ -271,7 +271,7 @@ public class PayPalFragment extends BaseFragment {
                 riskCorrelationId
         );
 
-        payPalClient.createEditErrorRequest(request, (result) -> {
+        payPalClient.createEditAuthRequest(requireContext(), request, (result) -> {
             if (result instanceof PayPalVaultEditResponse.Failure) {
                 PayPalVaultEditResponse.Failure.Failure failure = (PayPalVaultEditResponse.Failure) result;
                 String correlationId = failure.getRiskCorrelationId();
