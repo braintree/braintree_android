@@ -33,5 +33,4 @@ sealed class PayPalVaultEditAuthRequest {
 data class EditFIAgreementSetup(
     val tokenId: String,
     val approvalURL: String,
-    val paypalApprovalUrl: String?
 )

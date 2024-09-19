@@ -76,7 +76,6 @@ public class PayPalFragment extends BaseFragment {
             } else {
                 launchPayPalEditFIVault(editText.getText().toString());
             }
-
         });
 
         ppSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -128,19 +127,18 @@ public class PayPalFragment extends BaseFragment {
             PayPalVaultEditAuthResult editAuthResult = payPalLauncher.handleReturnToApp(pendingRequestEditFi, requireActivity().getIntent());
 
             if (editAuthResult != null) {
-
                 if (editAuthResult instanceof PayPalVaultEditAuthResult.Success) {
                     // For example, call server lookup_fi_details
                 } else if (editAuthResult instanceof PayPalVaultEditAuthResult.Failure) {
-                    // Handle failure.error
+                    handleError(((PayPalVaultEditAuthResult.Failure) editAuthResult).getError());
                 } else if (editAuthResult instanceof PayPalVaultEditAuthResult.NoResult) {
-                    // Handle user canceled
+                    handleError(new Exception("User did not complete payment flow"));
                 }
             } else {
                 handleError(new Exception("User did not complete payment flow"));
             }
 
-            clearPendingRequestEditFi();
+            clearEditFiPendingRequest();
         }
 
     }
@@ -157,7 +155,7 @@ public class PayPalFragment extends BaseFragment {
         PendingRequestStore.getInstance().clearPayPalPendingRequest(requireContext());
     }
 
-    private void storePendingRequestForEditFi(PayPalEditPendingRequest.Started request) {
+    private void storeEditFiPendingRequest(PayPalEditPendingRequest.Started request) {
         PendingRequestStore.getInstance().putPayPalPendingRequestEditFi(requireContext(), request);
     }
 
@@ -165,7 +163,7 @@ public class PayPalFragment extends BaseFragment {
         return PendingRequestStore.getInstance().getPayPalPendingRequestEditFi(requireContext());
     }
 
-    private void clearPendingRequestEditFi() {
+    private void clearEditFiPendingRequest() {
         PendingRequestStore.getInstance().clearPayPalPendingRequestEditFi(requireContext());
     }
 
@@ -253,7 +251,7 @@ public class PayPalFragment extends BaseFragment {
 
                 PayPalEditPendingRequest pendingRequest = payPalLauncher.launch(requireActivity(), success);
                 if (pendingRequest instanceof PayPalEditPendingRequest.Started) {
-                    storePendingRequestForEditFi((PayPalEditPendingRequest.Started) pendingRequest);
+                    storeEditFiPendingRequest((PayPalEditPendingRequest.Started) pendingRequest);
                 } else if (pendingRequest instanceof PayPalEditPendingRequest.Failure) {
                     handleError(((PayPalEditPendingRequest.Failure) pendingRequest).getError());
                 }
@@ -278,7 +276,7 @@ public class PayPalFragment extends BaseFragment {
 
                 PayPalEditPendingRequest pendingRequest = payPalLauncher.launch(requireActivity(), success);
                 if (pendingRequest instanceof PayPalEditPendingRequest.Started) {
-                    storePendingRequestForEditFi((PayPalEditPendingRequest.Started) pendingRequest);
+                    storeEditFiPendingRequest((PayPalEditPendingRequest.Started) pendingRequest);
                 } else if (pendingRequest instanceof PayPalEditPendingRequest.Failure) {
                     handleError(((PayPalEditPendingRequest.Failure) pendingRequest).getError());
                 }

@@ -196,8 +196,7 @@ internal class PayPalInternalClient(
 
                     val editFIAgreementSetup = EditFIAgreementSetup(
                         agreementSetup.getString("tokenId"),
-                        agreementSetup.getString("approvalUrl"),
-                        agreementSetup.getString("paypalAppApprovalUrl")
+                        agreementSetup.getString("approvalUrl")
                     )
 
                     val result = PayPalVaultEditAuthRequest.ReadyToLaunch(
