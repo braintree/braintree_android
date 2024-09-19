@@ -3,7 +3,6 @@ package com.braintreepayments.demo;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
 import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalVaultRequest;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -33,7 +32,7 @@ import com.braintreepayments.api.paypal.PayPalPendingRequestEditFi;
 import com.braintreepayments.api.paypal.PayPalRequest;
 import com.braintreepayments.api.paypal.PayPalResult;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult;
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResponse;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest;
 import com.google.android.material.textfield.TextInputEditText;
@@ -240,7 +239,7 @@ public class PayPalFragment extends BaseFragment {
 
     @OptIn(markerClass = ExperimentalBetaApi.class)
     private void launchPayPalEditFIVault(String editVaultId) {
-        PayPalVaultEditAuthRequest request = new PayPalVaultEditAuthRequest(
+        PayPalVaultEditRequest request = new PayPalVaultEditRequest(
                 editVaultId
         );
 

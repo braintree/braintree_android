@@ -15,6 +15,6 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 data class PayPalVaultErrorHandlingEditRequest(
     override val editPayPalVaultId: String,
     val riskCorrelationId: String,
-): PayPalVaultEditAuthRequest(editPayPalVaultId) {
+): PayPalVaultEditRequest(editPayPalVaultId) {
     override val hermesPath: String = "v1/paypal_hermes/generate_edit_fi_url"
 }
