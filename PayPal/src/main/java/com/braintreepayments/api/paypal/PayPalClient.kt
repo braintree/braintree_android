@@ -70,11 +70,6 @@ class PayPalClient internal constructor(
         callback: PayPalPaymentAuthCallback
     ) {
         isVaultRequest = payPalRequest is PayPalVaultRequest
-        linkType = if (internalPayPalClient.isAppSwitchEnabled(payPalRequest) && internalPayPalClient.isPayPalInstalled(context)) {
-            LinkType.UNIVERSAL
-        } else {
-            LinkType.DEEPLINK
-        }
 
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsParams)
 
@@ -105,6 +100,12 @@ class PayPalClient internal constructor(
             error: Exception? ->
             if (payPalResponse != null) {
                 payPalContextId = payPalResponse.pairingId
+                linkType = if (internalPayPalClient.isAppSwitchEnabled(payPalRequest) && internalPayPalClient.isPayPalInstalled(context)) {
+                    LinkType.UNIVERSAL
+                } else {
+                    LinkType.DEEPLINK
+                }
+
                 try {
                     payPalResponse.browserSwitchOptions = buildBrowserSwitchOptions(payPalResponse)
 
@@ -212,6 +213,13 @@ class PayPalClient internal constructor(
             )
 
             internalPayPalClient.tokenize(payPalAccount) { payPalAccountNonce: PayPalAccountNonce?, error: Exception? ->
+                if (isAppSwitchFlow) {
+                    braintreeClient.sendAnalyticsEvent(
+                        PayPalAnalytics.HANDLE_RETURN_STARTED,
+                        analyticsParams
+                    )
+                }
+
                 if (payPalAccountNonce != null) {
                     callbackTokenizeSuccess(
                         callback,
