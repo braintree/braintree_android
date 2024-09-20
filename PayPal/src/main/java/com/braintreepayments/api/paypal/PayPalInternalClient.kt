@@ -149,7 +149,6 @@ internal class PayPalInternalClient(
             if (clientMetadataId == null) {
                 callback.onPayPalVaultEditResult(null, BraintreeException("An unexpected error occurred"))
             } else {
-
                 val riskCorrelationId =
                     (request as? PayPalVaultErrorHandlingEditRequest)
                         ?.riskCorrelationId ?: clientMetadataId

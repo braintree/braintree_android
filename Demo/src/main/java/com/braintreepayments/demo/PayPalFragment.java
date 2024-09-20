@@ -56,7 +56,7 @@ public class PayPalFragment extends BaseFragment {
         TextInputEditText buyerEmailEditText = view.findViewById(R.id.buyer_email_edit_text);
         Button billingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
-        Switch ppSwitch = view.findViewById(R.id.paypal_edit_error_request_toggle);
+        Switch payPalErrorHandlingSwitch = view.findViewById(R.id.paypal_edit_error_request_toggle);
         TextInputEditText editText = view.findViewById(R.id.paypal_edit_vault_id_field);
         TextInputEditText riskCorrelationIdText = view.findViewById(R.id.paypal_edit_fi_risk_correlation_id_field);
 
@@ -70,7 +70,7 @@ public class PayPalFragment extends BaseFragment {
         });
 
         editVaultButton.setOnClickListener(v -> {
-            boolean isEditFIErrorRequestOn = ppSwitch.isChecked();
+            boolean isEditFIErrorRequestOn = payPalErrorHandlingSwitch.isChecked();
 
             if(isEditFIErrorRequestOn) {
                 launchEditFiErrorHandlingRequest(editText.getText().toString(),riskCorrelationIdText.getText().toString() );
@@ -79,7 +79,7 @@ public class PayPalFragment extends BaseFragment {
             }
         });
 
-        ppSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        payPalErrorHandlingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
