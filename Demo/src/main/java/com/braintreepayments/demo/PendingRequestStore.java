@@ -17,7 +17,7 @@ public class PendingRequestStore {
     static final String LOCAL_PAYMENT_PENDING_REQUEST_KEY = "LOCAL_PAYMENT_PENDING_REQUEST";
     static final String SEPA_DIRECT_DEBIT_PENDING_REQUEST_KEY = "SEPA_DIRECT_DEBIT_PENDING_REQUEST";
     static final String VENMO_PENDING_REQUEST_KEY = "VENMO_PENDING_REQUEST";
-    static final String EDITFI_PENDING_REQUEST_KEY = "EDITFI_PENDING_REQUEST";
+    static final String EDIT_FI_PENDING_REQUEST_KEY = "EDITFI_PENDING_REQUEST";
 
     private static final PendingRequestStore INSTANCE = new PendingRequestStore();
 
@@ -49,7 +49,7 @@ public class PendingRequestStore {
 
     public void putPayPalPendingRequestEditFi(Context context,
                                               PayPalVaultEditPendingRequest.Started pendingRequest) {
-        put(EDITFI_PENDING_REQUEST_KEY, pendingRequest.getPendingRequestString(), context);
+        put(EDIT_FI_PENDING_REQUEST_KEY, pendingRequest.getPendingRequestString(), context);
     }
 
     public PayPalPendingRequest.Started getPayPalPendingRequest(Context context) {
@@ -61,7 +61,7 @@ public class PendingRequestStore {
     }
 
     public PayPalVaultEditPendingRequest.Started getPayPalPendingRequestEditFi(Context context) {
-        String requestString = get(EDITFI_PENDING_REQUEST_KEY, context);
+        String requestString = get(EDIT_FI_PENDING_REQUEST_KEY, context);
         if (requestString != null) {
             return new PayPalVaultEditPendingRequest.Started(requestString);
         }
@@ -73,7 +73,7 @@ public class PendingRequestStore {
     }
 
     public void clearPayPalPendingRequestEditFi(Context context) {
-        remove(EDITFI_PENDING_REQUEST_KEY, context);
+        remove(EDIT_FI_PENDING_REQUEST_KEY, context);
     }
 
     public void putLocalPaymentPendingRequest(Context context,
