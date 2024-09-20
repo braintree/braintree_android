@@ -152,6 +152,11 @@ public class PayPalFragment extends BaseFragment {
     @OptIn(markerClass = ExperimentalBetaApi.class)
     private void handleVaultEditParsing(PayPalVaultEditResult result) {
         if (result instanceof PayPalVaultEditResult.Success) {
+            String successDialog =
+                    "Risk CorrelationId: " +
+                        ((PayPalVaultEditResult.Success) result)
+                        .getRiskCorrelationId().toString();
+            showDialog(successDialog);
             // call server lookup_fi_details
         } else if (result instanceof PayPalVaultEditResult.Failure) {
             handleError(new Exception(((PayPalVaultEditResult.Failure) result).getError().toString()));
