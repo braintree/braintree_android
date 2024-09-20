@@ -211,14 +211,14 @@ class PayPalClient internal constructor(
             )
 
             internalPayPalClient.tokenize(payPalAccount) { payPalAccountNonce: PayPalAccountNonce?, error: Exception? ->
-                if (isAppSwitchFlow) {
-                    braintreeClient.sendAnalyticsEvent(
-                        PayPalAnalytics.HANDLE_RETURN_STARTED,
-                        analyticsParams
-                    )
-                }
-
                 if (payPalAccountNonce != null) {
+                    if (isAppSwitchFlow) {
+                        braintreeClient.sendAnalyticsEvent(
+                            PayPalAnalytics.HANDLE_RETURN_STARTED,
+                            analyticsParams
+                        )
+                    }
+
                     callbackTokenizeSuccess(
                         callback,
                         PayPalResult.Success(payPalAccountNonce),
