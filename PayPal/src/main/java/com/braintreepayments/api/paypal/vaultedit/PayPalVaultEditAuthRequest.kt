@@ -14,7 +14,6 @@ sealed class PayPalVaultEditAuthRequest {
     class ReadyToLaunch internal constructor(
         val riskCorrelationId: String,
         internal var browserSwitchOptions: BrowserSwitchOptions?,
-
     ) : PayPalVaultEditAuthRequest()
 
     /**

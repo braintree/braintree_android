@@ -219,8 +219,6 @@ internal class PayPalInternalClient(
             if (error != null) {
                 callback(error("No Client Metadata Id"))
             } else {
-
-                // TODO: what to do with hasUserLocationConsent
                 val clientMetadataId = dataCollector.getClientMetadataId(
                     context, configuration,
                     false
