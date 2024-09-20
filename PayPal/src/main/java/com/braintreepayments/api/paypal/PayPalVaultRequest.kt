@@ -89,7 +89,7 @@ class PayPalVaultRequest
 
         if (enablePayPalAppSwitch && !appLink.isNullOrEmpty() && !userAuthenticationEmail.isNullOrEmpty()) {
             parameters.put(ENABLE_APP_SWITCH_KEY, enablePayPalAppSwitch)
-            parameters.put(OS_VERSION_KEY, Build.VERSION.RELEASE)
+            parameters.put(OS_VERSION_KEY, Build.VERSION.SDK_INT.toString())
             parameters.put(OS_TYPE_KEY, "Android")
             parameters.put(MERCHANT_APP_RETURN_URL_KEY, appLink)
         }
