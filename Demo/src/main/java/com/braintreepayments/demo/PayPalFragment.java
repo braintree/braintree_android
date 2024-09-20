@@ -57,7 +57,7 @@ public class PayPalFragment extends BaseFragment {
         Button billingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
         Switch payPalErrorHandlingSwitch = view.findViewById(R.id.paypal_edit_error_request_toggle);
-        TextInputEditText editText = view.findViewById(R.id.paypal_edit_vault_id_field);
+        TextInputEditText vaultIdEditText = view.findViewById(R.id.paypal_edit_vault_id_field);
         TextInputEditText riskCorrelationIdText = view.findViewById(R.id.paypal_edit_fi_risk_correlation_id_field);
 
         Button editVaultButton = view.findViewById(R.id.paypal_edit_vault_button);
@@ -73,9 +73,9 @@ public class PayPalFragment extends BaseFragment {
             boolean isEditFIErrorRequestOn = payPalErrorHandlingSwitch.isChecked();
 
             if(isEditFIErrorRequestOn) {
-                launchEditFiErrorHandlingRequest(editText.getText().toString(),riskCorrelationIdText.getText().toString() );
+                launchEditFiErrorHandlingRequest(vaultIdEditText.getText().toString(),riskCorrelationIdText.getText().toString() );
             } else {
-                launchPayPalEditFIVault(editText.getText().toString());
+                launchPayPalEditFIVault(vaultIdEditText.getText().toString());
             }
         });
 

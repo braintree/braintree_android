@@ -23,6 +23,7 @@ sealed class PayPalVaultEditAuthResult {
 
     /**
      * The browser switch failed.
+     * @property [error] Error detailing the reason for the browser switch failure.
      */
     class Failure internal constructor(val error: Exception) : PayPalVaultEditAuthResult()
 
