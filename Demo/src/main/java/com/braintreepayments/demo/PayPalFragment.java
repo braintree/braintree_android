@@ -72,8 +72,11 @@ public class PayPalFragment extends BaseFragment {
         editVaultButton.setOnClickListener(v -> {
             boolean isEditFIErrorRequestOn = payPalErrorHandlingSwitch.isChecked();
 
-            if(isEditFIErrorRequestOn) {
-                launchEditFiErrorHandlingRequest(vaultIdEditText.getText().toString(),riskCorrelationIdEditText.getText().toString() );
+            if (isEditFIErrorRequestOn) {
+                launchEditFiErrorHandlingRequest(
+                    vaultIdEditText.getText().toString(),
+                    riskCorrelationIdEditText.getText().toString()
+                );
             } else {
                 launchPayPalEditFIVault(vaultIdEditText.getText().toString());
             }
