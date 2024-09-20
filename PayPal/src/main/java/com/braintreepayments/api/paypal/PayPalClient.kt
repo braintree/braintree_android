@@ -100,8 +100,8 @@ class PayPalClient internal constructor(
             error: Exception? ->
             if (payPalResponse != null) {
                 payPalContextId = payPalResponse.pairingId
-                linkType = if (internalPayPalClient.isAppSwitchEnabled(payPalRequest)
-                    && internalPayPalClient.isPayPalInstalled(context)) {
+                linkType = if (internalPayPalClient.isAppSwitchEnabled(payPalRequest) &&
+                    internalPayPalClient.isPayPalInstalled(context)) {
                     LinkType.UNIVERSAL
                 } else {
                     LinkType.DEEPLINK
