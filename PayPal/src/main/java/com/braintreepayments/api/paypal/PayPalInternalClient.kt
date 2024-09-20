@@ -10,7 +10,7 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
-import com.braintreepayments.api.paypal.vaultedit.InternalPayPalVaultEditCallback
+import com.braintreepayments.api.paypal.vaultedit.PayPalInternalClientEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequestParams
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest
@@ -141,7 +141,7 @@ internal class PayPalInternalClient(
     fun sendVaultEditRequest(
         context: Context,
         request: PayPalVaultEditRequest,
-        callback: InternalPayPalVaultEditCallback
+        callback: PayPalInternalClientEditCallback
     ) {
         getClientMetadataId(
             context
@@ -167,7 +167,7 @@ internal class PayPalInternalClient(
     private fun sendVaultEditRequestWithRiskCorrelationId(
         payPalVaultEditRequest: PayPalVaultEditRequest,
         riskCorrelationId: String,
-        callback: InternalPayPalVaultEditCallback
+        callback: PayPalInternalClientEditCallback
     ) {
         val params = parameters(payPalVaultEditRequest.editPayPalVaultId).toMutableMap()
 

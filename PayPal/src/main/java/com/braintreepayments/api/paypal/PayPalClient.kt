@@ -12,7 +12,7 @@ import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
-import com.braintreepayments.api.paypal.vaultedit.InternalPayPalVaultEditCallback
+import com.braintreepayments.api.paypal.vaultedit.PayPalInternalClientEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequestParams
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult
@@ -307,12 +307,12 @@ class PayPalClient internal constructor(
     /**
      * Starts the PayPal flow that allows a customer to edit their PayPal payment method. A
      * [PayPalVaultEditAuthRequestParams] is returned in the
-     * [InternalPayPalVaultEditCallback] that is then passed to
+     * [PayPalInternalClientEditCallback] that is then passed to
      * [PayPalLauncher.launch].
      *
      * @param context an Android Context
      * @param payPalVaultEditRequest a [PayPalVaultEditRequest] containing the edit request
-     * @param payPalVaultEditCallback a [InternalPayPalVaultEditCallback]
+     * @param payPalVaultEditCallback a [PayPalInternalClientEditCallback]
      */
     @ExperimentalBetaApi
     fun createEditAuthRequest(
