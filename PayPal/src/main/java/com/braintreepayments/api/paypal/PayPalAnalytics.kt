@@ -8,6 +8,9 @@ internal object PayPalAnalytics {
     const val TOKENIZATION_SUCCEEDED = "paypal:tokenize:succeeded"
     const val BROWSER_LOGIN_CANCELED = "paypal:tokenize:browser-login:canceled"
 
+    // Additional Conversion events
+    const val HANDLE_RETURN_STARTED = "paypal:tokenize:handle-return:started"
+
     // App Switch events
     const val APP_SWITCH_STARTED = "paypal:tokenize:app-switch:started"
     const val APP_SWITCH_SUCCEEDED = "paypal:tokenize:app-switch:succeeded"
