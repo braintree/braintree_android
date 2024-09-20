@@ -76,7 +76,7 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
                 is BrowserSwitchStartResult.Started -> PayPalVaultEditPendingRequest.Started(request.pendingRequest)
             }
         } ?: run {
-            return PayPalVaultEditPendingRequest.Failure(BraintreeException("BrowserSwitchOptions is null"))
+            PayPalVaultEditPendingRequest.Failure(BraintreeException("BrowserSwitchOptions is null"))
         }
     }
 

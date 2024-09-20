@@ -15,7 +15,7 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 sealed class PayPalVaultEditAuthResult {
 
     /**
-     * A successful result
+     * A successful result that should be passed to [PayPalClient.edit] to complete the flow
      */
     class Success internal constructor(
         var browserSwitchSuccess: BrowserSwitchFinalResult.Success,
