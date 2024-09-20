@@ -2,9 +2,11 @@
 
 ## unreleased
 
-* Add PayPal vault edit flow (BETA)
-  * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
-  * Add `PayPalClient.createEditAuthRequest()` for editing a buyers funding instrument
+* PayPal
+  * Add PayPal vault edit flow (BETA)
+    * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
+    * Add `PayPalClient.createEditAuthRequest()` that takes in a `PayPalVaultEditRequest` or `PayPalVaultErrorHandlingEditRequest`
+    * **Note:** This feature is currently in beta and may change or be removed in future releases
 * GooglePay
   * Upgrade `play-services-wallet` to `19.4.0`
 * Breaking Changes
