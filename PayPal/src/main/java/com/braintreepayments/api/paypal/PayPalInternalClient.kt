@@ -215,12 +215,12 @@ internal class PayPalInternalClient(
         callback: (String?) -> Unit
     ) {
         braintreeClient.getConfiguration { configuration, error ->
-
             if (error != null) {
                 callback(error("No Client Metadata Id"))
             } else {
                 val clientMetadataId = dataCollector.getClientMetadataId(
-                    context, configuration,
+                    context,
+                    configuration,
                     false
                 )
 
