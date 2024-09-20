@@ -58,7 +58,7 @@ public class PayPalFragment extends BaseFragment {
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
         Switch payPalErrorHandlingSwitch = view.findViewById(R.id.paypal_edit_error_request_toggle);
         TextInputEditText vaultIdEditText = view.findViewById(R.id.paypal_edit_vault_id_field);
-        TextInputEditText riskCorrelationIdText = view.findViewById(R.id.paypal_edit_fi_risk_correlation_id_field);
+        TextInputEditText riskCorrelationIdEditText = view.findViewById(R.id.paypal_edit_fi_risk_correlation_id_field);
 
         Button editVaultButton = view.findViewById(R.id.paypal_edit_vault_button);
 
@@ -73,7 +73,7 @@ public class PayPalFragment extends BaseFragment {
             boolean isEditFIErrorRequestOn = payPalErrorHandlingSwitch.isChecked();
 
             if(isEditFIErrorRequestOn) {
-                launchEditFiErrorHandlingRequest(vaultIdEditText.getText().toString(),riskCorrelationIdText.getText().toString() );
+                launchEditFiErrorHandlingRequest(vaultIdEditText.getText().toString(),riskCorrelationIdEditText.getText().toString() );
             } else {
                 launchPayPalEditFIVault(vaultIdEditText.getText().toString());
             }
@@ -83,14 +83,14 @@ public class PayPalFragment extends BaseFragment {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
-                    riskCorrelationIdText.setVisibility(View.VISIBLE);
+                    riskCorrelationIdEditText.setVisibility(View.VISIBLE);
                 } else {
-                    riskCorrelationIdText.setVisibility(View.GONE);
+                    riskCorrelationIdEditText.setVisibility(View.GONE);
                 }
             }
         });
 
-        riskCorrelationIdText.setVisibility(View.GONE);
+        riskCorrelationIdEditText.setVisibility(View.GONE);
 
         payPalClient = new PayPalClient(
                 requireContext(),
