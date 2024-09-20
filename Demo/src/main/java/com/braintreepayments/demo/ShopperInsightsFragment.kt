@@ -208,15 +208,15 @@ class ShopperInsightsFragment : BaseFragment() {
                 activity,
                 emailInput.editText?.text.toString()
             )
-        ) { result ->
-            if (result == null) return@createPaymentAuthRequest
-            when (result) {
+        ) {
+            if (it == null) return@createPaymentAuthRequest
+            when (it) {
                 is PayPalPaymentAuthRequest.Failure -> {
-                    handleError(result.error)
+                    handleError(it.error)
                 }
 
                 is PayPalPaymentAuthRequest.ReadyToLaunch -> {
-                    when (val paypalPendingRequest = paypalLauncher.launch(requireActivity(), result)) {
+                    when (val paypalPendingRequest = paypalLauncher.launch(requireActivity(), it)) {
                         is PayPalPendingRequest.Started -> {
                             paypalStartedPendingRequest = paypalPendingRequest
                         }
