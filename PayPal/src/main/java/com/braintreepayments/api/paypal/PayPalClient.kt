@@ -75,12 +75,11 @@ class PayPalClient internal constructor(
 
         braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
             if (error != null) {
-                callbackCreatePaymentAuthFailure(callback, PayPalPaymentAuthRequest.Failure(error), false)
+                callbackCreatePaymentAuthFailure(callback, PayPalPaymentAuthRequest.Failure(error))
             } else if (payPalConfigInvalid(configuration)) {
                 callbackCreatePaymentAuthFailure(
                     callback,
-                    PayPalPaymentAuthRequest.Failure(createPayPalError()),
-                    false
+                    PayPalPaymentAuthRequest.Failure(createPayPalError())
                 )
             } else {
                 sendPayPalRequest(context, payPalRequest, callback)
@@ -120,15 +119,13 @@ class PayPalClient internal constructor(
                 } catch (exception: JSONException) {
                     callbackCreatePaymentAuthFailure(
                         callback,
-                        PayPalPaymentAuthRequest.Failure(exception),
-                        false
+                        PayPalPaymentAuthRequest.Failure(exception)
                     )
                 }
             } else {
                 callbackCreatePaymentAuthFailure(
                     callback,
-                    PayPalPaymentAuthRequest.Failure(error ?: BraintreeException("Error is null")),
-                    false
+                    PayPalPaymentAuthRequest.Failure(error ?: BraintreeException("Error is null"))
                 )
             }
         }
@@ -280,15 +277,9 @@ class PayPalClient internal constructor(
 
     private fun callbackCreatePaymentAuthFailure(
         callback: PayPalPaymentAuthCallback,
-        failure: PayPalPaymentAuthRequest.Failure,
-        isAppSwitchFlow: Boolean
+        failure: PayPalPaymentAuthRequest.Failure
     ) {
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, analyticsParams)
-
-        if (isAppSwitchFlow) {
-            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, analyticsParams)
-        }
-
         callback.onPayPalPaymentAuthRequest(failure)
     }
 
