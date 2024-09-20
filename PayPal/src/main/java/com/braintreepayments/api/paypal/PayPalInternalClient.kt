@@ -168,7 +168,7 @@ internal class PayPalInternalClient(
         riskCorrelationId: String,
         callback: PayPalInternalClientEditCallback
     ) {
-        val params = parameters(payPalVaultEditRequest.editPayPalVaultId).toMutableMap()
+        val params = editFiParameters(payPalVaultEditRequest.editPayPalVaultId).toMutableMap()
 
         params["risk_correlation_id"] = riskCorrelationId
 
@@ -200,8 +200,7 @@ internal class PayPalInternalClient(
         }
     }
 
-    // TODO: improve method name
-    fun parameters(editPayPalVaultId: String): Map<String, Any> {
+    fun editFiParameters(editPayPalVaultId: String): Map<String, Any> {
         val parameters = mutableMapOf<String, Any>()
 
         parameters["edit_paypal_vault_id"] = editPayPalVaultId
