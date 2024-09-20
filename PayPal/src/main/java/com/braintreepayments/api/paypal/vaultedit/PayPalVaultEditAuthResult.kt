@@ -28,7 +28,9 @@ sealed class PayPalVaultEditAuthResult {
     class Failure internal constructor(val error: Exception) : PayPalVaultEditAuthResult()
 
     /**
-     * If no matching result
+     * If no matching result can be found for [PayPalLauncher.handleReturnToApp]. This is expected if the user closed the
+     * browser to cancel the edit vault flow, or returns to the app without completing the
+     * authentication flow.
      */
     object NoResult : PayPalVaultEditAuthResult()
 }
