@@ -26,6 +26,7 @@ import org.json.JSONObject
 /**
  * Used to tokenize PayPal accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4)
  */
+@Suppress("LargeClass", "LongParameterList", "TooManyFunctions")
 class PayPalClient internal constructor(
 
     private val braintreeClient: BraintreeClient,
@@ -285,6 +286,7 @@ class PayPalClient internal constructor(
         val successUrl = Json.optString(metadata, "success-url", null)
         val tokenKey = "ba_token"
 
+        @Suppress("SwallowedException")
         try {
             val urlResponseData = parseUrlResponseData(
                 uri = browserSwitchResult.returnUrl,
@@ -294,7 +296,6 @@ class PayPalClient internal constructor(
             )
 
             return PayPalVaultEditResult.Success(clientMetadataId)
-
         } catch (e: UserCanceledException) {
             return PayPalVaultEditResult.Cancel
         } catch (e: JSONException) {

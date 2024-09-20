@@ -58,7 +58,9 @@ public class PayPalFragment extends BaseFragment {
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
         Switch payPalErrorHandlingSwitch = view.findViewById(R.id.paypal_edit_error_request_toggle);
         TextInputEditText vaultIdEditText = view.findViewById(R.id.paypal_edit_vault_id_field);
-        TextInputEditText riskCorrelationIdEditText = view.findViewById(R.id.paypal_edit_fi_risk_correlation_id_field);
+        TextInputEditText riskCorrelationIdEditText = view.findViewById(
+                R.id.paypal_edit_fi_risk_correlation_id_field
+        );
 
         Button editVaultButton = view.findViewById(R.id.paypal_edit_vault_button);
 
@@ -112,7 +114,10 @@ public class PayPalFragment extends BaseFragment {
         super.onResume();
         PayPalPendingRequest.Started pendingRequest = getPendingRequest();
         if (pendingRequest != null) {
-            PayPalPaymentAuthResult paymentAuthResult = payPalLauncher.handleReturnToApp(pendingRequest, requireActivity().getIntent());
+            PayPalPaymentAuthResult paymentAuthResult = payPalLauncher.handleReturnToApp(
+                    pendingRequest,
+                    requireActivity().getIntent()
+            );
 
             if (paymentAuthResult != null) {
                 if (paymentAuthResult instanceof PayPalPaymentAuthResult.Success) {
@@ -128,11 +133,16 @@ public class PayPalFragment extends BaseFragment {
         PayPalVaultEditPendingRequest.Started pendingRequestEditFi = getPendingRequestEditFi();
 
         if (pendingRequestEditFi != null) {
-            PayPalVaultEditAuthResult editAuthResult = payPalLauncher.handleReturnToApp(pendingRequestEditFi, requireActivity().getIntent());
+            PayPalVaultEditAuthResult editAuthResult = payPalLauncher.handleReturnToApp(
+                    pendingRequestEditFi,
+                    requireActivity().getIntent()
+            );
 
             if (editAuthResult != null) {
                 if (editAuthResult instanceof PayPalVaultEditAuthResult.Success) {
-                    PayPalVaultEditResult result = payPalClient.edit((PayPalVaultEditAuthResult.Success) editAuthResult);
+                    PayPalVaultEditResult result = payPalClient.edit(
+                            (PayPalVaultEditAuthResult.Success) editAuthResult
+                    );
 
                     handleVaultEditParsing(result);
 
