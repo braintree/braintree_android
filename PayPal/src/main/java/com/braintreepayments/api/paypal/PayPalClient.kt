@@ -12,11 +12,11 @@ import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
+import com.braintreepayments.api.paypal.vaultedit.PayPalEditAuthCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalInternalClientEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequestParams
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult
-import com.braintreepayments.api.paypal.vaultedit.PayPalEditAuthCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResult
 import com.braintreepayments.api.sharedutils.Json
@@ -275,6 +275,13 @@ class PayPalClient internal constructor(
         }
     }
 
+    /**
+     * After receiving a result from the Vault Edit flow,
+     * pass the [PayPalVaultEditAuthResult.Success] for parsing
+     *
+     * @param result a [PayPalVaultEditAuthResult.Success] received in the callback
+     * from  [PayPalLauncher.handleReturnToApp]
+     */
     @ExperimentalBetaApi
     fun edit(
         result: PayPalVaultEditAuthResult.Success
