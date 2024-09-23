@@ -118,6 +118,7 @@
     <string name="paypal_useraction_commit_summary">Sets the Payment User Action to Commit for Express Checkout Transactions</string>
     <string name="paypal_address_override">Send a shipping address to PayPal</string>
     <string name="paypal_address_override_summary">Sends a shipping address as an override option to PayPal for any PayPal request</string>
+    <string name="paypal_edit_fi_set_auth_type_client_token">Set the Authorization Type to: Client Token</string>
 
     <!-- VenmoActivity -->
     <string name="bt_descriptor_pay_with_venmo">Venmo</string>

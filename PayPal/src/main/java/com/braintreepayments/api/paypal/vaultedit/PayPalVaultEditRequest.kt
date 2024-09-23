@@ -7,11 +7,12 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
  *
  * Note: **This feature is in beta. It's public API may change in future releases.**
  *
- * @property editPaypalVaultId PayPal vault ID to edit
- * @property merchantAccountId optional ID of the merchant account; if one is not provided the default will be used
+ * @property editPayPalVaultId PayPal vault ID to edit
  */
 @ExperimentalBetaApi
-data class PayPalVaultEditRequest(
-    val editPaypalVaultId: String,
-    val merchantAccountId: String? = null,
-)
+open class PayPalVaultEditRequest
+@JvmOverloads constructor(
+    open val editPayPalVaultId: String
+) {
+    open val hermesPath: String = "v1/paypal_hermes/generate_edit_fi_url"
+}

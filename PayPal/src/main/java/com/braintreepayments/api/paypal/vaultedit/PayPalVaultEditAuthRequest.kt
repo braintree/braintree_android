@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypal.vaultedit
 
+import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.ExperimentalBetaApi
 
 /**
@@ -10,13 +11,18 @@ sealed class PayPalVaultEditAuthRequest {
 
     /**
      * The request was successfully created and is ready to be launched by [PayPalLauncher]
+     *
+     * @property riskCorrelationId This ID is used to link subsequent retry attempts if payment is declined
      */
     class ReadyToLaunch internal constructor(
-        internal val requestParams: PayPalVaultEditAuthRequestParams
+        internal val riskCorrelationId: String,
+        internal var browserSwitchOptions: BrowserSwitchOptions?,
     ) : PayPalVaultEditAuthRequest()
 
     /**
      * There was an [error] creating the request.
      */
-    class Failure internal constructor(val error: Exception) : PayPalVaultEditAuthRequest()
+    class Failure internal constructor(
+        val error: Exception
+    ) : PayPalVaultEditAuthRequest()
 }

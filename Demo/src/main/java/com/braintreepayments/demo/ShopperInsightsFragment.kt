@@ -10,10 +10,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.fragment.NavHostFragment
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import com.braintreepayments.api.shopperinsights.ShopperInsightsBuyerPhone
-import com.braintreepayments.api.shopperinsights.ShopperInsightsClient
-import com.braintreepayments.api.shopperinsights.ShopperInsightsRequest
-import com.braintreepayments.api.shopperinsights.ShopperInsightsResult
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
@@ -21,6 +17,10 @@ import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
 import com.braintreepayments.api.paypal.PayPalPaymentAuthResult
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
+import com.braintreepayments.api.shopperinsights.ShopperInsightsBuyerPhone
+import com.braintreepayments.api.shopperinsights.ShopperInsightsClient
+import com.braintreepayments.api.shopperinsights.ShopperInsightsRequest
+import com.braintreepayments.api.shopperinsights.ShopperInsightsResult
 import com.braintreepayments.api.venmo.VenmoClient
 import com.braintreepayments.api.venmo.VenmoLauncher
 import com.braintreepayments.api.venmo.VenmoPaymentAuthRequest

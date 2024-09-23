@@ -7,6 +7,10 @@ import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditPendingRequest
 
 /**
  * Responsible for launching PayPal user authentication in a web browser
@@ -50,6 +54,33 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
     }
 
     /**
+     * Launches the PayPal Vault Edit flow by switching to a web browser
+     *
+     * @param activity the Android Activity from which you will launch the web browser
+     * @param result a [PayPalVaultEditAuthRequest.ReadyToLaunch] received from
+     * calling [PayPalClient.createEditAuthRequest]
+     * @return [PayPalVaultEditPendingRequest] a [PayPalVaultEditPendingRequest.Started] should be stored
+     * to complete the flow upon return to app in
+     * [PayPalLauncher.handleReturnToApp],
+     * or a [PayPalVaultEditPendingRequest.Failure] with an error if the PayPal flow was unable to be
+     * launched in a browser.
+     */
+    @OptIn(ExperimentalBetaApi::class)
+    fun launch(
+        activity: ComponentActivity,
+        result: PayPalVaultEditAuthRequest.ReadyToLaunch
+    ): PayPalVaultEditPendingRequest {
+        return result.browserSwitchOptions?.let { options ->
+            when (val request = browserSwitchClient.start(activity, options)) {
+                is BrowserSwitchStartResult.Failure -> PayPalVaultEditPendingRequest.Failure(request.error)
+                is BrowserSwitchStartResult.Started -> PayPalVaultEditPendingRequest.Started(request.pendingRequest)
+            }
+        } ?: run {
+            PayPalVaultEditPendingRequest.Failure(BraintreeException("BrowserSwitchOptions is null"))
+        }
+    }
+
+    /**
      * Captures and delivers the result of a PayPal authentication flow.
      *
      * For most integrations, this method should be invoked in the onResume method of the Activity
@@ -84,6 +115,45 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
             )
 
             is BrowserSwitchFinalResult.NoResult -> PayPalPaymentAuthResult.NoResult
+        }
+    }
+
+    /**
+     * Captures and delivers the result of a PayPal Vault Edit flow.
+     *
+     * For most integrations, this method should be invoked in the onResume method of the Activity
+     * used to invoke
+     * [PayPalLauncher.launch].
+     *
+     * If the Activity used to launch the PayPal flow has is configured with
+     * android:launchMode="singleTop", this method should be invoked in the onNewIntent method of
+     * the Activity.
+     *
+     * @param pendingRequest the [PayPalVaultEditPendingRequest.Started] stored after successfully
+     * invoking [PayPalLauncher.launch]
+     * @param intent the intent to return to your application containing a deep link result
+     * from the PayPal browser flow
+     * @return a [PayPalVaultEditAuthResult.Success] that should be passed to [PayPalClient.edit]
+     * for parsing. Returns [PayPalPaymentAuthResult.NoResult] if the user
+     * canceled the payment flow, or returned to the app without completing the PayPal
+     * authentication flow.
+     */
+    @OptIn(ExperimentalBetaApi::class)
+    fun handleReturnToApp(
+        pendingRequest: PayPalVaultEditPendingRequest.Started,
+        intent: Intent
+    ): PayPalVaultEditAuthResult {
+        return when (val browserSwitchResult =
+            browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
+            is BrowserSwitchFinalResult.Success -> PayPalVaultEditAuthResult.Success(
+                browserSwitchResult
+            )
+
+            is BrowserSwitchFinalResult.Failure -> PayPalVaultEditAuthResult.Failure(
+                browserSwitchResult.error
+            )
+
+            is BrowserSwitchFinalResult.NoResult -> PayPalVaultEditAuthResult.NoResult
         }
     }
 

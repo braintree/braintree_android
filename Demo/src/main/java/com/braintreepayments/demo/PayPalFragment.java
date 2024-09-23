@@ -9,12 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.core.ExperimentalBetaApi;
 import com.braintreepayments.api.core.PaymentMethodNonce;
 import com.braintreepayments.api.datacollector.DataCollector;
 import com.braintreepayments.api.datacollector.DataCollectorRequest;
@@ -24,8 +28,14 @@ import com.braintreepayments.api.paypal.PayPalLauncher;
 import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest;
 import com.braintreepayments.api.paypal.PayPalPaymentAuthResult;
 import com.braintreepayments.api.paypal.PayPalPendingRequest;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditPendingRequest;
 import com.braintreepayments.api.paypal.PayPalRequest;
 import com.braintreepayments.api.paypal.PayPalResult;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResult;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class PayPalFragment extends BaseFragment {
@@ -38,6 +48,7 @@ public class PayPalFragment extends BaseFragment {
 
     private DataCollector dataCollector;
 
+    @OptIn(markerClass = ExperimentalBetaApi.class)
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -46,6 +57,13 @@ public class PayPalFragment extends BaseFragment {
         TextInputEditText buyerEmailEditText = view.findViewById(R.id.buyer_email_edit_text);
         Button billingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
+        Switch payPalErrorHandlingSwitch = view.findViewById(R.id.paypal_edit_error_request_toggle);
+        TextInputEditText vaultIdEditText = view.findViewById(R.id.paypal_edit_vault_id_field);
+        TextInputEditText riskCorrelationIdEditText = view.findViewById(
+                R.id.paypal_edit_fi_risk_correlation_id_field
+        );
+
+        Button editVaultButton = view.findViewById(R.id.paypal_edit_vault_button);
 
         singlePaymentButton.setOnClickListener(v -> {
             launchPayPal(false, buyerEmailEditText.getText().toString());
@@ -53,6 +71,40 @@ public class PayPalFragment extends BaseFragment {
         billingAgreementButton.setOnClickListener(v -> {
             launchPayPal(true, buyerEmailEditText.getText().toString());
         });
+
+        editVaultButton.setOnClickListener(v -> {
+            boolean isEditFIErrorRequestOn = payPalErrorHandlingSwitch.isChecked();
+
+            PayPalVaultEditRequest request = null;
+
+            if (isEditFIErrorRequestOn) {
+                request = new PayPalVaultErrorHandlingEditRequest(
+                        vaultIdEditText.getText().toString(),
+                        riskCorrelationIdEditText.getText().toString()
+                );
+
+                launchPayPalEditVault(request);
+            } else {
+                request = new PayPalVaultEditRequest(
+                        vaultIdEditText.getText().toString()
+                );
+            }
+
+            launchPayPalEditVault(request);
+        });
+
+        payPalErrorHandlingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked) {
+                    riskCorrelationIdEditText.setVisibility(View.VISIBLE);
+                } else {
+                    riskCorrelationIdEditText.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        riskCorrelationIdEditText.setVisibility(View.GONE);
 
         payPalClient = new PayPalClient(
                 requireContext(),
@@ -65,12 +117,17 @@ public class PayPalFragment extends BaseFragment {
         return view;
     }
 
+    @OptIn(markerClass = ExperimentalBetaApi.class)
     @Override
     public void onResume() {
         super.onResume();
         PayPalPendingRequest.Started pendingRequest = getPendingRequest();
         if (pendingRequest != null) {
-            PayPalPaymentAuthResult paymentAuthResult = payPalLauncher.handleReturnToApp(pendingRequest, requireActivity().getIntent());
+            PayPalPaymentAuthResult paymentAuthResult = payPalLauncher.handleReturnToApp(
+                    pendingRequest,
+                    requireActivity().getIntent()
+            );
+
             if (paymentAuthResult instanceof PayPalPaymentAuthResult.Success) {
                 completePayPalFlow((PayPalPaymentAuthResult.Success) paymentAuthResult);
             } else {
@@ -78,17 +135,66 @@ public class PayPalFragment extends BaseFragment {
             }
             clearPendingRequest();
         }
+
+        PayPalVaultEditPendingRequest.Started pendingEditFiRequest = getPendingEditFiRequest();
+
+        if (pendingEditFiRequest != null) {
+            PayPalVaultEditAuthResult editAuthResult = payPalLauncher.handleReturnToApp(
+                    pendingEditFiRequest,
+                    requireActivity().getIntent()
+            );
+
+            if (editAuthResult instanceof PayPalVaultEditAuthResult.Success) {
+                completeEdit((PayPalVaultEditAuthResult.Success) editAuthResult);
+            } else if (editAuthResult instanceof PayPalVaultEditAuthResult.Failure) {
+                handleError(((PayPalVaultEditAuthResult.Failure) editAuthResult).getError());
+            } else if (editAuthResult instanceof PayPalVaultEditAuthResult.NoResult) {
+                handleError(new Exception("User did not complete payment flow"));
+            }
+            clearEditPendingRequest();
+        }
+    }
+
+    @OptIn(markerClass = ExperimentalBetaApi.class)
+    private void completeEdit(PayPalVaultEditAuthResult.Success editAuthResult) {
+        PayPalVaultEditResult result = payPalClient.edit(editAuthResult);
+
+        if (result instanceof PayPalVaultEditResult.Success) {
+            String successDialog =
+                    "Risk CorrelationId: " +
+                        ((PayPalVaultEditResult.Success) result)
+                        .getRiskCorrelationId().toString();
+            showDialog(successDialog);
+            // call server lookup_fi_details
+        } else if (result instanceof PayPalVaultEditResult.Failure) {
+            handleError(new Exception(((PayPalVaultEditResult.Failure) result).getError().toString()));
+        } else if (result instanceof  PayPalVaultEditResult.Cancel) {
+            handleError(new Exception("User Canceled the flow"));
+        }
     }
 
     private void storePendingRequest(PayPalPendingRequest.Started request) {
         PendingRequestStore.getInstance().putPayPalPendingRequest(requireContext(), request);
     }
+
     private PayPalPendingRequest.Started getPendingRequest() {
         return PendingRequestStore.getInstance().getPayPalPendingRequest(requireContext());
     }
 
     private void clearPendingRequest() {
         PendingRequestStore.getInstance().clearPayPalPendingRequest(requireContext());
+    }
+
+    private void storeEditPendingRequest(PayPalVaultEditPendingRequest.Started request) {
+        PendingRequestStore.getInstance().putPayPalPendingRequestEditFi(requireContext(), request);
+    }
+
+    private PayPalVaultEditPendingRequest.Started getPendingEditFiRequest() {
+        return PendingRequestStore.getInstance().getPayPalPendingRequestEditFi(requireContext());
+    }
+
+    private void clearEditPendingRequest() {
+        PendingRequestStore.getInstance().clearPayPalPendingRequestEditFi(requireContext());
     }
 
     private void launchPayPal(boolean isBillingAgreement, String buyerEmailAddress) {
@@ -110,10 +216,10 @@ public class PayPalFragment extends BaseFragment {
     }
 
     private void launchPayPal(
-        FragmentActivity activity,
-        boolean isBillingAgreement,
-        String amount,
-        String buyerEmailAddress
+       FragmentActivity activity,
+       boolean isBillingAgreement,
+       String amount,
+       String buyerEmailAddress
     ) {
         PayPalRequest payPalRequest;
         if (isBillingAgreement) {
@@ -121,20 +227,19 @@ public class PayPalFragment extends BaseFragment {
         } else {
             payPalRequest = createPayPalCheckoutRequest(activity, amount, buyerEmailAddress);
         }
-        payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest,
-                (paymentAuthRequest) -> {
-                    if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.Failure) {
-                        handleError(((PayPalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
-                    } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch){
-                        PayPalPendingRequest request = payPalLauncher.launch(requireActivity(),
-                                ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
-                        if (request instanceof PayPalPendingRequest.Started) {
-                            storePendingRequest((PayPalPendingRequest.Started) request);
-                        } else if (request instanceof PayPalPendingRequest.Failure) {
-                            handleError(((PayPalPendingRequest.Failure) request).getError());
-                        }
-                    }
-                });
+        payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest, (paymentAuthRequest) -> {
+            if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.Failure) {
+                handleError(((PayPalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
+            } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch) {
+                PayPalPendingRequest request = payPalLauncher.launch(requireActivity(),
+                        ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
+                if (request instanceof PayPalPendingRequest.Started) {
+                    storePendingRequest((PayPalPendingRequest.Started) request);
+                } else if (request instanceof PayPalPendingRequest.Failure) {
+                    handleError(((PayPalPendingRequest.Failure) request).getError());
+                }
+            }
+        });
     }
 
     private void completePayPalFlow(PayPalPaymentAuthResult.Success paymentAuthResult) {
@@ -152,11 +257,32 @@ public class PayPalFragment extends BaseFragment {
             super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
             PayPalFragmentDirections.ActionPayPalFragmentToDisplayNonceFragment action =
-                PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
+                    PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
             action.setTransactionAmount(amount);
             action.setDeviceData(deviceData);
 
             NavHostFragment.findNavController(this).navigate(action);
         }
+    }
+
+    @OptIn(markerClass = ExperimentalBetaApi.class)
+    private void launchPayPalEditVault(PayPalVaultEditRequest request) {
+
+        payPalClient.createEditAuthRequest(requireContext(), request, (result) -> {
+            if (result instanceof PayPalVaultEditAuthRequest.Failure) {
+                handleError(((PayPalVaultEditAuthRequest.Failure) result).getError());
+            }
+
+            if (result instanceof PayPalVaultEditAuthRequest.ReadyToLaunch) {
+                PayPalVaultEditAuthRequest.ReadyToLaunch success = (PayPalVaultEditAuthRequest.ReadyToLaunch) result;
+
+                PayPalVaultEditPendingRequest pendingRequest = payPalLauncher.launch(requireActivity(), success);
+                if (pendingRequest instanceof PayPalVaultEditPendingRequest.Started) {
+                    storeEditPendingRequest((PayPalVaultEditPendingRequest.Started) pendingRequest);
+                } else if (pendingRequest instanceof PayPalVaultEditPendingRequest.Failure) {
+                    handleError(((PayPalVaultEditPendingRequest.Failure) pendingRequest).getError());
+                }
+            }
+        });
     }
 }
