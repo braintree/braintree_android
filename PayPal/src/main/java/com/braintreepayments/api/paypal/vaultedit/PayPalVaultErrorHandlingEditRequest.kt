@@ -13,7 +13,8 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
  * failure
  */
 @ExperimentalBetaApi
-data class PayPalVaultErrorHandlingEditRequest(
+data class PayPalVaultErrorHandlingEditRequest
+@JvmOverloads constructor(
     override val editPayPalVaultId: String,
     val riskCorrelationId: String,
 ) : PayPalVaultEditRequest(editPayPalVaultId) {

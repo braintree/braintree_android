@@ -10,7 +10,8 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
  * @property editPayPalVaultId PayPal vault ID to edit
  */
 @ExperimentalBetaApi
-open class PayPalVaultEditRequest(
+open class PayPalVaultEditRequest
+@JvmOverloads constructor(
     open val editPayPalVaultId: String
 ) {
     open val hermesPath: String = "v1/paypal_hermes/generate_edit_fi_url"
