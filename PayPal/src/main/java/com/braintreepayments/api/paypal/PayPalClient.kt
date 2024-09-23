@@ -99,17 +99,18 @@ class PayPalClient internal constructor(
             error: Exception? ->
             if (payPalResponse != null) {
                 payPalContextId = payPalResponse.pairingId
-                linkType = if (internalPayPalClient.isAppSwitchEnabled(payPalRequest) &&
-                    internalPayPalClient.isPayPalInstalled(context)) {
-                    LinkType.UNIVERSAL
+                val isAppSwitchFlow = internalPayPalClient.isAppSwitchEnabled(payPalRequest) &&
+                    internalPayPalClient.isPayPalInstalled(context)
+                linkType = if (isAppSwitchFlow) {
+                    LinkType.APP_SWITCH
                 } else {
-                    LinkType.DEEPLINK
+                    LinkType.APP_LINK
                 }
 
                 try {
                     payPalResponse.browserSwitchOptions = buildBrowserSwitchOptions(payPalResponse)
 
-                    if (internalPayPalClient.isAppSwitchEnabled(payPalRequest)) {
+                    if (isAppSwitchFlow) {
                         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_STARTED, analyticsParams)
                     }
 
@@ -187,6 +188,13 @@ class PayPalClient internal constructor(
         val switchInitiatedTime = Uri.parse(approvalUrl).getQueryParameter("switch_initiated_time")
         val isAppSwitchFlow = !switchInitiatedTime.isNullOrEmpty()
 
+        if (isAppSwitchFlow) {
+            braintreeClient.sendAnalyticsEvent(
+                PayPalAnalytics.HANDLE_RETURN_STARTED,
+                analyticsParams
+            )
+        }
+
         approvalUrl?.let {
             val pairingId = Uri.parse(approvalUrl).getQueryParameter(tokenKey)
             if (!pairingId.isNullOrEmpty()) {
@@ -212,13 +220,6 @@ class PayPalClient internal constructor(
 
             internalPayPalClient.tokenize(payPalAccount) { payPalAccountNonce: PayPalAccountNonce?, error: Exception? ->
                 if (payPalAccountNonce != null) {
-                    if (isAppSwitchFlow) {
-                        braintreeClient.sendAnalyticsEvent(
-                            PayPalAnalytics.HANDLE_RETURN_STARTED,
-                            analyticsParams
-                        )
-                    }
-
                     callbackTokenizeSuccess(
                         callback,
                         PayPalResult.Success(payPalAccountNonce),

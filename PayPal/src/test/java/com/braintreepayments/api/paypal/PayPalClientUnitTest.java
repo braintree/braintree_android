@@ -537,8 +537,8 @@ public class PayPalClientUnitTest {
         assertEquals(payPalAccountNonce, ((PayPalResult.Success) result).getNonce());
 
         AnalyticsEventParams params = new AnalyticsEventParams();
-        params.setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN");
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.HANDLE_RETURN_STARTED, params);
+        params.setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN");
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, params);
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_SUCCEEDED, params);
     }
