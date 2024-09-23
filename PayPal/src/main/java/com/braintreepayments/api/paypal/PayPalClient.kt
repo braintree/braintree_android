@@ -320,7 +320,7 @@ class PayPalClient internal constructor(
      *
      * @param context an Android Context
      * @param payPalVaultEditRequest a [PayPalVaultEditRequest] containing the edit request
-     * @param payPalVaultEditCallback a [PayPalInternalClientEditCallback]
+     * @param callback a [PayPalEditAuthCallback]
      */
     @ExperimentalBetaApi
     fun createEditAuthRequest(

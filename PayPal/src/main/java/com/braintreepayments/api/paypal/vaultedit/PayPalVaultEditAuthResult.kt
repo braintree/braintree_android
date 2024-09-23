@@ -6,7 +6,7 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 /**
  * Result of the PayPal edit vault flow received from [PayPalLauncher.handleReturnToApp].
  *
- * If no matching result can be found for the [PayPalPendingRequest.Started] passed to
+ * If no matching result can be found for the [PayPalVaultEditPendingRequest.Started] passed to
  * [PayPalLauncher.handleReturnToApp]. This is expected if the user closed the
  * browser to cancel the edit vault flow, or returns to the app without completing the
  * authentication flow.
@@ -32,5 +32,5 @@ sealed class PayPalVaultEditAuthResult {
      * if the user closed the browser to cancel the edit vault flow, or returns to the app without
      * completing the authentication flow.
      */
-    object NoResult : PayPalVaultEditAuthResult()
+    data object NoResult : PayPalVaultEditAuthResult()
 }

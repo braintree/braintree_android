@@ -3,6 +3,9 @@ package com.braintreepayments.api.paypal.vaultedit
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.ExperimentalBetaApi
 
+/**
+ * A request used to launch the continuation of the PayPal Edit Vault flow.
+ */
 @ExperimentalBetaApi
 sealed class PayPalVaultEditAuthRequest {
 

@@ -78,7 +78,6 @@ public class PayPalFragment extends BaseFragment {
             PayPalVaultEditRequest request = null;
 
             if (isEditFIErrorRequestOn) {
-
                 request = new PayPalVaultErrorHandlingEditRequest(
                         vaultIdEditText.getText().toString(),
                         riskCorrelationIdEditText.getText().toString()
@@ -268,7 +267,6 @@ public class PayPalFragment extends BaseFragment {
 
     @OptIn(markerClass = ExperimentalBetaApi.class)
     private void launchPayPalEditVault(PayPalVaultEditRequest request) {
-
 
         payPalClient.createEditAuthRequest(requireContext(), request, (result) -> {
             if (result instanceof PayPalVaultEditAuthRequest.Failure) {
