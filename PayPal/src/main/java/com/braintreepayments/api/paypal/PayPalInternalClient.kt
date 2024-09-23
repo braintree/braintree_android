@@ -200,7 +200,7 @@ internal class PayPalInternalClient(
         }
     }
 
-    fun editFiParameters(editPayPalVaultId: String): Map<String, Any> {
+    private fun editFiParameters(editPayPalVaultId: String): Map<String, Any> {
         val parameters = mutableMapOf<String, Any>()
 
         parameters["edit_paypal_vault_id"] = editPayPalVaultId
