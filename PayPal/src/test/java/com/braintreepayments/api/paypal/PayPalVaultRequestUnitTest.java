@@ -123,7 +123,7 @@ public class PayPalVaultRequestUnitTest {
 
     @Test
     public void createRequestBody_sets_enablePayPalSwitch_and_userAuthenticationEmail_not_null() throws JSONException {
-        int versionSDK = Build.VERSION.SDK_INT;
+        String versionSDK = String.valueOf(Build.VERSION.SDK_INT);
         String payerEmail = "payer_email@example.com";
         PayPalVaultRequest request = new PayPalVaultRequest(true);
 
@@ -139,7 +139,7 @@ public class PayPalVaultRequestUnitTest {
 
         assertTrue(requestBody.contains("\"launch_paypal_app\":true"));
         assertTrue(requestBody.contains("\"os_type\":" + "\"Android\""));
-        assertTrue(requestBody.contains("\"os_version\":" + versionSDK));
+        assertTrue(requestBody.contains("\"os_version\":" + "\"" + versionSDK + "\""));
         assertTrue(requestBody.contains("\"merchant_app_return_url\":" + "\"universal_url\""));
     }
 }
