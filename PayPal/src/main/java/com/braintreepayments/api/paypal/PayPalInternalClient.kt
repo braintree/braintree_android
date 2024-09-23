@@ -44,8 +44,8 @@ internal class PayPalInternalClient(
                 val url = "/v1/$endpoint"
                 val appLinkReturn = if (isBillingAgreement) appLink else null
 
-                if (isBillingAgreement) {
-                    (payPalRequest as PayPalVaultRequest).enablePayPalAppSwitch = isPayPalInstalled(context)
+                if (isBillingAgreement && (payPalRequest as PayPalVaultRequest).enablePayPalAppSwitch) {
+                    payPalRequest.enablePayPalAppSwitch = isPayPalInstalled(context)
                 }
 
                 val requestBody = payPalRequest.createRequestBody(
