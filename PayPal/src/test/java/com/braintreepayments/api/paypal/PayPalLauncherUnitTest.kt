@@ -115,6 +115,20 @@ class PayPalLauncherUnitTest {
         )
     }
 
+    @Test
+    @Throws(JSONException::class)
+    fun `handleReturnToApp when result does not exist returns null`() {
+        every {
+            browserSwitchClient.completeRequest(intent, pendingRequestString)
+        } returns BrowserSwitchFinalResult.NoResult
+
+        val paymentAuthResult = sut.handleReturnToApp(
+            PayPalPendingRequest.Started(pendingRequestString), intent
+        )
+
+        assertTrue(paymentAuthResult is PayPalPaymentAuthResult.NoResult)
+    }
+
     @OptIn(ExperimentalBetaApi::class)
     @Test
     @Throws(JSONException::class)
@@ -136,20 +150,6 @@ class PayPalLauncherUnitTest {
             browserSwitchFinalResult,
             (editAuthResult as PayPalVaultEditAuthResult.Success).browserSwitchSuccess
         )
-    }
-
-    @Test
-    @Throws(JSONException::class)
-    fun `handleReturnToApp when result does not exist returns null`() {
-        every {
-            browserSwitchClient.completeRequest(intent, pendingRequestString)
-        } returns BrowserSwitchFinalResult.NoResult
-
-        val paymentAuthResult = sut.handleReturnToApp(
-            PayPalPendingRequest.Started(pendingRequestString), intent
-        )
-
-        assertTrue(paymentAuthResult is PayPalPaymentAuthResult.NoResult)
     }
 
     @OptIn(ExperimentalBetaApi::class)
