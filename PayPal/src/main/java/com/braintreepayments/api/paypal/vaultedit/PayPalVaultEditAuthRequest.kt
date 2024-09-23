@@ -15,7 +15,7 @@ sealed class PayPalVaultEditAuthRequest {
      * @property riskCorrelationId This ID is used to link subsequent retry attempts if payment is declined
      */
     class ReadyToLaunch internal constructor(
-        val riskCorrelationId: String,
+        internal val riskCorrelationId: String,
         internal var browserSwitchOptions: BrowserSwitchOptions?,
     ) : PayPalVaultEditAuthRequest()
 
