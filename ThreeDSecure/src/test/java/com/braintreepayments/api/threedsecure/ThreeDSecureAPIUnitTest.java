@@ -326,7 +326,7 @@ public class ThreeDSecureAPIUnitTest {
 
         ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
         verify(threeDSecureResultCallback).onThreeDSecureResult(isNull(), captor.capture());
-        assertEquals(captor.getValue().getMessage(), "An unexpected error occurred");
+        assertEquals(captor.getValue().getMessage(), "threeDSecureParams or jwt is null");
     }
 
     @Test
@@ -342,6 +342,6 @@ public class ThreeDSecureAPIUnitTest {
 
         ArgumentCaptor<BraintreeException> captor = ArgumentCaptor.forClass(BraintreeException.class);
         verify(threeDSecureResultCallback).onThreeDSecureResult(isNull(), captor.capture());
-        assertEquals(captor.getValue().getMessage(), "An unexpected error occurred");
+        assertEquals(captor.getValue().getMessage(), "threeDSecureParams or jwt is null");
     }
 }
