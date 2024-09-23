@@ -575,7 +575,7 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void tokenize_whenCancelUriReceived_sendsAppSwitchFailedEvents()
+    public void tokenize_whenCancelUriReceived_sendsAppSwitchCanceledEvents()
             throws JSONException {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
@@ -608,6 +608,6 @@ public class PayPalClientUnitTest {
 
         AnalyticsEventParams params = new AnalyticsEventParams();
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params);
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, params);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_CANCELED, params);
     }
 }

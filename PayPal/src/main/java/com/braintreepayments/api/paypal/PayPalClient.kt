@@ -292,7 +292,7 @@ class PayPalClient internal constructor(
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, analyticsParams)
 
         if (isAppSwitchFlow) {
-            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, analyticsParams)
+            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_CANCELED, analyticsParams)
         }
 
         callback.onPayPalResult(cancel)
