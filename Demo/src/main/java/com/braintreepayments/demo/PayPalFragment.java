@@ -48,6 +48,7 @@ public class PayPalFragment extends BaseFragment {
 
     private DataCollector dataCollector;
 
+    @OptIn(markerClass = ExperimentalBetaApi.class)
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -74,14 +75,23 @@ public class PayPalFragment extends BaseFragment {
         editVaultButton.setOnClickListener(v -> {
             boolean isEditFIErrorRequestOn = payPalErrorHandlingSwitch.isChecked();
 
+            PayPalVaultEditRequest request = null;
+
             if (isEditFIErrorRequestOn) {
-                launchPayPalVaultEditErrorHandling(
-                    vaultIdEditText.getText().toString(),
-                    riskCorrelationIdEditText.getText().toString()
+
+                request = new PayPalVaultErrorHandlingEditRequest(
+                        vaultIdEditText.getText().toString(),
+                        riskCorrelationIdEditText.getText().toString()
                 );
+
+                launchPayPalEditVault(request);
             } else {
-                launchPayPalEditVault(vaultIdEditText.getText().toString());
+                request = new PayPalVaultEditRequest(
+                        vaultIdEditText.getText().toString()
+                );
             }
+
+            launchPayPalEditVault(request);
         });
 
         payPalErrorHandlingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -257,35 +267,8 @@ public class PayPalFragment extends BaseFragment {
     }
 
     @OptIn(markerClass = ExperimentalBetaApi.class)
-    private void launchPayPalEditVault(String editVaultId) {
-        PayPalVaultEditRequest request = new PayPalVaultEditRequest(
-                editVaultId
-        );
+    private void launchPayPalEditVault(PayPalVaultEditRequest request) {
 
-        payPalClient.createEditAuthRequest(requireContext(), request, (result) -> {
-            if (result instanceof PayPalVaultEditAuthRequest.Failure) {
-                handleError(((PayPalVaultEditAuthRequest.Failure) result).getError());
-            }
-
-            if (result instanceof PayPalVaultEditAuthRequest.ReadyToLaunch) {
-                PayPalVaultEditAuthRequest.ReadyToLaunch success = (PayPalVaultEditAuthRequest.ReadyToLaunch) result;
-
-                PayPalVaultEditPendingRequest pendingRequest = payPalLauncher.launch(requireActivity(), success);
-                if (pendingRequest instanceof PayPalVaultEditPendingRequest.Started) {
-                    storeEditPendingRequest((PayPalVaultEditPendingRequest.Started) pendingRequest);
-                } else if (pendingRequest instanceof PayPalVaultEditPendingRequest.Failure) {
-                    handleError(((PayPalVaultEditPendingRequest.Failure) pendingRequest).getError());
-                }
-            }
-        });
-    }
-
-    @OptIn(markerClass = ExperimentalBetaApi.class)
-    private void launchPayPalVaultEditErrorHandling(String editVaultId, String riskCorrelationId) {
-        PayPalVaultErrorHandlingEditRequest request = new PayPalVaultErrorHandlingEditRequest(
-                editVaultId,
-                riskCorrelationId
-        );
 
         payPalClient.createEditAuthRequest(requireContext(), request, (result) -> {
             if (result instanceof PayPalVaultEditAuthRequest.Failure) {
