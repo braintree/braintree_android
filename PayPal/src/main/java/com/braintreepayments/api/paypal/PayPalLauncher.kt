@@ -118,6 +118,26 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
         }
     }
 
+    /**
+     * Captures and delivers the result of a PayPal Vault Edit flow.
+     *
+     * For most integrations, this method should be invoked in the onResume method of the Activity
+     * used to invoke
+     * [PayPalLauncher.launch].
+     *
+     * If the Activity used to launch the PayPal flow has is configured with
+     * android:launchMode="singleTop", this method should be invoked in the onNewIntent method of
+     * the Activity.
+     *
+     * @param pendingRequest the [PayPalVaultEditPendingRequest.Started] stored after successfully
+     * invoking [PayPalLauncher.launch]
+     * @param intent the intent to return to your application containing a deep link result
+     * from the PayPal browser flow
+     * @return a [PayPalVaultEditAuthResult.Success] that should be passed to [PayPalClient.edit]
+     * for parsing. Returns [PayPalPaymentAuthResult.NoResult] if the user
+     * canceled the payment flow, or returned to the app without completing the PayPal
+     * authentication flow.
+     */
     @OptIn(ExperimentalBetaApi::class)
     fun handleReturnToApp(
         pendingRequest: PayPalVaultEditPendingRequest.Started,
