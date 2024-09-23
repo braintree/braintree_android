@@ -54,7 +54,7 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
     }
 
     /**
-     * Launches the PayPal EditFi flow by switching to a web browser
+     * Launches the PayPal Vault Edit flow by switching to a web browser
      *
      * @param activity the Android Activity from which you will launch the web browser
      * @param result a [PayPalVaultEditAuthRequest.ReadyToLaunch] received from

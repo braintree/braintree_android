@@ -17,7 +17,7 @@ public class PendingRequestStore {
     static final String LOCAL_PAYMENT_PENDING_REQUEST_KEY = "LOCAL_PAYMENT_PENDING_REQUEST";
     static final String SEPA_DIRECT_DEBIT_PENDING_REQUEST_KEY = "SEPA_DIRECT_DEBIT_PENDING_REQUEST";
     static final String VENMO_PENDING_REQUEST_KEY = "VENMO_PENDING_REQUEST";
-    static final String EDIT_FI_PENDING_REQUEST_KEY = "EDITFI_PENDING_REQUEST";
+    static final String EDIT_FI_PENDING_REQUEST_KEY = "EDIT_FI_PENDING_REQUEST";
 
     private static final PendingRequestStore INSTANCE = new PendingRequestStore();
 

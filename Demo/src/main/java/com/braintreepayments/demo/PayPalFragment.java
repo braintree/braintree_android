@@ -136,12 +136,7 @@ public class PayPalFragment extends BaseFragment {
             );
 
             if (editAuthResult instanceof PayPalVaultEditAuthResult.Success) {
-                PayPalVaultEditResult result = payPalClient.edit(
-                        (PayPalVaultEditAuthResult.Success) editAuthResult
-                );
-
-                handleVaultEditParsing(result);
-
+                completeEdit((PayPalVaultEditAuthResult.Success) editAuthResult);
             } else if (editAuthResult instanceof PayPalVaultEditAuthResult.Failure) {
                 handleError(((PayPalVaultEditAuthResult.Failure) editAuthResult).getError());
             } else if (editAuthResult instanceof PayPalVaultEditAuthResult.NoResult) {
@@ -152,7 +147,9 @@ public class PayPalFragment extends BaseFragment {
     }
 
     @OptIn(markerClass = ExperimentalBetaApi.class)
-    private void handleVaultEditParsing(PayPalVaultEditResult result) {
+    private void completeEdit(PayPalVaultEditAuthResult.Success editAuthResult) {
+        PayPalVaultEditResult result = payPalClient.edit(editAuthResult);
+
         if (result instanceof PayPalVaultEditResult.Success) {
             String successDialog =
                     "Risk CorrelationId: " +

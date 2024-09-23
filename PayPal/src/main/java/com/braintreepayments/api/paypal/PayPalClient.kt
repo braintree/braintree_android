@@ -16,7 +16,7 @@ import com.braintreepayments.api.paypal.vaultedit.PayPalInternalClientEditCallba
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequestParams
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditCallback
+import com.braintreepayments.api.paypal.vaultedit.PayPalEditAuthCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResult
 import com.braintreepayments.api.sharedutils.Json
@@ -319,17 +319,17 @@ class PayPalClient internal constructor(
     fun createEditAuthRequest(
         context: Context,
         payPalVaultEditRequest: PayPalVaultEditRequest,
-        callback: PayPalVaultEditCallback
+        callback: PayPalEditAuthCallback
     ) {
         internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest) { result, error ->
             if (error != null) {
-                callback.onPayPalVaultEditResult(PayPalVaultEditAuthRequest.Failure(error))
+                callback.onPayPalVaultEditAuthRequest(PayPalVaultEditAuthRequest.Failure(error))
             }
 
             if (result is PayPalVaultEditAuthRequestParams) {
                 result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result)
 
-                callback.onPayPalVaultEditResult(
+                callback.onPayPalVaultEditAuthRequest(
                     PayPalVaultEditAuthRequest.ReadyToLaunch(
                         result.clientMetadataId,
                         result.browserSwitchOptions

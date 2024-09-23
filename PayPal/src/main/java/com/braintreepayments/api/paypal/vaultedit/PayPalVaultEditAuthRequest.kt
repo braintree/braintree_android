@@ -7,7 +7,7 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 sealed class PayPalVaultEditAuthRequest {
 
     /**
-     * The PayPal vault edit flow completed successfully.
+     * The request was successfully created and is ready to be launched by [PayPalLauncher]
      *
      * @property riskCorrelationId This ID is used to link subsequent retry attempts if payment is declined
      */
@@ -17,14 +17,9 @@ sealed class PayPalVaultEditAuthRequest {
     ) : PayPalVaultEditAuthRequest()
 
     /**
-     * There was an [error] in the PayPal vault edit flow.
+     * There was an [error] creating the request.
      */
     class Failure internal constructor(
         val error: Exception
     ) : PayPalVaultEditAuthRequest()
-
-    /**
-     * The user canceled the PayPal vault edit flow.
-     */
-    class Cancel internal constructor() : PayPalVaultEditAuthRequest()
 }
