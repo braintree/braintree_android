@@ -43,6 +43,7 @@ dependencies {
     testImplementation libs.mockito.core
     testImplementation libs.mockk
     testImplementation project(':TestUtils')
+    testImplementation libs.androidx.test.core
 }
 
 // region signing and publishing
