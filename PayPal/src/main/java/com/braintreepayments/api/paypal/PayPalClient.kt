@@ -101,11 +101,7 @@ class PayPalClient internal constructor(
                 payPalContextId = payPalResponse.pairingId
                 val isAppSwitchFlow = internalPayPalClient.isAppSwitchEnabled(payPalRequest) &&
                     internalPayPalClient.isPayPalInstalled(context)
-                linkType = if (isAppSwitchFlow) {
-                    LinkType.APP_SWITCH
-                } else {
-                    LinkType.APP_LINK
-                }
+                linkType = if (isAppSwitchFlow) LinkType.APP_SWITCH else LinkType.APP_LINK
 
                 try {
                     payPalResponse.browserSwitchOptions = buildBrowserSwitchOptions(payPalResponse)
