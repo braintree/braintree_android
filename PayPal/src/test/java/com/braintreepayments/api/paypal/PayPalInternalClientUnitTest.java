@@ -26,6 +26,9 @@ import com.braintreepayments.api.core.TokenizationKey;
 import com.braintreepayments.api.core.TokenizeCallback;
 import com.braintreepayments.api.datacollector.DataCollector;
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest;
+import com.braintreepayments.api.paypal.vaultedit.PayPalInternalClientEditCallback;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
 import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.testutils.MockApiClientBuilder;
@@ -57,6 +60,7 @@ public class PayPalInternalClientUnitTest {
     private ApiClient apiClient;
 
     PayPalInternalClientCallback payPalInternalClientCallback;
+    PayPalInternalClientEditCallback payPalInternalClientEditCallback;
 
     @Before
     public void beforeEach() throws JSONException {
@@ -68,6 +72,7 @@ public class PayPalInternalClientUnitTest {
         dataCollector = mock(DataCollector.class);
         apiClient = mock(ApiClient.class);
         payPalInternalClientCallback = mock(PayPalInternalClientCallback.class);
+        payPalInternalClientEditCallback = mock(PayPalInternalClientEditCallback.class);
     }
 
     @Test
@@ -769,5 +774,60 @@ public class PayPalInternalClientUnitTest {
         verify(dataCollector).getClientMetadataId(same(context), captor.capture(), same(configuration));
 
         assertTrue(captor.getValue().getHasUserLocationConsent());
+    }
+
+    @Test
+    public void sendRequest_withPayPalVaultEditRequest_sendVaultEditRequest() throws JSONException {
+        when(dataCollector.getClientMetadataId(same(context), any(), any())).thenReturn("sample-client-metadata-id");
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .authorizationSuccess(clientToken)
+                .appLinkReturnUri(Uri.parse("https://example.com"))
+                .build();
+        when(clientToken.getBearer()).thenReturn("client-token-bearer");
+
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
+
+        String editVaultId = "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=";
+        PayPalVaultErrorHandlingEditRequest request = new PayPalVaultErrorHandlingEditRequest(editVaultId, "sample-client-metadata-id");
+
+        sut.sendVaultEditRequest(context, request, payPalInternalClientEditCallback);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+
+        verify(braintreeClient).sendPOST(
+                eq("/v1/paypal_hermes/generate_edit_fi_url"),
+                captor.capture(),
+                anyMap(),
+                any(HttpResponseCallback.class)
+        );
+
+        String result = captor.getValue();
+        JSONObject actual = new JSONObject(result);
+
+        JSONObject expected = new JSONObject()
+                .put("authorization_fingerprint", "client-token-bearer")
+                .put("return_url", "https://example.com://onetouch/v1/success")
+                .put("cancel_url", "https://example.com://onetouch/v1/cancel")
+                .put("offer_paypal_credit", true)
+                .put("description", "Billing Agreement Description")
+                .put("experience_profile", new JSONObject()
+                        .put("no_shipping", false)
+                        .put("landing_page_type", "billing")
+                        .put("brand_name", "sample-display-name")
+                        .put("locale_code", "US")
+                        .put("address_override", false))
+                .put("shipping_address", new JSONObject()
+                        .put("line1", "123 Fake St.")
+                        .put("line2", "Apt. v.0")
+                        .put("city", "Oakland")
+                        .put("state", "CA")
+                        .put("postal_code", "12345")
+                        .put("country_code", "US")
+                        .put("recipient_name", "Brianna Tree"))
+                .put("merchant_account_id", "sample-merchant-account-id");
+
+        JSONAssert.assertEquals(expected, actual, true);
     }
 }
