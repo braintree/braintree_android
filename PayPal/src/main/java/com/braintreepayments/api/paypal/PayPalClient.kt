@@ -322,6 +322,8 @@ class PayPalClient internal constructor(
      * @param context an Android Context
      * @param payPalVaultEditRequest a [PayPalVaultEditRequest] containing the edit request
      * @param callback a [PayPalEditAuthCallback]
+     *
+     * This feature is currently only supported with client token authorization.
      */
     @ExperimentalBetaApi
     fun createEditAuthRequest(
