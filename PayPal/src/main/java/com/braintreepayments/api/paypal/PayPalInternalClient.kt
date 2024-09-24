@@ -13,7 +13,6 @@ import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
 import com.braintreepayments.api.paypal.vaultedit.PayPalInternalClientEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequestParams
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -141,17 +140,17 @@ internal class PayPalInternalClient(
     fun sendVaultEditRequest(
         context: Context,
         request: PayPalVaultEditRequest,
+        correlationId: String? = null,
         callback: PayPalInternalClientEditCallback
     ) {
         getClientMetadataId(
-            context
+            context,
+            correlationId,
         ) { clientMetadataId ->
             if (clientMetadataId == null) {
                 callback.onPayPalVaultEditResult(null, BraintreeException("An unexpected error occurred"))
             } else {
-                val riskCorrelationId =
-                    (request as? PayPalVaultErrorHandlingEditRequest)
-                        ?.riskCorrelationId ?: clientMetadataId
+                val riskCorrelationId = correlationId ?: clientMetadataId
 
                 sendVaultEditRequestWithRiskCorrelationId(
                     request,
@@ -212,8 +211,13 @@ internal class PayPalInternalClient(
 
     private fun getClientMetadataId(
         context: Context,
+        correlationId: String?,
         callback: (String?) -> Unit
     ) {
+        if (correlationId != null) {
+            callback(correlationId)
+        }
+
         braintreeClient.getConfiguration { configuration, error ->
             if (error != null) {
                 callback(error("No Client Metadata Id"))

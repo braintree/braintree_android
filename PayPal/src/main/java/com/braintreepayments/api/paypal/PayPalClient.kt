@@ -19,6 +19,7 @@ import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequestPara
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResult
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest
 import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
 import org.json.JSONObject
@@ -328,7 +329,9 @@ class PayPalClient internal constructor(
         payPalVaultEditRequest: PayPalVaultEditRequest,
         callback: PayPalEditAuthCallback
     ) {
-        internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest) { result, error ->
+        var correlationId: String? = (payPalVaultEditRequest as? PayPalVaultErrorHandlingEditRequest)?.riskCorrelationId
+
+        internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest, correlationId) { result, error ->
             if (error != null) {
                 callback.onPayPalVaultEditAuthRequest(PayPalVaultEditAuthRequest.Failure(error))
             }

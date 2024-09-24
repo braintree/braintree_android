@@ -792,12 +792,12 @@ public class PayPalInternalClientUnitTest {
         String editVaultId = "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=";
         PayPalVaultErrorHandlingEditRequest request = new PayPalVaultErrorHandlingEditRequest(editVaultId, "sample-client-metadata-id");
 
-        sut.sendVaultEditRequest(context, request, payPalInternalClientEditCallback);
+        sut.sendVaultEditRequest(context, request, "sample-client-metadata-id", payPalInternalClientEditCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 
         verify(braintreeClient).sendPOST(
-                eq("/v1/paypal_hermes/generate_edit_fi_url"),
+                eq(request.getHermesPath().toString()),
                 captor.capture(),
                 anyMap(),
                 any(HttpResponseCallback.class)
@@ -807,26 +807,10 @@ public class PayPalInternalClientUnitTest {
         JSONObject actual = new JSONObject(result);
 
         JSONObject expected = new JSONObject()
-                .put("authorization_fingerprint", "client-token-bearer")
-                .put("return_url", "https://example.com://onetouch/v1/success")
-                .put("cancel_url", "https://example.com://onetouch/v1/cancel")
-                .put("offer_paypal_credit", true)
-                .put("description", "Billing Agreement Description")
-                .put("experience_profile", new JSONObject()
-                        .put("no_shipping", false)
-                        .put("landing_page_type", "billing")
-                        .put("brand_name", "sample-display-name")
-                        .put("locale_code", "US")
-                        .put("address_override", false))
-                .put("shipping_address", new JSONObject()
-                        .put("line1", "123 Fake St.")
-                        .put("line2", "Apt. v.0")
-                        .put("city", "Oakland")
-                        .put("state", "CA")
-                        .put("postal_code", "12345")
-                        .put("country_code", "US")
-                        .put("recipient_name", "Brianna Tree"))
-                .put("merchant_account_id", "sample-merchant-account-id");
+                .put("edit_paypal_vault_id", "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=")
+                .put("return_url", "https:\/\/example.com:\/\/onetouch\/v1\/success")
+                .put("cancel_url", "https:\/\/example.com:\/\/onetouch\/v1\/cancel")
+                .put("risk_correlation_id", "sample-client-metadata-id");
 
         JSONAssert.assertEquals(expected, actual, true);
     }
