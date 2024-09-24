@@ -320,18 +320,6 @@ class ThreeDSecureClient internal constructor(
             val validateResponse = paymentAuthResult.validateResponse
             val jwt = paymentAuthResult.jwt
 
-            if (threeDSecureParams == null || jwt == null) {
-                braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED)
-                callbackTokenizeFailure(
-                    callback,
-                    ThreeDSecureResult.Failure(
-                        error = BraintreeException("threeDSecureParams or jwt is null"),
-                        nonce = null
-                    )
-                )
-                return
-            }
-
             when (validateResponse?.actionCode) {
                 CardinalActionCode.FAILURE,
                 CardinalActionCode.NOACTION,
