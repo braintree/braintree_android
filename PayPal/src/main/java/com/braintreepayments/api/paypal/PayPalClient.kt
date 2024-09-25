@@ -10,6 +10,7 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.core.TokenizationKey
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.paypal.vaultedit.PayPalEditAuthCallback
@@ -321,6 +322,8 @@ class PayPalClient internal constructor(
      * @param context an Android Context
      * @param payPalVaultEditRequest a [PayPalVaultEditRequest] containing the edit request
      * @param callback a [PayPalEditAuthCallback]
+     *
+     * This feature is currently only supported with client token authorization.
      */
     @ExperimentalBetaApi
     fun createEditAuthRequest(
@@ -328,6 +331,15 @@ class PayPalClient internal constructor(
         payPalVaultEditRequest: PayPalVaultEditRequest,
         callback: PayPalEditAuthCallback
     ) {
+        if (braintreeClient.authorization is TokenizationKey) {
+            callback.onPayPalVaultEditAuthRequest(
+                PayPalVaultEditAuthRequest.Failure(
+                    BraintreeException("Invalid authorization. This feature can only be used with a client token.")
+                )
+            )
+            return
+        }
+
         internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest) { result, error ->
             if (error != null) {
                 callback.onPayPalVaultEditAuthRequest(PayPalVaultEditAuthRequest.Failure(error))
