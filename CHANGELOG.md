@@ -1,7 +1,11 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
-
+* PayPal
+  * Add PayPal App Switch flow (BETA)
+    * Send `link_type` and `paypal_installed` in `event_params` when available to PayPal's analytics service (FPTI)
+    * **Note:** This feature is currently in beta and may change or be removed in future releases.
+    
 * GooglePay
   * Upgrade `play-services-wallet` to `19.4.0`
 * Breaking Changes
