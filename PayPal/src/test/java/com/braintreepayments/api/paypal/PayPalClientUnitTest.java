@@ -463,7 +463,7 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void edit_auth_request() {
+    public void edit_auth_payPalVaultErrorHandlingEditRequest() {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         BraintreeClient braintreeClient =

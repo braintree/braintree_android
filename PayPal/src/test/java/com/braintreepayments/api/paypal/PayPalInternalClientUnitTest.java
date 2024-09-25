@@ -777,7 +777,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withPayPalVaultEditRequest_sendVaultEditRequest() throws JSONException {
+    public void sendRequest_withPayPalVaultErrorHandlingEditRequest_sendVaultEditRequest() throws JSONException {
         when(
             dataCollector.getClientMetadataId(same(context), any(), any())
         ).thenReturn("sample-client-metadata-id");
