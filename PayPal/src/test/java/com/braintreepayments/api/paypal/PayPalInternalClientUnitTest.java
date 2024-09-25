@@ -872,4 +872,29 @@ public class PayPalInternalClientUnitTest {
 
         JSONAssert.assertEquals(expected, actual, true);
     }
+
+    @Test
+    public void sendVaultEditRequest_propagatesHttpErrors() {
+        Exception httpError = new Exception("http error");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .authorizationSuccess(clientToken)
+                .sendPOSTErrorResponse(httpError)
+                .build();
+
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
+
+        String editVaultId = "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=";
+        PayPalVaultEditRequest request = new PayPalVaultEditRequest(
+                editVaultId
+        );
+        sut.sendVaultEditRequest(
+                context,
+                request,
+                "sample-client-metadata-id",
+                payPalInternalClientEditCallback
+        );
+
+        verify(payPalInternalClientEditCallback).onPayPalVaultEditResult(null, httpError);
+    }
 }
