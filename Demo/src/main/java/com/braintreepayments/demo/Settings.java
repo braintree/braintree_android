@@ -200,6 +200,10 @@ public class Settings {
         return getPreferences(context).getBoolean("paypal_address_override", true);
     }
 
+    public static boolean isRbaMetadataEnabled(Context context) {
+        return getPreferences(context).getBoolean("paypal_rba_metadata", false);
+    }
+
     public static boolean isThreeDSecureEnabled(Context context) {
         return getPreferences(context).getBoolean("enable_three_d_secure", false);
     }

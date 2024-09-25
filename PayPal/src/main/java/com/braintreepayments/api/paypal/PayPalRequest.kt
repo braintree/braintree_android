@@ -121,5 +121,7 @@ abstract class PayPalRequest internal constructor(
         internal const val CORRELATION_ID_KEY: String = "correlation_id"
         internal const val LINE_ITEMS_KEY: String = "line_items"
         internal const val USER_ACTION_KEY: String = "user_action"
+        internal const val PLAN_TYPE_KEY: String = "plan_type"
+        internal const val PLAN_METADATA_KEY: String = "plan_metadata"
     }
 }
