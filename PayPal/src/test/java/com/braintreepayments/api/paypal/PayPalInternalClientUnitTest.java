@@ -27,6 +27,7 @@ import com.braintreepayments.api.core.TokenizeCallback;
 import com.braintreepayments.api.datacollector.DataCollector;
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest;
 import com.braintreepayments.api.paypal.vaultedit.PayPalInternalClientEditCallback;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequestParams;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
@@ -895,6 +896,37 @@ public class PayPalInternalClientUnitTest {
                 payPalInternalClientEditCallback
         );
 
-        verify(payPalInternalClientEditCallback).onPayPalVaultEditResult(null, httpError);
+        verify(payPalInternalClientEditCallback).onPayPalVaultEditResult(
+                null,
+                httpError
+        );
+    }
+
+    @Test
+    public void sendVaultEditRequest_propagatesMalformedJSONResponseErrors() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .authorizationSuccess(clientToken)
+                .sendPOSTSuccessfulResponse("{bad:")
+                .build();
+
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
+
+        String editVaultId = "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=";
+        PayPalVaultEditRequest request = new PayPalVaultEditRequest(
+                editVaultId
+        );
+
+        sut.sendVaultEditRequest(
+                context,
+                request,
+                "sample-client-metadata-id",
+                payPalInternalClientEditCallback
+        );
+
+        verify(payPalInternalClientEditCallback).onPayPalVaultEditResult(
+                (PayPalVaultEditAuthRequestParams) isNull(),
+                any(JSONException.class)
+        );
     }
 }
