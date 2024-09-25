@@ -31,6 +31,10 @@ public class PayPalRequestFactory {
             request.setUserAuthenticationEmail(buyerEmailAddress);
         }
 
+        if (Settings.isPayPalAppSwithEnabled(context)) {
+            request.setEnablePayPalAppSwitch(true);
+        }
+
         request.setDisplayName(Settings.getPayPalDisplayName(context));
 
         String landingPageType = Settings.getPayPalLandingPageType(context);

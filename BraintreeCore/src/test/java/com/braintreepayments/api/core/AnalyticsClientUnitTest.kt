@@ -224,6 +224,7 @@ class AnalyticsClientUnitTest {
         val metadata = createSampleDeviceMetadata()
 
         every { deviceInspector.isVenmoInstalled(context) } returns true
+        every { deviceInspector.isPayPalInstalled(context) } returns true
         every {
             deviceInspector.getDeviceMetadata(context, any(), sessionId, integration)
         } returns metadata
@@ -263,6 +264,7 @@ class AnalyticsClientUnitTest {
                 "api_integration_type": "custom",
                 "is_simulator": false,
                 "venmo_installed": true,
+                "paypal_installed": true,
                 "mapv": "fake-merchant-app-version",
                 "merchant_id": "fake-merchant-id",
                 "platform": "fake-platform",
@@ -443,6 +445,7 @@ class AnalyticsClientUnitTest {
     fun reportCrash_sendsCrashAnalyticsEvent() {
         every { analyticsParamRepository.sessionId } returns sessionId
         every { deviceInspector.isVenmoInstalled(context) } returns false
+        every { deviceInspector.isPayPalInstalled(context) } returns false
         every {
             deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         } returns createSampleDeviceMetadata()
@@ -478,6 +481,7 @@ class AnalyticsClientUnitTest {
                 "api_integration_type": "custom",
                 "is_simulator": false,
                 "venmo_installed": false,
+                "paypal_installed": false,
                 "mapv": "fake-merchant-app-version",
                 "merchant_id": "fake-merchant-id",
                 "platform": "fake-platform",

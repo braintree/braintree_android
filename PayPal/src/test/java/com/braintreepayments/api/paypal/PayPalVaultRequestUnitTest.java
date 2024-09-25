@@ -7,6 +7,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 
+import android.os.Build;
 import android.os.Parcel;
 
 import com.braintreepayments.api.core.Authorization;
@@ -38,6 +39,7 @@ public class PayPalVaultRequestUnitTest {
         assertNull(request.getLandingPageType());
         assertFalse(request.getShouldOfferCredit());
         assertFalse(request.getHasUserLocationConsent());
+        assertFalse(request.getEnablePayPalAppSwitch());
     }
 
     @Test
@@ -200,7 +202,8 @@ public class PayPalVaultRequestUnitTest {
             mock(Configuration.class),
             mock(Authorization.class),
             "success_url",
-            "cancel_url"
+            "cancel_url",
+            null
         );
 
         assertTrue(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
@@ -227,11 +230,9 @@ public class PayPalVaultRequestUnitTest {
 
         PayPalBillingInterval billingInterval = PayPalBillingInterval.MONTH;
         PayPalPricingModel pricingModel = PayPalPricingModel.VARIABLE;
-        PayPalBillingPricing billingPricing =
-                new PayPalBillingPricing(pricingModel, "1.00");
+        PayPalBillingPricing billingPricing = new PayPalBillingPricing(pricingModel, "1.00");
         billingPricing.setReloadThresholdAmount("6.00");
-        PayPalBillingCycle billingCycle =
-                new PayPalBillingCycle(true, 2, billingInterval, 1);
+        PayPalBillingCycle billingCycle = new PayPalBillingCycle(true, 2, billingInterval, 1);
         billingCycle.setSequence(1);
         billingCycle.setStartDate("2024-04-06T00:00:00Z");
         billingCycle.setPricing(billingPricing);
@@ -246,13 +247,31 @@ public class PayPalVaultRequestUnitTest {
         request.setRecurringBillingDetails(billingDetails);
         request.setRecurringBillingPlanType(PayPalRecurringBillingPlanType.RECURRING);
 
-        String requestBody = request.createRequestBody(
-                mock(Configuration.class),
-                mock(Authorization.class),
-                "success_url",
-                "cancel_url"
-        );
+        String requestBody =
+                request.createRequestBody(mock(Configuration.class), mock(Authorization.class),
+                        "success_url", "cancel_url", "universal_url");
 
         JSONAssert.assertEquals(Fixtures.PAYPAL_REQUEST_JSON, requestBody, false);
+    }
+
+    public void createRequestBody_sets_enablePayPalSwitch_and_userAuthenticationEmail_not_null() throws JSONException {
+        String versionSDK = String.valueOf(Build.VERSION.SDK_INT);
+        String payerEmail = "payer_email@example.com";
+        PayPalVaultRequest request = new PayPalVaultRequest(true);
+
+        request.setEnablePayPalAppSwitch(true);
+        request.setUserAuthenticationEmail(payerEmail);
+        String requestBody = request.createRequestBody(
+            mock(Configuration.class),
+            mock(Authorization.class),
+            "success_url",
+            "cancel_url",
+            "universal_url"
+        );
+
+        assertTrue(requestBody.contains("\"launch_paypal_app\":true"));
+        assertTrue(requestBody.contains("\"os_type\":" + "\"Android\""));
+        assertTrue(requestBody.contains("\"os_version\":" + "\"" + versionSDK + "\""));
+        assertTrue(requestBody.contains("\"merchant_app_return_url\":" + "\"universal_url\""));
     }
 }

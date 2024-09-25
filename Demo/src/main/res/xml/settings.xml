@@ -127,6 +127,12 @@
             android:summary="@string/paypal_credit_offered_summary"
             android:defaultValue="false" />
 
+        <CheckBoxPreference
+            android:key="paypal_app_switch"
+            android:title="PayPal App Switch"
+            android:summary="Enable PayPal App Switch"
+            android:defaultValue="false" />
+
         <ListPreference
             android:key="paypal_landing_page_type"
             android:title="@string/paypal_landing_page_type"
