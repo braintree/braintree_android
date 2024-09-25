@@ -19,6 +19,9 @@ import com.braintreepayments.api.core.AnalyticsEventParams;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeRequestCodes;
 import com.braintreepayments.api.core.Configuration;
+import com.braintreepayments.api.paypal.vaultedit.PayPalEditAuthCallback;
+import com.braintreepayments.api.paypal.vaultedit.PayPalInternalClientEditCallback;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest;
 import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 
@@ -40,6 +43,7 @@ public class PayPalClientUnitTest {
 
     private PayPalTokenizeCallback payPalTokenizeCallback;
     private PayPalPaymentAuthCallback paymentAuthCallback;
+    private PayPalEditAuthCallback payPalEditAuthCallback;
 
     @Before
     public void beforeEach() throws JSONException {
@@ -50,6 +54,7 @@ public class PayPalClientUnitTest {
 
         payPalTokenizeCallback = mock(PayPalTokenizeCallback.class);
         paymentAuthCallback = mock(PayPalPaymentAuthCallback.class);
+        payPalEditAuthCallback = mock(PayPalEditAuthCallback.class);
     }
 
     @Test
@@ -450,5 +455,24 @@ public class PayPalClientUnitTest {
         params.setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN");
         params.setVaultRequest(false);
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, params);
+    }
+
+    @Test
+    public void edit_auth_request() {
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+
+        BraintreeClient braintreeClient =
+                new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
+
+        PayPalVaultErrorHandlingEditRequest request = new PayPalVaultErrorHandlingEditRequest(
+                "sample-edit-vault-id",
+                "sample-client-metadata-id"
+        );
+
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
+        sut.createEditAuthRequest(activity, request, payPalEditAuthCallback);
+
+        verify(payPalInternalClient).sendVaultEditRequest(same(activity), same(request), same("sample-client-metadata-id"),
+                any(PayPalInternalClientEditCallback.class));
     }
 }

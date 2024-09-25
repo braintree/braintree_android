@@ -778,7 +778,9 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendRequest_withPayPalVaultEditRequest_sendVaultEditRequest() throws JSONException {
-        when(dataCollector.getClientMetadataId(same(context), any(), any())).thenReturn("sample-client-metadata-id");
+        when(
+            dataCollector.getClientMetadataId(same(context), any(), any())
+        ).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
@@ -790,9 +792,17 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
 
         String editVaultId = "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=";
-        PayPalVaultErrorHandlingEditRequest request = new PayPalVaultErrorHandlingEditRequest(editVaultId, "sample-client-metadata-id");
+        PayPalVaultErrorHandlingEditRequest request = new PayPalVaultErrorHandlingEditRequest(
+                editVaultId,
+                "sample-client-metadata-id"
+        );
 
-        sut.sendVaultEditRequest(context, request, "sample-client-metadata-id", payPalInternalClientEditCallback);
+        sut.sendVaultEditRequest(
+                context,
+                request,
+                "sample-client-metadata-id",
+                payPalInternalClientEditCallback
+        );
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 
