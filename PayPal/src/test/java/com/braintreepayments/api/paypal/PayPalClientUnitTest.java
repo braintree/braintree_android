@@ -463,6 +463,24 @@ public class PayPalClientUnitTest {
     }
 
     @Test
+    public void edit_auth_payPalVaultEditRequest() {
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+
+        BraintreeClient braintreeClient =
+                new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
+
+        PayPalVaultEditRequest request = new PayPalVaultEditRequest(
+                "sample-edit-vault-id"
+        );
+
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
+        sut.createEditAuthRequest(activity, request, payPalEditAuthCallback);
+
+        verify(payPalInternalClient).sendVaultEditRequest(same(activity), same(request), same("sample-client-metadata-id"),
+                any(PayPalInternalClientEditCallback.class));
+    }
+
+    @Test
     public void edit_auth_payPalVaultErrorHandlingEditRequest() {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 

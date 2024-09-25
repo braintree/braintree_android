@@ -824,4 +824,52 @@ public class PayPalInternalClientUnitTest {
 
         JSONAssert.assertEquals(expected, actual, true);
     }
+
+    @Test
+    public void sendRequest_withPayPalVaultEditRequest_sendVaultEditRequest() throws JSONException {
+        when(
+                dataCollector.getClientMetadataId(same(context), any(), any())
+        ).thenReturn("sample-client-metadata-id");
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(configuration)
+                .authorizationSuccess(clientToken)
+                .appLinkReturnUri(Uri.parse("https://example.com"))
+                .build();
+        when(clientToken.getBearer()).thenReturn("client-token-bearer");
+
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
+
+        String editVaultId = "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=";
+        PayPalVaultEditRequest request = new PayPalVaultEditRequest(
+                editVaultId
+        );
+
+        sut.sendVaultEditRequest(
+                context,
+                request,
+                "sample-client-metadata-id",
+                payPalInternalClientEditCallback
+        );
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+
+        verify(braintreeClient).sendPOST(
+                eq(request.getHermesPath().toString()),
+                captor.capture(),
+                anyMap(),
+                any(HttpResponseCallback.class)
+        );
+
+        String result = captor.getValue();
+        JSONObject actual = new JSONObject(result);
+
+        JSONObject expected = new JSONObject()
+                .put("edit_paypal_vault_id", "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=")
+                .put("return_url", "https://example.com://onetouch/v1/success")
+                .put("cancel_url", "https://example.com://onetouch/v1/cancel")
+                .put("risk_correlation_id", "sample-client-metadata-id");
+
+        JSONAssert.assertEquals(expected, actual, true);
+    }
 }
