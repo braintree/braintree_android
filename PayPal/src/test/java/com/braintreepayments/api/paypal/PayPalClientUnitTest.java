@@ -9,19 +9,24 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.test.core.app.ApplicationProvider;
 
 import com.braintreepayments.api.BrowserSwitchFinalResult;
 import com.braintreepayments.api.BrowserSwitchOptions;
 import com.braintreepayments.api.core.AnalyticsEventParams;
+import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeRequestCodes;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.paypal.vaultedit.PayPalEditAuthCallback;
 import com.braintreepayments.api.paypal.vaultedit.PayPalInternalClientEditCallback;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest;
 import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 
@@ -474,5 +479,32 @@ public class PayPalClientUnitTest {
 
         verify(payPalInternalClient).sendVaultEditRequest(same(activity), same(request), same("sample-client-metadata-id"),
                 any(PayPalInternalClientEditCallback.class));
+    }
+
+    public void createEditAuthRequest_whenAuthorizationIsTokenizationKey_callsBackWithError() throws JSONException {
+        PayPalAccountNonce payPalAccountNonce = mock(PayPalAccountNonce.class);
+        PayPalInternalClient payPalInternalClient =
+                new MockPayPalInternalClientBuilder().tokenizeSuccess(payPalAccountNonce).build();
+        Context context = ApplicationProvider.getApplicationContext();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
+                .build();
+
+        PayPalVaultEditRequest payPalVaultEditRequest = new PayPalVaultEditRequest("123abc");
+        PayPalEditAuthCallback editAuthCallback = mock(PayPalEditAuthCallback.class);
+
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
+
+        sut.createEditAuthRequest(context, payPalVaultEditRequest, editAuthCallback);
+
+        ArgumentCaptor<PayPalVaultEditAuthRequest> captor =
+                ArgumentCaptor.forClass(PayPalVaultEditAuthRequest.class);
+        verify(editAuthCallback).onPayPalVaultEditAuthRequest(captor.capture());
+
+        PayPalVaultEditAuthRequest request = captor.getValue();
+        assertTrue(request instanceof PayPalVaultEditAuthRequest.Failure);
+        assertEquals("Invalid authorization. This feature can only be used with a client token.",
+                ((PayPalVaultEditAuthRequest.Failure) request).getError().getMessage());
     }
 }
