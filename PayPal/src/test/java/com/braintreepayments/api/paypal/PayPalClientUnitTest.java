@@ -4,6 +4,8 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -11,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.test.core.app.ApplicationProvider;
@@ -476,7 +479,7 @@ public class PayPalClientUnitTest {
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
         sut.createEditAuthRequest(activity, request, payPalEditAuthCallback);
 
-        verify(payPalInternalClient).sendVaultEditRequest(same(activity), same(request), same("sample-client-metadata-id"),
+        verify(payPalInternalClient).sendVaultEditRequest(same(activity), same(request), isNull(),
                 any(PayPalInternalClientEditCallback.class));
     }
 
