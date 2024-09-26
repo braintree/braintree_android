@@ -14,7 +14,7 @@ sealed class PayPalVaultEditPendingRequest {
      * @property pendingRequestString - This String should be stored and passed to
      * [PayPalLauncher.handleReturnToApp].
      */
-    class Started internal constructor(val pendingRequestString: String) : PayPalVaultEditPendingRequest()
+    class Started(val pendingRequestString: String) : PayPalVaultEditPendingRequest()
 
     /**
      * An error occurred launching the PayPal browser flow. See [error] for details.
