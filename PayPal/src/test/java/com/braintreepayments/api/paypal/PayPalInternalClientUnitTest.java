@@ -14,6 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Notification;
 import android.content.Context;
 import android.net.Uri;
 
@@ -929,4 +930,3 @@ public class PayPalInternalClientUnitTest {
                 any(JSONException.class)
         );
     }
-}

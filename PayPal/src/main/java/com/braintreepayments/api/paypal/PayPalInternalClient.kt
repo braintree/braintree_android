@@ -146,8 +146,10 @@ internal class PayPalInternalClient(
         getClientMetadataId(
             context,
             correlationId,
-        ) { clientMetadataId ->
-            if (clientMetadataId == null) {
+        ) { clientMetadataId, error ->
+            if (error != null) {
+                callback.onPayPalVaultEditResult(null, error)
+            } else if (clientMetadataId == null) {
                 callback.onPayPalVaultEditResult(null, BraintreeException("An unexpected error occurred"))
             } else {
                 val riskCorrelationId = correlationId ?: clientMetadataId
@@ -212,23 +214,23 @@ internal class PayPalInternalClient(
     private fun getClientMetadataId(
         context: Context,
         correlationId: String?,
-        callback: (String?) -> Unit
+        callback: (String?, Exception?) -> Unit
     ) {
         if (correlationId != null) {
-            callback(correlationId)
-        }
+            callback(correlationId, null)
+        } else {
+            braintreeClient.getConfiguration { configuration, error ->
+                if (error != null) {
+                    callback(null, BraintreeException("An unexpected error occurred"))
+                } else {
+                    val clientMetadataId = dataCollector.getClientMetadataId(
+                        context,
+                        configuration,
+                        false
+                    )
 
-        braintreeClient.getConfiguration { configuration, error ->
-            if (error != null) {
-                callback(error("No Client Metadata Id"))
-            } else {
-                val clientMetadataId = dataCollector.getClientMetadataId(
-                    context,
-                    configuration,
-                    false
-                )
-
-                callback(clientMetadataId)
+                    callback(clientMetadataId, null)
+                }
             }
         }
     }
