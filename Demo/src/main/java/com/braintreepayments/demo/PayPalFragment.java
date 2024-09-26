@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,13 +52,20 @@ public class PayPalFragment extends BaseFragment {
             launchPayPal(false, buyerEmailEditText.getText().toString());
         });
         billingAgreementButton.setOnClickListener(v -> {
+            FragmentActivity activity = getActivity();
+
+            if (Settings.isPayPalAppSwithEnabled(activity) && buyerEmailEditText.getText().toString().isEmpty()) {
+                Toast.makeText(activity, "Email is required for the App Switch flow", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             launchPayPal(true, buyerEmailEditText.getText().toString());
         });
 
         payPalClient = new PayPalClient(
                 requireContext(),
                 super.getAuthStringArg(),
-                Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/")
+                Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments")
         );
         payPalLauncher = new PayPalLauncher();
 
@@ -128,6 +136,13 @@ public class PayPalFragment extends BaseFragment {
                     } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch){
                         PayPalPendingRequest request = payPalLauncher.launch(requireActivity(),
                                 ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
+
+                        String pairingId = ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams().getPairingId();
+
+                        if (pairingId != null && !pairingId.isEmpty()) {
+                            Toast.makeText(getActivity(), "Pairing ID: " + pairingId, Toast.LENGTH_LONG).show();
+                        }
+
                         if (request instanceof PayPalPendingRequest.Started) {
                             storePendingRequest((PayPalPendingRequest.Started) request);
                         } else if (request instanceof PayPalPendingRequest.Failure) {
