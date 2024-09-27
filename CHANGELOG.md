@@ -8,6 +8,13 @@
     * Add `PayPalClient.createEditAuthRequest()` that takes in a `PayPalVaultEditRequest` or `PayPalVaultErrorHandlingEditRequest`
     * **Note:** This feature is currently in beta and may change or be removed in future releases
   * Add `PayPalRecurringBillingDetails` and `PayPalRecurringBillingPlanType` opt-in request objects. Including these details will provide transparency to users on their billing schedule, dates, and amounts, as well as launch a modernized checkout UI.
+  * Add PayPal App Switch vault flow (BETA)
+    * Add `enablePayPalAppSwitch` property to `PayPalVaultRequest` for App Switch support
+    * Require `PayPalVaultRequest.userAuthenticationEmail` for App Switch support
+    * Require `PayPalClient.appLinkReturnUrl` for App Switch support
+    * Send `link_type` and `paypal_installed` in `event_params` when available to PayPal's analytics service (FPTI)
+    * **Note:** This feature is currently in beta and may change or be removed in future releases.
+    
 * GooglePay
   * Upgrade `play-services-wallet` to `19.4.0`
 * Breaking Changes
