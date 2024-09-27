@@ -386,7 +386,7 @@ before the `OnResume` method of your Activity or Fragment.
 do not need to be instantiated in `OnCreate`.
 
 The PayPal integration now requires an Android App link be configured to return to your app from the 
-PayPal flow. 
+PayPal flow. See the [App Link Setup Guide](APP_LINK_SETUP.md) for more information.
 
 ```diff
 class MyActivity : FragmentActivity() {
