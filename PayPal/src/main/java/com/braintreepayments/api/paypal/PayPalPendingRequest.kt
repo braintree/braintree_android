@@ -14,7 +14,7 @@ sealed class PayPalPendingRequest {
      * @property pendingRequestString - This String should be stored and passed to
      * [PayPalLauncher.handleReturnToApp].
      */
-    class Started internal constructor(
+    class Started(
         val pendingRequestString: String
     ) : PayPalPendingRequest()
 
