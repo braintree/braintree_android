@@ -856,7 +856,7 @@ public class PayPalInternalClientUnitTest {
                 .build();
         when(clientToken.getBearer()).thenReturn("client-token-bearer");
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient,dataCollector, apiClient, deviceInspector);
 
         String editVaultId = "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=";
         PayPalVaultErrorHandlingEditRequest request = new PayPalVaultErrorHandlingEditRequest(
@@ -905,7 +905,7 @@ public class PayPalInternalClientUnitTest {
                 .build();
         when(clientToken.getBearer()).thenReturn("client-token-bearer");
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient,dataCollector, apiClient, deviceInspector);
 
         String editVaultId = "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=";
         PayPalVaultEditRequest request = new PayPalVaultEditRequest(
@@ -949,7 +949,7 @@ public class PayPalInternalClientUnitTest {
                 .sendPOSTErrorResponse(httpError)
                 .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient,dataCollector, apiClient, deviceInspector);
 
         String editVaultId = "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=";
         PayPalVaultEditRequest request = new PayPalVaultEditRequest(
@@ -976,7 +976,7 @@ public class PayPalInternalClientUnitTest {
                 .sendPOSTSuccessfulResponse("{bad:")
                 .build();
 
-        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
+        PayPalInternalClient sut = new PayPalInternalClient(braintreeClient,dataCollector, apiClient, deviceInspector);
 
         String editVaultId = "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=";
         PayPalVaultEditRequest request = new PayPalVaultEditRequest(
