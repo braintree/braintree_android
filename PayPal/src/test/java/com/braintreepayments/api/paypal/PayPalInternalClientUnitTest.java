@@ -112,10 +112,10 @@ public class PayPalInternalClientUnitTest {
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
-            eq("/v1/paypal_hermes/setup_billing_agreement"),
-            captor.capture(),
-            anyMap(),
-            any(HttpResponseCallback.class)
+                eq("/v1/paypal_hermes/setup_billing_agreement"),
+                captor.capture(),
+                anyMap(),
+                any(HttpResponseCallback.class)
         );
 
         String result = captor.getValue();
@@ -167,9 +167,9 @@ public class PayPalInternalClientUnitTest {
         shippingAddressOverride.setCountryCodeAlpha2("US");
 
         PayPalLineItem item = new PayPalLineItem(PayPalLineItemKind.DEBIT,
-            "Item 0",
-            "1",
-            "2"
+                "Item 0",
+                "1",
+                "2"
         );
         item.setDescription("A new item");
         item.setProductCode("abc-123");
@@ -195,10 +195,10 @@ public class PayPalInternalClientUnitTest {
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
-            eq("/v1/paypal_hermes/create_payment_resource"),
-            captor.capture(),
-            anyMap(),
-            any(HttpResponseCallback.class)
+                eq("/v1/paypal_hermes/create_payment_resource"),
+                captor.capture(),
+                anyMap(),
+                any(HttpResponseCallback.class)
         );
 
         String result = captor.getValue();
@@ -258,10 +258,10 @@ public class PayPalInternalClientUnitTest {
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
-            anyString(),
-            captor.capture(),
-            anyMap(),
-            any(HttpResponseCallback.class)
+                anyString(),
+                captor.capture(),
+                anyMap(),
+                any(HttpResponseCallback.class)
         );
 
         String result = captor.getValue();
@@ -287,10 +287,10 @@ public class PayPalInternalClientUnitTest {
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
-            anyString(),
-            captor.capture(),
-            anyMap(),
-            any(HttpResponseCallback.class)
+                anyString(),
+                captor.capture(),
+                anyMap(),
+                any(HttpResponseCallback.class)
         );
 
         String result = captor.getValue();
@@ -315,10 +315,10 @@ public class PayPalInternalClientUnitTest {
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
-            anyString(),
-            captor.capture(),
-            anyMap(),
-            any(HttpResponseCallback.class)
+                anyString(),
+                captor.capture(),
+                anyMap(),
+                any(HttpResponseCallback.class)
         );
 
         String result = captor.getValue();
@@ -343,10 +343,10 @@ public class PayPalInternalClientUnitTest {
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
-            anyString(),
-            captor.capture(),
-            anyMap(),
-            any(HttpResponseCallback.class)
+                anyString(),
+                captor.capture(),
+                anyMap(),
+                any(HttpResponseCallback.class)
         );
 
         String result = captor.getValue();
@@ -371,10 +371,10 @@ public class PayPalInternalClientUnitTest {
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
-            anyString(),
-            captor.capture(),
-            anyMap(),
-            any(HttpResponseCallback.class)
+                anyString(),
+                captor.capture(),
+                anyMap(),
+                any(HttpResponseCallback.class)
         );
 
         String result = captor.getValue();
@@ -403,10 +403,10 @@ public class PayPalInternalClientUnitTest {
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
-            eq("/v1/paypal_hermes/setup_billing_agreement"),
-            captor.capture(),
-            anyMap(),
-            any(HttpResponseCallback.class)
+                eq("/v1/paypal_hermes/setup_billing_agreement"),
+                captor.capture(),
+                anyMap(),
+                any(HttpResponseCallback.class)
         );
 
         String result = captor.getValue();
@@ -431,10 +431,10 @@ public class PayPalInternalClientUnitTest {
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
-            anyString(),
-            captor.capture(),
-            anyMap(),
-            any(HttpResponseCallback.class)
+                anyString(),
+                captor.capture(),
+                anyMap(),
+                any(HttpResponseCallback.class)
         );
 
         String result = captor.getValue();
@@ -458,10 +458,10 @@ public class PayPalInternalClientUnitTest {
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
-            anyString(),
-            captor.capture(),
-            anyMap(),
-            any(HttpResponseCallback.class)
+                anyString(),
+                captor.capture(),
+                anyMap(),
+                any(HttpResponseCallback.class)
         );
 
         String result = captor.getValue();
@@ -485,10 +485,10 @@ public class PayPalInternalClientUnitTest {
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
-            anyString(),
-            captor.capture(),
-            anyMap(),
-            any(HttpResponseCallback.class)
+                anyString(),
+                captor.capture(),
+                anyMap(),
+                any(HttpResponseCallback.class)
         );
 
         String result = captor.getValue();
@@ -564,10 +564,10 @@ public class PayPalInternalClientUnitTest {
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
-            anyString(),
-            captor.capture(),
-            anyMap(),
-            any(HttpResponseCallback.class)
+                anyString(),
+                captor.capture(),
+                anyMap(),
+                any(HttpResponseCallback.class)
         );
 
         String result = captor.getValue();
@@ -756,11 +756,11 @@ public class PayPalInternalClientUnitTest {
     public void payPalDataCollector_passes_correct_arguments_to_getClientMetadataId() throws Exception {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .configuration(configuration)
-            .authorizationSuccess(clientToken)
-            .returnUrlScheme("sample-scheme")
-            .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-            .build();
+                .configuration(configuration)
+                .authorizationSuccess(clientToken)
+                .returnUrlScheme("sample-scheme")
+                .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
+                .build();
 
         PayPalInternalClient sut = new PayPalInternalClient(braintreeClient, dataCollector, apiClient);
 
@@ -771,7 +771,7 @@ public class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         ArgumentCaptor<DataCollectorInternalRequest> captor = ArgumentCaptor.forClass(
-            DataCollectorInternalRequest.class);
+                DataCollectorInternalRequest.class);
 
         verify(dataCollector).getClientMetadataId(same(context), captor.capture(), same(configuration));
 
@@ -781,7 +781,7 @@ public class PayPalInternalClientUnitTest {
     @Test
     public void sendRequest_withPayPalVaultErrorHandlingEditRequest_sendVaultEditRequest() throws JSONException {
         when(
-            dataCollector.getClientMetadataId(same(context), any(), any())
+                dataCollector.getClientMetadataId(same(context), any(), any())
         ).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -930,3 +930,4 @@ public class PayPalInternalClientUnitTest {
                 any(JSONException.class)
         );
     }
+}
