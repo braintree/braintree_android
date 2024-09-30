@@ -15,4 +15,28 @@ class PayPalAnalyticsUnitTest {
             PayPalAnalytics.BROWSER_LOGIN_CANCELED
         )
     }
+
+    @Test
+    fun testAnalyticsEvents_sendsExpectedEditFiEventNames() {
+        assertEquals("paypal:edit:started", PayPalAnalytics.EDIT_FI_STARTED)
+
+        assertEquals(
+            "paypal:edit:browser-presentation:succeeded",
+            PayPalAnalytics.EDIT_FI_BROWSER_PRESENTATION_SUCCEEDED
+        )
+
+        assertEquals(
+            "paypal:edit:browser-presentation:failed",
+            PayPalAnalytics.EDIT_FI_BROWSER_PRESENTATION_FAILED
+        )
+
+        assertEquals(
+            "paypal:edit:browser-login:canceled",
+            PayPalAnalytics.EDIT_FI_BROWSER_LOGIN_CANCELED
+        )
+
+        assertEquals("paypal:edit:failed", PayPalAnalytics.EDIT_FI_FAILED)
+        
+        assertEquals("paypal:edit:succeeded", PayPalAnalytics.EDIT_FI_SUCCEEDED)
+    }
 }
