@@ -17,6 +17,7 @@ import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
 import org.json.JSONException
 import org.json.JSONObject
 
+@Suppress("TooManyFunctions")
 internal class PayPalInternalClient(
     private val braintreeClient: BraintreeClient,
     private val dataCollector: DataCollector = DataCollector(braintreeClient),
@@ -185,7 +186,10 @@ internal class PayPalInternalClient(
             if (error != null) {
                 callback.onPayPalVaultEditResult(null, error)
             } else if (clientMetadataId == null) {
-                callback.onPayPalVaultEditResult(null, BraintreeException("An unexpected error occurred"))
+                callback.onPayPalVaultEditResult(
+                    null,
+                    BraintreeException("An unexpected error occurred")
+                )
             } else {
                 val riskCorrelationId = correlationId ?: clientMetadataId
 
