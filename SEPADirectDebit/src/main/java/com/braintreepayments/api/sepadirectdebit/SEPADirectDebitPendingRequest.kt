@@ -14,7 +14,7 @@ sealed class SEPADirectDebitPendingRequest {
      * @property pendingRequestString - This String should be stored and passed to
      * [SEPADirectDebitLauncher.handleReturnToApp].
      */
-    class Started internal constructor(val pendingRequestString: String) : SEPADirectDebitPendingRequest()
+    class Started(val pendingRequestString: String) : SEPADirectDebitPendingRequest()
 
     /**
      * An error occurred launching the SEPA Direct Debit browser flow. See [error] for details.

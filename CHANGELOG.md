@@ -1,12 +1,20 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
-
 * PayPal
   * Add PayPal vault edit flow (BETA)
     * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
     * Add `PayPalClient.createEditAuthRequest()` that takes in a `PayPalVaultEditRequest` or `PayPalVaultErrorHandlingEditRequest`
     * **Note:** This feature is currently in beta and may change or be removed in future releases
+
+## 5.0.0 (2024-09-30)
+* PayPal
+  * Add PayPal App Switch vault flow (BETA)
+    * Add `enablePayPalAppSwitch` property to `PayPalVaultRequest` for App Switch support
+    * Require `PayPalVaultRequest.userAuthenticationEmail` for App Switch support
+    * Require `PayPalClient.appLinkReturnUrl` for App Switch support
+    * Send `link_type` and `paypal_installed` in `event_params` when available to PayPal's analytics service (FPTI)
+    * **Note:** This feature is currently in beta and may change or be removed in future releases.
 * GooglePay
   * Upgrade `play-services-wallet` to `19.4.0`
 * Breaking Changes

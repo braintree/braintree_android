@@ -41,7 +41,7 @@
 <a class="library-name--link" href="../../index.html">
                             braintree_android
                     </a>            </div>
-            <div class="library-version">5.0.0-beta2
+            <div class="library-version">5.0.0
             </div>
         </div>
         <div class="filter-section" id="filter-section">
@@ -93,7 +93,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Venmo:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-venmo-client/index.html">VenmoClient</a></div><div class="brief ">Used to create and tokenize Venmo accounts.</div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Venmo:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-venmo-client/index.html">VenmoClient</a></div><div class="brief "><p class="paragraph">Used to create and tokenize Venmo accounts. For more information see the <a href="https://developer.paypal.com/braintree/docs/guides/venmo/overview">documentation</a></p></div></div></div>
                 </div>
               </div>
             </div>
@@ -113,21 +113,6 @@
               </div>
             </div>
           </div>
-<a data-name="744237095%2FClasslikes%2F2054210724" anchor-label="VenmoLauncherCallback" id="744237095%2FClasslikes%2F2054210724" data-filterable-set=":Venmo:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":Venmo:dokkaHtmlPartial/release" data-filterable-set=":Venmo:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="-venmo-launcher-callback/index.html"><span>Venmo</span><wbr><span>Launcher</span><wbr><span><span>Callback</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="744237095%2FClasslikes%2F2054210724"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Venmo:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-venmo-launcher-callback/index.html">VenmoLauncherCallback</a></div><div class="brief "><p class="paragraph">Used to receive notification that the Venmo payment authorization flow completed Once this is invoked, continue the flow by calling <a href="../../Venmo/com.braintreepayments.api.venmo/-venmo-client/tokenize.html">VenmoClient.tokenize</a></p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
 <a data-name="-1209840571%2FClasslikes%2F2054210724" anchor-label="VenmoLineItem" id="-1209840571%2FClasslikes%2F2054210724" data-filterable-set=":Venmo:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":Venmo:dokkaHtmlPartial/release" data-filterable-set=":Venmo:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
@@ -138,7 +123,22 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Venmo:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-venmo-line-item/index.html">VenmoLineItem</a> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Venmo:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-venmo-line-item/index.html">VenmoLineItem</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>kind<span class="token operator">: </span><a href="-venmo-line-item-kind/index.html">VenmoLineItemKind</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>name<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>quantity<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>unitAmount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>description<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>productCode<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>unitTaxAmount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>url<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Venmo line item for Venmo checkout flows.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1049639663%2FClasslikes%2F2054210724" anchor-label="VenmoLineItemKind" id="-1049639663%2FClasslikes%2F2054210724" data-filterable-set=":Venmo:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":Venmo:dokkaHtmlPartial/release" data-filterable-set=":Venmo:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-venmo-line-item-kind/index.html"><span>Venmo</span><wbr><span>Line</span><wbr><span>Item</span><wbr><span><span>Kind</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1049639663%2FClasslikes%2F2054210724"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Venmo:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-venmo-line-item-kind/index.html">VenmoLineItemKind</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-venmo-line-item-kind/index.html">VenmoLineItemKind</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">The type of Venmo line item.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -168,7 +168,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Venmo:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-venmo-payment-auth-request-callback/index.html">VenmoPaymentAuthRequestCallback</a></div><div class="brief "><p class="paragraph">Callback to handle result from <a href="../../Venmo/com.braintreepayments.api.venmo/-venmo-client/tokenize.html">VenmoClient.tokenize</a></p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Venmo:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-venmo-payment-auth-request-callback/index.html">VenmoPaymentAuthRequestCallback</a></div><div class="brief "><p class="paragraph">Callback to handle result from <a href="-venmo-client/tokenize.html">VenmoClient.tokenize</a></p></div></div></div>
                 </div>
               </div>
             </div>
@@ -183,7 +183,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Venmo:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-venmo-payment-auth-request-params/index.html">VenmoPaymentAuthRequestParams</a></div><div class="brief ">Used to request Venmo authentication via <a href="../../Venmo/com.braintreepayments.api.venmo/-venmo-launcher/launch.html">launch</a> )}</div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Venmo:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.html"><span class="token annotation builtin">RestrictTo</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.Scope.LIBRARY_GROUP.html">RestrictTo.Scope.LIBRARY_GROUP</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">data </span><span class="token keyword">class </span><a href="-venmo-payment-auth-request-params/index.html">VenmoPaymentAuthRequestParams</a></div><div class="brief "><p class="paragraph">Used to request Venmo authentication via <a href="-venmo-launcher/launch.html">VenmoLauncher.launch</a> )}</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -203,21 +203,6 @@
               </div>
             </div>
           </div>
-<a data-name="133462269%2FClasslikes%2F2054210724" anchor-label="VenmoPaymentAuthResultInfo" id="133462269%2FClasslikes%2F2054210724" data-filterable-set=":Venmo:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":Venmo:dokkaHtmlPartial/release" data-filterable-set=":Venmo:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="-venmo-payment-auth-result-info/index.html"><span>Venmo</span><wbr><span>Payment</span><wbr><span>Auth</span><wbr><span>Result</span><wbr><span><span>Info</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="133462269%2FClasslikes%2F2054210724"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Venmo:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-venmo-payment-auth-result-info/index.html">VenmoPaymentAuthResultInfo</a></div><div class="brief ">Details of a <a href="-venmo-payment-auth-result/-success/index.html">VenmoPaymentAuthResult.Success</a></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
 <a data-name="-411323470%2FClasslikes%2F2054210724" anchor-label="VenmoPaymentMethodUsage" id="-411323470%2FClasslikes%2F2054210724" data-filterable-set=":Venmo:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":Venmo:dokkaHtmlPartial/release" data-filterable-set=":Venmo:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
@@ -228,7 +213,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Venmo:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/java/lang/annotation/Retention.html"><span class="token annotation builtin">Retention</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><a href="https://developer.android.com/reference/kotlin/java/lang/annotation/RetentionPolicy.html">RetentionPolicy.SOURCE</a></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">annotation class </span><a href="-venmo-payment-method-usage/index.html">VenmoPaymentMethodUsage</a></div><div class="brief ">Usage type for the tokenized Venmo account.</div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Venmo:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-venmo-payment-method-usage/index.html">VenmoPaymentMethodUsage</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-venmo-payment-method-usage/index.html">VenmoPaymentMethodUsage</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">Usage type for the tokenized Venmo account.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -258,7 +243,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Venmo:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-venmo-request/index.html">VenmoRequest</a> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief ">A VenmoRequest specifies options that contribute to the Venmo flow</div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Venmo:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-venmo-request/index.html">VenmoRequest</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>paymentMethodUsage<span class="token operator">: </span><a href="-venmo-payment-method-usage/index.html">VenmoPaymentMethodUsage</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>lineItems<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-array-list/index.html">ArrayList</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-venmo-line-item/index.html">VenmoLineItem</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>shouldVault<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>profileId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>displayName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>collectCustomerShippingAddress<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>collectCustomerBillingAddress<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>totalAmount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>subTotalAmount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>discountAmount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>taxAmount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>shippingAmount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>isFinalAmount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">A VenmoRequest specifies options that contribute to the Venmo flow.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -288,7 +273,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Venmo:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-venmo-tokenize-callback/index.html">VenmoTokenizeCallback</a></div><div class="brief "><p class="paragraph">Used to receive the result of <a href="../../Venmo/com.braintreepayments.api.venmo/-venmo-client/tokenize.html">VenmoClient.tokenize</a></p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Venmo:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-venmo-tokenize-callback/index.html">VenmoTokenizeCallback</a></div><div class="brief "><p class="paragraph">Used to receive the result of <a href="-venmo-client/tokenize.html">VenmoClient.tokenize</a></p></div></div></div>
                 </div>
               </div>
             </div>
