@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.0.0 (2024-09-30)
 * PayPal
   * Add PayPal App Switch vault flow (BETA)
     * Add `enablePayPalAppSwitch` property to `PayPalVaultRequest` for App Switch support
