@@ -10,8 +10,8 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import com.braintreepayments.api.core.TokenizationKey
 import com.braintreepayments.api.core.LinkType
+import com.braintreepayments.api.core.TokenizationKey
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.paypal.vaultedit.PayPalEditAuthCallback
@@ -326,13 +326,17 @@ class PayPalClient internal constructor(
                 approvalUrl = approvalUrl,
                 tokenKey = tokenKey
             )
+            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_BROWSER_PRESENTATION_SUCCEEDED)
 
             return PayPalVaultEditResult.Success(clientMetadataId)
         } catch (e: UserCanceledException) {
+            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_BROWSER_LOGIN_CANCELED)
             return PayPalVaultEditResult.Cancel
         } catch (e: JSONException) {
+            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_BROWSER_PRESENTATION_FAILED)
             return PayPalVaultEditResult.Failure(e)
         } catch (e: PayPalBrowserSwitchException) {
+            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_BROWSER_PRESENTATION_FAILED)
             return PayPalVaultEditResult.Failure(e)
         }
     }
@@ -355,6 +359,7 @@ class PayPalClient internal constructor(
         payPalVaultEditRequest: PayPalVaultEditRequest,
         callback: PayPalEditAuthCallback
     ) {
+
         if (braintreeClient.authorization is TokenizationKey) {
             callback.onPayPalVaultEditAuthRequest(
                 PayPalVaultEditAuthRequest.Failure(
@@ -364,11 +369,15 @@ class PayPalClient internal constructor(
             return
         }
 
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_STARTED)
+
         internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest) { result, error ->
             if (error != null) {
+                braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_FAILED)
                 callback.onPayPalVaultEditAuthRequest(PayPalVaultEditAuthRequest.Failure(error))
             }
 
+            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_SUCCEEDED)
             if (result is PayPalVaultEditAuthRequestParams) {
                 result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result)
 
