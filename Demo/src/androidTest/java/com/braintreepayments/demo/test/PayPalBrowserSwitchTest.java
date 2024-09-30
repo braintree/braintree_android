@@ -22,7 +22,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
     @Before
     public void setup() {
         super.setup();
-        launchApp("Mock PayPal");
+        launchApp("Sandbox");
         onDevice(withText("PayPal Web")).waitForEnabled().perform(click());
     }
 
