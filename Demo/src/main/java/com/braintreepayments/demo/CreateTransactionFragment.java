@@ -49,12 +49,12 @@ public class CreateTransactionFragment extends Fragment {
         }
 
         CreateTransactionFragmentArgs args = CreateTransactionFragmentArgs.fromBundle(getArguments());
-        sendNonceToServer(args.getPaymentMethodNonce());
+        sendNonceToServer(args.getPaymentMethodNonce(), args.getTransactionAmount());
 
         return view;
     }
 
-    private void sendNonceToServer(PaymentMethodNonce nonce) {
+    private void sendNonceToServer(PaymentMethodNonce nonce, String amount) {
         Callback<Transaction> callback = new Callback<>() {
             @Override
             public void onResponse(Call<Transaction> call, Response<Transaction> response) {
@@ -98,6 +98,7 @@ public class CreateTransactionFragment extends Fragment {
                     .getApiClient(activity)
                     .createTransaction(
                             nonceString,
+                            amount,
                             Settings.getThreeDSecureMerchantAccountId(activity),
                             true
                     )
@@ -106,7 +107,8 @@ public class CreateTransactionFragment extends Fragment {
             DemoApplication
                     .getApiClient(activity)
                     .createTransaction(
-                            nonce.getString(),
+                            nonceString,
+                            amount,
                             Settings.getThreeDSecureMerchantAccountId(activity)
                     )
                     .enqueue(callback);
@@ -114,7 +116,8 @@ public class CreateTransactionFragment extends Fragment {
             DemoApplication
                     .getApiClient(activity)
                     .createTransaction(
-                            nonce.getString(),
+                            nonceString,
+                            amount,
                             Settings.getMerchantAccountId(activity)
                     )
                     .enqueue(callback);

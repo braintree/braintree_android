@@ -21,15 +21,15 @@ public interface ApiClient {
 
     @FormUrlEncoded
     @POST("/nonce/transaction")
-    Call<Transaction> createTransaction(@Field("nonce") String nonce);
+    Call<Transaction> createTransaction(@Field("nonce") String nonce, @Field("amount") String amount);
 
     @FormUrlEncoded
     @POST("/nonce/transaction")
-    Call<Transaction> createTransaction(@Field("nonce") String nonce, @Field("merchant_account_id") String merchantAccountId);
+    Call<Transaction> createTransaction(@Field("nonce") String nonce, @Field("amount") String amount, @Field("merchant_account_id") String merchantAccountId);
 
     @FormUrlEncoded
     @POST("/nonce/transaction")
-    Call<Transaction> createTransaction(@Field("nonce") String nonce, @Field("merchant_account_id") String merchantAccountId, @Field("three_d_secure_required") boolean requireThreeDSecure);
+    Call<Transaction> createTransaction(@Field("nonce") String nonce, @Field("amount") String amount, @Field("merchant_account_id") String merchantAccountId, @Field("three_d_secure_required") boolean requireThreeDSecure);
 
     @FormUrlEncoded
     @POST("/customers/{id}/vault")
