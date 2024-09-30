@@ -136,13 +136,6 @@ public class PayPalFragment extends BaseFragment {
                     } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch){
                         PayPalPendingRequest request = payPalLauncher.launch(requireActivity(),
                                 ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
-
-                        String pairingId = ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams().getPairingId();
-
-                        if (pairingId != null && !pairingId.isEmpty()) {
-                            Toast.makeText(getActivity(), "Pairing ID: " + pairingId, Toast.LENGTH_LONG).show();
-                        }
-
                         if (request instanceof PayPalPendingRequest.Started) {
                             storePendingRequest((PayPalPendingRequest.Started) request);
                         } else if (request instanceof PayPalPendingRequest.Failure) {
