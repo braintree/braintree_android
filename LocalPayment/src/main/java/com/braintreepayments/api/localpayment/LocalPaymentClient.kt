@@ -3,7 +3,6 @@ package com.braintreepayments.api.localpayment
 import android.content.Context
 import android.net.Uri
 import androidx.annotation.RestrictTo
-import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.AnalyticsEventParams
@@ -22,7 +21,7 @@ import java.util.Locale
 /**
  * Used to integrate with local payments.
  */
-class LocalPaymentClient @VisibleForTesting internal constructor(
+class LocalPaymentClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val dataCollector: DataCollector = DataCollector(braintreeClient),
     private val localPaymentApi: LocalPaymentApi = LocalPaymentApi(braintreeClient),
@@ -152,13 +151,13 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
 
     /**
      * After receiving a result from the web authentication flow via
-     * [LocalPaymentLauncher.handleReturnToAppFromBrowser], pass the
+     * [LocalPaymentLauncher.handleReturnToApp], pass the
      * [LocalPaymentAuthResult.Success] returned to this method to tokenize the local
      * payment method and receive a [LocalPaymentNonce] on success.
      *
      * @param context Android Context
      * @param localPaymentAuthResult a [LocalPaymentAuthResult.Success] received from
-     * [LocalPaymentLauncher.handleReturnToAppFromBrowser]
+     * [LocalPaymentLauncher.handleReturnToApp]
      * @param callback [LocalPaymentInternalTokenizeCallback]
      */
     fun tokenize(
@@ -230,7 +229,7 @@ class LocalPaymentClient @VisibleForTesting internal constructor(
     }
 
     companion object {
-        const val LOCAL_PAYMENT_CANCEL: String = "local-payment-cancel"
-        const val LOCAL_PAYMENT_SUCCESS: String = "local-payment-success"
+        internal const val LOCAL_PAYMENT_CANCEL: String = "local-payment-cancel"
+        internal const val LOCAL_PAYMENT_SUCCESS: String = "local-payment-success"
     }
 }

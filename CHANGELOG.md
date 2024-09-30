@@ -2,6 +2,19 @@
 
 ## unreleased
 
+* Breaking Changes
+    * PayPal
+        * Add `PayPalRecurringBillingDetails` and `PayPalRecurringBillingPlanType` opt-in request objects. Including these details will provide transparency to users on their billing schedule, dates, and amounts, as well as launch a modernized checkout UI.
+      
+## 5.0.0 (2024-09-30)
+* PayPal
+  * Add PayPal App Switch vault flow (BETA)
+    * Add `enablePayPalAppSwitch` property to `PayPalVaultRequest` for App Switch support
+    * Require `PayPalVaultRequest.userAuthenticationEmail` for App Switch support
+    * Require `PayPalClient.appLinkReturnUrl` for App Switch support
+    * Send `link_type` and `paypal_installed` in `event_params` when available to PayPal's analytics service (FPTI)
+    * **Note:** This feature is currently in beta and may change or be removed in future releases.
+    
 * GooglePay
   * Upgrade `play-services-wallet` to `19.4.0`
 * Breaking Changes
@@ -23,16 +36,18 @@
   * PayPal
     * Make `PayPalPaymentAuthRequestParams` internal
     * Remove `PayPalPaymentAuthResultInfo`
-    * Add `PayPalRecurringBillingDetails` and `PayPalRecurringBillingPlanType` opt-in request objects. Including these details will provide transparency to users on their billing schedule, dates, and amounts, as well as launch a modernized checkout UI.
   * SEPADirectDebit
     * Make `SEPADirectDebitPaymentAuthRequestParams` internal
     * Remove `SEPADirectDebitPaymentAuthResultInfo`
+    * Rename `SEPADirectDebitLauncher.handleReturnToAppFromBrowser()` to `SEPADirectDebitLauncher.handleReturnToApp()`
   * ThreeDSecure
     * Make `ThreeDSecureParams` internal
     * Make `ThreeDSecurePaymentAuthResult` parameters internal
-  * LocalPayment
     * Remove `ThreeDSecurePaymentAuthResultInfo`
+  * LocalPayment
+    * Remove `LocalPaymentAuthResultInfo`
     * Make `LocalPaymentAuthRequestParams` internal
+    * Rename `LocalPaymentLauncher.handleReturnToAppFromBrowser()` to `LocalPaymentLauncher.handleReturnToApp()`
 
 ## 5.0.0-beta2 (2024-08-28)
 

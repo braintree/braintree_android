@@ -1,6 +1,7 @@
 package com.braintreepayments.api.threedsecure
 
 import android.content.Context
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BuildConfig
@@ -248,6 +249,7 @@ class ThreeDSecureClient internal constructor(
         }
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun sendAnalyticsAndCallbackResult(
         result: ThreeDSecureParams,
         callback: ThreeDSecurePaymentAuthRequestCallback
@@ -317,18 +319,6 @@ class ThreeDSecureClient internal constructor(
             val threeDSecureParams = paymentAuthResult.threeDSecureParams
             val validateResponse = paymentAuthResult.validateResponse
             val jwt = paymentAuthResult.jwt
-
-            if (threeDSecureParams == null || jwt == null) {
-                braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED)
-                callbackTokenizeFailure(
-                    callback,
-                    ThreeDSecureResult.Failure(
-                        error = BraintreeException("threeDSecureParams or jwt is null"),
-                        nonce = null
-                    )
-                )
-                return
-            }
 
             when (validateResponse?.actionCode) {
                 CardinalActionCode.FAILURE,

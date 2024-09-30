@@ -40,7 +40,6 @@ object PostalAddressParser {
     private const val VENMO_GQL_LOCALITY_KEY = "adminArea2"
     private const val VENMO_GQL_REGION_KEY = "adminArea1"
 
-    @JvmStatic
     fun fromJson(accountAddress: JSONObject?): PostalAddress =
         // If we don't have an account address, return an empty PostalAddress.
         accountAddress?.let {

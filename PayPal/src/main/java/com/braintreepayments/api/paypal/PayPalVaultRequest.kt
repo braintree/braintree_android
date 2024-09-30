@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypal
 
+import android.os.Build
 import android.text.TextUtils
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.ClientToken
@@ -25,6 +26,9 @@ import org.json.JSONObject
  * @property shouldOfferCredit Offers PayPal Credit if the customer qualifies. Defaults to false.
  * @property recurringBillingDetails Optional: Recurring billing product details.
  * @property recurringBillingPlanType Optional: Recurring billing plan type, or charge pattern.
+ * @property enablePayPalAppSwitch Used to determine if the customer will use the PayPal app switch flow.
+ * Defaults to `false`.
+ * - Warning: This property is currently in beta and may change or be removed in future releases.
  */
 @Parcelize
 class PayPalVaultRequest
@@ -33,6 +37,7 @@ class PayPalVaultRequest
     var shouldOfferCredit: Boolean = false,
     var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
     var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
+    var enablePayPalAppSwitch: Boolean = false,
     override var localeCode: String? = null,
     override var billingAgreementDescription: String? = null,
     override var isShippingAddressRequired: Boolean = false,
@@ -65,7 +70,8 @@ class PayPalVaultRequest
         configuration: Configuration?,
         authorization: Authorization?,
         successUrl: String?,
-        cancelUrl: String?
+        cancelUrl: String?,
+        appLink: String?
     ): String {
         val parameters = JSONObject()
             .put(RETURN_URL_KEY, successUrl)
@@ -84,6 +90,13 @@ class PayPalVaultRequest
         }
 
         parameters.putOpt(PAYER_EMAIL_KEY, userAuthenticationEmail)
+
+        if (enablePayPalAppSwitch && !appLink.isNullOrEmpty() && !userAuthenticationEmail.isNullOrEmpty()) {
+            parameters.put(ENABLE_APP_SWITCH_KEY, enablePayPalAppSwitch)
+            parameters.put(OS_VERSION_KEY, Build.VERSION.SDK_INT.toString())
+            parameters.put(OS_TYPE_KEY, "Android")
+            parameters.put(MERCHANT_APP_RETURN_URL_KEY, appLink)
+        }
 
         val experienceProfile = JSONObject()
         experienceProfile.put(NO_SHIPPING_KEY, !isShippingAddressRequired)

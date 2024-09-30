@@ -1,6 +1,7 @@
 package com.braintreepayments.api.threedsecure
 
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import com.cardinalcommerce.shared.models.enums.ButtonType
 import com.cardinalcommerce.shared.userinterfaces.UiCustomization
 import kotlinx.parcelize.Parcelize
@@ -15,7 +16,7 @@ import kotlinx.parcelize.Parcelize
  * @property toolbarCustomization toolbar customization options for 3D Secure 2 flows
  */
 @Parcelize
-data class ThreeDSecureV2UiCustomization(
+data class ThreeDSecureV2UiCustomization @JvmOverloads constructor(
     var buttonCustomization: ThreeDSecureV2ButtonCustomization? = null,
     var buttonType: ThreeDSecureV2ButtonType? = null,
     var labelCustomization: ThreeDSecureV2LabelCustomization? = null,
@@ -23,6 +24,7 @@ data class ThreeDSecureV2UiCustomization(
     var toolbarCustomization: ThreeDSecureV2ToolbarCustomization? = null,
 ) : Parcelable {
 
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val cardinalUiCustomization: UiCustomization
         get() {
             return UiCustomization().also {

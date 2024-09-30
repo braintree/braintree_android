@@ -19,7 +19,6 @@ internal class VisaCheckoutAccount(
     override var integration: IntegrationType? = IntegrationType.CUSTOM
 ) : PaymentMethod {
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     private fun buildMetadataJSON(): JSONObject {
         return MetadataBuilder()
             .sessionId(sessionId)
@@ -28,7 +27,6 @@ internal class VisaCheckoutAccount(
             .build()
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     @Throws(JSONException::class)
     override fun buildJSON(): JSONObject {
         val json = JSONObject()
@@ -42,7 +40,6 @@ internal class VisaCheckoutAccount(
         return json
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     override val apiPath = "visa_checkout_cards"
 
     companion object {

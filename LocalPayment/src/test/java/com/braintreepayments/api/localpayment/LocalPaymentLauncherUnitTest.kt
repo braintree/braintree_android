@@ -68,7 +68,7 @@ class LocalPaymentLauncherUnitTest {
     }
 
     @Test
-    fun `handleReturnToAppFromBrowser on BrowserSwitchResult returns result`() {
+    fun `handleReturnToApp on BrowserSwitchResult returns result`() {
         val browserSwitchFinalResult = mockk<BrowserSwitchFinalResult.Success>()
         val pendingRequest: LocalPaymentPendingRequest.Started =
             LocalPaymentPendingRequest.Started(pendingRequestString)
@@ -76,7 +76,7 @@ class LocalPaymentLauncherUnitTest {
             browserSwitchClient.completeRequest(eq(intent), eq(pendingRequestString))
         } returns browserSwitchFinalResult
 
-        val paymentAuthResult = sut.handleReturnToAppFromBrowser(pendingRequest, intent)
+        val paymentAuthResult = sut.handleReturnToApp(pendingRequest, intent)
 
         assertTrue(paymentAuthResult is LocalPaymentAuthResult.Success)
         assertSame(
@@ -86,14 +86,14 @@ class LocalPaymentLauncherUnitTest {
     }
 
     @Test
-    fun `handleReturnToAppFromBrowser when no BrowserSwitchResult returns null`() {
+    fun `handleReturnToApp when no BrowserSwitchResult returns null`() {
         val pendingRequest: LocalPaymentPendingRequest.Started =
             LocalPaymentPendingRequest.Started(pendingRequestString)
         every {
             browserSwitchClient.completeRequest(eq(intent), eq(pendingRequestString))
         } returns BrowserSwitchFinalResult.NoResult
 
-        val paymentAuthResult = sut.handleReturnToAppFromBrowser(pendingRequest, intent)
+        val paymentAuthResult = sut.handleReturnToApp(pendingRequest, intent)
 
         assertTrue(paymentAuthResult is LocalPaymentAuthResult.NoResult)
     }

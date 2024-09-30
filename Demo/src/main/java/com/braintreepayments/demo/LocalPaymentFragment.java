@@ -46,7 +46,7 @@ public class LocalPaymentFragment extends BaseFragment {
         LocalPaymentPendingRequest.Started pendingRequest = getPendingRequest();
         if (getPendingRequest() != null) {
             LocalPaymentAuthResult paymentAuthResult =
-                    localPaymentLauncher.handleReturnToAppFromBrowser(pendingRequest,
+                    localPaymentLauncher.handleReturnToApp(pendingRequest,
                             requireActivity().getIntent());
             if (paymentAuthResult instanceof LocalPaymentAuthResult.Success) {
                 localPaymentClient.tokenize(requireContext(),

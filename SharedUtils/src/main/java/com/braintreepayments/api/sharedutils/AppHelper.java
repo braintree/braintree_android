@@ -15,13 +15,11 @@ public class AppHelper {
 
     private static final int NO_FLAGS = 0;
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public boolean isIntentAvailable(Context context, Intent intent) {
         List<ResolveInfo> activities = context.getPackageManager().queryIntentActivities(intent, 0);
         return activities != null && activities.size() == 1;
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public boolean isAppInstalled(Context context, String packageName) {
         PackageManager packageManager = context.getPackageManager();
         try {

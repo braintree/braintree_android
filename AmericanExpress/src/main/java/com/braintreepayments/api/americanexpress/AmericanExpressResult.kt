@@ -8,10 +8,12 @@ sealed class AmericanExpressResult {
     /**
      * The [rewardsBalance] was successfully fetched
      */
-    class Success(val rewardsBalance: AmericanExpressRewardsBalance) : AmericanExpressResult()
+    class Success internal constructor(
+        val rewardsBalance: AmericanExpressRewardsBalance
+    ) : AmericanExpressResult()
 
     /**
      * There was an [error] fetching rewards balance
      */
-    class Failure(val error: Exception) : AmericanExpressResult()
+    class Failure internal constructor(val error: Exception) : AmericanExpressResult()
 }

@@ -6,7 +6,7 @@ enum class BinType {
     Unknown;
 
     companion object {
-        fun fromString(string: String): BinType {
+        internal fun fromString(string: String): BinType {
             return when (string.lowercase()) {
                 Yes.name.lowercase() -> Yes
                 No.name.lowercase() -> No

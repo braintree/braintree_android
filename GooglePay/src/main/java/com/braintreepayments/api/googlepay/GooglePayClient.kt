@@ -2,7 +2,7 @@ package com.braintreepayments.api.googlepay
 
 import android.content.Context
 import android.text.TextUtils
-import androidx.annotation.VisibleForTesting
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeClient
@@ -28,7 +28,7 @@ import org.json.JSONObject
  * Used to create and tokenize Google Pay payment methods. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/google-pay/overview)
  */
 @SuppressWarnings("TooManyFunctions")
-class GooglePayClient @VisibleForTesting internal constructor(
+class GooglePayClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalGooglePayClient: GooglePayInternalClient = GooglePayInternalClient(),
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
@@ -123,7 +123,12 @@ class GooglePayClient @VisibleForTesting internal constructor(
             } catch (ignored: JSONException) {
             }
             val readyToPayRequest = IsReadyToPayRequest.fromJson(json.toString())
-            internalGooglePayClient.isReadyToPay(context, configuration, readyToPayRequest, callback)
+            internalGooglePayClient.isReadyToPay(
+                context,
+                configuration,
+                readyToPayRequest,
+                callback
+            )
         }
     }
 
@@ -155,7 +160,9 @@ class GooglePayClient @VisibleForTesting internal constructor(
                 )
             } else {
                 if (e != null) {
-                    callback.onTokenizationParametersResult(GooglePayTokenizationParameters.Failure(e))
+                    callback.onTokenizationParametersResult(
+                        GooglePayTokenizationParameters.Failure(e)
+                    )
                 } else {
                     callback.onTokenizationParametersResult(null)
                 }
@@ -184,7 +191,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
                 GooglePayPaymentAuthRequest.Failure(
                     BraintreeException(
                         "GooglePayActivity was not found in the Android " +
-                                "manifest, or did not have a theme of R.style.bt_transparent_activity"
+                            "manifest, or did not have a theme of R.style.bt_transparent_activity"
                     )
                 ), callback
             )
@@ -214,7 +221,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
                         GooglePayPaymentAuthRequest.Failure(
                             BraintreeException(
                                 "Google Pay is not enabled for your Braintree account, " +
-                                        "or Google Play Services are not configured correctly."
+                                    "or Google Play Services are not configured correctly."
                             )
                         ), callback
                     )
@@ -301,6 +308,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
         }
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun getTokenizationParameters(
         configuration: Configuration,
         authorization: Authorization
@@ -338,6 +346,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
         return parameters.build()
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun getAllowedCardNetworks(configuration: Configuration): ArrayList<Int> {
         val allowedNetworks = ArrayList<Int>()
         for (network in configuration.googlePaySupportedNetworks) {
@@ -530,7 +539,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
         }
 
         val googlePayCanProcessPayPal = request.isPayPalEnabled &&
-                !TextUtils.isEmpty(configuration.googlePayPayPalClientId)
+            !TextUtils.isEmpty(configuration.googlePayPayPalClientId)
 
         if (googlePayCanProcessPayPal) {
             if (request.getAllowedPaymentMethod("PAYPAL") == null) {
@@ -555,7 +564,7 @@ class GooglePayClient @VisibleForTesting internal constructor(
         val activityInfo =
             braintreeClient.getManifestActivityInfo(GooglePayActivity::class.java)
         return activityInfo != null &&
-                activityInfo.themeResource == R.style.bt_transparent_activity
+            activityInfo.themeResource == R.style.bt_transparent_activity
     }
 
     private fun callbackPaymentRequestSuccess(

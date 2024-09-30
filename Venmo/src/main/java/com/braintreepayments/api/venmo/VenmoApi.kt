@@ -173,8 +173,7 @@ internal class VenmoApi(
     }
 
     fun vaultVenmoAccountNonce(nonce: String?, callback: VenmoInternalCallback) {
-        val venmoAccount = VenmoAccount()
-        venmoAccount.nonce = nonce
+        val venmoAccount = VenmoAccount(nonce)
 
         apiClient.tokenizeREST(venmoAccount) { tokenizationResponse: JSONObject?, exception: Exception? ->
             if (tokenizationResponse != null) {

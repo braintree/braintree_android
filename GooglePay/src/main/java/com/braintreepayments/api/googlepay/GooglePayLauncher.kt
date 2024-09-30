@@ -3,14 +3,13 @@ package com.braintreepayments.api.googlepay
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
-import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 
 /**
  * Responsible for launching the Google Pay payment sheet
  */
-class GooglePayLauncher @VisibleForTesting internal constructor(
+class GooglePayLauncher internal constructor(
     registry: ActivityResultRegistry,
     lifecycleOwner: LifecycleOwner,
     callback: GooglePayLauncherCallback

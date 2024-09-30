@@ -5,16 +5,20 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.annotation.VisibleForTesting
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.AppHelper
 import com.braintreepayments.api.sharedutils.SignatureVerifier
 
-internal class DeviceInspector(
+/**
+ * @suppress
+ */
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+class DeviceInspector(
     private val appHelper: AppHelper = AppHelper(),
     private val signatureVerifier: SignatureVerifier = SignatureVerifier(),
 ) {
 
-    fun getDeviceMetadata(
+    internal fun getDeviceMetadata(
         context: Context?,
         configuration: Configuration?,
         sessionId: String?,
@@ -123,7 +127,6 @@ internal class DeviceInspector(
         private const val VENMO_APP_PACKAGE = "com.venmo"
         private const val VENMO_APP_SWITCH_ACTIVITY = "controller.SetupMerchantActivity"
 
-        @VisibleForTesting
         const val VENMO_BASE_64_ENCODED_SIGNATURE = "x34mMawEUcCG8l95riWCOK+kAJYejVmdt44l6tzcyUc=\n"
         private val venmoIntent: Intent
             get() = Intent().setComponent(

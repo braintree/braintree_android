@@ -990,24 +990,47 @@ object Fixtures {
     """
 
     // language=JSON
-    const val ERRORS_BRAINTREE_API_ERROR_RESPONSE = """
+    const val ERRORS_AUTH_FINGERPRINT_WITH_ERROR_MESSAGE_ERROR = """
         {
-          "meta": {
-            "braintree_request_id": "fe62f36c-7616-4130-a83f-20dc341d5c79"
-          },
-          "error": {
-            "user_message": "Invalid data detected. Please check your entries and try again.",
-            "developer_message": "The provided parameters are invalid; see details for field-specific error messages.",
-            "details": [
-              {
-                "code": "not_an_integer",
-                "user_message": "must be a number",
-                "developer_message": "The provided value must be a string encoding of a base-10 integer between 1 and 12.",
-                "in": "body",
-                "at": "/expiration_month"
-              }
+            "error": {
+                "errorMessage": "Authorization fingerprint is invalid"
+            },
+            "fieldErrors": [
+                {
+                    "field": "authorizationFingerprint",
+                    "message": "Authorization fingerprint signature did not match"
+                }
             ]
-          }
+        }
+    """
+
+    // language=JSON
+    const val ERRORS_AUTH_FINGERPRINT_WITH_DEVELOPER_MESSAGE_ERROR = """
+        {
+            "error": {
+                "developer_message": "Authorization fingerprint is invalid"
+            },
+            "fieldErrors": [
+                {
+                    "field": "authorizationFingerprint",
+                    "message": "Authorization fingerprint signature did not match"
+                }
+            ]
+        }
+    """
+
+    // language=JSON
+    const val ERRORS_AUTH_FINGERPRINT_WITH_UNKNOWN_MESSAGE_ERROR = """
+        {
+            "error": {
+                "unknown_field": "Authorization fingerprint is invalid"
+            },
+            "fieldErrors": [
+                {
+                    "field": "authorizationFingerprint",
+                    "message": "Authorization fingerprint signature did not match"
+                }
+            ]
         }
     """
 
@@ -2246,6 +2269,27 @@ object Fixtures {
             "paymentToken":"token",
             "intent":"authorize",
             "redirectUrl":"https://checkout.paypal.com/one-touch-login-sandbox/index.html?token=fake-token\u0026action=create_payment_resource\u0026amount=1.00\u0026authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8\u0026cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel\u0026controller=client_api%2Fpaypal_hermes\u0026currency_iso_code=USD\u0026experience_profile%5Baddress_override%5D=false\u0026experience_profile%5Bno_shipping%5D=false\u0026merchant_id=dcpspy2brwdjr3qn\u0026return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess\u0026offer_paypal_credit=true\u0026version=1"
+          }
+        }
+    """
+
+    // language=JSON
+    const val PAYPAL_HERMES_RESPONSE_WITH_PAYPAL_REDIRECT_URL = """
+        {
+          "agreementSetup":{
+            "tokenId":"fake-ba-token",
+            "approvalUrl":"https://www.example.com/some?ba_token=fake-ba-token",
+            "paypalAppApprovalUrl":"https://paypal.com/some?ba_token=fake-ba-token"
+          }
+        }
+    """
+
+    // language=JSON
+    const val PAYPAL_HERMES_RESPONSE_WITH_APPROVAL_URL = """
+        {
+          "agreementSetup":{
+            "tokenId":"fake-ba-token",
+            "approvalUrl":"https://www.example.com/some?ba_token=fake-ba-token"
           }
         }
     """
