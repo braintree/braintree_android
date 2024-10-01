@@ -1,6 +1,7 @@
 # Braintree Android SDK Release Notes
 
 ## 5.0.0 (2024-09-30)
+
 * PayPal
   * Add PayPal App Switch vault flow (BETA)
     * Add `enablePayPalAppSwitch` property to `PayPalVaultRequest` for App Switch support
@@ -8,7 +9,6 @@
     * Require `PayPalClient.appLinkReturnUrl` for App Switch support
     * Send `link_type` and `paypal_installed` in `event_params` when available to PayPal's analytics service (FPTI)
     * **Note:** This feature is currently in beta and may change or be removed in future releases.
-    
 * GooglePay
   * Upgrade `play-services-wallet` to `19.4.0`
 * Breaking Changes
@@ -43,6 +43,8 @@
     * Remove `LocalPaymentAuthResultInfo`
     * Make `LocalPaymentAuthRequestParams` internal
     * Rename `LocalPaymentLauncher.handleReturnToAppFromBrowser()` to `LocalPaymentLauncher.handleReturnToApp()`
+    
+**Note:** Includes all changes in [5.0.0-beta2](#500-beta2-2024-08-28) and [5.0.0-beta1](#500-beta1-2024-07-23)
 
 ## 5.0.0-beta2 (2024-08-28)
 
