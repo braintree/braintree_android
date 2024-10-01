@@ -1,6 +1,6 @@
 ## Set Up App Links
 
-In order to use the PayPal flow your application must be set up for [App Links](https://developer.android.com/training/app-links?authuser=2).
+In order to use the PayPal flow your application must be set up for [App Links](https://developer.android.com/training/app-links).
 
 ### Register App Link in Control Panel
 
