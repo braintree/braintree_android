@@ -514,7 +514,7 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void edit_auth_payPalVaultEditRequest() {
+    public void createEditAuthRequest_whenEditRequest_sendsPayPalEditRequestViaInternalClient() {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         BraintreeClient braintreeClient =
@@ -532,7 +532,7 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void edit_auth_payPalVaultErrorHandlingEditRequest() {
+    public void createEditAuthRequest_whenEditRequest_sendsPayPalVaultErrorHandlingEditRequestViaInternalClient() {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         BraintreeClient braintreeClient =
