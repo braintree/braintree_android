@@ -507,7 +507,6 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-<<<<<<< HEAD
     public void createEditAuthRequest_whenAuthorizationIsTokenizationKey_callsBackWithError() throws JSONException {
         PayPalAccountNonce payPalAccountNonce = mock(PayPalAccountNonce.class);
         PayPalInternalClient payPalInternalClient =
