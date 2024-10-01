@@ -36,7 +36,7 @@ class PayPalAnalyticsUnitTest {
         )
 
         assertEquals("paypal:edit:failed", PayPalAnalytics.EDIT_FI_FAILED)
-        
+
         assertEquals("paypal:edit:succeeded", PayPalAnalytics.EDIT_FI_SUCCEEDED)
     }
 }
