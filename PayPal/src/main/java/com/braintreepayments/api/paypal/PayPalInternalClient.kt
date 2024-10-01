@@ -10,10 +10,12 @@ import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
+import com.braintreepayments.api.datacollector.DataCollectorRequest
 import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
 import com.braintreepayments.api.paypal.vaultedit.PayPalInternalClientEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequestParams
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -172,26 +174,25 @@ internal class PayPalInternalClient(
             ?: redirectUri.getQueryParameter("token")
     }
 
+
     @ExperimentalBetaApi
     fun sendVaultEditRequest(
         context: Context,
         request: PayPalVaultEditRequest,
-        correlationId: String? = null,
         callback: PayPalInternalClientEditCallback
     ) {
+        val riskCorrelationId = (request as? PayPalVaultErrorHandlingEditRequest)?.riskCorrelationId
+
         getClientMetadataId(
             context,
-            correlationId,
-        ) { clientMetadataId, error ->
-            if (error != null) {
-                callback.onPayPalVaultEditResult(null, error)
-            } else if (clientMetadataId == null) {
-                callback.onPayPalVaultEditResult(
-                    null,
-                    BraintreeException("An unexpected error occurred")
-                )
+            riskCorrelationId
+        ) { clientMetadataId ->
+            if (clientMetadataId == null) {
+                callback.onPayPalVaultEditResult(null, BraintreeException("An unexpected error occurred"))
             } else {
-                val riskCorrelationId = correlationId ?: clientMetadataId
+                val riskCorrelationId =
+                    (request as? PayPalVaultErrorHandlingEditRequest)
+                        ?.riskCorrelationId ?: clientMetadataId
 
                 sendVaultEditRequestWithRiskCorrelationId(
                     request,
@@ -253,23 +254,27 @@ internal class PayPalInternalClient(
     private fun getClientMetadataId(
         context: Context,
         correlationId: String?,
-        callback: (String?, Exception?) -> Unit
+        callback: (String?) -> Unit
     ) {
-        if (correlationId != null) {
-            callback(correlationId, null)
-        } else {
-            braintreeClient.getConfiguration { configuration, error ->
-                if (error != null) {
-                    callback(null, BraintreeException("An unexpected error occurred"))
-                } else {
-                    val clientMetadataId = dataCollector.getClientMetadataId(
-                        context,
-                        configuration,
-                        false
-                    )
+        braintreeClient.getConfiguration { configuration, error ->
+            if (error != null) {
+                callback(error("No Client Metadata Id"))
+            } else {
+                val request = DataCollectorRequest(false, correlationId)
 
-                    callback(clientMetadataId, null)
+                val dataCollectorRequest = DataCollectorInternalRequest(
+                    false
+                ).apply {
+                    applicationGuid = dataCollector.getPayPalInstallationGUID(context)
+                    clientMetadataId = correlationId
                 }
+                val clientMetaDataId = dataCollector.getClientMetadataId(
+                    context = context,
+                    request = dataCollectorRequest,
+                    configuration = configuration
+                )
+
+                callback(clientMetaDataId)
             }
         }
     }

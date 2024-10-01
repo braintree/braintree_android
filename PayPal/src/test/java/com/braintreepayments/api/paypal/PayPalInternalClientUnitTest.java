@@ -867,7 +867,6 @@ public class PayPalInternalClientUnitTest {
         sut.sendVaultEditRequest(
                 context,
                 request,
-                "sample-client-metadata-id",
                 payPalInternalClientEditCallback
         );
 
@@ -915,7 +914,6 @@ public class PayPalInternalClientUnitTest {
         sut.sendVaultEditRequest(
                 context,
                 request,
-                "sample-client-metadata-id",
                 payPalInternalClientEditCallback
         );
 
@@ -942,6 +940,9 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendVaultEditRequest_propagatesHttpErrors() {
+        when(dataCollector.getClientMetadataId(same(context), any(), any())
+        ).thenReturn("sample-client-metadata-id");
+
         Exception httpError = new Exception("http error");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
@@ -958,7 +959,6 @@ public class PayPalInternalClientUnitTest {
         sut.sendVaultEditRequest(
                 context,
                 request,
-                "sample-client-metadata-id",
                 payPalInternalClientEditCallback
         );
 
@@ -970,6 +970,9 @@ public class PayPalInternalClientUnitTest {
 
     @Test
     public void sendVaultEditRequest_propagatesMalformedJSONResponseErrors() {
+        when(dataCollector.getClientMetadataId(same(context), any(), any())
+        ).thenReturn("sample-client-metadata-id");
+
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
                 .authorizationSuccess(clientToken)
@@ -986,7 +989,6 @@ public class PayPalInternalClientUnitTest {
         sut.sendVaultEditRequest(
                 context,
                 request,
-                "sample-client-metadata-id",
                 payPalInternalClientEditCallback
         );
 

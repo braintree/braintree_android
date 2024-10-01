@@ -527,7 +527,7 @@ public class PayPalClientUnitTest {
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
         sut.createEditAuthRequest(activity, request, payPalEditAuthCallback);
 
-        verify(payPalInternalClient).sendVaultEditRequest(same(activity), same(request), isNull(),
+        verify(payPalInternalClient).sendVaultEditRequest(same(activity), same(request),
                 any(PayPalInternalClientEditCallback.class));
     }
 
@@ -546,7 +546,7 @@ public class PayPalClientUnitTest {
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
         sut.createEditAuthRequest(activity, request, payPalEditAuthCallback);
 
-        verify(payPalInternalClient).sendVaultEditRequest(same(activity), same(request), same("sample-client-metadata-id"),
+        verify(payPalInternalClient).sendVaultEditRequest(same(activity), same(request),
                 any(PayPalInternalClientEditCallback.class));
     }
 

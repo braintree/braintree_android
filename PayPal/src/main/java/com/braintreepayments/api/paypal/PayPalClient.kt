@@ -10,8 +10,8 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import com.braintreepayments.api.core.TokenizationKey
 import com.braintreepayments.api.core.LinkType
+import com.braintreepayments.api.core.TokenizationKey
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.paypal.vaultedit.PayPalEditAuthCallback
@@ -21,7 +21,6 @@ import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequestPara
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResult
-import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest
 import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
 import org.json.JSONObject
@@ -356,8 +355,6 @@ class PayPalClient internal constructor(
         payPalVaultEditRequest: PayPalVaultEditRequest,
         callback: PayPalEditAuthCallback
     ) {
-        var correlationId: String? = (payPalVaultEditRequest as? PayPalVaultErrorHandlingEditRequest)?.riskCorrelationId
-
         if (braintreeClient.authorization is TokenizationKey) {
             callback.onPayPalVaultEditAuthRequest(
                 PayPalVaultEditAuthRequest.Failure(
@@ -367,7 +364,7 @@ class PayPalClient internal constructor(
             return
         }
 
-        internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest, correlationId) { result, error ->
+        internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest) { result, error ->
             if (error != null) {
                 callback.onPayPalVaultEditAuthRequest(PayPalVaultEditAuthRequest.Failure(error))
             }
