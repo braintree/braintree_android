@@ -268,7 +268,7 @@ internal class PayPalInternalClient(
                     applicationGuid = dataCollector.getPayPalInstallationGUID(context)
                     clientMetadataId = correlationId
                 }
-                val clientMetaDataId = dataCollector.getClientMetadataId(
+                val clientMetadataId = dataCollector.getClientMetadataId(
                     context = context,
                     request = dataCollectorRequest,
                     configuration = configuration
