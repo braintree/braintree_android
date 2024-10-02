@@ -174,7 +174,6 @@ internal class PayPalInternalClient(
             ?: redirectUri.getQueryParameter("token")
     }
 
-
     @ExperimentalBetaApi
     fun sendVaultEditRequest(
         context: Context,
