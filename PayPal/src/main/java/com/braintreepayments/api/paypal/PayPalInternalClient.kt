@@ -273,7 +273,7 @@ internal class PayPalInternalClient(
                     configuration = configuration
                 )
 
-                callback(clientMetaDataId)
+                callback(clientMetadataId)
             }
         }
     }
