@@ -969,7 +969,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendVaultEditRequest_propagatesMalformedJSONResponseErrors() {
+    public void sendVaultEditRequest_withPayPalVaultEditRequest_propagatesMalformedJSONResponseErrors() {
         when(dataCollector.getClientMetadataId(same(context), any(), any())
         ).thenReturn("sample-client-metadata-id");
 
