@@ -2,9 +2,8 @@
 
 ## unreleased
 
-* Breaking Changes
-    * PayPal
-        * Add `PayPalRecurringBillingDetails` and `PayPalRecurringBillingPlanType` opt-in request objects. Including these details will provide transparency to users on their billing schedule, dates, and amounts, as well as launch a modernized checkout UI.
+* PayPal
+  * Add `PayPalRecurringBillingDetails` and `PayPalRecurringBillingPlanType` opt-in request objects. Including these details will provide transparency to users on their billing schedule, dates, and amounts, as well as launch a modernized checkout UI.
       
 ## 5.0.0 (2024-09-30)
 * PayPal
@@ -36,6 +35,7 @@
   * PayPal
     * Make `PayPalPaymentAuthRequestParams` internal
     * Remove `PayPalPaymentAuthResultInfo`
+    * Rename `PayPalLauncher.handleReturnToAppFromBrowser()` to `PayPalLauncher.handleReturnToApp()`
   * SEPADirectDebit
     * Make `SEPADirectDebitPaymentAuthRequestParams` internal
     * Remove `SEPADirectDebitPaymentAuthResultInfo`
