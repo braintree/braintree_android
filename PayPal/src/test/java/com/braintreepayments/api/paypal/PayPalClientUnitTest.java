@@ -608,7 +608,7 @@ public class PayPalClientUnitTest {
 
         assertTrue(result instanceof PayPalVaultEditResult.Success);
     }
-    
+        
     @Test
     public void tokenize_whenPayPalInternalClientTokenizeResult_sendsAppSwitchSucceededEvents()
             throws JSONException {
