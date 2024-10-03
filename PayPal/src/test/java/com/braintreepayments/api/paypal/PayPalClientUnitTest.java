@@ -24,6 +24,8 @@ import com.braintreepayments.api.core.BraintreeRequestCodes;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.paypal.vaultedit.PayPalEditAuthCallback;
 import com.braintreepayments.api.paypal.vaultedit.PayPalInternalClientEditCallback;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult;
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditResult;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest;
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest;
@@ -575,6 +577,39 @@ public class PayPalClientUnitTest {
                 ((PayPalVaultEditAuthRequest.Failure) request).getError().getMessage());
     }
 
+    @Test
+    public void edit_withBrowserSwitchResult_success() throws JSONException {
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+
+        BraintreeClient braintreeClient =
+                new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
+
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
+
+        BrowserSwitchFinalResult.Success browserSwitchResult = mock(BrowserSwitchFinalResult.Success.class);
+
+        String approvalUrl =
+            "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments://onetouch/v1/success?";
+
+        when(browserSwitchResult.getRequestMetadata()).thenReturn(
+            new JSONObject()
+                .put("client-metadata-id", "sample-client-metadata-id")
+                .put("ba_token", "BA-54236444AS8711221")
+                .put("success-url", "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments://onetouch/v1/success")
+                .put("approval-url", "https://www.sandbox.paypal.com/agreements/approve")
+        );
+
+        Uri uri = Uri.parse(approvalUrl);
+        when(browserSwitchResult.getReturnUrl()).thenReturn(uri);
+
+
+        PayPalVaultEditAuthResult.Success editAuthResult = new PayPalVaultEditAuthResult.Success(browserSwitchResult);
+        PayPalVaultEditResult result = sut.edit(editAuthResult);
+
+        assertTrue(result instanceof PayPalVaultEditResult.Success);
+    }
+    
+    @Test
     public void tokenize_whenPayPalInternalClientTokenizeResult_sendsAppSwitchSucceededEvents()
             throws JSONException {
         PayPalAccountNonce payPalAccountNonce = mock(PayPalAccountNonce.class);
