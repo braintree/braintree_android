@@ -3,6 +3,7 @@ package com.braintreepayments.api.paypal
 import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
+import androidx.core.net.toUri
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeClient
@@ -100,7 +101,7 @@ class PayPalClient internal constructor(
             if (payPalResponse != null) {
                 payPalContextId = payPalResponse.pairingId
                 val isAppSwitchFlow = internalPayPalClient.isAppSwitchEnabled(payPalRequest) &&
-                    internalPayPalClient.isDeepLinkSupportedByPayPalApp(context)
+                    internalPayPalClient.isDeepLinkSupportedByPayPalApp(context, payPalResponse.approvalUrl.orEmpty().toUri())
                 linkType = if (isAppSwitchFlow) LinkType.APP_SWITCH else LinkType.APP_LINK
 
                 try {

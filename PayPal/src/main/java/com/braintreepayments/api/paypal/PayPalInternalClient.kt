@@ -10,7 +10,6 @@ import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
-import com.braintreepayments.api.sharedutils.AppHelper
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -44,10 +43,6 @@ internal class PayPalInternalClient(
                 }
                 val url = "/v1/$endpoint"
                 val appLinkReturn = if (isBillingAgreement) appLink else null
-
-                if (isBillingAgreement && (payPalRequest as PayPalVaultRequest).enablePayPalAppSwitch) {
-                    payPalRequest.enablePayPalAppSwitch = isDeepLinkSupportedByPayPalApp(context)
-                }
 
                 val requestBody = payPalRequest.createRequestBody(
                     configuration = configuration,
@@ -130,7 +125,14 @@ internal class PayPalInternalClient(
                     successUrl = successUrl
                 )
 
-                if (isAppSwitchEnabled(payPalRequest) && isDeepLinkSupportedByPayPalApp(context)) {
+                val isBillingAgreement = payPalRequest is PayPalVaultRequest
+                val isDeepLinkSupportedByPayPalApp = isDeepLinkSupportedByPayPalApp(context, parsedRedirectUri)
+
+                if (isBillingAgreement && (payPalRequest as PayPalVaultRequest).enablePayPalAppSwitch) {
+                    payPalRequest.enablePayPalAppSwitch = isDeepLinkSupportedByPayPalApp
+                }
+
+                if (isAppSwitchEnabled(payPalRequest) && isDeepLinkSupportedByPayPalApp) {
                     if (!pairingId.isNullOrEmpty()) {
                         paymentAuthRequest.approvalUrl = createAppSwitchUri(parsedRedirectUri).toString()
                     } else {
@@ -159,8 +161,8 @@ internal class PayPalInternalClient(
                 payPalRequest.enablePayPalAppSwitch
     }
 
-    fun isDeepLinkSupportedByPayPalApp(context: Context): Boolean {
-        return deviceInspector.isDeepLinkSupportedByPayPalApp(context)
+    fun isDeepLinkSupportedByPayPalApp(context: Context, uri: Uri): Boolean {
+        return deviceInspector.isDeepLinkSupportedByPayPalApp(uri, context)
     }
 
     private fun findPairingId(redirectUri: Uri): String? {
