@@ -303,7 +303,7 @@ public class PayPalClientUnitTest {
                 new MockPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest)
                         .build();
 
-        when(payPalInternalClient.isPayPalInstalled(activity)).thenReturn(true);
+        when(payPalInternalClient.isDeepLinkSupportedByPayPalApp(activity)).thenReturn(true);
         when(payPalInternalClient.isAppSwitchEnabled(payPalVaultRequest)).thenReturn(true);
 
         BraintreeClient braintreeClient =

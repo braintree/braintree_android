@@ -10,6 +10,7 @@ import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
+import com.braintreepayments.api.sharedutils.AppHelper
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -17,7 +18,7 @@ internal class PayPalInternalClient(
     private val braintreeClient: BraintreeClient,
     private val dataCollector: DataCollector = DataCollector(braintreeClient),
     private val apiClient: ApiClient = ApiClient(braintreeClient),
-    private val deviceInspector: DeviceInspector = DeviceInspector()
+    private val deviceInspector: DeviceInspector = DeviceInspector(),
 ) {
     private val cancelUrl = "${braintreeClient.appLinkReturnUri}://onetouch/v1/cancel"
     private val successUrl = "${braintreeClient.appLinkReturnUri}://onetouch/v1/success"
@@ -45,7 +46,7 @@ internal class PayPalInternalClient(
                 val appLinkReturn = if (isBillingAgreement) appLink else null
 
                 if (isBillingAgreement && (payPalRequest as PayPalVaultRequest).enablePayPalAppSwitch) {
-                    payPalRequest.enablePayPalAppSwitch = isPayPalInstalled(context)
+                    payPalRequest.enablePayPalAppSwitch = isDeepLinkSupportedByPayPalApp(context)
                 }
 
                 val requestBody = payPalRequest.createRequestBody(
@@ -129,7 +130,7 @@ internal class PayPalInternalClient(
                     successUrl = successUrl
                 )
 
-                if (isAppSwitchEnabled(payPalRequest) && isPayPalInstalled(context)) {
+                if (isAppSwitchEnabled(payPalRequest) && isDeepLinkSupportedByPayPalApp(context)) {
                     if (!pairingId.isNullOrEmpty()) {
                         paymentAuthRequest.approvalUrl = createAppSwitchUri(parsedRedirectUri).toString()
                     } else {
@@ -158,8 +159,8 @@ internal class PayPalInternalClient(
                 payPalRequest.enablePayPalAppSwitch
     }
 
-    fun isPayPalInstalled(context: Context): Boolean {
-        return deviceInspector.isPayPalInstalled(context)
+    fun isDeepLinkSupportedByPayPalApp(context: Context): Boolean {
+        return deviceInspector.isDeepLinkSupportedByPayPalApp(context)
     }
 
     private fun findPairingId(redirectUri: Uri): String? {

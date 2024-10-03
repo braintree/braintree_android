@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.AppHelper
@@ -50,7 +51,7 @@ class DeviceInspector(
      * @param context A context to access the installed packages.
      * @return boolean depending on if the Venmo app is installed, and has a valid signature.
      */
-    fun isVenmoAppSwitchAvailable(context: Context?): Boolean {
+    fun isVenmoAppSwitchAvailable(context: Context): Boolean {
         val isVenmoIntentAvailable = appHelper.isIntentAvailable(context, venmoIntent)
         val isVenmoSignatureValid = signatureVerifier.isSignatureValid(
             context, VENMO_APP_PACKAGE, VENMO_BASE_64_ENCODED_SIGNATURE
@@ -58,12 +59,17 @@ class DeviceInspector(
         return isVenmoIntentAvailable && isVenmoSignatureValid
     }
 
-    fun isPayPalInstalled(context: Context?): Boolean {
+    fun isPayPalInstalled(context: Context): Boolean {
         return appHelper.isAppInstalled(context, PAYPAL_APP_PACKAGE)
     }
 
-    fun isVenmoInstalled(context: Context?): Boolean {
+    fun isVenmoInstalled(context: Context): Boolean {
         return appHelper.isAppInstalled(context, VENMO_APP_PACKAGE)
+    }
+
+    fun isDeepLinkSupportedByPayPalApp(context: Context): Boolean {
+        val intent = Intent().apply { data = Uri.parse(PAYPAL_URL) }
+        return appHelper.isIntentAvailableForPackageName(context, intent, PAYPAL_APP_PACKAGE)
     }
 
     private val isDeviceEmulator: Boolean
@@ -124,6 +130,7 @@ class DeviceInspector(
 
     companion object {
         private const val PAYPAL_APP_PACKAGE = "com.paypal.android.p2pmobile"
+        private const val PAYPAL_URL = "https://paypal.com"
         private const val VENMO_APP_PACKAGE = "com.venmo"
         private const val VENMO_APP_SWITCH_ACTIVITY = "controller.SetupMerchantActivity"
 
