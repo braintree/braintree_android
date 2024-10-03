@@ -161,8 +161,8 @@ internal class PayPalInternalClient(
                 payPalRequest.enablePayPalAppSwitch
     }
 
-    fun isPayPalAppInstalled(context: Context): Boolean {
-        return deviceInspector.isPayPalInstalled(context)
+    fun arePayPalAppLinksVerified(context: Context): Boolean {
+        return deviceInspector.arePayPalAppLinksVerified(context)
     }
 
     fun isDeepLinkSupportedByPayPalApp(context: Context, uri: Uri): Boolean {

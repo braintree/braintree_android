@@ -303,7 +303,7 @@ public class PayPalClientUnitTest {
                 new MockPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest)
                         .build();
         Uri aprovalUri = Uri.parse("https://example.com/approval/url");
-        when(payPalInternalClient.isPayPalAppInstalled(activity)).thenReturn(true);
+        when(payPalInternalClient.arePayPalAppLinksVerified(activity)).thenReturn(true);
         when(payPalInternalClient.isDeepLinkSupportedByPayPalApp(activity, aprovalUri)).thenReturn(true);
         when(payPalInternalClient.isAppSwitchEnabled(payPalVaultRequest)).thenReturn(true);
 

@@ -93,7 +93,7 @@ class PayPalClient internal constructor(
         payPalRequest: PayPalRequest,
         callback: PayPalPaymentAuthCallback
     ) {
-        if (payPalRequest is PayPalVaultRequest && !internalPayPalClient.isPayPalAppInstalled(context)) {
+        if (payPalRequest is PayPalVaultRequest && !internalPayPalClient.arePayPalAppLinksVerified(context)) {
             payPalRequest.enablePayPalAppSwitch = false
         }
 

@@ -63,6 +63,10 @@ class DeviceInspector(
         return appHelper.isAppInstalled(context, PAYPAL_APP_PACKAGE)
     }
 
+    fun arePayPalAppLinksVerified(context: Context): Boolean {
+        return appHelper.areAppLinksVerified(context, PAYPAL_APP_PACKAGE)
+    }
+
     fun isVenmoInstalled(context: Context): Boolean {
         return appHelper.isAppInstalled(context, VENMO_APP_PACKAGE)
     }
