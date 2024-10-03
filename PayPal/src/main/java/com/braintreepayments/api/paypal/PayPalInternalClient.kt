@@ -52,14 +52,37 @@ internal class PayPalInternalClient(
                     appLink = appLinkReturn
                 ) ?: throw JSONException("Error creating requestBody")
 
+                val onPayPalAppDeepLinkNotAvailable = {
+                    (payPalRequest as? PayPalVaultRequest)?.enablePayPalAppSwitch = false
+                    val requestBodyWithoutAppSwitch = payPalRequest.createRequestBody(
+                        configuration = configuration,
+                        authorization = braintreeClient.authorization,
+                        successUrl = successUrl,
+                        cancelUrl = cancelUrl,
+                        appLink = appLinkReturn
+                    ) ?: throw JSONException("Error creating requestBody")
+
+                    sendPost(
+                        url = url,
+                        requestBody = requestBodyWithoutAppSwitch,
+                        payPalRequest = payPalRequest,
+                        context = context,
+                        configuration = configuration,
+                        onPayPalAppDeepLinkNotAvailable = { throw RuntimeException("Error on fetching redirect url") },
+                        callback = callback
+                    )
+                }
+
                 sendPost(
                     url = url,
                     requestBody = requestBody,
                     payPalRequest = payPalRequest,
                     context = context,
                     configuration = configuration,
+                    onPayPalAppDeepLinkNotAvailable = onPayPalAppDeepLinkNotAvailable,
                     callback = callback
                 )
+
             } catch (exception: JSONException) {
                 callback.onResult(null, exception)
             }
@@ -86,6 +109,7 @@ internal class PayPalInternalClient(
         payPalRequest: PayPalRequest,
         context: Context,
         configuration: Configuration,
+        onPayPalAppDeepLinkNotAvailable: () -> Unit,
         callback: PayPalInternalClientCallback
     ) {
         braintreeClient.sendPOST(
@@ -101,6 +125,13 @@ internal class PayPalInternalClient(
             try {
                 val paypalPaymentResource = fromJson(responseBody)
                 val parsedRedirectUri = Uri.parse(paypalPaymentResource.redirectUrl)
+                val isDeepLinkSupportedByPayPalApp = isDeepLinkSupportedByPayPalApp(context, parsedRedirectUri)
+                val isPayPalAppSwitchEnabled = (payPalRequest as? PayPalVaultRequest)?.enablePayPalAppSwitch == true
+
+                if (isPayPalAppSwitchEnabled && !isDeepLinkSupportedByPayPalApp) {
+                    onPayPalAppDeepLinkNotAvailable()
+                    return@sendPOST
+                }
 
                 val pairingId = findPairingId(parsedRedirectUri)
                 val clientMetadataId = payPalRequest.riskCorrelationId ?: run {
@@ -124,13 +155,6 @@ internal class PayPalInternalClient(
                     pairingId = pairingId,
                     successUrl = successUrl
                 )
-
-                val isBillingAgreement = payPalRequest is PayPalVaultRequest
-                val isDeepLinkSupportedByPayPalApp = isDeepLinkSupportedByPayPalApp(context, parsedRedirectUri)
-
-                if (isBillingAgreement && (payPalRequest as PayPalVaultRequest).enablePayPalAppSwitch) {
-                    payPalRequest.enablePayPalAppSwitch = isDeepLinkSupportedByPayPalApp
-                }
 
                 if (isAppSwitchEnabled(payPalRequest) && isDeepLinkSupportedByPayPalApp) {
                     if (!pairingId.isNullOrEmpty()) {
@@ -158,7 +182,7 @@ internal class PayPalInternalClient(
 
     fun isAppSwitchEnabled(payPalRequest: PayPalRequest): Boolean {
         return (payPalRequest is PayPalVaultRequest) &&
-                payPalRequest.enablePayPalAppSwitch
+            payPalRequest.enablePayPalAppSwitch
     }
 
     fun arePayPalAppLinksVerified(context: Context): Boolean {
