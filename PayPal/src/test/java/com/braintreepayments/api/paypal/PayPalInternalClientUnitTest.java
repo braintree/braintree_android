@@ -623,7 +623,7 @@ public class PayPalInternalClientUnitTest {
         payPalRequest.setUserAuthenticationEmail("example@mail.com");
         payPalRequest.setEnablePayPalAppSwitch(true);
 
-        when(deviceInspector.isPayPalInstalled(context)).thenReturn(true);
+        when(deviceInspector.isDeepLinkSupportedByPayPalApp(context)).thenReturn(true);
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
