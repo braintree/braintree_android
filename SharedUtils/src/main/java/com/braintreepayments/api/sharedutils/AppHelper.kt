@@ -3,7 +3,7 @@ package com.braintreepayments.api.sharedutils
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
+import android.content.pm.ResolveInfo
 import androidx.annotation.RestrictTo
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
@@ -11,15 +11,13 @@ class AppHelper {
 
     fun isIntentAvailable(context: Context, intent: Intent): Boolean {
         return context
-            .packageManager
-            .queryIntentActivities(intent, 0)
+            .queryIntentActivities(intent)
             .isNotEmpty()
     }
 
     fun isIntentAvailableForPackageName(context: Context, intent: Intent, packageName: String): Boolean {
         return context
-            .packageManager
-            .queryIntentActivities(intent, 0)
+            .queryIntentActivities(intent)
             .any { it.activityInfo.packageName == packageName }
     }
 
@@ -31,6 +29,10 @@ class AppHelper {
         } catch (e: PackageManager.NameNotFoundException) {
             false
         }
+    }
+
+    private fun Context.queryIntentActivities(intent: Intent): List<ResolveInfo> {
+        return packageManager.queryIntentActivities(intent, NO_FLAGS)
     }
 
     companion object {
