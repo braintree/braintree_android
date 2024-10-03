@@ -302,8 +302,9 @@ public class PayPalClientUnitTest {
         PayPalInternalClient payPalInternalClient =
                 new MockPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest)
                         .build();
-
-        when(payPalInternalClient.isDeepLinkSupportedByPayPalApp(activity)).thenReturn(true);
+        Uri aprovalUri = Uri.parse("https://example.com/approval/url");
+        when(payPalInternalClient.isPayPalAppInstalled(activity)).thenReturn(true);
+        when(payPalInternalClient.isDeepLinkSupportedByPayPalApp(activity, aprovalUri)).thenReturn(true);
         when(payPalInternalClient.isAppSwitchEnabled(payPalVaultRequest)).thenReturn(true);
 
         BraintreeClient braintreeClient =

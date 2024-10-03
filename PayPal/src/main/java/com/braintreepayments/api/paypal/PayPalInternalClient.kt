@@ -161,8 +161,12 @@ internal class PayPalInternalClient(
                 payPalRequest.enablePayPalAppSwitch
     }
 
+    fun isPayPalAppInstalled(context: Context): Boolean {
+        return deviceInspector.isPayPalInstalled(context)
+    }
+
     fun isDeepLinkSupportedByPayPalApp(context: Context, uri: Uri): Boolean {
-        return deviceInspector.isDeepLinkSupportedByPayPalApp(uri, context)
+        return deviceInspector.isDeepLinkSupportedByPayPalApp(context, uri)
     }
 
     private fun findPairingId(redirectUri: Uri): String? {

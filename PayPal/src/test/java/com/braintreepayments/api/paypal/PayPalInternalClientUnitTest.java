@@ -623,7 +623,9 @@ public class PayPalInternalClientUnitTest {
         payPalRequest.setUserAuthenticationEmail("example@mail.com");
         payPalRequest.setEnablePayPalAppSwitch(true);
 
-        when(deviceInspector.isDeepLinkSupportedByPayPalApp(context)).thenReturn(true);
+        Uri aprovalUri = Uri.parse("https://paypal.com/some?ba_token=fake-ba-token");
+        when(deviceInspector.isPayPalInstalled(context)).thenReturn(true);
+        when(deviceInspector.isDeepLinkSupportedByPayPalApp(context, aprovalUri)).thenReturn(true);
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 

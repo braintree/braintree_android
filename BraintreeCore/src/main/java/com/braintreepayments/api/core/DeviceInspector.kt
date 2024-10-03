@@ -67,7 +67,7 @@ class DeviceInspector(
         return appHelper.isAppInstalled(context, VENMO_APP_PACKAGE)
     }
 
-    fun isDeepLinkSupportedByPayPalApp(uri: Uri, context: Context): Boolean {
+    fun isDeepLinkSupportedByPayPalApp(context: Context, uri: Uri): Boolean {
         val intent = Intent().apply { data = uri }
         return appHelper.isIntentAvailableForPackageName(context, intent, PAYPAL_APP_PACKAGE)
     }
