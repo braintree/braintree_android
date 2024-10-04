@@ -427,7 +427,6 @@ class BraintreeClientUnitTest {
     @Test
     fun integrationType_returnsIntegrationTypeDefinedInConstructor() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val sessionId = "custom-session-id"
         val sut = BraintreeClient(context, authorization, IntegrationType.DROP_IN)
         assertEquals("dropin", sut.integrationType.stringValue)
     }

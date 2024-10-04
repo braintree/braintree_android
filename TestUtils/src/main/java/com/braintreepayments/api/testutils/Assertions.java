@@ -1,8 +1,8 @@
 package com.braintreepayments.api.testutils;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.braintreepayments.api.card.BinData;
 
