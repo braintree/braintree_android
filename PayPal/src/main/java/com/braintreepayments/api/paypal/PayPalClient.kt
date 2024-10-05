@@ -359,6 +359,7 @@ class PayPalClient internal constructor(
         payPalVaultEditRequest: PayPalVaultEditRequest,
         callback: PayPalEditAuthCallback
     ) {
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_STARTED, analyticsParams)
 
         if (braintreeClient.authorization is TokenizationKey) {
             callback.onPayPalVaultEditAuthRequest(
@@ -369,15 +370,12 @@ class PayPalClient internal constructor(
             return
         }
 
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_STARTED)
-
         internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest) { result, error ->
             if (error != null) {
-                braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_FAILED)
+
                 callback.onPayPalVaultEditAuthRequest(PayPalVaultEditAuthRequest.Failure(error))
             }
 
-            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_SUCCEEDED)
             if (result is PayPalVaultEditAuthRequestParams) {
                 result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result)
 
@@ -389,6 +387,31 @@ class PayPalClient internal constructor(
                 )
             }
         }
+    }
+
+    @OptIn(ExperimentalBetaApi::class)
+    private fun callBackEditFIFailed(
+        callback: PayPalEditAuthCallback,
+        error: Exception
+    ) {
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_FAILED, analyticsParams)
+
+        val failure = PayPalVaultEditAuthRequest.Failure(error)
+
+        callback(failure)
+    }
+
+    @OptIn(ExperimentalBetaApi::class)
+    private fun callbackEditFiSucceeded(
+        callback: PayPalEditAuthCallback,
+        clientMetadataId: String,
+        browserSwitchOptions: BrowserSwitchOptions?
+    ) {
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_SUCCEEDED)
+
+        val readyToLaunch = PayPalVaultEditAuthRequest.ReadyToLaunch(clientMetadataId, browserSwitchOptions)
+
+        callback(readyToLaunch)
     }
 
     private fun callbackCreatePaymentAuthFailure(
