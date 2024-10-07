@@ -1,8 +1,10 @@
 package com.braintreepayments.api.googlepay
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.braintreepayments.api.sharedutils.IntentExtensions.parcelable
 import com.google.android.gms.wallet.AutoResolveHelper
 import com.google.android.gms.wallet.PaymentDataRequest
 import com.google.android.gms.wallet.Wallet
@@ -28,7 +30,7 @@ internal class GooglePayActivity : AppCompatActivity() {
                 .build()
         )
 
-        val request = intent.getParcelableExtra<PaymentDataRequest>(EXTRA_PAYMENT_DATA_REQUEST)
+        val request = intent.parcelable<PaymentDataRequest>(EXTRA_PAYMENT_DATA_REQUEST)
         if (request != null) {
             AutoResolveHelper.resolveTask(paymentsClient.loadPaymentData(request), this, REQUEST_CODE)
         }
@@ -48,7 +50,12 @@ internal class GooglePayActivity : AppCompatActivity() {
 
     override fun finish() {
         super.finish()
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, android.R.anim.fade_in, android.R.anim.fade_out)
+        } else {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        }
     }
 
     companion object {

@@ -1,6 +1,7 @@
 package com.braintreepayments.api.core
 
 import android.os.Bundle
+import com.braintreepayments.api.sharedutils.IntentExtensions.parcelable
 import com.braintreepayments.api.testutils.Fixtures
 import org.robolectric.RobolectricTestRunner
 import org.json.JSONException
@@ -82,7 +83,7 @@ class PostalAddressUnitTest {
         val bundle = Bundle().apply {
             putParcelable("TEST_PARCEL", preSerialized)
         }
-        val postSerialized: PostalAddress? = bundle.getParcelable("TEST_PARCEL")
+        val postSerialized: PostalAddress? = bundle.parcelable("TEST_PARCEL")
         assertNotNull(postSerialized)
         assertEquals("123 Fake St.", postSerialized!!.streetAddress)
         assertEquals("Apt. 3", postSerialized.extendedAddress)

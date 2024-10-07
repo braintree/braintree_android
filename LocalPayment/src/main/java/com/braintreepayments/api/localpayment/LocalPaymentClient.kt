@@ -79,25 +79,23 @@ class LocalPaymentClient internal constructor(
                         return@getConfiguration
                     }
 
-                    request?.let {
-                        localPaymentApi.createPaymentMethod(
-                            it
-                        ) { localPaymentResult: LocalPaymentAuthRequestParams?, createPaymentMethodError: Exception? ->
-                            if (localPaymentResult != null) {
-                                val pairingId = localPaymentResult.paymentId
-                                if (pairingId != null && !pairingId.isEmpty()) {
-                                    payPalContextId = pairingId
-                                }
-                                buildBrowserSwitchOptions(
-                                    localPaymentResult,
-                                    request.hasUserLocationConsent,
-                                    callback
-                                )
-                            } else if (createPaymentMethodError != null) {
-                                val errorMessage =
-                                    "An error occurred creating the local payment method."
-                                authRequestFailure(BraintreeException(errorMessage), callback)
+                    localPaymentApi.createPaymentMethod(
+                        request
+                    ) { localPaymentResult: LocalPaymentAuthRequestParams?, createPaymentMethodError: Exception? ->
+                        if (localPaymentResult != null) {
+                            val pairingId = localPaymentResult.paymentId
+                            if (pairingId.isNotEmpty()) {
+                                payPalContextId = pairingId
                             }
+                            buildBrowserSwitchOptions(
+                                localPaymentResult,
+                                request.hasUserLocationConsent,
+                                callback
+                            )
+                        } else if (createPaymentMethodError != null) {
+                            val errorMessage =
+                                "An error occurred creating the local payment method."
+                            authRequestFailure(BraintreeException(errorMessage), callback)
                         }
                     }
                 } else if (error != null) {
@@ -173,17 +171,9 @@ class LocalPaymentClient internal constructor(
         val hasUserLocationConsent = Json.optBoolean(metadata, "has-user-location-consent", false)
 
         val deepLinkUri: Uri = browserSwitchResult.returnUrl
-        if (deepLinkUri == null) {
-            val errorMessage = "LocalPayment encountered an error, return URL is invalid."
-            tokenizeFailure(BraintreeException(errorMessage), callback)
-            return
-        }
-
         val responseString = deepLinkUri.toString()
         if (responseString.lowercase(Locale.getDefault()).contains(
-                LOCAL_PAYMENT_CANCEL.lowercase(
-                    Locale.getDefault()
-                )
+                LOCAL_PAYMENT_CANCEL.lowercase(Locale.getDefault())
             )
         ) {
             callbackCancel(callback)

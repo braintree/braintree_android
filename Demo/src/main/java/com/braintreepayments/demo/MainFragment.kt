@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.fragment.findNavController
 import com.braintreepayments.api.core.PaymentMethodNonce
+import com.braintreepayments.api.sharedutils.IntentExtensions.parcelable
 
 @Suppress("TooManyFunctions")
 class MainFragment : BaseFragment() {
@@ -99,7 +100,7 @@ class MainFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_NONCE)) {
-            nonce = savedInstanceState.getParcelable(KEY_NONCE)
+            nonce = savedInstanceState.parcelable(KEY_NONCE)
         }
     }
 
