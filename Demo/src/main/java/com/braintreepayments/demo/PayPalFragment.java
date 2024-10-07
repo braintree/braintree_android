@@ -87,6 +87,7 @@ public class PayPalFragment extends BaseFragment {
 
             if (isEditFIErrorRequestOn) {
                 request = new PayPalVaultErrorHandlingEditRequest(
+                        true,
                         vaultIdEditText.getText().toString(),
                         riskCorrelationIdEditText.getText().toString()
                 );
@@ -94,6 +95,7 @@ public class PayPalFragment extends BaseFragment {
                 launchPayPalEditVault(request);
             } else {
                 request = new PayPalVaultEditRequest(
+                        true,
                         vaultIdEditText.getText().toString()
                 );
             }

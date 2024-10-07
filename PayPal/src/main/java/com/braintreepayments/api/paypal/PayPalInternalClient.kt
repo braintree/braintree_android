@@ -18,6 +18,7 @@ import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRe
 import org.json.JSONException
 import org.json.JSONObject
 
+@Suppress("TooManyFunctions")
 internal class PayPalInternalClient(
     private val braintreeClient: BraintreeClient,
     private val dataCollector: DataCollector = DataCollector(braintreeClient),
@@ -119,6 +120,7 @@ internal class PayPalInternalClient(
                         applicationGuid = dataCollector.getPayPalInstallationGUID(context)
                         clientMetadataId = pairingId
                     }
+
                     dataCollector.getClientMetadataId(
                         context = context,
                         request = dataCollectorRequest,
@@ -178,8 +180,12 @@ internal class PayPalInternalClient(
         request: PayPalVaultEditRequest,
         callback: PayPalInternalClientEditCallback
     ) {
+        val riskCorrelationId = (request as? PayPalVaultErrorHandlingEditRequest)?.riskCorrelationId
+
         getClientMetadataId(
-            context
+            context,
+            request.hasUserLocationConsent,
+            riskCorrelationId
         ) { clientMetadataId ->
             if (clientMetadataId == null) {
                 callback.onPayPalVaultEditResult(null, BraintreeException("An unexpected error occurred"))
@@ -247,16 +253,24 @@ internal class PayPalInternalClient(
 
     private fun getClientMetadataId(
         context: Context,
+        hasUserLocationConsent: Boolean,
+        correlationId: String?,
         callback: (String?) -> Unit
     ) {
         braintreeClient.getConfiguration { configuration, error ->
             if (error != null) {
                 callback(error("No Client Metadata Id"))
             } else {
+                val dataCollectorRequest = DataCollectorInternalRequest(
+                    hasUserLocationConsent
+                ).apply {
+                    applicationGuid = dataCollector.getPayPalInstallationGUID(context)
+                    clientMetadataId = correlationId
+                }
                 val clientMetadataId = dataCollector.getClientMetadataId(
-                    context,
-                    configuration,
-                    false
+                    context = context,
+                    request = dataCollectorRequest,
+                    configuration = configuration
                 )
 
                 callback(clientMetadataId)
