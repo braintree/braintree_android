@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - paypal-app-switch-feature
+      - main
 jobs:
   build_and_preview:
     runs-on: ubuntu-latest
