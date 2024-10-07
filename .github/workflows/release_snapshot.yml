@@ -1,5 +1,9 @@
 name: Release Snapshot
 on:
+  # update SNAPSHOT build whenever a push or merge occurs on main
+  push:
+    branches:
+      - 'main'
   workflow_dispatch:
 env:
   SIGNING_KEY_FILE_PATH: /home/runner/secretKey.gpg
