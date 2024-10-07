@@ -362,28 +362,31 @@ class PayPalClient internal constructor(
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_STARTED, analyticsParams)
 
         if (braintreeClient.authorization is TokenizationKey) {
-            callback.onPayPalVaultEditAuthRequest(
-                PayPalVaultEditAuthRequest.Failure(
-                    BraintreeException("Invalid authorization. This feature can only be used with a client token.")
+            callBackEditFIFailed(
+                callback,
+                BraintreeException(
+                    "Invalid authorization. This feature can only be used with a client token."
                 )
             )
+
             return
         }
 
         internalPayPalClient.sendVaultEditRequest(context, payPalVaultEditRequest) { result, error ->
             if (error != null) {
-
-                callback.onPayPalVaultEditAuthRequest(PayPalVaultEditAuthRequest.Failure(error))
+                callBackEditFIFailed(
+                    callback,
+                    error
+                )
             }
 
             if (result is PayPalVaultEditAuthRequestParams) {
                 result.browserSwitchOptions = buildBrowserSwitchOptionsForEditFI(result)
 
-                callback.onPayPalVaultEditAuthRequest(
-                    PayPalVaultEditAuthRequest.ReadyToLaunch(
-                        result.clientMetadataId,
-                        result.browserSwitchOptions
-                    )
+                callbackEditFiSucceeded(
+                    callback,
+                    result.clientMetadataId,
+                    result.browserSwitchOptions
                 )
             }
         }
@@ -398,7 +401,7 @@ class PayPalClient internal constructor(
 
         val failure = PayPalVaultEditAuthRequest.Failure(error)
 
-        callback(failure)
+        callback.onPayPalVaultEditAuthRequest(failure)
     }
 
     @OptIn(ExperimentalBetaApi::class)
@@ -409,9 +412,12 @@ class PayPalClient internal constructor(
     ) {
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_SUCCEEDED)
 
-        val readyToLaunch = PayPalVaultEditAuthRequest.ReadyToLaunch(clientMetadataId, browserSwitchOptions)
+        val readyToLaunch = PayPalVaultEditAuthRequest.ReadyToLaunch(
+            clientMetadataId,
+            browserSwitchOptions
+        )
 
-        callback(readyToLaunch)
+        callback.onPayPalVaultEditAuthRequest(readyToLaunch)
     }
 
     private fun callbackCreatePaymentAuthFailure(
