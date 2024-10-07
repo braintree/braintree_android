@@ -10,8 +10,8 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import com.braintreepayments.api.core.TokenizationKey
 import com.braintreepayments.api.core.LinkType
+import com.braintreepayments.api.core.TokenizationKey
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.paypal.vaultedit.PayPalEditAuthCallback

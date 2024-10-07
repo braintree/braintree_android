@@ -6,8 +6,8 @@ import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
-import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.DeviceInspector
+import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
@@ -18,6 +18,7 @@ import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRe
 import org.json.JSONException
 import org.json.JSONObject
 
+@Suppress("TooManyFunctions")
 internal class PayPalInternalClient(
     private val braintreeClient: BraintreeClient,
     private val dataCollector: DataCollector = DataCollector(braintreeClient),
@@ -119,6 +120,7 @@ internal class PayPalInternalClient(
                         applicationGuid = dataCollector.getPayPalInstallationGUID(context)
                         clientMetadataId = pairingId
                     }
+
                     dataCollector.getClientMetadataId(
                         context = context,
                         request = dataCollectorRequest,
@@ -178,8 +180,11 @@ internal class PayPalInternalClient(
         request: PayPalVaultEditRequest,
         callback: PayPalInternalClientEditCallback
     ) {
+        val riskCorrelationId = (request as? PayPalVaultErrorHandlingEditRequest)?.riskCorrelationId
+
         getClientMetadataId(
-            context
+            context,
+            riskCorrelationId
         ) { clientMetadataId ->
             if (clientMetadataId == null) {
                 callback.onPayPalVaultEditResult(null, BraintreeException("An unexpected error occurred"))
@@ -247,16 +252,23 @@ internal class PayPalInternalClient(
 
     private fun getClientMetadataId(
         context: Context,
+        correlationId: String?,
         callback: (String?) -> Unit
     ) {
         braintreeClient.getConfiguration { configuration, error ->
             if (error != null) {
                 callback(error("No Client Metadata Id"))
             } else {
-                val clientMetadataId = dataCollector.getClientMetadataId(
-                    context,
-                    configuration,
+                val dataCollectorRequest = DataCollectorInternalRequest(
                     false
+                ).apply {
+                    applicationGuid = dataCollector.getPayPalInstallationGUID(context)
+                    clientMetadataId = correlationId
+                }
+                val clientMetadataId = dataCollector.getClientMetadataId(
+                    context = context,
+                    request = dataCollectorRequest,
+                    configuration = configuration
                 )
 
                 callback(clientMetadataId)

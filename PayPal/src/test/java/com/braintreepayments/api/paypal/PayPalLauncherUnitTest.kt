@@ -7,6 +7,9 @@ import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.BrowserSwitchStartResult
+import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult
+import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditPendingRequest
 import io.mockk.every
 import io.mockk.mockk
 import org.json.JSONException
@@ -124,5 +127,43 @@ class PayPalLauncherUnitTest {
         )
 
         assertTrue(paymentAuthResult is PayPalPaymentAuthResult.NoResult)
+    }
+
+    @OptIn(ExperimentalBetaApi::class)
+    @Test
+    @Throws(JSONException::class)
+    fun `handleReturnToApp with EditAuthResult when result exists returns result`() {
+        val browserSwitchFinalResult = mockk<BrowserSwitchFinalResult.Success>()
+        every {
+            browserSwitchClient.completeRequest(
+                intent,
+                pendingRequestString
+            )
+        } returns browserSwitchFinalResult
+
+        val editAuthResult = sut.handleReturnToApp(
+            PayPalVaultEditPendingRequest.Started(pendingRequestString), intent
+        )
+
+        assertTrue(editAuthResult is PayPalVaultEditAuthResult.Success)
+        assertSame(
+            browserSwitchFinalResult,
+            (editAuthResult as PayPalVaultEditAuthResult.Success).browserSwitchSuccess
+        )
+    }
+
+    @OptIn(ExperimentalBetaApi::class)
+    @Test
+    @Throws(JSONException::class)
+    fun `handleReturnToApp with EditAuthResult when result does not exist returns null`() {
+        every {
+            browserSwitchClient.completeRequest(intent, pendingRequestString)
+        } returns BrowserSwitchFinalResult.NoResult
+
+        val editAuthResult = sut.handleReturnToApp(
+            PayPalVaultEditPendingRequest.Started(pendingRequestString), intent
+        )
+
+        assertTrue(editAuthResult is PayPalVaultEditAuthResult.NoResult)
     }
 }
