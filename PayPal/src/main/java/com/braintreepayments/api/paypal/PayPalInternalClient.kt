@@ -10,7 +10,6 @@ import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
-import com.braintreepayments.api.datacollector.DataCollectorRequest
 import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
 import com.braintreepayments.api.paypal.vaultedit.PayPalInternalClientEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequestParams
@@ -121,6 +120,7 @@ internal class PayPalInternalClient(
                         applicationGuid = dataCollector.getPayPalInstallationGUID(context)
                         clientMetadataId = pairingId
                     }
+
                     dataCollector.getClientMetadataId(
                         context = context,
                         request = dataCollectorRequest,
@@ -259,8 +259,6 @@ internal class PayPalInternalClient(
             if (error != null) {
                 callback(error("No Client Metadata Id"))
             } else {
-                val request = DataCollectorRequest(false, correlationId)
-
                 val dataCollectorRequest = DataCollectorInternalRequest(
                     false
                 ).apply {
