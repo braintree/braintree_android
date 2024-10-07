@@ -201,31 +201,6 @@ public class CardClientTest {
         countDownLatch.await();
     }
 
-    @Ignore("Sample merchant account is not set up for CVV verification")
-    @Test(timeout = 10000)
-    public void tokenize_callsErrorCallbackForInvalidCvv() throws Exception {
-        String authorization = new TestClientTokenBuilder().withCvvVerification().build();
-        overrideConfigurationCache(authorization, requestProtocol);
-
-        Card card = new Card();
-        card.setNumber(VISA);
-        card.setCvv("200");
-        card.setExpirationMonth("08");
-        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
-
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
-        CardClient sut = setupCardClient(authorization);
-        sut.tokenize(card, (cardResult) -> {
-            assertTrue(cardResult instanceof CardResult.Failure);
-            Exception error = ((CardResult.Failure) cardResult).getError();
-           assertEquals("CVV verification failed",
-                    ((ErrorWithResponse) error).errorFor("creditCard").getFieldErrors().get(0).getMessage());
-            countDownLatch.countDown();
-        });
-
-        countDownLatch.await();
-    }
-
     @Test(timeout = 10000)
     public void tokenize_tokenizesACardWithPostalCode() throws Exception {
         String authorization = new TestClientTokenBuilder().withPostalCodeVerification().build();
@@ -238,32 +213,6 @@ public class CardClientTest {
         card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
 
         assertTokenizationSuccessful(authorization, card);
-    }
-
-    @Ignore("Sample merchant account is not set up for postal code verification")
-    @Test(timeout = 10000)
-    public void tokenize_callsErrorCallbackForInvalidPostalCode() throws Exception {
-        String authorization = new TestClientTokenBuilder().withPostalCodeVerification().build();
-        overrideConfigurationCache(authorization, requestProtocol);
-
-        Card card = new Card();
-        card.setNumber(VISA);
-        card.setPostalCode("20000");
-        card.setExpirationMonth("08");
-        card.setExpirationYear(ExpirationDateHelper.validExpirationYear());
-
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
-        CardClient sut = setupCardClient(authorization);
-        sut.tokenize(card, (cardResult) -> {
-            assertTrue(cardResult instanceof CardResult.Failure);
-            Exception error = ((CardResult.Failure) cardResult).getError();
-            assertEquals("Postal code verification failed",
-                    ((ErrorWithResponse) error).errorFor("creditCard").errorFor("billingAddress")
-                            .getFieldErrors().get(0).getMessage());
-            countDownLatch.countDown();
-        });
-
-        countDownLatch.await();
     }
 
     @Test
@@ -317,8 +266,7 @@ public class CardClientTest {
     }
 
     private void assertTokenizationSuccessful(String authorization, Card card) throws Exception {
-        BraintreeClient braintreeClient = new BraintreeClient(ApplicationProvider.getApplicationContext(), authorization);
-        CardClient sut = new CardClient(braintreeClient);
+        CardClient sut = setupCardClient(authorization);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         sut.tokenize(card, (cardResult) -> {
@@ -346,8 +294,7 @@ public class CardClientTest {
     }
 
     private CardClient setupCardClient(String authorization) {
-        BraintreeClient braintreeClient = new BraintreeClient(ApplicationProvider.getApplicationContext(), authorization);
-        return new CardClient(braintreeClient);
+        return new CardClient(ApplicationProvider.getApplicationContext(), authorization);
     }
 
     private static void overrideConfigurationCache(String authString, String requestProtocol) throws JSONException {
