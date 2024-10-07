@@ -1,9 +1,7 @@
 name: Deploy demo app to Firebase app distribution
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - paypal-app-switch-feature
+
 jobs:
   build_and_preview:
     runs-on: ubuntu-latest
