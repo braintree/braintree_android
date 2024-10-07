@@ -12,7 +12,8 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 @ExperimentalBetaApi
 open class PayPalVaultEditRequest
 @JvmOverloads constructor(
-    open val editPayPalVaultId: String
+    open val editPayPalVaultId: String,
+    open val hasUserLocationConsent: Boolean
 ) {
     open val hermesPath: String = "v1/paypal_hermes/generate_edit_fi_url"
 }

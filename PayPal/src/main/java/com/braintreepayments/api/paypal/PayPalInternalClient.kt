@@ -184,6 +184,7 @@ internal class PayPalInternalClient(
 
         getClientMetadataId(
             context,
+            request.hasUserLocationConsent,
             riskCorrelationId
         ) { clientMetadataId ->
             if (clientMetadataId == null) {
@@ -252,6 +253,7 @@ internal class PayPalInternalClient(
 
     private fun getClientMetadataId(
         context: Context,
+        hasUserLocationConsent: Boolean,
         correlationId: String?,
         callback: (String?) -> Unit
     ) {
@@ -260,7 +262,7 @@ internal class PayPalInternalClient(
                 callback(error("No Client Metadata Id"))
             } else {
                 val dataCollectorRequest = DataCollectorInternalRequest(
-                    false
+                    hasUserLocationConsent
                 ).apply {
                     applicationGuid = dataCollector.getPayPalInstallationGUID(context)
                     clientMetadataId = correlationId
