@@ -860,6 +860,7 @@ public class PayPalInternalClientUnitTest {
 
         String editVaultId = "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=";
         PayPalVaultErrorHandlingEditRequest request = new PayPalVaultErrorHandlingEditRequest(
+                true,
                 editVaultId,
                 "sample-client-metadata-id"
         );
@@ -908,6 +909,7 @@ public class PayPalInternalClientUnitTest {
 
         String editVaultId = "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=";
         PayPalVaultEditRequest request = new PayPalVaultEditRequest(
+                true,
                 editVaultId
         );
 
@@ -954,6 +956,7 @@ public class PayPalInternalClientUnitTest {
 
         String editVaultId = "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=";
         PayPalVaultEditRequest request = new PayPalVaultEditRequest(
+                true,
                 editVaultId
         );
         sut.sendVaultEditRequest(
@@ -983,6 +986,7 @@ public class PayPalInternalClientUnitTest {
 
         String editVaultId = "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=";
         PayPalVaultEditRequest request = new PayPalVaultEditRequest(
+                true,
                 editVaultId
         );
 

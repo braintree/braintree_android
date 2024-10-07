@@ -520,6 +520,7 @@ public class PayPalClientUnitTest {
                 new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
 
         PayPalVaultEditRequest request = new PayPalVaultEditRequest(
+                true,
                 "sample-edit-vault-id"
         );
 
@@ -538,6 +539,7 @@ public class PayPalClientUnitTest {
                 new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
 
         PayPalVaultErrorHandlingEditRequest request = new PayPalVaultErrorHandlingEditRequest(
+                true,
                 "sample-edit-vault-id",
                 "sample-client-metadata-id"
         );
@@ -560,7 +562,11 @@ public class PayPalClientUnitTest {
                 .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
                 .build();
 
-        PayPalVaultEditRequest payPalVaultEditRequest = new PayPalVaultEditRequest("123abc");
+        PayPalVaultEditRequest payPalVaultEditRequest = new PayPalVaultEditRequest(
+                true,
+                "123abc"
+        );
+
         PayPalEditAuthCallback editAuthCallback = mock(PayPalEditAuthCallback.class);
 
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
