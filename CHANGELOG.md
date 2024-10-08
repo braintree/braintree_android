@@ -6,7 +6,8 @@
     * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
     * Add `PayPalClient.createEditAuthRequest()` that takes in a `PayPalVaultEditRequest` or `PayPalVaultErrorHandlingEditRequest`
     * **Note:** This feature is currently in beta and may change or be removed in future releases
-
+  * Add `PayPalRecurringBillingDetails` and `PayPalRecurringBillingPlanType` opt-in request objects. Including these details will provide transparency to users on their billing schedule, dates, and amounts, as well as launch a modernized checkout UI.
+      
 ## 5.0.0 (2024-09-30)
 * PayPal
   * Add PayPal App Switch vault flow (BETA)
