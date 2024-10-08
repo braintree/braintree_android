@@ -326,17 +326,35 @@ class PayPalClient internal constructor(
                 approvalUrl = approvalUrl,
                 tokenKey = tokenKey
             )
-            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_BROWSER_PRESENTATION_SUCCEEDED)
+            braintreeClient.sendAnalyticsEvent(
+                PayPalAnalytics.EDIT_FI_BROWSER_PRESENTATION_SUCCEEDED,
+                analyticsParams
+            )
 
             return PayPalVaultEditResult.Success(clientMetadataId)
         } catch (e: UserCanceledException) {
-            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_BROWSER_LOGIN_CANCELED)
+
+            braintreeClient.sendAnalyticsEvent(
+                PayPalAnalytics.EDIT_FI_BROWSER_LOGIN_CANCELED,
+                analyticsParams
+            )
+
             return PayPalVaultEditResult.Cancel
         } catch (e: JSONException) {
-            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_BROWSER_PRESENTATION_FAILED)
+
+            braintreeClient.sendAnalyticsEvent(
+                PayPalAnalytics.EDIT_FI_BROWSER_PRESENTATION_FAILED,
+                analyticsParams
+            )
+
             return PayPalVaultEditResult.Failure(e)
         } catch (e: PayPalBrowserSwitchException) {
-            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_BROWSER_PRESENTATION_FAILED)
+
+            braintreeClient.sendAnalyticsEvent(
+                PayPalAnalytics.EDIT_FI_BROWSER_PRESENTATION_FAILED,
+                analyticsParams
+            )
+
             return PayPalVaultEditResult.Failure(e)
         }
     }
