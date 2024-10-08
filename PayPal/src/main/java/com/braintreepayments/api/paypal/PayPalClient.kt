@@ -338,7 +338,7 @@ class PayPalClient internal constructor(
     }
 
     @OptIn(ExperimentalBetaApi::class)
-    fun editFiBrowserPresentationSuccess(clientMetadataId: String): PayPalVaultEditResult {
+    private fun editFiBrowserPresentationSuccess(clientMetadataId: String): PayPalVaultEditResult {
         braintreeClient.sendAnalyticsEvent(
             PayPalAnalytics.EDIT_FI_BROWSER_PRESENTATION_SUCCEEDED,
             analyticsParams
@@ -348,7 +348,7 @@ class PayPalClient internal constructor(
     }
 
     @OptIn(ExperimentalBetaApi::class)
-    fun editFiBrowserPresentationFailed(exception: Exception): PayPalVaultEditResult {
+    private fun editFiBrowserPresentationFailed(exception: Exception): PayPalVaultEditResult {
         braintreeClient.sendAnalyticsEvent(
             PayPalAnalytics.EDIT_FI_BROWSER_PRESENTATION_FAILED,
             analyticsParams
@@ -358,7 +358,7 @@ class PayPalClient internal constructor(
     }
 
     @OptIn(ExperimentalBetaApi::class)
-    fun editFiBrowserPresentationCanceled(): PayPalVaultEditResult {
+    private fun editFiBrowserPresentationCanceled(): PayPalVaultEditResult {
         braintreeClient.sendAnalyticsEvent(
             PayPalAnalytics.EDIT_FI_BROWSER_LOGIN_CANCELED,
             analyticsParams
