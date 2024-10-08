@@ -410,7 +410,7 @@ class PayPalClient internal constructor(
         clientMetadataId: String,
         browserSwitchOptions: BrowserSwitchOptions?
     ) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_SUCCEEDED)
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_SUCCEEDED, analyticsParams)
 
         val readyToLaunch = PayPalVaultEditAuthRequest.ReadyToLaunch(
             clientMetadataId,
