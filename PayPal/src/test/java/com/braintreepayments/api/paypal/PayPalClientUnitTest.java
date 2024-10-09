@@ -527,6 +527,13 @@ public class PayPalClientUnitTest {
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
         sut.createEditAuthRequest(activity, request, payPalEditAuthCallback);
 
+        AnalyticsEventParams params = new AnalyticsEventParams();
+
+        verify(braintreeClient).sendAnalyticsEvent(
+                PayPalAnalytics.EDIT_FI_STARTED,
+                params
+        );
+        
         verify(payPalInternalClient).sendVaultEditRequest(same(activity), same(request),
                 any(PayPalInternalClientEditCallback.class));
     }
@@ -546,6 +553,13 @@ public class PayPalClientUnitTest {
 
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient);
         sut.createEditAuthRequest(activity, request, payPalEditAuthCallback);
+
+        AnalyticsEventParams params = new AnalyticsEventParams();
+
+        verify(braintreeClient).sendAnalyticsEvent(
+                PayPalAnalytics.EDIT_FI_STARTED,
+                params
+        );
 
         verify(payPalInternalClient).sendVaultEditRequest(same(activity), same(request),
                 any(PayPalInternalClientEditCallback.class));
@@ -573,12 +587,25 @@ public class PayPalClientUnitTest {
 
         sut.createEditAuthRequest(context, payPalVaultEditRequest, editAuthCallback);
 
+        AnalyticsEventParams params = new AnalyticsEventParams();
+
+        verify(braintreeClient).sendAnalyticsEvent(
+                PayPalAnalytics.EDIT_FI_STARTED,
+                params
+        );
+
         ArgumentCaptor<PayPalVaultEditAuthRequest> captor =
                 ArgumentCaptor.forClass(PayPalVaultEditAuthRequest.class);
         verify(editAuthCallback).onPayPalVaultEditAuthRequest(captor.capture());
 
         PayPalVaultEditAuthRequest request = captor.getValue();
         assertTrue(request instanceof PayPalVaultEditAuthRequest.Failure);
+
+        verify(braintreeClient).sendAnalyticsEvent(
+                PayPalAnalytics.EDIT_FI_FAILED,
+                params
+        );
+
         assertEquals("Invalid authorization. This feature can only be used with a client token.",
                 ((PayPalVaultEditAuthRequest.Failure) request).getError().getMessage());
     }
@@ -611,6 +638,13 @@ public class PayPalClientUnitTest {
 
         PayPalVaultEditAuthResult.Success editAuthResult = new PayPalVaultEditAuthResult.Success(browserSwitchResult);
         PayPalVaultEditResult result = sut.edit(editAuthResult);
+
+        AnalyticsEventParams params = new AnalyticsEventParams();
+
+        verify(braintreeClient).sendAnalyticsEvent(
+                PayPalAnalytics.EDIT_FI_BROWSER_PRESENTATION_SUCCEEDED,
+                params
+        );
 
         assertTrue(result instanceof PayPalVaultEditResult.Success);
     }
