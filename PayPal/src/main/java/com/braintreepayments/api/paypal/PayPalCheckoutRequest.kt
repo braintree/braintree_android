@@ -106,7 +106,10 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
             .put(RETURN_URL_KEY, successUrl)
             .put(CANCEL_URL_KEY, cancelUrl)
             .put(OFFER_PAY_LATER_KEY, shouldOfferPayLater)
-            .putOpt(SHIPPING_CALLBACK_URL_KEY, shippingCallbackUrl.toString())
+
+        shippingCallbackUrl?.let {
+            if (it.toString().isNotEmpty()) parameters.put(SHIPPING_CALLBACK_URL_KEY, it)
+        }
 
         if (authorization is ClientToken) {
             parameters.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.bearer)
