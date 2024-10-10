@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypal
 
+import android.net.Uri
 import android.os.Build
 import android.text.TextUtils
 import com.braintreepayments.api.core.Authorization
@@ -45,6 +46,7 @@ class PayPalVaultRequest
     override var riskCorrelationId: String? = null,
     override var userAuthenticationEmail: String? = null,
     override var lineItems: List<PayPalLineItem> = emptyList(),
+    override var shippingCallbackUrl: Uri? = null,
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -57,7 +59,8 @@ class PayPalVaultRequest
     merchantAccountId = merchantAccountId,
     riskCorrelationId = riskCorrelationId,
     userAuthenticationEmail = userAuthenticationEmail,
-    lineItems = lineItems
+    lineItems = lineItems,
+    shippingCallbackUrl = shippingCallbackUrl,
 ) {
 
     @Throws(JSONException::class)
@@ -73,6 +76,7 @@ class PayPalVaultRequest
             .put(RETURN_URL_KEY, successUrl)
             .put(CANCEL_URL_KEY, cancelUrl)
             .put(OFFER_CREDIT_KEY, shouldOfferCredit)
+            .putOpt(SHIPPING_CALLBACK_URL_KEY, shippingCallbackUrl.toString())
 
         if (authorization is ClientToken) {
             parameters.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.bearer)
