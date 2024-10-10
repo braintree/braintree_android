@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypal
 
+import android.net.Uri
 import android.os.Parcelable
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.Authorization
@@ -71,6 +72,9 @@ import org.json.JSONException
  * @property userAuthenticationEmail User email to initiate a quicker authentication flow in cases
  * where the user has a PayPal Account with the same email.
  * @property lineItems The line items for this transaction. It can include up to 249 line items.
+ * @property shippingCallbackUrl Server side shipping callback URL to be notified when a customer
+ * updates their shipping address or options. A callback request will be sent to the merchant server
+ * at this URL.
  */
 abstract class PayPalRequest internal constructor(
     open val hasUserLocationConsent: Boolean,
@@ -84,7 +88,8 @@ abstract class PayPalRequest internal constructor(
     open var merchantAccountId: String? = null,
     open var riskCorrelationId: String? = null,
     open var userAuthenticationEmail: String? = null,
-    open var lineItems: List<PayPalLineItem> = emptyList()
+    open var lineItems: List<PayPalLineItem> = emptyList(),
+    open var shippingCallbackUrl: Uri? = null,
 ) : Parcelable {
 
     @Throws(JSONException::class)
@@ -126,5 +131,6 @@ abstract class PayPalRequest internal constructor(
         internal const val OS_VERSION_KEY: String = "os_version"
         internal const val OS_TYPE_KEY: String = "os_type"
         internal const val MERCHANT_APP_RETURN_URL_KEY: String = "merchant_app_return_url"
+        internal const val SHIPPING_CALLBACK_URL_KEY: String = "shipping_callback_url"
     }
 }
