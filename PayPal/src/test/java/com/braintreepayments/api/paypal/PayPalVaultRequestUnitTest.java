@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypal;
 
+import android.net.Uri;
 import android.os.Build;
 import android.os.Parcel;
 
@@ -8,6 +9,7 @@ import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.core.PostalAddress;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -141,5 +143,58 @@ public class PayPalVaultRequestUnitTest {
         assertTrue(requestBody.contains("\"os_type\":" + "\"Android\""));
         assertTrue(requestBody.contains("\"os_version\":" + "\"" + versionSDK + "\""));
         assertTrue(requestBody.contains("\"merchant_app_return_url\":" + "\"universal_url\""));
+    }
+
+    @Test
+    public void createRequestBody_sets_shippingCallbackUri_when_not_null() throws JSONException {
+        String urlString = "https://www.example.com/path";
+        Uri uri = Uri.parse(urlString);
+
+        PayPalVaultRequest request = new PayPalVaultRequest(true);
+        request.setShippingCallbackUrl(uri);
+
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url",
+                null
+        );
+
+        JSONObject jsonObject = new JSONObject(requestBody);
+        assertEquals(urlString, jsonObject.getString("shipping_callback_url"));
+    }
+
+    @Test
+    public void createRequestBody_does_not_set_shippingCallbackUri_when_null() throws JSONException {
+        PayPalVaultRequest request = new PayPalVaultRequest(true);
+
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url",
+                null
+        );
+
+        JSONObject jsonObject = new JSONObject(requestBody);
+        assertFalse(jsonObject.has("shipping_callback_url"));
+    }
+
+    @Test
+    public void createRequestBody_does_not_set_shippingCallbackUri_when_empty() throws JSONException {
+        PayPalVaultRequest request = new PayPalVaultRequest(true);
+        request.setShippingCallbackUrl(Uri.parse(""));
+
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url",
+                null
+        );
+
+        JSONObject jsonObject = new JSONObject(requestBody);
+        assertFalse(jsonObject.has("shipping_callback_url"));
     }
 }
