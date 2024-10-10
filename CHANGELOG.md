@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+# unreleased
+* Shopper Insights (BETA)
+  * For analytics, send `experiment` as a parameter to `getRecommendedPaymentMethods` method
+  * For analytics, send `experiment` and `buttonRank` analytic metrics to FPTI via the button presented event methods
+
 ## 5.0.0 (2024-09-30)
 * PayPal
   * Add PayPal App Switch vault flow (BETA)

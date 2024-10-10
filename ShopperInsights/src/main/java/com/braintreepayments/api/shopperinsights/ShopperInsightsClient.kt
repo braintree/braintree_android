@@ -1,6 +1,7 @@
 package com.braintreepayments.api.shopperinsights
 
 import android.content.Context
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
@@ -13,6 +14,7 @@ import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.PAYPAL
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.PAYPAL_SELECTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.VENMO_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.VENMO_SELECTED
+import kotlin.math.exp
 
 /**
  * Use [ShopperInsightsClient] to optimize your checkout experience
@@ -50,10 +52,14 @@ class ShopperInsightsClient internal constructor(
      */
     fun getRecommendedPaymentMethods(
         request: ShopperInsightsRequest,
+        experiment: String? = null,
         callback: ShopperInsightsCallback
     ) {
         analyticsParamRepository.resetSessionId()
-        braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_STARTED)
+        braintreeClient.sendAnalyticsEvent(
+            GET_RECOMMENDED_PAYMENTS_STARTED,
+            AnalyticsEventParams(merchantExperiment = experiment)
+        )
 
         if (request.email == null && request.phone == null) {
             callbackFailure(
@@ -154,8 +160,14 @@ class ShopperInsightsClient internal constructor(
      * Call this method when the PayPal button has been successfully displayed to the buyer.
      * This method sends analytics to help improve the Shopper Insights feature experience.
      */
-    fun sendPayPalPresentedEvent() {
-        braintreeClient.sendAnalyticsEvent(PAYPAL_PRESENTED)
+    fun sendPayPalPresentedEvent(experiment: String? = null, buttonRank: Int? = null) {
+        braintreeClient.sendAnalyticsEvent(
+            PAYPAL_PRESENTED,
+            AnalyticsEventParams(
+                merchantExperiment = experiment,
+                merchantExperimentButtonRank = buttonRank
+            )
+        )
     }
 
     /**
@@ -170,8 +182,14 @@ class ShopperInsightsClient internal constructor(
      * Call this method when the Venmo button has been successfully displayed to the buyer.
      * This method sends analytics to help improve the Shopper Insights feature experience.
      */
-    fun sendVenmoPresentedEvent() {
-        braintreeClient.sendAnalyticsEvent(VENMO_PRESENTED)
+    fun sendVenmoPresentedEvent(experiment: String? = null, buttonRank: Int? = null) {
+        braintreeClient.sendAnalyticsEvent(
+            VENMO_PRESENTED,
+            AnalyticsEventParams(
+                merchantExperiment = experiment,
+                merchantExperimentButtonRank = buttonRank
+            )
+        )
     }
 
     /**

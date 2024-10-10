@@ -9,5 +9,7 @@ data class AnalyticsEventParams(
     var isVaultRequest: Boolean = false,
     var startTime: Long? = null,
     var endTime: Long? = null,
-    var endpoint: String? = null
+    var endpoint: String? = null,
+    val merchantExperiment: String? = null,
+    val merchantExperimentButtonRank: Int? = null
 )
