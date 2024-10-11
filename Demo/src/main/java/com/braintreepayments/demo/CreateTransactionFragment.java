@@ -15,12 +15,13 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.braintreepayments.api.card.CardNonce;
 import com.braintreepayments.api.core.PaymentMethodNonce;
 import com.braintreepayments.demo.models.Transaction;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CreateTransactionFragment extends Fragment {
 
@@ -54,49 +55,73 @@ public class CreateTransactionFragment extends Fragment {
     }
 
     private void sendNonceToServer(PaymentMethodNonce nonce, String amount) {
-        Callback<Transaction> callback = new Callback<Transaction>() {
+        Callback<Transaction> callback = new Callback<>() {
             @Override
-            public void success(Transaction transaction, Response response) {
-                if (transaction.getMessage() != null &&
-                        transaction.getMessage().startsWith("created")) {
-                    setStatus(R.string.transaction_complete);
-                    setMessage(transaction.getMessage());
+            public void onResponse(Call<Transaction> call, Response<Transaction> response) {
+                if (response.isSuccessful()) {
+                    Transaction transaction = response.body();
+                    if (transaction.getMessage() != null &&
+                            transaction.getMessage().startsWith("created")) {
+                        setStatus(R.string.transaction_complete);
+                        setMessage(transaction.getMessage());
+                    } else {
+                        setStatus(R.string.transaction_failed);
+                        if (TextUtils.isEmpty(transaction.getMessage())) {
+                            setMessage("Server response was empty or malformed");
+                        } else {
+                            setMessage(transaction.getMessage());
+                        }
+                    }
                 } else {
                     setStatus(R.string.transaction_failed);
-                    if (TextUtils.isEmpty(transaction.getMessage())) {
-                        setMessage("Server response was empty or malformed");
+                    if (response.body() != null) {
+                        setMessage("Unable to create a transaction. Response Code: " +
+                                response.code() + " Response body: " + response.body());
                     } else {
-                        setMessage(transaction.getMessage());
+                        setMessage("Unable to create a transaction - no response body");
                     }
                 }
             }
 
             @Override
-            public void failure(RetrofitError error) {
+            public void onFailure(Call<Transaction> call, Throwable throwable) {
                 setStatus(R.string.transaction_failed);
-                setMessage("Unable to create a transaction. Response Code: " +
-                        error.getResponse().getStatus() + " Response body: " +
-                        error.getResponse().getBody());
+                setMessage("Unable to create a transaction. Error: " + throwable.getMessage());
             }
         };
 
         String nonceString = nonce.getString();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
 
-        TransactionRequest transactionRequest;
-        if (Settings.isThreeDSecureEnabled(activity)) {
-            String threeDSecureMerchantId = Settings.getThreeDSecureMerchantAccountId(activity);
-            transactionRequest = new TransactionRequest(amount, nonceString, threeDSecureMerchantId);
-
-            if (Settings.isThreeDSecureRequired(activity)) {
-                transactionRequest.setThreeDSecureRequired(true);
-            }
+        if (Settings.isThreeDSecureEnabled(activity) && Settings.isThreeDSecureRequired(activity)) {
+            DemoApplication
+                    .getApiClient(activity)
+                    .createTransaction(
+                            nonceString,
+                            amount,
+                            Settings.getThreeDSecureMerchantAccountId(activity),
+                            true
+                    )
+                    .enqueue(callback);
+        } else if (Settings.isThreeDSecureEnabled(activity)) {
+            DemoApplication
+                    .getApiClient(activity)
+                    .createTransaction(
+                            nonceString,
+                            amount,
+                            Settings.getThreeDSecureMerchantAccountId(activity)
+                    )
+                    .enqueue(callback);
         } else {
-            String merchantAccountId = Settings.getMerchantAccountId(activity);
-            transactionRequest = new TransactionRequest(amount, nonceString, merchantAccountId);
+            DemoApplication
+                    .getApiClient(activity)
+                    .createTransaction(
+                            nonceString,
+                            amount,
+                            Settings.getMerchantAccountId(activity)
+                    )
+                    .enqueue(callback);
         }
-
-        DemoApplication.getApiClient(activity).createTransaction(transactionRequest, callback);
     }
 
     private void setStatus(int message) {

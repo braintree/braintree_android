@@ -1,6 +1,7 @@
 package com.braintreepayments.api.paypal
 
 import android.os.Parcelable
+import androidx.annotation.RestrictTo
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
@@ -40,6 +41,7 @@ data class PayPalCreditFinancing internal constructor(
 
         @JvmStatic
         @Throws(JSONException::class)
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         fun fromJson(creditFinancing: JSONObject?): PayPalCreditFinancing {
             return if (creditFinancing == null) {
                 PayPalCreditFinancing()

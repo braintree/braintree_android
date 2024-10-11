@@ -4,7 +4,6 @@ import android.content.Context
 import android.text.TextUtils
 import androidx.annotation.MainThread
 import androidx.annotation.RestrictTo
-import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.UUIDHelper
@@ -14,10 +13,10 @@ import org.json.JSONObject
 /**
  * PayPalDataCollector is used to collect PayPal specific device information to aid in fraud detection and prevention.
  */
-class DataCollector @VisibleForTesting internal constructor(
+class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
     private val braintreeClient: BraintreeClient,
-    private val magnesInternalClient: MagnesInternalClient,
-    private val uuidHelper: UUIDHelper
+    private val magnesInternalClient: MagnesInternalClient = MagnesInternalClient(),
+    private val uuidHelper: UUIDHelper = UUIDHelper()
 ) {
     /**
      * Initializes a new [DataCollector] instance
@@ -32,17 +31,9 @@ class DataCollector @VisibleForTesting internal constructor(
         )
     )
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    constructor(braintreeClient: BraintreeClient) : this(
-        braintreeClient,
-        MagnesInternalClient(),
-        UUIDHelper()
-    )
-
     /**
      * @suppress
      */
-    @VisibleForTesting
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun getPayPalInstallationGUID(context: Context?): String {
         return uuidHelper.getInstallationGUID(context)
@@ -58,8 +49,9 @@ class DataCollector @VisibleForTesting internal constructor(
         configuration: Configuration?,
         hasUserLocationConsent: Boolean
     ): String {
-        val request = DataCollectorInternalRequest(hasUserLocationConsent)
-            .setApplicationGuid(getPayPalInstallationGUID(context))
+        val request = DataCollectorInternalRequest(hasUserLocationConsent).apply {
+            applicationGuid = getPayPalInstallationGUID(context)
+        }
         return getClientMetadataId(context, request, configuration)
     }
 
@@ -68,7 +60,6 @@ class DataCollector @VisibleForTesting internal constructor(
      */
     @MainThread
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    @VisibleForTesting
     fun getClientMetadataId(
         context: Context?,
         request: DataCollectorInternalRequest?,
@@ -100,13 +91,19 @@ class DataCollector @VisibleForTesting internal constructor(
             if (configuration != null) {
                 val deviceData = JSONObject()
                 try {
-                    val internalRequest = DataCollectorInternalRequest(request.hasUserLocationConsent)
-                        .setApplicationGuid(getPayPalInstallationGUID(context))
+                    val internalRequest =
+                        DataCollectorInternalRequest(request.hasUserLocationConsent).apply {
+                            applicationGuid = getPayPalInstallationGUID(context)
+                        }
                     if (request.riskCorrelationId != null) {
-                        internalRequest.setRiskCorrelationId(request.riskCorrelationId)
+                        internalRequest.clientMetadataId = request.riskCorrelationId
                     }
                     val correlationId =
-                        magnesInternalClient.getClientMetadataId(context, configuration, internalRequest)
+                        magnesInternalClient.getClientMetadataId(
+                            context,
+                            configuration,
+                            internalRequest
+                        )
                     if (!TextUtils.isEmpty(correlationId)) {
                         deviceData.put(CORRELATION_ID_KEY, correlationId)
                     }

@@ -1,9 +1,10 @@
 [versions]
-gradle = "8.1.4"
+gradle = "8.5.2"
 gradleNexusStagingPlugin = "0.21.2"
 kotlinGradlePlugin = "1.8.0"
 gradleNexusPublish = "1.1.0"
 kotlin = "1.9.10"
+ksp = "1.9.10-1.0.13"
 coreKtx = "1.12.0"
 androidxLifecycle = "2.6.2"
 androidxRoom = "2.6.1"
@@ -16,7 +17,7 @@ coroutines = "1.7.1"
 browserSwitch = "3.0.0-beta1"
 cardinal = "2.2.7-5"
 navigationSafeArgsGradlePlugin = "2.5.0"
-playServices = "19.3.0"
+playServices = "19.4.0"
 junit = "4.13.2"
 robolectric = "4.11.1"
 mockito = "5.7.0"
@@ -33,10 +34,10 @@ androidxCardview = "1.0.0"
 androidxLegacySupportV4 = "1.0.0"
 androidxLifecycleExtensions = "2.2.0"
 androidxComposeBom = "2024.06.00"
-retrofit = "1.9.0"
+retrofit = "2.11.0"
 gson = "2.10.1"
 eventbus = "2.4.1"
-material = "1.10.0"
+material = "1.12.0"
 leakcanary = "2.12"
 deviceAutomator = "1.0.0"
 btCardForm = "5.4.0"
@@ -89,7 +90,8 @@ androidx-lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensi
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidxLifecycleExtensions" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidxComposeBom" }
 androidx-material3 = { module = "androidx.compose.material3:material3" }
-retrofit = { module = "com.squareup.retrofit:retrofit", version.ref = "retrofit" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 eventbus = { module = "de.greenrobot:eventbus", version.ref = "eventbus" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
@@ -102,7 +104,7 @@ android-application = { id = "com.android.application", version.ref = "gradle" }
 android-library = { id = "com.android.library", version.ref = "gradle" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidx-safeargs = { id = "androidx.navigation.safeargs", version.ref = "navigationSafeArgsGradlePlugin" }
 gradle-nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "gradleNexusPublish" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

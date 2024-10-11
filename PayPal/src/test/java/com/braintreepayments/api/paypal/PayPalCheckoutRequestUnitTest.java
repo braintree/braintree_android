@@ -132,7 +132,8 @@ public class PayPalCheckoutRequestUnitTest {
             mock(Configuration.class),
             mock(Authorization.class),
             "success_url",
-            "cancel_url"
+            "cancel_url",
+            null
         );
 
         assertTrue(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
@@ -148,7 +149,8 @@ public class PayPalCheckoutRequestUnitTest {
             mock(Configuration.class),
             mock(Authorization.class),
             "success_url",
-            "cancel_url"
+            "cancel_url",
+            null
         );
 
         assertFalse(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
@@ -163,7 +165,8 @@ public class PayPalCheckoutRequestUnitTest {
             mock(Configuration.class),
             mock(Authorization.class),
             "success_url",
-            "cancel_url"
+            "cancel_url",
+            null
         );
 
         assertTrue(requestBody.contains("\"phone_number\":{\"country_code\":\"1\",\"national_number\":\"1231231234\"}"));

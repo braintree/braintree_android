@@ -41,7 +41,7 @@
 <a class="library-name--link" href="../../../index.html">
                             braintree_android
                     </a>            </div>
-            <div class="library-version">5.0.0-beta1
+            <div class="library-version">5.0.0
             </div>
         </div>
         <div class="filter-section" id="filter-section">
@@ -62,24 +62,24 @@
   <div class="breadcrumbs"><a href="../../index.html">ThreeDSecure</a><span class="delimiter">/</span><a href="../index.html">com.braintreepayments.api.threedsecure</a><span class="delimiter">/</span><span class="current">ThreeDSecureRequest</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Three</span><wbr><span>DSecure</span><wbr><span><span>Request</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">ThreeDSecureRequest</a> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><p class="paragraph">A class to contain 3D Secure request information used for authentication</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">ThreeDSecureRequest</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">var </span>nonce<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>amount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>mobilePhoneNumber<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>email<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>shippingMethod<span class="token operator">: </span><a href="../-three-d-secure-shipping-method/index.html">ThreeDSecureShippingMethod</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>billingAddress<span class="token operator">: </span><a href="../-three-d-secure-postal-address/index.html">ThreeDSecurePostalAddress</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>accountType<span class="token operator">: </span><a href="../-three-d-secure-account-type/index.html">ThreeDSecureAccountType</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>additionalInformation<span class="token operator">: </span><a href="../-three-d-secure-additional-information/index.html">ThreeDSecureAdditionalInformation</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>challengeRequested<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>dataOnlyRequested<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>exemptionRequested<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>requestedExemptionType<span class="token operator">: </span><a href="../-three-d-secure-requested-exemption-type/index.html">ThreeDSecureRequestedExemptionType</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>cardAddChallengeRequested<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>v2UiCustomization<span class="token operator">: </span><a href="../-three-d-secure-v2-ui-customization/index.html">ThreeDSecureV2UiCustomization</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>uiType<span class="token operator">: </span><a href="../-three-d-secure-ui-type/index.html">ThreeDSecureUiType</a><span class="token operator"> = </span>ThreeDSecureUiType.BOTH<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>renderTypes<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-three-d-secure-render-type/index.html">ThreeDSecureRenderType</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>customFields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><p class="paragraph">A class to contain 3D Secure request information used for authentication</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
         <h2 class="">Constructors</h2>
-        <div class="table"><a data-name="-635968830%2FConstructors%2F-182276970" anchor-label="ThreeDSecureRequest" id="-635968830%2FConstructors%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+        <div class="table"><a data-name="-1499589663%2FConstructors%2F-182276970" anchor-label="ThreeDSecureRequest" id="-1499589663%2FConstructors%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-three-d-secure-request.html"><span>Three</span><wbr><span>DSecure</span><wbr><span><span>Request</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-635968830%2FConstructors%2F-182276970"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1499589663%2FConstructors%2F-182276970"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">in<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcel.html">Parcel</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a></div></div><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">nonce<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">amount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">mobilePhoneNumber<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">email<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">shippingMethod<span class="token operator">: </span><a href="../-three-d-secure-shipping-method/index.html">ThreeDSecureShippingMethod</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">billingAddress<span class="token operator">: </span><a href="../-three-d-secure-postal-address/index.html">ThreeDSecurePostalAddress</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">accountType<span class="token operator">: </span><a href="../-three-d-secure-account-type/index.html">ThreeDSecureAccountType</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">additionalInformation<span class="token operator">: </span><a href="../-three-d-secure-additional-information/index.html">ThreeDSecureAdditionalInformation</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">challengeRequested<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">dataOnlyRequested<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">exemptionRequested<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">requestedExemptionType<span class="token operator">: </span><a href="../-three-d-secure-requested-exemption-type/index.html">ThreeDSecureRequestedExemptionType</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">cardAddChallengeRequested<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">v2UiCustomization<span class="token operator">: </span><a href="../-three-d-secure-v2-ui-customization/index.html">ThreeDSecureV2UiCustomization</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">uiType<span class="token operator">: </span><a href="../-three-d-secure-ui-type/index.html">ThreeDSecureUiType</a><span class="token operator"> = </span>ThreeDSecureUiType.BOTH<span class="token punctuation">, </span></span><span class="parameter ">renderTypes<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-three-d-secure-render-type/index.html">ThreeDSecureRenderType</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">customFields<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -98,7 +98,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="account-type.html">accountType</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="account-type.html">accountType</a><span class="token operator">: </span><a href="../-three-d-secure-account-type/index.html">ThreeDSecureAccountType</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Optional. The account type selected by the cardholder. Some cards can be processed using either a credit or debit account and cardholders have the option to choose which account to use.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -113,7 +113,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="additional-information.html">additionalInformation</a><span class="token operator">: </span><a href="../-three-d-secure-additional-information/index.html">ThreeDSecureAdditionalInformation</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="additional-information.html">additionalInformation</a><span class="token operator">: </span><a href="../-three-d-secure-additional-information/index.html">ThreeDSecureAdditionalInformation</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Optional. Additional information used for verification.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -128,7 +128,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="amount.html">amount</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="amount.html">amount</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The amount of the transaction in the current merchant account'scurrency. This must be expressed in numbers with an optional decimal (using <code class="lang-kotlin">.</code>) and precision up to the hundredths place. For example, if you're processing a transaction for 1.234,56 € then <code class="lang-kotlin">amount</code> should be <code class="lang-kotlin">1234.56</code>.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -143,67 +143,37 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="billing-address.html">billingAddress</a><span class="token operator">: </span><a href="../-three-d-secure-postal-address/index.html">ThreeDSecurePostalAddress</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="billing-address.html">billingAddress</a><span class="token operator">: </span><a href="../-three-d-secure-postal-address/index.html">ThreeDSecurePostalAddress</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Optional. The billing address used for verification.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-674812133%2FProperties%2F-182276970" anchor-label="BOTH" id="-674812133%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+<a data-name="-569227966%2FProperties%2F-182276970" anchor-label="cardAddChallengeRequested" id="-569227966%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="-b-o-t-h.html"><span><span>BOTH</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-674812133%2FProperties%2F-182276970"></span>
+                  <div><a href="card-add-challenge-requested.html"><span>card</span><wbr><span>Add</span><wbr><span>Challenge</span><wbr><span><span>Requested</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-569227966%2FProperties%2F-182276970"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-b-o-t-h.html">BOTH</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">3</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="card-add-challenge-requested.html">cardAddChallengeRequested</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Optional. An authentication created using this flag should only be used for adding a payment method to the merchant's vault and not for creating transactions.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-255210448%2FProperties%2F-182276970" anchor-label="CONTENTS_FILE_DESCRIPTOR" id="-255210448%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+<a data-name="1075266897%2FProperties%2F-182276970" anchor-label="challengeRequested" id="1075266897%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-three-d-secure-postal-address/index.html#-255210448%2FProperties%2F-182276970"><span><span>CONTENTS_FILE_DESCRIPTOR</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-255210448%2FProperties%2F-182276970"></span>
+                  <div><a href="challenge-requested.html"><span>challenge</span><wbr><span><span>Requested</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1075266897%2FProperties%2F-182276970"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="../-three-d-secure-postal-address/index.html#-255210448%2FProperties%2F-182276970">CONTENTS_FILE_DESCRIPTOR</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">1</span></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-1732807406%2FProperties%2F-182276970" anchor-label="CREATOR" id="-1732807406%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="-c-r-e-a-t-o-r.html"><span><span>CREATOR</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1732807406%2FProperties%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-c-r-e-a-t-o-r.html">CREATOR</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.Creator.html">Parcelable.Creator</a><span class="token operator">&lt;</span><a href="index.html">ThreeDSecureRequest</a><span class="token operator">&gt;</span></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-176478493%2FProperties%2F-182276970" anchor-label="CREDIT" id="-176478493%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="-c-r-e-d-i-t.html"><span><span>CREDIT</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-176478493%2FProperties%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-c-r-e-d-i-t.html">CREDIT</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token operator"> = </span><span class="token string">"credit"</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="challenge-requested.html">challengeRequested</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Optional. If set to true, the customer will be asked to complete the authentication challenge if possible.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -218,22 +188,22 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="custom-fields.html">customFields</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/Map.html">Map</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token punctuation">, </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="custom-fields.html">customFields</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Optional. Object where each key is the name of a custom field which has been configured in the Control Panel. In the Control Panel you can configure 3D Secure Rules which trigger on certain values.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-201211758%2FProperties%2F-182276970" anchor-label="DEBIT" id="-201211758%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+<a data-name="1460302790%2FProperties%2F-182276970" anchor-label="dataOnlyRequested" id="1460302790%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="-d-e-b-i-t.html"><span><span>DEBIT</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-201211758%2FProperties%2F-182276970"></span>
+                  <div><a href="data-only-requested.html"><span>data</span><wbr><span>Only</span><wbr><span><span>Requested</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1460302790%2FProperties%2F-182276970"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-d-e-b-i-t.html">DEBIT</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token operator"> = </span><span class="token string">"debit"</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="data-only-requested.html">dataOnlyRequested</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">If data was only requested</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -248,37 +218,22 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="email.html">email</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="email.html">email</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Optional. The email used for verification.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-102136271%2FProperties%2F-182276970" anchor-label="HTML" id="-102136271%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+<a data-name="-1078428873%2FProperties%2F-182276970" anchor-label="exemptionRequested" id="-1078428873%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="-h-t-m-l.html"><span><span>HTML</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-102136271%2FProperties%2F-182276970"></span>
+                  <div><a href="exemption-requested.html"><span>exemption</span><wbr><span><span>Requested</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1078428873%2FProperties%2F-182276970"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-h-t-m-l.html">HTML</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">2</span></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-1260536424%2FProperties%2F-182276970" anchor-label="LOW_VALUE" id="-1260536424%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="-l-o-w_-v-a-l-u-e.html"><span><span>LOW_VALUE</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1260536424%2FProperties%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-l-o-w_-v-a-l-u-e.html">LOW_VALUE</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token operator"> = </span><span class="token string">"low_value"</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="exemption-requested.html">exemptionRequested</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Optional. If set to true, an exemption to the authentication challenge will be requested.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -293,37 +248,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="mobile-phone-number.html">mobilePhoneNumber</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="1956284378%2FProperties%2F-182276970" anchor-label="MULTI_SELECT" id="1956284378%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="-m-u-l-t-i_-s-e-l-e-c-t.html"><span><span>MULTI_SELECT</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1956284378%2FProperties%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-m-u-l-t-i_-s-e-l-e-c-t.html">MULTI_SELECT</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">3</span></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-1121329275%2FProperties%2F-182276970" anchor-label="NATIVE" id="-1121329275%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="-n-a-t-i-v-e.html"><span><span>NATIVE</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1121329275%2FProperties%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-n-a-t-i-v-e.html">NATIVE</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">1</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="mobile-phone-number.html">mobilePhoneNumber</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Optional. The mobile phone number used for verification. Only numbers. Remove dashes, parentheses and other characters.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -338,67 +263,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="nonce.html">nonce</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-1543891972%2FProperties%2F-182276970" anchor-label="OOB" id="-1543891972%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="-o-o-b.html"><span><span>OOB</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1543891972%2FProperties%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-o-o-b.html">OOB</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">4</span></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-596511885%2FProperties%2F-182276970" anchor-label="OTP" id="-596511885%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="-o-t-p.html"><span><span>OTP</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-596511885%2FProperties%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-o-t-p.html">OTP</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">1</span></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-865205281%2FProperties%2F-182276970" anchor-label="PARCELABLE_WRITE_RETURN_VALUE" id="-865205281%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="../-three-d-secure-postal-address/index.html#-865205281%2FProperties%2F-182276970"><span><span>PARCELABLE_WRITE_RETURN_VALUE</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-865205281%2FProperties%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="../-three-d-secure-postal-address/index.html#-865205281%2FProperties%2F-182276970">PARCELABLE_WRITE_RETURN_VALUE</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">1</span></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-2029181718%2FProperties%2F-182276970" anchor-label="RENDER_HTML" id="-2029181718%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="-r-e-n-d-e-r_-h-t-m-l.html"><span><span>RENDER_HTML</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2029181718%2FProperties%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-r-e-n-d-e-r_-h-t-m-l.html">RENDER_HTML</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">5</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="nonce.html">nonce</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">The nonce that represents a card to perform a 3D Secure verification against.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -413,7 +278,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="render-types.html">renderTypes</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/List.html">List</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="render-types.html">renderTypes</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-three-d-secure-render-type/index.html">ThreeDSecureRenderType</a><span class="token operator">&gt;</span><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Optional. List of all the render types that the device supports for displaying specific challenge user interfaces within the 3D Secure challenge. When using <code class="lang-kotlin">ThreeDSecureUIType.BOTH</code> or <code class="lang-kotlin">ThreeDSecureUIType.HTML</code>, all <code class="lang-kotlin">ThreeDSecureRenderType</code> options must be set. When using <code class="lang-kotlin">ThreeDSecureUIType.NATIVE</code>, all <code class="lang-kotlin">ThreeDSecureRenderType</code> options except <code class="lang-kotlin">ThreeDSecureRenderType.RENDER_HTML</code> must be set. Defaults to OTP, OOB, SINGLE_SELECT, MULTI_SELECT, RENDER_HTML</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -428,22 +293,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="requested-exemption-type.html">requestedExemptionType</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="1442149919%2FProperties%2F-182276970" anchor-label="SECURE_CORPORATE" id="1442149919%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="-s-e-c-u-r-e_-c-o-r-p-o-r-a-t-e.html"><span><span>SECURE_CORPORATE</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1442149919%2FProperties%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-s-e-c-u-r-e_-c-o-r-p-o-r-a-t-e.html">SECURE_CORPORATE</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token operator"> = </span><span class="token string">"secure_corporate"</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="requested-exemption-type.html">requestedExemptionType</a><span class="token operator">: </span><a href="../-three-d-secure-requested-exemption-type/index.html">ThreeDSecureRequestedExemptionType</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Optional. 3D Secure requested exemption type. If an exemption is requested and the exemption's conditions are satisfied, then it will be applied.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -458,52 +308,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="shipping-method.html">shippingMethod</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-193354389%2FProperties%2F-182276970" anchor-label="SINGLE_SELECT" id="-193354389%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="-s-i-n-g-l-e_-s-e-l-e-c-t.html"><span><span>SINGLE_SELECT</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-193354389%2FProperties%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-s-i-n-g-l-e_-s-e-l-e-c-t.html">SINGLE_SELECT</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">2</span></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-1596462797%2FProperties%2F-182276970" anchor-label="TRANSACTION_RISK_ANALYSIS" id="-1596462797%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="-t-r-a-n-s-a-c-t-i-o-n_-r-i-s-k_-a-n-a-l-y-s-i-s.html"><span><span>TRANSACTION_RISK_ANALYSIS</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1596462797%2FProperties%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-t-r-a-n-s-a-c-t-i-o-n_-r-i-s-k_-a-n-a-l-y-s-i-s.html">TRANSACTION_RISK_ANALYSIS</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token operator"> = </span><span class="token string">"transaction_risk_analysis"</span></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="1605969249%2FProperties%2F-182276970" anchor-label="TRUSTED_BENEFICIARY" id="1605969249%2FProperties%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="-t-r-u-s-t-e-d_-b-e-n-e-f-i-c-i-a-r-y.html"><span><span>TRUSTED_BENEFICIARY</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1605969249%2FProperties%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-t-r-u-s-t-e-d_-b-e-n-e-f-i-c-i-a-r-y.html">TRUSTED_BENEFICIARY</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token operator"> = </span><span class="token string">"trusted_beneficiary"</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="shipping-method.html">shippingMethod</a><span class="token operator">: </span><a href="../-three-d-secure-shipping-method/index.html">ThreeDSecureShippingMethod</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Optional. The 2-digit string indicating the shipping method chosen for the transaction. Possible Values: 01 Same Day 02 Overnight / Expedited 03 Priority (2-3 Days) 04 Ground 05 Electronic Delivery 06 Ship to Store</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -518,7 +323,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="ui-type.html">uiType</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="ui-type.html">uiType</a><span class="token operator">: </span><a href="../-three-d-secure-ui-type/index.html">ThreeDSecureUiType</a></div><div class="brief "><p class="paragraph">Optional. Sets all UI types that the device supports for displaying specific challenge user interfaces in the 3D Secure challenge. Possible Values: 01 BOTH 02 Native 03 HTML Defaults to BOTH</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -533,7 +338,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@get:</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">var </span><a href="v2-ui-customization.html">v2UiCustomization</a><span class="token operator">: </span><a href="../-three-d-secure-v2-ui-customization/index.html">ThreeDSecureV2UiCustomization</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="v2-ui-customization.html">v2UiCustomization</a><span class="token operator">: </span><a href="../-three-d-secure-v2-ui-customization/index.html">ThreeDSecureV2UiCustomization</a><span class="token operator">?</span></div><div class="brief "><p class="paragraph">Optional. UI Customization for the 3DS2 challenge views.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -542,167 +347,47 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-2126669013%2FFunctions%2F-182276970" anchor-label="build" id="-2126669013%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+        <div class="table"><a data-name="1462543247%2FFunctions%2F-182276970" anchor-label="build" id="1462543247%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="build.html"><span><span>build</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2126669013%2FFunctions%2F-182276970"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1462543247%2FFunctions%2F-182276970"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="build.html"><span class="token function">build</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">dfReferenceId<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.html"><span class="token annotation builtin">RestrictTo</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.Scope.LIBRARY_GROUP.html">RestrictTo.Scope.LIBRARY_GROUP</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword"></span><span class="token keyword">fun </span><a href="build.html"><span class="token function">build</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">dfReferenceId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1407451753%2FFunctions%2F-182276970" anchor-label="describeContents" id="-1407451753%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+<a data-name="-1578325224%2FFunctions%2F-182276970" anchor-label="describeContents" id="-1578325224%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="describe-contents.html"><span>describe</span><wbr><span><span>Contents</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1407451753%2FFunctions%2F-182276970"></span>
+                  <div><a href="../-three-d-secure-v2-ui-customization/index.html#-1578325224%2FFunctions%2F-182276970"><span>describe</span><wbr><span><span>Contents</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1578325224%2FFunctions%2F-182276970"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="describe-contents.html"><span class="token function">describeContents</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-three-d-secure-v2-ui-customization/index.html#-1578325224%2FFunctions%2F-182276970"><span class="token function">describeContents</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-342799412%2FFunctions%2F-182276970" anchor-label="isCardAddChallengeRequested" id="-342799412%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
+<a data-name="-1754457655%2FFunctions%2F-182276970" anchor-label="writeToParcel" id="-1754457655%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="is-card-add-challenge-requested.html"><span>is</span><wbr><span>Card</span><wbr><span>Add</span><wbr><span>Challenge</span><wbr><span><span>Requested</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-342799412%2FFunctions%2F-182276970"></span>
+                  <div><a href="../-three-d-secure-v2-ui-customization/index.html#-1754457655%2FFunctions%2F-182276970"><span>write</span><wbr><span>To</span><wbr><span><span>Parcel</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1754457655%2FFunctions%2F-182276970"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="is-card-add-challenge-requested.html"><span class="token function">isCardAddChallengeRequested</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Boolean.html">Boolean</a></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-760076793%2FFunctions%2F-182276970" anchor-label="isChallengeRequested" id="-760076793%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="is-challenge-requested.html"><span>is</span><wbr><span>Challenge</span><wbr><span><span>Requested</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-760076793%2FFunctions%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="is-challenge-requested.html"><span class="token function">isChallengeRequested</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-1646943152%2FFunctions%2F-182276970" anchor-label="isDataOnlyRequested" id="-1646943152%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="is-data-only-requested.html"><span>is</span><wbr><span>Data</span><wbr><span>Only</span><wbr><span><span>Requested</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1646943152%2FFunctions%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="is-data-only-requested.html"><span class="token function">isDataOnlyRequested</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="1381194733%2FFunctions%2F-182276970" anchor-label="isExemptionRequested" id="1381194733%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="is-exemption-requested.html"><span>is</span><wbr><span>Exemption</span><wbr><span><span>Requested</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1381194733%2FFunctions%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="is-exemption-requested.html"><span class="token function">isExemptionRequested</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-1348940020%2FFunctions%2F-182276970" anchor-label="setCardAddChallengeRequested" id="-1348940020%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="set-card-add-challenge-requested.html"><span>set</span><wbr><span>Card</span><wbr><span>Add</span><wbr><span>Challenge</span><wbr><span><span>Requested</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1348940020%2FFunctions%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-card-add-challenge-requested.html"><span class="token function">setCardAddChallengeRequested</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a>&nbsp;</span>cardAddChallengeRequested<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/Boolean.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Optional.</div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="419058377%2FFunctions%2F-182276970" anchor-label="setChallengeRequested" id="419058377%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="set-challenge-requested.html"><span>set</span><wbr><span>Challenge</span><wbr><span><span>Requested</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="419058377%2FFunctions%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-challenge-requested.html"><span class="token function">setChallengeRequested</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">challengeRequested<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Optional If set to true, the customer will be asked to complete the authentication challenge if possible</div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="1820848244%2FFunctions%2F-182276970" anchor-label="setDataOnlyRequested" id="1820848244%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="set-data-only-requested.html"><span>set</span><wbr><span>Data</span><wbr><span>Only</span><wbr><span><span>Requested</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1820848244%2FFunctions%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-data-only-requested.html"><span class="token function">setDataOnlyRequested</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">dataOnlyRequested<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-456012253%2FFunctions%2F-182276970" anchor-label="setExemptionRequested" id="-456012253%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="set-exemption-requested.html"><span>set</span><wbr><span>Exemption</span><wbr><span><span>Requested</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-456012253%2FFunctions%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-exemption-requested.html"><span class="token function">setExemptionRequested</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">exemptionRequested<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Optional If set to true, an exemption to the authentication challenge will be requested</div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-1562682393%2FFunctions%2F-182276970" anchor-label="writeToParcel" id="-1562682393%2FFunctions%2F-182276970" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":ThreeDSecure:dokkaHtmlPartial/release" data-filterable-set=":ThreeDSecure:dokkaHtmlPartial/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="write-to-parcel.html"><span>write</span><wbr><span>To</span><wbr><span><span>Parcel</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1562682393%2FFunctions%2F-182276970"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="write-to-parcel.html"><span class="token function">writeToParcel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">dest<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcel.html">Parcel</a><span class="token punctuation">, </span></span><span class="parameter ">flags<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-three-d-secure-v2-ui-customization/index.html#-1754457655%2FFunctions%2F-182276970"><span class="token function">writeToParcel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcel.html">Parcel</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>

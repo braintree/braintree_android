@@ -1,5 +1,6 @@
 package com.braintreepayments.api.sepadirectdebit
 
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.PaymentMethodNonce
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
@@ -35,6 +36,7 @@ class SEPADirectDebitNonce internal constructor(
 
         @Throws(JSONException::class)
         @JvmStatic
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         fun fromJSON(inputJson: JSONObject): SEPADirectDebitNonce {
             val nonce = inputJson.getString(PAYMENT_METHOD_NONCE_KEY)
             val details = inputJson.optJSONObject(DETAILS_KEY)
@@ -44,7 +46,7 @@ class SEPADirectDebitNonce internal constructor(
             if (details != null) {
                 ibanLastFour = details.optString(IBAN_LAST_FOUR_KEY)
                 customerId = details.optString(CUSTOMER_ID_KEY)
-                mandateType = SEPADirectDebitMandateType.fromString(
+                mandateType = SEPADirectDebitMandateType.valueOf(
                     details.optString(MANDATE_TYPE_KEY)
                 )
             }

@@ -7,62 +7,56 @@
     android:padding="10dp"
     tools:context=".PayPalFragment">
 
-    <LinearLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:hint="@string/paypal_buyer_email_address">
 
-        <com.google.android.material.textfield.TextInputLayout
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/buyer_email_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:hint="@string/paypal_buyer_email_address">
+            android:inputType="textEmailAddress" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/buyer_email_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
 
-        <com.google.android.material.textfield.TextInputLayout
+        android:hint="@string/paypal_phone_country_code">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/buyer_phone_country_code_edit_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="wrap_content" />
 
-            android:hint="@string/paypal_phone_country_code">
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/buyer_phone_country_code_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:hint="@string/paypal_phone_national_number">
 
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/buyer_phone_national_number_edit_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:hint="@string/paypal_phone_national_number">
+            android:layout_height="wrap_content" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/buyer_phone_national_number_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        </com.google.android.material.textfield.TextInputLayout>
+    <Button
+        android:id="@+id/paypal_single_payment_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/paypal_single_payment" />
 
-        <Button
-            android:id="@+id/paypal_single_payment_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/paypal_single_payment" />
-
-        <Button
-            android:id="@+id/paypal_billing_agreement_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/paypal_billing_agreement" />
-
-    </LinearLayout>
+    <Button
+        android:id="@+id/paypal_billing_agreement_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/paypal_billing_agreement" />
 
 </LinearLayout>

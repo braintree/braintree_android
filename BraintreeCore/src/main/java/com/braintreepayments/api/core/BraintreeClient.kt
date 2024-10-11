@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
+import com.braintreepayments.api.sharedutils.Time
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -31,11 +32,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    val sessionId: String,
-
-    /**
-     * @suppress
-     */
     val authorization: Authorization,
 
     private val analyticsClient: AnalyticsClient,
@@ -43,6 +39,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
     private val graphQLClient: BraintreeGraphQLClient,
     private val configurationLoader: ConfigurationLoader,
     private val manifestValidator: ManifestValidator,
+    private val time: Time,
     private val returnUrlScheme: String,
     private val braintreeDeepLinkReturnUrlScheme: String,
     /**
@@ -55,16 +52,19 @@ class BraintreeClient @VisibleForTesting internal constructor(
     private var launchesBrowserSwitchAsNewTask: Boolean = false
 
     // NOTE: this constructor is used to make dependency injection easy
-    internal constructor(params: BraintreeClientParams) : this(
+    internal constructor(
+        params: BraintreeClientParams,
+        time: Time = Time()
+    ) : this(
         applicationContext = params.applicationContext,
         integrationType = params.integrationType,
-        sessionId = params.sessionId,
         authorization = params.authorization,
         analyticsClient = params.analyticsClient,
         httpClient = params.httpClient,
         graphQLClient = params.graphQLClient,
         configurationLoader = params.configurationLoader,
         manifestValidator = params.manifestValidator,
+        time = time,
         returnUrlScheme = params.returnUrlScheme,
         braintreeDeepLinkReturnUrlScheme = params.braintreeReturnUrlScheme,
         appLinkReturnUri = params.appLinkReturnUri
@@ -73,7 +73,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @JvmOverloads
     constructor (
         context: Context,
         authorization: String,
@@ -93,23 +92,21 @@ class BraintreeClient @VisibleForTesting internal constructor(
     internal constructor(
         context: Context,
         authorization: Authorization,
-        sessionId: String?,
         integrationType: IntegrationType
     ) : this(
         BraintreeOptions(
             context = context,
             authorization = authorization,
-            sessionId = sessionId,
             integrationType = integrationType,
         )
     )
 
     init {
-        // NEXT MAJOR VERSION: CrashReporter isn't a part of BraintreeClientParams
-        // because it requires a reference to BraintreeClient. This is a design flaw that creates
-        // a circular reference. We should consider if we need CrashReporter anymore since
-        // merchants already have access to Crash statistics via GooglePlay. We also have crash
-        // statistics access via the sdk console
+        // TODO: CrashReporter isn't a part of BraintreeClientParams
+        //  because it requires a reference to BraintreeClient. This is a design flaw that creates
+        //  a circular reference. We should consider if we need CrashReporter anymore since
+        //  merchants already have access to Crash statistics via GooglePlay. We also have crash
+        //  statistics access via the sdk console
         crashReporter = CrashReporter(this)
         crashReporter.start()
     }
@@ -137,20 +134,21 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    @JvmOverloads
     fun sendAnalyticsEvent(
         eventName: String,
         params: AnalyticsEventParams = AnalyticsEventParams()
     ) {
+        val timestamp = time.currentTime
         getConfiguration { configuration, _ ->
             val event = AnalyticsEvent(
-                eventName,
-                params.payPalContextId,
-                params.linkType,
-                params.isVaultRequest,
-                params.startTime,
-                params.endTime,
-                params.endpoint
+                name = eventName,
+                timestamp = timestamp,
+                payPalContextId = params.payPalContextId,
+                linkType = params.linkType,
+                isVaultRequest = params.isVaultRequest,
+                startTime = params.startTime,
+                endTime = params.endTime,
+                endpoint = params.endpoint,
             )
             sendAnalyticsEvent(event, configuration, authorization)
         }
@@ -165,7 +163,6 @@ class BraintreeClient @VisibleForTesting internal constructor(
             analyticsClient.sendEvent(
                 it,
                 event,
-                sessionId,
                 integrationType,
                 authorization
             )
@@ -317,18 +314,17 @@ class BraintreeClient @VisibleForTesting internal constructor(
     /**
      * @suppress
      */
-    fun reportCrash() =
+    internal fun reportCrash() =
         getConfiguration { configuration, _ ->
             analyticsClient.reportCrash(
                 applicationContext,
                 configuration,
-                sessionId,
                 integrationType,
                 authorization
             )
         }
 
-    // NEXT MAJOR VERSION: Make launches browser switch as new task a property of `BraintreeOptions`
+    // TODO: Make launches browser switch as new task a property of `BraintreeOptions`
     fun launchesBrowserSwitchAsNewTask(): Boolean {
         return launchesBrowserSwitchAsNewTask
     }

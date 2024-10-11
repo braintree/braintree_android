@@ -56,18 +56,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
-    kotlin {
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of("11"))
-        }
+        sourceCompatibility versions.javaSourceCompatibility
+        targetCompatibility versions.javaTargetCompatibility
     }
 
     namespace 'com.braintreepayments.demo'
@@ -76,9 +66,8 @@ android {
 dependencies {
     implementation libs.kotlin.stdlib
 
-    implementation(libs.retrofit) {
-        exclude module: 'com.google.gson'
-    }
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
 
     implementation project(':AmericanExpress')
     implementation project(':Card')

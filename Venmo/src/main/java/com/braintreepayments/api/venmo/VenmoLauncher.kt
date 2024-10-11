@@ -64,7 +64,7 @@ class VenmoLauncher internal constructor(
      * from the Venmo flow
      * @return a [VenmoPaymentAuthResult.Success] that should be passed to [VenmoClient.tokenize]
      * to complete the Venmo payment flow. Returns [VenmoPaymentAuthResult.NoResult] if the user
-     * closed the browser to cancel the payment flow, or returned to the app without completing the
+     * canceled payment flow, or returned to the app without completing the
      * Venmo authentication flow.
      */
     fun handleReturnToApp(
@@ -74,7 +74,7 @@ class VenmoLauncher internal constructor(
         return when (val browserSwitchResult =
             browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
             is BrowserSwitchFinalResult.Success -> VenmoPaymentAuthResult.Success(
-                VenmoPaymentAuthResultInfo(browserSwitchResult)
+                browserSwitchResult
             )
 
             is BrowserSwitchFinalResult.Failure -> VenmoPaymentAuthResult.Failure(browserSwitchResult.error)
@@ -105,7 +105,7 @@ class VenmoLauncher internal constructor(
     }
 
     companion object {
-        const val VENMO_PACKAGE_NAME = "com.venmo"
+        private const val VENMO_PACKAGE_NAME = "com.venmo"
         private fun createBrowserSwitchError(exception: BrowserSwitchException): Exception {
             return BraintreeException(
                 "AndroidManifest.xml is incorrectly configured or another app defines the same " +

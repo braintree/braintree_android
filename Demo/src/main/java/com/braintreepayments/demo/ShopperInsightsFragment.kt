@@ -1,5 +1,6 @@
 package com.braintreepayments.demo
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,10 +11,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.fragment.NavHostFragment
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import com.braintreepayments.api.shopperinsights.ShopperInsightsBuyerPhone
-import com.braintreepayments.api.shopperinsights.ShopperInsightsClient
-import com.braintreepayments.api.shopperinsights.ShopperInsightsRequest
-import com.braintreepayments.api.shopperinsights.ShopperInsightsResult
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
@@ -21,6 +18,10 @@ import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
 import com.braintreepayments.api.paypal.PayPalPaymentAuthResult
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
+import com.braintreepayments.api.shopperinsights.ShopperInsightsBuyerPhone
+import com.braintreepayments.api.shopperinsights.ShopperInsightsClient
+import com.braintreepayments.api.shopperinsights.ShopperInsightsRequest
+import com.braintreepayments.api.shopperinsights.ShopperInsightsResult
 import com.braintreepayments.api.venmo.VenmoClient
 import com.braintreepayments.api.venmo.VenmoLauncher
 import com.braintreepayments.api.venmo.VenmoPaymentAuthRequest
@@ -35,6 +36,7 @@ import com.google.android.material.textfield.TextInputLayout
 /**
  * Fragment for handling shopping insights.
  */
+@SuppressLint("SetTextI18n")
 @OptIn(ExperimentalBetaApi::class)
 class ShopperInsightsFragment : BaseFragment() {
 
@@ -66,8 +68,10 @@ class ShopperInsightsFragment : BaseFragment() {
         shopperInsightsClient = ShopperInsightsClient(requireContext(), authStringArg)
 
         venmoClient = VenmoClient(requireContext(), super.getAuthStringArg(), null)
-        payPalClient = PayPalClient(requireContext(), super.getAuthStringArg(),
-            Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/"))
+        payPalClient = PayPalClient(
+            requireContext(), super.getAuthStringArg(),
+            Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/")
+        )
 
         return inflater.inflate(R.layout.fragment_shopping_insights, container, false)
     }
@@ -106,7 +110,7 @@ class ShopperInsightsFragment : BaseFragment() {
     private fun handlePayPalReturnToApp() {
         if (this::paypalStartedPendingRequest.isInitialized) {
             val paypalPaymentAuthResult =
-                paypalLauncher.handleReturnToAppFromBrowser(paypalStartedPendingRequest, requireActivity().intent)
+                paypalLauncher.handleReturnToApp(paypalStartedPendingRequest, requireActivity().intent)
             if (paypalPaymentAuthResult is PayPalPaymentAuthResult.Success) {
                 payPalClient.tokenize(paypalPaymentAuthResult) {
                     when (it) {
@@ -119,8 +123,13 @@ class ShopperInsightsFragment : BaseFragment() {
                             NavHostFragment.findNavController(this).navigate(action)
                         }
 
-                        is PayPalResult.Failure -> { handleError(it.error) }
-                        is PayPalResult.Cancel -> { handleError(UserCanceledException("User canceled PayPal")) }
+                        is PayPalResult.Failure -> {
+                            handleError(it.error)
+                        }
+
+                        is PayPalResult.Cancel -> {
+                            handleError(UserCanceledException("User canceled PayPal"))
+                        }
                     }
                 }
             } else {
@@ -145,8 +154,13 @@ class ShopperInsightsFragment : BaseFragment() {
                             NavHostFragment.findNavController(this).navigate(action)
                         }
 
-                        is VenmoResult.Failure -> { handleError(it.error) }
-                        is VenmoResult.Cancel -> { handleError(UserCanceledException("User canceled Venmo")) }
+                        is VenmoResult.Failure -> {
+                            handleError(it.error)
+                        }
+
+                        is VenmoResult.Cancel -> {
+                            handleError(UserCanceledException("User canceled Venmo"))
+                        }
                     }
                 }
             } else {
@@ -210,18 +224,18 @@ class ShopperInsightsFragment : BaseFragment() {
                 countryCodeInput.editText?.text.toString(),
                 nationalNumberInput.editText?.text.toString()
             )
-        ) {
-            if (it == null) return@createPaymentAuthRequest
-            when (it) {
+        ) { authRequest ->
+            when (authRequest) {
                 is PayPalPaymentAuthRequest.Failure -> {
-                    handleError(it.error)
+                    handleError(authRequest.error)
                 }
 
                 is PayPalPaymentAuthRequest.ReadyToLaunch -> {
-                    when (val paypalPendingRequest = paypalLauncher.launch(requireActivity(), it)) {
+                    when (val paypalPendingRequest = paypalLauncher.launch(requireActivity(), authRequest)) {
                         is PayPalPendingRequest.Started -> {
                             paypalStartedPendingRequest = paypalPendingRequest
                         }
+
                         is PayPalPendingRequest.Failure -> {
                             Toast.makeText(
                                 requireContext(),
@@ -253,6 +267,7 @@ class ShopperInsightsFragment : BaseFragment() {
                         is VenmoPendingRequest.Started -> {
                             venmoStartedPendingRequest = venmoPendingRequest
                         }
+
                         is VenmoPendingRequest.Failure -> {
                             Toast.makeText(
                                 requireContext(),

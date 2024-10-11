@@ -24,8 +24,8 @@ public class ThreeDSecureV2UiCustomizationUnitTest {
     public void setsAllCardinalClassProperties() {
         ThreeDSecureV2UiCustomization sut = new ThreeDSecureV2UiCustomization();
         sut.setLabelCustomization(new ThreeDSecureV2LabelCustomization());
-        sut.setButtonCustomization(new ThreeDSecureV2ButtonCustomization(),
-                ThreeDSecureV2UiCustomization.BUTTON_TYPE_NEXT);
+        sut.setButtonCustomization(new ThreeDSecureV2ButtonCustomization());
+        sut.setButtonType(ThreeDSecureV2ButtonType.BUTTON_TYPE_NEXT);
         sut.setTextBoxCustomization(new ThreeDSecureV2TextBoxCustomization());
         sut.setToolbarCustomization(new ThreeDSecureV2ToolbarCustomization());
 
@@ -80,8 +80,8 @@ public class ThreeDSecureV2UiCustomizationUnitTest {
         toolbarCustomization.setTextFontSize(15);
 
         ThreeDSecureV2UiCustomization customization = new ThreeDSecureV2UiCustomization();
-        customization.setButtonCustomization(buttonCustomization,
-                ThreeDSecureV2UiCustomization.BUTTON_TYPE_CONTINUE);
+        customization.setButtonCustomization(buttonCustomization);
+        customization.setButtonType(ThreeDSecureV2ButtonType.BUTTON_TYPE_CONTINUE);
         customization.setLabelCustomization(labelCustomization);
         customization.setTextBoxCustomization(textBoxCustomization);
         customization.setToolbarCustomization(toolbarCustomization);

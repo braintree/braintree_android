@@ -19,12 +19,10 @@ public class SignatureVerifier {
 
     private final CertificateHelper certificateHelper;
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public SignatureVerifier() {
         this(new CertificateHelper());
     }
 
-    @VisibleForTesting
     SignatureVerifier(CertificateHelper certificateHelper) {
         this.certificateHelper = certificateHelper;
     }
@@ -39,7 +37,6 @@ public class SignatureVerifier {
      * @return true is signature is valid or signature verification has been disabled.
      */
     @SuppressLint("PackageManagerGetSignatures")
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public boolean isSignatureValid(Context context, String packageName, String base64EncodedSignature) {
 
         PackageManager packageManager = context.getPackageManager();

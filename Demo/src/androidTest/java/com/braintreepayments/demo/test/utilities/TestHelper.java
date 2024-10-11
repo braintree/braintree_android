@@ -73,21 +73,6 @@ public class TestHelper {
         }
     }
 
-    protected static void useTokenizationKey() {
-        onDevice(withText("Settings")).perform(click());
-        onDevice(withText("Use Tokenization Key")).perform(click());
-        onDevice().pressBack();
-    }
-
-    protected static void setMerchantAccountId(String merchantAccountId) {
-        onDevice(withText("Settings")).perform(click());
-        onDevice(withText("Merchant Account")).perform(click());
-
-        onDevice().typeText(merchantAccountId);
-        onDevice(withText("OK")).perform(click());
-        onDevice().pressBack();
-    }
-
     protected String validExpirationText() {
         String expirationYear = ExpirationDateHelper.validExpirationYear();
         int expirationYearLength = expirationYear.length();

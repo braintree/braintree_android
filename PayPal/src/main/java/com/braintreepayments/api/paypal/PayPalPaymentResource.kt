@@ -19,6 +19,7 @@ internal data class PayPalPaymentResource(
         private const val REDIRECT_URL_KEY = "redirectUrl"
         private const val AGREEMENT_SETUP_KEY = "agreementSetup"
         private const val APPROVAL_URL_KEY = "approvalUrl"
+        private const val PAYPAL_APP_APPROVAL_URL_KEY = "paypalAppApprovalUrl"
 
         /**
          * Create a PayPalPaymentResource from a jsonString. Checks for keys associated with Single
@@ -36,11 +37,15 @@ internal data class PayPalPaymentResource(
             val redirectUrl = if (paymentResource != null) {
                 Json.optString(paymentResource, REDIRECT_URL_KEY, "")
             } else {
-                Json.optString(
-                    json.optJSONObject(AGREEMENT_SETUP_KEY),
-                    APPROVAL_URL_KEY,
-                    ""
-                )
+                val redirectJson = json.optJSONObject(AGREEMENT_SETUP_KEY)
+                val payPalApprovalURL = Json.optString(redirectJson, PAYPAL_APP_APPROVAL_URL_KEY, "")
+                payPalApprovalURL.ifEmpty {
+                    Json.optString(
+                        redirectJson,
+                        APPROVAL_URL_KEY,
+                        ""
+                    )
+                }
             }
             return PayPalPaymentResource(redirectUrl)
         }

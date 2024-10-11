@@ -6,7 +6,7 @@ package com.braintreepayments.api.paypal
  * [CREDIT] A line item that is a credit.
  * [DEBIT] A line item that debits.
  */
-enum class PayPalLineItemKind(val stringValue: String) {
+enum class PayPalLineItemKind(internal val stringValue: String) {
     CREDIT("credit"),
     DEBIT("debit")
 }

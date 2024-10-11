@@ -9,18 +9,16 @@ import android.os.Parcelable
  */
 @Parcelize
 data class PostalAddress(
-    var recipientName: String?,
-    var phoneNumber: String?,
-    var streetAddress: String?,
-    var extendedAddress: String?,
-    var locality: String?,
-    var region: String?,
-    var postalCode: String?,
-    var sortingCode: String?,
-    var countryCodeAlpha2: String?) : Parcelable {
-
-    constructor() : this(null, null, null, null, null, null, null, null, null)
-
+    var recipientName: String? = null,
+    var phoneNumber: String? = null,
+    var streetAddress: String? = null,
+    var extendedAddress: String? = null,
+    var locality: String? = null,
+    var region: String? = null,
+    var postalCode: String? = null,
+    var sortingCode: String? = null,
+    var countryCodeAlpha2: String? = null
+) : Parcelable {
     /**
      * A [PostalAddress] is considered empty if it does not have a country code.
      *

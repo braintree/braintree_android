@@ -10,10 +10,12 @@ sealed class VisaCheckoutProfileBuilderResult {
     /**
      * The [profileBuilder] was successfully created
      */
-    class Success(val profileBuilder: Profile.ProfileBuilder) : VisaCheckoutProfileBuilderResult()
+    class Success internal constructor(
+        val profileBuilder: Profile.ProfileBuilder
+    ) : VisaCheckoutProfileBuilderResult()
 
     /**
      * There was an [error] creating the profile builder
      */
-    class Failure(val error: Exception) : VisaCheckoutProfileBuilderResult()
+    class Failure internal constructor(val error: Exception) : VisaCheckoutProfileBuilderResult()
 }

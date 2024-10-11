@@ -3,7 +3,7 @@ package com.braintreepayments.api.paypal
 /**
  * The upc type of PayPal line item.
  */
-enum class PayPalLineItemUpcType(val stringValue: String) {
+enum class PayPalLineItemUpcType(internal val stringValue: String) {
     UPC_TYPE_A("UPC-A"),
     UPC_TYPE_B("UPC-B"),
     UPC_TYPE_C("UPC-C"),

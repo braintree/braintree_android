@@ -7,10 +7,11 @@ import androidx.fragment.app.FragmentActivity
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.braintreepayments.api.BrowserSwitchClient
-import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.ManifestValidator
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
+import com.braintreepayments.api.sharedutils.Time
+import com.braintreepayments.api.testutils.Fixtures
 import io.mockk.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -55,22 +56,6 @@ class BraintreeClientUnitTest {
 
         every { context.applicationContext } returns applicationContext
         WorkManagerTestInitHelper.initializeTestWorkManager(context)
-    }
-
-    @Test
-    fun constructor_usesSessionIdFromParams() {
-        val params = BraintreeOptions(context = context, sessionId = "session-id", authorization =
-        authorization)
-        val sut = BraintreeClient(params)
-        assertEquals("session-id", sut.sessionId)
-    }
-
-    @Test
-    fun constructor_setsSessionIdFromUUIDHelperIfSessionIdNotIncluded() {
-        val uuidRegex = """[a-fA-F0-9]{32}""".toRegex()
-
-        val sut = BraintreeClient(BraintreeOptions(context = context, authorization = authorization))
-        assertTrue(uuidRegex.matches(sut.sessionId))
     }
 
     @Test
@@ -342,15 +327,17 @@ class BraintreeClientUnitTest {
             .configuration(configuration)
             .build()
 
+        val time: Time = mockk()
+        every { time.currentTime } returns 123
+
         val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
+        val sut = BraintreeClient(params, time)
         sut.sendAnalyticsEvent("event.started")
 
         verify {
             analyticsClient.sendEvent(
                 configuration,
-                match { it.name == "event.started" },
-                "session-id",
+                match { it.name == "event.started" && it.timestamp == 123L },
                 IntegrationType.CUSTOM,
                 authorization
             )
@@ -410,8 +397,12 @@ class BraintreeClientUnitTest {
     fun returnUrlScheme_returnsUrlSchemeDefinedInConstructor() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val returnUrlScheme = "custom-url-scheme"
-        val sut = BraintreeClient(BraintreeOptions(context, authorization, returnUrlScheme =
-        returnUrlScheme))
+        val sut = BraintreeClient(
+            BraintreeOptions(
+                context, authorization, returnUrlScheme =
+                returnUrlScheme
+            )
+        )
         assertEquals("custom-url-scheme", sut.getReturnUrlScheme())
     }
 
@@ -427,14 +418,6 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sessionId_returnsSessionIdDefinedInConstructor() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val sessionId = "custom-session-id"
-        val sut = BraintreeClient(context, authorization, sessionId, IntegrationType.DROP_IN)
-        assertEquals("custom-session-id", sut.sessionId)
-    }
-
-    @Test
     fun integrationType_returnsCustomByDefault() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val sut = BraintreeClient(BraintreeOptions(context, authorization))
@@ -444,8 +427,7 @@ class BraintreeClientUnitTest {
     @Test
     fun integrationType_returnsIntegrationTypeDefinedInConstructor() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val sessionId = "custom-session-id"
-        val sut = BraintreeClient(context, authorization, sessionId, IntegrationType.DROP_IN)
+        val sut = BraintreeClient(context, authorization, IntegrationType.DROP_IN)
         assertEquals("dropin", sut.integrationType.stringValue)
     }
 
@@ -471,7 +453,6 @@ class BraintreeClientUnitTest {
             analyticsClient.reportCrash(
                 applicationContext,
                 any(),
-                "session-id",
                 IntegrationType.CUSTOM,
                 authorization
             )
@@ -483,7 +464,6 @@ class BraintreeClientUnitTest {
     ): BraintreeClientParams =
         BraintreeClientParams(
             context = context,
-            sessionId = "session-id",
             authorization = authorization,
             returnUrlScheme = "sample-return-url-scheme",
             appLinkReturnUri = Uri.parse("https://example.com"),

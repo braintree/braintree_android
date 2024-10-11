@@ -2,7 +2,7 @@ plugins {
     alias libs.plugins.android.library
     alias libs.plugins.kotlin.android
     alias libs.plugins.dokka
-    alias libs.plugins.kotlin.kapt
+    alias libs.plugins.ksp
     alias libs.plugins.kotlin.parcelize
 }
 
@@ -50,18 +50,11 @@ android {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
     }
-
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
-    kotlin {
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of("11"))
-        }
-    }
 }
 
+ksp {
+    arg('room.schemaLocation', "$projectDir/schemas")
+}
 
 dependencies {
     implementation libs.androidx.appcompat
@@ -73,7 +66,7 @@ dependencies {
     implementation libs.androidx.room.runtime
 
     // Ref: https://stackoverflow.com/a/51067251
-    kapt libs.androidx.room.compiler
+    ksp libs.androidx.room.compiler
 
     api libs.browser.switch
     api project(':SharedUtils')
@@ -101,7 +94,7 @@ dependencies {
     testImplementation project(':Card')
 
     // Ref: https://kotlin.github.io/dokka/1.8.0-SNAPSHOT/user_guide/applying/gradle/#applying-plugins
-    dokkaHtmlPartialPlugin 'org.jetbrains.dokka:android-documentation-plugin:1.9.10'
+    dokkaHtmlPartialPlugin libs.dokka.android.documentation.plugin
 }
 
 android.buildTypes.each { type ->

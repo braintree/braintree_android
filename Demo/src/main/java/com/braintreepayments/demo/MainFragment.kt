@@ -21,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.fragment.findNavController
 import com.braintreepayments.api.core.PaymentMethodNonce
+import com.braintreepayments.api.sharedutils.IntentExtensions.parcelable
 
 @Suppress("TooManyFunctions")
 class MainFragment : BaseFragment() {
@@ -99,7 +100,7 @@ class MainFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_NONCE)) {
-            nonce = savedInstanceState.getParcelable(KEY_NONCE)
+            nonce = savedInstanceState.parcelable(KEY_NONCE)
         }
     }
 
@@ -110,8 +111,17 @@ class MainFragment : BaseFragment() {
         }
     }
 
+    private fun fetchAuthorizationAndHandleError(onSuccess: (String) -> Unit) {
+        fetchAuthorization { authResult ->
+            when (authResult) {
+                is BraintreeAuthorizationResult.Success -> onSuccess(authResult.authString)
+                is BraintreeAuthorizationResult.Error -> showDialog(authResult.error.toString())
+            }
+        }
+    }
+
     private fun launchGooglePay() {
-        fetchAuthorization { authString ->
+        fetchAuthorizationAndHandleError { authString ->
             val action = MainFragmentDirections.actionMainFragmentToGooglePayFragment()
                 .setAuthString(authString)
             findNavController().navigate(action)
@@ -119,7 +129,7 @@ class MainFragment : BaseFragment() {
     }
 
     private fun launchCards() {
-        fetchAuthorization { authString ->
+        fetchAuthorizationAndHandleError { authString ->
             val action = MainFragmentDirections.actionMainFragmentToCardFragment()
             action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(activity))
             action.setAuthString(authString)
@@ -128,7 +138,7 @@ class MainFragment : BaseFragment() {
     }
 
     private fun launchPayPal() {
-        fetchAuthorization { authString ->
+        fetchAuthorizationAndHandleError { authString ->
             val action = MainFragmentDirections.actionMainFragmentToPayPalFragment()
             action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(activity))
             action.setAuthString(authString)
@@ -137,7 +147,7 @@ class MainFragment : BaseFragment() {
     }
 
     private fun launchVenmo() {
-        fetchAuthorization { authString ->
+        fetchAuthorizationAndHandleError { authString ->
             val action = MainFragmentDirections.actionMainFragmentToVenmoFragment()
                 .setAuthString(authString)
             findNavController().navigate(action)
@@ -145,7 +155,7 @@ class MainFragment : BaseFragment() {
     }
 
     private fun launchVisaCheckout() {
-        fetchAuthorization { authString ->
+        fetchAuthorizationAndHandleError { authString ->
             val action = MainFragmentDirections.actionMainFragmentToVisaCheckoutFragment()
                 .setAuthString(authString)
             findNavController().navigate(action)
@@ -153,7 +163,7 @@ class MainFragment : BaseFragment() {
     }
 
     private fun launchLocalPayment() {
-        fetchAuthorization { authString ->
+        fetchAuthorizationAndHandleError { authString ->
             val action = MainFragmentDirections.actionMainFragmentToLocalPaymentFragment()
                 .setAuthString(authString)
             findNavController().navigate(action)
@@ -161,7 +171,7 @@ class MainFragment : BaseFragment() {
     }
 
     private fun launchSEPADirectDebit() {
-        fetchAuthorization { authString ->
+        fetchAuthorizationAndHandleError { authString ->
             val action = MainFragmentDirections.actionMainFragmentToSepaDirectDebitFragment()
                 .setAuthString(authString)
             findNavController().navigate(action)
@@ -169,7 +179,7 @@ class MainFragment : BaseFragment() {
     }
 
     private fun launchPayPalMessaging() {
-        fetchAuthorization { authString ->
+        fetchAuthorizationAndHandleError { authString ->
             val action = MainFragmentDirections.actionMainFragmentToPayPalMessagingFragment()
                 .setAuthString(authString)
             findNavController().navigate(action)
@@ -177,7 +187,7 @@ class MainFragment : BaseFragment() {
     }
 
     private fun launchShopperInsights() {
-        fetchAuthorization { authString ->
+        fetchAuthorizationAndHandleError { authString ->
             val action = MainFragmentDirections.actionMainFragmentToShoppingInsightsFragment()
                 .setAuthString(authString)
             findNavController().navigate(action)

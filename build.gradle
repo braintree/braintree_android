@@ -7,7 +7,7 @@ buildscript {
         }
     }
 
-    def sdkTargetJavaVersion = JavaVersion.VERSION_11
+    def sdkTargetJavaVersion = JavaVersion.VERSION_17
 
     ext.versions = [
             "javaSourceCompatibility": sdkTargetJavaVersion,
@@ -33,7 +33,7 @@ plugins {
     alias libs.plugins.android.library apply false
     alias libs.plugins.kotlin.android apply false
     alias libs.plugins.kotlin.parcelize apply false
-    alias libs.plugins.kotlin.kapt apply false
+    alias libs.plugins.ksp apply false
     alias libs.plugins.androidx.safeargs apply false
 }
 
@@ -48,14 +48,14 @@ allprojects {
     }
 }
 
-version '5.0.0-beta2-SNAPSHOT'
+version '5.0.1-SNAPSHOT'
 group 'com.braintreepayments'
 ext {
-    compileSdkVersion = 34
+    compileSdkVersion = 35
     minSdkVersion = 23
     minSdkVersionPayPalMessaging = 23
-    versionCode = 194
-    targetSdkVersion = 34
+    versionCode = 196
+    targetSdkVersion = 35
     versionName = version
 }
 
@@ -168,7 +168,7 @@ task incrementSNAPSHOTVersion {
         def (major, minor, patch) = versionParam.tokenize('.')
         def patchInteger = patch[-1].toInteger()
         patchInteger++
-        def newPatch = patch.substring(0,patch.length()-1) + patchInteger.toString()
+        def newPatch = patch.substring(0, patch.length() - 1) + patchInteger.toString()
         def newVersion = "$major.$minor.$newPatch-SNAPSHOT"
         def gradleFileText = gradleFile.text.replaceFirst("\\nversion '\\d+\\.\\d+\\.\\d+(-.*)?'", "\nversion '" + newVersion + "'")
         gradleFile.write(gradleFileText)

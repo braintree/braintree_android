@@ -6,15 +6,11 @@
     <string name="reset">Reset</string>
     <string name="settings">Settings</string>
     <string name="nonce_placeholder">Nonce: %s</string>
-    <string name="ideal_id_placeholder">iDEAL payment id: \n %s</string>
-    <string name="ideal_status_placeholder">iDEAL payment status: \n %s</string>
     <string name="device_data_placeholder">Device Data: %s</string>
-    <string name="drop_in">Drop-In</string>
     <string name="google_pay">Google Pay</string>
-    <string name="paypal_button">@string/paypal</string>
+    <string name="paypal_button">PayPal Web</string>
     <string name="visa_checkout_button">Visa Checkout</string>
     <string name="ideal_button">Pay with iDEAL</string>
-    <string name="ideal_bank_icon">iDEAL bank icon</string>
     <string name="local_payment_button">Local Payment</string>
     <string name="sepa_direct_debit_button">SEPA Direct Debit</string>
     <string name="cards">Credit or Debit Cards</string>
@@ -22,14 +18,9 @@
     <string name="shopper_insights_button">Shopper Insights</string>
     <string name="create_transaction">Create a Transaction</string>
     <string name="loading">Loading…</string>
-    <string name="buy">Buy</string>
-    <string name="payment_icon">payment icon</string>
-    <string name="paypal_two_factor">PayPal 2FA</string>
 
     <!-- CardActivity -->
     <string name="purchase">Purchase</string>
-    <string name="send_sms">Send SMS</string>
-    <string name="sms_auth_code">SMS Auth Code</string>
 
     <!-- CreateTransactionActivity -->
     <string name="processing_transaction">Processing Transaction</string>
@@ -41,7 +32,6 @@
     <string name="none">None</string>
     <string name="options">Options</string>
     <string name="sandbox">Sandbox</string>
-    <string name="mock_pay_pal">Mock PayPal</string>
     <string name="production">Production</string>
     <string name="authorization">Authorization</string>
     <string name="authorization_type">Authorization Type</string>
@@ -91,7 +81,6 @@
     <string name="paypal_phone_national_number">Buyer Phone National Number</string>
     <string name="paypal_single_payment">Single Payment</string>
     <string name="paypal_billing_agreement">Billing Agreement</string>
-    <string name="paypal_deferred_billing_agreement">Deferred Billing Agreement</string>
     <string name="paypal_intent_type">Intent Type</string>
     <string name="paypal_landing_page_type">Landing Page Type</string>
     <string name="paypal_intent_authorize">Authorize</string>
@@ -101,11 +90,7 @@
     <string name="paypal_display_name_summary">Name to be displayed in the PayPal flow</string>
     <string name="paypal_landing_page_type_billing">Billing</string>
     <string name="paypal_landing_page_type_login">Login</string>
-    <string name="paypal_native_checkout_launch">Launch PayPal Native Checkout</string>
-    <string name="paypal_native_checkout_vault_launch">Launch PayPal Native Vault Checkout</string>
     <string name="venmo">Venmo</string>
-    <string name="venmo_fallback_to_web">Venmo Fallback to Web</string>
-    <string name="venmo_fallback_to_web_summary">Fallback to web if the Venmo app is not installed.</string>
     <string name="vault_venmo">Vault Venmo</string>
     <string name="vault_venmo_summary">Vault Venmo payment methods on creation. Requires a customer id to be set.</string>
     <string name="amex">Amex</string>
@@ -113,7 +98,6 @@
     <string name="amex_rewards_balance_summary">Fetch Amex Rewards Balance on Card Tokenization. Requires a Client Token and relevant configurations.</string>
 
     <!-- PayPalActivity -->
-    <string name="paypal_wallet_available">PayPal Wallet app available for app switch: %b</string>
     <string name="paypal_credit_offered">Offer PayPal Credit</string>
     <string name="paypal_credit_offered_summary">Offers PayPal Credit prominently in the payment flow</string>
     <string name="paypal_useraction_commit_title">Set Useraction to Commit</string>

@@ -41,7 +41,7 @@
 <a class="library-name--link" href="../../../index.html">
                             braintree_android
                     </a>            </div>
-            <div class="library-version">5.0.0-beta1
+            <div class="library-version">5.0.0
             </div>
         </div>
         <div class="filter-section" id="filter-section">
@@ -79,7 +79,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-cancel/index.html">Cancel</a> : <a href="index.html">ThreeDSecureResult</a></div><div class="brief "><p class="paragraph">The user canceled the 3DS authentication flow.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">object </span><a href="-cancel/index.html">Cancel</a> : <a href="index.html">ThreeDSecureResult</a></div><div class="brief "><p class="paragraph">The user canceled the 3DS authentication flow.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -94,7 +94,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-failure/index.html">Failure</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>error<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-exception/index.html">Exception</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>nonce<span class="token operator">: </span><a href="../-three-d-secure-nonce/index.html">ThreeDSecureNonce</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span> : <a href="index.html">ThreeDSecureResult</a></div><div class="brief "><p class="paragraph">There was an <a href="-failure/error.html">error</a> in the 3DS authentication flow. Optionally may return a <a href="-failure/nonce.html">nonce</a> if the authentication was not successful but the <a href="-failure/nonce.html">nonce</a> from the <a href="../-three-d-secure-lookup/index.html">ThreeDSecureLookup</a> can be transacted with.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-failure/index.html">Failure</a> : <a href="index.html">ThreeDSecureResult</a></div><div class="brief "><p class="paragraph">There was an <a href="-failure/error.html">error</a> in the 3DS authentication flow. Optionally may return a <a href="-failure/nonce.html">nonce</a> if the authentication was not successful but the <a href="-failure/nonce.html">nonce</a> from the <a href="../-three-d-secure-lookup/index.html">ThreeDSecureLookup</a> can be transacted with.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -109,7 +109,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-success/index.html">Success</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>nonce<span class="token operator">: </span><a href="../-three-d-secure-nonce/index.html">ThreeDSecureNonce</a></span></span><span class="token punctuation">)</span> : <a href="index.html">ThreeDSecureResult</a></div><div class="brief "><p class="paragraph">The 3DS flow completed successfully. This <a href="-success/nonce.html">nonce</a> should be sent to your server.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ThreeDSecure:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-success/index.html">Success</a> : <a href="index.html">ThreeDSecureResult</a></div><div class="brief "><p class="paragraph">The 3DS flow completed successfully. This <a href="-success/nonce.html">nonce</a> should be sent to your server.</p></div></div></div>
                 </div>
               </div>
             </div>

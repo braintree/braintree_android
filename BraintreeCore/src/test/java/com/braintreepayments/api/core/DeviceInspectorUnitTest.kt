@@ -158,6 +158,87 @@ class DeviceInspectorUnitTest {
 
     @Test
     @Throws(JSONException::class)
+    fun getDeviceMetadata_whenBuildFingerpintContainsGeneric_returnsTrueForIsSimulator() {
+        ReflectionHelpers.setStaticField(Build::class.java, "FINGERPRINT", "generic")
+        val metadata =
+            sut.getDeviceMetadata(context, btConfiguration, "session-id", IntegrationType.CUSTOM)
+        assertTrue(metadata.isSimulator)
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun getDeviceMetadata_whenBuildFingerpintContainsUnknown_returnsTrueForIsSimulator() {
+        ReflectionHelpers.setStaticField(Build::class.java, "FINGERPRINT", "unknown")
+        val metadata =
+            sut.getDeviceMetadata(context, btConfiguration, "session-id", IntegrationType.CUSTOM)
+        assertTrue(metadata.isSimulator)
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun getDeviceMetadata_whenHardwareContainsGoldfish_returnsTrueForIsSimulator() {
+        ReflectionHelpers.setStaticField(Build::class.java, "HARDWARE", "goldfish")
+        val metadata =
+            sut.getDeviceMetadata(context, btConfiguration, "session-id", IntegrationType.CUSTOM)
+        assertTrue(metadata.isSimulator)
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun getDeviceMetadata_whenHardwareContainsRanchu_returnsTrueForIsSimulator() {
+        ReflectionHelpers.setStaticField(Build::class.java, "HARDWARE", "ranchu")
+        val metadata =
+            sut.getDeviceMetadata(context, btConfiguration, "session-id", IntegrationType.CUSTOM)
+        assertTrue(metadata.isSimulator)
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun getDeviceMetadata_whenHardwareModelGoogleSDK_returnsTrueForIsSimulator() {
+        ReflectionHelpers.setStaticField(Build::class.java, "MODEL", "google_sdk")
+        val metadata =
+            sut.getDeviceMetadata(context, btConfiguration, "session-id", IntegrationType.CUSTOM)
+        assertTrue(metadata.isSimulator)
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun getDeviceMetadata_whenHardwareModelEmulator_returnsTrueForIsSimulator() {
+        ReflectionHelpers.setStaticField(Build::class.java, "MODEL", "Emulator")
+        val metadata =
+            sut.getDeviceMetadata(context, btConfiguration, "session-id", IntegrationType.CUSTOM)
+        assertTrue(metadata.isSimulator)
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun getDeviceMetadata_whenHardwareModelAndroidSDKBuiltForX86_returnsTrueForIsSimulator() {
+        ReflectionHelpers.setStaticField(Build::class.java, "MODEL", "Android SDK built for x86")
+        val metadata =
+            sut.getDeviceMetadata(context, btConfiguration, "session-id", IntegrationType.CUSTOM)
+        assertTrue(metadata.isSimulator)
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun getDeviceMetadata_whenBuildManufacturerIsGenymotion_returnsTrueForIsSimulator() {
+        ReflectionHelpers.setStaticField(Build::class.java, "MANUFACTURER", "Genymotion")
+        val metadata =
+            sut.getDeviceMetadata(context, btConfiguration, "session-id", IntegrationType.CUSTOM)
+        assertTrue(metadata.isSimulator)
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun getDeviceMetadata_whenBuildProductIsSdkGoogle_returnsTrueForIsSimulator() {
+        ReflectionHelpers.setStaticField(Build::class.java, "PRODUCT", "sdk_google")
+        val metadata =
+            sut.getDeviceMetadata(context, btConfiguration, "session-id", IntegrationType.CUSTOM)
+        assertTrue(metadata.isSimulator)
+    }
+
+    @Test
+    @Throws(JSONException::class)
     fun getDeviceMetadata_whenBuildProductIsGoogleSdk_returnsTrueForIsSimulator() {
         ReflectionHelpers.setStaticField(Build::class.java, "PRODUCT", "google_sdk")
         val metadata =
@@ -176,8 +257,8 @@ class DeviceInspectorUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun getDeviceMetadata_whenBuildManufacturerIsGenymotion_returnsTrueForIsSimulator() {
-        ReflectionHelpers.setStaticField(Build::class.java, "MANUFACTURER", "Genymotion")
+    fun getDeviceMetadata_whenBuildProductIssdkx86_returnsTrueForIsSimulator() {
+        ReflectionHelpers.setStaticField(Build::class.java, "PRODUCT", "sdk_x86")
         val metadata =
             sut.getDeviceMetadata(context, btConfiguration, "session-id", IntegrationType.CUSTOM)
         assertTrue(metadata.isSimulator)
@@ -185,8 +266,26 @@ class DeviceInspectorUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun getDeviceMetadata_whenBuildFingerpintContainsGeneric_returnsTrueForIsSimulator() {
-        ReflectionHelpers.setStaticField(Build::class.java, "FINGERPRINT", "generic")
+    fun getDeviceMetadata_whenBuildProductIsVbox86p_returnsTrueForIsSimulator() {
+        ReflectionHelpers.setStaticField(Build::class.java, "PRODUCT", "vbox86p")
+        val metadata =
+            sut.getDeviceMetadata(context, btConfiguration, "session-id", IntegrationType.CUSTOM)
+        assertTrue(metadata.isSimulator)
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun getDeviceMetadata_whenBuildProductIsEmulator_returnsTrueForIsSimulator() {
+        ReflectionHelpers.setStaticField(Build::class.java, "PRODUCT", "emulator")
+        val metadata =
+            sut.getDeviceMetadata(context, btConfiguration, "session-id", IntegrationType.CUSTOM)
+        assertTrue(metadata.isSimulator)
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun getDeviceMetadata_whenBuildProductIsSimulator_returnsTrueForIsSimulator() {
+        ReflectionHelpers.setStaticField(Build::class.java, "PRODUCT", "simulator")
         val metadata =
             sut.getDeviceMetadata(context, btConfiguration, "session-id", IntegrationType.CUSTOM)
         assertTrue(metadata.isSimulator)
