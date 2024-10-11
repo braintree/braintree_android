@@ -1,7 +1,8 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
-
+* PayPal
+  * Add `userPhoneNumber` property to `PayPalVaultRequest` and `PayPalCheckoutRequest`
 * BraintreeCore
   * Update `endpoint` syntax sent to FPTI for 3D Secure and Venmo flows
 
