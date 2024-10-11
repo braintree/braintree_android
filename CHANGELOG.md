@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+  * Add `shippingCallbackURL` to `PayPalRequest`
+  
 ## 5.0.0 (2024-09-30)
 
 * PayPal
