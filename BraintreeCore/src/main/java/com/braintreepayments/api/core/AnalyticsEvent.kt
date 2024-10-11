@@ -8,5 +8,7 @@ internal data class AnalyticsEvent(
     val isVaultRequest: Boolean = false,
     val startTime: Long? = null,
     val endTime: Long? = null,
-    val endpoint: String? = null
+    val endpoint: String? = null,
+    val experiment: String? = null,
+    val buttonRank: Int? = null
 )

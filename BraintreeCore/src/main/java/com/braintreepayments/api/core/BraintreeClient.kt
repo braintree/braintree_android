@@ -149,6 +149,8 @@ class BraintreeClient @VisibleForTesting internal constructor(
                 startTime = params.startTime,
                 endTime = params.endTime,
                 endpoint = params.endpoint,
+                experiment = params.merchantExperiment,
+                buttonRank = params.merchantExperimentButtonRank
             )
             sendAnalyticsEvent(event, configuration, authorization)
         }
