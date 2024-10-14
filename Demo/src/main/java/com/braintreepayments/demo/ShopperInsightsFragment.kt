@@ -170,18 +170,19 @@ class ShopperInsightsFragment : BaseFragment() {
         }
 
         shopperInsightsClient.getRecommendedPaymentMethods(
-            request
+            request,
+            "dummy_experiment"
         ) { result ->
             when (result) {
                 is ShopperInsightsResult.Success -> {
                     if (result.response.isPayPalRecommended) {
                         payPalVaultButton.isEnabled = true
-                        shopperInsightsClient.sendPayPalPresentedEvent()
+                        shopperInsightsClient.sendPayPalPresentedEvent("dummy_paypal_presented_experiment", 1)
                     }
 
                     if (result.response.isVenmoRecommended) {
                         venmoButton.isEnabled = true
-                        shopperInsightsClient.sendVenmoPresentedEvent()
+                        shopperInsightsClient.sendVenmoPresentedEvent("dummy_paypal_presented_experiment", 2)
                     }
 
                     responseTextView.text =
