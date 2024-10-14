@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+* PayPal
+    * Add `userPhoneNumber` property to `PayPalVaultRequest` and `PayPalCheckoutRequest`
+
 ## 5.0.0 (2024-09-30)
 
 * PayPal

@@ -44,6 +44,7 @@ class PayPalVaultRequest
     override var merchantAccountId: String? = null,
     override var riskCorrelationId: String? = null,
     override var userAuthenticationEmail: String? = null,
+    override var userPhoneNumber: PayPalPhoneNumber? = null,
     override var lineItems: List<PayPalLineItem> = emptyList(),
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
@@ -86,6 +87,8 @@ class PayPalVaultRequest
         }
 
         parameters.putOpt(PAYER_EMAIL_KEY, userAuthenticationEmail)
+
+        userPhoneNumber?.let { parameters.put(PHONE_NUMBER_KEY, it.toJson()) }
 
         if (enablePayPalAppSwitch && !appLink.isNullOrEmpty() && !userAuthenticationEmail.isNullOrEmpty()) {
             parameters.put(ENABLE_APP_SWITCH_KEY, enablePayPalAppSwitch)

@@ -7,6 +7,7 @@ import com.braintreepayments.api.paypal.PayPalCheckoutRequest;
 import com.braintreepayments.api.paypal.PayPalLandingPageType;
 import com.braintreepayments.api.paypal.PayPalPaymentIntent;
 import com.braintreepayments.api.paypal.PayPalPaymentUserAction;
+import com.braintreepayments.api.paypal.PayPalPhoneNumber;
 import com.braintreepayments.api.paypal.PayPalRequest;
 import com.braintreepayments.api.paypal.PayPalVaultRequest;
 
@@ -14,13 +15,19 @@ public class PayPalRequestFactory {
 
     public static PayPalVaultRequest createPayPalVaultRequest(
         Context context,
-        String buyerEmailAddress
+        String buyerEmailAddress,
+        String buyerPhoneCountryCode,
+        String buyerPhoneNationalNumber
     ) {
 
         PayPalVaultRequest request = new PayPalVaultRequest(true);
 
         if (!buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
+        }
+
+        if (!buyerPhoneCountryCode.isEmpty() && !buyerPhoneNationalNumber.isEmpty()) {
+            request.setUserPhoneNumber(new PayPalPhoneNumber(buyerPhoneCountryCode, buyerPhoneNationalNumber));
         }
 
         if (Settings.isPayPalAppSwithEnabled(context)) {
@@ -58,12 +65,18 @@ public class PayPalRequestFactory {
     public static PayPalCheckoutRequest createPayPalCheckoutRequest(
         Context context,
         String amount,
-        String buyerEmailAddress
+        String buyerEmailAddress,
+        String buyerPhoneCountryCode,
+        String buyerPhoneNationalNumber
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
 
         if (!buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
+        }
+
+        if (!buyerPhoneCountryCode.isEmpty() && !buyerPhoneNationalNumber.isEmpty()) {
+            request.setUserPhoneNumber(new PayPalPhoneNumber(buyerPhoneCountryCode, buyerPhoneNationalNumber));
         }
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
