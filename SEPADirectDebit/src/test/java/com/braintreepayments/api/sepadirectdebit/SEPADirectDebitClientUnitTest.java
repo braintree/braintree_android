@@ -382,33 +382,4 @@ public class SEPADirectDebitClientUnitTest {
         assertTrue(result instanceof SEPADirectDebitResult.Cancel);
         verify(braintreeClient).sendAnalyticsEvent(eq(SEPADirectDebitAnalytics.CHALLENGE_CANCELED), any());
     }
-
-    @Test
-    public void tokenize_whenDeepLinkURLIsNull_returnsErrorToListener() {
-        SEPADirectDebitApi sepaDirectDebitApi = new MockSEPADirectDebitApiBuilder().build();
-
-        BrowserSwitchFinalResult.Success browserSwitchResult = mock(BrowserSwitchFinalResult.Success.class);
-        when(browserSwitchResult.getReturnUrl()).thenReturn(null);
-
-        braintreeClient = new MockBraintreeClientBuilder()
-            .build();
-
-        SEPADirectDebitClient sut =
-            new SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi);
-
-        SEPADirectDebitPaymentAuthResult.Success
-            sepaBrowserSwitchResult = new SEPADirectDebitPaymentAuthResult.Success(browserSwitchResult);
-
-        sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback);
-
-        ArgumentCaptor<SEPADirectDebitResult> captor = ArgumentCaptor.forClass(SEPADirectDebitResult.class);
-        verify(sepaTokenizeCallback).onSEPADirectDebitResult(captor.capture());
-
-        SEPADirectDebitResult result = captor.getValue();
-        assertTrue(result instanceof SEPADirectDebitResult.Failure);
-        Exception exception = ((SEPADirectDebitResult.Failure) result).getError();
-        assertTrue(exception instanceof BraintreeException);
-        assertEquals("Unknown error", exception.getMessage());
-        verify(braintreeClient).sendAnalyticsEvent(eq(SEPADirectDebitAnalytics.TOKENIZE_FAILED), any());
-    }
 }

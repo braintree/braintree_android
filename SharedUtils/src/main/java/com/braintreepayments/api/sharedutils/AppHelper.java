@@ -17,13 +17,14 @@ public class AppHelper {
 
     public boolean isIntentAvailable(Context context, Intent intent) {
         List<ResolveInfo> activities = context.getPackageManager().queryIntentActivities(intent, 0);
-        return activities != null && activities.size() == 1;
+        return activities.size() == 1;
     }
 
     public boolean isAppInstalled(Context context, String packageName) {
         PackageManager packageManager = context.getPackageManager();
         try {
-            return packageManager.getApplicationInfo(packageName, NO_FLAGS) != null;
+            packageManager.getApplicationInfo(packageName, NO_FLAGS);
+            return true;
         } catch (NameNotFoundException e) {
             return false;
         }
