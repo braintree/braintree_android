@@ -211,6 +211,10 @@ public class PayPalCheckoutRequest extends PayPalRequest implements Parcelable {
             parameters.put(PAYER_EMAIL_KEY, userAuthenticationEmail);
         }
 
+        if (getUserPhoneNumber() != null) {
+            parameters.putOpt(PHONE_NUMBER_KEY, getUserPhoneNumber().toJson());
+        }
+
         String currencyCode = getCurrencyCode();
         if (currencyCode == null) {
             currencyCode = configuration.getPayPalCurrencyIsoCode();
