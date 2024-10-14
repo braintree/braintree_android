@@ -124,6 +124,7 @@ public class PayPalVaultRequestUnitTest {
         request.setDisplayName("Display Name");
         request.setRiskCorrelationId("123-correlation");
         request.setMerchantAccountId("merchant_account_id");
+        request.setUserPhoneNumber(new PayPalPhoneNumber("1", "1231231234"));
 
         PayPalBillingInterval billingInterval = PayPalBillingInterval.MONTH;
         PayPalPricingModel pricingModel = PayPalPricingModel.FIXED;
@@ -168,6 +169,8 @@ public class PayPalVaultRequestUnitTest {
         assertEquals("merchant_account_id", result.getMerchantAccountId());
         assertEquals(1, result.getLineItems().size());
         assertEquals("An Item", result.getLineItems().get(0).getName());
+        assertEquals("1", result.getUserPhoneNumber().getCountryCode());
+        assertEquals("1231231234", result.getUserPhoneNumber().getNationalNumber());
         assertTrue(result.getHasUserLocationConsent());
         assertEquals(PayPalRecurringBillingPlanType.RECURRING, result.getRecurringBillingPlanType());
         assertEquals("USD", result.getRecurringBillingDetails().getCurrencyISOCode());
@@ -279,5 +282,21 @@ public class PayPalVaultRequestUnitTest {
         );
 
         JSONAssert.assertEquals(Fixtures.PAYPAL_REQUEST_JSON, requestBody, false);
+    }
+
+    @Test
+    public void createRequestBody_sets_userPhoneNumber_when_not_null() throws JSONException {
+        PayPalVaultRequest request = new PayPalVaultRequest(true);
+
+        request.setUserPhoneNumber(new PayPalPhoneNumber("1", "1231231234"));
+        String requestBody = request.createRequestBody(
+            mock(Configuration.class),
+            mock(Authorization.class),
+            "success_url",
+            "cancel_url",
+            null
+        );
+
+        assertTrue(requestBody.contains("\"phone_number\":{\"country_code\":\"1\",\"national_number\":\"1231231234\"}"));
     }
 }

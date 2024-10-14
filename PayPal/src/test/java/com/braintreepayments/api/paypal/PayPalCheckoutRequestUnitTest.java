@@ -107,7 +107,7 @@ public class PayPalCheckoutRequestUnitTest {
         assertEquals("USD", result.getCurrencyCode());
         assertEquals("en-US", result.getLocaleCode());
         assertEquals("Billing Agreement Description",
-                result.getBillingAgreementDescription());
+            result.getBillingAgreementDescription());
         assertTrue(result.isShippingAddressRequired());
         assertTrue(result.isShippingAddressEditable());
         assertEquals("Postal Address", result.getShippingAddressOverride().getRecipientName());
@@ -154,5 +154,21 @@ public class PayPalCheckoutRequestUnitTest {
         );
 
         assertFalse(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
+    }
+
+    @Test
+    public void createRequestBody_sets_userPhoneNumber_when_not_null() throws JSONException {
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+
+        request.setUserPhoneNumber(new PayPalPhoneNumber("1", "1231231234"));
+        String requestBody = request.createRequestBody(
+            mock(Configuration.class),
+            mock(Authorization.class),
+            "success_url",
+            "cancel_url",
+            null
+        );
+
+        assertTrue(requestBody.contains("\"phone_number\":{\"country_code\":\"1\",\"national_number\":\"1231231234\"}"));
     }
 }

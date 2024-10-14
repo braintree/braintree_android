@@ -4,7 +4,8 @@
 
 * PayPal
   * Add `PayPalRecurringBillingDetails` and `PayPalRecurringBillingPlanType` opt-in request objects. Including these details will provide transparency to users on their billing schedule, dates, and amounts, as well as launch a modernized checkout UI.
-      
+  * Add `userPhoneNumber` property to `PayPalVaultRequest` and `PayPalCheckoutRequest`
+
 ## 5.0.0 (2024-09-30)
 
 * PayPal
