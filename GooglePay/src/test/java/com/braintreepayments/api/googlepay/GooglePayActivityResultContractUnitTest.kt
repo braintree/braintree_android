@@ -6,6 +6,7 @@ import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.UserCanceledException
+import com.braintreepayments.api.sharedutils.IntentExtensions.parcelable
 import com.google.android.gms.wallet.AutoResolveHelper
 import com.google.android.gms.wallet.PaymentData
 import com.google.android.gms.wallet.PaymentDataRequest
@@ -37,7 +38,7 @@ class GooglePayActivityResultContractUnitTest {
         assertEquals(1, intent.getIntExtra(GooglePayClient.EXTRA_ENVIRONMENT, 0))
         assertSame(
             paymentDataRequest,
-            intent.getParcelableExtra(GooglePayClient.EXTRA_PAYMENT_DATA_REQUEST)
+            intent.parcelable(GooglePayClient.EXTRA_PAYMENT_DATA_REQUEST)
         )
     }
 

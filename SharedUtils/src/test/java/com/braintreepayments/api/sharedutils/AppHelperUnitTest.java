@@ -38,16 +38,6 @@ public class AppHelperUnitTest {
     }
 
     @Test
-    public void isAppInstalled_whenAppInfoIsNullForPackageName_returnsTrue()
-            throws NameNotFoundException {
-        when(context.getPackageManager()).thenReturn(packageManager);
-        when(packageManager.getApplicationInfo("package.name", 0)).thenReturn(null);
-
-        AppHelper sut = new AppHelper();
-        assertFalse(sut.isAppInstalled(context, "package.name"));
-    }
-
-    @Test
     public void isAppInstalled_whenAppInfoNotFoundForPackageName_returnsTrue()
             throws NameNotFoundException {
         when(context.getPackageManager()).thenReturn(packageManager);

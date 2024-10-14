@@ -4,10 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.os.Parcelable
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.sharedutils.IntentExtensions.parcelable
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 
@@ -49,14 +49,8 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
             return
         }
 
-        var extras = intent.extras
-        if (extras == null) {
-            extras = Bundle()
-        }
-
-        val threeDSecureParams = extras.getParcelable<ThreeDSecureParams>(
-            EXTRA_THREE_D_SECURE_RESULT
-        )
+        val extras = intent.extras ?: Bundle()
+        val threeDSecureParams = extras.parcelable<ThreeDSecureParams>(EXTRA_THREE_D_SECURE_RESULT)
         if (threeDSecureParams != null) {
             try {
                 cardinalClient.continueLookup(threeDSecureParams, challengeObserver)
@@ -87,7 +81,7 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
         result.putExtra(EXTRA_JWT, jwt)
         result.putExtra(
             EXTRA_THREE_D_SECURE_RESULT,
-            intent.extras?.getParcelable<Parcelable>(EXTRA_THREE_D_SECURE_RESULT) as ThreeDSecureParams?
+            intent.extras?.parcelable<ThreeDSecureParams>(EXTRA_THREE_D_SECURE_RESULT)
         )
         result.putExtra(EXTRA_VALIDATION_RESPONSE, validateResponse)
 

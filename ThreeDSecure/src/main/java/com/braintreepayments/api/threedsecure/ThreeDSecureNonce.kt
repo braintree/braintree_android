@@ -53,9 +53,9 @@ data class ThreeDSecureNonce internal constructor(
             if (json.has(DATA_KEY)) { // graphQL
                 threeDSecureInfo = ThreeDSecureInfo.fromJson(null)
             } else if (json.has(API_RESOURCE_KEY)) { // REST
-                val json = json.getJSONArray(API_RESOURCE_KEY).getJSONObject(0)
+                val creditCardsJson = json.getJSONArray(API_RESOURCE_KEY).getJSONObject(0)
                 threeDSecureInfo =
-                    ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY))
+                    ThreeDSecureInfo.fromJson(creditCardsJson.optJSONObject(THREE_D_SECURE_INFO_KEY))
             } else { // plain JSON
                 threeDSecureInfo = ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY))
             }

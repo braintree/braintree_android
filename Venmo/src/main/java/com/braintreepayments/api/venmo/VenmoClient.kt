@@ -88,13 +88,13 @@ class VenmoClient internal constructor(
             // Data) is enabled on the BT Control Panel.
             val customerDataEnabled = configuration?.venmoEnrichedCustomerDataEnabled ?: false
             if ((request.collectCustomerShippingAddress ||
-                        request.collectCustomerBillingAddress) && !customerDataEnabled
+                    request.collectCustomerBillingAddress) && !customerDataEnabled
             ) {
                 callbackPaymentAuthFailure(
                     callback, VenmoPaymentAuthRequest.Failure(
                         BraintreeException(
                             "Cannot collect customer data when ECD is disabled. Enable this feature " +
-                                    "in the Control Panel to collect this data."
+                                "in the Control Panel to collect this data."
                         )
                     )
                 )
@@ -209,20 +209,16 @@ class VenmoClient internal constructor(
             paymentAuthResult.browserSwitchSuccess
 
         val deepLinkUri: Uri = browserSwitchResultInfo.returnUrl
-        if (deepLinkUri != null) {
-            braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED, analyticsParams)
-            if (Objects.requireNonNull(deepLinkUri.path?.contains("success")) == true) {
-                callbackTokenizeSuccess(deepLinkUri, callback)
-            } else if (deepLinkUri.path?.contains("cancel") == true) {
-                callbackTokenizeCancel(callback)
-            } else if (deepLinkUri.path?.contains("error") == true) {
-                callbackTokenizeFailure(
-                    callback,
-                    VenmoResult.Failure(Exception("Error returned from Venmo."))
-                )
-            }
-        } else {
-            callbackTokenizeFailure(callback, VenmoResult.Failure(Exception("Unknown error")))
+        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED, analyticsParams)
+        if (Objects.requireNonNull(deepLinkUri.path?.contains("success")) == true) {
+            callbackTokenizeSuccess(deepLinkUri, callback)
+        } else if (deepLinkUri.path?.contains("cancel") == true) {
+            callbackTokenizeCancel(callback)
+        } else if (deepLinkUri.path?.contains("error") == true) {
+            callbackTokenizeFailure(
+                callback,
+                VenmoResult.Failure(Exception("Error returned from Venmo."))
+            )
         }
     }
 

@@ -70,6 +70,7 @@ public class LocalPaymentClientUnitTest {
         localPaymentAuthRequestParams = mock(LocalPaymentAuthRequestParams.class);
         when(localPaymentAuthRequestParams.getApprovalUrl()).thenReturn("https://");
         when(localPaymentAuthRequestParams.getRequest()).thenReturn(getIdealLocalPaymentRequest());
+        when(localPaymentAuthRequestParams.getPaymentId()).thenReturn("paymentId");
         when(analyticsParamRepository.getSessionId()).thenReturn("sample-session-id");
 
         payPalEnabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL);
@@ -171,7 +172,7 @@ public class LocalPaymentClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
             LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED,
-            new AnalyticsEventParams()
+            new AnalyticsEventParams("paymentId")
         );
     }
 
@@ -454,36 +455,6 @@ public class LocalPaymentClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
             LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED,
-            new AnalyticsEventParams()
-        );
-    }
-
-    @Test
-    public void tokenize_whenResultOK_uriNull_notifiesCallbackOfErrorAlongWithAnalyticsEvent() {
-        BrowserSwitchFinalResult.Success browserSwitchResult = mock(BrowserSwitchFinalResult.Success.class);
-        LocalPaymentAuthResult.Success localPaymentAuthResult = new LocalPaymentAuthResult.Success(
-            browserSwitchResult);
-
-        LocalPaymentClient sut =
-            new LocalPaymentClient(braintreeClient, dataCollector,
-                localPaymentApi, analyticsParamRepository);
-
-        sut.tokenize(activity, localPaymentAuthResult, localPaymentTokenizeCallback);
-
-        ArgumentCaptor<LocalPaymentResult> captor = ArgumentCaptor.forClass(LocalPaymentResult.class);
-        verify(localPaymentTokenizeCallback).onLocalPaymentResult(
-            captor.capture());
-
-        LocalPaymentResult result = captor.getValue();
-        assertTrue(result instanceof LocalPaymentResult.Failure);
-        Exception exception = ((LocalPaymentResult.Failure) result).getError();
-        assertTrue(exception instanceof BraintreeException);
-
-        String expectedMessage = "LocalPayment encountered an error, return URL is invalid.";
-        assertEquals(expectedMessage, exception.getMessage());
-
-        verify(braintreeClient).sendAnalyticsEvent(
-            LocalPaymentAnalytics.PAYMENT_FAILED,
             new AnalyticsEventParams()
         );
     }

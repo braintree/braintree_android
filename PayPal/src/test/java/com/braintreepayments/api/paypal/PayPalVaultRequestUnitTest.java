@@ -1,5 +1,11 @@
 package com.braintreepayments.api.paypal;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
 import android.os.Build;
 import android.os.Parcel;
 
@@ -13,12 +19,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 import java.util.ArrayList;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricTestRunner.class)
 public class PayPalVaultRequestUnitTest {
@@ -78,6 +78,7 @@ public class PayPalVaultRequestUnitTest {
         request.setDisplayName("Display Name");
         request.setRiskCorrelationId("123-correlation");
         request.setMerchantAccountId("merchant_account_id");
+        request.setUserPhoneNumber(new PayPalPhoneNumber("1", "1231231234"));
 
         ArrayList<PayPalLineItem> lineItems = new ArrayList<>();
         lineItems.add(new PayPalLineItem(PayPalLineItemKind.DEBIT, "An Item", "1", "1"));
@@ -101,6 +102,8 @@ public class PayPalVaultRequestUnitTest {
         assertEquals("merchant_account_id", result.getMerchantAccountId());
         assertEquals(1, result.getLineItems().size());
         assertEquals("An Item", result.getLineItems().get(0).getName());
+        assertEquals("1", result.getUserPhoneNumber().getCountryCode());
+        assertEquals("1231231234", result.getUserPhoneNumber().getNationalNumber());
         assertTrue(result.getHasUserLocationConsent());
     }
 
@@ -141,5 +144,21 @@ public class PayPalVaultRequestUnitTest {
         assertTrue(requestBody.contains("\"os_type\":" + "\"Android\""));
         assertTrue(requestBody.contains("\"os_version\":" + "\"" + versionSDK + "\""));
         assertTrue(requestBody.contains("\"merchant_app_return_url\":" + "\"universal_url\""));
+    }
+
+    @Test
+    public void createRequestBody_sets_userPhoneNumber_when_not_null() throws JSONException {
+        PayPalVaultRequest request = new PayPalVaultRequest(true);
+
+        request.setUserPhoneNumber(new PayPalPhoneNumber("1", "1231231234"));
+        String requestBody = request.createRequestBody(
+            mock(Configuration.class),
+            mock(Authorization.class),
+            "success_url",
+            "cancel_url",
+            null
+        );
+
+        assertTrue(requestBody.contains("\"phone_number\":{\"country_code\":\"1\",\"national_number\":\"1231231234\"}"));
     }
 }

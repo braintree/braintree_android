@@ -30,7 +30,8 @@
                 android:layout_marginTop="20dp"
                 android:layout_weight="1"
                 android:enabled="false"
-                android:text="@string/autofill" />
+                android:text="@string/autofill"
+                tools:ignore="ButtonStyle" />
 
             <Button
                 android:id="@+id/purchase_button"
@@ -39,7 +40,8 @@
                 android:layout_marginTop="20dp"
                 android:layout_weight="1"
                 android:enabled="false"
-                android:text="@string/purchase" />
+                android:text="@string/purchase"
+                tools:ignore="ButtonStyle" />
 
         </LinearLayout>
 

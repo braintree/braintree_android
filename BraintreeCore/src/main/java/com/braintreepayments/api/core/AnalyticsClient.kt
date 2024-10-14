@@ -1,7 +1,6 @@
 package com.braintreepayments.api.core
 
 import android.content.Context
-import androidx.annotation.VisibleForTesting
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
@@ -140,7 +139,6 @@ internal class AnalyticsClient(
         }
     }
 
-    @VisibleForTesting
     fun reportCrash(
         context: Context?,
         configuration: Configuration?,
