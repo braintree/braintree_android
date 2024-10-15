@@ -51,14 +51,14 @@ class ShopperInsightsClientUnitTest {
 
     @Test
     fun `when getRecommendedPaymentMethods is called, session id is reset`() {
-        sut.getRecommendedPaymentMethods(mockk(relaxed = true), mockk(relaxed = true), mockk(relaxed = true))
+        sut.getRecommendedPaymentMethods(mockk(relaxed = true), "some_experiment", mockk(relaxed = true))
 
         verify { analyticsParamRepository.resetSessionId() }
     }
 
     @Test
     fun `when getRecommendedPaymentMethods is called, started event is sent`() {
-        sut.getRecommendedPaymentMethods(mockk(relaxed = true), mockk(relaxed = true), mockk(relaxed = true))
+        sut.getRecommendedPaymentMethods(mockk(relaxed = true), "some_experiment", mockk(relaxed = true))
 
         verifyStartedAnalyticsEvent()
     }
@@ -67,7 +67,7 @@ class ShopperInsightsClientUnitTest {
     fun `when getRecommendedPaymentMethods is called, failed event is sent`() {
         val request = ShopperInsightsRequest(null, null)
 
-        sut.getRecommendedPaymentMethods(request, mockk(relaxed = true), mockk(relaxed = true))
+        sut.getRecommendedPaymentMethods(request, "some_experiment", mockk(relaxed = true))
 
         verifyFailedAnalyticsEvent()
     }
