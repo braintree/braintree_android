@@ -2,6 +2,7 @@ package com.braintreepayments.api.shopperinsights
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeClient
@@ -58,9 +59,10 @@ class ShopperInsightsClientUnitTest {
 
     @Test
     fun `when getRecommendedPaymentMethods is called, started event is sent`() {
-        sut.getRecommendedPaymentMethods(mockk(relaxed = true), "some_experiment", mockk(relaxed = true))
+        val experiment = "some_experiment"
+        sut.getRecommendedPaymentMethods(mockk(relaxed = true), experiment, mockk(relaxed = true))
 
-        verifyStartedAnalyticsEvent()
+        verifyStartedAnalyticsEvent(AnalyticsEventParams(merchantExperiment = experiment))
     }
 
     @Test
@@ -447,10 +449,10 @@ class ShopperInsightsClientUnitTest {
         apiCallbackSlot.captured.onResult(result = result, error = error)
     }
 
-    private fun verifyStartedAnalyticsEvent() {
+    private fun verifyStartedAnalyticsEvent(params: AnalyticsEventParams = AnalyticsEventParams()) {
         verify {
             braintreeClient
-                .sendAnalyticsEvent("shopper-insights:get-recommended-payments:started")
+                .sendAnalyticsEvent("shopper-insights:get-recommended-payments:started", params)
         }
     }
 
