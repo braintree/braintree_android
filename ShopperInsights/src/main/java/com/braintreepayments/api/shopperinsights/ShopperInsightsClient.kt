@@ -44,6 +44,7 @@ class ShopperInsightsClient internal constructor(
      * Retrieves recommended payment methods based on the provided shopper insights request.
      *
      * @param request The [ShopperInsightsRequest] containing information about the shopper.
+     * @param experiment optional JSON string representing an experiment you want to run
      * @return A [ShopperInsightsResult] object indicating the recommended payment methods.
      * Note: This feature is in beta. Its public API may change or be removed in future releases
      * PayPal recommendation is only available for US, AU, FR, DE, ITA, NED, ESP, Switzerland and
@@ -158,6 +159,9 @@ class ShopperInsightsClient internal constructor(
     /**
      * Call this method when the PayPal button has been successfully displayed to the buyer.
      * This method sends analytics to help improve the Shopper Insights feature experience.
+     *
+     * @param experiment optional JSON string representing an experiment you want to run
+     * @param buttonRank optional integer representing the rank of the button in the experiment
      */
     fun sendPayPalPresentedEvent(experiment: String? = null, buttonRank: Int? = null) {
         braintreeClient.sendAnalyticsEvent(
@@ -180,6 +184,9 @@ class ShopperInsightsClient internal constructor(
     /**
      * Call this method when the Venmo button has been successfully displayed to the buyer.
      * This method sends analytics to help improve the Shopper Insights feature experience.
+     *
+     * @param experiment optional JSON string representing an experiment you want to run
+     * @param buttonRank optional integer representing the rank of the button in the experiment
      */
     fun sendVenmoPresentedEvent(experiment: String? = null, buttonRank: Int? = null) {
         braintreeClient.sendAnalyticsEvent(
