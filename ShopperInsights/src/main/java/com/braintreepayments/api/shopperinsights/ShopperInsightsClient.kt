@@ -14,7 +14,6 @@ import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.PAYPAL
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.PAYPAL_SELECTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.VENMO_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.VENMO_SELECTED
-import kotlin.math.exp
 
 /**
  * Use [ShopperInsightsClient] to optimize your checkout experience

@@ -51,14 +51,14 @@ class ShopperInsightsClientUnitTest {
 
     @Test
     fun `when getRecommendedPaymentMethods is called, session id is reset`() {
-        sut.getRecommendedPaymentMethods(mockk(relaxed = true), mockk(relaxed = true))
+        sut.getRecommendedPaymentMethods(mockk(relaxed = true), mockk(relaxed = true), mockk(relaxed = true))
 
         verify { analyticsParamRepository.resetSessionId() }
     }
 
     @Test
     fun `when getRecommendedPaymentMethods is called, started event is sent`() {
-        sut.getRecommendedPaymentMethods(mockk(relaxed = true), mockk(relaxed = true))
+        sut.getRecommendedPaymentMethods(mockk(relaxed = true), mockk(relaxed = true), mockk(relaxed = true))
 
         verifyStartedAnalyticsEvent()
     }
@@ -67,7 +67,7 @@ class ShopperInsightsClientUnitTest {
     fun `when getRecommendedPaymentMethods is called, failed event is sent`() {
         val request = ShopperInsightsRequest(null, null)
 
-        sut.getRecommendedPaymentMethods(request, mockk(relaxed = true))
+        sut.getRecommendedPaymentMethods(request, mockk(relaxed = true), mockk(relaxed = true))
 
         verifyFailedAnalyticsEvent()
     }
@@ -442,7 +442,7 @@ class ShopperInsightsClientUnitTest {
         val apiCallbackSlot = slot<EligiblePaymentsCallback>()
         every { api.findEligiblePayments(any(), capture(apiCallbackSlot)) } just runs
 
-        sut.getRecommendedPaymentMethods(request, callback)
+        sut.getRecommendedPaymentMethods(request, "some_experiment", callback)
 
         apiCallbackSlot.captured.onResult(result = result, error = error)
     }
