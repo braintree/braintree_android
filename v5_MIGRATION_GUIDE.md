@@ -39,7 +39,7 @@ are required.
 
 ```diff
 - implementation 'com.braintreepayments.api:card:4.x.x'
-+ implementation 'com.braintreepayments.api:card:5.0.0'
++ implementation 'com.braintreepayments.api:card:5.1.0'
 ```
 
 ## Braintree Client

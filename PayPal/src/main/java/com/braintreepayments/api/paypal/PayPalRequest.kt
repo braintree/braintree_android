@@ -129,6 +129,8 @@ abstract class PayPalRequest internal constructor(
         internal const val OS_VERSION_KEY: String = "os_version"
         internal const val OS_TYPE_KEY: String = "os_type"
         internal const val MERCHANT_APP_RETURN_URL_KEY: String = "merchant_app_return_url"
+        internal const val PLAN_TYPE_KEY: String = "plan_type"
+        internal const val PLAN_METADATA_KEY: String = "plan_metadata"
         internal const val PHONE_NUMBER_KEY: String = "phone_number"
     }
 }

@@ -1,11 +1,17 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
-* PayPal
-  * Add `userPhoneNumber` property to `PayPalVaultRequest` and `PayPalCheckoutRequest`
+
 * Shopper Insights (BETA)
   * For analytics, send `experiment` as a parameter to `getRecommendedPaymentMethods` method
   * For analytics, send `experiment` and `buttonRank` analytic metrics to FPTI via the button presented event methods
+
+## 5.1.0 (2024-10-15)
+
+* PayPal
+  * Add `userPhoneNumber` property to `PayPalVaultRequest` and `PayPalCheckoutRequest`
+  * Add `PayPalRecurringBillingDetails` and `PayPalRecurringBillingPlanType` opt-in request objects. Including these details will provide transparency to users on their billing schedule, dates, and amounts, as well as launch a modernized checkout UI.
+  * Add `userPhoneNumber` property to `PayPalVaultRequest` and `PayPalCheckoutRequest`
 
 ## 5.0.0 (2024-09-30)
 
