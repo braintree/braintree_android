@@ -4,6 +4,7 @@ gradleNexusStagingPlugin = "0.21.2"
 kotlinGradlePlugin = "1.8.0"
 gradleNexusPublish = "1.1.0"
 kotlin = "1.9.10"
+ksp = "1.9.10-1.0.13"
 coreKtx = "1.12.0"
 androidxLifecycle = "2.6.2"
 androidxRoom = "2.6.1"
@@ -103,7 +104,7 @@ android-application = { id = "com.android.application", version.ref = "gradle" }
 android-library = { id = "com.android.library", version.ref = "gradle" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidx-safeargs = { id = "androidx.navigation.safeargs", version.ref = "navigationSafeArgsGradlePlugin" }
 gradle-nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "gradleNexusPublish" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

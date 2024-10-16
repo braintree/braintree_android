@@ -7,7 +7,14 @@
     * Add `PayPalClient.createEditAuthRequest()` that takes in a `PayPalVaultEditRequest` or `PayPalVaultErrorHandlingEditRequest`
     * **Note:** This feature is currently in beta and may change or be removed in future releases
 
+## 5.1.0 (2024-10-15)
+
+* PayPal
+  * Add `PayPalRecurringBillingDetails` and `PayPalRecurringBillingPlanType` opt-in request objects. Including these details will provide transparency to users on their billing schedule, dates, and amounts, as well as launch a modernized checkout UI.
+  * Add `userPhoneNumber` property to `PayPalVaultRequest` and `PayPalCheckoutRequest`
+
 ## 5.0.0 (2024-09-30)
+
 * PayPal
   * Add PayPal App Switch vault flow (BETA)
     * Add `enablePayPalAppSwitch` property to `PayPalVaultRequest` for App Switch support
@@ -49,6 +56,8 @@
     * Remove `LocalPaymentAuthResultInfo`
     * Make `LocalPaymentAuthRequestParams` internal
     * Rename `LocalPaymentLauncher.handleReturnToAppFromBrowser()` to `LocalPaymentLauncher.handleReturnToApp()`
+    
+**Note:** Includes all changes in [5.0.0-beta2](#500-beta2-2024-08-28) and [5.0.0-beta1](#500-beta1-2024-07-23)
 
 ## 5.0.0-beta2 (2024-08-28)
 

@@ -7,43 +7,65 @@
     android:padding="10dp"
     tools:context=".PayPalFragment">
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:hint="@string/paypal_buyer_email_address">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/buyer_email_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:hint="@string/paypal_phone_country_code">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/buyer_phone_country_code_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="phone" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:hint="@string/paypal_phone_national_number">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/buyer_phone_national_number_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="phone" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/paypal_single_payment_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/paypal_single_payment" />
+
+    <Button
+        android:id="@+id/paypal_billing_agreement_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/paypal_billing_agreement" />
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:hint="@string/paypal_buyer_email_address">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/buyer_email_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <Button
-            android:id="@+id/paypal_single_payment_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/paypal_single_payment" />
-
-        <Button
-            android:id="@+id/paypal_billing_agreement_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/paypal_billing_agreement" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="#D3D3D3"
-            android:layout_marginTop="30dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#D3D3D3"
+        android:layout_marginTop="30dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -54,57 +76,57 @@
             android:background="#00000000"
             android:layout_marginBottom="16dp" />
 
-            <com.google.android.material.textfield.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:hint="Edit Vault Id">
+
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/paypal_edit_vault_id_field"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:hint="Edit Vault Id">
+                android:text="+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/paypal_edit_vault_id_field"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical">
 
-            </com.google.android.material.textfield.TextInputLayout>
+            <Switch
+                android:id="@+id/paypal_edit_error_request_toggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-
-            <LinearLayout
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                android:gravity="center_vertical">
+                android:text="EditFI Error Request"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
 
-                <Switch
-                    android:id="@+id/paypal_edit_error_request_toggle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:hint="Risk Correlation Id">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="EditFI Error Request"
-                    android:textSize="16sp"
-                    android:textColor="@android:color/black"
-                    android:layout_marginStart="8dp" />
-            </LinearLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/paypal_edit_fi_risk_correlation_id_field"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:hint="Risk Correlation Id">
+                android:text="test" />
 
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/paypal_edit_fi_risk_correlation_id_field"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="test" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/paypal_edit_vault_button"
@@ -116,8 +138,7 @@
             android:layout_margin="16dp"/>
 
 
-        </LinearLayout>
-
     </LinearLayout>
 
 </LinearLayout>
+

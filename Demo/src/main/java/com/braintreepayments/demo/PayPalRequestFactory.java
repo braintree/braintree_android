@@ -3,24 +3,39 @@ package com.braintreepayments.demo;
 import android.content.Context;
 
 import com.braintreepayments.api.core.PostalAddress;
+import com.braintreepayments.api.paypal.PayPalBillingCycle;
+import com.braintreepayments.api.paypal.PayPalBillingInterval;
+import com.braintreepayments.api.paypal.PayPalBillingPricing;
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest;
 import com.braintreepayments.api.paypal.PayPalLandingPageType;
 import com.braintreepayments.api.paypal.PayPalPaymentIntent;
 import com.braintreepayments.api.paypal.PayPalPaymentUserAction;
-import com.braintreepayments.api.paypal.PayPalRequest;
+import com.braintreepayments.api.paypal.PayPalPricingModel;
+import com.braintreepayments.api.paypal.PayPalRecurringBillingDetails;
+import com.braintreepayments.api.paypal.PayPalRecurringBillingPlanType;
+import com.braintreepayments.api.paypal.PayPalPhoneNumber;
 import com.braintreepayments.api.paypal.PayPalVaultRequest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PayPalRequestFactory {
 
     public static PayPalVaultRequest createPayPalVaultRequest(
         Context context,
-        String buyerEmailAddress
+        String buyerEmailAddress,
+        String buyerPhoneCountryCode,
+        String buyerPhoneNationalNumber
     ) {
 
         PayPalVaultRequest request = new PayPalVaultRequest(true);
 
         if (!buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
+        }
+
+        if (!buyerPhoneCountryCode.isEmpty() && !buyerPhoneNationalNumber.isEmpty()) {
+            request.setUserPhoneNumber(new PayPalPhoneNumber(buyerPhoneCountryCode, buyerPhoneNationalNumber));
         }
 
         if (Settings.isPayPalAppSwithEnabled(context)) {
@@ -52,18 +67,60 @@ public class PayPalRequestFactory {
             request.setShippingAddressOverride(postalAddress);
         }
 
+        if (Settings.isRbaMetadataEnabled(context)) {
+            PayPalBillingPricing billingPricing = new PayPalBillingPricing(
+                PayPalPricingModel.FIXED,
+                "9.99",
+                "99.99"
+            );
+
+            PayPalBillingCycle billingCycle = new PayPalBillingCycle(
+                    false,
+                1,
+                    PayPalBillingInterval.MONTH,
+                1,
+                1,
+                "2024-08-01",
+                billingPricing
+            );
+
+            List<PayPalBillingCycle> billingCycles = new ArrayList<>();
+            billingCycles.add(billingCycle);
+            PayPalRecurringBillingDetails payPalRecurringBillingDetails = new PayPalRecurringBillingDetails(
+                billingCycles,
+                "32.56",
+                "USD",
+                "Vogue Magazine Subscription",
+                "9.99",
+                "Home delivery to Chicago, IL",
+                "19.99",
+                1,
+                "1.99",
+                "0.59"
+            );
+
+            request.setRecurringBillingDetails(payPalRecurringBillingDetails);
+            request.setRecurringBillingPlanType(PayPalRecurringBillingPlanType.SUBSCRIPTION);
+        }
+
         return request;
     }
 
     public static PayPalCheckoutRequest createPayPalCheckoutRequest(
         Context context,
         String amount,
-        String buyerEmailAddress
+        String buyerEmailAddress,
+        String buyerPhoneCountryCode,
+        String buyerPhoneNationalNumber
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
 
         if (!buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
+        }
+
+        if (!buyerPhoneCountryCode.isEmpty() && !buyerPhoneNationalNumber.isEmpty()) {
+            request.setUserPhoneNumber(new PayPalPhoneNumber(buyerPhoneCountryCode, buyerPhoneNationalNumber));
         }
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));

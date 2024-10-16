@@ -1,5 +1,6 @@
 package com.braintreepayments.demo
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -35,6 +36,7 @@ import com.google.android.material.textfield.TextInputLayout
 /**
  * Fragment for handling shopping insights.
  */
+@SuppressLint("SetTextI18n")
 @OptIn(ExperimentalBetaApi::class)
 class ShopperInsightsFragment : BaseFragment() {
 
@@ -66,8 +68,10 @@ class ShopperInsightsFragment : BaseFragment() {
         shopperInsightsClient = ShopperInsightsClient(requireContext(), authStringArg)
 
         venmoClient = VenmoClient(requireContext(), super.getAuthStringArg(), null)
-        payPalClient = PayPalClient(requireContext(), super.getAuthStringArg(),
-            Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/"))
+        payPalClient = PayPalClient(
+            requireContext(), super.getAuthStringArg(),
+            Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/")
+        )
 
         return inflater.inflate(R.layout.fragment_shopping_insights, container, false)
     }
@@ -119,8 +123,13 @@ class ShopperInsightsFragment : BaseFragment() {
                             NavHostFragment.findNavController(this).navigate(action)
                         }
 
-                        is PayPalResult.Failure -> { handleError(it.error) }
-                        is PayPalResult.Cancel -> { handleError(UserCanceledException("User canceled PayPal")) }
+                        is PayPalResult.Failure -> {
+                            handleError(it.error)
+                        }
+
+                        is PayPalResult.Cancel -> {
+                            handleError(UserCanceledException("User canceled PayPal"))
+                        }
                     }
                 }
             } else {
@@ -145,8 +154,13 @@ class ShopperInsightsFragment : BaseFragment() {
                             NavHostFragment.findNavController(this).navigate(action)
                         }
 
-                        is VenmoResult.Failure -> { handleError(it.error) }
-                        is VenmoResult.Cancel -> { handleError(UserCanceledException("User canceled Venmo")) }
+                        is VenmoResult.Failure -> {
+                            handleError(it.error)
+                        }
+
+                        is VenmoResult.Cancel -> {
+                            handleError(UserCanceledException("User canceled Venmo"))
+                        }
                     }
                 }
             } else {
@@ -206,20 +220,22 @@ class ShopperInsightsFragment : BaseFragment() {
             requireContext(),
             PayPalRequestFactory.createPayPalVaultRequest(
                 activity,
-                emailInput.editText?.text.toString()
+                emailInput.editText?.text.toString(),
+                countryCodeInput.editText?.text.toString(),
+                nationalNumberInput.editText?.text.toString()
             )
-        ) {
-            if (it == null) return@createPaymentAuthRequest
-            when (it) {
+        ) { authRequest ->
+            when (authRequest) {
                 is PayPalPaymentAuthRequest.Failure -> {
-                    handleError(it.error)
+                    handleError(authRequest.error)
                 }
 
                 is PayPalPaymentAuthRequest.ReadyToLaunch -> {
-                    when (val paypalPendingRequest = paypalLauncher.launch(requireActivity(), it)) {
+                    when (val paypalPendingRequest = paypalLauncher.launch(requireActivity(), authRequest)) {
                         is PayPalPendingRequest.Started -> {
                             paypalStartedPendingRequest = paypalPendingRequest
                         }
+
                         is PayPalPendingRequest.Failure -> {
                             Toast.makeText(
                                 requireContext(),
@@ -251,6 +267,7 @@ class ShopperInsightsFragment : BaseFragment() {
                         is VenmoPendingRequest.Started -> {
                             venmoStartedPendingRequest = venmoPendingRequest
                         }
+
                         is VenmoPendingRequest.Failure -> {
                             Toast.makeText(
                                 requireContext(),

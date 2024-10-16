@@ -38,7 +38,7 @@ class AnalyticsClientTest {
         val authorization = fromString(Fixtures.TOKENIZATION_KEY)
         val configuration = fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
 
-        val event = AnalyticsEvent("event.started")
+        val event = AnalyticsEvent("event.started", 1234)
         val sut = AnalyticsClient(context)
         val workSpecId =
             sut.sendEvent(configuration, event, IntegrationType.CUSTOM, authorization)

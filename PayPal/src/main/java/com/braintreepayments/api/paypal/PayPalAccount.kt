@@ -64,9 +64,9 @@ internal data class PayPalAccount(
         }
 
         if (merchantAccountId != null) {
-            json?.put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId)
+            json.put(MERCHANT_ACCOUNT_ID_KEY, merchantAccountId)
         }
-        json?.put(PAYPAL_ACCOUNT_KEY, paymentMethodNonceJson)
+        json.put(PAYPAL_ACCOUNT_KEY, paymentMethodNonceJson)
         return json
     }
 
