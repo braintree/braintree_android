@@ -58,7 +58,7 @@ class ShopperInsightsClient internal constructor(
         analyticsParamRepository.resetSessionId()
         braintreeClient.sendAnalyticsEvent(
             GET_RECOMMENDED_PAYMENTS_STARTED,
-            AnalyticsEventParams(merchantExperiment = experiment)
+            AnalyticsEventParams(experiment = experiment)
         )
 
         if (request.email == null && request.phone == null) {
@@ -161,14 +161,17 @@ class ShopperInsightsClient internal constructor(
      * This method sends analytics to help improve the Shopper Insights feature experience.
      *
      * @param experiment optional JSON string representing an experiment you want to run
-     * @param buttonRank optional integer representing the rank of the button in the experiment
+     * @param paymentMethodsDisplayed optional The list of available payment methods, rendered in the same order in which they are displayed
      */
-    fun sendPayPalPresentedEvent(experiment: String? = null, buttonRank: Int? = null) {
+    fun sendPayPalPresentedEvent(
+        experiment: String? = null,
+        paymentMethodsDisplayed: List<String> = emptyList()
+    ) {
         braintreeClient.sendAnalyticsEvent(
             PAYPAL_PRESENTED,
             AnalyticsEventParams(
-                merchantExperiment = experiment,
-                merchantExperimentButtonRank = buttonRank
+                experiment = experiment,
+                paymentMethodsDisplayed = paymentMethodsDisplayed
             )
         )
     }
@@ -186,14 +189,17 @@ class ShopperInsightsClient internal constructor(
      * This method sends analytics to help improve the Shopper Insights feature experience.
      *
      * @param experiment optional JSON string representing an experiment you want to run
-     * @param buttonRank optional integer representing the rank of the button in the experiment
+     * @param paymentMethodsDisplayed optional The list of available payment methods, rendered in the same order in which they are displayed
      */
-    fun sendVenmoPresentedEvent(experiment: String? = null, buttonRank: Int? = null) {
+    fun sendVenmoPresentedEvent(
+        experiment: String? = null,
+        paymentMethodsDisplayed: List<String> = emptyList()
+    ) {
         braintreeClient.sendAnalyticsEvent(
             VENMO_PRESENTED,
             AnalyticsEventParams(
-                merchantExperiment = experiment,
-                merchantExperimentButtonRank = buttonRank
+                experiment = experiment,
+                paymentMethodsDisplayed = paymentMethodsDisplayed
             )
         )
     }

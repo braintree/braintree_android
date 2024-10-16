@@ -62,7 +62,7 @@ class ShopperInsightsClientUnitTest {
         val experiment = "some_experiment"
         sut.getRecommendedPaymentMethods(mockk(relaxed = true), experiment, mockk(relaxed = true))
 
-        verifyStartedAnalyticsEvent(AnalyticsEventParams(merchantExperiment = experiment))
+        verifyStartedAnalyticsEvent(AnalyticsEventParams(experiment = experiment))
     }
 
     @Test
