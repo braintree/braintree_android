@@ -193,7 +193,7 @@ class ShopperInsightsFragment : BaseFragment() {
                         payPalVaultButton.isEnabled = true
                         shopperInsightsClient.sendPayPalPresentedEvent(
                             "dummy_paypal_presented_experiment",
-                            1
+                            listOf("PayPal, Apple Pay, Google Pay")
                         )
                     }
 
@@ -201,7 +201,7 @@ class ShopperInsightsFragment : BaseFragment() {
                         venmoButton.isEnabled = true
                         shopperInsightsClient.sendVenmoPresentedEvent(
                             "dummy_venmo_presented_experiment",
-                            2
+                            listOf("Apple Pay, Venmo, Google Pay")
                         )
                     }
 
