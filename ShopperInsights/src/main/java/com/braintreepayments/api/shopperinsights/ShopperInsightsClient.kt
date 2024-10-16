@@ -161,7 +161,8 @@ class ShopperInsightsClient internal constructor(
      * This method sends analytics to help improve the Shopper Insights feature experience.
      *
      * @param experiment optional JSON string representing an experiment you want to run
-     * @param paymentMethodsDisplayed optional The list of available payment methods, rendered in the same order in which they are displayed
+     * @param paymentMethodsDisplayed optional The list of available payment methods,
+     * rendered in the same order in which they are displayed
      */
     fun sendPayPalPresentedEvent(
         experiment: String? = null,
@@ -189,7 +190,8 @@ class ShopperInsightsClient internal constructor(
      * This method sends analytics to help improve the Shopper Insights feature experience.
      *
      * @param experiment optional JSON string representing an experiment you want to run
-     * @param paymentMethodsDisplayed optional The list of available payment methods, rendered in the same order in which they are displayed
+     * @param paymentMethodsDisplayed optional The list of available payment methods,
+     * rendered in the same order in which they are displayed
      */
     fun sendVenmoPresentedEvent(
         experiment: String? = null,
