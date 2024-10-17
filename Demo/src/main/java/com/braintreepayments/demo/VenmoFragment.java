@@ -1,5 +1,6 @@
 package com.braintreepayments.demo;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -81,7 +82,12 @@ public class VenmoFragment extends BaseFragment {
     public void launchVenmo(View v) {
         getActivity().setProgressBarIndeterminateVisibility(true);
         if (venmoClient == null) {
-            venmoClient = new VenmoClient(requireContext(), super.getAuthStringArg(), null);
+            venmoClient = new VenmoClient(
+                    requireContext(),
+                    super.getAuthStringArg(),
+                    null,
+                    Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments")
+            );
         }
 
         FragmentActivity activity = getActivity();
