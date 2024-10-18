@@ -255,6 +255,40 @@ public class VenmoClientUnitTest {
     }
 
     @Test
+    public void createPaymentAuthRequest_whenAppLinkUriSet_appSwitchesWithAppLink() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(venmoEnabledConfiguration)
+                .integration(IntegrationType.CUSTOM)
+                .authorizationSuccess(clientToken)
+                .appLinkReturnUri(Uri.parse("https://example.com/payments"))
+                .build();
+
+        VenmoApi venmoApi = new MockVenmoApiBuilder()
+                .createPaymentContextSuccess("venmo-payment-context-id")
+                .build();
+
+        VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
+        request.setProfileId(null);
+        request.setShouldVault(false);
+        VenmoClient sut =
+                new VenmoClient(braintreeClient, apiClient, venmoApi, sharedPrefsWriter, analyticsParamRepository);
+        sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
+
+        ArgumentCaptor<VenmoPaymentAuthRequest> captor =
+                ArgumentCaptor.forClass(VenmoPaymentAuthRequest.class);
+        verify(venmoPaymentAuthRequestCallback).onVenmoPaymentAuthRequest(captor.capture());
+        VenmoPaymentAuthRequest paymentAuthRequest = captor.getValue();
+        VenmoPaymentAuthRequestParams params = ((VenmoPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams();
+        BrowserSwitchOptions browserSwitchOptions = params.getBrowserSwitchOptions();
+
+        Uri url = browserSwitchOptions.getUrl();
+        assertEquals("https://example.com/payments/success", url.getQueryParameter("x-success"));
+        assertEquals("https://example.com/payments/error", url.getQueryParameter("x-error"));
+        assertEquals("https://example.com/payments/cancel", url.getQueryParameter("x-cancel"));
+
+    }
+
+    @Test
     public void createPaymentAuthRequest_whenProfileIdIsSpecified_appSwitchesWithProfileIdAndAccessToken() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
