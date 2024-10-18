@@ -192,6 +192,12 @@
             android:summary="@string/vault_venmo_summary"
             android:defaultValue="true" />
 
+        <CheckBoxPreference
+            android:key="use_app_links_return"
+            android:title="@string/use_app_links_return"
+            android:summary="@string/use_app_links_return_summary"
+            android:defaultValue="true" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

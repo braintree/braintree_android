@@ -63,7 +63,7 @@ class VenmoClient internal constructor(
      * @param authorization a Tokenization Key or Client Token used to authenticate
      * @param returnUrlScheme a custom return url to use for browser and app switching
      */
-    @Deprecated("Use the constructor with the appLinkReturnUrl parameter instead.")
+    @Deprecated("Use the constructor that uses an `appLinkReturnUrl` to redirect back to your application instead.")
     constructor(
         context: Context,
         authorization: String,
