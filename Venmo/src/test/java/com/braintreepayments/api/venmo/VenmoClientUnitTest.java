@@ -285,7 +285,6 @@ public class VenmoClientUnitTest {
         assertEquals("https://example.com/payments/success", url.getQueryParameter("x-success"));
         assertEquals("https://example.com/payments/error", url.getQueryParameter("x-error"));
         assertEquals("https://example.com/payments/cancel", url.getQueryParameter("x-cancel"));
-
     }
 
     @Test
