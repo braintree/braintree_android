@@ -1,6 +1,10 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+
+* Shopper Insights (BETA)
+  * For analytics, send `experiment` as a parameter to `getRecommendedPaymentMethods` method
+  * For analytics, send `experiment` and `paymentMethodsDisplayed` analytic metrics to FPTI via the button presented event methods
 * Venmo
   * Add `VenmoClient` constructor with `appLinkReturnUri` to use App Links when redirecting back from the Venmo flow
 
