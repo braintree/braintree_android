@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+* Venmo
+  * Add `VenmoClient` constructor with `appLinkReturnUri` to use App Links when redirecting back from the Venmo flow
+
 ## 5.1.0 (2024-10-15)
 
 * PayPal
