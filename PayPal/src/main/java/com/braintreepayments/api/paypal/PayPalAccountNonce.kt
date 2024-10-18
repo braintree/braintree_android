@@ -38,7 +38,7 @@ data class PayPalAccountNonce internal constructor(
     val firstName: String,
     val lastName: String,
     val phone: String,
-    val email: String?,
+    val email: String?, /* NEXT_MAJOR_VERSION - update this to be non-null */
     val payerId: String,
     val creditFinancing: PayPalCreditFinancing?,
     val authenticateUrl: String?,
