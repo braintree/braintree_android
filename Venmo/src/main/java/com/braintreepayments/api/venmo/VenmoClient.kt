@@ -199,7 +199,7 @@ class VenmoClient internal constructor(
             .requestCode(BraintreeRequestCodes.VENMO.code)
             .url(venmoBaseURL)
             .appLinkUri(braintreeClient.appLinkReturnUri)
-//            .returnUrlScheme(returnUrlScheme)
+            .returnUrlScheme(braintreeClient.getReturnUrlScheme())
         val params = VenmoPaymentAuthRequestParams(
             browserSwitchOptions
         )
