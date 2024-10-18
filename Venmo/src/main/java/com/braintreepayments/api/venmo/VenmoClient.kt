@@ -63,10 +63,11 @@ class VenmoClient internal constructor(
      * @param authorization a Tokenization Key or Client Token used to authenticate
      * @param returnUrlScheme a custom return url to use for browser and app switching
      */
+    @Deprecated("Use the constructor with the appLinkReturnUrl parameter instead.")
     constructor(
         context: Context,
         authorization: String,
-        returnUrlScheme: String?
+        returnUrlScheme: String?,
     ) : this(BraintreeClient(context, authorization, returnUrlScheme))
 
     /**
@@ -172,7 +173,7 @@ class VenmoClient internal constructor(
                 .toString()
         
         // TODO: - Is there a way to do it without merchantBaseUri being optional????
-        val merchantBaseUri = braintreeClient.appLinkReturnUri ?: Uri.parse(braintreeClient.getReturnUrlScheme())
+        val merchantBaseUri = braintreeClient.appLinkReturnUri ?: Uri.parse("${braintreeClient.getReturnUrlScheme()}://x-callback-url/vzero/auth/venmo")
 
         val successUri = merchantBaseUri.buildUpon().appendPath("success").build()
         val cancelUri = merchantBaseUri.buildUpon().appendPath("cancel").build()
@@ -180,8 +181,8 @@ class VenmoClient internal constructor(
 
         val venmoBaseURL = Uri.parse("https://venmo.com/go/checkout")
             .buildUpon()
-            .appendQueryParameter("x-success", successUri?.toString())
-            .appendQueryParameter("x-error", errorUri?.toString())
+            .appendQueryParameter("x-success", successUri.toString())
+            .appendQueryParameter("x-error", errorUri.toString())
             .appendQueryParameter("x-cancel", cancelUri.toString())
             .appendQueryParameter("x-source", applicationName)
             .appendQueryParameter("braintree_merchant_id", venmoProfileId)
