@@ -3,7 +3,7 @@ package com.braintreepayments.api.threedsecure
 /**
  * Callback for receiving result of [ThreeDSecureClient.prepareLookup].
  */
-interface ThreeDSecurePrepareLookupCallback {
+fun interface ThreeDSecurePrepareLookupCallback {
 
     /**
      * @param prepareLookupResult [ThreeDSecurePrepareLookupResult]

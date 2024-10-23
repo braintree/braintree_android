@@ -1,6 +1,10 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+
+* Shopper Insights (BETA)
+  * For analytics, send `experiment` as a parameter to `getRecommendedPaymentMethods` method
+  * For analytics, send `experiment` and `paymentMethodsDisplayed` analytic metrics to FPTI via the button presented event methods
 * PayPal
   * Add PayPal vault edit flow (BETA)
     * Requires opt in - `@OptIn(ExperimentalBetaApi::class)`
