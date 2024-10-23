@@ -210,6 +210,10 @@ public class Settings {
         return getPreferences(context).getBoolean("vault_venmo", true);
     }
 
+    public static boolean useAppLinkReturn(Context context) {
+        return getPreferences(context).getBoolean("use_app_link_return", true);
+    }
+
     public static boolean isAmexRewardsBalanceEnabled(Context context) {
         return getPreferences(context).getBoolean("amex_rewards_balance", false);
     }
