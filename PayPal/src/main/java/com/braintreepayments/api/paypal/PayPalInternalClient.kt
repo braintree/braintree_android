@@ -211,7 +211,7 @@ internal class PayPalInternalClient(
     ) {
         val params = editFiParameters(payPalVaultEditRequest.editPayPalVaultId).toMutableMap()
 
-        params["risk_correlation_id"] = riskCorrelationId
+        params["correlation_id"] = riskCorrelationId
 
         val jsonObject = JSONObject(params.toMap())
 
