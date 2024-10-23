@@ -91,7 +91,7 @@ public class VenmoFragment extends BaseFragment {
                         Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments")
                 );
             } else {
-                venmoClient = new VenmoClient(requireContext(), super.getAuthStringArg(), (String)null);
+                venmoClient = new VenmoClient(requireContext(), super.getAuthStringArg());
             }
         }
 

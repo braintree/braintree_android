@@ -64,10 +64,10 @@ class VenmoClient internal constructor(
      * @param returnUrlScheme a custom return url to use for browser and app switching
      */
     @Deprecated("Use the constructor that uses an `appLinkReturnUrl` to redirect back to your application instead.")
-    constructor(
+    @JvmOverloads constructor(
         context: Context,
         authorization: String,
-        returnUrlScheme: String?
+        returnUrlScheme: String? = null
     ) : this(BraintreeClient(context, authorization, returnUrlScheme))
 
     /**
