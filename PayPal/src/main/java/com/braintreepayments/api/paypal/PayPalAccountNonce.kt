@@ -21,6 +21,7 @@ import org.json.JSONObject
  * @property lastName The last name associated with the PayPal account.
  * @property phone The phone number associated with the PayPal account.
  * @property email The email address associated with this PayPal account
+ * @property email2 Same as [email] - but as a non-null String
  * @property payerId The Payer ID provided in checkout flows.
  * @property creditFinancing The credit financing details. This property will only be present when
  * the customer pays with PayPal Credit.
@@ -39,6 +40,8 @@ data class PayPalAccountNonce internal constructor(
     val lastName: String,
     val phone: String,
     val email: String?, /* NEXT_MAJOR_VERSION - update this to be non-null */
+    /** Same as [email] - adding for non-null guarantees  */
+    val email2: String,
     val payerId: String,
     val creditFinancing: PayPalCreditFinancing?,
     val authenticateUrl: String?,
@@ -109,6 +112,7 @@ data class PayPalAccountNonce internal constructor(
             var lastName = ""
             var phone = ""
             var payerId = ""
+            var email2 = ""
             try {
                 if (details.has(CREDIT_FINANCING_KEY)) {
                     val creditFinancing = details.getJSONObject(CREDIT_FINANCING_KEY)
@@ -132,6 +136,7 @@ data class PayPalAccountNonce internal constructor(
                 if (email == null) {
                     email = Json.optString(payerInfo, EMAIL_KEY, null)
                 }
+                email2 = details.getString(EMAIL_KEY) ?: payerInfo.getString(EMAIL_KEY) ?: ""
             } catch (e: JSONException) {
                 billingAddress = PostalAddress()
                 shippingAddress = PostalAddress()
@@ -156,6 +161,7 @@ data class PayPalAccountNonce internal constructor(
                 lastName = lastName,
                 phone = phone,
                 email = email,
+                email2 = email2,
                 payerId = payerId,
                 creditFinancing = payPalCreditFinancing,
                 authenticateUrl = authenticateUrl

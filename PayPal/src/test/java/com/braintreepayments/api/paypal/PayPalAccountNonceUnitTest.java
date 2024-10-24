@@ -28,6 +28,7 @@ public class PayPalAccountNonceUnitTest {
         assertEquals("fake-authenticate-url", payPalAccountNonce.getAuthenticateUrl());
         assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", payPalAccountNonce.getString());
         assertEquals("paypalaccount@example.com", payPalAccountNonce.getEmail());
+        assertEquals("paypalaccount@example.com", payPalAccountNonce.getEmail2());
         assertEquals("123 Fake St.", payPalAccountNonce.getBillingAddress().getStreetAddress());
         assertEquals("Apt. 3", payPalAccountNonce.getBillingAddress().getExtendedAddress());
         assertEquals("Oakland", payPalAccountNonce.getBillingAddress().getLocality());
@@ -59,6 +60,7 @@ public class PayPalAccountNonceUnitTest {
         assertNotNull(payPalAccountNonce);
         assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", payPalAccountNonce.getString());
         assertEquals("paypalaccount@example.com", payPalAccountNonce.getEmail());
+        assertEquals("paypalaccount@example.com", payPalAccountNonce.getEmail2());
         assertEquals("123 Fake St.", payPalAccountNonce.getBillingAddress().getStreetAddress());
         assertEquals("Apt. 3", payPalAccountNonce.getBillingAddress().getExtendedAddress());
         assertEquals("Oakland", payPalAccountNonce.getBillingAddress().getLocality());
@@ -91,6 +93,7 @@ public class PayPalAccountNonceUnitTest {
 
         assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", parceled.getString());
         assertEquals("paypalaccount@example.com", parceled.getEmail());
+        assertEquals("paypalaccount@example.com", parceled.getEmail2());
         assertEquals("fake-authenticate-url", parceled.getAuthenticateUrl());
 
         assertEquals("123 Fake St.", parceled.getBillingAddress().getStreetAddress());
@@ -129,6 +132,7 @@ public class PayPalAccountNonceUnitTest {
 
         assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", parceled.getString());
         assertEquals("paypalaccount@example.com", parceled.getEmail());
+        assertEquals("paypalaccount@example.com", parceled.getEmail2());
         assertEquals("123 Fake St.", parceled.getBillingAddress().getStreetAddress());
         assertEquals("Apt. 3", parceled.getBillingAddress().getExtendedAddress());
         assertEquals("Oakland", parceled.getBillingAddress().getLocality());
