@@ -887,7 +887,7 @@ public class PayPalInternalClientUnitTest {
                 .put("edit_paypal_vault_id", "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=")
                 .put("return_url", "https://example.com://onetouch/v1/success")
                 .put("cancel_url", "https://example.com://onetouch/v1/cancel")
-                .put("risk_correlation_id", "sample-client-metadata-id");
+                .put("correlation_id", "sample-client-metadata-id");
 
         JSONAssert.assertEquals(expected, actual, true);
     }
@@ -935,7 +935,7 @@ public class PayPalInternalClientUnitTest {
                 .put("edit_paypal_vault_id", "+fZXfUn6nzR+M9661WGnCBfyPlIExIMPY2rS9AC2vmA=")
                 .put("return_url", "https://example.com://onetouch/v1/success")
                 .put("cancel_url", "https://example.com://onetouch/v1/cancel")
-                .put("risk_correlation_id", "sample-client-metadata-id");
+                .put("correlation_id", "sample-client-metadata-id");
 
         JSONAssert.assertEquals(expected, actual, true);
     }
