@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.2.0 (2024-10-30)
 
 * GooglePay
   * Fix a crash being caused on API 33 devices. It is recommended that merchants not use 5.1.0 for GooglePay.
