@@ -14,10 +14,10 @@ public class Settings {
     static final String SANDBOX_ENV_NAME = "Sandbox";
     static final String PRODUCTION_ENV_NAME = "Production";
 
-    private static final String PRODUCTION_BASE_SERVER_URL = "https://executive-sample-merchant.herokuapp.com";
+    private static final String PRODUCTION_BASE_SERVER_URL = "https://braintree-production-merchant-455d21469113.herokuapp.com";
     private static final String PRODUCTION_TOKENIZATION_KEY = "production_t2wns2y2_dfy45jdj3dxkmz5m";
 
-    private static final String SANDBOX_BASE_SERVER_URL = "https://braintree-sample-merchant.herokuapp.com";
+    private static final String SANDBOX_BASE_SERVER_URL = "https://braintree-demo-merchant-63b7a2204f6e.herokuapp.com";
     private static final String SANDBOX_TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn";
 
     static final String LOCAL_PAYMENTS_TOKENIZATION_KEY = "sandbox_f252zhq7_hh4cpc39zq4rgjcg";
