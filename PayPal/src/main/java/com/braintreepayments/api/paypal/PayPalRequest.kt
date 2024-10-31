@@ -73,9 +73,6 @@ import org.json.JSONException
  * @property userPhoneNumber User phone number used to initiate a quicker authentication flow in
  * cases where the user has a PayPal Account with the phone number.
  * @property lineItems The line items for this transaction. It can include up to 249 line items.
- * @property shippingCallbackUrl Server side shipping callback URL to be notified when a customer
- * updates their shipping address or options. A callback request will be sent to the merchant server
- * at this URL.
  */
 abstract class PayPalRequest internal constructor(
     open val hasUserLocationConsent: Boolean,
