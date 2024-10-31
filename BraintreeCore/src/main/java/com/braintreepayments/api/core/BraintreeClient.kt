@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import androidx.annotation.RestrictTo
-import androidx.annotation.VisibleForTesting
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
@@ -17,7 +16,7 @@ import org.json.JSONObject
  */
 @Suppress("LargeClass", "LongParameterList", "TooManyFunctions")
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class BraintreeClient @VisibleForTesting internal constructor(
+class BraintreeClient internal constructor(
 
     /**
      * @suppress
@@ -34,41 +33,26 @@ class BraintreeClient @VisibleForTesting internal constructor(
      */
     val authorization: Authorization,
 
-    private val analyticsClient: AnalyticsClient,
-    private val httpClient: BraintreeHttpClient,
-    private val graphQLClient: BraintreeGraphQLClient,
-    private val configurationLoader: ConfigurationLoader,
-    private val manifestValidator: ManifestValidator,
-    private val time: Time,
     private val returnUrlScheme: String,
-    private val braintreeDeepLinkReturnUrlScheme: String,
+
     /**
      * @suppress
      */
     val appLinkReturnUri: Uri?,
+
+    private val analyticsClient: AnalyticsClient = AnalyticsClient(applicationContext),
+    private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
+    private val graphQLClient: BraintreeGraphQLClient = BraintreeGraphQLClient(),
+    private val configurationLoader: ConfigurationLoader = ConfigurationLoader(applicationContext, httpClient),
+    private val manifestValidator: ManifestValidator = ManifestValidator(),
+    private val time: Time = Time(),
 ) {
 
     private val crashReporter: CrashReporter
     private var launchesBrowserSwitchAsNewTask: Boolean = false
 
-    // NOTE: this constructor is used to make dependency injection easy
-    internal constructor(
-        params: BraintreeClientParams,
-        time: Time = Time()
-    ) : this(
-        applicationContext = params.applicationContext,
-        integrationType = params.integrationType,
-        authorization = params.authorization,
-        analyticsClient = params.analyticsClient,
-        httpClient = params.httpClient,
-        graphQLClient = params.graphQLClient,
-        configurationLoader = params.configurationLoader,
-        manifestValidator = params.manifestValidator,
-        time = time,
-        returnUrlScheme = params.returnUrlScheme,
-        braintreeDeepLinkReturnUrlScheme = params.braintreeReturnUrlScheme,
-        appLinkReturnUri = params.appLinkReturnUri
-    )
+    private val braintreeDeepLinkReturnUrlScheme: String =
+        "${getAppPackageNameWithoutUnderscores(applicationContext)}.braintree.deeplinkhandler"
 
     /**
      * @suppress
@@ -78,27 +62,14 @@ class BraintreeClient @VisibleForTesting internal constructor(
         authorization: String,
         returnUrlScheme: String? = null,
         appLinkReturnUri: Uri? = null,
+        integrationType: IntegrationType? = null,
     ) : this(
-        BraintreeOptions(
-            context = context,
-            authorization = Authorization.fromString(authorization),
-            returnUrlScheme = returnUrlScheme,
-            appLinkReturnUri = appLinkReturnUri
-        )
-    )
-
-    internal constructor(options: BraintreeOptions) : this(BraintreeClientParams(options))
-
-    internal constructor(
-        context: Context,
-        authorization: Authorization,
-        integrationType: IntegrationType
-    ) : this(
-        BraintreeOptions(
-            context = context,
-            authorization = authorization,
-            integrationType = integrationType,
-        )
+        applicationContext = context.applicationContext,
+        authorization = Authorization.fromString(authorization),
+        returnUrlScheme = returnUrlScheme
+            ?: "${getAppPackageNameWithoutUnderscores(context.applicationContext)}.braintree",
+        appLinkReturnUri = appLinkReturnUri,
+        integrationType = integrationType ?: IntegrationType.CUSTOM,
     )
 
     init {
@@ -353,7 +324,7 @@ class BraintreeClient @VisibleForTesting internal constructor(
      *
      * For web payment flows, this means launching the browser in a task separate from the calling
      * activity.
-     *
+     *B
      * NOTE: When this property is set to true, all custom url schemes set in [BraintreeClient]
      * constructors will be ignored.
      *
@@ -369,5 +340,11 @@ class BraintreeClient @VisibleForTesting internal constructor(
             "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization"
         val message = "Valid authorization required. See $clientSDKSetupURL for more info."
         return BraintreeException(message)
+    }
+
+    companion object {
+        private fun getAppPackageNameWithoutUnderscores(context: Context): String {
+            return context.applicationContext.packageName.replace("_", "")
+        }
     }
 }
