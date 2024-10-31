@@ -218,6 +218,9 @@ internal class AnalyticsClient(
             .putOpt(FPTI_KEY_START_TIME, event.startTime)
             .putOpt(FPTI_KEY_END_TIME, event.endTime)
             .putOpt(FPTI_KEY_ENDPOINT, event.endpoint)
+            .putOpt(FPTI_KEY_MERCHANT_EXPERIMENT, event.experiment)
+            .putOpt(FPTI_KEY_MERCHANT_PAYMENT_METHODS_DISPLAYED,
+                event.paymentMethodsDisplayed.ifEmpty { null })
         return json.toString()
     }
 
@@ -265,6 +268,8 @@ internal class AnalyticsClient(
         private const val FPTI_KEY_START_TIME = "start_time"
         private const val FPTI_KEY_END_TIME = "end_time"
         private const val FPTI_KEY_ENDPOINT = "endpoint"
+        private const val FPTI_KEY_MERCHANT_EXPERIMENT = "experiment"
+        private const val FPTI_KEY_MERCHANT_PAYMENT_METHODS_DISPLAYED = "payment_methods_displayed"
 
         private const val FPTI_BATCH_KEY_VENMO_INSTALLED = "venmo_installed"
         private const val FPTI_BATCH_KEY_PAYPAL_INSTALLED = "paypal_installed"

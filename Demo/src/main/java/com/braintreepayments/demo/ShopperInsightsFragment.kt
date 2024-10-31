@@ -184,18 +184,25 @@ class ShopperInsightsFragment : BaseFragment() {
         }
 
         shopperInsightsClient.getRecommendedPaymentMethods(
-            request
+            request,
+            "dummy_experiment"
         ) { result ->
             when (result) {
                 is ShopperInsightsResult.Success -> {
                     if (result.response.isPayPalRecommended) {
                         payPalVaultButton.isEnabled = true
-                        shopperInsightsClient.sendPayPalPresentedEvent()
+                        shopperInsightsClient.sendPayPalPresentedEvent(
+                            "dummy_paypal_presented_experiment",
+                            listOf("PayPal, Apple Pay, Google Pay")
+                        )
                     }
 
                     if (result.response.isVenmoRecommended) {
                         venmoButton.isEnabled = true
-                        shopperInsightsClient.sendVenmoPresentedEvent()
+                        shopperInsightsClient.sendVenmoPresentedEvent(
+                            "dummy_venmo_presented_experiment",
+                            listOf("Apple Pay, Venmo, Google Pay")
+                        )
                     }
 
                     responseTextView.text =
@@ -220,7 +227,9 @@ class ShopperInsightsFragment : BaseFragment() {
             requireContext(),
             PayPalRequestFactory.createPayPalVaultRequest(
                 activity,
-                emailInput.editText?.text.toString()
+                emailInput.editText?.text.toString(),
+                countryCodeInput.editText?.text.toString(),
+                nationalNumberInput.editText?.text.toString()
             )
         ) { authRequest ->
             when (authRequest) {

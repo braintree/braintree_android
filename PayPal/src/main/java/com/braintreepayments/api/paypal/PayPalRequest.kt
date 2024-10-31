@@ -71,6 +71,8 @@ import org.json.JSONException
  * server.
  * @property userAuthenticationEmail User email to initiate a quicker authentication flow in cases
  * where the user has a PayPal Account with the same email.
+ * @property userPhoneNumber User phone number used to initiate a quicker authentication flow in
+ * cases where the user has a PayPal Account with the phone number.
  * @property lineItems The line items for this transaction. It can include up to 249 line items.
  * @property shippingCallbackUrl Server side shipping callback URL to be notified when a customer
  * updates their shipping address or options. A callback request will be sent to the merchant server
@@ -88,8 +90,9 @@ abstract class PayPalRequest internal constructor(
     open var merchantAccountId: String? = null,
     open var riskCorrelationId: String? = null,
     open var userAuthenticationEmail: String? = null,
+    open var userPhoneNumber: PayPalPhoneNumber? = null,
     open var lineItems: List<PayPalLineItem> = emptyList(),
-    open var shippingCallbackUrl: Uri? = null,
+    open var shippingCallbackUrl: Uri? = null
 ) : Parcelable {
 
     @Throws(JSONException::class)
@@ -131,6 +134,9 @@ abstract class PayPalRequest internal constructor(
         internal const val OS_VERSION_KEY: String = "os_version"
         internal const val OS_TYPE_KEY: String = "os_type"
         internal const val MERCHANT_APP_RETURN_URL_KEY: String = "merchant_app_return_url"
+        internal const val PLAN_TYPE_KEY: String = "plan_type"
+        internal const val PLAN_METADATA_KEY: String = "plan_metadata"
+        internal const val PHONE_NUMBER_KEY: String = "phone_number"
         internal const val SHIPPING_CALLBACK_URL_KEY: String = "shipping_callback_url"
     }
 }

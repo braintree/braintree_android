@@ -4,7 +4,21 @@
 
 * PayPal
   * Add `shippingCallbackURL` to `PayPalRequest`
-  
+
+## 5.2.0 (2024-10-30)
+
+* GooglePay
+  * Fix a crash being caused on API 33 devices. It is recommended that merchants not use 5.1.0 for GooglePay.
+* Shopper Insights (BETA)
+  * For analytics, send `experiment` as a parameter to `getRecommendedPaymentMethods` method
+  * For analytics, send `experiment` and `paymentMethodsDisplayed` analytic metrics to FPTI via the button presented event methods
+
+## 5.1.0 (2024-10-15)
+
+* PayPal
+  * Add `PayPalRecurringBillingDetails` and `PayPalRecurringBillingPlanType` opt-in request objects. Including these details will provide transparency to users on their billing schedule, dates, and amounts, as well as launch a modernized checkout UI.
+  * Add `userPhoneNumber` property to `PayPalVaultRequest` and `PayPalCheckoutRequest`
+
 ## 5.0.0 (2024-09-30)
 
 * PayPal

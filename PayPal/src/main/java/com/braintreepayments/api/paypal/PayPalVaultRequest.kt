@@ -24,7 +24,9 @@ import org.json.JSONObject
  *
  * @see [Examples of prominent in-app disclosures](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en.Prominent%20in-app%20disclosure)
  *
- * @property shouldOfferCredit Offers PayPal Credit if the customer qualifies. Defaults to `false`.
+ * @property shouldOfferCredit Offers PayPal Credit if the customer qualifies. Defaults to false.
+ * @property recurringBillingDetails Optional: Recurring billing product details.
+ * @property recurringBillingPlanType Optional: Recurring billing plan type, or charge pattern.
  * @property enablePayPalAppSwitch Used to determine if the customer will use the PayPal app switch flow.
  * Defaults to `false`.
  * - Warning: This property is currently in beta and may change or be removed in future releases.
@@ -34,6 +36,8 @@ class PayPalVaultRequest
 @JvmOverloads constructor(
     override val hasUserLocationConsent: Boolean,
     var shouldOfferCredit: Boolean = false,
+    var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
+    var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
     var enablePayPalAppSwitch: Boolean = false,
     override var localeCode: String? = null,
     override var billingAgreementDescription: String? = null,
@@ -45,6 +49,7 @@ class PayPalVaultRequest
     override var merchantAccountId: String? = null,
     override var riskCorrelationId: String? = null,
     override var userAuthenticationEmail: String? = null,
+    override var userPhoneNumber: PayPalPhoneNumber? = null,
     override var lineItems: List<PayPalLineItem> = emptyList(),
     override var shippingCallbackUrl: Uri? = null,
 ) : PayPalRequest(
@@ -93,6 +98,8 @@ class PayPalVaultRequest
         }
 
         parameters.putOpt(PAYER_EMAIL_KEY, userAuthenticationEmail)
+
+        userPhoneNumber?.let { parameters.put(PHONE_NUMBER_KEY, it.toJson()) }
 
         if (enablePayPalAppSwitch && !appLink.isNullOrEmpty() && !userAuthenticationEmail.isNullOrEmpty()) {
             parameters.put(ENABLE_APP_SWITCH_KEY, enablePayPalAppSwitch)
@@ -159,6 +166,10 @@ class PayPalVaultRequest
         }
 
         parameters.put(EXPERIENCE_PROFILE_KEY, experienceProfile)
+
+        recurringBillingPlanType?.let { parameters.put(PLAN_TYPE_KEY, it) }
+        recurringBillingDetails?.let { parameters.put(PLAN_METADATA_KEY, it.toJson()); }
+
         return parameters.toString()
     }
 }

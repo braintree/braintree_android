@@ -75,6 +75,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     override var merchantAccountId: String? = null,
     override var riskCorrelationId: String? = null,
     override var userAuthenticationEmail: String? = null,
+    override var userPhoneNumber: PayPalPhoneNumber? = null,
     override var lineItems: List<PayPalLineItem> = emptyList(),
     override var shippingCallbackUrl: Uri? = null,
 ) : PayPalRequest(
@@ -129,6 +130,8 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
         userAuthenticationEmail?.let {
             if (it.isNotEmpty()) parameters.put(PAYER_EMAIL_KEY, it)
         }
+
+        userPhoneNumber?.let { parameters.put(PHONE_NUMBER_KEY, it.toJson()) }
 
         if (currencyCode == null) {
             currencyCode = configuration?.payPalCurrencyIsoCode
