@@ -1,6 +1,5 @@
 package com.braintreepayments.api.paypal
 
-import android.net.Uri
 import android.os.Parcelable
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.Authorization
@@ -91,8 +90,7 @@ abstract class PayPalRequest internal constructor(
     open var riskCorrelationId: String? = null,
     open var userAuthenticationEmail: String? = null,
     open var userPhoneNumber: PayPalPhoneNumber? = null,
-    open var lineItems: List<PayPalLineItem> = emptyList(),
-    open var shippingCallbackUrl: Uri? = null
+    open var lineItems: List<PayPalLineItem> = emptyList()
 ) : Parcelable {
 
     @Throws(JSONException::class)
