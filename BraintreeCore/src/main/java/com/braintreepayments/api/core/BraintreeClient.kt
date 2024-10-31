@@ -324,7 +324,7 @@ class BraintreeClient internal constructor(
      *
      * For web payment flows, this means launching the browser in a task separate from the calling
      * activity.
-     *B
+     *
      * NOTE: When this property is set to true, all custom url schemes set in [BraintreeClient]
      * constructors will be ignored.
      *
