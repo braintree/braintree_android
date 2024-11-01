@@ -55,6 +55,9 @@ import org.json.JSONObject
  *
  * @property shouldOfferPayLater Offers PayPal Pay Later if the customer qualifies. Defaults to
  * false.
+ * @property shippingCallbackUrl Server side shipping callback URL to be notified when a customer
+ * updates their shipping address or options. A callback request will be sent to the merchant server
+ * at this URL.
  */
 @Parcelize
 class PayPalCheckoutRequest @JvmOverloads constructor(
@@ -65,6 +68,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     var currencyCode: String? = null,
     var shouldRequestBillingAgreement: Boolean = false,
     var shouldOfferPayLater: Boolean = false,
+    var shippingCallbackUrl: Uri? = null,
     override var localeCode: String? = null,
     override var billingAgreementDescription: String? = null,
     override var isShippingAddressRequired: Boolean = false,
@@ -76,8 +80,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     override var riskCorrelationId: String? = null,
     override var userAuthenticationEmail: String? = null,
     override var userPhoneNumber: PayPalPhoneNumber? = null,
-    override var lineItems: List<PayPalLineItem> = emptyList(),
-    override var shippingCallbackUrl: Uri? = null,
+    override var lineItems: List<PayPalLineItem> = emptyList()
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -90,8 +93,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     merchantAccountId = merchantAccountId,
     riskCorrelationId = riskCorrelationId,
     userAuthenticationEmail = userAuthenticationEmail,
-    lineItems = lineItems,
-    shippingCallbackUrl = shippingCallbackUrl,
+    lineItems = lineItems
 ) {
 
     @Throws(JSONException::class)
