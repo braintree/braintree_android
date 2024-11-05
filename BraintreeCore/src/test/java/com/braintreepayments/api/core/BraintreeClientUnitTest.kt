@@ -34,6 +34,7 @@ class BraintreeClientUnitTest {
     private lateinit var manifestValidator: ManifestValidator
     private lateinit var browserSwitchClient: BrowserSwitchClient
     private lateinit var expectedAuthException: BraintreeException
+    private lateinit var merchantRepository: MerchantRepository
 
     @Before
     fun beforeEach() {
@@ -48,6 +49,7 @@ class BraintreeClientUnitTest {
         analyticsClient = mockk(relaxed = true)
         manifestValidator = mockk(relaxed = true)
         browserSwitchClient = mockk(relaxed = true)
+        merchantRepository = mockk(relaxed = true)
 
         val clientSDKSetupURL =
             "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization"
@@ -403,24 +405,6 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun integrationType_returnsCustomByDefault() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val sut = BraintreeClient(context, authorization.toString())
-        assertEquals("custom", sut.integrationType.stringValue)
-    }
-
-    @Test
-    fun integrationType_returnsIntegrationTypeDefinedInConstructor() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val sut = BraintreeClient(
-            context = context,
-            authorization = authorization.toString(),
-            integrationType = IntegrationType.DROP_IN
-        )
-        assertEquals("dropin", sut.integrationType.stringValue)
-    }
-
-    @Test
     @Throws(JSONException::class)
     fun reportCrash_reportsCrashViaAnalyticsClient() {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
@@ -447,20 +431,39 @@ class BraintreeClientUnitTest {
         }
     }
 
+    @Test
+    fun `when BraintreeClient is initialized, merchantRepository properties are set`() {
+        createBraintreeClient(merchantRepository = merchantRepository)
+        verify { merchantRepository.returnUrlScheme = "sample-return-url-scheme" }
+        verify { merchantRepository.applicationContext = applicationContext }
+        verify { merchantRepository.authorization = authorization }
+        verify { merchantRepository.appLinkReturnUri = Uri.parse("https://example.com") }
+        verify { merchantRepository.integrationType = IntegrationType.CUSTOM }
+    }
+
+    @Test
+    fun `when BraintreeClient is initialized and appLinkReturnUri is null, it is not set on the MerchantRepository`() {
+        createBraintreeClient(appLinkReturnUri = null, merchantRepository = merchantRepository)
+        verify(exactly = 0) { merchantRepository.appLinkReturnUri = null }
+    }
+
     private fun createBraintreeClient(
-        configurationLoader: ConfigurationLoader,
-        time: Time = Time()
+        configurationLoader: ConfigurationLoader = mockk(),
+        time: Time = Time(),
+        appLinkReturnUri: Uri? = Uri.parse("https://example.com"),
+        merchantRepository: MerchantRepository = MerchantRepository.instance
     ) = BraintreeClient(
         applicationContext = applicationContext,
         integrationType = IntegrationType.CUSTOM,
         authorization = authorization,
         returnUrlScheme = "sample-return-url-scheme",
-        appLinkReturnUri = Uri.parse("https://example.com"),
+        appLinkReturnUri = appLinkReturnUri,
         httpClient = braintreeHttpClient,
         graphQLClient = braintreeGraphQLClient,
         analyticsClient = analyticsClient,
         manifestValidator = manifestValidator,
         configurationLoader = configurationLoader,
-        time = time
+        time = time,
+        merchantRepository = merchantRepository,
     )
 }

@@ -23,6 +23,7 @@ import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.Configuration;
+import com.braintreepayments.api.core.MerchantRepository;
 import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
 import com.braintreepayments.api.paypal.PayPalAccountNonce;
@@ -63,6 +64,8 @@ public class GooglePayClientUnitTest {
 
     private AnalyticsParamRepository analyticsParamRepository;
 
+    private MerchantRepository merchantRepository = mock(MerchantRepository.class);
+
     @Before
     public void beforeEach() {
         activity = mock(FragmentActivity.class);
@@ -93,7 +96,12 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient, 
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.isReadyToPay(activity, null, readyToPayCallback);
 
         ArgumentCaptor<IsReadyToPayRequest> captor =
@@ -125,7 +133,12 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient, 
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.isReadyToPay(activity, readyForGooglePayRequest, readyToPayCallback);
 
         ArgumentCaptor<IsReadyToPayRequest> captor =
@@ -147,15 +160,21 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
                 .activityInfo(activityInfo)
                 .build();
+        
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString(Fixtures.TOKENIZATION_KEY));
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder()
                 .isReadyToPay(true)
                 .build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient, 
+            analyticsParamRepository,
+            merchantRepository
+        );
 
         sut.isReadyToPay(activity, null, readyToPayCallback);
         verify(readyToPayCallback).onGooglePayReadinessResult(any(GooglePayReadinessResult.NotReadyToPay.class));
@@ -174,15 +193,21 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configuration(configuration)
-            .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
             .activityInfo(activityInfo)
             .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString(Fixtures.TOKENIZATION_KEY));
 
         GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder()
             .isReadyToPay(true)
             .build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
 
         sut.createPaymentAuthRequest(mock(), mock());
 
@@ -203,9 +228,10 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString("sandbox_tokenization_string"));
 
         GooglePayRequest googlePayRequest = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
         googlePayRequest.setAllowPrepaidCards(true);
@@ -219,7 +245,12 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(googlePayRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
@@ -329,16 +360,22 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
                 .activityInfo(activityInfo)
                 .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString(Fixtures.TOKENIZATION_KEY));
 
         GooglePayRequest googlePayRequest = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
 
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(googlePayRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
@@ -375,16 +412,22 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .activityInfo(activityInfo)
                 .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN));
 
         GooglePayRequest googlePayRequest = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
 
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(googlePayRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
@@ -421,16 +464,22 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString("sandbox_tokenization_string"));
 
         GooglePayRequest googlePayRequest = new GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL);
 
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(googlePayRequest, intentDataCallback);
 
         InOrder order = inOrder(braintreeClient);
@@ -443,15 +492,21 @@ public class GooglePayClientUnitTest {
         Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(configuration)
                 .activityInfo(activityInfo)
                 .build();
 
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN));
+
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
@@ -483,14 +538,20 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString("sandbox_tokenization_string"));
 
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
@@ -522,14 +583,20 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString("sandbox_tokenization_string"));
 
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
@@ -562,16 +629,22 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString("sandbox_tokenization_string"));
 
         baseRequest.setGoogleMerchantName("google-merchant-name-override");
 
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
@@ -605,9 +678,10 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString("sandbox_tokenization_string"));
 
         GooglePayRequest googlePayRequest = baseRequest;
         googlePayRequest.setGoogleMerchantName("google-merchant-name-override");
@@ -615,7 +689,12 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
@@ -653,9 +732,10 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString("sandbox_tokenization_string"));
 
         GooglePayRequest googlePayRequest = baseRequest;
         googlePayRequest.setGoogleMerchantName("google-merchant-name-override");
@@ -664,7 +744,12 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
@@ -703,9 +788,10 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString("sandbox_tokenization_string"));
 
         GooglePayRequest googlePayRequest = baseRequest;
         googlePayRequest.setGoogleMerchantName("google-merchant-name-override");
@@ -713,7 +799,12 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
@@ -753,9 +844,10 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString("sandbox_tokenization_string"));
 
         GooglePayRequest googlePayRequest = baseRequest;
         googlePayRequest.setGoogleMerchantName("google-merchant-name-override");
@@ -763,7 +855,12 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
@@ -810,9 +907,10 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString("sandbox_tokenization_string"));
 
         GooglePayRequest googlePayRequest = baseRequest;
         googlePayRequest.setGoogleMerchantName("google-merchant-name-override");
@@ -820,7 +918,12 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
@@ -859,9 +962,10 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString("sandbox_tokenization_string"));
 
         GooglePayRequest googlePayRequest = baseRequest;
         googlePayRequest.setGoogleMerchantName("google-merchant-name-override");
@@ -869,7 +973,12 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
@@ -908,14 +1017,20 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(null)
                 .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString("sandbox_tokenization_string"));
 
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback);
 
         ArgumentCaptor<GooglePayPaymentAuthRequest> captor = ArgumentCaptor.forClass(
@@ -952,16 +1067,22 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString("sandbox_tokenization_string"));
 
         PaymentData pd = PaymentData.fromJson(paymentDataJson);
 
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.tokenize(pd, activityResultCallback);
 
         ArgumentCaptor<GooglePayResult> captor =
@@ -990,16 +1111,22 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString("sandbox_tokenization_string"));
 
         PaymentData pd = PaymentData.fromJson(paymentDataJson);
 
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
         sut.tokenize(pd, activityResultCallback);
 
         ArgumentCaptor<GooglePayResult> captor =
@@ -1022,7 +1149,12 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
 
         String paymentDataJson = Fixtures.RESPONSE_GOOGLE_PAY_CARD;
         PaymentData paymentData = PaymentData.fromJson(paymentDataJson);
@@ -1049,7 +1181,12 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
 
         Exception error = new Exception("Error");
         GooglePayPaymentAuthResult
@@ -1072,7 +1209,12 @@ public class GooglePayClientUnitTest {
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
 
         UserCanceledException userCanceledError =
                 new UserCanceledException("User canceled Google Pay.");
@@ -1102,14 +1244,20 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString("sandbox_tokenization_string"))
                 .activityInfo(activityInfo)
                 .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString("sandbox_tokenization_string"));
 
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
 
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
 
         Collection<Integer> allowedCardNetworks = sut.getAllowedCardNetworks(configuration);
 
@@ -1136,13 +1284,19 @@ public class GooglePayClientUnitTest {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(authorization)
                 .activityInfo(activityInfo)
                 .build();
 
+        when(merchantRepository.getAuthorization()).thenReturn(authorization);
+
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
 
         Bundle tokenizationParameters =
                 sut.getTokenizationParameters(configuration, authorization).getParameters();
@@ -1169,13 +1323,19 @@ public class GooglePayClientUnitTest {
         Authorization authorization = Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(authorization)
                 .activityInfo(activityInfo)
                 .build();
 
+        when(merchantRepository.getAuthorization()).thenReturn(authorization);
+
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
 
         Bundle tokenizationParameters =
                 sut.getTokenizationParameters(configuration, authorization).getParameters();
@@ -1194,13 +1354,18 @@ public class GooglePayClientUnitTest {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(authorization)
                 .activityInfo(activityInfo)
                 .build();
 
-        GooglePayInternalClient internalGooglePayClient =
-                new MockGooglePayInternalClientBuilder().build();
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        when(merchantRepository.getAuthorization()).thenReturn(authorization);
+
+        GooglePayInternalClient internalGooglePayClient = new MockGooglePayInternalClientBuilder().build();
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        );
 
         Bundle tokenizationParameters =
                 sut.getTokenizationParameters(configuration, authorization).getParameters();
@@ -1219,13 +1384,19 @@ public class GooglePayClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(configuration)
-                .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
                 .activityInfo(activityInfo)
                 .build();
 
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString(Fixtures.TOKENIZATION_KEY));
+
         GooglePayInternalClient internalGooglePayClient =
                 new MockGooglePayInternalClientBuilder().build();
-        GooglePayClient sut = new GooglePayClient(braintreeClient, internalGooglePayClient, analyticsParamRepository);
+        GooglePayClient sut = new GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient, 
+            analyticsParamRepository,
+            merchantRepository
+        );
 
         sut.getTokenizationParameters(tokenizationParameters -> {
             assertTrue(tokenizationParameters instanceof GooglePayTokenizationParameters.Success);

@@ -476,7 +476,6 @@ public class LocalPaymentClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configuration(payPalEnabledConfig)
             .sendPOSTErrorResponse(postError)
-            .integration(IntegrationType.CUSTOM)
             .build();
 
         LocalPaymentApi localPaymentApi = new MockLocalPaymentApiBuilder()
@@ -522,7 +521,6 @@ public class LocalPaymentClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configuration(payPalEnabledConfig)
-            .integration(IntegrationType.CUSTOM)
             .build();
         when(dataCollector.getClientMetadataId(activity, payPalEnabledConfig, false)).thenReturn(
             "sample-correlation-id");
@@ -553,7 +551,6 @@ public class LocalPaymentClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configuration(payPalEnabledConfig)
-            .integration(IntegrationType.CUSTOM)
             .build();
         when(dataCollector.getClientMetadataId(any(Context.class),
             same(payPalEnabledConfig), eq(false))).thenReturn("client-metadata-id");
@@ -635,7 +632,6 @@ public class LocalPaymentClientUnitTest {
         Exception configError = new Exception("config error");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configurationError(configError)
-            .integration(IntegrationType.CUSTOM)
             .build();
         when(dataCollector.getClientMetadataId(activity, payPalEnabledConfig, true)).thenReturn(
             "sample-correlation-id");
@@ -702,7 +698,6 @@ public class LocalPaymentClientUnitTest {
         when(browserSwitchResult.getReturnUrl()).thenReturn(Uri.parse(webUrl));
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configuration(payPalEnabledConfig)
-            .integration(IntegrationType.CUSTOM)
             .build();
         when(dataCollector.getClientMetadataId(any(Context.class), same(payPalEnabledConfig), anyBoolean())).thenReturn("client-metadata-id");
 

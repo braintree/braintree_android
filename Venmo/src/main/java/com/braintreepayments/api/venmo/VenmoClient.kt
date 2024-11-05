@@ -16,6 +16,7 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.ClientToken
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.MetadataBuilder
 import org.json.JSONException
 import org.json.JSONObject
@@ -29,7 +30,8 @@ class VenmoClient internal constructor(
     private val apiClient: ApiClient = ApiClient(braintreeClient),
     private val venmoApi: VenmoApi = VenmoApi(braintreeClient, apiClient),
     private val sharedPrefsWriter: VenmoSharedPrefsWriter = VenmoSharedPrefsWriter(),
-    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
 ) {
     /**
      * Used for linking events from the client to server side request
@@ -117,7 +119,7 @@ class VenmoClient internal constructor(
                     try {
                         createPaymentAuthRequest(
                             context, request, configuration,
-                            braintreeClient.authorization, finalVenmoProfileId,
+                            merchantRepository.authorization, finalVenmoProfileId,
                             paymentContextId, callback
                         )
                     } catch (e: JSONException) {
@@ -146,7 +148,7 @@ class VenmoClient internal constructor(
 
         val metadata = MetadataBuilder()
             .sessionId(analyticsParamRepository.sessionId)
-            .integration(braintreeClient.integrationType)
+            .integration(merchantRepository.integrationType)
             .version()
             .build()
 
@@ -228,14 +230,14 @@ class VenmoClient internal constructor(
         val paymentMethodNonce = parse(deepLinkUri.toString(), "payment_method_nonce")
         val username = parse(deepLinkUri.toString(), "username")
 
-        val isClientTokenAuth = (braintreeClient.authorization is ClientToken)
+        val isClientTokenAuth = (merchantRepository.authorization is ClientToken)
         if (paymentContextId != null) {
 
             venmoApi.createNonceFromPaymentContext(paymentContextId) { nonce: VenmoAccountNonce?, error: Exception? ->
 
                 if (nonce != null) {
                     isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(
-                        braintreeClient.applicationContext
+                        merchantRepository.applicationContext
                     )
                     if (isVaultRequest && isClientTokenAuth) {
                         vaultVenmoAccountNonce(
@@ -262,7 +264,7 @@ class VenmoClient internal constructor(
             }
         } else if (paymentMethodNonce != null && username != null) {
             isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(
-                braintreeClient.applicationContext
+                merchantRepository.applicationContext
             )
 
             if (isVaultRequest && isClientTokenAuth) {
