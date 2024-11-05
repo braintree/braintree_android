@@ -5,6 +5,7 @@ import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.MetadataBuilder
 import com.braintreepayments.api.venmo.VenmoAccountNonce.Companion.fromJSON
 import org.json.JSONArray
@@ -14,7 +15,8 @@ import org.json.JSONObject
 internal class VenmoApi(
     private val braintreeClient: BraintreeClient,
     private val apiClient: ApiClient,
-    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
 ) {
 
     @Suppress("LongMethod")
@@ -82,7 +84,7 @@ internal class VenmoApi(
 
             val braintreeData = MetadataBuilder()
                 .sessionId(analyticsParamRepository.sessionId)
-                .integration(braintreeClient.integrationType)
+                .integration(merchantRepository.integrationType)
                 .version()
                 .build()
 

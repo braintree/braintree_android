@@ -4,11 +4,12 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
-import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.ClientToken
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import com.braintreepayments.api.testutils.Fixtures
+import com.braintreepayments.api.core.MerchantRepository
+import com.braintreepayments.api.core.TokenizationKey
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import io.mockk.every
 import io.mockk.just
@@ -39,14 +40,21 @@ class ShopperInsightsClientUnitTest {
     private lateinit var api: ShopperInsightsApi
     private lateinit var braintreeClient: BraintreeClient
     private lateinit var analyticsParamRepository: AnalyticsParamRepository
+    private lateinit var merchantRepository: MerchantRepository
     private lateinit var context: Context
+
+    private val clientToken = mockk<ClientToken>()
 
     @Before
     fun beforeEach() {
         api = mockk(relaxed = true)
         braintreeClient = mockk(relaxed = true)
         analyticsParamRepository = mockk(relaxed = true)
-        sut = ShopperInsightsClient(braintreeClient, analyticsParamRepository, api)
+        merchantRepository = mockk(relaxed = true)
+
+        every { merchantRepository.authorization } returns clientToken
+
+        sut = ShopperInsightsClient(braintreeClient, analyticsParamRepository, api, merchantRepository)
         context = ApplicationProvider.getApplicationContext()
     }
 
@@ -392,11 +400,10 @@ class ShopperInsightsClientUnitTest {
 
     @Test
     fun `test getRecommendPaymentMethods is called with a tokenization key, error is sent`() {
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .authorizationSuccess(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
-            .build()
+        every { merchantRepository.authorization } returns mockk<TokenizationKey>()
+        val braintreeClient = MockkBraintreeClientBuilder().build()
 
-        sut = ShopperInsightsClient(braintreeClient, analyticsParamRepository, api)
+        sut = ShopperInsightsClient(braintreeClient, analyticsParamRepository, api, merchantRepository)
 
         val request = ShopperInsightsRequest("some-email", null)
         sut.getRecommendedPaymentMethods(request) { result ->

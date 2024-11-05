@@ -33,11 +33,8 @@ public class MockBraintreeClientBuilder {
     private Configuration configuration;
     private Exception configurationError;
 
-    private Authorization authorization;
 
-    private IntegrationType integration;
     private String returnUrlScheme;
-    private Uri appLinkReturnUri;
 
 
     private ActivityInfo activityInfo;
@@ -50,11 +47,6 @@ public class MockBraintreeClientBuilder {
 
     public MockBraintreeClientBuilder configurationError(Exception configurationError) {
         this.configurationError = configurationError;
-        return this;
-    }
-
-    public MockBraintreeClientBuilder authorizationSuccess(Authorization authorization) {
-        this.authorization = authorization;
         return this;
     }
 
@@ -93,11 +85,6 @@ public class MockBraintreeClientBuilder {
         return this;
     }
 
-    public MockBraintreeClientBuilder integration(IntegrationType integration) {
-        this.integration = integration;
-        return this;
-    }
-
     public MockBraintreeClientBuilder returnUrlScheme(String returnUrlScheme) {
         this.returnUrlScheme = returnUrlScheme;
         return this;
@@ -109,21 +96,12 @@ public class MockBraintreeClientBuilder {
         return this;
     }
 
-    public MockBraintreeClientBuilder appLinkReturnUri(
-            Uri appLinkReturnUri) {
-        this.appLinkReturnUri = appLinkReturnUri;
-        return this;
-    }
-
     public BraintreeClient build() {
         BraintreeClient braintreeClient = mock(BraintreeClient.class);
-        when(braintreeClient.getIntegrationType()).thenReturn(integration);
-        when(braintreeClient.getAuthorization()).thenReturn(authorization);
         when(braintreeClient.getReturnUrlScheme()).thenReturn(returnUrlScheme);
         when(braintreeClient.getManifestActivityInfo(any())).thenReturn(activityInfo);
         when(braintreeClient.launchesBrowserSwitchAsNewTask()).thenReturn(
                 launchesBrowserSwitchAsNewTask);
-        when(braintreeClient.getAppLinkReturnUri()).thenReturn(appLinkReturnUri);
 
         doAnswer((Answer<Void>) invocation -> {
             ConfigurationCallback callback = (ConfigurationCallback) invocation.getArguments()[0];

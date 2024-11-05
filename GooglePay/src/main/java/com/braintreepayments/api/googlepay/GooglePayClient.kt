@@ -9,6 +9,7 @@ import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ErrorWithResponse.Companion.fromJson
+import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.MetadataBuilder
 import com.braintreepayments.api.core.TokenizationKey
 import com.braintreepayments.api.core.UserCanceledException
@@ -31,7 +32,8 @@ import org.json.JSONObject
 class GooglePayClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalGooglePayClient: GooglePayInternalClient = GooglePayInternalClient(),
-    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
 ) {
     /**
      * Initializes a new [GooglePayClient] instance
@@ -154,7 +156,7 @@ class GooglePayClient internal constructor(
             if (configuration != null) {
                 callback.onTokenizationParametersResult(
                     GooglePayTokenizationParameters.Success(
-                        getTokenizationParameters(configuration, braintreeClient.authorization),
+                        getTokenizationParameters(configuration, merchantRepository.authorization),
                         getAllowedCardNetworks(configuration)
                     )
                 )
@@ -201,7 +203,7 @@ class GooglePayClient internal constructor(
         braintreeClient.getConfiguration { configuration: Configuration?, configError: Exception? ->
 
             if (configuration?.isGooglePayEnabled == true) {
-                setGooglePayRequestDefaults(configuration, braintreeClient.authorization, request)
+                setGooglePayRequestDefaults(configuration, merchantRepository.authorization, request)
 
                 val paymentDataRequest =
                     PaymentDataRequest.fromJson(request.toJson())
@@ -315,7 +317,7 @@ class GooglePayClient internal constructor(
     ): PaymentMethodTokenizationParameters {
 
         val metadata =
-            MetadataBuilder().integration(braintreeClient.integrationType)
+            MetadataBuilder().integration(merchantRepository.integrationType)
                 .sessionId(analyticsParamRepository.sessionId).version().build()
 
         val version = try {
@@ -467,7 +469,7 @@ class GooglePayClient internal constructor(
                 .put("braintree:merchantId", configuration.merchantId)
                 .put(
                     "braintree:metadata", JSONObject().put("source", "client")
-                        .put("integration", braintreeClient.integrationType)
+                        .put("integration", merchantRepository.integrationType)
                         .put("sessionId", analyticsParamRepository.sessionId)
                         .put("version", googlePayVersion)
                         .put("platform", "android").toString()
@@ -507,7 +509,7 @@ class GooglePayClient internal constructor(
                     )
                     .put(
                         "braintree:metadata", JSONObject().put("source", "client")
-                            .put("integration", braintreeClient.integrationType)
+                            .put("integration", merchantRepository.integrationType)
                             .put("sessionId", analyticsParamRepository.sessionId)
                             .put("version", googlePayVersion)
                             .put("platform", "android").toString()
