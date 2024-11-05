@@ -54,9 +54,9 @@ public class TestClientTokenBuilder {
 
             URL url;
             if (withCustomerId) {
-                url = new URL("https://braintree-sample-merchant.herokuapp.com/client_token?customer_id=" + UUID.randomUUID().toString());
+                url = new URL("https://braintree-demo-merchant-63b7a2204f6e.herokuapp.com/client_token?customer_id=" + UUID.randomUUID().toString());
             } else {
-                url = new URL("https://braintree-sample-merchant.herokuapp.com/client_token");
+                url = new URL("https://braintree-demo-merchant-63b7a2204f6e.herokuapp.com/client_token");
             }
 
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
