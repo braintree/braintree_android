@@ -4,6 +4,9 @@ import android.content.Context
 import android.net.Uri
 import androidx.annotation.RestrictTo
 
+/**
+ * An internal repository that holds properties set by the integrating merchant.
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class MerchantRepository {
 
@@ -14,6 +17,10 @@ class MerchantRepository {
     var appLinkReturnUri: Uri? = null
 
     companion object {
+
+        /**
+         * Singleton instance of the MerchantRepository.
+         */
         val instance: MerchantRepository by lazy { MerchantRepository() }
     }
 }
