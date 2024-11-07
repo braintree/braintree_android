@@ -1,24 +1,26 @@
 package com.braintreepayments.api.core
 
-import android.content.Context
 import android.net.Uri
 import android.util.Base64
 import com.braintreepayments.api.sharedutils.HttpClient
 import org.json.JSONException
 
 internal class ConfigurationLoader(
-    private val httpClient: BraintreeHttpClient,
-    private val configurationCache: ConfigurationCache
+    private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance
 ) {
-    constructor(context: Context, httpClient: BraintreeHttpClient) : this(
-        httpClient, ConfigurationCache.getInstance(context)
-    )
+    private val configurationCache: ConfigurationCache
+        get() = ConfigurationCache.getInstance(merchantRepository.applicationContext)
 
-    fun loadConfiguration(authorization: Authorization, callback: ConfigurationLoaderCallback) {
+    fun loadConfiguration(callback: ConfigurationLoaderCallback) {
+        val authorization = merchantRepository.authorization
         if (authorization is InvalidAuthorization) {
-            val message = authorization.errorMessage
+            val clientSDKSetupURL =
+                "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization"
+            val message = "Valid authorization required. See $clientSDKSetupURL for more info."
+
             // NOTE: timing information is null when configuration comes from cache
-            callback.onResult(null, BraintreeException(message), null)
+            callback.onResult(ConfigurationLoaderResult.Failure(BraintreeException(message)))
             return
         }
         val configUrl = Uri.parse(authorization.configUrl)
@@ -29,7 +31,7 @@ internal class ConfigurationLoader(
         val cachedConfig = getCachedConfiguration(authorization, configUrl)
 
         cachedConfig?.let {
-            callback.onResult(cachedConfig, null, null)
+            callback.onResult(ConfigurationLoaderResult.Success(it))
         } ?: run {
             httpClient.get(
                 configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES
@@ -40,16 +42,21 @@ internal class ConfigurationLoader(
                     try {
                         val configuration = Configuration.fromJson(responseBody)
                         saveConfigurationToCache(configuration, authorization, configUrl)
-                        callback.onResult(configuration, null, timing)
+                        callback.onResult(ConfigurationLoaderResult.Success(configuration, timing))
+
+                        // TODO: send timing analytics
+
+
+
                     } catch (jsonException: JSONException) {
-                        callback.onResult(null, jsonException, null)
+                        callback.onResult(ConfigurationLoaderResult.Failure(jsonException))
                     }
                 } else {
                     httpError?.let { error ->
                         val errorMessageFormat = "Request for configuration has failed: %s"
                         val errorMessage = String.format(errorMessageFormat, error.message)
                         val configurationException = ConfigurationException(errorMessage, error)
-                        callback.onResult(null, configurationException, null)
+                        callback.onResult(ConfigurationLoaderResult.Failure(configurationException))
                     }
                 }
             }
@@ -82,5 +89,10 @@ internal class ConfigurationLoader(
         private fun createCacheKey(authorization: Authorization, configUrl: String): String {
             return Base64.encodeToString("$configUrl${authorization.bearer}".toByteArray(), 0)
         }
+
+        /**
+         * Singleton instance of the ConfigurationLoader.
+         */
+        val instance: ConfigurationLoader by lazy { ConfigurationLoader() }
     }
 }

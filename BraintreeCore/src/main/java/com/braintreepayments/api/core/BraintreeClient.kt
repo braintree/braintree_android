@@ -22,13 +22,14 @@ class BraintreeClient internal constructor(
     authorization: Authorization,
     returnUrlScheme: String,
     appLinkReturnUri: Uri?,
-    private val analyticsClient: AnalyticsClient = AnalyticsClient(applicationContext),
+    sdkComponent: SdkComponent = SdkComponent.create(applicationContext),
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
     private val graphQLClient: BraintreeGraphQLClient = BraintreeGraphQLClient(),
-    private val configurationLoader: ConfigurationLoader = ConfigurationLoader(applicationContext, httpClient),
+    private val configurationLoader: ConfigurationLoader = ConfigurationLoader.instance,
     private val manifestValidator: ManifestValidator = ManifestValidator(),
     private val time: Time = Time(),
-    private val merchantRepository: MerchantRepository = MerchantRepository.instance
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val analyticsClient: AnalyticsClient = AnalyticsClient(),
 ) {
 
     private val crashReporter: CrashReporter
@@ -81,17 +82,15 @@ class BraintreeClient internal constructor(
      * @param callback [ConfigurationCallback]
      */
     fun getConfiguration(callback: ConfigurationCallback) {
-        if (merchantRepository.authorization is InvalidAuthorization) {
-            callback.onResult(null, createAuthError())
-            return
-        }
-        configurationLoader.loadConfiguration(merchantRepository.authorization) { configuration, configError, timing ->
-            if (configuration != null) {
-                callback.onResult(configuration, null)
-            } else {
-                callback.onResult(null, configError)
+        configurationLoader.loadConfiguration { result ->
+            when (result) {
+                is ConfigurationLoaderResult.Success -> {
+                    callback.onResult(result.configuration, null)
+                    result.timing?.let { sendAnalyticsTimingEvent("/v1/configuration", it) }
+                }
+
+                is ConfigurationLoaderResult.Failure -> callback.onResult(null, result.error)
             }
-            timing?.let { sendAnalyticsTimingEvent("/v1/configuration", it) }
         }
     }
 
@@ -103,46 +102,28 @@ class BraintreeClient internal constructor(
         params: AnalyticsEventParams = AnalyticsEventParams()
     ) {
         val timestamp = time.currentTime
-        getConfiguration { configuration, _ ->
-            val event = AnalyticsEvent(
-                name = eventName,
-                timestamp = timestamp,
-                payPalContextId = params.payPalContextId,
-                linkType = params.linkType,
-                isVaultRequest = params.isVaultRequest,
-                startTime = params.startTime,
-                endTime = params.endTime,
-                endpoint = params.endpoint,
-                experiment = params.experiment,
-                paymentMethodsDisplayed = params.paymentMethodsDisplayed
-            )
-            sendAnalyticsEvent(event, configuration, merchantRepository.authorization)
-        }
-    }
-
-    private fun sendAnalyticsEvent(
-        event: AnalyticsEvent,
-        configuration: Configuration?,
-        authorization: Authorization
-    ) {
-        configuration?.let {
-            analyticsClient.sendEvent(
-                it,
-                event,
-                merchantRepository.integrationType,
-                authorization
-            )
-        }
+        val event = AnalyticsEvent(
+            name = eventName,
+            timestamp = timestamp,
+            payPalContextId = params.payPalContextId,
+            linkType = params.linkType,
+            isVaultRequest = params.isVaultRequest,
+            startTime = params.startTime,
+            endTime = params.endTime,
+            endpoint = params.endpoint,
+            experiment = params.experiment,
+            paymentMethodsDisplayed = params.paymentMethodsDisplayed
+        )
+        analyticsClient.sendEvent(
+            event = event,
+            integration = merchantRepository.integrationType,
+        )
     }
 
     /**
      * @suppress
      */
     fun sendGET(url: String, responseCallback: HttpResponseCallback) {
-        if (merchantRepository.authorization is InvalidAuthorization) {
-            responseCallback.onResult(null, createAuthError())
-            return
-        }
         getConfiguration { configuration, configError ->
             if (configuration != null) {
                 httpClient.get(url, configuration, merchantRepository.authorization) { response, httpError ->
@@ -173,10 +154,6 @@ class BraintreeClient internal constructor(
         additionalHeaders: Map<String, String> = emptyMap(),
         responseCallback: HttpResponseCallback,
     ) {
-        if (merchantRepository.authorization is InvalidAuthorization) {
-            responseCallback.onResult(null, createAuthError())
-            return
-        }
         getConfiguration { configuration, configError ->
             if (configuration != null) {
                 httpClient.post(
@@ -207,10 +184,6 @@ class BraintreeClient internal constructor(
      * @suppress
      */
     fun sendGraphQLPOST(json: JSONObject?, responseCallback: HttpResponseCallback) {
-        if (merchantRepository.authorization is InvalidAuthorization) {
-            responseCallback.onResult(null, createAuthError())
-            return
-        }
         getConfiguration { configuration, configError ->
             if (configuration != null) {
                 graphQLClient.post(
@@ -326,13 +299,6 @@ class BraintreeClient internal constructor(
      */
     fun launchesBrowserSwitchAsNewTask(launchesBrowserSwitchAsNewTask: Boolean) {
         this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask
-    }
-
-    private fun createAuthError(): BraintreeException {
-        val clientSDKSetupURL =
-            "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization"
-        val message = "Valid authorization required. See $clientSDKSetupURL for more info."
-        return BraintreeException(message)
     }
 
     companion object {

@@ -15,28 +15,32 @@ import java.util.concurrent.TimeUnit
 
 @Suppress("SwallowedException", "TooGenericExceptionCaught")
 internal class AnalyticsClient(
-    context: Context,
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
-    private val analyticsDatabase: AnalyticsDatabase = AnalyticsDatabase.getInstance(context.applicationContext),
-    private val workManager: WorkManager = WorkManager.getInstance(context.applicationContext),
+    private val analyticsDatabase: AnalyticsDatabase = AnalyticsDatabaseProvider().analyticsDatabase,
+    private val workManager: WorkManager = WorkManagerProvider().workManager,
     private val deviceInspector: DeviceInspector = DeviceInspector(),
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
-    private val time: Time = Time()
+    private val time: Time = Time(),
+    private val configurationLoader: ConfigurationLoader = ConfigurationLoader.instance,
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance
 ) {
-    private val applicationContext = context.applicationContext
+    private val applicationContext: Context
+        get() = merchantRepository.applicationContext
 
     fun sendEvent(
-        configuration: Configuration,
         event: AnalyticsEvent,
         integration: IntegrationType?,
-        authorization: Authorization
-    ): UUID {
-        scheduleAnalyticsWriteInBackground(event, authorization)
-        return scheduleAnalyticsUploadInBackground(
-            configuration,
-            authorization,
-            integration
-        )
+    ) {
+        configurationLoader.loadConfiguration { result ->
+            if (result is ConfigurationLoaderResult.Success) {
+                scheduleAnalyticsWriteInBackground(event, merchantRepository.authorization)
+                scheduleAnalyticsUploadInBackground(
+                    configuration = result.configuration,
+                    authorization = merchantRepository.authorization,
+                    integration = integration
+                )
+            }
+        }
     }
 
     private fun scheduleAnalyticsWriteInBackground(
