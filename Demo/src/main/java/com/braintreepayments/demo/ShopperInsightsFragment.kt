@@ -185,7 +185,7 @@ class ShopperInsightsFragment : BaseFragment() {
 
         shopperInsightsClient.getRecommendedPaymentMethods(
             request,
-            "dummy_experiment"
+            """{"exp_name":"PaymentReady","treatment_name":"test"}"""
         ) { result ->
             when (result) {
                 is ShopperInsightsResult.Success -> {
