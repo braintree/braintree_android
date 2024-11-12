@@ -68,6 +68,7 @@ import org.json.JSONException
  * tokenization.
  * @property riskCorrelationId A risk correlation ID created with Set Transaction Context on your
  * server.
+ * @property enablePayPalAppSwitch Used to determine if the customer will use the PayPal app switch
  * @property userAuthenticationEmail User email to initiate a quicker authentication flow in cases
  * where the user has a PayPal Account with the same email.
  * @property userPhoneNumber User phone number used to initiate a quicker authentication flow in
@@ -85,6 +86,7 @@ abstract class PayPalRequest internal constructor(
     open var displayName: String? = null,
     open var merchantAccountId: String? = null,
     open var riskCorrelationId: String? = null,
+    open var enablePayPalAppSwitch: Boolean = false,
     open var userAuthenticationEmail: String? = null,
     open var userPhoneNumber: PayPalPhoneNumber? = null,
     open var lineItems: List<PayPalLineItem> = emptyList()

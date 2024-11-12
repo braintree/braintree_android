@@ -64,6 +64,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     var currencyCode: String? = null,
     var shouldRequestBillingAgreement: Boolean = false,
     var shouldOfferPayLater: Boolean = false,
+    override var enablePayPalAppSwitch: Boolean = false,
     override var localeCode: String? = null,
     override var billingAgreementDescription: String? = null,
     override var isShippingAddressRequired: Boolean = false,
@@ -87,6 +88,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     displayName = displayName,
     merchantAccountId = merchantAccountId,
     riskCorrelationId = riskCorrelationId,
+    enablePayPalAppSwitch = enablePayPalAppSwitch,
     userAuthenticationEmail = userAuthenticationEmail,
     lineItems = lineItems
 ) {
