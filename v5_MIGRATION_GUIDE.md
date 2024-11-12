@@ -21,6 +21,7 @@ basics for updating your Braintree integration from v4 to v5.
 1. [Visa Checkout](#visa-checkout)
 1. [Samsung Pay](#samsung-pay)
 1. [PayPal Native Checkout](#paypal-native-checkout)
+1. [## Chrome Custom Tab Picture-in-Picture](#chrome-custom-tab-picture-in-picture)
 
 ## Supported Versions
 
@@ -690,3 +691,27 @@ The Samsung Pay integration is no longer supported. Please remove it from your a
 
 The PayPal Native Checkout integration is no longer supported. Please remove it from your app and 
 use the PayPal (web) integration.
+
+## Chrome Custom Tab Picture-in-Picture
+Google has added a Picture-in-Picture feature to Chrome Custom Tabs. Users are now able to minimize the checkout flow at
+any point while the Chrome Custom Tab is active.
+
+When the Chrome Custom Tab is minimized and your app is resumed, calling `handleReturnToApp()` on the launcher class 
+will return `NoResult` instead of `Success` or `Failure`.  At this point you can prompt the user to return to the Chrome
+Custom Tab and complete the checkout flow.
+
+PayPal Example:
+```kotlin
+override fun onResume() {
+    super.onResume()
+
+    getPendingRequest()?.let { pendingRequest ->
+        when (val paymentAuthResult = payPalLauncher.handleReturnToApp(pendingRequest, intent)) {
+            is PayPalPaymentAuthResult.NoResult -> {
+                // Prompt user to return to the Chrome Custom Tab to complete the checkout flow
+            }
+            ...
+        }
+    }
+}
+```
