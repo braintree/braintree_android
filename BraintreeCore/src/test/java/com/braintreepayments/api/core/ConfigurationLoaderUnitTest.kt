@@ -1,43 +1,54 @@
 package com.braintreepayments.api.core
 
 import android.util.Base64
-import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
-import io.mockk.*
-import org.robolectric.RobolectricTestRunner
+import com.braintreepayments.api.testutils.Fixtures
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import org.json.JSONException
-import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.Exception
+import org.robolectric.RobolectricTestRunner
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class ConfigurationLoaderUnitTest {
-    private var configurationCache: ConfigurationCache = mockk(relaxed = true)
-    private var braintreeHttpClient: BraintreeHttpClient = mockk(relaxed = true)
-    private var callback: ConfigurationLoaderCallback = mockk(relaxed = true)
-    private var authorization: Authorization = mockk(relaxed = true)
+    private val configurationCache: ConfigurationCache = mockk(relaxed = true)
+    private val braintreeHttpClient: BraintreeHttpClient = mockk(relaxed = true)
+    private val callback: ConfigurationLoaderCallback = mockk(relaxed = true)
+    private val authorization: Authorization = mockk(relaxed = true)
+    private val merchantRepository: MerchantRepository = mockk(relaxed = true)
+
+    @Before
+    fun setUp() {
+        every { merchantRepository.authorization } returns authorization
+    }
 
     @Test
     fun loadConfiguration_loadsConfigurationForTheCurrentEnvironment() {
 
         every { authorization.configUrl } returns "https://example.com/config"
+        every { merchantRepository.authorization } returns authorization
 
-        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, callback)
+        val sut = ConfigurationLoader(braintreeHttpClient, merchantRepository, configurationCache)
+        sut.loadConfiguration(callback)
 
         val expectedConfigUrl = "https://example.com/config?configVersion=3"
         val callbackSlot = slot<NetworkResponseCallback>()
         verify {
             braintreeHttpClient.get(
-                    expectedConfigUrl,
-                    null,
-                    authorization,
-                    HttpClient.RETRY_MAX_3_TIMES,
-                    capture(callbackSlot)
+                expectedConfigUrl,
+                null,
+                authorization,
+                HttpClient.RETRY_MAX_3_TIMES,
+                capture(callbackSlot)
             )
         }
 
@@ -46,7 +57,10 @@ class ConfigurationLoaderUnitTest {
             HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0)), null
         )
 
-        verify { callback.onResult(ofType(Configuration::class), null, HttpResponseTiming(0, 0)) }
+        val successSlot = slot<ConfigurationLoaderResult>()
+        verify { callback.onResult(capture(successSlot)) }
+
+        assertTrue { successSlot.captured is ConfigurationLoaderResult.Success }
     }
 
     @Test
@@ -54,18 +68,18 @@ class ConfigurationLoaderUnitTest {
         every { authorization.configUrl } returns "https://example.com/config"
         every { authorization.bearer } returns "bearer"
 
-        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, callback)
+        val sut = ConfigurationLoader(braintreeHttpClient, merchantRepository, configurationCache)
+        sut.loadConfiguration(callback)
 
         val expectedConfigUrl = "https://example.com/config?configVersion=3"
         val callbackSlot = slot<NetworkResponseCallback>()
         verify {
             braintreeHttpClient.get(
-                    expectedConfigUrl,
-                    null,
-                    authorization,
-                    HttpClient.RETRY_MAX_3_TIMES,
-                    capture(callbackSlot)
+                expectedConfigUrl,
+                null,
+                authorization,
+                HttpClient.RETRY_MAX_3_TIMES,
+                capture(callbackSlot)
             )
         }
 
@@ -86,71 +100,72 @@ class ConfigurationLoaderUnitTest {
     @Test
     fun loadConfiguration_onJSONParsingError_forwardsExceptionToErrorResponseListener() {
         every { authorization.configUrl } returns "https://example.com/config"
-        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, callback)
+        val sut = ConfigurationLoader(braintreeHttpClient, merchantRepository, configurationCache)
+        sut.loadConfiguration(callback)
 
         val callbackSlot = slot<NetworkResponseCallback>()
         verify {
             braintreeHttpClient.get(
-                    ofType(String::class),
-                    null,
-                    authorization,
-                    HttpClient.RETRY_MAX_3_TIMES,
-                    capture(callbackSlot)
+                ofType(String::class),
+                null,
+                authorization,
+                HttpClient.RETRY_MAX_3_TIMES,
+                capture(callbackSlot)
             )
         }
         val httpResponseCallback = callbackSlot.captured
         httpResponseCallback.onResult(HttpResponse("not json", HttpResponseTiming(0, 0)), null)
-        verify {
-            callback.onResult(null, ofType(JSONException::class), null)
-        }
+
+        val errorSlot = slot<ConfigurationLoaderResult>()
+        verify { callback.onResult(capture(errorSlot)) }
+
+        assertTrue { (errorSlot.captured as ConfigurationLoaderResult.Failure).error is JSONException }
     }
 
     @Test
     fun loadConfiguration_onHttpError_forwardsExceptionToErrorResponseListener() {
         every { authorization.configUrl } returns "https://example.com/config"
-        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, callback)
+        val sut = ConfigurationLoader(braintreeHttpClient, merchantRepository, configurationCache)
+        sut.loadConfiguration(callback)
 
         val callbackSlot = slot<NetworkResponseCallback>()
 
         verify {
             braintreeHttpClient.get(
-                    ofType(String::class),
-                    null,
-                    authorization,
-                    HttpClient.RETRY_MAX_3_TIMES,
-                    capture(callbackSlot)
+                ofType(String::class),
+                null,
+                authorization,
+                HttpClient.RETRY_MAX_3_TIMES,
+                capture(callbackSlot)
             )
         }
 
         val httpResponseCallback = callbackSlot.captured
         val httpError = Exception("http error")
         httpResponseCallback.onResult(null, httpError)
-        val errorSlot = slot<Exception>()
-        verify {
-            callback.onResult(null, capture(errorSlot), null)
-        }
+        val errorSlot = slot<ConfigurationLoaderResult>()
+        verify { callback.onResult(capture(errorSlot)) }
 
-        val error = errorSlot.captured as ConfigurationException
         assertEquals(
-            "Request for configuration has failed: http error",
-            error.message
+            (errorSlot.captured as ConfigurationLoaderResult.Failure).error.message,
+            "Request for configuration has failed: http error"
         )
     }
 
     @Test
-    fun loadConfiguration_whenInvalidToken_forwardsExceptionToCallback() {
-        val authorization: Authorization = InvalidAuthorization("invalid", "token invalid")
-        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, callback)
-        val errorSlot = slot<BraintreeException>()
-        verify {
-            callback.onResult(null, capture(errorSlot), null)
-        }
+    fun loadConfiguration_whenInvalidToken_exception_is_returned() {
+        every { merchantRepository.authorization } returns InvalidAuthorization("invalid", "token invalid")
+        val sut = ConfigurationLoader(braintreeHttpClient, merchantRepository, configurationCache)
+        sut.loadConfiguration(callback)
+        val errorSlot = slot<ConfigurationLoaderResult>()
+        verify { callback.onResult(capture(errorSlot)) }
 
-        val exception = errorSlot.captured
-        assertEquals("token invalid", exception.message)
+        assertEquals(
+            (errorSlot.captured as ConfigurationLoaderResult.Failure).error.message,
+            "Valid authorization required. See " +
+                "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization " +
+                "for more info."
+        )
     }
 
     @Test
@@ -163,18 +178,22 @@ class ConfigurationLoaderUnitTest {
         every { authorization.bearer } returns "bearer"
         every { configurationCache.getConfiguration(cacheKey) } returns Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN
 
-        val sut = ConfigurationLoader(braintreeHttpClient, configurationCache)
-        sut.loadConfiguration(authorization, callback)
+        val sut = ConfigurationLoader(braintreeHttpClient, merchantRepository, configurationCache)
+        sut.loadConfiguration(callback)
 
         verify(exactly = 0) {
             braintreeHttpClient.get(
-                    ofType(String::class),
-                    null,
-                    authorization,
-                    ofType(Int::class),
-                    ofType(NetworkResponseCallback::class)
+                ofType(String::class),
+                null,
+                authorization,
+                ofType(Int::class),
+                ofType(NetworkResponseCallback::class)
             )
         }
-        verify { callback.onResult(ofType(Configuration::class), null, null) }
+
+        val successSlot = slot<ConfigurationLoaderResult>()
+        verify { callback.onResult(capture(successSlot)) }
+
+        assertTrue { successSlot.captured is ConfigurationLoaderResult.Success }
     }
 }

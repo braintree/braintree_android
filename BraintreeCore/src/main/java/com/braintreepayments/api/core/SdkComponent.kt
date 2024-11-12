@@ -12,6 +12,7 @@ internal class SdkComponent(
 ) {
     val analyticsDatabase: AnalyticsDatabase = AnalyticsDatabase.getInstance(applicationContext)
     val workManager: WorkManager = WorkManager.getInstance(applicationContext)
+    val configurationCache: ConfigurationCache = ConfigurationCache.getInstance(applicationContext)
 
     companion object {
         private var instance: SdkComponent? = null
@@ -42,4 +43,9 @@ internal class AnalyticsDatabaseProvider {
 internal class WorkManagerProvider {
     val workManager: WorkManager
         get() = SdkComponent.getInstance().workManager
+}
+
+internal class ConfigurationCacheProvider {
+    val configurationCache: ConfigurationCache
+        get() = SdkComponent.getInstance().configurationCache
 }

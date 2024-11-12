@@ -7,10 +7,10 @@ import com.braintreepayments.api.sharedutils.HttpResponseTiming
  */
 internal sealed class ConfigurationLoaderResult {
 
-    class Success(
+    data class Success(
         val configuration: Configuration,
         val timing: HttpResponseTiming? = null
     ) : ConfigurationLoaderResult()
 
-    class Failure(val error: Exception) : ConfigurationLoaderResult()
+    data class Failure(val error: Exception) : ConfigurationLoaderResult()
 }

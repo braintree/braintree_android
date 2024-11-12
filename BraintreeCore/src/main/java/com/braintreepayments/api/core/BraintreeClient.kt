@@ -114,10 +114,7 @@ class BraintreeClient internal constructor(
             experiment = params.experiment,
             paymentMethodsDisplayed = params.paymentMethodsDisplayed
         )
-        analyticsClient.sendEvent(
-            event = event,
-            integration = merchantRepository.integrationType,
-        )
+        analyticsClient.sendEvent(event)
     }
 
     /**

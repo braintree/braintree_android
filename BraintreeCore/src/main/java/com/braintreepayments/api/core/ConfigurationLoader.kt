@@ -7,10 +7,9 @@ import org.json.JSONException
 
 internal class ConfigurationLoader(
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
-    private val merchantRepository: MerchantRepository = MerchantRepository.instance
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val configurationCache: ConfigurationCache = ConfigurationCacheProvider().configurationCache,
 ) {
-    private val configurationCache: ConfigurationCache
-        get() = ConfigurationCache.getInstance(merchantRepository.applicationContext)
 
     fun loadConfiguration(callback: ConfigurationLoaderCallback) {
         val authorization = merchantRepository.authorization
@@ -45,9 +44,6 @@ internal class ConfigurationLoader(
                         callback.onResult(ConfigurationLoaderResult.Success(configuration, timing))
 
                         // TODO: send timing analytics
-
-
-
                     } catch (jsonException: JSONException) {
                         callback.onResult(ConfigurationLoaderResult.Failure(jsonException))
                     }

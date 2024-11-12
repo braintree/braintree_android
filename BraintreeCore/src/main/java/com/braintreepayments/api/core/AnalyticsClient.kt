@@ -27,17 +27,14 @@ internal class AnalyticsClient(
     private val applicationContext: Context
         get() = merchantRepository.applicationContext
 
-    fun sendEvent(
-        event: AnalyticsEvent,
-        integration: IntegrationType?,
-    ) {
+    fun sendEvent(event: AnalyticsEvent) {
         configurationLoader.loadConfiguration { result ->
             if (result is ConfigurationLoaderResult.Success) {
                 scheduleAnalyticsWriteInBackground(event, merchantRepository.authorization)
                 scheduleAnalyticsUploadInBackground(
                     configuration = result.configuration,
                     authorization = merchantRepository.authorization,
-                    integration = integration
+                    integration = merchantRepository.integrationType
                 )
             }
         }
