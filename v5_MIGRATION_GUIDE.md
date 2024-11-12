@@ -21,7 +21,7 @@ basics for updating your Braintree integration from v4 to v5.
 1. [Visa Checkout](#visa-checkout)
 1. [Samsung Pay](#samsung-pay)
 1. [PayPal Native Checkout](#paypal-native-checkout)
-1. [## Chrome Custom Tab Picture-in-Picture](#chrome-custom-tab-picture-in-picture)
+1. [Chrome Custom Tab Picture-in-Picture](#chrome-custom-tab-picture-in-picture)
 
 ## Supported Versions
 
