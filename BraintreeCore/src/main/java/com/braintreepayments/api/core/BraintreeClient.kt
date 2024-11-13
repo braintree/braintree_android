@@ -101,10 +101,9 @@ class BraintreeClient internal constructor(
         eventName: String,
         params: AnalyticsEventParams = AnalyticsEventParams()
     ) {
-        val timestamp = time.currentTime
         val event = AnalyticsEvent(
             name = eventName,
-            timestamp = timestamp,
+            timestamp = time.currentTime,
             payPalContextId = params.payPalContextId,
             linkType = params.linkType,
             isVaultRequest = params.isVaultRequest,
@@ -200,7 +199,7 @@ class BraintreeClient internal constructor(
                                         endpoint = finalQuery
                                     )
                                     sendAnalyticsEvent(
-                                        CoreAnalytics.apiRequestLatency,
+                                        CoreAnalytics.API_REQUEST_LATENCY,
                                         params
                                     )
                                 }
@@ -272,7 +271,7 @@ class BraintreeClient internal constructor(
         )
 
         sendAnalyticsEvent(
-            CoreAnalytics.apiRequestLatency,
+            CoreAnalytics.API_REQUEST_LATENCY,
             AnalyticsEventParams(
                 startTime = timing.startTime,
                 endTime = timing.endTime,

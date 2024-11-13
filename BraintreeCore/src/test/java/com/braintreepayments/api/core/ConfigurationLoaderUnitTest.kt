@@ -5,6 +5,7 @@ import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
+import com.braintreepayments.api.sharedutils.Time
 import com.braintreepayments.api.testutils.Fixtures
 import io.mockk.every
 import io.mockk.mockk
@@ -25,6 +26,8 @@ class ConfigurationLoaderUnitTest {
     private val callback: ConfigurationLoaderCallback = mockk(relaxed = true)
     private val authorization: Authorization = mockk(relaxed = true)
     private val merchantRepository: MerchantRepository = mockk(relaxed = true)
+    private val analyticsClient: AnalyticsClient = mockk(relaxed = true)
+    private val time: Time = mockk(relaxed = true)
 
     @Before
     fun setUp() {
@@ -188,6 +191,56 @@ class ConfigurationLoaderUnitTest {
                 authorization,
                 ofType(Int::class),
                 ofType(NetworkResponseCallback::class)
+            )
+        }
+
+        val successSlot = slot<ConfigurationLoaderResult>()
+        verify { callback.onResult(capture(successSlot)) }
+
+        assertTrue { successSlot.captured is ConfigurationLoaderResult.Success }
+    }
+
+    @Test
+    fun `when loadConfiguration is called and configuration is fetched from the API, analytics event is sent`() {
+        every { authorization.configUrl } returns "https://example.com/config"
+        every { merchantRepository.authorization } returns authorization
+        every { time.currentTime } returns 123
+
+        val sut = ConfigurationLoader(
+            httpClient = braintreeHttpClient,
+            merchantRepository = merchantRepository,
+            configurationCache = configurationCache,
+            time = time,
+            lazyAnalyticsClient = lazy { analyticsClient }
+        )
+        sut.loadConfiguration(callback)
+
+        val expectedConfigUrl = "https://example.com/config?configVersion=3"
+        val callbackSlot = slot<NetworkResponseCallback>()
+        verify {
+            braintreeHttpClient.get(
+                expectedConfigUrl,
+                null,
+                authorization,
+                HttpClient.RETRY_MAX_3_TIMES,
+                capture(callbackSlot)
+            )
+        }
+
+        val httpResponseCallback = callbackSlot.captured
+        httpResponseCallback.onResult(
+            HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 10)), null
+        )
+
+        verify {
+            analyticsClient.sendEvent(
+                AnalyticsEvent(
+                    name = CoreAnalytics.API_REQUEST_LATENCY,
+                    timestamp = 123,
+                    startTime = 0,
+                    endTime = 10,
+                    endpoint = "/v1/configuration"
+                )
             )
         }
 

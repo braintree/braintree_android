@@ -3,13 +3,17 @@ package com.braintreepayments.api.core
 import android.net.Uri
 import android.util.Base64
 import com.braintreepayments.api.sharedutils.HttpClient
+import com.braintreepayments.api.sharedutils.Time
 import org.json.JSONException
 
 internal class ConfigurationLoader(
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val configurationCache: ConfigurationCache = ConfigurationCacheProvider().configurationCache,
+    private val time: Time = Time(),
+    lazyAnalyticsClient: Lazy<AnalyticsClient> = lazy { AnalyticsClient(httpClient) },
 ) {
+    private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
 
     fun loadConfiguration(callback: ConfigurationLoaderCallback) {
         val authorization = merchantRepository.authorization
@@ -43,7 +47,15 @@ internal class ConfigurationLoader(
                         saveConfigurationToCache(configuration, authorization, configUrl)
                         callback.onResult(ConfigurationLoaderResult.Success(configuration, timing))
 
-                        // TODO: send timing analytics
+                        analyticsClient.sendEvent(
+                            AnalyticsEvent(
+                                name = CoreAnalytics.API_REQUEST_LATENCY,
+                                timestamp = time.currentTime,
+                                startTime = timing?.startTime,
+                                endTime = timing?.endTime,
+                                endpoint = "/v1/configuration"
+                            )
+                        )
                     } catch (jsonException: JSONException) {
                         callback.onResult(ConfigurationLoaderResult.Failure(jsonException))
                     }
