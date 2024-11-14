@@ -1,6 +1,7 @@
 package com.braintreepayments.api.core
 
 import android.content.Context
+import androidx.annotation.RestrictTo
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
@@ -13,8 +14,9 @@ import org.json.JSONObject
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 @Suppress("SwallowedException", "TooGenericExceptionCaught")
-internal class AnalyticsClient(
+class AnalyticsClient internal constructor(
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
     private val analyticsDatabase: AnalyticsDatabase = AnalyticsDatabaseProvider().analyticsDatabase,
     private val workManager: WorkManager = WorkManagerProvider().workManager,
@@ -27,10 +29,25 @@ internal class AnalyticsClient(
     private val applicationContext: Context
         get() = merchantRepository.applicationContext
 
-    fun sendEvent(event: AnalyticsEvent) {
+    fun sendEvent(
+        eventName: String,
+        analyticsEventParams: AnalyticsEventParams = AnalyticsEventParams()
+    ) {
+        val analyticsEvent = AnalyticsEvent(
+            name = eventName,
+            timestamp = time.currentTime,
+            payPalContextId = analyticsEventParams.payPalContextId,
+            linkType = analyticsEventParams.linkType,
+            isVaultRequest = analyticsEventParams.isVaultRequest,
+            startTime = analyticsEventParams.startTime,
+            endTime = analyticsEventParams.endTime,
+            endpoint = analyticsEventParams.endpoint,
+            experiment = analyticsEventParams.experiment,
+            paymentMethodsDisplayed = analyticsEventParams.paymentMethodsDisplayed
+        )
         configurationLoader.loadConfiguration { result ->
             if (result is ConfigurationLoaderResult.Success) {
-                scheduleAnalyticsWriteInBackground(event, merchantRepository.authorization)
+                scheduleAnalyticsWriteInBackground(analyticsEvent, merchantRepository.authorization)
                 scheduleAnalyticsUploadInBackground(
                     configuration = result.configuration,
                     authorization = merchantRepository.authorization,

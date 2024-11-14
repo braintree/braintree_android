@@ -52,9 +52,8 @@ internal class ConfigurationLoader(
                         callback.onResult(ConfigurationLoaderResult.Success(configuration, timing))
 
                         analyticsClient.sendEvent(
-                            AnalyticsEvent(
-                                name = CoreAnalytics.API_REQUEST_LATENCY,
-                                timestamp = time.currentTime,
+                            eventName = CoreAnalytics.API_REQUEST_LATENCY,
+                            analyticsEventParams = AnalyticsEventParams(
                                 startTime = timing?.startTime,
                                 endTime = timing?.endTime,
                                 endpoint = "/v1/configuration"

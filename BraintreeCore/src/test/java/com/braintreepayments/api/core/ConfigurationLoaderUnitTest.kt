@@ -234,9 +234,8 @@ class ConfigurationLoaderUnitTest {
 
         verify {
             analyticsClient.sendEvent(
-                AnalyticsEvent(
-                    name = CoreAnalytics.API_REQUEST_LATENCY,
-                    timestamp = 123,
+                eventName = CoreAnalytics.API_REQUEST_LATENCY,
+                analyticsEventParams = AnalyticsEventParams(
                     startTime = 0,
                     endTime = 10,
                     endpoint = "/v1/configuration"
