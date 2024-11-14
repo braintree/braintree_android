@@ -44,7 +44,6 @@ internal class PayPalInternalClient(
                     CREATE_SINGLE_PAYMENT_ENDPOINT
                 }
                 val url = "/v1/$endpoint"
-                val appLinkReturn = if (isBillingAgreement) appLink else null
 
                 if (isBillingAgreement && (payPalRequest as PayPalVaultRequest).enablePayPalAppSwitch) {
                     payPalRequest.enablePayPalAppSwitch = isPayPalInstalled(context)
@@ -55,7 +54,7 @@ internal class PayPalInternalClient(
                     authorization = merchantRepository.authorization,
                     successUrl = successUrl,
                     cancelUrl = cancelUrl,
-                    appLink = appLinkReturn
+                    appLink = appLink
                 ) ?: throw JSONException("Error creating requestBody")
 
                 sendPost(
