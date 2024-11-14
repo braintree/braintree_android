@@ -136,7 +136,6 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
             parameters.put(MERCHANT_APP_RETURN_URL_KEY, appLink)
         }
 
-
         if (currencyCode == null) {
             currencyCode = configuration?.payPalCurrencyIsoCode
         }
