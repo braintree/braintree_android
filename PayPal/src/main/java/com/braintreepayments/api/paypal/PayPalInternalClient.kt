@@ -45,7 +45,7 @@ internal class PayPalInternalClient(
                 }
                 val url = "/v1/$endpoint"
 
-                if (isBillingAgreement && (payPalRequest as PayPalVaultRequest).enablePayPalAppSwitch) {
+                if (payPalRequest.enablePayPalAppSwitch) {
                     payPalRequest.enablePayPalAppSwitch = isPayPalInstalled(context)
                 }
 
