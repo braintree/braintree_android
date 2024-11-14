@@ -11,6 +11,10 @@ internal class ConfigurationLoader(
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val configurationCache: ConfigurationCache = ConfigurationCacheProvider().configurationCache,
     private val time: Time = Time(),
+    /**
+     * TODO: AnalyticsClient must be lazy due to the circular dependency between ConfigurationLoader and AnalyticsClient
+     * This should be refactored to remove the circular dependency.
+     */
     lazyAnalyticsClient: Lazy<AnalyticsClient> = lazy { AnalyticsClient(httpClient) },
 ) {
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
