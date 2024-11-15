@@ -326,9 +326,7 @@ class BraintreeClientUnitTest {
         sut.sendAnalyticsEvent("event.started")
 
         verify {
-            analyticsClient.sendEvent(
-                match { it.name == "event.started" && it.timestamp == 123L },
-            )
+            analyticsClient.sendEvent("event.started")
         }
     }
 

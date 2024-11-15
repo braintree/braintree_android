@@ -101,19 +101,7 @@ class BraintreeClient internal constructor(
         eventName: String,
         params: AnalyticsEventParams = AnalyticsEventParams()
     ) {
-        val event = AnalyticsEvent(
-            name = eventName,
-            timestamp = time.currentTime,
-            payPalContextId = params.payPalContextId,
-            linkType = params.linkType,
-            isVaultRequest = params.isVaultRequest,
-            startTime = params.startTime,
-            endTime = params.endTime,
-            endpoint = params.endpoint,
-            experiment = params.experiment,
-            paymentMethodsDisplayed = params.paymentMethodsDisplayed
-        )
-        analyticsClient.sendEvent(event)
+        analyticsClient.sendEvent(eventName, params)
     }
 
     /**

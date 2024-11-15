@@ -103,9 +103,7 @@ class AnalyticsClientUnitTest {
             )
         } returns mockk()
 
-        val event = AnalyticsEvent(eventName, timestamp = 123)
-
-        sut.sendEvent(event)
+        sut.sendEvent(eventName)
 
         val workSpec = workRequestSlot.captured.workSpec
         assertEquals(AnalyticsWriteToDbWorker::class.java.name, workSpec.workerClassName)
@@ -142,7 +140,14 @@ class AnalyticsClientUnitTest {
             timestamp = 456
         )
 
-        sut.sendEvent(event)
+        sut.sendEvent(
+            eventName = eventName,
+            analyticsEventParams = AnalyticsEventParams(
+                payPalContextId = "fake-paypal-context-id",
+                linkType = "fake-link-type",
+                isVaultRequest = true,
+            )
+        )
 
         val workSpec = workRequestSlot.captured.workSpec
         assertEquals(30000, workSpec.initialDelay)
@@ -528,8 +533,7 @@ class AnalyticsClientUnitTest {
             deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         } returns metadata
 
-        val event = AnalyticsEvent(eventName, timestamp)
-        sut.sendEvent(event)
+        sut.sendEvent(eventName)
 
         sut.reportCrash(context, configuration, integration, null)
 
@@ -539,7 +543,7 @@ class AnalyticsClientUnitTest {
 
     @Test
     fun `sendEvent enqueues work to upload analytic events with sessionId in the name`() {
-        sut.sendEvent(AnalyticsEvent("event-name", timestamp))
+        sut.sendEvent("event-name")
 
         verify {
             workManager.enqueueUniqueWork(
