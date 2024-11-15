@@ -192,16 +192,16 @@ class ShopperInsightsFragment : BaseFragment() {
                     if (result.response.isPayPalRecommended) {
                         payPalVaultButton.isEnabled = true
                         shopperInsightsClient.sendPayPalPresentedEvent(
-                            "dummy_paypal_presented_experiment",
-                            listOf("PayPal, Apple Pay, Google Pay")
+                            """{"exp_name":"PaymentReady","treatment_name":"control"}""",
+                            listOf("PayPal", "Venmo", "other")
                         )
                     }
 
                     if (result.response.isVenmoRecommended) {
                         venmoButton.isEnabled = true
                         shopperInsightsClient.sendVenmoPresentedEvent(
-                            "dummy_venmo_presented_experiment",
-                            listOf("Apple Pay, Venmo, Google Pay")
+                            """{"exp_name":"PaymentReady","treatment_name":"test"}""",
+                            listOf("Venmo", "PayPal", "other")
                         )
                     }
 
