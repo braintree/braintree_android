@@ -30,7 +30,7 @@ internal class BraintreeHttpClient(
         configuration: Configuration?,
         authorization: Authorization?,
         callback: NetworkResponseCallback
-    ) = get(path, configuration, authorization, HttpClient.NO_RETRY, callback)
+    ) = get(path, configuration, authorization, RetryStrategy.NO_RETRY, callback)
 
     /**
      * Make a HTTP GET request to Braintree using the base url, path and authorization provided.
@@ -45,7 +45,7 @@ internal class BraintreeHttpClient(
         path: String,
         configuration: Configuration?,
         authorization: Authorization?,
-        @RetryStrategy retryStrategy: Int,
+        retryStrategy: RetryStrategy,
         callback: NetworkResponseCallback
     ) {
         if (authorization is InvalidAuthorization) {
@@ -76,7 +76,7 @@ internal class BraintreeHttpClient(
         if (authorization is TokenizationKey) {
             request.addHeader(CLIENT_KEY_HEADER, authorization.bearer)
         }
-        httpClient.sendRequest(request, retryStrategy, callback)
+        httpClient.sendRequest(request, callback, retryStrategy)
     }
 
     /**
@@ -185,8 +185,7 @@ internal class BraintreeHttpClient(
 
         @Throws(SSLException::class)
         private fun createDefaultHttpClient(): HttpClient {
-            val socketFactory =
-                TLSSocketFactory(TLSCertificatePinning.createCertificateInputStream())
+            val socketFactory = TLSSocketFactory(TLSCertificatePinning.createCertificateInputStream())
             return HttpClient(socketFactory, BraintreeHttpResponseParser())
         }
     }
