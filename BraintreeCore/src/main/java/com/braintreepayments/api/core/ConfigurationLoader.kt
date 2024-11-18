@@ -16,10 +16,7 @@ internal class ConfigurationLoader(
      * This should be refactored to remove the circular dependency.
      */
     lazyAnalyticsClient: Lazy<AnalyticsClient> = lazy {
-        AnalyticsClient(
-            httpClient = httpClient,
-            merchantRepository = merchantRepository
-        )
+        AnalyticsClient(httpClient = httpClient)
     },
 ) {
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient

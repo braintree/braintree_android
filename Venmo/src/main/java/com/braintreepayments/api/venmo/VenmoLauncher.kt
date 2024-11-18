@@ -20,7 +20,7 @@ class VenmoLauncher internal constructor(
 
     constructor() : this(
         browserSwitchClient = BrowserSwitchClient(),
-        lazyAnalyticsClient = lazy { AnalyticsClient() }
+        lazyAnalyticsClient = AnalyticsClient.lazyInstance
     )
 
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient

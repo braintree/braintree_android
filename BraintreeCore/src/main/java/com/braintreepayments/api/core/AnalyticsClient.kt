@@ -24,12 +24,8 @@ class AnalyticsClient internal constructor(
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
     private val time: Time = Time(),
     private val configurationLoader: ConfigurationLoader = ConfigurationLoader.instance,
-    private val merchantRepository: MerchantRepository
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance
 ) {
-
-    constructor() : this(
-        merchantRepository = MerchantRepository.instance
-    )
 
     private val applicationContext: Context
         get() = merchantRepository.applicationContext
@@ -275,6 +271,9 @@ class AnalyticsClient internal constructor(
     }
 
     companion object {
+
+        val lazyInstance: Lazy<AnalyticsClient> = lazy { AnalyticsClient() }
+
         private const val FPTI_ANALYTICS_URL = "https://api-m.paypal.com/v1/tracking/batch/events"
 
         private const val FPTI_KEY_PAYPAL_CONTEXT_ID = "paypal_context_id"
