@@ -34,7 +34,7 @@ class VenmoLauncherUnitTest {
     @Before
     fun setup() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
-        sut = VenmoLauncher(browserSwitchClient)
+        sut = VenmoLauncher(browserSwitchClient, lazy { mockk(relaxed = true) })
     }
 
     @Test
