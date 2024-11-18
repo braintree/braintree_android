@@ -27,6 +27,15 @@ android {
         }
     }
 
+    buildTypes {
+        debug {
+            buildConfigField "boolean", "API_LOGGING", "true"
+        }
+        release {
+            buildConfigField "boolean", "API_LOGGING", "false"
+        }
+    }
+
     testOptions {
         unitTests {
             includeAndroidResources = true

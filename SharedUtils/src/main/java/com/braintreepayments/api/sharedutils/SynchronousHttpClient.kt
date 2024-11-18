@@ -1,5 +1,6 @@
 package com.braintreepayments.api.sharedutils
 
+import android.util.Log
 import androidx.annotation.RestrictTo
 import java.net.HttpURLConnection
 import javax.net.ssl.HttpsURLConnection
@@ -54,6 +55,22 @@ internal class SynchronousHttpClient(
         try {
             val responseCode = connection.responseCode
             val endTime = System.currentTimeMillis()
+
+
+            val urlString = with(httpRequest.url) { "$protocol://$host$path" }
+            val logString = """
+                ==================================================
+                ${httpRequest.method} $responseCode $urlString
+               
+               
+                Url: ${connection.url}
+                
+                Query Params:
+                ${httpRequest.url.query}
+                ==================================================
+            """.trimIndent()
+            Log.d("API_LOG", logString)
+
 
             return HttpResponse(
                 body = parser.parse(responseCode, connection),
