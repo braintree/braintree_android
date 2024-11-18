@@ -18,8 +18,8 @@ internal class SynchronousHttpClient(
     @Throws(Exception::class)
     fun request(httpRequest: HttpRequest): HttpResponse {
         requireNotNull(httpRequest.path) { "Path cannot be null" }
-        val url = httpRequest.url
 
+        val url = httpRequest.url
         val startTime = System.currentTimeMillis()
 
         val connection = url.openConnection() as HttpURLConnection
