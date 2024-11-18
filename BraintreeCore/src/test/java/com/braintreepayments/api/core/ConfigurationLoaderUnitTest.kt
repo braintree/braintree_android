@@ -50,7 +50,7 @@ class ConfigurationLoaderUnitTest {
                 expectedConfigUrl,
                 null,
                 authorization,
-                HttpClient.RETRY_MAX_3_TIMES,
+                HttpClient.RetryStrategy.RETRY_MAX_3_TIMES,
                 capture(callbackSlot)
             )
         }
@@ -81,7 +81,7 @@ class ConfigurationLoaderUnitTest {
                 expectedConfigUrl,
                 null,
                 authorization,
-                HttpClient.RETRY_MAX_3_TIMES,
+                HttpClient.RetryStrategy.RETRY_MAX_3_TIMES,
                 capture(callbackSlot)
             )
         }
@@ -112,7 +112,7 @@ class ConfigurationLoaderUnitTest {
                 ofType(String::class),
                 null,
                 authorization,
-                HttpClient.RETRY_MAX_3_TIMES,
+                HttpClient.RetryStrategy.RETRY_MAX_3_TIMES,
                 capture(callbackSlot)
             )
         }
@@ -138,7 +138,7 @@ class ConfigurationLoaderUnitTest {
                 ofType(String::class),
                 null,
                 authorization,
-                HttpClient.RETRY_MAX_3_TIMES,
+                HttpClient.RetryStrategy.RETRY_MAX_3_TIMES,
                 capture(callbackSlot)
             )
         }
@@ -189,7 +189,7 @@ class ConfigurationLoaderUnitTest {
                 ofType(String::class),
                 null,
                 authorization,
-                ofType(Int::class),
+                any(),
                 ofType(NetworkResponseCallback::class)
             )
         }
@@ -222,7 +222,7 @@ class ConfigurationLoaderUnitTest {
                 expectedConfigUrl,
                 null,
                 authorization,
-                HttpClient.RETRY_MAX_3_TIMES,
+                HttpClient.RetryStrategy.RETRY_MAX_3_TIMES,
                 capture(callbackSlot)
             )
         }

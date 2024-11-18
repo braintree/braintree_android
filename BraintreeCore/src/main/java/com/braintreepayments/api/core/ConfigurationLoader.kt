@@ -41,7 +41,7 @@ internal class ConfigurationLoader(
             callback.onResult(ConfigurationLoaderResult.Success(it))
         } ?: run {
             httpClient.get(
-                configUrl, null, authorization, HttpClient.RETRY_MAX_3_TIMES
+                configUrl, null, authorization, HttpClient.RetryStrategy.RETRY_MAX_3_TIMES
             ) { response, httpError ->
                 val responseBody = response?.body
                 val timing = response?.timing
