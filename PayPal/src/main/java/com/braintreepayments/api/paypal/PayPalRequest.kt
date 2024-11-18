@@ -68,7 +68,9 @@ import org.json.JSONException
  * tokenization.
  * @property riskCorrelationId A risk correlation ID created with Set Transaction Context on your
  * server.
- * @property enablePayPalAppSwitch Used to determine if the customer will use the PayPal app switch
+ * @property enablePayPalAppSwitch Used to determine if the customer will use the PayPal app switch flow.
+ *  Defaults to `false`.
+ *  - Warning: This property is currently in beta and may change or be removed in future releases.
  * @property userAuthenticationEmail User email to initiate a quicker authentication flow in cases
  * where the user has a PayPal Account with the same email.
  * @property userPhoneNumber User phone number used to initiate a quicker authentication flow in
