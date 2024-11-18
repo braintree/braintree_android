@@ -24,8 +24,13 @@ class AnalyticsClient internal constructor(
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
     private val time: Time = Time(),
     private val configurationLoader: ConfigurationLoader = ConfigurationLoader.instance,
-    private val merchantRepository: MerchantRepository = MerchantRepository.instance
+    private val merchantRepository: MerchantRepository
 ) {
+
+    constructor() : this(
+        merchantRepository = MerchantRepository.instance
+    )
+
     private val applicationContext: Context
         get() = merchantRepository.applicationContext
 

@@ -11,4 +11,8 @@ internal object VenmoAnalytics {
     // Additional Detail Events
     const val APP_SWITCH_SUCCEEDED = "venmo:tokenize:app-switch:succeeded"
     const val APP_SWITCH_FAILED = "venmo:tokenize:app-switch:failed"
+
+    // App Switch events
+    const val APP_SWITCH_STARTED = "venmo:tokenize:app-switch:started"
+    const val HANDLE_RETURN_STARTED = "venmo:tokenize:handle-return:started"
 }

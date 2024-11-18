@@ -7,15 +7,23 @@ import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchStartResult
+import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.BraintreeException
 
 /**
  * Responsible for launching the Venmo app to authenticate users
  */
 class VenmoLauncher internal constructor(
-    private val browserSwitchClient: BrowserSwitchClient
+    private val browserSwitchClient: BrowserSwitchClient,
+    lazyAnalyticsClient: Lazy<AnalyticsClient>
 ) {
-    constructor() : this(BrowserSwitchClient())
+
+    constructor() : this(
+        browserSwitchClient = BrowserSwitchClient(),
+        lazyAnalyticsClient = lazy { AnalyticsClient() }
+    )
+
+    private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
 
     /**
      * Launches the Venmo authentication flow by switching to the Venmo app or a mobile browser, if
@@ -32,6 +40,7 @@ class VenmoLauncher internal constructor(
         activity: ComponentActivity,
         paymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch
     ): VenmoPendingRequest {
+        analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_STARTED)
         try {
             assertCanPerformBrowserSwitch(activity, paymentAuthRequest.requestParams)
         } catch (browserSwitchException: BrowserSwitchException) {
@@ -71,6 +80,7 @@ class VenmoLauncher internal constructor(
         pendingRequest: VenmoPendingRequest.Started,
         intent: Intent
     ): VenmoPaymentAuthResult {
+        analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_STARTED)
         return when (val browserSwitchResult =
             browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
             is BrowserSwitchFinalResult.Success -> VenmoPaymentAuthResult.Success(
@@ -109,9 +119,9 @@ class VenmoLauncher internal constructor(
         private fun createBrowserSwitchError(exception: BrowserSwitchException): Exception {
             return BraintreeException(
                 "AndroidManifest.xml is incorrectly configured or another app defines the same " +
-                        "browser switch url as this app. See https://developer.paypal.com/" +
-                        "braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
-                        "for the correct configuration: " + exception.message
+                    "browser switch url as this app. See https://developer.paypal.com/" +
+                    "braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
+                    "for the correct configuration: " + exception.message
             )
         }
     }
