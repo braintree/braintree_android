@@ -15,5 +15,6 @@ internal data class AnalyticsEvent(
     val endTime: Long? = null,
     val endpoint: String? = null,
     val experiment: String? = null,
-    val paymentMethodsDisplayed: List<String> = emptyList()
+    val paymentMethodsDisplayed: List<String> = emptyList(),
+    val appSwitchUrl: String? = null
 )

@@ -335,7 +335,7 @@ class VenmoClient internal constructor(
 
     private val analyticsParams: AnalyticsEventParams
         get() {
-            val eventParameters = AnalyticsEventParams()
+            val eventParameters = AnalyticsEventParams(appSwitchUrl = merchantRepository.returnUrlScheme)
             eventParameters.payPalContextId = payPalContextId
             eventParameters.linkType = LINK_TYPE
             eventParameters.isVaultRequest = isVaultRequest

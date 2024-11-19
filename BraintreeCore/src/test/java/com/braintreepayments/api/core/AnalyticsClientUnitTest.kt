@@ -47,6 +47,7 @@ class AnalyticsClientUnitTest {
     private lateinit var sut: AnalyticsClient
 
     private var timestamp: Long = 0
+    private val returnUrlScheme = "com.braintreepayments.demo.braintree"
 
     @Before
     @Throws(InvalidArgumentException::class, GeneralSecurityException::class, IOException::class)
@@ -74,6 +75,7 @@ class AnalyticsClientUnitTest {
         every { time.currentTime } returns 123
         every { merchantRepository.authorization } returns authorization
         every { merchantRepository.applicationContext } returns context
+        every { merchantRepository.returnUrlScheme } returns returnUrlScheme
 
         configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
@@ -103,7 +105,7 @@ class AnalyticsClientUnitTest {
             )
         } returns mockk()
 
-        sut.sendEvent(eventName)
+        sut.sendEvent(eventName, AnalyticsEventParams(appSwitchUrl = returnUrlScheme))
 
         val workSpec = workRequestSlot.captured.workSpec
         assertEquals(AnalyticsWriteToDbWorker::class.java.name, workSpec.workerClassName)
@@ -115,7 +117,8 @@ class AnalyticsClientUnitTest {
           "event_name": "sample-event-name",
           "t": 123,
           "is_vault": false,
-          "tenant_name": "Braintree"
+          "tenant_name": "Braintree",
+          "url": "$returnUrlScheme"
         }
         """
         val actualJSON = workSpec.input.getString(WORK_INPUT_KEY_ANALYTICS_JSON)!!

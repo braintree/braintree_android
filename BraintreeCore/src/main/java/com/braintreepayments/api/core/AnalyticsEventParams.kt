@@ -27,5 +27,6 @@ data class AnalyticsEventParams @JvmOverloads constructor(
     var endTime: Long? = null,
     var endpoint: String? = null,
     val experiment: String? = null,
-    val paymentMethodsDisplayed: List<String> = emptyList()
+    val paymentMethodsDisplayed: List<String> = emptyList(),
+    val appSwitchUrl: String? = null
 )

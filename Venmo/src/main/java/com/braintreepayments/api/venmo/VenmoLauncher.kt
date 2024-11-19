@@ -8,18 +8,22 @@ import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.MerchantRepository
 
 /**
  * Responsible for launching the Venmo app to authenticate users
  */
 class VenmoLauncher internal constructor(
     private val browserSwitchClient: BrowserSwitchClient,
-    lazyAnalyticsClient: Lazy<AnalyticsClient>
+    private val merchantRepository: MerchantRepository,
+    lazyAnalyticsClient: Lazy<AnalyticsClient>,
 ) {
 
     constructor() : this(
         browserSwitchClient = BrowserSwitchClient(),
+        merchantRepository = MerchantRepository.instance,
         lazyAnalyticsClient = AnalyticsClient.lazyInstance
     )
 
@@ -40,7 +44,10 @@ class VenmoLauncher internal constructor(
         activity: ComponentActivity,
         paymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch
     ): VenmoPendingRequest {
-        analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_STARTED)
+        analyticsClient.sendEvent(
+            eventName = VenmoAnalytics.APP_SWITCH_STARTED,
+            analyticsEventParams = analyticsEventParams
+        )
         try {
             assertCanPerformBrowserSwitch(activity, paymentAuthRequest.requestParams)
         } catch (browserSwitchException: BrowserSwitchException) {
@@ -80,7 +87,10 @@ class VenmoLauncher internal constructor(
         pendingRequest: VenmoPendingRequest.Started,
         intent: Intent
     ): VenmoPaymentAuthResult {
-        analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_STARTED)
+        analyticsClient.sendEvent(
+            eventName = VenmoAnalytics.HANDLE_RETURN_STARTED,
+            analyticsEventParams = analyticsEventParams
+        )
         return when (val browserSwitchResult =
             browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
             is BrowserSwitchFinalResult.Success -> VenmoPaymentAuthResult.Success(
@@ -113,6 +123,8 @@ class VenmoLauncher internal constructor(
     ) {
         browserSwitchClient.assertCanPerformBrowserSwitch(activity, params.browserSwitchOptions)
     }
+
+    private val analyticsEventParams by lazy { AnalyticsEventParams(appSwitchUrl = merchantRepository.returnUrlScheme) }
 
     companion object {
         private const val VENMO_PACKAGE_NAME = "com.venmo"
