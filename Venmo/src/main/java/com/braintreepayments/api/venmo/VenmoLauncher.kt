@@ -10,20 +10,19 @@ import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeException
-import com.braintreepayments.api.core.MerchantRepository
 
 /**
  * Responsible for launching the Venmo app to authenticate users
  */
 class VenmoLauncher internal constructor(
     private val browserSwitchClient: BrowserSwitchClient,
-    private val merchantRepository: MerchantRepository,
+    private val venmoRepository: VenmoRepository,
     lazyAnalyticsClient: Lazy<AnalyticsClient>,
 ) {
 
     constructor() : this(
         browserSwitchClient = BrowserSwitchClient(),
-        merchantRepository = MerchantRepository.instance,
+        venmoRepository = VenmoRepository.instance,
         lazyAnalyticsClient = AnalyticsClient.lazyInstance
     )
 
@@ -124,7 +123,9 @@ class VenmoLauncher internal constructor(
         browserSwitchClient.assertCanPerformBrowserSwitch(activity, params.browserSwitchOptions)
     }
 
-    private val analyticsEventParams by lazy { AnalyticsEventParams(appSwitchUrl = merchantRepository.returnUrlScheme) }
+    private val analyticsEventParams by lazy {
+        AnalyticsEventParams(appSwitchUrl = venmoRepository.venmoUrl.toString())
+    }
 
     companion object {
         private const val VENMO_PACKAGE_NAME = "com.venmo"

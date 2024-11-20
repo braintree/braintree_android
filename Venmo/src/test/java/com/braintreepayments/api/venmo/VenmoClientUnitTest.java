@@ -65,7 +65,7 @@ public class VenmoClientUnitTest {
     private final Uri CANCEL_URL = Uri.parse("sample-scheme://x-callback-url/vzero/auth/venmo/cancel");
 
     private final String LINK_TYPE = "universal";
-    private final String appSwitchUrl = "com.braintreepayments.demo.braintree";
+    private final Uri appSwitchUrl = Uri.parse("https://example.com");
     private final AnalyticsEventParams expectedAnalyticsParams = new AnalyticsEventParams(
         null,
         LINK_TYPE,
@@ -75,7 +75,7 @@ public class VenmoClientUnitTest {
         null,
         null,
         new ArrayList<>(),
-        appSwitchUrl
+        appSwitchUrl.toString()
     );
     private final AnalyticsEventParams expectedVaultAnalyticsParams = new AnalyticsEventParams(
         null,
@@ -86,10 +86,11 @@ public class VenmoClientUnitTest {
         null,
         null,
         new ArrayList<>(),
-        appSwitchUrl
+        appSwitchUrl.toString()
     );
 
     private final MerchantRepository merchantRepository = mock(MerchantRepository.class);
+    private final VenmoRepository venmoRepository = mock(VenmoRepository.class);
 
     @Before
     public void beforeEach() throws JSONException {
@@ -114,7 +115,7 @@ public class VenmoClientUnitTest {
         when(analyticsParamRepository.getSessionId()).thenReturn("session-id");
         when(merchantRepository.getIntegrationType()).thenReturn(IntegrationType.CUSTOM);
         when(merchantRepository.getApplicationContext()).thenReturn(context);
-        when(merchantRepository.getReturnUrlScheme()).thenReturn(appSwitchUrl);
+        when(venmoRepository.getVenmoUrl()).thenReturn(appSwitchUrl);
     }
 
     @Test
@@ -142,7 +143,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
 
@@ -178,7 +180,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
 
@@ -227,7 +230,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
 
@@ -256,7 +260,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
 
@@ -291,7 +296,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
 
@@ -329,7 +335,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
 
@@ -363,7 +370,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
         verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_STARTED, new AnalyticsEventParams());
@@ -391,7 +399,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
 
@@ -420,7 +429,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
 
@@ -449,7 +459,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
 
@@ -477,7 +488,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
 
@@ -504,7 +516,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
 
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback);
@@ -529,7 +542,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
 
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback);
@@ -563,7 +577,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
 
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback);
@@ -600,7 +615,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
 
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback);
@@ -641,7 +657,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
 
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback);
@@ -661,7 +678,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
 
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback);
@@ -695,7 +713,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
 
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback);
@@ -717,7 +736,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
 
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback);
@@ -747,7 +767,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
 
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback);
@@ -787,7 +808,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
 
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback);
@@ -822,7 +844,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
 
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback);
@@ -866,7 +889,8 @@ public class VenmoClientUnitTest {
             venmoApi,
             sharedPrefsWriter,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            venmoRepository
         );
 
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback);

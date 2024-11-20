@@ -1,6 +1,7 @@
 package com.braintreepayments.api.venmo
 
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
@@ -9,7 +10,6 @@ import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
-import com.braintreepayments.api.core.MerchantRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -27,7 +27,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class VenmoLauncherUnitTest {
     private val browserSwitchClient: BrowserSwitchClient = mockk(relaxed = true)
-    private val merchantRepository: MerchantRepository = mockk(relaxed = true)
+    private val venmoRepository: VenmoRepository = mockk(relaxed = true)
     private val analyticsClient: AnalyticsClient = mockk(relaxed = true)
     private val activity: ComponentActivity = mockk(relaxed = true)
     private val paymentAuthRequestParams: VenmoPaymentAuthRequestParams = mockk(relaxed = true)
@@ -37,14 +37,14 @@ class VenmoLauncherUnitTest {
 
     private lateinit var sut: VenmoLauncher
 
-    private val appSwitchUrl = "com.braintreepayments.demo.braintree"
+    private val appSwitchUrl = Uri.parse("http://example.com")
 
     @Before
     fun setup() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
-        every { merchantRepository.returnUrlScheme } returns appSwitchUrl
+        every { venmoRepository.venmoUrl } returns appSwitchUrl
 
-        sut = VenmoLauncher(browserSwitchClient, merchantRepository, lazy { analyticsClient })
+        sut = VenmoLauncher(browserSwitchClient, venmoRepository, lazy { analyticsClient })
     }
 
     @Test
@@ -54,7 +54,7 @@ class VenmoLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 eventName = VenmoAnalytics.APP_SWITCH_STARTED,
-                analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl)
+                analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
             )
         }
     }
@@ -121,7 +121,7 @@ class VenmoLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 eventName = VenmoAnalytics.HANDLE_RETURN_STARTED,
-                analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl)
+                analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
             )
         }
     }
