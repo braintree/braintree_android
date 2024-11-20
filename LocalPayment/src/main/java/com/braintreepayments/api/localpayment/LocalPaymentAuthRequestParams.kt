@@ -1,6 +1,5 @@
 package com.braintreepayments.api.localpayment
 
-import androidx.annotation.RestrictTo
 import com.braintreepayments.api.BrowserSwitchOptions
 
 /**
