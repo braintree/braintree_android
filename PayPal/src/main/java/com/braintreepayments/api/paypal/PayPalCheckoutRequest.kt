@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypal
 
+import android.os.Build
 import android.text.TextUtils
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.ClientToken
@@ -64,6 +65,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     var currencyCode: String? = null,
     var shouldRequestBillingAgreement: Boolean = false,
     var shouldOfferPayLater: Boolean = false,
+    override var enablePayPalAppSwitch: Boolean = false,
     override var localeCode: String? = null,
     override var billingAgreementDescription: String? = null,
     override var isShippingAddressRequired: Boolean = false,
@@ -87,6 +89,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     displayName = displayName,
     merchantAccountId = merchantAccountId,
     riskCorrelationId = riskCorrelationId,
+    enablePayPalAppSwitch = enablePayPalAppSwitch,
     userAuthenticationEmail = userAuthenticationEmail,
     lineItems = lineItems
 ) {
@@ -125,6 +128,13 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
         }
 
         userPhoneNumber?.let { parameters.put(PHONE_NUMBER_KEY, it.toJson()) }
+
+        if (enablePayPalAppSwitch && !appLink.isNullOrEmpty() && !userAuthenticationEmail.isNullOrEmpty()) {
+            parameters.put(ENABLE_APP_SWITCH_KEY, enablePayPalAppSwitch)
+            parameters.put(OS_VERSION_KEY, Build.VERSION.SDK_INT.toString())
+            parameters.put(OS_TYPE_KEY, "Android")
+            parameters.put(MERCHANT_APP_RETURN_URL_KEY, appLink)
+        }
 
         if (currencyCode == null) {
             currencyCode = configuration?.payPalCurrencyIsoCode

@@ -123,6 +123,10 @@ public class PayPalRequestFactory {
             request.setUserPhoneNumber(new PayPalPhoneNumber(buyerPhoneCountryCode, buyerPhoneNationalNumber));
         }
 
+        if (Settings.isPayPalAppSwithEnabled(context)) {
+            request.setEnablePayPalAppSwitch(true);
+        }
+
         request.setDisplayName(Settings.getPayPalDisplayName(context));
 
         String landingPageType = Settings.getPayPalLandingPageType(context);
