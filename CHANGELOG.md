@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* LocalPayment
+  * Remove restriction on LocalPaymentAuthRequestParams. It should now be accessible outside of Braintree libraries.
+
 ## 5.2.0 (2024-10-30)
 
 * GooglePay
