@@ -3,8 +3,7 @@
 ## unreleased
 
 * LocalPayment
-  * Remove restriction on LocalPaymentAuthRequestParams. It should now be accessible outside of Braintree libraries.
-    * Addresses https://github.com/braintree/braintree_android/issues/1207.
+  * Make LocalPaymentAuthRequestParams public (fixes #1207)
 
 ## 5.2.0 (2024-10-30)
 
