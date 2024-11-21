@@ -1,5 +1,6 @@
 package com.braintreepayments.api.localpayment
 
+import androidx.annotation.RestrictTo
 import com.braintreepayments.api.BrowserSwitchOptions
 
 /**
@@ -13,5 +14,6 @@ data class LocalPaymentAuthRequestParams @JvmOverloads internal constructor(
     val request: LocalPaymentRequest,
     val approvalUrl: String,
     val paymentId: String,
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     var browserSwitchOptions: BrowserSwitchOptions? = null
 )
