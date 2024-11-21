@@ -43,13 +43,11 @@ class VenmoLauncher internal constructor(
         activity: ComponentActivity,
         paymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch
     ): VenmoPendingRequest {
-        analyticsClient.sendEvent(
-            eventName = VenmoAnalytics.APP_SWITCH_STARTED,
-            analyticsEventParams = analyticsEventParams
-        )
+        analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_STARTED, analyticsEventParams)
         try {
             assertCanPerformBrowserSwitch(activity, paymentAuthRequest.requestParams)
         } catch (browserSwitchException: BrowserSwitchException) {
+            analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_FAILED, analyticsEventParams)
             val manifestInvalidError = createBrowserSwitchError(browserSwitchException)
             return VenmoPendingRequest.Failure(manifestInvalidError)
         }
@@ -58,8 +56,15 @@ class VenmoLauncher internal constructor(
             paymentAuthRequest.requestParams.browserSwitchOptions
         )
         return when (request) {
-            is BrowserSwitchStartResult.Failure -> VenmoPendingRequest.Failure(request.error)
-            is BrowserSwitchStartResult.Started -> VenmoPendingRequest.Started(request.pendingRequest)
+            is BrowserSwitchStartResult.Failure -> {
+                analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_FAILED, analyticsEventParams)
+                VenmoPendingRequest.Failure(request.error)
+            }
+
+            is BrowserSwitchStartResult.Started -> {
+                analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED, analyticsEventParams)
+                VenmoPendingRequest.Started(request.pendingRequest)
+            }
         }
     }
 
@@ -86,19 +91,23 @@ class VenmoLauncher internal constructor(
         pendingRequest: VenmoPendingRequest.Started,
         intent: Intent
     ): VenmoPaymentAuthResult {
-        analyticsClient.sendEvent(
-            eventName = VenmoAnalytics.HANDLE_RETURN_STARTED,
-            analyticsEventParams = analyticsEventParams
-        )
+        analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_STARTED, analyticsEventParams)
         return when (val browserSwitchResult =
             browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
-            is BrowserSwitchFinalResult.Success -> VenmoPaymentAuthResult.Success(
-                browserSwitchResult
-            )
+            is BrowserSwitchFinalResult.Success -> {
+                analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_SUCCEEDED, analyticsEventParams)
+                VenmoPaymentAuthResult.Success(browserSwitchResult)
+            }
 
-            is BrowserSwitchFinalResult.Failure -> VenmoPaymentAuthResult.Failure(browserSwitchResult.error)
+            is BrowserSwitchFinalResult.Failure -> {
+                analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_FAILED, analyticsEventParams)
+                VenmoPaymentAuthResult.Failure(browserSwitchResult.error)
+            }
 
-            is BrowserSwitchFinalResult.NoResult -> VenmoPaymentAuthResult.NoResult
+            is BrowserSwitchFinalResult.NoResult -> {
+                analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_NO_RESULT, analyticsEventParams)
+                VenmoPaymentAuthResult.NoResult
+            }
         }
     }
 
