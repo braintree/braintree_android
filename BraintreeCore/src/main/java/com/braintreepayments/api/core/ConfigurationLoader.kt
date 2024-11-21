@@ -15,7 +15,9 @@ internal class ConfigurationLoader(
      * TODO: AnalyticsClient must be lazy due to the circular dependency between ConfigurationLoader and AnalyticsClient
      * This should be refactored to remove the circular dependency.
      */
-    lazyAnalyticsClient: Lazy<AnalyticsClient> = lazy { AnalyticsClient(httpClient) },
+    lazyAnalyticsClient: Lazy<AnalyticsClient> = lazy {
+        AnalyticsClient(httpClient = httpClient)
+    },
 ) {
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
 

@@ -32,6 +32,7 @@ class VenmoClient internal constructor(
     private val sharedPrefsWriter: VenmoSharedPrefsWriter = VenmoSharedPrefsWriter(),
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val venmoRepository: VenmoRepository = VenmoRepository.instance
 ) {
     /**
      * Used for linking events from the client to server side request
@@ -182,6 +183,8 @@ class VenmoClient internal constructor(
             )
             .appendQueryParameter("customerClient", "MOBILE_APP")
             .build()
+
+        venmoRepository.venmoUrl = venmoBaseURL
 
         val browserSwitchOptions = BrowserSwitchOptions()
             .requestCode(BraintreeRequestCodes.VENMO.code)
@@ -335,7 +338,7 @@ class VenmoClient internal constructor(
 
     private val analyticsParams: AnalyticsEventParams
         get() {
-            val eventParameters = AnalyticsEventParams()
+            val eventParameters = AnalyticsEventParams(appSwitchUrl = venmoRepository.venmoUrl.toString())
             eventParameters.payPalContextId = payPalContextId
             eventParameters.linkType = LINK_TYPE
             eventParameters.isVaultRequest = isVaultRequest

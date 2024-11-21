@@ -7,15 +7,26 @@ import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchStartResult
+import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeException
 
 /**
  * Responsible for launching the Venmo app to authenticate users
  */
 class VenmoLauncher internal constructor(
-    private val browserSwitchClient: BrowserSwitchClient
+    private val browserSwitchClient: BrowserSwitchClient,
+    private val venmoRepository: VenmoRepository,
+    lazyAnalyticsClient: Lazy<AnalyticsClient>,
 ) {
-    constructor() : this(BrowserSwitchClient())
+
+    constructor() : this(
+        browserSwitchClient = BrowserSwitchClient(),
+        venmoRepository = VenmoRepository.instance,
+        lazyAnalyticsClient = AnalyticsClient.lazyInstance
+    )
+
+    private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
 
     /**
      * Launches the Venmo authentication flow by switching to the Venmo app or a mobile browser, if
@@ -32,9 +43,11 @@ class VenmoLauncher internal constructor(
         activity: ComponentActivity,
         paymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch
     ): VenmoPendingRequest {
+        analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_STARTED, analyticsEventParams)
         try {
             assertCanPerformBrowserSwitch(activity, paymentAuthRequest.requestParams)
         } catch (browserSwitchException: BrowserSwitchException) {
+            analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_FAILED, analyticsEventParams)
             val manifestInvalidError = createBrowserSwitchError(browserSwitchException)
             return VenmoPendingRequest.Failure(manifestInvalidError)
         }
@@ -43,8 +56,15 @@ class VenmoLauncher internal constructor(
             paymentAuthRequest.requestParams.browserSwitchOptions
         )
         return when (request) {
-            is BrowserSwitchStartResult.Failure -> VenmoPendingRequest.Failure(request.error)
-            is BrowserSwitchStartResult.Started -> VenmoPendingRequest.Started(request.pendingRequest)
+            is BrowserSwitchStartResult.Failure -> {
+                analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_FAILED, analyticsEventParams)
+                VenmoPendingRequest.Failure(request.error)
+            }
+
+            is BrowserSwitchStartResult.Started -> {
+                analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED, analyticsEventParams)
+                VenmoPendingRequest.Started(request.pendingRequest)
+            }
         }
     }
 
@@ -71,15 +91,23 @@ class VenmoLauncher internal constructor(
         pendingRequest: VenmoPendingRequest.Started,
         intent: Intent
     ): VenmoPaymentAuthResult {
+        analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_STARTED, analyticsEventParams)
         return when (val browserSwitchResult =
             browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
-            is BrowserSwitchFinalResult.Success -> VenmoPaymentAuthResult.Success(
-                browserSwitchResult
-            )
+            is BrowserSwitchFinalResult.Success -> {
+                analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_SUCCEEDED, analyticsEventParams)
+                VenmoPaymentAuthResult.Success(browserSwitchResult)
+            }
 
-            is BrowserSwitchFinalResult.Failure -> VenmoPaymentAuthResult.Failure(browserSwitchResult.error)
+            is BrowserSwitchFinalResult.Failure -> {
+                analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_FAILED, analyticsEventParams)
+                VenmoPaymentAuthResult.Failure(browserSwitchResult.error)
+            }
 
-            is BrowserSwitchFinalResult.NoResult -> VenmoPaymentAuthResult.NoResult
+            is BrowserSwitchFinalResult.NoResult -> {
+                analyticsClient.sendEvent(VenmoAnalytics.HANDLE_RETURN_NO_RESULT, analyticsEventParams)
+                VenmoPaymentAuthResult.NoResult
+            }
         }
     }
 
@@ -104,14 +132,18 @@ class VenmoLauncher internal constructor(
         browserSwitchClient.assertCanPerformBrowserSwitch(activity, params.browserSwitchOptions)
     }
 
+    private val analyticsEventParams by lazy {
+        AnalyticsEventParams(appSwitchUrl = venmoRepository.venmoUrl.toString())
+    }
+
     companion object {
         private const val VENMO_PACKAGE_NAME = "com.venmo"
         private fun createBrowserSwitchError(exception: BrowserSwitchException): Exception {
             return BraintreeException(
                 "AndroidManifest.xml is incorrectly configured or another app defines the same " +
-                        "browser switch url as this app. See https://developer.paypal.com/" +
-                        "braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
-                        "for the correct configuration: " + exception.message
+                    "browser switch url as this app. See https://developer.paypal.com/" +
+                    "braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
+                    "for the correct configuration: " + exception.message
             )
         }
     }

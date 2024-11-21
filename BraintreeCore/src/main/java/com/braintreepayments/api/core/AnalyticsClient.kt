@@ -26,6 +26,7 @@ class AnalyticsClient internal constructor(
     private val configurationLoader: ConfigurationLoader = ConfigurationLoader.instance,
     private val merchantRepository: MerchantRepository = MerchantRepository.instance
 ) {
+
     private val applicationContext: Context
         get() = merchantRepository.applicationContext
 
@@ -43,7 +44,8 @@ class AnalyticsClient internal constructor(
             endTime = analyticsEventParams.endTime,
             endpoint = analyticsEventParams.endpoint,
             experiment = analyticsEventParams.experiment,
-            paymentMethodsDisplayed = analyticsEventParams.paymentMethodsDisplayed
+            paymentMethodsDisplayed = analyticsEventParams.paymentMethodsDisplayed,
+            appSwitchUrl = analyticsEventParams.appSwitchUrl
         )
         configurationLoader.loadConfiguration { result ->
             if (result is ConfigurationLoaderResult.Success) {
@@ -239,6 +241,7 @@ class AnalyticsClient internal constructor(
             .putOpt(FPTI_KEY_MERCHANT_EXPERIMENT, event.experiment)
             .putOpt(FPTI_KEY_MERCHANT_PAYMENT_METHODS_DISPLAYED,
                 event.paymentMethodsDisplayed.ifEmpty { null })
+            .putOpt(FPTI_KEY_URL, event.appSwitchUrl)
         return json.toString()
     }
 
@@ -270,6 +273,9 @@ class AnalyticsClient internal constructor(
     }
 
     companion object {
+
+        val lazyInstance: Lazy<AnalyticsClient> = lazy { AnalyticsClient() }
+
         private const val FPTI_ANALYTICS_URL = "https://api-m.paypal.com/v1/tracking/batch/events"
 
         private const val FPTI_KEY_PAYPAL_CONTEXT_ID = "paypal_context_id"
@@ -288,6 +294,7 @@ class AnalyticsClient internal constructor(
         private const val FPTI_KEY_ENDPOINT = "endpoint"
         private const val FPTI_KEY_MERCHANT_EXPERIMENT = "experiment"
         private const val FPTI_KEY_MERCHANT_PAYMENT_METHODS_DISPLAYED = "payment_methods_displayed"
+        private const val FPTI_KEY_URL = "url"
 
         private const val FPTI_BATCH_KEY_VENMO_INSTALLED = "venmo_installed"
         private const val FPTI_BATCH_KEY_PAYPAL_INSTALLED = "paypal_installed"
