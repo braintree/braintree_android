@@ -3,6 +3,7 @@
     <application>
         <activity
             android:name=".ThreeDSecureActivity"
-            android:theme="@style/Theme.Translucent.NoTitleBar.Fullscreen" />
+            android:theme="@style/Theme.Translucent.NoTitleBar.Fullscreen"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
     </application>
 </manifest>
