@@ -9,6 +9,7 @@ import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.GetReturnLinkTypeUseCase
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.UserCanceledException
@@ -24,6 +25,7 @@ class PayPalClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient = PayPalInternalClient(braintreeClient),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(merchantRepository)
 ) {
 
     /**
@@ -54,8 +56,9 @@ class PayPalClient internal constructor(
     constructor(
         context: Context,
         authorization: String,
-        appLinkReturnUrl: Uri
-    ) : this(BraintreeClient(context, authorization, null, appLinkReturnUrl))
+        appLinkReturnUrl: Uri,
+        returnUrlScheme: String? = null
+    ) : this(BraintreeClient(context, authorization, returnUrlScheme, appLinkReturnUrl))
 
     /**
      * Starts the PayPal payment flow by creating a [PayPalPaymentAuthRequestParams] to be
@@ -152,10 +155,20 @@ class PayPalClient internal constructor(
 
         return BrowserSwitchOptions()
             .requestCode(BraintreeRequestCodes.PAYPAL.code)
-            .appLinkUri(merchantRepository.appLinkReturnUri)
             .url(Uri.parse(paymentAuthRequest.approvalUrl))
             .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
             .metadata(metadata)
+            .apply {
+                when (getReturnLinkTypeUseCase()) {
+                    GetReturnLinkTypeUseCase.ReturnLinkType.APP_LINK -> {
+                        appLinkUri(merchantRepository.appLinkReturnUri)
+                    }
+
+                    GetReturnLinkTypeUseCase.ReturnLinkType.DEEP_LINK -> {
+                        returnUrlScheme(merchantRepository.returnUrlScheme)
+                    }
+                }
+            }
     }
 
     /**

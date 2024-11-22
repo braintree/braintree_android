@@ -7,6 +7,7 @@ import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.DeviceInspector
+import com.braintreepayments.api.core.GetReturnLinkTypeUseCase
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
@@ -20,9 +21,8 @@ internal class PayPalInternalClient(
     private val apiClient: ApiClient = ApiClient(braintreeClient),
     private val deviceInspector: DeviceInspector = DeviceInspector(),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(merchantRepository)
 ) {
-    private val cancelUrl = "${merchantRepository.appLinkReturnUri}://onetouch/v1/cancel"
-    private val successUrl = "${merchantRepository.appLinkReturnUri}://onetouch/v1/success"
     private val appLink = merchantRepository.appLinkReturnUri?.toString()
 
     fun sendRequest(
@@ -50,12 +50,28 @@ internal class PayPalInternalClient(
                     payPalRequest.enablePayPalAppSwitch = isPayPalInstalled(context)
                 }
 
+                val returnLinkType = getReturnLinkTypeUseCase()
+                val navigationLink = when (returnLinkType) {
+                    GetReturnLinkTypeUseCase.ReturnLinkType.APP_LINK -> merchantRepository.appLinkReturnUri
+                    GetReturnLinkTypeUseCase.ReturnLinkType.DEEP_LINK -> merchantRepository.returnUrlScheme
+                }
+                val appLinkParam = if (
+                    navigationLink == GetReturnLinkTypeUseCase.ReturnLinkType.APP_LINK && isBillingAgreement
+                ) {
+                    merchantRepository.appLinkReturnUri?.toString()
+                } else {
+                    null
+                }
+
+                val cancelUrl = "$navigationLink://onetouch/v1/cancel"
+                val successUrl = "$navigationLink://onetouch/v1/success"
+
                 val requestBody = payPalRequest.createRequestBody(
                     configuration = configuration,
                     authorization = merchantRepository.authorization,
                     successUrl = successUrl,
                     cancelUrl = cancelUrl,
-                    appLink = appLinkReturn
+                    appLink = appLinkParam
                 ) ?: throw JSONException("Error creating requestBody")
 
                 sendPost(
@@ -123,12 +139,17 @@ internal class PayPalInternalClient(
                     )
                 }
 
+                val returnLink = when (getReturnLinkTypeUseCase()) {
+                    GetReturnLinkTypeUseCase.ReturnLinkType.APP_LINK -> merchantRepository.appLinkReturnUri
+                    GetReturnLinkTypeUseCase.ReturnLinkType.DEEP_LINK -> merchantRepository.returnUrlScheme
+                }
+
                 val paymentAuthRequest = PayPalPaymentAuthRequestParams(
                     payPalRequest = payPalRequest,
                     browserSwitchOptions = null,
                     clientMetadataId = clientMetadataId,
                     pairingId = pairingId,
-                    successUrl = successUrl
+                    successUrl = "$returnLink://onetouch/v1/success"
                 )
 
                 if (isAppSwitchEnabled(payPalRequest) && isPayPalInstalled(context)) {
