@@ -50,8 +50,9 @@ class PayPalClient internal constructor(
      * @param context          an Android Context
      * @param authorization    a Tokenization Key or Client Token used to authenticate
      * @param appLinkReturnUrl A [Uri] containing the Android App Link website associated with
-     * your application to be used to return to your app from the PayPal
-     * payment flows.
+     * your application to be used to return to your app from the PayPal payment flows.
+     * @param returnUrlScheme A return url scheme that will be used as a deep link fallback when returning to your app
+     * via App Link is not available (buyer unchecks the "Open supported links" setting).
      */
     constructor(
         context: Context,
