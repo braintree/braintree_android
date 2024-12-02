@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -49,13 +50,15 @@ public class PayPalFragment extends BaseFragment {
         TextInputEditText buyerPhoneNationalNumberEditText = view.findViewById(R.id.buyer_phone_national_number_edit_text);
         Button billingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
+        Switch contactInformationSwitch = view.findViewById(R.id.contact_info_switch);
 
         singlePaymentButton.setOnClickListener(v -> {
             launchPayPal(
                 false,
                 buyerEmailEditText.getText().toString(),
                 buyerPhoneCountryCodeEditText.getText().toString(),
-                buyerPhoneNationalNumberEditText.getText().toString()
+                buyerPhoneNationalNumberEditText.getText().toString(),
+                contactInformationSwitch.isChecked()
             );
         });
         billingAgreementButton.setOnClickListener(v -> {
@@ -70,7 +73,8 @@ public class PayPalFragment extends BaseFragment {
                 true,
                 buyerEmailEditText.getText().toString(),
                 buyerPhoneCountryCodeEditText.getText().toString(),
-                buyerPhoneNationalNumberEditText.getText().toString()
+                buyerPhoneNationalNumberEditText.getText().toString(),
+                false
             );
         });
 
@@ -115,7 +119,8 @@ public class PayPalFragment extends BaseFragment {
         boolean isBillingAgreement,
         String buyerEmailAddress,
         String buyerPhoneCountryCode,
-        String buyerPhoneNationalNumber
+        String buyerPhoneNationalNumber,
+        Boolean isContactInformationEnabled
     ) {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
@@ -127,10 +132,10 @@ public class PayPalFragment extends BaseFragment {
                 if (dataCollectorResult instanceof DataCollectorResult.Success) {
                     deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
                 }
-                launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber);
+                launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled);
             });
         } else {
-            launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber);
+            launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled);
         }
     }
 
@@ -140,7 +145,8 @@ public class PayPalFragment extends BaseFragment {
         String amount,
         String buyerEmailAddress,
         String buyerPhoneCountryCode,
-        String buyerPhoneNationalNumber
+        String buyerPhoneNationalNumber,
+        Boolean isContactInformationEnabled
     ) {
         PayPalRequest payPalRequest;
         if (isBillingAgreement) {
@@ -156,7 +162,8 @@ public class PayPalFragment extends BaseFragment {
                 amount,
                 buyerEmailAddress,
                 buyerPhoneCountryCode,
-                buyerPhoneNationalNumber
+                buyerPhoneNationalNumber,
+                isContactInformationEnabled
             );
         }
         payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest,
