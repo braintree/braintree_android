@@ -4,6 +4,9 @@
 
 * LocalPayment
   * Make LocalPaymentAuthRequestParams public (fixes #1207)
+* PayPal
+  * Add `PayPalContactInformation` request object
+  * Add `PayPalCheckoutRequest.contactInformation` optional property
 
 ## 5.2.0 (2024-10-30)
 

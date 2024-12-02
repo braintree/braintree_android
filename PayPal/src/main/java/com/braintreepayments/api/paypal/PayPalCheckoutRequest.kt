@@ -64,6 +64,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     var currencyCode: String? = null,
     var shouldRequestBillingAgreement: Boolean = false,
     var shouldOfferPayLater: Boolean = false,
+    var contactInformation: PayPalContactInformation? = null,
     override var localeCode: String? = null,
     override var billingAgreementDescription: String? = null,
     override var isShippingAddressRequired: Boolean = false,
@@ -125,6 +126,11 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
         }
 
         userPhoneNumber?.let { parameters.put(PHONE_NUMBER_KEY, it.toJson()) }
+
+        contactInformation?.let { info ->
+            info.recipientEmail?.let { parameters.put(RECIPIENT_EMAIL_KEY, it) }
+            info.recipentPhoneNumber?.let { parameters.put(RECIPIENT_PHONE_NUMBER_KEY, it.toJson()) }
+        }
 
         if (currencyCode == null) {
             currencyCode = configuration?.payPalCurrencyIsoCode
