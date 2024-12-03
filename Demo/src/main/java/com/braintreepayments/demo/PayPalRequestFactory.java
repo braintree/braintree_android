@@ -42,7 +42,6 @@ public class PayPalRequestFactory {
 
         if (!shopperInsightsSessionId.toString().isEmpty()) {
             request.setShopperSessionId(shopperInsightsSessionId.toString());
-            request.setUserAuthenticationEmail(buyerEmailAddress);
         }
 
         if (Settings.isPayPalAppSwithEnabled(context)) {
