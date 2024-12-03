@@ -18,6 +18,7 @@ import com.braintreepayments.api.paypal.PayPalVaultRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class PayPalRequestFactory {
 
@@ -25,7 +26,8 @@ public class PayPalRequestFactory {
         Context context,
         String buyerEmailAddress,
         String buyerPhoneCountryCode,
-        String buyerPhoneNationalNumber
+        String buyerPhoneNationalNumber,
+        Optional<String> shopperInsightsSessionId
     ) {
 
         PayPalVaultRequest request = new PayPalVaultRequest(true);
@@ -36,6 +38,11 @@ public class PayPalRequestFactory {
 
         if (!buyerPhoneCountryCode.isEmpty() && !buyerPhoneNationalNumber.isEmpty()) {
             request.setUserPhoneNumber(new PayPalPhoneNumber(buyerPhoneCountryCode, buyerPhoneNationalNumber));
+        }
+
+        if (!shopperInsightsSessionId.toString().isEmpty()) {
+            request.setShopperSessionId(shopperInsightsSessionId.toString());
+            request.setUserAuthenticationEmail(buyerEmailAddress);
         }
 
         if (Settings.isPayPalAppSwithEnabled(context)) {
@@ -111,7 +118,8 @@ public class PayPalRequestFactory {
         String amount,
         String buyerEmailAddress,
         String buyerPhoneCountryCode,
-        String buyerPhoneNationalNumber
+        String buyerPhoneNationalNumber,
+        Optional<String> shopperInsightsSessionId
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
 
@@ -121,6 +129,11 @@ public class PayPalRequestFactory {
 
         if (!buyerPhoneCountryCode.isEmpty() && !buyerPhoneNationalNumber.isEmpty()) {
             request.setUserPhoneNumber(new PayPalPhoneNumber(buyerPhoneCountryCode, buyerPhoneNationalNumber));
+        }
+
+        if (!shopperInsightsSessionId.toString().isEmpty()) {
+            request.setShopperSessionId(shopperInsightsSessionId.toString());
+            request.setUserAuthenticationEmail(buyerEmailAddress);
         }
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
