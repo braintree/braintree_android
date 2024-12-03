@@ -54,7 +54,12 @@ class ShopperInsightsClientUnitTest {
 
         every { merchantRepository.authorization } returns clientToken
 
-        sut = ShopperInsightsClient(braintreeClient, analyticsParamRepository, api, merchantRepository)
+        sut = ShopperInsightsClient(
+            braintreeClient,
+            analyticsParamRepository,
+            api,
+            merchantRepository,
+        )
         context = ApplicationProvider.getApplicationContext()
     }
 
@@ -403,7 +408,12 @@ class ShopperInsightsClientUnitTest {
         every { merchantRepository.authorization } returns mockk<TokenizationKey>()
         val braintreeClient = MockkBraintreeClientBuilder().build()
 
-        sut = ShopperInsightsClient(braintreeClient, analyticsParamRepository, api, merchantRepository)
+        sut = ShopperInsightsClient(
+            braintreeClient,
+            analyticsParamRepository,
+            api,
+            merchantRepository,
+        )
 
         val request = ShopperInsightsRequest("some-email", null)
         sut.getRecommendedPaymentMethods(request) { result ->

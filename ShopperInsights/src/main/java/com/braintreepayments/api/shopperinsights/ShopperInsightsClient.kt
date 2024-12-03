@@ -5,6 +5,7 @@ import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.TokenizationKey
@@ -32,6 +33,7 @@ class ShopperInsightsClient internal constructor(
         EligiblePaymentsApi(braintreeClient, analyticsParamRepository)
     ),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val deviceInspector: DeviceInspector = DeviceInspector(),
 ) {
 
     /**
@@ -39,7 +41,7 @@ class ShopperInsightsClient internal constructor(
      * @param authorization: a Tokenization Key or Client Token used to authenticate
      */
     constructor(context: Context, authorization: String) : this(
-        BraintreeClient(context, authorization)
+        BraintreeClient(context, authorization),
     )
 
     /**
@@ -214,6 +216,20 @@ class ShopperInsightsClient internal constructor(
      */
     fun sendVenmoSelectedEvent() {
         braintreeClient.sendAnalyticsEvent(VENMO_SELECTED)
+    }
+
+    /**
+     * Indicates whether the PayPal App is installed.
+     */
+    fun isPayPalAppInstalled(context: Context): Boolean {
+        return deviceInspector.isPayPalInstalled(context)
+    }
+
+    /**
+     * Indicates whether the Venmo App is installed.
+     */
+    fun isVenmoAppInstalled(context: Context): Boolean {
+        return deviceInspector.isVenmoInstalled(context)
     }
 
     companion object {
