@@ -6,7 +6,6 @@ import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
-import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
@@ -18,7 +17,6 @@ internal class PayPalInternalClient(
     private val braintreeClient: BraintreeClient,
     private val dataCollector: DataCollector = DataCollector(braintreeClient),
     private val apiClient: ApiClient = ApiClient(braintreeClient),
-    private val deviceInspector: DeviceInspector = DeviceInspector(),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
 ) {
     private val cancelUrl = "${merchantRepository.appLinkReturnUri}://onetouch/v1/cancel"
@@ -28,6 +26,7 @@ internal class PayPalInternalClient(
     fun sendRequest(
         context: Context,
         payPalRequest: PayPalRequest,
+        shouldAppSwitch: Boolean,
         callback: PayPalInternalClientCallback
     ) {
         braintreeClient.getConfiguration { configuration: Configuration?, configError: Exception? ->
@@ -47,7 +46,7 @@ internal class PayPalInternalClient(
                 val appLinkReturn = if (isBillingAgreement) appLink else null
 
                 if (isBillingAgreement && (payPalRequest as PayPalVaultRequest).enablePayPalAppSwitch) {
-                    payPalRequest.enablePayPalAppSwitch = isPayPalInstalled(context)
+                    payPalRequest.enablePayPalAppSwitch = shouldAppSwitch
                 }
 
                 val requestBody = payPalRequest.createRequestBody(
@@ -62,6 +61,7 @@ internal class PayPalInternalClient(
                     url = url,
                     requestBody = requestBody,
                     payPalRequest = payPalRequest,
+                    shouldAppSwitch = shouldAppSwitch,
                     context = context,
                     configuration = configuration,
                     callback = callback
@@ -90,6 +90,7 @@ internal class PayPalInternalClient(
         url: String,
         requestBody: String,
         payPalRequest: PayPalRequest,
+        shouldAppSwitch: Boolean,
         context: Context,
         configuration: Configuration,
         callback: PayPalInternalClientCallback
@@ -131,7 +132,7 @@ internal class PayPalInternalClient(
                     successUrl = successUrl
                 )
 
-                if (isAppSwitchEnabled(payPalRequest) && isPayPalInstalled(context)) {
+                if (shouldAppSwitch) {
                     if (!pairingId.isNullOrEmpty()) {
                         paymentAuthRequest.approvalUrl = createAppSwitchUri(parsedRedirectUri).toString()
                     } else {
@@ -153,15 +154,6 @@ internal class PayPalInternalClient(
             .appendQueryParameter("source", "braintree_sdk")
             .appendQueryParameter("switch_initiated_time", System.currentTimeMillis().toString())
             .build()
-    }
-
-    fun isAppSwitchEnabled(payPalRequest: PayPalRequest): Boolean {
-        return (payPalRequest is PayPalVaultRequest) &&
-            payPalRequest.enablePayPalAppSwitch
-    }
-
-    fun isPayPalInstalled(context: Context): Boolean {
-        return deviceInspector.isPayPalInstalled(context)
     }
 
     private fun findPairingId(redirectUri: Uri): String? {

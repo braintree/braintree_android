@@ -9,6 +9,7 @@ import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.UserCanceledException
@@ -24,6 +25,7 @@ class PayPalClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient = PayPalInternalClient(braintreeClient),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val deviceInspector: DeviceInspector = DeviceInspector(),
 ) {
 
     /**
@@ -55,7 +57,7 @@ class PayPalClient internal constructor(
         context: Context,
         authorization: String,
         appLinkReturnUrl: Uri
-    ) : this(BraintreeClient(context, authorization, null, appLinkReturnUrl))
+    ) : this(BraintreeClient(context, authorization, null, appLinkReturnUrl),)
 
     /**
      * Starts the PayPal payment flow by creating a [PayPalPaymentAuthRequestParams] to be
@@ -96,13 +98,13 @@ class PayPalClient internal constructor(
     ) {
         internalPayPalClient.sendRequest(
             context,
-            payPalRequest
+            payPalRequest,
+            shouldAppSwitch(context, payPalRequest)
         ) { payPalResponse: PayPalPaymentAuthRequestParams?,
             error: Exception? ->
             if (payPalResponse != null) {
                 payPalContextId = payPalResponse.pairingId
-                val isAppSwitchFlow = internalPayPalClient.isAppSwitchEnabled(payPalRequest) &&
-                    internalPayPalClient.isPayPalInstalled(context)
+                val isAppSwitchFlow = shouldAppSwitch(context, payPalRequest)
                 linkType = if (isAppSwitchFlow) LinkType.APP_SWITCH else LinkType.APP_LINK
 
                 try {
@@ -234,6 +236,19 @@ class PayPalClient internal constructor(
         } catch (e: PayPalBrowserSwitchException) {
             callbackTokenizeFailure(callback, PayPalResult.Failure(e), isAppSwitchFlow)
         }
+    }
+
+    fun isPayPalInstalled(context: Context): Boolean {
+        return deviceInspector.isPayPalInstalled(context)
+    }
+
+    private fun shouldAppSwitch(context: Context, payPalRequest: PayPalRequest) : Boolean {
+        return isAppSwitchEnabled(payPalRequest) && isPayPalInstalled(context)
+    }
+
+    private fun isAppSwitchEnabled(payPalRequest: PayPalRequest): Boolean {
+        return (payPalRequest is PayPalVaultRequest) &&
+                payPalRequest.enablePayPalAppSwitch
     }
 
     @Throws(

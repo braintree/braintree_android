@@ -90,9 +90,7 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PostalAddress shippingAddressOverride = new PostalAddress();
@@ -115,7 +113,7 @@ public class PayPalInternalClientUnitTest {
         payPalRequest.setShouldOfferCredit(true);
         payPalRequest.setShippingAddressOverride(shippingAddressOverride);
 
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
@@ -166,9 +164,7 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
         PostalAddress shippingAddressOverride = new PostalAddress();
         shippingAddressOverride.setRecipientName("Brianna Tree");
@@ -204,7 +200,7 @@ public class PayPalInternalClientUnitTest {
         payPalRequest.setLineItems(Collections.singletonList(item));
         payPalRequest.setShippingAddressOverride(shippingAddressOverride);
 
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
@@ -267,13 +263,11 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
@@ -302,14 +296,12 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(false);
         payPalRequest.setDisplayName("");
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
@@ -337,14 +329,12 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
         payPalRequest.setLocaleCode(null);
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
@@ -372,14 +362,12 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
         payPalRequest.setMerchantAccountId(null);
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
@@ -407,14 +395,12 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
         payPalRequest.setShippingAddressOverride(null);
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
@@ -443,16 +429,14 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
         payPalRequest.setShippingAddressEditable(false);
         payPalRequest.setShippingAddressOverride(new PostalAddress());
 
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
@@ -480,14 +464,12 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
         payPalRequest.setBillingAgreementDescription("");
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
@@ -515,13 +497,11 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
@@ -548,14 +528,12 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
         payPalRequest.setLineItems(new ArrayList<PayPalLineItem>());
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
@@ -585,15 +563,13 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
         payPalRequest.setRiskCorrelationId("risk-correlation-id");
 
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequestParams> captor = ArgumentCaptor.forClass(
             PayPalPaymentAuthRequestParams.class);
@@ -617,14 +593,12 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
 
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequestParams> captor = ArgumentCaptor.forClass(
             PayPalPaymentAuthRequestParams.class);
@@ -647,15 +621,13 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
         payPalRequest.setShouldRequestBillingAgreement(false);
         payPalRequest.setBillingAgreementDescription("Billing agreement description");
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(braintreeClient).sendPOST(
@@ -687,16 +659,14 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
         payPalRequest.setRiskCorrelationId("sample-client-metadata-id");
 
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequestParams> captor = ArgumentCaptor.forClass(
             PayPalPaymentAuthRequestParams.class);
@@ -726,9 +696,7 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -737,7 +705,7 @@ public class PayPalInternalClientUnitTest {
 
         when(deviceInspector.isPayPalInstalled(context)).thenReturn(true);
 
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequestParams> captor = ArgumentCaptor.forClass(
             PayPalPaymentAuthRequestParams.class);
@@ -768,14 +736,12 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
 
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequestParams> captor = ArgumentCaptor.forClass(
             PayPalPaymentAuthRequestParams.class);
@@ -803,9 +769,7 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -814,7 +778,7 @@ public class PayPalInternalClientUnitTest {
         payPalRequest.setUserAction(PayPalPaymentUserAction.USER_ACTION_COMMIT);
         payPalRequest.setRiskCorrelationId("sample-client-metadata-id");
 
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequestParams> captor = ArgumentCaptor.forClass(
             PayPalPaymentAuthRequestParams.class);
@@ -845,13 +809,11 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         verify(payPalInternalClientCallback).onResult(null, httpError);
     }
@@ -868,13 +830,11 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         verify(payPalInternalClientCallback).onResult((PayPalPaymentAuthRequestParams) isNull(),
             any(JSONException.class));
@@ -892,13 +852,11 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         verify(payPalInternalClientCallback).onResult(null, configurationError);
     }
@@ -912,9 +870,7 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         sut.tokenize(payPalAccount, callback);
@@ -935,9 +891,7 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         sut.tokenize(payPalAccount, callback);
@@ -965,9 +919,7 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         sut.tokenize(payPalAccount, callback);
@@ -989,16 +941,14 @@ public class PayPalInternalClientUnitTest {
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository
+            apiClient, merchantRepository
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
         payPalRequest.setIntent(PayPalPaymentIntent.AUTHORIZE);
         payPalRequest.setMerchantAccountId("sample-merchant-account-id");
 
-        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+        sut.sendRequest(context, payPalRequest, , payPalInternalClientCallback);
 
         ArgumentCaptor<DataCollectorInternalRequest> captor = ArgumentCaptor.forClass(
             DataCollectorInternalRequest.class);

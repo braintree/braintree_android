@@ -77,7 +77,7 @@ public class PayPalClientUnitTest {
         BraintreeClient braintreeClient =
             new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
 
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository);
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, );
         sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequest> captor =
@@ -131,7 +131,7 @@ public class PayPalClientUnitTest {
             new MockBraintreeClientBuilder().configuration(payPalEnabledConfig)
                 .launchesBrowserSwitchAsNewTask(true).build();
 
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository);
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, );
         sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequest> captor =
@@ -166,7 +166,7 @@ public class PayPalClientUnitTest {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().configuration(payPalEnabledConfig)
             .build();
 
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository);
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, );
         sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequest> captor =
@@ -186,7 +186,7 @@ public class PayPalClientUnitTest {
         BraintreeClient braintreeClient =
             new MockBraintreeClientBuilder().configuration(payPalDisabledConfig).build();
 
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository);
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, );
         sut.createPaymentAuthRequest(activity, new PayPalCheckoutRequest("1.00", true),
             paymentAuthCallback);
 
@@ -215,7 +215,7 @@ public class PayPalClientUnitTest {
             .configurationError(authError)
             .build();
 
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository);
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, );
         sut.createPaymentAuthRequest(activity, new PayPalCheckoutRequest("1.00", true), paymentAuthCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequest> captor =
@@ -240,7 +240,7 @@ public class PayPalClientUnitTest {
             .configurationError(authError)
             .build();
 
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository);
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, );
         sut.createPaymentAuthRequest(activity, new PayPalVaultRequest(true), paymentAuthCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequest> captor =
@@ -266,11 +266,11 @@ public class PayPalClientUnitTest {
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
 
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository);
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, );
         sut.createPaymentAuthRequest(activity, payPalRequest, paymentAuthCallback);
 
-        verify(payPalInternalClient).sendRequest(same(activity), same(payPalRequest),
-            any(PayPalInternalClientCallback.class));
+        verify(payPalInternalClient).sendRequest(same(activity), same(payPalRequest), ,
+                any(PayPalInternalClientCallback.class));
     }
 
     @Test
@@ -282,11 +282,11 @@ public class PayPalClientUnitTest {
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
 
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository);
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, );
         sut.createPaymentAuthRequest(activity, payPalRequest, paymentAuthCallback);
 
-        verify(payPalInternalClient).sendRequest(same(activity), same(payPalRequest),
-            any(PayPalInternalClientCallback.class));
+        verify(payPalInternalClient).sendRequest(same(activity), same(payPalRequest), ,
+                any(PayPalInternalClientCallback.class));
     }
 
     @Test
@@ -314,7 +314,7 @@ public class PayPalClientUnitTest {
         BraintreeClient braintreeClient =
             new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
 
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository);
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, );
         sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback);
 
         ArgumentCaptor<PayPalPaymentAuthRequest> captor =
@@ -359,7 +359,7 @@ public class PayPalClientUnitTest {
         PayPalPaymentAuthResult.Success payPalPaymentAuthResult = new PayPalPaymentAuthResult.Success(
             browserSwitchResult);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository);
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, );
 
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback);
 
@@ -403,7 +403,7 @@ public class PayPalClientUnitTest {
         PayPalPaymentAuthResult.Success payPalPaymentAuthResult = new PayPalPaymentAuthResult.Success(
             browserSwitchResult);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository);
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, );
 
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback);
 
@@ -448,7 +448,7 @@ public class PayPalClientUnitTest {
         PayPalPaymentAuthResult.Success payPalPaymentAuthResult = new PayPalPaymentAuthResult.Success(
             browserSwitchResult);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository);
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, );
 
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback);
 
@@ -488,7 +488,7 @@ public class PayPalClientUnitTest {
         PayPalPaymentAuthResult.Success payPalPaymentAuthResult = new PayPalPaymentAuthResult.Success(
             browserSwitchResult);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository);
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, );
 
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback);
 
@@ -530,7 +530,7 @@ public class PayPalClientUnitTest {
         PayPalPaymentAuthResult.Success payPalPaymentAuthResult = new PayPalPaymentAuthResult.Success(
             browserSwitchResult);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository);
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, );
 
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback);
 
@@ -569,7 +569,7 @@ public class PayPalClientUnitTest {
         PayPalPaymentAuthResult.Success payPalPaymentAuthResult = new PayPalPaymentAuthResult.Success(
             browserSwitchResult);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository);
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, );
 
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback);
 
@@ -601,7 +601,7 @@ public class PayPalClientUnitTest {
         PayPalPaymentAuthResult.Success payPalPaymentAuthResult = new PayPalPaymentAuthResult.Success(
             browserSwitchResult);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository);
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, );
 
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback);
 
