@@ -10,6 +10,7 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.DeviceInspector
+import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.UserCanceledException
@@ -21,6 +22,7 @@ import org.json.JSONObject
 /**
  * Used to tokenize PayPal accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4)
  */
+@Suppress("TooManyFunctions")
 class PayPalClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient = PayPalInternalClient(braintreeClient),
@@ -238,11 +240,17 @@ class PayPalClient internal constructor(
         }
     }
 
+    /**
+     * Indicates whether the PayPal App is installed.
+     * Note: **This feature is in beta. It's public API may change in future releases.**
+     */
+    @ExperimentalBetaApi
     fun isPayPalInstalled(context: Context): Boolean {
         return deviceInspector.isPayPalInstalled(context)
     }
 
-    private fun shouldAppSwitch(context: Context, payPalRequest: PayPalRequest) : Boolean {
+    @OptIn(ExperimentalBetaApi::class)
+    private fun shouldAppSwitch(context: Context, payPalRequest: PayPalRequest): Boolean {
         return isAppSwitchEnabled(payPalRequest) && isPayPalInstalled(context)
     }
 
