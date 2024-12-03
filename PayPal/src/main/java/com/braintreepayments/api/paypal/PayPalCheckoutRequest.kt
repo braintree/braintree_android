@@ -126,6 +126,10 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
 
         userPhoneNumber?.let { parameters.put(PHONE_NUMBER_KEY, it.toJson()) }
 
+        shopperSessionId?.let {
+            if (it.isNotEmpty()) parameters.put(SHOPPER_SESSION_ID, it)
+        }
+
         if (currencyCode == null) {
             currencyCode = configuration?.payPalCurrencyIsoCode
         }

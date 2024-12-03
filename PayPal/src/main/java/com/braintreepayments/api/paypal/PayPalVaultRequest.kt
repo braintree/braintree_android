@@ -92,6 +92,8 @@ class PayPalVaultRequest
 
         parameters.putOpt(PAYER_EMAIL_KEY, userAuthenticationEmail)
 
+        parameters.putOpt(SHOPPER_SESSION_ID, shopperSessionId)
+
         userPhoneNumber?.let { parameters.put(PHONE_NUMBER_KEY, it.toJson()) }
 
         if (enablePayPalAppSwitch && !appLink.isNullOrEmpty() && !userAuthenticationEmail.isNullOrEmpty()) {

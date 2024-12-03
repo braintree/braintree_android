@@ -72,6 +72,8 @@ import org.json.JSONException
  * where the user has a PayPal Account with the same email.
  * @property userPhoneNumber User phone number used to initiate a quicker authentication flow in
  * cases where the user has a PayPal Account with the phone number.
+ * @property shopperSessionId value should be the shopper session ID returned from your server SDK
+ * request.
  * @property lineItems The line items for this transaction. It can include up to 249 line items.
  */
 abstract class PayPalRequest internal constructor(
@@ -87,6 +89,7 @@ abstract class PayPalRequest internal constructor(
     open var riskCorrelationId: String? = null,
     open var userAuthenticationEmail: String? = null,
     open var userPhoneNumber: PayPalPhoneNumber? = null,
+    open var shopperSessionId: String? = null,
     open var lineItems: List<PayPalLineItem> = emptyList()
 ) : Parcelable {
 
@@ -132,5 +135,6 @@ abstract class PayPalRequest internal constructor(
         internal const val PLAN_TYPE_KEY: String = "plan_type"
         internal const val PLAN_METADATA_KEY: String = "plan_metadata"
         internal const val PHONE_NUMBER_KEY: String = "phone_number"
+        internal const val SHOPPER_SESSION_ID: String = "shopper_session_id"
     }
 }

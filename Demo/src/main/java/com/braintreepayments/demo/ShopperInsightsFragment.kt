@@ -49,6 +49,8 @@ class ShopperInsightsFragment : BaseFragment() {
     private lateinit var nationalNumberInput: TextInputLayout
     private lateinit var emailNullSwitch: SwitchMaterial
     private lateinit var phoneNullSwitch: SwitchMaterial
+    private lateinit var shopperInsightsSessionIdInput: TextInputLayout
+    private lateinit var shopperInsightsSessionIdNullSwitch: SwitchMaterial
 
     private lateinit var shopperInsightsClient: ShopperInsightsClient
     private lateinit var payPalClient: PayPalClient
@@ -95,9 +97,13 @@ class ShopperInsightsFragment : BaseFragment() {
         nationalNumberInput = view.findViewById(R.id.nationalNumberInput)
         emailNullSwitch = view.findViewById(R.id.emailNullSwitch)
         phoneNullSwitch = view.findViewById(R.id.phoneNullSwitch)
+        shopperInsightsSessionIdInput = view.findViewById(R.id.shopperInsightsSessionIdInput)
+        shopperInsightsSessionIdNullSwitch = view.findViewById(R.id.shopperInsightsSessionIdNullSwitch)
+
 
         emailInput.editText?.setText("PR1_merchantname@personal.example.com")
         nationalNumberInput.editText?.setText("4082321001")
+        shopperInsightsSessionIdInput.editText?.setText("shopperSessionId")
         countryCodeInput.editText?.setText("1")
     }
 
