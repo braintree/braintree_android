@@ -32,7 +32,6 @@ import com.braintreepayments.api.venmo.VenmoRequest
 import com.braintreepayments.api.venmo.VenmoResult
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
-import java.util.Optional
 
 /**
  * Fragment for handling shopping insights.
@@ -241,7 +240,7 @@ class ShopperInsightsFragment : BaseFragment() {
                 emailInput.editText?.text.toString(),
                 countryCodeInput.editText?.text.toString(),
                 nationalNumberInput.editText?.text.toString(),
-                Optional.ofNullable(shopperSessionId)
+                shopperSessionId
 
             )
         ) { authRequest ->
