@@ -4,6 +4,8 @@
 
 * LocalPayment
   * Make LocalPaymentAuthRequestParams public (fixes #1207)
+* PayPal
+  * Send `url` in `event_params` for App Switch events to PayPal's analytics service (FPTI)
 
 ## 5.2.0 (2024-10-30)
 
