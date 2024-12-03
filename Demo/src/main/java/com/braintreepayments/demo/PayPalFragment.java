@@ -78,7 +78,7 @@ public class PayPalFragment extends BaseFragment {
             requireContext(),
             super.getAuthStringArg(),
             Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"),
-            null
+            "com.braintreepayments.demo.braintree"
         );
         payPalLauncher = new PayPalLauncher();
 

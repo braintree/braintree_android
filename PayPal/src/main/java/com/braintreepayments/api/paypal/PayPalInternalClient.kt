@@ -7,7 +7,7 @@ import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.DeviceInspector
-import com.braintreepayments.api.core.GetReturnLinkTypeUseCase
+import com.braintreepayments.api.core.GetReturnLinkUseCase
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
@@ -21,9 +21,8 @@ internal class PayPalInternalClient(
     private val apiClient: ApiClient = ApiClient(braintreeClient),
     private val deviceInspector: DeviceInspector = DeviceInspector(),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
-    private val getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(merchantRepository)
+    private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository)
 ) {
-    private val appLink = merchantRepository.appLinkReturnUri?.toString()
 
     fun sendRequest(
         context: Context,
@@ -44,19 +43,22 @@ internal class PayPalInternalClient(
                     CREATE_SINGLE_PAYMENT_ENDPOINT
                 }
                 val url = "/v1/$endpoint"
-                val appLinkReturn = if (isBillingAgreement) appLink else null
 
                 if (isBillingAgreement && (payPalRequest as PayPalVaultRequest).enablePayPalAppSwitch) {
                     payPalRequest.enablePayPalAppSwitch = isPayPalInstalled(context)
                 }
 
-                val returnLinkType = getReturnLinkTypeUseCase()
-                val navigationLink = when (returnLinkType) {
-                    GetReturnLinkTypeUseCase.ReturnLinkType.APP_LINK -> merchantRepository.appLinkReturnUri
-                    GetReturnLinkTypeUseCase.ReturnLinkType.DEEP_LINK -> merchantRepository.returnUrlScheme
+                val returnLinkResult = getReturnLinkUseCase()
+                val navigationLink: String = when (returnLinkResult) {
+                    is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
+                    is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> returnLinkResult.deepLinkFallbackUrlScheme
+                    is GetReturnLinkUseCase.ReturnLinkResult.Failure -> {
+                        callback.onResult(null, returnLinkResult.exception)
+                        return@getConfiguration
+                    }
                 }
                 val appLinkParam = if (
-                    navigationLink == GetReturnLinkTypeUseCase.ReturnLinkType.APP_LINK && isBillingAgreement
+                    returnLinkResult is GetReturnLinkUseCase.ReturnLinkResult.AppLink && isBillingAgreement
                 ) {
                     merchantRepository.appLinkReturnUri?.toString()
                 } else {
@@ -139,9 +141,13 @@ internal class PayPalInternalClient(
                     )
                 }
 
-                val returnLink = when (getReturnLinkTypeUseCase()) {
-                    GetReturnLinkTypeUseCase.ReturnLinkType.APP_LINK -> merchantRepository.appLinkReturnUri
-                    GetReturnLinkTypeUseCase.ReturnLinkType.DEEP_LINK -> merchantRepository.returnUrlScheme
+                val returnLink: String = when (val returnLinkResult = getReturnLinkUseCase()) {
+                    is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
+                    is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> returnLinkResult.deepLinkFallbackUrlScheme
+                    is GetReturnLinkUseCase.ReturnLinkResult.Failure -> {
+                        callback.onResult(null, returnLinkResult.exception)
+                        return@sendPOST
+                    }
                 }
 
                 val paymentAuthRequest = PayPalPaymentAuthRequestParams(
