@@ -118,21 +118,20 @@ public class PayPalRequestFactory {
         String buyerEmailAddress,
         String buyerPhoneCountryCode,
         String buyerPhoneNationalNumber,
-        Optional<String> shopperInsightsSessionId
+        String shopperInsightsSessionId
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
 
-        if (!buyerEmailAddress.isEmpty()) {
+        if (buyerEmailAddress != null) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
         }
 
-        if (!buyerPhoneCountryCode.isEmpty() && !buyerPhoneNationalNumber.isEmpty()) {
+        if (buyerPhoneCountryCode != null && buyerPhoneNationalNumber != null) {
             request.setUserPhoneNumber(new PayPalPhoneNumber(buyerPhoneCountryCode, buyerPhoneNationalNumber));
         }
 
-        if (!shopperInsightsSessionId.toString().isEmpty()) {
-            request.setShopperSessionId(shopperInsightsSessionId.toString());
-            request.setUserAuthenticationEmail(buyerEmailAddress);
+        if (shopperInsightsSessionId != null) {
+            request.setShopperSessionId(shopperInsightsSessionId);
         }
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
