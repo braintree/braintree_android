@@ -41,7 +41,7 @@ class ShopperInsightsClient internal constructor(
      * @param authorization: a Tokenization Key or Client Token used to authenticate
      */
     constructor(context: Context, authorization: String) : this(
-        BraintreeClient(context, authorization),
+        BraintreeClient(context, authorization)
     )
 
     /**
