@@ -7,6 +7,7 @@ import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ClientToken
+import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.TokenizationKey
@@ -42,6 +43,7 @@ class ShopperInsightsClientUnitTest {
     private lateinit var analyticsParamRepository: AnalyticsParamRepository
     private lateinit var merchantRepository: MerchantRepository
     private lateinit var context: Context
+    private lateinit var deviceInspector: DeviceInspector
 
     private val clientToken = mockk<ClientToken>()
 
@@ -51,6 +53,7 @@ class ShopperInsightsClientUnitTest {
         braintreeClient = mockk(relaxed = true)
         analyticsParamRepository = mockk(relaxed = true)
         merchantRepository = mockk(relaxed = true)
+        deviceInspector = mockk(relaxed = true)
 
         every { merchantRepository.authorization } returns clientToken
 
@@ -59,6 +62,7 @@ class ShopperInsightsClientUnitTest {
             analyticsParamRepository,
             api,
             merchantRepository,
+            deviceInspector
         )
         context = ApplicationProvider.getApplicationContext()
     }
@@ -450,6 +454,30 @@ class ShopperInsightsClientUnitTest {
     fun `test venmo selected analytics event`() {
         sut.sendVenmoSelectedEvent()
         verify { braintreeClient.sendAnalyticsEvent("shopper-insights:venmo-selected") }
+    }
+
+    @Test
+    fun `test isPayPalAppInstalled returns true when deviceInspector returns true`() {
+        every { deviceInspector.isPayPalInstalled(context) } returns true
+        assertTrue { sut.isPayPalAppInstalled(context) }
+    }
+
+    @Test
+    fun `test isVenmoAppInstalled returns true when deviceInspector returns true`() {
+        every { deviceInspector.isVenmoInstalled(context) } returns true
+        assertTrue { sut.isVenmoAppInstalled(context) }
+    }
+
+    @Test
+    fun `test isPayPalAppInstalled returns false when deviceInspector returns false`() {
+        every { deviceInspector.isPayPalInstalled(context) } returns false
+        assertFalse { sut.isPayPalAppInstalled(context) }
+    }
+
+    @Test
+    fun `test isVenmoAppInstalled returns false when deviceInspector returns false`() {
+        every { deviceInspector.isVenmoInstalled(context) } returns false
+        assertFalse { sut.isVenmoAppInstalled(context) }
     }
 
     private fun executeTestForFindEligiblePaymentsApi(
