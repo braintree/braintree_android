@@ -545,6 +545,7 @@ public class PayPalClientUnitTest {
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.HANDLE_RETURN_STARTED, params);
         params.setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN");
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, params);
+        params.setAppSwitchUrl("sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN&switch_initiated_time=17166111926211");
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_SUCCEEDED, params);
     }
 
@@ -576,6 +577,7 @@ public class PayPalClientUnitTest {
         AnalyticsEventParams params = new AnalyticsEventParams();
         params.setPayPalContextId("SOME-BA");
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params);
+        params.setAppSwitchUrl("https://some-scheme/onetouch/v1/cancel?token=SOME-BA&switch_initiated_time=17166111926211");
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, params);
     }
 
