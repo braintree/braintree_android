@@ -47,6 +47,7 @@ class ShopperInsightsClient internal constructor(
     /**
      * @param context: an Android context
      * @param authorization: a Tokenization Key or Client Token used to authenticate
+     * @param shopperSessionId: the shopper session ID returned from your server SDK request
      */
     constructor(context: Context, authorization: String, shopperSessionId: String) : this(
         BraintreeClient(context, authorization),

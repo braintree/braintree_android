@@ -68,10 +68,26 @@ class ShopperInsightsClientUnitTest {
     }
 
     @Test
-    fun `when getRecommendedPaymentMethods is called, session id is reset`() {
+    fun `when getRecommendedPaymentMethods is called without shopper session id, session id is reset`() {
         sut.getRecommendedPaymentMethods(mockk(relaxed = true), "some_experiment", mockk(relaxed = true))
 
         verify { analyticsParamRepository.resetSessionId() }
+    }
+
+    @Test
+    fun `when getRecommendedPaymentMethods is called with shopper session id, session id is not reset`() {
+        sut = ShopperInsightsClient(
+            braintreeClient,
+            analyticsParamRepository,
+            api,
+            merchantRepository,
+            deviceInspector,
+            "shopper-session-id"
+        )
+
+        sut.getRecommendedPaymentMethods(mockk(relaxed = true), "some_experiment", mockk(relaxed = true))
+
+        verify(exactly = 0) { analyticsParamRepository.resetSessionId() }
     }
 
     @Test

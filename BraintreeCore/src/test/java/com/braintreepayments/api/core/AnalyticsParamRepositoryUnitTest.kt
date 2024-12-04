@@ -41,4 +41,10 @@ class AnalyticsParamRepositoryUnitTest {
 
         assertEquals(newUuid, sut.sessionId)
     }
+
+    @Test
+    fun `overrideSessionId overrides the session ID with input value`() {
+        sut.overrideSessionId("override-session-id")
+        assertEquals("override-session-id", sut.sessionId)
+    }
 }
