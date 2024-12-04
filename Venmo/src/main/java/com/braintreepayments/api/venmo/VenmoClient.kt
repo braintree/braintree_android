@@ -175,7 +175,7 @@ class VenmoClient internal constructor(
             context.packageManager.getApplicationLabel(context.applicationInfo)
                 .toString()
 
-        val merchantBaseUri = braintreeClient.appLinkReturnUri
+        val merchantBaseUri = merchantRepository.appLinkReturnUri
             ?: Uri.parse("${braintreeClient.getReturnUrlScheme()}://x-callback-url/vzero/auth/venmo")
 
         val successUri = merchantBaseUri.buildUpon().appendPath("success").build()
@@ -204,7 +204,7 @@ class VenmoClient internal constructor(
         val browserSwitchOptions = BrowserSwitchOptions()
             .requestCode(BraintreeRequestCodes.VENMO.code)
             .url(venmoBaseURL)
-            .appLinkUri(braintreeClient.appLinkReturnUri)
+            .appLinkUri(merchantRepository.appLinkReturnUri)
             .returnUrlScheme(braintreeClient.getReturnUrlScheme())
         val params = VenmoPaymentAuthRequestParams(
             browserSwitchOptions
