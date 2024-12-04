@@ -71,7 +71,7 @@ class ShopperInsightsClient internal constructor(
         experiment: String? = null,
         callback: ShopperInsightsCallback
     ) {
-        if(shopperSessionId == null) {
+        if (shopperSessionId == null) {
             analyticsParamRepository.resetSessionId()
         }
         braintreeClient.sendAnalyticsEvent(
