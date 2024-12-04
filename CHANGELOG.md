@@ -6,6 +6,7 @@
   * Make LocalPaymentAuthRequestParams public (fixes #1207)
 * ShopperInsights (BETA)
   * Add `isPayPalAppInstalled` and `isVenmoAppInstalled` methods
+  * Add `shopperSessionId` parameter to `ShopperInsightsClient`
 
 ## 5.2.0 (2024-10-30)
 
