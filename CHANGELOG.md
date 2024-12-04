@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* PayPal
+  * Add `deepLinkFallbackUrlScheme` to `PayPalClient` constructor params for supporting deep link fallback
 * LocalPayment
   * Make LocalPaymentAuthRequestParams public (fixes #1207)
 
