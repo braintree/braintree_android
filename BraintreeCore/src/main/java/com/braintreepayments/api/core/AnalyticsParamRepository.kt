@@ -30,7 +30,7 @@ class AnalyticsParamRepository(
         _sessionId = uuidHelper.formattedUUID
     }
 
-    fun overrideSessionId(sessionId: String) {
+    fun setSessionId(sessionId: String) {
         _sessionId = sessionId
     }
 

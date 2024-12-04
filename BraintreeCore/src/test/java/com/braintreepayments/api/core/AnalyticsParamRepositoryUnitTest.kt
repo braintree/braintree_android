@@ -43,8 +43,8 @@ class AnalyticsParamRepositoryUnitTest {
     }
 
     @Test
-    fun `overrideSessionId overrides the session ID with input value`() {
-        sut.overrideSessionId("override-session-id")
+    fun `setSessionId sets the session ID with input value`() {
+        sut.setSessionId("override-session-id")
         assertEquals("override-session-id", sut.sessionId)
     }
 }

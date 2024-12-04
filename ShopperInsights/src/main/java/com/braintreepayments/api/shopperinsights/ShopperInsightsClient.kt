@@ -40,20 +40,15 @@ class ShopperInsightsClient internal constructor(
     /**
      * @param context: an Android context
      * @param authorization: a Tokenization Key or Client Token used to authenticate
-     */
-    constructor(context: Context, authorization: String) : this(
-        BraintreeClient(context, authorization)
-    )
-    /**
-     * @param context: an Android context
-     * @param authorization: a Tokenization Key or Client Token used to authenticate
      * @param shopperSessionId: the shopper session ID returned from your server SDK request
      */
-    constructor(context: Context, authorization: String, shopperSessionId: String) : this(
+    constructor(context: Context, authorization: String, shopperSessionId: String? = null) : this(
         BraintreeClient(context, authorization),
         shopperSessionId = shopperSessionId
     ) {
-        analyticsParamRepository.overrideSessionId(sessionId = shopperSessionId)
+        if (shopperSessionId != null) {
+            analyticsParamRepository.setSessionId(sessionId = shopperSessionId)
+        }
     }
 
     /**
