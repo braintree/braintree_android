@@ -32,7 +32,7 @@ class PayPalLauncherUnitTest {
     @Before
     fun setup() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
-        sut = PayPalLauncher(browserSwitchClient, mockk(relaxed = true))
+        sut = PayPalLauncher(browserSwitchClient, lazy { mockk(relaxed = true) })
     }
 
     @Test
@@ -102,7 +102,8 @@ class PayPalLauncherUnitTest {
         } returns browserSwitchFinalResult
 
         val paymentAuthResult = sut.handleReturnToApp(
-            PayPalPendingRequest.Started(pendingRequestString), intent
+            PayPalPendingRequest.Started(pendingRequestString),
+            intent
         )
 
         assertTrue(paymentAuthResult is PayPalPaymentAuthResult.Success)
@@ -120,7 +121,8 @@ class PayPalLauncherUnitTest {
         } returns BrowserSwitchFinalResult.NoResult
 
         val paymentAuthResult = sut.handleReturnToApp(
-            PayPalPendingRequest.Started(pendingRequestString), intent
+            PayPalPendingRequest.Started(pendingRequestString),
+            intent
         )
 
         assertTrue(paymentAuthResult is PayPalPaymentAuthResult.NoResult)
