@@ -65,7 +65,7 @@ class ShopperInsightsFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        shopperInsightsClient = ShopperInsightsClient(requireContext(), authStringArg)
+        shopperInsightsClient = ShopperInsightsClient(requireContext(), authStringArg, "test-shopper-session-id")
 
         venmoClient = VenmoClient(requireContext(), super.getAuthStringArg(), null)
         payPalClient = PayPalClient(

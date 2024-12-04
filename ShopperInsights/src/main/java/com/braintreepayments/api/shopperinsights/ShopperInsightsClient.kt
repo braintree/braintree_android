@@ -34,15 +34,22 @@ class ShopperInsightsClient internal constructor(
     ),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val deviceInspector: DeviceInspector = DeviceInspector(),
+    private val shopperSessionId: String? = null
 ) {
 
     /**
      * @param context: an Android context
      * @param authorization: a Tokenization Key or Client Token used to authenticate
+     * @param shopperSessionId: the shopper session ID returned from your server SDK request
      */
-    constructor(context: Context, authorization: String) : this(
-        BraintreeClient(context, authorization)
-    )
+    constructor(context: Context, authorization: String, shopperSessionId: String? = null) : this(
+        BraintreeClient(context, authorization),
+        shopperSessionId = shopperSessionId
+    ) {
+        if (shopperSessionId != null) {
+            analyticsParamRepository.setSessionId(sessionId = shopperSessionId)
+        }
+    }
 
     /**
      * Retrieves recommended payment methods based on the provided shopper insights request.
@@ -59,7 +66,9 @@ class ShopperInsightsClient internal constructor(
         experiment: String? = null,
         callback: ShopperInsightsCallback
     ) {
-        analyticsParamRepository.resetSessionId()
+        if (shopperSessionId == null) {
+            analyticsParamRepository.resetSessionId()
+        }
         braintreeClient.sendAnalyticsEvent(
             GET_RECOMMENDED_PAYMENTS_STARTED,
             AnalyticsEventParams(experiment = experiment)

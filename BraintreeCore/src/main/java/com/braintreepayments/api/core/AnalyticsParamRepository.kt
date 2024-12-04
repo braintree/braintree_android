@@ -30,6 +30,10 @@ class AnalyticsParamRepository(
         _sessionId = uuidHelper.formattedUUID
     }
 
+    fun setSessionId(sessionId: String) {
+        _sessionId = sessionId
+    }
+
     companion object {
 
         /**
