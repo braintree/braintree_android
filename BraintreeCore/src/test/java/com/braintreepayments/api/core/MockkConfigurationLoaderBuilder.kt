@@ -6,7 +6,7 @@ import io.mockk.mockk
 internal class MockkConfigurationLoaderBuilder {
 
     private var configuration: Configuration? = null
-    private var configurationError: Exception? = null
+    private lateinit var configurationError: Exception
 
     fun configuration(configuration: Configuration): MockkConfigurationLoaderBuilder {
         this.configuration = configuration
@@ -20,12 +20,12 @@ internal class MockkConfigurationLoaderBuilder {
 
     fun build(): ConfigurationLoader {
         val configurationLoader = mockk<ConfigurationLoader>(relaxed = true)
-        every { configurationLoader.loadConfiguration(any(), any()) } answers {
-            val callback = secondArg<ConfigurationLoaderCallback>()
-            if (configuration != null) {
-                callback.onResult(configuration, null, null)
-            } else if (configurationError != null) {
-                callback.onResult(null, configurationError, null)
+        every { configurationLoader.loadConfiguration(any()) } answers {
+            val callback = firstArg<ConfigurationLoaderCallback>()
+            configuration?.let {
+                callback.onResult(ConfigurationLoaderResult.Success(it))
+            } ?: run {
+                callback.onResult(ConfigurationLoaderResult.Failure(configurationError))
             }
         }
         return configurationLoader

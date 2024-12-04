@@ -8,9 +8,10 @@ Before using this feature, you must register your App Link domain in the Braintr
 
 1. Log into your Control Panel (e.g. [Sandbox](https://sandbox.braintreegateway.com/login), or [Production](https://www.braintreegateway.com/login)).
 2. Click on the **gear icon** in the top right corner. A drop-down menu will open.
-3. Click **Processing** from the drop-down menu.
-4. Scroll to the **Payment Methods** section.
-5. Next to **PayPal**, click the **Options** link. This will take you to your linked PayPal Account(s) page.
+3. Select **Account Settings** from the drop-down menu.
+4. In the **Processing Options** tab, go to **Payment Methods** section.
+5. Next to **PayPal**, click the **Link Sandbox** link. This will give you option to link your Braintree and PayPal accounts.
+   - If your accounts are already linked, you'd see an **Options** button instead.
 6. Click the **View Domain Names** button. This will take you to the **PayPal Domain Names** page. 
    - Note: If you have a single PayPal account, it will be at the bottom of the page. If you have multiple PayPal accounts, it will be at the top right of the page.
 7. Click the **+ Add** link on the top right of the page or scroll to the **Specify Your Domain Names** section.

@@ -7,6 +7,7 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BuildConfig
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.InvalidArgumentException
+import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.threedsecure.ThreeDSecureParams.Companion.fromJson
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode
 import org.json.JSONException
@@ -24,7 +25,8 @@ import org.json.JSONObject
 class ThreeDSecureClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val cardinalClient: CardinalClient = CardinalClient(),
-    private val api: ThreeDSecureAPI = ThreeDSecureAPI(braintreeClient)
+    private val api: ThreeDSecureAPI = ThreeDSecureAPI(braintreeClient),
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
 ) {
     /**
      * Initializes a new [ThreeDSecureClient] instance
@@ -161,7 +163,7 @@ class ThreeDSecureClient internal constructor(
         val lookupJSON = JSONObject()
         try {
             lookupJSON
-                .put("authorizationFingerprint", braintreeClient.authorization.bearer)
+                .put("authorizationFingerprint", merchantRepository.authorization.bearer)
                 .put("braintreeLibraryVersion", "Android-${BuildConfig.VERSION_NAME}")
                 .put("nonce", request.nonce)
                 .put(

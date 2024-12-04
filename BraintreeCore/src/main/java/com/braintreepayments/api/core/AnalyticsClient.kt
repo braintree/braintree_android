@@ -1,6 +1,7 @@
 package com.braintreepayments.api.core
 
 import android.content.Context
+import androidx.annotation.RestrictTo
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
@@ -13,30 +14,49 @@ import org.json.JSONObject
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 @Suppress("SwallowedException", "TooGenericExceptionCaught")
-internal class AnalyticsClient(
-    context: Context,
+class AnalyticsClient internal constructor(
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
-    private val analyticsDatabase: AnalyticsDatabase = AnalyticsDatabase.getInstance(context.applicationContext),
-    private val workManager: WorkManager = WorkManager.getInstance(context.applicationContext),
+    private val analyticsDatabase: AnalyticsDatabase = AnalyticsDatabaseProvider().analyticsDatabase,
+    private val workManager: WorkManager = WorkManagerProvider().workManager,
     private val deviceInspector: DeviceInspector = DeviceInspector(),
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
-    private val time: Time = Time()
+    private val time: Time = Time(),
+    private val configurationLoader: ConfigurationLoader = ConfigurationLoader.instance,
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance
 ) {
-    private val applicationContext = context.applicationContext
+
+    private val applicationContext: Context
+        get() = merchantRepository.applicationContext
 
     fun sendEvent(
-        configuration: Configuration,
-        event: AnalyticsEvent,
-        integration: IntegrationType?,
-        authorization: Authorization
-    ): UUID {
-        scheduleAnalyticsWriteInBackground(event, authorization)
-        return scheduleAnalyticsUploadInBackground(
-            configuration,
-            authorization,
-            integration
+        eventName: String,
+        analyticsEventParams: AnalyticsEventParams = AnalyticsEventParams()
+    ) {
+        val analyticsEvent = AnalyticsEvent(
+            name = eventName,
+            timestamp = time.currentTime,
+            payPalContextId = analyticsEventParams.payPalContextId,
+            linkType = analyticsEventParams.linkType,
+            isVaultRequest = analyticsEventParams.isVaultRequest,
+            startTime = analyticsEventParams.startTime,
+            endTime = analyticsEventParams.endTime,
+            endpoint = analyticsEventParams.endpoint,
+            experiment = analyticsEventParams.experiment,
+            paymentMethodsDisplayed = analyticsEventParams.paymentMethodsDisplayed,
+            appSwitchUrl = analyticsEventParams.appSwitchUrl
         )
+        configurationLoader.loadConfiguration { result ->
+            if (result is ConfigurationLoaderResult.Success) {
+                scheduleAnalyticsWriteInBackground(analyticsEvent, merchantRepository.authorization)
+                scheduleAnalyticsUploadInBackground(
+                    configuration = result.configuration,
+                    authorization = merchantRepository.authorization,
+                    integration = merchantRepository.integrationType
+                )
+            }
+        }
     }
 
     private fun scheduleAnalyticsWriteInBackground(
@@ -221,6 +241,7 @@ internal class AnalyticsClient(
             .putOpt(FPTI_KEY_MERCHANT_EXPERIMENT, event.experiment)
             .putOpt(FPTI_KEY_MERCHANT_PAYMENT_METHODS_DISPLAYED,
                 event.paymentMethodsDisplayed.ifEmpty { null })
+            .putOpt(FPTI_KEY_URL, event.appSwitchUrl)
         return json.toString()
     }
 
@@ -252,6 +273,9 @@ internal class AnalyticsClient(
     }
 
     companion object {
+
+        val lazyInstance: Lazy<AnalyticsClient> = lazy { AnalyticsClient() }
+
         private const val FPTI_ANALYTICS_URL = "https://api-m.paypal.com/v1/tracking/batch/events"
 
         private const val FPTI_KEY_PAYPAL_CONTEXT_ID = "paypal_context_id"
@@ -270,6 +294,7 @@ internal class AnalyticsClient(
         private const val FPTI_KEY_ENDPOINT = "endpoint"
         private const val FPTI_KEY_MERCHANT_EXPERIMENT = "experiment"
         private const val FPTI_KEY_MERCHANT_PAYMENT_METHODS_DISPLAYED = "payment_methods_displayed"
+        private const val FPTI_KEY_URL = "url"
 
         private const val FPTI_BATCH_KEY_VENMO_INSTALLED = "venmo_installed"
         private const val FPTI_BATCH_KEY_PAYPAL_INSTALLED = "paypal_installed"

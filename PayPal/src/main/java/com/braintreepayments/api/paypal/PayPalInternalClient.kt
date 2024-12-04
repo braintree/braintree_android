@@ -7,6 +7,7 @@ import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.DeviceInspector
+import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
@@ -17,11 +18,12 @@ internal class PayPalInternalClient(
     private val braintreeClient: BraintreeClient,
     private val dataCollector: DataCollector = DataCollector(braintreeClient),
     private val apiClient: ApiClient = ApiClient(braintreeClient),
-    private val deviceInspector: DeviceInspector = DeviceInspector()
+    private val deviceInspector: DeviceInspector = DeviceInspector(),
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
 ) {
-    private val cancelUrl = "${braintreeClient.appLinkReturnUri}://onetouch/v1/cancel"
-    private val successUrl = "${braintreeClient.appLinkReturnUri}://onetouch/v1/success"
-    private val appLink = braintreeClient.appLinkReturnUri?.toString()
+    private val cancelUrl = "${merchantRepository.appLinkReturnUri}://onetouch/v1/cancel"
+    private val successUrl = "${merchantRepository.appLinkReturnUri}://onetouch/v1/success"
+    private val appLink = merchantRepository.appLinkReturnUri?.toString()
 
     fun sendRequest(
         context: Context,
@@ -50,7 +52,7 @@ internal class PayPalInternalClient(
 
                 val requestBody = payPalRequest.createRequestBody(
                     configuration = configuration,
-                    authorization = braintreeClient.authorization,
+                    authorization = merchantRepository.authorization,
                     successUrl = successUrl,
                     cancelUrl = cancelUrl,
                     appLink = appLinkReturn
@@ -155,7 +157,7 @@ internal class PayPalInternalClient(
 
     fun isAppSwitchEnabled(payPalRequest: PayPalRequest): Boolean {
         return (payPalRequest is PayPalVaultRequest) &&
-                payPalRequest.enablePayPalAppSwitch
+            payPalRequest.enablePayPalAppSwitch
     }
 
     fun isPayPalInstalled(context: Context): Boolean {

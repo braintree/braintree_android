@@ -10,6 +10,7 @@ Thank you for your contribution to Braintree.
 
  - [ ] Added a changelog entry
  - [ ] Relevant test coverage
+ - [ ] Tested and confirmed payment flows affected by this change are functioning as expected
 
 ### Authors
 > List GitHub usernames for everyone who contributed to this pull request.

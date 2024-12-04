@@ -21,6 +21,7 @@ import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.Configuration;
+import com.braintreepayments.api.core.MerchantRepository;
 import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
 import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
@@ -45,6 +46,7 @@ public class ThreeDSecureClientUnitTest {
 
     private FragmentActivity activity;
     private ThreeDSecureAPI threeDSecureAPI;
+    private MerchantRepository merchantRepository = mock(MerchantRepository.class);
 
     private ThreeDSecurePaymentAuthRequestCallback paymentAuthRequestCallback;
     private ThreeDSecureTokenizeCallback threeDSecureTokenizeCallback;
@@ -74,8 +76,9 @@ public class ThreeDSecureClientUnitTest {
         billingAddress.setGivenName("billing-given-name");
         basicRequest.setBillingAddress(billingAddress);
 
-        threeDSecureParams =
-            ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+        threeDSecureParams = ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+
+        when(merchantRepository.getAuthorization()).thenReturn(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN));
     }
 
     // region prepareLookup
@@ -88,13 +91,15 @@ public class ThreeDSecureClientUnitTest {
             .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
             .configuration(threeDSecureEnabledConfig)
             .build();
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                new ThreeDSecureAPI(braintreeClient));
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            new ThreeDSecureAPI(braintreeClient),
+            merchantRepository
+        );
 
         ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
         sut.prepareLookup(activity, basicRequest, callback);
@@ -130,13 +135,15 @@ public class ThreeDSecureClientUnitTest {
             .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
             .configuration(threeDSecureEnabledConfig)
             .build();
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                new ThreeDSecureAPI(braintreeClient));
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            new ThreeDSecureAPI(braintreeClient),
+            merchantRepository
+        );
 
         ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
         sut.prepareLookup(activity, basicRequest, callback);
@@ -170,13 +177,15 @@ public class ThreeDSecureClientUnitTest {
             .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
             .configuration(threeDSecureEnabledConfig)
             .build();
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                new ThreeDSecureAPI(braintreeClient));
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            new ThreeDSecureAPI(braintreeClient),
+            merchantRepository
+        );
 
         ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
         sut.prepareLookup(activity, basicRequest, callback);
@@ -194,13 +203,15 @@ public class ThreeDSecureClientUnitTest {
             .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
             .configuration(threeDSecureEnabledConfig)
             .build();
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                new ThreeDSecureAPI(braintreeClient));
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            new ThreeDSecureAPI(braintreeClient),
+            merchantRepository
+        );
 
         ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
         sut.prepareLookup(activity, basicRequest, callback);
@@ -220,13 +231,15 @@ public class ThreeDSecureClientUnitTest {
             .buildConfiguration();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
             .configuration(configuration)
             .build();
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                new ThreeDSecureAPI(braintreeClient));
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            new ThreeDSecureAPI(braintreeClient),
+            merchantRepository
+        );
 
         ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
         sut.prepareLookup(activity, basicRequest, callback);
@@ -257,9 +270,12 @@ public class ThreeDSecureClientUnitTest {
             .configuration(threeDSecureEnabledConfig)
             .build();
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                threeDSecureAPI);
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            threeDSecureAPI,
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(activity, basicRequest, paymentAuthRequestCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_STARTED, new AnalyticsEventParams());
@@ -285,9 +301,12 @@ public class ThreeDSecureClientUnitTest {
         billingAddress.setGivenName("billing-given-name");
         request.setBillingAddress(billingAddress);
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                new ThreeDSecureAPI(braintreeClient));
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            new ThreeDSecureAPI(braintreeClient),
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(activity, request, paymentAuthRequestCallback);
 
         String expectedUrl = "/v1/payment_methods/a-nonce/three_d_secure/lookup";
@@ -322,9 +341,12 @@ public class ThreeDSecureClientUnitTest {
         billingAddress.setGivenName("billing-given-name");
         request.setBillingAddress(billingAddress);
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                new ThreeDSecureAPI(braintreeClient));
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            new ThreeDSecureAPI(braintreeClient),
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(activity, request, paymentAuthRequestCallback);
 
         ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
@@ -364,9 +386,12 @@ public class ThreeDSecureClientUnitTest {
         billingAddress.setGivenName("billing-given-name");
         request.setBillingAddress(billingAddress);
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                new ThreeDSecureAPI(braintreeClient));
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            new ThreeDSecureAPI(braintreeClient),
+            merchantRepository
+        );
 
         sut.createPaymentAuthRequest(activity, request, paymentAuthRequestCallback);
 
@@ -379,9 +404,12 @@ public class ThreeDSecureClientUnitTest {
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                threeDSecureAPI);
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            threeDSecureAPI,
+            merchantRepository
+        );
 
         ThreeDSecureRequest request = new ThreeDSecureRequest();
         request.setAmount("5");
@@ -402,13 +430,15 @@ public class ThreeDSecureClientUnitTest {
             .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
             .configuration(threeDSecureEnabledConfig)
             .build();
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                new ThreeDSecureAPI(braintreeClient));
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            new ThreeDSecureAPI(braintreeClient),
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(activity, basicRequest, paymentAuthRequestCallback);
 
         verify(cardinalClient).initialize(same(activity), same(threeDSecureEnabledConfig),
@@ -424,13 +454,15 @@ public class ThreeDSecureClientUnitTest {
             .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
             .configuration(threeDSecureEnabledConfig)
             .build();
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                new ThreeDSecureAPI(braintreeClient));
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            new ThreeDSecureAPI(braintreeClient),
+            merchantRepository
+        );
 
         sut.createPaymentAuthRequest(activity, basicRequest, paymentAuthRequestCallback);
 
@@ -450,13 +482,15 @@ public class ThreeDSecureClientUnitTest {
             .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
             .configuration(threeDSecureEnabledConfig)
             .build();
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                new ThreeDSecureAPI(braintreeClient));
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            new ThreeDSecureAPI(braintreeClient),
+            merchantRepository
+        );
         sut.createPaymentAuthRequest(activity, basicRequest, paymentAuthRequestCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_STARTED, new AnalyticsEventParams());
@@ -472,13 +506,15 @@ public class ThreeDSecureClientUnitTest {
             .buildConfiguration();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
             .configuration(configuration)
             .build();
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                new ThreeDSecureAPI(braintreeClient));
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            new ThreeDSecureAPI(braintreeClient),
+            merchantRepository
+        );
 
         sut.createPaymentAuthRequest(activity, basicRequest, paymentAuthRequestCallback);
 
@@ -504,13 +540,15 @@ public class ThreeDSecureClientUnitTest {
             .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
             .configuration(threeDSecureEnabledConfig)
             .build();
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                new ThreeDSecureAPI(braintreeClient));
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            new ThreeDSecureAPI(braintreeClient),
+            merchantRepository
+        );
 
         ThreeDSecureParams threeDSecureParams =
             ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
@@ -527,14 +565,16 @@ public class ThreeDSecureClientUnitTest {
             .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
             .configuration(threeDSecureEnabledConfig)
             .returnUrlScheme("sample-return-url://")
             .build();
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                new ThreeDSecureAPI(braintreeClient));
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            new ThreeDSecureAPI(braintreeClient),
+            merchantRepository
+        );
 
         ThreeDSecureParams threeDSecureParams =
             ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
@@ -552,13 +592,15 @@ public class ThreeDSecureClientUnitTest {
             .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
             .configuration(threeDSecureEnabledConfig)
             .build();
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                new ThreeDSecureAPI(braintreeClient));
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            new ThreeDSecureAPI(braintreeClient),
+            merchantRepository
+        );
 
         ThreeDSecureParams threeDSecureParams =
             ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL);
@@ -580,13 +622,15 @@ public class ThreeDSecureClientUnitTest {
             .build();
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .authorizationSuccess(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
             .configuration(threeDSecureEnabledConfig)
             .build();
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                new ThreeDSecureAPI(braintreeClient));
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            new ThreeDSecureAPI(braintreeClient),
+            merchantRepository
+        );
         ThreeDSecureParams threeDSecureParams =
             ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
@@ -609,9 +653,12 @@ public class ThreeDSecureClientUnitTest {
         CardinalClient cardinalClient = new MockCardinalClientBuilder().build();
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                threeDSecureAPI);
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            threeDSecureAPI,
+            merchantRepository
+        );
 
         Exception threeDSecureError = new Exception("3DS error.");
         ThreeDSecurePaymentAuthResult paymentAuthResult = new ThreeDSecurePaymentAuthResult(null, null, null, threeDSecureError);
@@ -634,9 +681,12 @@ public class ThreeDSecureClientUnitTest {
         when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.TIMEOUT);
         when(validateResponse.getErrorDescription()).thenReturn("Error");
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                threeDSecureAPI);
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            threeDSecureAPI,
+            merchantRepository
+        );
 
         ThreeDSecurePaymentAuthResult paymentAuthResult =
             new ThreeDSecurePaymentAuthResult("jwt", validateResponse, threeDSecureParams, null);
@@ -663,9 +713,12 @@ public class ThreeDSecureClientUnitTest {
         ValidateResponse validateResponse = mock(ValidateResponse.class);
         when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.CANCEL);
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                threeDSecureAPI);
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            threeDSecureAPI,
+            merchantRepository
+        );
 
         ThreeDSecurePaymentAuthResult paymentAuthResult =
             new ThreeDSecurePaymentAuthResult("jwt", validateResponse, threeDSecureParams, null);
@@ -696,9 +749,12 @@ public class ThreeDSecureClientUnitTest {
         }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecureParams.class), anyString(),
             any(ThreeDSecureResultCallback.class));
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                threeDSecureAPI);
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            threeDSecureAPI,
+            merchantRepository
+        );
 
         ThreeDSecurePaymentAuthResult paymentAuthResult =
             new ThreeDSecurePaymentAuthResult("jwt", validateResponse, threeDSecureParams, null);
@@ -733,9 +789,12 @@ public class ThreeDSecureClientUnitTest {
         }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecureParams.class), anyString(),
             any(ThreeDSecureResultCallback.class));
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                threeDSecureAPI);
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            threeDSecureAPI,
+            merchantRepository
+        );
 
         ThreeDSecurePaymentAuthResult paymentAuthResult =
             new ThreeDSecurePaymentAuthResult("jwt", validateResponse, threeDSecureParams, null);
@@ -771,9 +830,12 @@ public class ThreeDSecureClientUnitTest {
         }).when(threeDSecureAPI).authenticateCardinalJWT(any(ThreeDSecureParams.class), anyString(),
             any(ThreeDSecureResultCallback.class));
 
-        ThreeDSecureClient sut =
-            new ThreeDSecureClient(braintreeClient, cardinalClient,
-                threeDSecureAPI);
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            threeDSecureAPI,
+            merchantRepository
+        );
 
         ThreeDSecurePaymentAuthResult paymentAuthResult =
             new ThreeDSecurePaymentAuthResult("jwt", validateResponse, threeDSecureParams, null);
