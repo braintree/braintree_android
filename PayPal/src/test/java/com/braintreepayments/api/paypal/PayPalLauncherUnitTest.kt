@@ -32,7 +32,7 @@ class PayPalLauncherUnitTest {
     @Before
     fun setup() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
-        sut = PayPalLauncher(browserSwitchClient)
+        sut = PayPalLauncher(browserSwitchClient, mockk(relaxed = true))
     }
 
     @Test
