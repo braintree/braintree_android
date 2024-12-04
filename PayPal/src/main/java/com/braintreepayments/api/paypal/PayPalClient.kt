@@ -212,13 +212,6 @@ class PayPalClient internal constructor(
         val switchInitiatedTime = Uri.parse(approvalUrl).getQueryParameter("switch_initiated_time")
         val isAppSwitchFlow = !switchInitiatedTime.isNullOrEmpty()
 
-        if (isAppSwitchFlow) {
-            braintreeClient.sendAnalyticsEvent(
-                PayPalAnalytics.HANDLE_RETURN_STARTED,
-                analyticsParams
-            )
-        }
-
         approvalUrl?.let {
             val pairingId = Uri.parse(approvalUrl).getQueryParameter(tokenKey)
             if (!pairingId.isNullOrEmpty()) {
