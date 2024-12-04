@@ -7,7 +7,6 @@ import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
-import com.braintreepayments.api.sharedutils.Time
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -22,12 +21,12 @@ class BraintreeClient internal constructor(
     authorization: Authorization,
     returnUrlScheme: String,
     appLinkReturnUri: Uri?,
+    deepLinkFallbackUrlScheme: String? = null,
     sdkComponent: SdkComponent = SdkComponent.create(applicationContext),
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
     private val graphQLClient: BraintreeGraphQLClient = BraintreeGraphQLClient(),
     private val configurationLoader: ConfigurationLoader = ConfigurationLoader.instance,
     private val manifestValidator: ManifestValidator = ManifestValidator(),
-    private val time: Time = Time(),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val analyticsClient: AnalyticsClient = AnalyticsClient(),
 ) {
@@ -47,6 +46,7 @@ class BraintreeClient internal constructor(
         returnUrlScheme: String? = null,
         appLinkReturnUri: Uri? = null,
         integrationType: IntegrationType? = null,
+        deepLinkFallbackUrlScheme: String? = null,
     ) : this(
         applicationContext = context.applicationContext,
         authorization = Authorization.fromString(authorization),
@@ -54,6 +54,7 @@ class BraintreeClient internal constructor(
             ?: "${getAppPackageNameWithoutUnderscores(context.applicationContext)}.braintree",
         appLinkReturnUri = appLinkReturnUri,
         integrationType = integrationType ?: IntegrationType.CUSTOM,
+        deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
     )
 
     init {
@@ -72,6 +73,9 @@ class BraintreeClient internal constructor(
             it.returnUrlScheme = returnUrlScheme
             if (appLinkReturnUri != null) {
                 it.appLinkReturnUri = appLinkReturnUri
+            }
+            if (deepLinkFallbackUrlScheme != null) {
+                it.deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
             }
         }
     }
