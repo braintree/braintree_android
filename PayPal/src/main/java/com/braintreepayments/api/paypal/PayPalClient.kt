@@ -310,8 +310,10 @@ class PayPalClient internal constructor(
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, analyticsParams)
 
         if (isAppSwitchFlow) {
-            val appSwitchAnalyticsParams = analyticsParams.apply { appSwitchUrl = appSwitchUrlString }
-            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, appSwitchAnalyticsParams)
+            braintreeClient.sendAnalyticsEvent(
+                PayPalAnalytics.APP_SWITCH_FAILED,
+                analyticsParams.copy(appSwitchUrl = appSwitchUrlString)
+            )
         }
 
         callback.onPayPalResult(failure)
@@ -325,8 +327,10 @@ class PayPalClient internal constructor(
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, analyticsParams)
 
         if (isAppSwitchFlow) {
-            val appSwitchAnalyticsParams = analyticsParams.apply { appSwitchUrl = appSwitchUrlString }
-            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_SUCCEEDED, appSwitchAnalyticsParams)
+            braintreeClient.sendAnalyticsEvent(
+                PayPalAnalytics.APP_SWITCH_SUCCEEDED,
+                analyticsParams.copy(appSwitchUrl = appSwitchUrlString)
+            )
         }
 
         callback.onPayPalResult(success)
