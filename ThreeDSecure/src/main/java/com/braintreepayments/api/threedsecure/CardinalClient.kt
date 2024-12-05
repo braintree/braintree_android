@@ -110,7 +110,7 @@ internal class CardinalClient {
         }
 
         request.requestorAppUrl?.let {
-            cardinalConfigurationParameters.threeDSRequestorAppURL = request.requestorAppUrl
+            cardinalConfigurationParameters.threeDSRequestorAppURL = it
         }
         try {
             Cardinal.getInstance().configure(context, cardinalConfigurationParameters)
