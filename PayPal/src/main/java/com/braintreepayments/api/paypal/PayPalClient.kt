@@ -45,6 +45,11 @@ class PayPalClient internal constructor(
     private var isVaultRequest = false
 
     /**
+     * The final URL string used to open the app switch flow
+     */
+    private var appSwitchUrlString: String? = null
+
+    /**
      * Initializes a new [PayPalClient] instance
      *
      * @param context          an Android Context
@@ -213,6 +218,7 @@ class PayPalClient internal constructor(
         val isAppSwitchFlow = !switchInitiatedTime.isNullOrEmpty()
 
         if (isAppSwitchFlow) {
+            appSwitchUrlString = approvalUrl
             braintreeClient.sendAnalyticsEvent(
                 PayPalAnalytics.HANDLE_RETURN_STARTED,
                 analyticsParams
@@ -330,7 +336,10 @@ class PayPalClient internal constructor(
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, analyticsParams)
 
         if (isAppSwitchFlow) {
-            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, analyticsParams)
+            braintreeClient.sendAnalyticsEvent(
+                PayPalAnalytics.APP_SWITCH_FAILED,
+                analyticsParams.copy(appSwitchUrl = appSwitchUrlString)
+            )
         }
 
         callback.onPayPalResult(failure)
@@ -344,7 +353,10 @@ class PayPalClient internal constructor(
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, analyticsParams)
 
         if (isAppSwitchFlow) {
-            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_SUCCEEDED, analyticsParams)
+            braintreeClient.sendAnalyticsEvent(
+                PayPalAnalytics.APP_SWITCH_SUCCEEDED,
+                analyticsParams.copy(appSwitchUrl = appSwitchUrlString)
+            )
         }
 
         callback.onPayPalResult(success)
