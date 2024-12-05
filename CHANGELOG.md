@@ -8,7 +8,7 @@
 * LocalPayment
   * Make LocalPaymentAuthRequestParams public (fixes #1207)
 * ThreeDSecure
-  * Add `ThreeDSecureRequest.threeDSRequestorAppUrl`
+  * Add `ThreeDSecureRequest.requestorAppUrl`
 
 ## 5.2.0 (2024-10-30)
 
