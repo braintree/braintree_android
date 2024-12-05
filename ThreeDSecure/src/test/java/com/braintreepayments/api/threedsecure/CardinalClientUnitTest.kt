@@ -185,7 +185,6 @@ class CardinalClientUnitTest {
         assertEquals(exceptionSlot.captured.message, "consumer session id not available")
     }
 
-
     @Test
     fun `when cardinal configuration is called with a requestorAppUrl, sets threeDSRequestorAppURL`() {
         every { Cardinal.getInstance() } returns cardinalInstance
