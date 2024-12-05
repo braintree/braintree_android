@@ -35,7 +35,7 @@ class PayPalLauncherUnitTest {
     @Before
     fun setup() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
-        sut = PayPalLauncher(browserSwitchClient, lazy {analyticsClient })
+        sut = PayPalLauncher(browserSwitchClient, lazy { analyticsClient })
     }
 
     @Test
