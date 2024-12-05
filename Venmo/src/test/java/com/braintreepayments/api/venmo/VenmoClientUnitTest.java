@@ -326,7 +326,9 @@ public class VenmoClientUnitTest {
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId(null);
         request.setShouldVault(false);
-        
+
+        when(merchantRepository.getAppLinkReturnUri()).thenReturn(Uri.parse("https://example.com/payments"));
+
         VenmoClient sut = new VenmoClient(
                 braintreeClient,
                 apiClient,
@@ -337,8 +339,6 @@ public class VenmoClientUnitTest {
                 venmoRepository
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
-
-        when(merchantRepository.getAppLinkReturnUri()).thenReturn(Uri.parse("https://example.com/payments"));
 
         ArgumentCaptor<VenmoPaymentAuthRequest> captor =
                 ArgumentCaptor.forClass(VenmoPaymentAuthRequest.class);
