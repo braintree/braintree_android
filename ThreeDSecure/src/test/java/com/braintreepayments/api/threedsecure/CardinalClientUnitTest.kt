@@ -185,6 +185,23 @@ class CardinalClientUnitTest {
         assertEquals(exceptionSlot.captured.message, "consumer session id not available")
     }
 
+
+    @Test
+    fun `when cardinal configuration is called with a requestorAppUrl, sets threeDSRequestorAppURL`() {
+        every { Cardinal.getInstance() } returns cardinalInstance
+
+        val sut = CardinalClient()
+        val request = ThreeDSecureRequest()
+        request.requestorAppUrl = "www.paypal.com"
+        sut.initialize(context, configuration, request, cardinalInitializeCallback)
+
+        val parametersSlot = slot<CardinalConfigurationParameters>()
+        verify { cardinalInstance.configure(context, capture(parametersSlot)) }
+
+        val parameters = parametersSlot.captured
+        assertEquals("www.paypal.com", parameters.threeDSRequestorAppURL)
+    }
+
     @Test
     fun initialize_onCardinalConfigureRuntimeException_throwsError() {
         every { Cardinal.getInstance() } returns cardinalInstance
