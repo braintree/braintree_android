@@ -49,7 +49,7 @@ import org.json.JSONObject
  * @property customFields Optional. Object where each key is the name of a custom field which has
  * been configured in the Control Panel. In the Control Panel you can configure 3D Secure Rules
  * which trigger on certain values.
- * @property threeDSRequestorAppUrl Optional. Three DS Requester APP URL Merchant app declaring their
+ * @property requestorAppUrl Optional. Three DS Requester APP URL Merchant app declaring their
  * URL within the CReq message so that the Authentication app can call the Merchant app after
  * OOB authentication has occurred.
  */
@@ -72,7 +72,7 @@ data class ThreeDSecureRequest @JvmOverloads constructor(
     var uiType: ThreeDSecureUiType = ThreeDSecureUiType.BOTH,
     var renderTypes: List<ThreeDSecureRenderType>? = null,
     var customFields: Map<String, String>? = null,
-    var threeDSRequestorAppUrl: String? = null
+    var requestorAppUrl: String? = null
 ) : Parcelable {
 
     /**
