@@ -95,6 +95,16 @@ class PayPalLauncherUnitTest {
 
     @Test
     @Throws(JSONException::class)
+    fun `handleReturnToApp sends started event`() {
+        sut.handleReturnToApp(
+            PayPalPendingRequest.Started(pendingRequestString),
+            intent
+        )
+        verify { analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_STARTED) }
+    }
+
+    @Test
+    @Throws(JSONException::class)
     fun `handleReturnToApp when result exists returns result`() {
         val browserSwitchFinalResult = mockk<BrowserSwitchFinalResult.Success>()
         every {
