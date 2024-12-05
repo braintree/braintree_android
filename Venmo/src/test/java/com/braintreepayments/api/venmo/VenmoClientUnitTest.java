@@ -317,9 +317,6 @@ public class VenmoClientUnitTest {
     public void createPaymentAuthRequest_whenAppLinkUriSet_appSwitchesWithAppLink() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(venmoEnabledConfiguration)
-                .integration(IntegrationType.CUSTOM)
-                .authorizationSuccess(clientToken)
-                .appLinkReturnUri(Uri.parse("https://example.com/payments"))
                 .build();
 
         VenmoApi venmoApi = new MockVenmoApiBuilder()
@@ -329,9 +326,19 @@ public class VenmoClientUnitTest {
         VenmoRequest request = new VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE);
         request.setProfileId(null);
         request.setShouldVault(false);
-        VenmoClient sut =
-                new VenmoClient(braintreeClient, apiClient, venmoApi, sharedPrefsWriter, analyticsParamRepository);
+        
+        VenmoClient sut = new VenmoClient(
+                braintreeClient,
+                apiClient,
+                venmoApi,
+                sharedPrefsWriter,
+                analyticsParamRepository,
+                merchantRepository,
+                venmoRepository
+        );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
+
+        when(merchantRepository.getAppLinkReturnUri()).thenReturn(Uri.parse("https://example.com/payments"));
 
         ArgumentCaptor<VenmoPaymentAuthRequest> captor =
                 ArgumentCaptor.forClass(VenmoPaymentAuthRequest.class);
