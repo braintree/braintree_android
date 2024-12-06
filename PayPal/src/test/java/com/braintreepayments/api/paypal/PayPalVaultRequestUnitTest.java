@@ -220,7 +220,7 @@ public class PayPalVaultRequestUnitTest {
         String versionSDK = String.valueOf(Build.VERSION.SDK_INT);
         String payerEmail = "payer_email@example.com";
         PayPalVaultRequest request = new PayPalVaultRequest(true);
-
+        request.setShopperSessionId("shopper-insights-id");
         request.setEnablePayPalAppSwitch(true);
         request.setUserAuthenticationEmail(payerEmail);
         String requestBody = request.createRequestBody(
@@ -231,6 +231,7 @@ public class PayPalVaultRequestUnitTest {
             "universal_url"
         );
 
+        assertTrue(requestBody.contains("\"shopper_session_id\":shopper-insights-id"));
         assertTrue(requestBody.contains("\"launch_paypal_app\":true"));
         assertTrue(requestBody.contains("\"os_type\":" + "\"Android\""));
         assertTrue(requestBody.contains("\"os_version\":" + "\"" + versionSDK + "\""));
