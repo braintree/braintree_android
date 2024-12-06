@@ -50,12 +50,27 @@ class VenmoClient internal constructor(
      *
      * @param context an Android Context
      * @param authorization a Tokenization Key or Client Token used to authenticate
-     * @param returnUrlScheme a custom return url to use for browser and app switching
+     * @param appLinkReturnUrl A [Uri] containing the Android App Link website associated with
+     * your application to be used to return to your app from the PayPal
      */
     constructor(
         context: Context,
         authorization: String,
-        returnUrlScheme: String?
+        appLinkReturnUrl: Uri,
+    ) : this(BraintreeClient(context, authorization, null, appLinkReturnUrl))
+
+    /**
+     * Initializes a new [VenmoClient] instance
+     *
+     * @param context an Android Context
+     * @param authorization a Tokenization Key or Client Token used to authenticate
+     * @param returnUrlScheme a custom return url to use for browser and app switching
+     */
+    @Deprecated("Use the constructor that uses an `appLinkReturnUrl` to redirect back to your application instead.")
+    @JvmOverloads constructor(
+        context: Context,
+        authorization: String,
+        returnUrlScheme: String? = null
     ) : this(BraintreeClient(context, authorization, returnUrlScheme))
 
     /**
@@ -160,18 +175,18 @@ class VenmoClient internal constructor(
             context.packageManager.getApplicationLabel(context.applicationInfo)
                 .toString()
 
-        val returnUrlScheme = braintreeClient.getReturnUrlScheme()
+        val merchantBaseUri = merchantRepository.appLinkReturnUri
+            ?: Uri.parse("${braintreeClient.getReturnUrlScheme()}://x-callback-url/vzero/auth/venmo")
+
+        val successUri = merchantBaseUri.buildUpon().appendPath("success").build()
+        val cancelUri = merchantBaseUri.buildUpon().appendPath("cancel").build()
+        val errorUri = merchantBaseUri.buildUpon().appendPath("error").build()
+
         val venmoBaseURL = Uri.parse("https://venmo.com/go/checkout")
             .buildUpon()
-            .appendQueryParameter(
-                "x-success", "$returnUrlScheme://x-callback-url/vzero/auth/venmo/success"
-            )
-            .appendQueryParameter(
-                "x-error", "$returnUrlScheme://x-callback-url/vzero/auth/venmo/error"
-            )
-            .appendQueryParameter(
-                "x-cancel", "$returnUrlScheme://x-callback-url/vzero/auth/venmo/cancel"
-            )
+            .appendQueryParameter("x-success", successUri.toString())
+            .appendQueryParameter("x-error", errorUri.toString())
+            .appendQueryParameter("x-cancel", cancelUri.toString())
             .appendQueryParameter("x-source", applicationName)
             .appendQueryParameter("braintree_merchant_id", venmoProfileId)
             .appendQueryParameter("braintree_access_token", configuration?.venmoAccessToken)
@@ -189,7 +204,8 @@ class VenmoClient internal constructor(
         val browserSwitchOptions = BrowserSwitchOptions()
             .requestCode(BraintreeRequestCodes.VENMO.code)
             .url(venmoBaseURL)
-            .returnUrlScheme(returnUrlScheme)
+            .appLinkUri(merchantRepository.appLinkReturnUri)
+            .returnUrlScheme(braintreeClient.getReturnUrlScheme())
         val params = VenmoPaymentAuthRequestParams(
             browserSwitchOptions
         )
