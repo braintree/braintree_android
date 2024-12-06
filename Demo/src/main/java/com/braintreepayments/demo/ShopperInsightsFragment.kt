@@ -49,7 +49,6 @@ class ShopperInsightsFragment : BaseFragment() {
     private lateinit var nationalNumberInput: TextInputLayout
     private lateinit var emailNullSwitch: SwitchMaterial
     private lateinit var phoneNullSwitch: SwitchMaterial
-    private lateinit var shopperInsightsSessionIdNullSwitch: SwitchMaterial
 
     private lateinit var shopperInsightsClient: ShopperInsightsClient
     private lateinit var payPalClient: PayPalClient
