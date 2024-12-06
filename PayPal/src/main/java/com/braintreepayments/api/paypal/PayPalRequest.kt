@@ -72,8 +72,8 @@ import org.json.JSONException
  * where the user has a PayPal Account with the same email.
  * @property userPhoneNumber User phone number used to initiate a quicker authentication flow in
  * cases where the user has a PayPal Account with the phone number.
- * @property shopperSessionId value should be the shopper session ID returned from your server SDK
- * request.
+ * @property shopperSessionId the shopper session ID returned from your shopper insights server SDK
+ * integration
  * @property lineItems The line items for this transaction. It can include up to 249 line items.
  */
 abstract class PayPalRequest internal constructor(
