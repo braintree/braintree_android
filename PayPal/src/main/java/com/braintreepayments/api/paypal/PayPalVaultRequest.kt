@@ -5,6 +5,7 @@ import android.text.TextUtils
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.ClientToken
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.PostalAddress
 import com.braintreepayments.api.core.PostalAddressParser
 import kotlinx.parcelize.Parcelize
@@ -65,6 +66,7 @@ class PayPalVaultRequest
     lineItems = lineItems
 ) {
 
+    @OptIn(ExperimentalBetaApi::class)
     @Throws(JSONException::class)
     @Suppress("LongMethod")
     override fun createRequestBody(

@@ -4,6 +4,7 @@ import android.text.TextUtils
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.ClientToken
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.PostalAddress
 import com.braintreepayments.api.core.PostalAddressParser
 import kotlinx.parcelize.Parcelize
@@ -91,6 +92,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     lineItems = lineItems
 ) {
 
+    @OptIn(ExperimentalBetaApi::class)
     @Throws(JSONException::class)
     @Suppress("LongMethod", "CyclomaticComplexMethod")
     override fun createRequestBody(
@@ -126,9 +128,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
 
         userPhoneNumber?.let { parameters.put(PHONE_NUMBER_KEY, it.toJson()) }
 
-        shopperSessionId?.let {
-            if (it.isNotEmpty()) parameters.put(SHOPPER_SESSION_ID, it)
-        }
+        parameters.putOpt(SHOPPER_SESSION_ID, shopperSessionId)
 
         if (currencyCode == null) {
             currencyCode = configuration?.payPalCurrencyIsoCode
