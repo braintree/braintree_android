@@ -31,7 +31,7 @@ public class PayPalRequestFactory {
 
         PayPalVaultRequest request = new PayPalVaultRequest(true);
 
-        if (buyerEmailAddress != null && !buyerEmailAddress.isEmpty() ) {
+        if (buyerEmailAddress != null && !buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
         }
 
@@ -126,15 +126,19 @@ public class PayPalRequestFactory {
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
 
-        if (buyerEmailAddress != null) {
+        if (buyerEmailAddress != null && !buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
         }
 
-        if (buyerPhoneCountryCode != null && buyerPhoneNationalNumber != null) {
-            request.setUserPhoneNumber(new PayPalPhoneNumber(buyerPhoneCountryCode, buyerPhoneNationalNumber));
+        if ((buyerPhoneCountryCode != null && !buyerPhoneCountryCode.isEmpty())
+                && (buyerPhoneNationalNumber != null && !buyerPhoneNationalNumber.isEmpty())) {
+            request.setUserPhoneNumber(new PayPalPhoneNumber(
+                    buyerPhoneCountryCode,
+                    buyerPhoneNationalNumber)
+            );
         }
 
-        if (shopperInsightsSessionId != null) {
+        if (shopperInsightsSessionId != null && !shopperInsightsSessionId.isEmpty()) {
             request.setShopperSessionId(shopperInsightsSessionId);
         }
 
