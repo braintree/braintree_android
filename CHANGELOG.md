@@ -4,8 +4,14 @@
 
 * PayPal
   * Add `deepLinkFallbackUrlScheme` to `PayPalClient` constructor params for supporting deep link fallback
+  * Send `url` in `event_params` for App Switch events to PayPal's analytics service (FPTI)
 * LocalPayment
   * Make LocalPaymentAuthRequestParams public (fixes #1207)
+* ThreeDSecure
+  * Add `ThreeDSecureRequest.requestorAppUrl`
+* Venmo
+  * Add `VenmoClient` constructor with `appLinkReturnUri` argument to use App Links when redirecting back from the Venmo flow
+  * Deprecate `VenmoClient` constructor with `returnUrlScheme` argument
 
 ## 5.2.0 (2024-10-30)
 
