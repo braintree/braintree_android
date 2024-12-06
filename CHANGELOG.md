@@ -7,6 +7,8 @@
 * ShopperInsights (BETA)
   * Add `isPayPalAppInstalled` and `isVenmoAppInstalled` methods
   * Add `shopperSessionId` parameter to `ShopperInsightsClient`
+* BraintreePayPal
+  * Add `shopperSessionInsight`
 
 ## 5.2.0 (2024-10-30)
 
