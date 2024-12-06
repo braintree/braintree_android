@@ -7,6 +7,7 @@ import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ClientToken
+import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.TokenizationKey
@@ -42,6 +43,7 @@ class ShopperInsightsClientUnitTest {
     private lateinit var analyticsParamRepository: AnalyticsParamRepository
     private lateinit var merchantRepository: MerchantRepository
     private lateinit var context: Context
+    private lateinit var deviceInspector: DeviceInspector
 
     private val clientToken = mockk<ClientToken>()
 
@@ -51,18 +53,41 @@ class ShopperInsightsClientUnitTest {
         braintreeClient = mockk(relaxed = true)
         analyticsParamRepository = mockk(relaxed = true)
         merchantRepository = mockk(relaxed = true)
+        deviceInspector = mockk(relaxed = true)
 
         every { merchantRepository.authorization } returns clientToken
 
-        sut = ShopperInsightsClient(braintreeClient, analyticsParamRepository, api, merchantRepository)
+        sut = ShopperInsightsClient(
+            braintreeClient,
+            analyticsParamRepository,
+            api,
+            merchantRepository,
+            deviceInspector
+        )
         context = ApplicationProvider.getApplicationContext()
     }
 
     @Test
-    fun `when getRecommendedPaymentMethods is called, session id is reset`() {
+    fun `when getRecommendedPaymentMethods is called without shopper session id, session id is reset`() {
         sut.getRecommendedPaymentMethods(mockk(relaxed = true), "some_experiment", mockk(relaxed = true))
 
         verify { analyticsParamRepository.resetSessionId() }
+    }
+
+    @Test
+    fun `when getRecommendedPaymentMethods is called with shopper session id, session id is not reset`() {
+        sut = ShopperInsightsClient(
+            braintreeClient,
+            analyticsParamRepository,
+            api,
+            merchantRepository,
+            deviceInspector,
+            "shopper-session-id"
+        )
+
+        sut.getRecommendedPaymentMethods(mockk(relaxed = true), "some_experiment", mockk(relaxed = true))
+
+        verify(exactly = 0) { analyticsParamRepository.resetSessionId() }
     }
 
     @Test
@@ -403,7 +428,12 @@ class ShopperInsightsClientUnitTest {
         every { merchantRepository.authorization } returns mockk<TokenizationKey>()
         val braintreeClient = MockkBraintreeClientBuilder().build()
 
-        sut = ShopperInsightsClient(braintreeClient, analyticsParamRepository, api, merchantRepository)
+        sut = ShopperInsightsClient(
+            braintreeClient,
+            analyticsParamRepository,
+            api,
+            merchantRepository,
+        )
 
         val request = ShopperInsightsRequest("some-email", null)
         sut.getRecommendedPaymentMethods(request) { result ->
@@ -440,6 +470,30 @@ class ShopperInsightsClientUnitTest {
     fun `test venmo selected analytics event`() {
         sut.sendVenmoSelectedEvent()
         verify { braintreeClient.sendAnalyticsEvent("shopper-insights:venmo-selected") }
+    }
+
+    @Test
+    fun `test isPayPalAppInstalled returns true when deviceInspector returns true`() {
+        every { deviceInspector.isPayPalInstalled(context) } returns true
+        assertTrue { sut.isPayPalAppInstalled(context) }
+    }
+
+    @Test
+    fun `test isVenmoAppInstalled returns true when deviceInspector returns true`() {
+        every { deviceInspector.isVenmoInstalled(context) } returns true
+        assertTrue { sut.isVenmoAppInstalled(context) }
+    }
+
+    @Test
+    fun `test isPayPalAppInstalled returns false when deviceInspector returns false`() {
+        every { deviceInspector.isPayPalInstalled(context) } returns false
+        assertFalse { sut.isPayPalAppInstalled(context) }
+    }
+
+    @Test
+    fun `test isVenmoAppInstalled returns false when deviceInspector returns false`() {
+        every { deviceInspector.isVenmoInstalled(context) } returns false
+        assertFalse { sut.isVenmoAppInstalled(context) }
     }
 
     private fun executeTestForFindEligiblePaymentsApi(
