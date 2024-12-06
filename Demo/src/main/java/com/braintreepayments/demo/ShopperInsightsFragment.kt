@@ -49,7 +49,6 @@ class ShopperInsightsFragment : BaseFragment() {
     private lateinit var nationalNumberInput: TextInputLayout
     private lateinit var emailNullSwitch: SwitchMaterial
     private lateinit var phoneNullSwitch: SwitchMaterial
-    private lateinit var shopperInsightsSessionIdInput: TextInputLayout
     private lateinit var shopperInsightsSessionIdNullSwitch: SwitchMaterial
 
     private lateinit var shopperInsightsClient: ShopperInsightsClient
@@ -62,12 +61,14 @@ class ShopperInsightsFragment : BaseFragment() {
     private lateinit var venmoStartedPendingRequest: VenmoPendingRequest.Started
     private lateinit var paypalStartedPendingRequest: PayPalPendingRequest.Started
 
+    private var sessionId: String = "test-shopper-session-id"
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        shopperInsightsClient = ShopperInsightsClient(requireContext(), authStringArg, "test-shopper-session-id")
+        shopperInsightsClient = ShopperInsightsClient(requireContext(), authStringArg, sessionId)
 
         venmoClient = VenmoClient(requireContext(), super.getAuthStringArg(), null)
         payPalClient = PayPalClient(
@@ -97,13 +98,9 @@ class ShopperInsightsFragment : BaseFragment() {
         nationalNumberInput = view.findViewById(R.id.nationalNumberInput)
         emailNullSwitch = view.findViewById(R.id.emailNullSwitch)
         phoneNullSwitch = view.findViewById(R.id.phoneNullSwitch)
-        shopperInsightsSessionIdInput = view.findViewById(R.id.shopperInsightsSessionIdInput)
-        shopperInsightsSessionIdNullSwitch = view.findViewById(R.id.shopperInsightsSessionIdNullSwitch)
-
 
         emailInput.editText?.setText("PR1_merchantname@personal.example.com")
         nationalNumberInput.editText?.setText("4082321001")
-        shopperInsightsSessionIdInput.editText?.setText("shopperSessionId")
         countryCodeInput.editText?.setText("1")
     }
 
@@ -229,10 +226,6 @@ class ShopperInsightsFragment : BaseFragment() {
     private fun launchPayPalVault() {
         shopperInsightsClient.sendPayPalSelectedEvent()
 
-        val shopperSessionId =
-            if (shopperInsightsSessionIdNullSwitch.isChecked) null
-            else shopperInsightsSessionIdInput.editText?.text.toString()
-
         payPalClient.createPaymentAuthRequest(
             requireContext(),
             PayPalRequestFactory.createPayPalVaultRequest(
@@ -240,7 +233,7 @@ class ShopperInsightsFragment : BaseFragment() {
                 emailInput.editText?.text.toString(),
                 countryCodeInput.editText?.text.toString(),
                 nationalNumberInput.editText?.text.toString(),
-                shopperSessionId
+                sessionId
 
             )
         ) { authRequest ->
