@@ -16,6 +16,7 @@ import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.testutils.Fixtures;
 
 import org.json.JSONException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -32,6 +33,7 @@ public class PayPalVaultRequestUnitTest {
     public void newPayPalVaultRequest_setsDefaultValues() {
         PayPalVaultRequest request = new PayPalVaultRequest(false);
 
+        assertNull(request.getShopperSessionId());
         assertNull(request.getLocaleCode());
         assertFalse(request.isShippingAddressRequired());
         assertNull(request.getShippingAddressOverride());
@@ -46,6 +48,7 @@ public class PayPalVaultRequestUnitTest {
     public void setsValuesCorrectly() {
         PostalAddress postalAddress = new PostalAddress();
         PayPalVaultRequest request = new PayPalVaultRequest(true);
+        request.setShopperSessionId("shopper-insights-id");
         request.setLocaleCode("US");
         request.setBillingAgreementDescription("Billing Agreement Description");
         request.setShippingAddressRequired(true);
@@ -75,6 +78,7 @@ public class PayPalVaultRequestUnitTest {
         request.setRecurringBillingDetails(billingDetails);
         request.setRecurringBillingPlanType(PayPalRecurringBillingPlanType.RECURRING);
 
+        assertEquals("shopper-insights-id", request.getShopperSessionId());
         assertEquals("US", request.getLocaleCode());
         assertEquals("Billing Agreement Description", request.getBillingAgreementDescription());
         assertTrue(request.isShippingAddressRequired());
