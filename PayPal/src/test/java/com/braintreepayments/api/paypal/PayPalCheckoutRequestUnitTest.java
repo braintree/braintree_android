@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypal;
 
+import android.os.Build;
 import android.os.Parcel;
 
 import com.braintreepayments.api.core.Authorization;
@@ -27,6 +28,7 @@ public class PayPalCheckoutRequestUnitTest {
     public void newPayPalCheckoutRequest_setsDefaultValues() {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", false);
 
+        assertNull(request.getShopperSessionId());
         assertNotNull(request.getAmount());
         assertNull(request.getCurrencyCode());
         assertNull(request.getLocaleCode());
@@ -44,6 +46,7 @@ public class PayPalCheckoutRequestUnitTest {
     public void setsValuesCorrectly() {
         PostalAddress postalAddress = new PostalAddress();
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+        request.setShopperSessionId("shopper-insights-id");
         request.setCurrencyCode("USD");
         request.setShouldOfferPayLater(true);
         request.setIntent(PayPalPaymentIntent.SALE);
@@ -58,6 +61,7 @@ public class PayPalCheckoutRequestUnitTest {
         request.setRiskCorrelationId("123-correlation");
         request.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
 
+        assertEquals("shopper-insights-id", request.getShopperSessionId());
         assertEquals("1.00", request.getAmount());
         assertEquals("USD", request.getCurrencyCode());
         assertEquals("US", request.getLocaleCode());
@@ -154,6 +158,21 @@ public class PayPalCheckoutRequestUnitTest {
         );
 
         assertFalse(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
+    }
+
+    @Test
+    public void createRequestBody_sets_shopper_insights_session_id() throws JSONException {
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+        request.setShopperSessionId("shopper-insights-id");
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url",
+                "universal_url"
+        );
+
+        assertTrue(requestBody.contains("\"shopper_session_id\":" + "\"shopper-insights-id\""));
     }
 
     @Test
