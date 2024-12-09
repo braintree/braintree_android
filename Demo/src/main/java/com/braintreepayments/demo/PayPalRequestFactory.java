@@ -25,17 +25,27 @@ public class PayPalRequestFactory {
         Context context,
         String buyerEmailAddress,
         String buyerPhoneCountryCode,
-        String buyerPhoneNationalNumber
+        String buyerPhoneNationalNumber,
+        String shopperInsightsSessionId
     ) {
 
         PayPalVaultRequest request = new PayPalVaultRequest(true);
 
-        if (!buyerEmailAddress.isEmpty()) {
+        if (buyerEmailAddress != null && !buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
         }
 
-        if (!buyerPhoneCountryCode.isEmpty() && !buyerPhoneNationalNumber.isEmpty()) {
-            request.setUserPhoneNumber(new PayPalPhoneNumber(buyerPhoneCountryCode, buyerPhoneNationalNumber));
+        if ((buyerPhoneCountryCode != null && !buyerPhoneCountryCode.isEmpty())
+                && (buyerPhoneNationalNumber != null && !buyerPhoneNationalNumber.isEmpty())) {
+
+            request.setUserPhoneNumber(new PayPalPhoneNumber(
+                    buyerPhoneCountryCode,
+                    buyerPhoneNationalNumber)
+            );
+        }
+
+        if (shopperInsightsSessionId != null && !shopperInsightsSessionId.isEmpty()) {
+            request.setShopperSessionId(shopperInsightsSessionId);
         }
 
         if (Settings.isPayPalAppSwithEnabled(context)) {
@@ -111,16 +121,25 @@ public class PayPalRequestFactory {
         String amount,
         String buyerEmailAddress,
         String buyerPhoneCountryCode,
-        String buyerPhoneNationalNumber
+        String buyerPhoneNationalNumber,
+        String shopperInsightsSessionId
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
 
-        if (!buyerEmailAddress.isEmpty()) {
+        if (buyerEmailAddress != null && !buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
         }
 
-        if (!buyerPhoneCountryCode.isEmpty() && !buyerPhoneNationalNumber.isEmpty()) {
-            request.setUserPhoneNumber(new PayPalPhoneNumber(buyerPhoneCountryCode, buyerPhoneNationalNumber));
+        if ((buyerPhoneCountryCode != null && !buyerPhoneCountryCode.isEmpty())
+                && (buyerPhoneNationalNumber != null && !buyerPhoneNationalNumber.isEmpty())) {
+            request.setUserPhoneNumber(new PayPalPhoneNumber(
+                    buyerPhoneCountryCode,
+                    buyerPhoneNationalNumber)
+            );
+        }
+
+        if (shopperInsightsSessionId != null && !shopperInsightsSessionId.isEmpty()) {
+            request.setShopperSessionId(shopperInsightsSessionId);
         }
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
