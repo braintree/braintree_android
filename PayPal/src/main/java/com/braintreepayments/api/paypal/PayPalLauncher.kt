@@ -94,6 +94,9 @@ class PayPalLauncher internal constructor(
                     is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> {
                         returnLinkResult.appLinkReturnUri.toString()
                     }
+                    is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> {
+                        returnLinkResult.deepLinkFallbackUrlScheme
+                    }
                     else -> null
                 }
             )
