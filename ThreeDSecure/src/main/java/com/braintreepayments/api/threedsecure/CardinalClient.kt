@@ -3,12 +3,12 @@ package com.braintreepayments.api.threedsecure
 import android.content.Context
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
-import com.cardinalcommerce.cardinalmobilesdk.Cardinal
-import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment
-import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalRenderType
-import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalUiType
-import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver
-import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters
+import com.cardinalcommerce.ThreeDotOh.CardinalService
+import com.cardinalcommerce.ThreeDotOh.models.enums.CardinalEnvironment
+import com.cardinalcommerce.ThreeDotOh.models.enums.CardinalRenderType
+import com.cardinalcommerce.ThreeDotOh.models.enums.CardinalUiType
+import com.cardinalcommerce.ThreeDotOh.models.CardinalChallengeObserver
+import com.cardinalcommerce.ThreeDotOh.models.CardinalConfigurationParameters
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService
 import org.json.JSONArray
@@ -28,6 +28,11 @@ internal class CardinalClient {
         configureCardinal(context, configuration, request)
 
         try {
+            val cardinalInitializeCallback =
+                CardinalInitializeCallback { consumerSessionId, error -> TODO("Not yet implemented") }
+        }
+
+        try {
             val cardinalInitService = object : CardinalInitService {
                 override fun onSetupCompleted(sessionId: String) {
                     consumerSessionId = sessionId
@@ -45,6 +50,8 @@ internal class CardinalClient {
                     }
                 }
             }
+
+            CardinalService.getInstance().initialize(context, )
 
             Cardinal.getInstance()
                 .init(configuration.cardinalAuthenticationJwt, cardinalInitService)
@@ -78,17 +85,17 @@ internal class CardinalClient {
         configuration: Configuration,
         request: ThreeDSecureRequest
     ) {
-        val cardinalEnvironment =
-            if ("production".equals(configuration.environment, ignoreCase = true)) {
-                CardinalEnvironment.PRODUCTION
-            } else {
-                CardinalEnvironment.STAGING
-            }
+        val cardinalEnvironment = CardinalEnvironment.STAGING
+//            if ("production".equals(configuration.environment, ignoreCase = true)) {
+//                CardinalEnvironment.PRODUCTION // doesn't exist right now
+//            } else {
+//                CardinalEnvironment.STAGING
+//            }
 
         val cardinalConfigurationParameters = CardinalConfigurationParameters().apply {
             environment = cardinalEnvironment
-            requestTimeout = REQUEST_TIMEOUT
-            isEnableDFSync = true
+//            requestTimeout = REQUEST_TIMEOUT // 1:1 mapping doesn't exist even their documentation seems to say this property exists
+//            isEnableDFSync = true // not sure what this is either
         }
 
         cardinalConfigurationParameters.uiType = when (request.uiType) {
@@ -113,14 +120,14 @@ internal class CardinalClient {
             cardinalConfigurationParameters.threeDSRequestorAppURL = it
         }
         try {
-            Cardinal.getInstance().configure(context, cardinalConfigurationParameters)
+            CardinalService.getInstance().configure(context, cardinalConfigurationParameters)
         } catch (e: RuntimeException) {
             throw BraintreeException("Cardinal SDK configure Error.", e)
         }
     }
 
     fun cleanup() {
-        Cardinal.getInstance().cleanup()
+        CardinalService.getInstance().cleanup()
     }
 
     private fun getCardinalRenderType(

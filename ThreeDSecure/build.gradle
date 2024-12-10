@@ -35,7 +35,9 @@ android {
 dependencies {
     api project(':BraintreeCore')
     api project(':Card')
-    implementation libs.cardinal
+//    implementation libs.cardinal
+
+    implementation files('libs/CardinalMobileSdk-v3-beta.aar')
 
     implementation libs.androidx.appcompat
     implementation libs.androidx.lifecycle.runtime
