@@ -11,6 +11,7 @@
   * Add `ThreeDSecureRequest.requestorAppUrl`
 * Venmo
   * Add `VenmoClient` constructor with `appLinkReturnUri` argument to use App Links when redirecting back from the Venmo flow
+  * Add `deepLinkFallbackUrlScheme` to `VenmoClient` constructor params for supporting deep link fallback
   * Deprecate `VenmoClient` constructor with `returnUrlScheme` argument
 
 ## 5.2.0 (2024-10-30)
