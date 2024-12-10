@@ -5,10 +5,12 @@ import android.net.Uri
 import android.text.TextUtils
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.UserCanceledException
@@ -24,6 +26,7 @@ class PayPalClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient = PayPalInternalClient(braintreeClient),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
 ) {
 
     /**
@@ -66,11 +69,17 @@ class PayPalClient internal constructor(
      * @param payPalRequest a [PayPalRequest] used to customize the request.
      * @param callback      [PayPalPaymentAuthCallback]
      */
+    @OptIn(ExperimentalBetaApi::class)
     fun createPaymentAuthRequest(
         context: Context,
         payPalRequest: PayPalRequest,
         callback: PayPalPaymentAuthCallback
     ) {
+        // The shopper insights server SDK integration
+        payPalRequest.shopperSessionId?.let {
+            analyticsParamRepository.setSessionId(it)
+        }
+
         isVaultRequest = payPalRequest is PayPalVaultRequest
 
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsParams)
