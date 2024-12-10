@@ -9,8 +9,8 @@ import com.cardinalcommerce.ThreeDotOh.models.enums.CardinalRenderType
 import com.cardinalcommerce.ThreeDotOh.models.enums.CardinalUiType
 import com.cardinalcommerce.ThreeDotOh.models.CardinalChallengeObserver
 import com.cardinalcommerce.ThreeDotOh.models.CardinalConfigurationParameters
-import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
-import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService
+// import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
+// import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService
 import org.json.JSONArray
 
 internal class CardinalClient {
@@ -26,11 +26,6 @@ internal class CardinalClient {
         callback: CardinalInitializeCallback
     ) {
         configureCardinal(context, configuration, request)
-
-        try {
-            val cardinalInitializeCallback =
-                CardinalInitializeCallback { consumerSessionId, error -> TODO("Not yet implemented") }
-        }
 
         try {
             val cardinalInitService = object : CardinalInitService {
@@ -51,7 +46,13 @@ internal class CardinalClient {
                 }
             }
 
-            CardinalService.getInstance().initialize(context, )
+            CardinalService.getInstance().initialize(context, "",
+                CardinalConfigurationParameters(), object : CardinalInitializeCallback {
+                    override fun onResult(consumerSessionId: String?, error: Exception?) {
+                        TODO("Not yet implemented")
+                    }
+                }
+            )
 
             Cardinal.getInstance()
                 .init(configuration.cardinalAuthenticationJwt, cardinalInitService)
