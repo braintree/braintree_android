@@ -36,6 +36,7 @@ class PayPalLauncherUnitTest {
     private val merchantRepository = mockk<MerchantRepository>(relaxed = true)
     private val getReturnLinkUseCase = mockk<GetReturnLinkUseCase>()
     private val returnUrl = "https://return.url"
+    private val deepLinkScheme = "deepLinkScheme"
 
     private lateinit var sut: PayPalLauncher
 
@@ -120,6 +121,42 @@ class PayPalLauncherUnitTest {
             analyticsClient.sendEvent(
                 PayPalAnalytics.HANDLE_RETURN_STARTED,
                 AnalyticsEventParams(appSwitchUrl = returnUrl)
+            )
+        }
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun `handleReturnToApp with deeplinkScheme sends handle started event with deeplink scheme`() {
+        every { getReturnLinkUseCase() } returns GetReturnLinkUseCase.ReturnLinkResult.DeepLink(
+            deepLinkScheme
+        )
+        sut.handleReturnToApp(
+            PayPalPendingRequest.Started(pendingRequestString),
+            intent
+        )
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.HANDLE_RETURN_STARTED,
+                AnalyticsEventParams(appSwitchUrl = deepLinkScheme)
+            )
+        }
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun `handleReturnToApp with ReturnLinkResult Failure sends handle started event with null appSwitchUrl`() {
+        every { getReturnLinkUseCase() } returns GetReturnLinkUseCase.ReturnLinkResult.Failure(
+            Exception("handle return start failed")
+        )
+        sut.handleReturnToApp(
+            PayPalPendingRequest.Started(pendingRequestString),
+            intent
+        )
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.HANDLE_RETURN_STARTED,
+                AnalyticsEventParams()
             )
         }
     }
