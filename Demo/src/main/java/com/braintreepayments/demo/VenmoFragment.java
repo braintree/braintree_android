@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.core.UserCanceledException;
 import com.braintreepayments.api.venmo.VenmoAccountNonce;
 import com.braintreepayments.api.venmo.VenmoClient;
 import com.braintreepayments.api.venmo.VenmoLauncher;
@@ -25,7 +26,6 @@ import com.braintreepayments.api.venmo.VenmoPaymentMethodUsage;
 import com.braintreepayments.api.venmo.VenmoPendingRequest;
 import com.braintreepayments.api.venmo.VenmoRequest;
 import com.braintreepayments.api.venmo.VenmoResult;
-import com.braintreepayments.api.core.UserCanceledException;
 
 import java.util.ArrayList;
 
@@ -42,6 +42,18 @@ public class VenmoFragment extends BaseFragment {
         venmoButton = view.findViewById(R.id.venmo_button);
         venmoButton.setOnClickListener(this::launchVenmo);
 
+        if (venmoClient == null) {
+            if (Settings.useAppLinkReturn(requireContext())) {
+                venmoClient = new VenmoClient(
+                    requireContext(),
+                    super.getAuthStringArg(),
+                    Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"),
+                    "com.braintreepayments.demo.braintree"
+                );
+            } else {
+                venmoClient = new VenmoClient(requireContext(), super.getAuthStringArg());
+            }
+        }
         venmoLauncher = new VenmoLauncher();
 
         return view;
@@ -71,11 +83,11 @@ public class VenmoFragment extends BaseFragment {
             handleError(new UserCanceledException("User canceled Venmo"));
         }
     }
+
     private void handleVenmoAccountNonce(VenmoAccountNonce venmoAccountNonce) {
         super.onPaymentMethodNonceCreated(venmoAccountNonce);
 
-        NavDirections action =
-                VenmoFragmentDirections.actionVenmoFragmentToDisplayNonceFragment(venmoAccountNonce);
+        NavDirections action = VenmoFragmentDirections.actionVenmoFragmentToDisplayNonceFragment(venmoAccountNonce);
         NavHostFragment.findNavController(this).navigate(action);
     }
 
@@ -83,23 +95,12 @@ public class VenmoFragment extends BaseFragment {
         FragmentActivity activity = getActivity();
 
         getActivity().setProgressBarIndeterminateVisibility(true);
-        if (venmoClient == null) {
-            if (Settings.useAppLinkReturn(activity)) {
-                venmoClient = new VenmoClient(
-                        requireContext(),
-                        super.getAuthStringArg(),
-                        Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments")
-                );
-            } else {
-                venmoClient = new VenmoClient(requireContext(), super.getAuthStringArg());
-            }
-        }
 
         boolean shouldVault =
-                Settings.vaultVenmo(activity) && !TextUtils.isEmpty(Settings.getCustomerId(activity));
+            Settings.vaultVenmo(activity) && !TextUtils.isEmpty(Settings.getCustomerId(activity));
 
         VenmoPaymentMethodUsage venmoPaymentMethodUsage = shouldVault ?
-                VenmoPaymentMethodUsage.MULTI_USE : VenmoPaymentMethodUsage.SINGLE_USE;
+            VenmoPaymentMethodUsage.MULTI_USE : VenmoPaymentMethodUsage.SINGLE_USE;
         VenmoRequest venmoRequest = new VenmoRequest(venmoPaymentMethodUsage);
         venmoRequest.setProfileId(null);
         venmoRequest.setShouldVault(shouldVault);
@@ -139,6 +140,7 @@ public class VenmoFragment extends BaseFragment {
     private void storePendingRequest(VenmoPendingRequest.Started request) {
         PendingRequestStore.getInstance().putVenmoPendingRequest(requireContext(), request);
     }
+
     private VenmoPendingRequest.Started getPendingRequest() {
         return PendingRequestStore.getInstance().getVenmoPendingRequest(requireContext());
     }
