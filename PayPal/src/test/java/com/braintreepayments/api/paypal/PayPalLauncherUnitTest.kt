@@ -1,6 +1,7 @@
 package com.braintreepayments.api.paypal
 
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
@@ -8,6 +9,9 @@ import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.GetReturnLinkUseCase
+import com.braintreepayments.api.core.MerchantRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -29,13 +33,25 @@ class PayPalLauncherUnitTest {
     private val options: BrowserSwitchOptions = mockk(relaxed = true)
     private val pendingRequestString = "pending_request_string"
     private val analyticsClient: AnalyticsClient = mockk(relaxed = true)
+    private val merchantRepository = mockk<MerchantRepository>(relaxed = true)
+    private val getReturnLinkUseCase = mockk<GetReturnLinkUseCase>()
+    private val returnUrl = "https://return.url"
 
     private lateinit var sut: PayPalLauncher
 
     @Before
     fun setup() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
-        sut = PayPalLauncher(browserSwitchClient, lazy { analyticsClient })
+
+        val appSwitchReturnUrl = Uri.parse(returnUrl)
+        every { getReturnLinkUseCase() } returns GetReturnLinkUseCase.ReturnLinkResult.AppLink(
+            appSwitchReturnUrl
+        )
+        sut = PayPalLauncher(
+            browserSwitchClient,
+            merchantRepository,
+            getReturnLinkUseCase,
+            lazy { analyticsClient })
     }
 
     @Test
@@ -100,7 +116,12 @@ class PayPalLauncherUnitTest {
             PayPalPendingRequest.Started(pendingRequestString),
             intent
         )
-        verify { analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_STARTED) }
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.HANDLE_RETURN_STARTED,
+                AnalyticsEventParams(appSwitchUrl = returnUrl)
+            )
+        }
     }
 
     @Test
