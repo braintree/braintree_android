@@ -219,10 +219,6 @@ class PayPalClient internal constructor(
 
         if (isAppSwitchFlow) {
             appSwitchUrlString = approvalUrl
-            braintreeClient.sendAnalyticsEvent(
-                PayPalAnalytics.HANDLE_RETURN_STARTED,
-                analyticsParams
-            )
         }
 
         approvalUrl?.let {

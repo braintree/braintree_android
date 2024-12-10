@@ -6,16 +6,25 @@ import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchStartResult
+import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.BraintreeException
 
 /**
  * Responsible for launching PayPal user authentication in a web browser
  */
-class PayPalLauncher internal constructor(private val browserSwitchClient: BrowserSwitchClient) {
+class PayPalLauncher internal constructor(
+    private val browserSwitchClient: BrowserSwitchClient,
+    lazyAnalyticsClient: Lazy<AnalyticsClient>
+) {
     /**
      * Used to launch the PayPal flow in a web browser and deliver results to your Activity
      */
-    constructor() : this(BrowserSwitchClient())
+    constructor() : this(
+        browserSwitchClient = BrowserSwitchClient(),
+        lazyAnalyticsClient = AnalyticsClient.lazyInstance
+    )
+
+    private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
 
     /**
      * Launches the PayPal flow by switching to a web browser for user authentication
@@ -73,17 +82,27 @@ class PayPalLauncher internal constructor(private val browserSwitchClient: Brows
         pendingRequest: PayPalPendingRequest.Started,
         intent: Intent
     ): PayPalPaymentAuthResult {
+        analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_STARTED)
         return when (val browserSwitchResult =
             browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
-            is BrowserSwitchFinalResult.Success -> PayPalPaymentAuthResult.Success(
-                browserSwitchResult
-            )
+            is BrowserSwitchFinalResult.Success -> {
+                analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_SUCCEEDED)
+                PayPalPaymentAuthResult.Success(
+                    browserSwitchResult
+                )
+            }
 
-            is BrowserSwitchFinalResult.Failure -> PayPalPaymentAuthResult.Failure(
-                browserSwitchResult.error
-            )
+            is BrowserSwitchFinalResult.Failure -> {
+                analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_FAILED)
+                PayPalPaymentAuthResult.Failure(
+                    browserSwitchResult.error
+                )
+            }
 
-            is BrowserSwitchFinalResult.NoResult -> PayPalPaymentAuthResult.NoResult
+            is BrowserSwitchFinalResult.NoResult -> {
+                analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_NO_RESULT)
+                PayPalPaymentAuthResult.NoResult
+            }
         }
     }
 
