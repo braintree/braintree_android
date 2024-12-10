@@ -26,10 +26,8 @@ class PayPalClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient = PayPalInternalClient(braintreeClient),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
-) {
-
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
-
+) {
     /**
      * Used for linking events from the client to server side request
      * In the PayPal flow this will be either an EC token or a Billing Agreement token
