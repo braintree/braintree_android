@@ -618,4 +618,60 @@ public class PayPalClientUnitTest {
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params);
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_CANCELED, params);
     }
+
+    @Test
+    public void test_vaultRequest_shopperSessionId_sets_repository() throws JSONException {
+        PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest(true);
+
+        payPalVaultRequest.setShopperSessionId("test-shopper-id");
+
+        PayPalPaymentAuthRequestParams paymentAuthRequest = new PayPalPaymentAuthRequestParams(
+                payPalVaultRequest,
+                null,
+                "https://example.com/approval/url",
+                "sample-client-metadata-id",
+                null,
+                "https://example.com/success/url"
+        );
+
+        PayPalInternalClient payPalInternalClient =
+                new MockPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest)
+                        .build();
+
+        BraintreeClient braintreeClient =
+                new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
+
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, analyticsParamRepository);
+        sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback);
+
+        verify(analyticsParamRepository).setSessionId("test-shopper-id");
+    }
+
+    @Test
+    public void test_checkoutRequest_shopperSessionId_sets_repository() throws JSONException {
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("2.00", true);
+
+        request.setShopperSessionId("test-shopper-id");
+
+        PayPalPaymentAuthRequestParams paymentAuthRequest = new PayPalPaymentAuthRequestParams(
+                request,
+                null,
+                "https://example.com/approval/url",
+                "sample-client-metadata-id",
+                null,
+                "https://example.com/success/url"
+        );
+
+        PayPalInternalClient payPalInternalClient =
+                new MockPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest)
+                        .build();
+
+        BraintreeClient braintreeClient =
+                new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
+
+        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, analyticsParamRepository);
+        sut.createPaymentAuthRequest(activity, request, paymentAuthCallback);
+
+        verify(analyticsParamRepository).setSessionId("test-shopper-id");
+    }
 }
