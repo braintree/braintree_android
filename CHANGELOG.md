@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.3.0 (2024-12-11)
 
 * PayPal
   * Add `deepLinkFallbackUrlScheme` to `PayPalClient` constructor params for supporting deep link fallback
