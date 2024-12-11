@@ -179,6 +179,20 @@ class ShopperInsightsClient internal constructor(
         )
     }
 
+    fun sendPresentedEvent(
+        buttonType: ButtonType,
+        presentmentDetails: PresentmentDetails,
+        paymentMethodsDisplayed: List<String> = emptyList()
+    ) {
+        braintreeClient.sendAnalyticsEvent(
+            PAYPAL_PRESENTED,
+            AnalyticsEventParams(
+                experiment = presentmentDetails.treatmentName,
+                paymentMethodsDisplayed = paymentMethodsDisplayed
+            )
+        )
+    }
+
     /**
      * Call this method when the PayPal button has been selected/tapped by the buyer.
      * This method sends analytics to help improve the Shopper Insights feature experience.
