@@ -8,9 +8,10 @@ import com.cardinalcommerce.ThreeDotOh.models.enums.CardinalEnvironment
 import com.cardinalcommerce.ThreeDotOh.models.enums.CardinalRenderType
 import com.cardinalcommerce.ThreeDotOh.models.enums.CardinalUiType
 import com.cardinalcommerce.ThreeDotOh.models.CardinalChallengeObserver
+import com.cardinalcommerce.ThreeDotOh.models.CardinalChallengeParameters
 import com.cardinalcommerce.ThreeDotOh.models.CardinalConfigurationParameters
-import com.cardinalcommerce.shared.cs.interfaces.Error
 import com.cardinalcommerce.ThreeDotOh.interfaces.CardinalInitializeCallback as ThreeDotOhCardinalInitializeCallback
+import com.cardinalcommerce.shared.cs.interfaces.Error
 import org.json.JSONArray
 
 internal class CardinalClient {
@@ -60,6 +61,7 @@ internal class CardinalClient {
         val transactionId = lookup?.transactionId
         val paReq = lookup?.pareq
         try {
+            CardinalService.getInstance().doChallenge(challengeObserver, CardinalChallengeParameters("threeDSServerTransactionId", "acsTransactionId", "acsReferenceNumber", "acsSignedContent", "threeDSRequestorAppURL", transactionId), 60000)
 //            Cardinal.getInstance().cca_continue(transactionId, paReq, challengeObserver)
         } catch (e: RuntimeException) {
             throw BraintreeException("Cardinal SDK cca_continue Error.", e)
@@ -108,11 +110,11 @@ internal class CardinalClient {
         request.requestorAppUrl?.let {
             cardinalConfigurationParameters.threeDSRequestorAppURL = it
         }
-        try {
-            CardinalService.getInstance().configure(context, cardinalConfigurationParameters)
-        } catch (e: RuntimeException) {
-            throw BraintreeException("Cardinal SDK configure Error.", e)
-        }
+//        try {
+//            CardinalService.getInstance().configure(context, cardinalConfigurationParameters)
+//        } catch (e: RuntimeException) {
+//            throw BraintreeException("Cardinal SDK configure Error.", e)
+//        }
     }
 
     fun cleanup() {

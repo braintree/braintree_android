@@ -8,8 +8,12 @@ import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.sharedutils.IntentExtensions.parcelable
+import com.cardinalcommerce.ThreeDotOh.interfaces.ChallengeStatusReceiver
 import com.cardinalcommerce.ThreeDotOh.models.CardinalChallengeObserver
-import com.cardinalcommerce.ThreeDotOh.models.ValidateResponse
+import com.cardinalcommerce.ThreeDotOh.models.ChallengeCompletionResult
+import com.cardinalcommerce.shared.cs.interfaces.Error
+
+//import com.cardinalcommerce.ThreeDotOh.models.ValidateResponse
 
 /**
  * The Activity that receives Cardinal SDK result from 3DS v2 flow
@@ -20,10 +24,31 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        challengeObserver =
-            CardinalChallengeObserver(this) { _, validateResponse: ValidateResponse?, s: String? ->
-                handleValidated(cardinalClient, validateResponse, s)
+        challengeObserver = CardinalChallengeObserver(this, object : ChallengeStatusReceiver {
+            override fun completed(p0: ChallengeCompletionResult?) {
+                TODO("Not yet implemented")
             }
+
+            override fun cancelled() {
+                TODO("Not yet implemented")
+            }
+
+            override fun timedOut() {
+                TODO("Not yet implemented")
+            }
+
+            override fun runtimeError(p0: Error<String>?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun protocolError(p0: Error<String>?) {
+                TODO("Not yet implemented")
+            }
+
+        })
+//        challengeObserver = CardinalChallengeObserver(this) { _, validateResponse: ValidateResponse?, s: String? ->
+//                handleValidated(cardinalClient, validateResponse, s)
+//            }
 
         /**
          * Here, we schedule the 3DS auth challenge launch to run immediately after onCreate() is
@@ -72,7 +97,7 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
     @VisibleForTesting
     fun handleValidated(
         cardinalClient: CardinalClient,
-        validateResponse: ValidateResponse?,
+//        validateResponse: ValidateResponse?,
         jwt: String?
     ) {
         cardinalClient.cleanup()
@@ -83,7 +108,7 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
             EXTRA_THREE_D_SECURE_RESULT,
             intent.extras?.parcelable<ThreeDSecureParams>(EXTRA_THREE_D_SECURE_RESULT)
         )
-        result.putExtra(EXTRA_VALIDATION_RESPONSE, validateResponse)
+//        result.putExtra(EXTRA_VALIDATION_RESPONSE, validateResponse)
 
         setResult(RESULT_OK, result)
         finish()

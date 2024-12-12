@@ -8,8 +8,8 @@ import androidx.activity.result.contract.ActivityResultContract
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.sharedutils.IntentExtensions.parcelable
-import com.braintreepayments.api.sharedutils.IntentExtensions.serializable
-import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
+//import com.braintreepayments.api.sharedutils.IntentExtensions.serializable
+//import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 
 internal class ThreeDSecureActivityResultContract :
     ActivityResultContract<ThreeDSecureParams?, ThreeDSecurePaymentAuthResult?>() {
@@ -44,12 +44,12 @@ internal class ThreeDSecureActivityResultContract :
                 val threeDSecureParams = intent.parcelable<ThreeDSecureParams>(
                     ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT
                 )
-                val validateResponse = intent.serializable<ValidateResponse>(
-                    ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE
-                )
+//                val validateResponse = intent.serializable<ValidateResponse>(
+//                    ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE
+//                )
                 ThreeDSecurePaymentAuthResult(
                     jwt = intent.getStringExtra(ThreeDSecureActivity.EXTRA_JWT),
-                    validateResponse = validateResponse,
+//                    validateResponse = validateResponse,
                     threeDSecureParams = threeDSecureParams
                 )
             }

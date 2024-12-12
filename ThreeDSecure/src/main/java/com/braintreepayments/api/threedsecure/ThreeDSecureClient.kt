@@ -319,62 +319,62 @@ class ThreeDSecureClient internal constructor(
             callbackTokenizeFailure(callback, ThreeDSecureResult.Failure(threeDSecureError, null))
         } else {
             val threeDSecureParams = paymentAuthResult.threeDSecureParams
-            val validateResponse = paymentAuthResult.validateResponse
+//            val validateResponse = paymentAuthResult.validateResponse
             val jwt = paymentAuthResult.jwt
 
-            when (validateResponse?.actionCode) {
-                CardinalActionCode.FAILURE,
-                CardinalActionCode.NOACTION,
-                CardinalActionCode.SUCCESS -> api.authenticateCardinalJWT(
-                    threeDSecureParams = threeDSecureParams,
-                    cardinalJWT = jwt
-                ) { threeDSecureResult: ThreeDSecureParams?, error: Exception? ->
-                    if (threeDSecureResult != null) {
-                        if (threeDSecureResult.hasError()) {
-                            braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED)
-                            callbackTokenizeFailure(
-                                callback,
-                                ThreeDSecureResult.Failure(
-                                    BraintreeException(threeDSecureResult.errorMessage),
-                                    threeDSecureResult.threeDSecureNonce
-                                )
-                            )
-                        }
-                        threeDSecureResult.threeDSecureNonce?.let {
-                            braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_SUCCEEDED)
-                            callbackTokenizeSuccess(callback, ThreeDSecureResult.Success(it))
-                        }
-                    } else if (error != null) {
-                        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED)
-                        callbackTokenizeFailure(
-                            callback,
-                            ThreeDSecureResult.Failure(
-                                error,
-                                null
-                            )
-                        )
-                    }
-                }
-
-                CardinalActionCode.ERROR, CardinalActionCode.TIMEOUT -> callbackTokenizeFailure(
-                    callback, ThreeDSecureResult.Failure(
-                        BraintreeException(validateResponse.errorDescription), null
-                    )
-                )
-
-                CardinalActionCode.CANCEL -> callbackCancel(callback)
-
-                else -> {
-                    braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED)
-                    callbackTokenizeFailure(
-                        callback,
-                        ThreeDSecureResult.Failure(
-                            error = BraintreeException("invalid action code"),
-                            nonce = null
-                        )
-                    )
-                }
-            }
+//            when (validateResponse?.actionCode) {
+//                CardinalActionCode.FAILURE,
+//                CardinalActionCode.NOACTION,
+//                CardinalActionCode.SUCCESS -> api.authenticateCardinalJWT(
+//                    threeDSecureParams = threeDSecureParams,
+//                    cardinalJWT = jwt
+//                ) { threeDSecureResult: ThreeDSecureParams?, error: Exception? ->
+//                    if (threeDSecureResult != null) {
+//                        if (threeDSecureResult.hasError()) {
+//                            braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED)
+//                            callbackTokenizeFailure(
+//                                callback,
+//                                ThreeDSecureResult.Failure(
+//                                    BraintreeException(threeDSecureResult.errorMessage),
+//                                    threeDSecureResult.threeDSecureNonce
+//                                )
+//                            )
+//                        }
+//                        threeDSecureResult.threeDSecureNonce?.let {
+//                            braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_SUCCEEDED)
+//                            callbackTokenizeSuccess(callback, ThreeDSecureResult.Success(it))
+//                        }
+//                    } else if (error != null) {
+//                        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED)
+//                        callbackTokenizeFailure(
+//                            callback,
+//                            ThreeDSecureResult.Failure(
+//                                error,
+//                                null
+//                            )
+//                        )
+//                    }
+//                }
+//
+//                CardinalActionCode.ERROR, CardinalActionCode.TIMEOUT -> callbackTokenizeFailure(
+//                    callback, ThreeDSecureResult.Failure(
+//                        BraintreeException(validateResponse.errorDescription), null
+//                    )
+//                )
+//
+//                CardinalActionCode.CANCEL -> callbackCancel(callback)
+//
+//                else -> {
+//                    braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED)
+//                    callbackTokenizeFailure(
+//                        callback,
+//                        ThreeDSecureResult.Failure(
+//                            error = BraintreeException("invalid action code"),
+//                            nonce = null
+//                        )
+//                    )
+//                }
+//            }
         }
     }
 
