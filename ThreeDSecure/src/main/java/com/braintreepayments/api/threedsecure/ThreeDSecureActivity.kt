@@ -8,8 +8,8 @@ import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.sharedutils.IntentExtensions.parcelable
-import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver
-import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
+import com.cardinalcommerce.ThreeDotOh.models.CardinalChallengeObserver
+import com.cardinalcommerce.ThreeDotOh.models.ValidateResponse
 
 /**
  * The Activity that receives Cardinal SDK result from 3DS v2 flow

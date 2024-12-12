@@ -9,8 +9,8 @@ import com.cardinalcommerce.ThreeDotOh.models.enums.CardinalRenderType
 import com.cardinalcommerce.ThreeDotOh.models.enums.CardinalUiType
 import com.cardinalcommerce.ThreeDotOh.models.CardinalChallengeObserver
 import com.cardinalcommerce.ThreeDotOh.models.CardinalConfigurationParameters
-// import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
-// import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService
+import com.cardinalcommerce.shared.cs.interfaces.Error
+import com.cardinalcommerce.ThreeDotOh.interfaces.CardinalInitializeCallback as ThreeDotOhCardinalInitializeCallback
 import org.json.JSONArray
 
 internal class CardinalClient {
@@ -28,34 +28,21 @@ internal class CardinalClient {
         configureCardinal(context, configuration, request)
 
         try {
-            val cardinalInitService = object : CardinalInitService {
-                override fun onSetupCompleted(sessionId: String) {
-                    consumerSessionId = sessionId
-                    callback.onResult(consumerSessionId, null)
-                }
+            CardinalService.getInstance()
+                .initialize(context,
+                    configuration.cardinalAuthenticationJwt,
+                    CardinalConfigurationParameters(),
+                    object : ThreeDotOhCardinalInitializeCallback {
+                        override fun onSuccess(sdkTransactionID: String?) {
+                            TODO("Not yet implemented")
+                        }
 
-                override fun onValidated(validateResponse: ValidateResponse?, serverJWT: String?) {
-                    if (consumerSessionId == null) {
-                        callback.onResult(
-                            consumerSessionId = null,
-                            error = BraintreeException("consumer session id not available")
-                        )
-                    } else {
-                        callback.onResult(consumerSessionId, null)
+                        override fun onError(error: Error<Int>?) {
+                            TODO("Not yet implemented")
+                        }
+
                     }
-                }
-            }
-
-            CardinalService.getInstance().initialize(context, "",
-                CardinalConfigurationParameters(), object : CardinalInitializeCallback {
-                    override fun onResult(consumerSessionId: String?, error: Exception?) {
-                        TODO("Not yet implemented")
-                    }
-                }
-            )
-
-            Cardinal.getInstance()
-                .init(configuration.cardinalAuthenticationJwt, cardinalInitService)
+                )
         } catch (e: RuntimeException) {
             throw BraintreeException("Cardinal SDK init Error.", e)
         }
@@ -73,7 +60,7 @@ internal class CardinalClient {
         val transactionId = lookup?.transactionId
         val paReq = lookup?.pareq
         try {
-            Cardinal.getInstance().cca_continue(transactionId, paReq, challengeObserver)
+//            Cardinal.getInstance().cca_continue(transactionId, paReq, challengeObserver)
         } catch (e: RuntimeException) {
             throw BraintreeException("Cardinal SDK cca_continue Error.", e)
         }
