@@ -199,6 +199,7 @@ class ShopperInsightsFragment : BaseFragment() {
                     if (result.response.isPayPalRecommended) {
                         payPalVaultButton.isEnabled = true
                         shopperInsightsClient.sendPresentedEvent(
+                            shopperSessionId,
                             PresentmentDetails("PaymentReady", ExperimentType.CONTROL),
                             listOf("PayPal", "Venmo", "other"),
                             ButtonType.PAYPAL,
@@ -212,6 +213,7 @@ class ShopperInsightsFragment : BaseFragment() {
                     if (result.response.isVenmoRecommended) {
                         venmoButton.isEnabled = true
                         shopperInsightsClient.sendPresentedEvent(
+                            shopperSessionId,
                             PresentmentDetails("PaymentReady", ExperimentType.TEST),
                             listOf("Venmo", "PayPal", "other"),
                             ButtonType.VENMO,
