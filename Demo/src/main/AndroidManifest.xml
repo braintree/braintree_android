@@ -37,6 +37,7 @@
 
                 <data android:scheme="https" />
                 <data android:host="mobile-sdk-demo-site-838cead5d3ab.herokuapp.com" />
+                <data android:pathPrefix="/braintree-payments" />
             </intent-filter>
         </activity>
     </application>

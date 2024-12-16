@@ -20,9 +20,11 @@ import android.net.Uri;
 
 import com.braintreepayments.api.core.ApiClient;
 import com.braintreepayments.api.core.BraintreeClient;
+import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.ClientToken;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.core.DeviceInspector;
+import com.braintreepayments.api.core.GetReturnLinkUseCase;
 import com.braintreepayments.api.core.MerchantRepository;
 import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.core.TokenizationKey;
@@ -63,6 +65,7 @@ public class PayPalInternalClientUnitTest {
     PayPalInternalClientCallback payPalInternalClientCallback;
 
     private MerchantRepository merchantRepository = mock(MerchantRepository.class);
+    private GetReturnLinkUseCase getReturnLinkUseCase = mock(GetReturnLinkUseCase.class);
 
     @Before
     public void beforeEach() throws JSONException {
@@ -75,6 +78,10 @@ public class PayPalInternalClientUnitTest {
         apiClient = mock(ApiClient.class);
         deviceInspector = mock(DeviceInspector.class);
         payPalInternalClientCallback = mock(PayPalInternalClientCallback.class);
+
+        when(getReturnLinkUseCase.invoke()).thenReturn(new GetReturnLinkUseCase.ReturnLinkResult.AppLink(
+            Uri.parse("https://example.com")
+        ));
     }
 
     @Test
@@ -92,7 +99,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PostalAddress shippingAddressOverride = new PostalAddress();
@@ -154,6 +162,87 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
+    public void sendRequest_withPayPalVaultRequest_sendsAllParameters_with_deep_link() throws JSONException {
+        when(getReturnLinkUseCase.invoke()).thenReturn(new GetReturnLinkUseCase.ReturnLinkResult.DeepLink(
+            "com.braintreepayments.demo"
+        ));
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+            .configuration(configuration)
+            .build();
+        when(clientToken.getBearer()).thenReturn("client-token-bearer");
+
+        when(merchantRepository.getAuthorization()).thenReturn(clientToken);
+        when(merchantRepository.getReturnUrlScheme()).thenReturn("com.braintreepayments.demo");
+
+        PayPalInternalClient sut = new PayPalInternalClient(
+            braintreeClient,
+            dataCollector,
+            apiClient,
+            deviceInspector,
+            merchantRepository,
+            getReturnLinkUseCase
+        );
+
+        PostalAddress shippingAddressOverride = new PostalAddress();
+        shippingAddressOverride.setRecipientName("Brianna Tree");
+        shippingAddressOverride.setStreetAddress("123 Fake St.");
+        shippingAddressOverride.setExtendedAddress("Apt. v.0");
+        shippingAddressOverride.setLocality("Oakland");
+        shippingAddressOverride.setRegion("CA");
+        shippingAddressOverride.setPostalCode("12345");
+        shippingAddressOverride.setCountryCodeAlpha2("US");
+
+        PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
+        payPalRequest.setBillingAgreementDescription("Billing Agreement Description");
+        payPalRequest.setMerchantAccountId("sample-merchant-account-id");
+        payPalRequest.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_BILLING);
+        payPalRequest.setDisplayName("sample-display-name");
+        payPalRequest.setLocaleCode("US");
+        payPalRequest.setShippingAddressRequired(true);
+        payPalRequest.setShippingAddressEditable(true);
+        payPalRequest.setShouldOfferCredit(true);
+        payPalRequest.setShippingAddressOverride(shippingAddressOverride);
+
+        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(braintreeClient).sendPOST(
+            eq("/v1/paypal_hermes/setup_billing_agreement"),
+            captor.capture(),
+            anyMap(),
+            any(HttpResponseCallback.class)
+        );
+
+        String result = captor.getValue();
+        JSONObject actual = new JSONObject(result);
+
+        JSONObject expected = new JSONObject()
+            .put("authorization_fingerprint", "client-token-bearer")
+            .put("return_url", "com.braintreepayments.demo://onetouch/v1/success")
+            .put("cancel_url", "com.braintreepayments.demo://onetouch/v1/cancel")
+            .put("offer_paypal_credit", true)
+            .put("description", "Billing Agreement Description")
+            .put("experience_profile", new JSONObject()
+                .put("no_shipping", false)
+                .put("landing_page_type", "billing")
+                .put("brand_name", "sample-display-name")
+                .put("locale_code", "US")
+                .put("address_override", false))
+            .put("shipping_address", new JSONObject()
+                .put("line1", "123 Fake St.")
+                .put("line2", "Apt. v.0")
+                .put("city", "Oakland")
+                .put("state", "CA")
+                .put("postal_code", "12345")
+                .put("country_code", "US")
+                .put("recipient_name", "Brianna Tree"))
+            .put("merchant_account_id", "sample-merchant-account-id");
+
+        JSONAssert.assertEquals(expected, actual, true);
+    }
+
+    @Test
     public void sendRequest_withPayPalCheckoutRequest_sendsAllParameters() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configuration(configuration)
@@ -161,14 +250,14 @@ public class PayPalInternalClientUnitTest {
         when(clientToken.getBearer()).thenReturn("client-token-bearer");
 
         when(merchantRepository.getAuthorization()).thenReturn(clientToken);
-        when(merchantRepository.getAppLinkReturnUri()).thenReturn(Uri.parse("https://example.com"));
 
         PayPalInternalClient sut = new PayPalInternalClient(
             braintreeClient,
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
         PostalAddress shippingAddressOverride = new PostalAddress();
         shippingAddressOverride.setRecipientName("Brianna Tree");
@@ -269,7 +358,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -304,7 +394,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(false);
@@ -339,7 +430,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -374,7 +466,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -409,7 +502,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -445,7 +539,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -482,7 +577,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -517,7 +613,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -550,7 +647,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -587,7 +685,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -619,7 +718,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -649,7 +749,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -689,7 +790,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -728,7 +830,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -770,7 +873,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -805,7 +909,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -847,7 +952,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -870,7 +976,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -894,13 +1001,41 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
         verify(payPalInternalClientCallback).onResult(null, configurationError);
+    }
+
+    @Test
+    public void sendRequest_returnLinkResultFailure_forwardsError() {
+        BraintreeException exception = new BraintreeException();
+
+        when(getReturnLinkUseCase.invoke()).thenReturn(new GetReturnLinkUseCase.ReturnLinkResult.Failure(exception));
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+            .configuration(configuration)
+            .sendPOSTSuccessfulResponse("{bad:")
+            .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(clientToken);
+
+        PayPalInternalClient sut = new PayPalInternalClient(
+            braintreeClient,
+            dataCollector,
+            apiClient,
+            deviceInspector,
+            merchantRepository,
+            getReturnLinkUseCase
+        );
+
+        PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
+        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+
+        verify(payPalInternalClientCallback).onResult(isNull(), eq(exception));
     }
 
     @Test
@@ -914,7 +1049,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         sut.tokenize(payPalAccount, callback);
@@ -937,7 +1073,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         sut.tokenize(payPalAccount, callback);
@@ -967,7 +1104,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         sut.tokenize(payPalAccount, callback);
@@ -991,7 +1129,8 @@ public class PayPalInternalClientUnitTest {
             dataCollector,
             apiClient,
             deviceInspector,
-            merchantRepository
+            merchantRepository,
+            getReturnLinkUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);

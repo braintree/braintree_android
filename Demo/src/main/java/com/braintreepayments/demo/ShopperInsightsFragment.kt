@@ -72,7 +72,8 @@ class ShopperInsightsFragment : BaseFragment() {
         venmoClient = VenmoClient(requireContext(), super.getAuthStringArg(), null)
         payPalClient = PayPalClient(
             requireContext(), super.getAuthStringArg(),
-            Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/")
+            Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/"),
+            "com.braintreepayments.demo.braintree"
         )
 
         return inflater.inflate(R.layout.fragment_shopping_insights, container, false)
