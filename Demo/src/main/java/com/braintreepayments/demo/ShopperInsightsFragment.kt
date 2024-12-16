@@ -18,8 +18,10 @@ import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
 import com.braintreepayments.api.paypal.PayPalPaymentAuthResult
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
+import com.braintreepayments.api.shopperinsights.ButtonOrder
 import com.braintreepayments.api.shopperinsights.ButtonType
 import com.braintreepayments.api.shopperinsights.ExperimentType
+import com.braintreepayments.api.shopperinsights.PageType
 import com.braintreepayments.api.shopperinsights.PresentmentDetails
 import com.braintreepayments.api.shopperinsights.ShopperInsightsBuyerPhone
 import com.braintreepayments.api.shopperinsights.ShopperInsightsClient
@@ -195,9 +197,11 @@ class ShopperInsightsFragment : BaseFragment() {
                     if (result.response.isPayPalRecommended) {
                         payPalVaultButton.isEnabled = true
                         shopperInsightsClient.sendPresentedEvent(
-                            ButtonType.PAYPAL,
                             PresentmentDetails("PaymentReady", ExperimentType.CONTROL),
-                            listOf("PayPal", "Venmo", "other")
+                            listOf("PayPal", "Venmo", "other"),
+                            ButtonType.PAYPAL,
+                            ButtonOrder.OTHER,
+                            PageType.HOMEPAGE
                         )
 
                         //"""{"exp_name":"PaymentReady","treatment_name":"control"}""",
@@ -206,9 +210,11 @@ class ShopperInsightsFragment : BaseFragment() {
                     if (result.response.isVenmoRecommended) {
                         venmoButton.isEnabled = true
                         shopperInsightsClient.sendPresentedEvent(
-                            ButtonType.VENMO,
                             PresentmentDetails("PaymentReady", ExperimentType.TEST),
-                            listOf("Venmo", "PayPal", "other")
+                            listOf("Venmo", "PayPal", "other"),
+                            ButtonType.VENMO,
+                            ButtonOrder.OTHER,
+                            PageType.HOMEPAGE
                         )
 
                         //"""{"exp_name":"PaymentReady","treatment_name":"test"}""",

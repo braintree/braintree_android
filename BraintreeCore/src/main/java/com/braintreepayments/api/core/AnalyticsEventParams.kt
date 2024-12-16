@@ -29,5 +29,7 @@ data class AnalyticsEventParams @JvmOverloads constructor(
     val experiment: String? = null,
     val paymentMethodsDisplayed: List<String> = emptyList(),
     val appSwitchUrl: String? = null,
-    val buttonType: String? = null
+    val buttonType: String? = null,
+    val buttonOrder: String? = null,
+    val pageType: String? = null
 )
