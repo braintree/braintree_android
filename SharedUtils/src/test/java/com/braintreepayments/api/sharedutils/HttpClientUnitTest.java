@@ -36,7 +36,7 @@ public class HttpClientUnitTest {
         HttpClient sut = new HttpClient(syncHttpClient, threadScheduler);
 
         NetworkResponseCallback callback = mock(NetworkResponseCallback.class);
-        sut.sendRequest(httpRequest, callback);
+        sut.sendRequest(httpRequest, callback, HttpClient.RetryStrategy.NO_RETRY);
 
         verifyNoInteractions(syncHttpClient);
         threadScheduler.flushBackgroundThread();
@@ -46,14 +46,14 @@ public class HttpClientUnitTest {
 
     @Test
     public void sendRequest_whenBaseHttpClientThrowsException_notifiesErrorViaCallbackOnMainThread()
-            throws Exception {
+        throws Exception {
         HttpClient sut = new HttpClient(syncHttpClient, threadScheduler);
 
         Exception exception = new Exception("error");
         when(syncHttpClient.request(httpRequest)).thenThrow(exception);
 
         NetworkResponseCallback callback = mock(NetworkResponseCallback.class);
-        sut.sendRequest(httpRequest, callback);
+        sut.sendRequest(httpRequest, callback, HttpClient.RetryStrategy.NO_RETRY);
 
         threadScheduler.flushBackgroundThread();
         verify(callback, never()).onResult(null, exception);
@@ -64,14 +64,14 @@ public class HttpClientUnitTest {
 
     @Test
     public void sendRequest_onBaseHttpClientRequestSuccess_notifiesSuccessViaCallbackOnMainThread()
-            throws Exception {
+        throws Exception {
         HttpClient sut = new HttpClient(syncHttpClient, threadScheduler);
         HttpResponse response = new HttpResponse("response body", new HttpResponseTiming(123, 456));
 
         when(syncHttpClient.request(httpRequest)).thenReturn(response);
 
         NetworkResponseCallback callback = mock(NetworkResponseCallback.class);
-        sut.sendRequest(httpRequest, callback);
+        sut.sendRequest(httpRequest, callback, HttpClient.RetryStrategy.NO_RETRY);
 
         threadScheduler.flushBackgroundThread();
         verify(callback, never()).onResult(response, null);
@@ -86,7 +86,7 @@ public class HttpClientUnitTest {
         HttpResponse response = new HttpResponse("response body", new HttpResponseTiming(123, 456));
 
         when(syncHttpClient.request(httpRequest)).thenReturn(response);
-        sut.sendRequest(httpRequest, null);
+        sut.sendRequest(httpRequest, null, HttpClient.RetryStrategy.NO_RETRY);
 
         threadScheduler.flushBackgroundThread();
         verify(threadScheduler, never()).runOnMain(any(Runnable.class));
@@ -99,7 +99,7 @@ public class HttpClientUnitTest {
         Exception exception = new Exception("error");
         when(syncHttpClient.request(httpRequest)).thenThrow(exception);
 
-        sut.sendRequest(httpRequest, null);
+        sut.sendRequest(httpRequest, null, HttpClient.RetryStrategy.NO_RETRY);
 
         threadScheduler.flushBackgroundThread();
         verify(threadScheduler, never()).runOnMain(any(Runnable.class));
@@ -113,7 +113,7 @@ public class HttpClientUnitTest {
         when(syncHttpClient.request(httpRequest)).thenThrow(exception);
 
         NetworkResponseCallback callback = mock(NetworkResponseCallback.class);
-        sut.sendRequest(httpRequest, HttpClient.RETRY_MAX_3_TIMES, callback);
+        sut.sendRequest(httpRequest, callback, HttpClient.RetryStrategy.RETRY_MAX_3_TIMES);
 
         threadScheduler.flushBackgroundThread();
         verify(syncHttpClient, times(3)).request(httpRequest);
@@ -121,14 +121,14 @@ public class HttpClientUnitTest {
 
     @Test
     public void sendRequest_whenRetryMax3TimesEnabled_notifiesMaxRetriesLimitExceededOnForegroundThread()
-            throws Exception {
+        throws Exception {
         HttpClient sut = new HttpClient(syncHttpClient, threadScheduler);
 
         Exception exception = new Exception("error");
         when(syncHttpClient.request(httpRequest)).thenThrow(exception);
 
         NetworkResponseCallback callback = mock(NetworkResponseCallback.class);
-        sut.sendRequest(httpRequest, HttpClient.RETRY_MAX_3_TIMES, callback);
+        sut.sendRequest(httpRequest, callback, HttpClient.RetryStrategy.RETRY_MAX_3_TIMES);
 
         threadScheduler.flushBackgroundThread();
         verify(callback, never()).onResult((HttpResponse) isNull(), any(Exception.class));
@@ -152,15 +152,15 @@ public class HttpClientUnitTest {
         when(syncHttpClient.request(httpRequest)).thenThrow(exception);
 
         NetworkResponseCallback callback = mock(NetworkResponseCallback.class);
-        sut.sendRequest(httpRequest, HttpClient.RETRY_MAX_3_TIMES, callback);
+        sut.sendRequest(httpRequest, callback, HttpClient.RetryStrategy.RETRY_MAX_3_TIMES);
 
         threadScheduler.flushBackgroundThread();
 
         reset(syncHttpClient);
         when(syncHttpClient.request(httpRequest))
-                .thenThrow(exception)
-                .thenReturn(response);
-        sut.sendRequest(httpRequest, HttpClient.RETRY_MAX_3_TIMES, callback);
+            .thenThrow(exception)
+            .thenReturn(response);
+        sut.sendRequest(httpRequest, callback, HttpClient.RetryStrategy.RETRY_MAX_3_TIMES);
 
         threadScheduler.flushBackgroundThread();
         threadScheduler.flushMainThread();

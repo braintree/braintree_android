@@ -2,13 +2,15 @@ package com.braintreepayments.api.localpayment
 
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.localpayment.LocalPaymentNonce.Companion.fromJSON
 import org.json.JSONException
 import org.json.JSONObject
 
 internal class LocalPaymentApi(
     private val braintreeClient: BraintreeClient,
-    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
 ) {
 
     fun createPaymentMethod(
@@ -66,7 +68,7 @@ internal class LocalPaymentApi(
 
             val metaData = JSONObject()
                 .put("source", "client")
-                .put("integration", braintreeClient.integrationType.stringValue)
+                .put("integration", merchantRepository.integrationType.stringValue)
                 .put("sessionId", analyticsParamRepository.sessionId)
             payload.put("_meta", metaData)
 
