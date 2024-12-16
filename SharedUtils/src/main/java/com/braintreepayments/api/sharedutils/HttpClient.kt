@@ -72,7 +72,7 @@ class HttpClient internal constructor(
         }
 
         if (url != null) {
-            val retryCount = getNumRetriesSoFar(url)
+            val retryCount = getCurrentRetryCount(url)
             val shouldRetry = ((retryCount + 1) < MAX_RETRY_ATTEMPTS)
             if (shouldRetry) {
                 scheduleRequest(request, retryStrategy, callback)
@@ -85,10 +85,7 @@ class HttpClient internal constructor(
         }
     }
 
-    private fun getNumRetriesSoFar(url: URL): Int {
-        val retryCount = retryCountMap[url] ?: return 0
-        return retryCount
-    }
+    private fun getCurrentRetryCount(url: URL) = retryCountMap[url] ?: 0
 
     private fun resetRetryCount(request: HttpRequest) {
         try {
