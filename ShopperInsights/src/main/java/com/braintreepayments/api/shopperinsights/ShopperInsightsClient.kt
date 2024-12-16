@@ -65,7 +65,10 @@ class ShopperInsightsClient internal constructor(
         analyticsParamRepository.resetSessionId()
         braintreeClient.sendAnalyticsEvent(
             GET_RECOMMENDED_PAYMENTS_STARTED,
-            AnalyticsEventParams(experiment = experiment)
+            AnalyticsEventParams(
+                experiment = experiment,
+                shopperSessionId = shopperSessionId
+            )
         )
 
         if (request.email == null && request.phone == null) {
@@ -141,7 +144,7 @@ class ShopperInsightsClient internal constructor(
         callback: ShopperInsightsCallback,
         error: Exception
     ) {
-        braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_FAILED, analyticsEventParams)
+        braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_FAILED, analyticsParams)
         callback.onResult(ShopperInsightsResult.Failure(error))
     }
 
@@ -151,7 +154,7 @@ class ShopperInsightsClient internal constructor(
         isPayPalRecommended: Boolean,
         isVenmoRecommended: Boolean,
     ) {
-        braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_SUCCEEDED, analyticsEventParams)
+        braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_SUCCEEDED, analyticsParams)
         callback.onResult(
             ShopperInsightsResult.Success(
                 ShopperInsightsInfo(
@@ -190,7 +193,7 @@ class ShopperInsightsClient internal constructor(
      * This method sends analytics to help improve the Shopper Insights feature experience.
      */
     fun sendPayPalSelectedEvent() {
-        braintreeClient.sendAnalyticsEvent(PAYPAL_SELECTED, analyticsEventParams)
+        braintreeClient.sendAnalyticsEvent(PAYPAL_SELECTED, analyticsParams)
     }
 
     /**
@@ -220,7 +223,7 @@ class ShopperInsightsClient internal constructor(
      * This method sends analytics to help improve the Shopper Insights feature experience.
      */
     fun sendVenmoSelectedEvent() {
-        braintreeClient.sendAnalyticsEvent(VENMO_SELECTED, analyticsEventParams)
+        braintreeClient.sendAnalyticsEvent(VENMO_SELECTED, analyticsParams)
     }
 
     /**
@@ -237,7 +240,7 @@ class ShopperInsightsClient internal constructor(
         return deviceInspector.isVenmoInstalled(context)
     }
 
-    private val analyticsEventParams : AnalyticsEventParams get() {
+    private val analyticsParams : AnalyticsEventParams get() {
         return AnalyticsEventParams(shopperSessionId = shopperSessionId)
     }
 
