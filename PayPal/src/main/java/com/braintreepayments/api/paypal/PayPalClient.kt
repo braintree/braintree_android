@@ -44,6 +44,8 @@ class PayPalClient internal constructor(
      */
     private var isVaultRequest = false
 
+    private var shopperSessionId: String? = null
+
     /**
      * Initializes a new [PayPalClient] instance
      *
@@ -74,11 +76,7 @@ class PayPalClient internal constructor(
         payPalRequest: PayPalRequest,
         callback: PayPalPaymentAuthCallback
     ) {
-        // The shopper insights server SDK integration
-        payPalRequest.shopperSessionId?.let {
-            analyticsParamRepository.setSessionId(it)
-        }
-
+        shopperSessionId = payPalRequest.shopperSessionId
         isVaultRequest = payPalRequest is PayPalVaultRequest
 
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsParams)
@@ -337,7 +335,8 @@ class PayPalClient internal constructor(
             return AnalyticsEventParams(
                 payPalContextId = payPalContextId,
                 linkType = linkType?.stringValue,
-                isVaultRequest = isVaultRequest
+                isVaultRequest = isVaultRequest,
+                shopperSessionId = shopperSessionId
             )
         }
 

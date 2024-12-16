@@ -644,7 +644,7 @@ public class PayPalClientUnitTest {
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, analyticsParamRepository);
         sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback);
 
-        verify(analyticsParamRepository).setSessionId("test-shopper-id");
+        verify(analyticsParamRepository).setShopperSessionId("test-shopper-id");
     }
 
     @Test
@@ -672,6 +672,6 @@ public class PayPalClientUnitTest {
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, analyticsParamRepository);
         sut.createPaymentAuthRequest(activity, request, paymentAuthCallback);
 
-        verify(analyticsParamRepository).setSessionId("test-shopper-id");
+        verify(analyticsParamRepository).setShopperSessionId("test-shopper-id");
     }
 }
