@@ -5,7 +5,6 @@ import android.net.Uri
 import android.text.TextUtils
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.AnalyticsEventParams
-import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
@@ -25,8 +24,7 @@ import org.json.JSONObject
 class PayPalClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient = PayPalInternalClient(braintreeClient),
-    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
-    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance
 ) {
     /**
      * Used for linking events from the client to server side request
@@ -44,6 +42,9 @@ class PayPalClient internal constructor(
      */
     private var isVaultRequest = false
 
+    /**
+     * Used for sending Shopper Insights session ID provided by merchant to FPTI
+     */
     private var shopperSessionId: String? = null
 
     /**

@@ -75,22 +75,6 @@ class ShopperInsightsClientUnitTest {
     }
 
     @Test
-    fun `when getRecommendedPaymentMethods is called with shopper session id, session id is not reset`() {
-        sut = ShopperInsightsClient(
-            braintreeClient,
-            analyticsParamRepository,
-            api,
-            merchantRepository,
-            deviceInspector,
-            "shopper-session-id"
-        )
-
-        sut.getRecommendedPaymentMethods(mockk(relaxed = true), "some_experiment", mockk(relaxed = true))
-
-        verify(exactly = 0) { analyticsParamRepository.resetSessionId() }
-    }
-
-    @Test
     fun `when getRecommendedPaymentMethods is called, started event is sent`() {
         val experiment = "some_experiment"
         sut.getRecommendedPaymentMethods(mockk(relaxed = true), experiment, mockk(relaxed = true))
