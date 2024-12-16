@@ -9,10 +9,10 @@ import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.TokenizationKey
+import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_FAILED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_STARTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_SUCCEEDED
-import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.PAYPAL_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.PAYPAL_SELECTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.VENMO_SELECTED
 
@@ -180,7 +180,7 @@ class ShopperInsightsClient internal constructor(
         buttonType: ButtonType? = null,
     ) {
         braintreeClient.sendAnalyticsEvent(
-            PAYPAL_PRESENTED,
+            BUTTON_PRESENTED,
             AnalyticsEventParams(
                 experiment = presentmentDetails?.type?.formattedExperiment(),
                 paymentMethodsDisplayed = paymentMethodsDisplayed,
