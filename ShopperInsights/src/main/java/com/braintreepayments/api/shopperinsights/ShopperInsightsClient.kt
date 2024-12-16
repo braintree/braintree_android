@@ -187,7 +187,7 @@ class ShopperInsightsClient internal constructor(
         braintreeClient.sendAnalyticsEvent(
             PAYPAL_PRESENTED,
             AnalyticsEventParams(
-                experiment = presentmentDetails.treatmentName,
+                experiment = presentmentDetails.toString(),
                 paymentMethodsDisplayed = paymentMethodsDisplayed
             )
         )
