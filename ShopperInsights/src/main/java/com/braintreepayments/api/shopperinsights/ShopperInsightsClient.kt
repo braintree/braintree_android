@@ -168,6 +168,7 @@ class ShopperInsightsClient internal constructor(
     /**
      * Call this method when the PayPal button has been successfully displayed to the buyer.
      * This method sends analytics to help improve the Shopper Insights feature experience.
+     * @param shopperSessionId: the shopper session ID returned from your server SDK request
      * @param presentmentDetails optional JSON string representing an experiment you want to run.
      * @param paymentMethodsDisplayed optional The list of available payment methods,
      * rendered in the same order in which they are displayed
