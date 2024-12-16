@@ -1,12 +1,23 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
-
-* LocalPayment
-  * Make LocalPaymentAuthRequestParams public (fixes #1207)
 * PayPal
   * Add `PayPalContactInformation` request object
   * Add `PayPalCheckoutRequest.contactInformation` optional property
+
+## 5.3.0 (2024-12-11)
+
+* PayPal
+  * Add `deepLinkFallbackUrlScheme` to `PayPalClient` constructor params for supporting deep link fallback
+  * Send `url` in `event_params` for App Switch events to PayPal's analytics service (FPTI)
+* LocalPayment
+  * Make LocalPaymentAuthRequestParams public (fixes #1207)
+* ThreeDSecure
+  * Add `ThreeDSecureRequest.requestorAppUrl`
+* Venmo
+  * Add `VenmoClient` constructor with `appLinkReturnUri` argument to use App Links when redirecting back from the Venmo flow
+  * Add `deepLinkFallbackUrlScheme` to `VenmoClient` constructor params for supporting deep link fallback
+  * Deprecate `VenmoClient` constructor with `returnUrlScheme` argument
 
 ## 5.2.0 (2024-10-30)
 

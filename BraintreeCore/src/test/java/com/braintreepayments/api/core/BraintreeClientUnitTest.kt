@@ -10,7 +10,6 @@ import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.ManifestValidator
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
-import com.braintreepayments.api.sharedutils.Time
 import com.braintreepayments.api.testutils.Fixtures
 import io.mockk.*
 import org.json.JSONException
@@ -319,10 +318,7 @@ class BraintreeClientUnitTest {
             .configuration(configuration)
             .build()
 
-        val time: Time = mockk()
-        every { time.currentTime } returns 123
-
-        val sut = createBraintreeClient(configurationLoader, time)
+        val sut = createBraintreeClient(configurationLoader)
         sut.sendAnalyticsEvent("event.started")
 
         verify {
@@ -432,7 +428,6 @@ class BraintreeClientUnitTest {
 
     private fun createBraintreeClient(
         configurationLoader: ConfigurationLoader = mockk(),
-        time: Time = Time(),
         appLinkReturnUri: Uri? = Uri.parse("https://example.com"),
         merchantRepository: MerchantRepository = MerchantRepository.instance
     ) = BraintreeClient(
@@ -446,7 +441,6 @@ class BraintreeClientUnitTest {
         analyticsClient = analyticsClient,
         manifestValidator = manifestValidator,
         configurationLoader = configurationLoader,
-        time = time,
         merchantRepository = merchantRepository,
     )
 }

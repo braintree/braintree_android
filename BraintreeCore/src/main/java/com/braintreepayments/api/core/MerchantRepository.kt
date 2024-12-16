@@ -16,6 +16,8 @@ class MerchantRepository {
     lateinit var returnUrlScheme: String
     var appLinkReturnUri: Uri? = null
 
+    var deepLinkFallbackUrlScheme: String? = null
+
     companion object {
 
         /**

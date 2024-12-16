@@ -10,6 +10,9 @@ internal object PayPalAnalytics {
 
     // Additional Conversion events
     const val HANDLE_RETURN_STARTED = "paypal:tokenize:handle-return:started"
+    const val HANDLE_RETURN_SUCCEEDED = "paypal:tokenize:handle-return:succeeded"
+    const val HANDLE_RETURN_FAILED = "paypal:tokenize:handle-return:failed"
+    const val HANDLE_RETURN_NO_RESULT = "paypal:tokenize:handle-return:no-result"
 
     // App Switch events
     const val APP_SWITCH_STARTED = "paypal:tokenize:app-switch:started"
