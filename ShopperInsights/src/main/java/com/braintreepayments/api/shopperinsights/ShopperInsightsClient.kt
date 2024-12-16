@@ -168,11 +168,11 @@ class ShopperInsightsClient internal constructor(
      * @param pageType optional Represents the page or view the button is rendered on.
      */
     fun sendPresentedEvent(
-        presentmentDetails: PresentmentDetails,
+        presentmentDetails: PresentmentDetails? = null,
         paymentMethodsDisplayed: List<String> = emptyList(),
-        buttonType: ButtonType,
-        buttonOrder: ButtonOrder,
-        pageType: PageType
+        buttonType: ButtonType? = null,
+        buttonOrder: ButtonOrder? = null,
+        pageType: PageType? = null
     ) {
         braintreeClient.sendAnalyticsEvent(
             PAYPAL_PRESENTED,
