@@ -240,7 +240,7 @@ class ShopperInsightsClient internal constructor(
         return deviceInspector.isVenmoInstalled(context)
     }
 
-    private val analyticsParams : AnalyticsEventParams get() {
+    private val analyticsParams: AnalyticsEventParams get() {
         return AnalyticsEventParams(shopperSessionId = shopperSessionId)
     }
 
