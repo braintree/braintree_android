@@ -18,6 +18,9 @@ import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
 import com.braintreepayments.api.paypal.PayPalPaymentAuthResult
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
+import com.braintreepayments.api.shopperinsights.ButtonType
+import com.braintreepayments.api.shopperinsights.ExperimentType
+import com.braintreepayments.api.shopperinsights.PresentmentDetails
 import com.braintreepayments.api.shopperinsights.ShopperInsightsBuyerPhone
 import com.braintreepayments.api.shopperinsights.ShopperInsightsClient
 import com.braintreepayments.api.shopperinsights.ShopperInsightsRequest
@@ -191,18 +194,24 @@ class ShopperInsightsFragment : BaseFragment() {
                 is ShopperInsightsResult.Success -> {
                     if (result.response.isPayPalRecommended) {
                         payPalVaultButton.isEnabled = true
-                        shopperInsightsClient.sendPayPalPresentedEvent(
-                            """{"exp_name":"PaymentReady","treatment_name":"control"}""",
+                        shopperInsightsClient.sendPresentedEvent(
+                            ButtonType.PAYPAL,
+                            PresentmentDetails("PaymentReady", ExperimentType.CONTROL),
                             listOf("PayPal", "Venmo", "other")
                         )
+
+                        //"""{"exp_name":"PaymentReady","treatment_name":"control"}""",
                     }
 
                     if (result.response.isVenmoRecommended) {
                         venmoButton.isEnabled = true
-                        shopperInsightsClient.sendVenmoPresentedEvent(
-                            """{"exp_name":"PaymentReady","treatment_name":"test"}""",
+                        shopperInsightsClient.sendPresentedEvent(
+                            ButtonType.VENMO,
+                            PresentmentDetails("PaymentReady", ExperimentType.TEST),
                             listOf("Venmo", "PayPal", "other")
                         )
+
+                        //"""{"exp_name":"PaymentReady","treatment_name":"test"}""",
                     }
 
                     responseTextView.text =
