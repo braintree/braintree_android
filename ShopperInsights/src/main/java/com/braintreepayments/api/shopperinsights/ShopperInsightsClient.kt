@@ -14,7 +14,6 @@ import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RE
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_SUCCEEDED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.PAYPAL_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.PAYPAL_SELECTED
-import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.VENMO_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.VENMO_SELECTED
 
 /**
@@ -173,26 +172,21 @@ class ShopperInsightsClient internal constructor(
      * @param paymentMethodsDisplayed optional The list of available payment methods,
      * rendered in the same order in which they are displayed
      * @param buttonType optional Represents the tapped button type.
-     * @param buttonOrder optional Represents this buttons order in context of other buttons.
-     * @param pageType optional Represents the page or view the button is rendered on.
      */
     fun sendPresentedEvent(
         shopperSessionId: String? = null,
         presentmentDetails: PresentmentDetails? = null,
         paymentMethodsDisplayed: List<String> = emptyList(),
         buttonType: ButtonType? = null,
-        buttonOrder: ButtonOrder? = null,
-        pageType: PageType? = null
     ) {
         braintreeClient.sendAnalyticsEvent(
             PAYPAL_PRESENTED,
             AnalyticsEventParams(
-                experiment = presentmentDetails.toString(),
+                experiment = presentmentDetails?.type?.formattedExperiment(),
                 paymentMethodsDisplayed = paymentMethodsDisplayed,
                 shopperSessionId = shopperSessionId,
                 buttonType = buttonType.toString(),
-                buttonOrder = buttonOrder.toString(),
-                pageType = pageType.toString()
+                buttonOrder = presentmentDetails?.buttonOrder.toString()
             )
         )
     }
