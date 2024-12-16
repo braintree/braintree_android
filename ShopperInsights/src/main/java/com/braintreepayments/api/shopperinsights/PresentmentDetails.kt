@@ -2,14 +2,16 @@ package com.braintreepayments.api.shopperinsights
 
 
 /**
- * Initializes a new [DataCollector] instance
+ * Initializes a new PresentmentDetails instance
  *
- * @param experimentType an Android Context
+ * @param treatmentName The experiment or treatment name
+ * @param type An ExperimentType that is either a control or test type
  */
-class PresentmentDetails (
+data class PresentmentDetails (
     val treatmentName: String,
     val type: ExperimentType
-) {}
+)
+
 
 /*
 Add new PresentmentDetails class with the following provided in the initializer:
