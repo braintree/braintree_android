@@ -65,12 +65,14 @@ class ShopperInsightsFragment : BaseFragment() {
     private lateinit var venmoStartedPendingRequest: VenmoPendingRequest.Started
     private lateinit var paypalStartedPendingRequest: PayPalPendingRequest.Started
 
+    private var shopperSessionId: String = "test-shopper-session-id"
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        shopperInsightsClient = ShopperInsightsClient(requireContext(), authStringArg)
+        shopperInsightsClient = ShopperInsightsClient(requireContext(), authStringArg, shopperSessionId)
 
         venmoClient = VenmoClient(requireContext(), super.getAuthStringArg(), null)
         payPalClient = PayPalClient(
@@ -244,7 +246,9 @@ class ShopperInsightsFragment : BaseFragment() {
                 activity,
                 emailInput.editText?.text.toString(),
                 countryCodeInput.editText?.text.toString(),
-                nationalNumberInput.editText?.text.toString()
+                nationalNumberInput.editText?.text.toString(),
+                shopperSessionId
+
             )
         ) { authRequest ->
             when (authRequest) {

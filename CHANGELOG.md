@@ -2,6 +2,14 @@
 
 ## unreleased
 
+* ShopperInsights (BETA)
+    * Add `isPayPalAppInstalled` and `isVenmoAppInstalled` methods
+    * Add `shopperSessionId` parameter to `ShopperInsightsClient`
+* BraintreePayPal
+    * Add `shopperSessionId` to `PayPalCheckoutRequest` and `PayPalVaultRequest`
+
+## 5.3.0 (2024-12-11)
+
 * PayPal
   * Add `deepLinkFallbackUrlScheme` to `PayPalClient` constructor params for supporting deep link fallback
   * Send `url` in `event_params` for App Switch events to PayPal's analytics service (FPTI)
