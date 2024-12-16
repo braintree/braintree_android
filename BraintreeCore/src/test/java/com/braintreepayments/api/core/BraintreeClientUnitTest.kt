@@ -10,7 +10,6 @@ import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.ManifestValidator
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
-import com.braintreepayments.api.sharedutils.Time
 import com.braintreepayments.api.testutils.Fixtures
 import io.mockk.*
 import org.json.JSONException
@@ -34,6 +33,7 @@ class BraintreeClientUnitTest {
     private lateinit var manifestValidator: ManifestValidator
     private lateinit var browserSwitchClient: BrowserSwitchClient
     private lateinit var expectedAuthException: BraintreeException
+    private lateinit var merchantRepository: MerchantRepository
 
     @Before
     fun beforeEach() {
@@ -48,6 +48,7 @@ class BraintreeClientUnitTest {
         analyticsClient = mockk(relaxed = true)
         manifestValidator = mockk(relaxed = true)
         browserSwitchClient = mockk(relaxed = true)
+        merchantRepository = mockk(relaxed = true)
 
         val clientSDKSetupURL =
             "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization"
@@ -66,8 +67,7 @@ class BraintreeClientUnitTest {
             .configuration(configuration)
             .build()
 
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
+        val sut = createBraintreeClient(configurationLoader)
         val callback = mockk<ConfigurationCallback>(relaxed = true)
         sut.getConfiguration(callback)
 
@@ -81,8 +81,7 @@ class BraintreeClientUnitTest {
             .configurationError(configFetchError)
             .build()
 
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
+        val sut = createBraintreeClient(configurationLoader)
 
         val callback = mockk<ConfigurationCallback>(relaxed = true)
         sut.getConfiguration(callback)
@@ -110,8 +109,7 @@ class BraintreeClientUnitTest {
             .configuration(configuration)
             .build()
 
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
+        val sut = createBraintreeClient(configurationLoader)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
         val networkResponseCallbackSlot = slot<NetworkResponseCallback>()
 
@@ -135,8 +133,7 @@ class BraintreeClientUnitTest {
             .configurationError(configError)
             .build()
 
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
+        val sut = createBraintreeClient(configurationLoader)
 
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
         sut.sendGET("sample-url", httpResponseCallback)
@@ -164,8 +161,7 @@ class BraintreeClientUnitTest {
             .configuration(configuration)
             .build()
 
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
+        val sut = createBraintreeClient(configurationLoader)
 
         val networkResponseCallbackSlot = slot<NetworkResponseCallback>()
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
@@ -191,8 +187,7 @@ class BraintreeClientUnitTest {
             .configurationError(exception)
             .build()
 
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
+        val sut = createBraintreeClient(configurationLoader)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
 
         sut.sendPOST("sample-url", "{}", emptyMap(), httpResponseCallback)
@@ -204,8 +199,7 @@ class BraintreeClientUnitTest {
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(mockk<Configuration>(relaxed = true))
             .build()
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
+        val sut = createBraintreeClient(configurationLoader)
 
         sut.sendPOST(
             url = "sample-url",
@@ -230,8 +224,7 @@ class BraintreeClientUnitTest {
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(mockk<Configuration>(relaxed = true))
             .build()
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
+        val sut = createBraintreeClient(configurationLoader)
         val headers = mapOf("name" to "value")
 
         sut.sendPOST(
@@ -273,8 +266,7 @@ class BraintreeClientUnitTest {
             .configuration(configuration)
             .build()
 
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
+        val sut = createBraintreeClient(configurationLoader)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
         val networkResponseCallbackSlot = slot<NetworkResponseCallback>()
 
@@ -298,8 +290,7 @@ class BraintreeClientUnitTest {
             .configurationError(exception)
             .build()
 
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
+        val sut = createBraintreeClient(configurationLoader)
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
 
         sut.sendGraphQLPOST(JSONObject(), httpResponseCallback)
@@ -327,34 +318,12 @@ class BraintreeClientUnitTest {
             .configuration(configuration)
             .build()
 
-        val time: Time = mockk()
-        every { time.currentTime } returns 123
-
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params, time)
+        val sut = createBraintreeClient(configurationLoader)
         sut.sendAnalyticsEvent("event.started")
 
         verify {
-            analyticsClient.sendEvent(
-                configuration,
-                match { it.name == "event.started" && it.timestamp == 123L },
-                IntegrationType.CUSTOM,
-                authorization
-            )
+            analyticsClient.sendEvent("event.started")
         }
-    }
-
-    @Test
-    fun sendAnalyticsEvent_whenConfigurationLoadFails_doesNothing() {
-        val configurationLoader = MockkConfigurationLoaderBuilder()
-            .configurationError(Exception("error"))
-            .build()
-
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
-        sut.sendAnalyticsEvent("event.started")
-
-        verify { analyticsClient wasNot Called }
     }
 
     @Test
@@ -367,8 +336,7 @@ class BraintreeClientUnitTest {
             )
         } returns true
 
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
+        val sut = createBraintreeClient(configurationLoader)
         assertTrue(
             sut.isUrlSchemeDeclaredInAndroidManifest("a-url-scheme", FragmentActivity::class.java)
         )
@@ -381,15 +349,14 @@ class BraintreeClientUnitTest {
             manifestValidator.getActivityInfo(applicationContext, FragmentActivity::class.java)
         } returns activityInfo
 
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
+        val sut = createBraintreeClient(configurationLoader)
         assertSame(activityInfo, sut.getManifestActivityInfo(FragmentActivity::class.java))
     }
 
     @Test
     fun returnUrlScheme_returnsUrlSchemeBasedOnApplicationIdByDefault() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val sut = BraintreeClient(BraintreeOptions(context, authorization))
+        val sut = BraintreeClient(context, authorization.toString())
         assertEquals("com.braintreepayments.api.core.test.braintree", sut.getReturnUrlScheme())
     }
 
@@ -398,10 +365,9 @@ class BraintreeClientUnitTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val returnUrlScheme = "custom-url-scheme"
         val sut = BraintreeClient(
-            BraintreeOptions(
-                context, authorization, returnUrlScheme =
-                returnUrlScheme
-            )
+            context = context,
+            authorization = authorization.toString(),
+            returnUrlScheme = returnUrlScheme
         )
         assertEquals("custom-url-scheme", sut.getReturnUrlScheme())
     }
@@ -409,26 +375,12 @@ class BraintreeClientUnitTest {
     @Test
     fun returnUrlScheme_whenDefaultDeepLinkHandlerEnabled_returnsDefaultDeepLinkHandlerScheme() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val sut = BraintreeClient(BraintreeOptions(context, authorization))
+        val sut = BraintreeClient(context, authorization.toString())
         sut.launchesBrowserSwitchAsNewTask(true)
         assertEquals(
             "com.braintreepayments.api.core.test.braintree.deeplinkhandler",
             sut.getReturnUrlScheme()
         )
-    }
-
-    @Test
-    fun integrationType_returnsCustomByDefault() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val sut = BraintreeClient(BraintreeOptions(context, authorization))
-        assertEquals("custom", sut.integrationType.stringValue)
-    }
-
-    @Test
-    fun integrationType_returnsIntegrationTypeDefinedInConstructor() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val sut = BraintreeClient(context, authorization, IntegrationType.DROP_IN)
-        assertEquals("dropin", sut.integrationType.stringValue)
     }
 
     @Test
@@ -438,16 +390,15 @@ class BraintreeClientUnitTest {
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
-        val params = createDefaultParams(configurationLoader)
-        val sut = BraintreeClient(params)
+        val sut = createBraintreeClient(configurationLoader)
         sut.reportCrash()
 
         val callbackSlot = slot<ConfigurationLoaderCallback>()
         verify {
-            configurationLoader.loadConfiguration(authorization, capture(callbackSlot))
+            configurationLoader.loadConfiguration(capture(callbackSlot))
         }
 
-        callbackSlot.captured.onResult(configuration, null, null)
+        callbackSlot.captured.onResult(ConfigurationLoaderResult.Success(configuration))
 
         verify {
             analyticsClient.reportCrash(
@@ -459,20 +410,37 @@ class BraintreeClientUnitTest {
         }
     }
 
-    private fun createDefaultParams(
-        configurationLoader: ConfigurationLoader
-    ): BraintreeClientParams =
-        BraintreeClientParams(
-            context = context,
-            authorization = authorization,
-            returnUrlScheme = "sample-return-url-scheme",
-            appLinkReturnUri = Uri.parse("https://example.com"),
-            httpClient = braintreeHttpClient,
-            graphQLClient = braintreeGraphQLClient,
-            analyticsClient = analyticsClient,
-            browserSwitchClient = browserSwitchClient,
-            manifestValidator = manifestValidator,
-            configurationLoader = configurationLoader,
-            integrationType = IntegrationType.CUSTOM
-        )
+    @Test
+    fun `when BraintreeClient is initialized, merchantRepository properties are set`() {
+        createBraintreeClient(merchantRepository = merchantRepository)
+        verify { merchantRepository.returnUrlScheme = "sample-return-url-scheme" }
+        verify { merchantRepository.applicationContext = applicationContext }
+        verify { merchantRepository.authorization = authorization }
+        verify { merchantRepository.appLinkReturnUri = Uri.parse("https://example.com") }
+        verify { merchantRepository.integrationType = IntegrationType.CUSTOM }
+    }
+
+    @Test
+    fun `when BraintreeClient is initialized and appLinkReturnUri is null, it is not set on the MerchantRepository`() {
+        createBraintreeClient(appLinkReturnUri = null, merchantRepository = merchantRepository)
+        verify(exactly = 0) { merchantRepository.appLinkReturnUri = null }
+    }
+
+    private fun createBraintreeClient(
+        configurationLoader: ConfigurationLoader = mockk(),
+        appLinkReturnUri: Uri? = Uri.parse("https://example.com"),
+        merchantRepository: MerchantRepository = MerchantRepository.instance
+    ) = BraintreeClient(
+        applicationContext = applicationContext,
+        integrationType = IntegrationType.CUSTOM,
+        authorization = authorization,
+        returnUrlScheme = "sample-return-url-scheme",
+        appLinkReturnUri = appLinkReturnUri,
+        httpClient = braintreeHttpClient,
+        graphQLClient = braintreeGraphQLClient,
+        analyticsClient = analyticsClient,
+        manifestValidator = manifestValidator,
+        configurationLoader = configurationLoader,
+        merchantRepository = merchantRepository,
+    )
 }

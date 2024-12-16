@@ -12,6 +12,8 @@ import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.TokenizationKey
+import com.braintreepayments.api.core.GetReturnLinkUseCase
+import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.paypal.vaultedit.PayPalEditAuthCallback
@@ -33,6 +35,8 @@ class PayPalClient internal constructor(
 
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient = PayPalInternalClient(braintreeClient),
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository)
 ) {
 
     /**
@@ -52,19 +56,33 @@ class PayPalClient internal constructor(
     private var isVaultRequest = false
 
     /**
+     * The final URL string used to open the app switch flow
+     */
+    private var appSwitchUrlString: String? = null
+
+    /**
      * Initializes a new [PayPalClient] instance
      *
      * @param context          an Android Context
      * @param authorization    a Tokenization Key or Client Token used to authenticate
      * @param appLinkReturnUrl A [Uri] containing the Android App Link website associated with
-     * your application to be used to return to your app from the PayPal
-     * payment flows.
+     * your application to be used to return to your app from the PayPal payment flows.
+     * @param deepLinkFallbackUrlScheme A return url scheme that will be used as a deep link fallback when returning to
+     * your app via App Link is not available (buyer unchecks the "Open supported links" setting).
      */
     constructor(
         context: Context,
         authorization: String,
-        appLinkReturnUrl: Uri
-    ) : this(BraintreeClient(context, authorization, null, appLinkReturnUrl))
+        appLinkReturnUrl: Uri,
+        deepLinkFallbackUrlScheme: String? = null
+    ) : this(
+        BraintreeClient(
+            context = context,
+            authorization = authorization,
+            deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme,
+            appLinkReturnUri = appLinkReturnUrl
+        )
+    )
 
     /**
      * Starts the PayPal payment flow by creating a [PayPalPaymentAuthRequestParams] to be
@@ -98,6 +116,7 @@ class PayPalClient internal constructor(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun sendPayPalRequest(
         context: Context,
         payPalRequest: PayPalRequest,
@@ -120,14 +139,16 @@ class PayPalClient internal constructor(
                         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_STARTED, analyticsParams)
                     }
 
-                    callback.onPayPalPaymentAuthRequest(
-                        PayPalPaymentAuthRequest.ReadyToLaunch(payPalResponse)
-                    )
-                } catch (exception: JSONException) {
-                    callbackCreatePaymentAuthFailure(
-                        callback,
-                        PayPalPaymentAuthRequest.Failure(exception)
-                    )
+                    callback.onPayPalPaymentAuthRequest(PayPalPaymentAuthRequest.ReadyToLaunch(payPalResponse))
+                } catch (exception: Exception) {
+                    when (exception) {
+                        is JSONException,
+                        is BraintreeException -> {
+                            callbackCreatePaymentAuthFailure(callback, PayPalPaymentAuthRequest.Failure(exception))
+                        }
+
+                        else -> throw exception
+                    }
                 }
             } else {
                 callbackCreatePaymentAuthFailure(
@@ -138,7 +159,7 @@ class PayPalClient internal constructor(
         }
     }
 
-    @Throws(JSONException::class)
+    @Throws(JSONException::class, BraintreeException::class)
     private fun buildBrowserSwitchOptions(
         paymentAuthRequest: PayPalPaymentAuthRequestParams
     ): BrowserSwitchOptions {
@@ -160,10 +181,22 @@ class PayPalClient internal constructor(
 
         return BrowserSwitchOptions()
             .requestCode(BraintreeRequestCodes.PAYPAL.code)
-            .appLinkUri(braintreeClient.appLinkReturnUri)
             .url(Uri.parse(paymentAuthRequest.approvalUrl))
             .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
             .metadata(metadata)
+            .apply {
+                when (val returnLinkResult = getReturnLinkUseCase()) {
+                    is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> {
+                        appLinkUri(returnLinkResult.appLinkReturnUri)
+                    }
+
+                    is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> {
+                        returnUrlScheme(returnLinkResult.deepLinkFallbackUrlScheme)
+                    }
+
+                    is GetReturnLinkUseCase.ReturnLinkResult.Failure -> throw returnLinkResult.exception
+                }
+            }
     }
 
     @Throws(JSONException::class)
@@ -178,7 +211,7 @@ class PayPalClient internal constructor(
 
         return BrowserSwitchOptions()
             .requestCode(BraintreeRequestCodes.PAYPAL.code)
-            .appLinkUri(braintreeClient.appLinkReturnUri)
+            .appLinkUri(merchantRepository.appLinkReturnUri)
             .url(Uri.parse(params.approvalUrl))
             .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
             .metadata(metadata)
@@ -213,10 +246,7 @@ class PayPalClient internal constructor(
         val isAppSwitchFlow = !switchInitiatedTime.isNullOrEmpty()
 
         if (isAppSwitchFlow) {
-            braintreeClient.sendAnalyticsEvent(
-                PayPalAnalytics.HANDLE_RETURN_STARTED,
-                analyticsParams
-            )
+            appSwitchUrlString = approvalUrl
         }
 
         approvalUrl?.let {
@@ -387,7 +417,7 @@ class PayPalClient internal constructor(
     ) {
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.EDIT_FI_STARTED, analyticsParams)
 
-        if (braintreeClient.authorization is TokenizationKey) {
+        if (merchantRepository.authorization is TokenizationKey) {
             callBackEditFiFailed(
                 callback,
                 BraintreeException(
@@ -476,7 +506,10 @@ class PayPalClient internal constructor(
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, analyticsParams)
 
         if (isAppSwitchFlow) {
-            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, analyticsParams)
+            braintreeClient.sendAnalyticsEvent(
+                PayPalAnalytics.APP_SWITCH_FAILED,
+                analyticsParams.copy(appSwitchUrl = appSwitchUrlString)
+            )
         }
 
         callback.onPayPalResult(failure)
@@ -490,7 +523,10 @@ class PayPalClient internal constructor(
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, analyticsParams)
 
         if (isAppSwitchFlow) {
-            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_SUCCEEDED, analyticsParams)
+            braintreeClient.sendAnalyticsEvent(
+                PayPalAnalytics.APP_SWITCH_SUCCEEDED,
+                analyticsParams.copy(appSwitchUrl = appSwitchUrlString)
+            )
         }
 
         callback.onPayPalResult(success)

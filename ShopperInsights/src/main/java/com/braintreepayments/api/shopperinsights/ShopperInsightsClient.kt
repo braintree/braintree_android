@@ -6,6 +6,7 @@ import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.TokenizationKey
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_FAILED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_STARTED
@@ -30,6 +31,7 @@ class ShopperInsightsClient internal constructor(
     private val api: ShopperInsightsApi = ShopperInsightsApi(
         EligiblePaymentsApi(braintreeClient, analyticsParamRepository)
     ),
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
 ) {
 
     /**
@@ -72,7 +74,7 @@ class ShopperInsightsClient internal constructor(
             return
         }
 
-        if (braintreeClient.authorization is TokenizationKey) {
+        if (merchantRepository.authorization is TokenizationKey) {
             callbackFailure(
                 callback = callback,
                 error = BraintreeException(

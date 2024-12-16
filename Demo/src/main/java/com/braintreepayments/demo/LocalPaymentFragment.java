@@ -1,6 +1,7 @@
 package com.braintreepayments.demo;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,6 +72,11 @@ public class LocalPaymentFragment extends BaseFragment {
             if (paymentAuthRequest instanceof LocalPaymentAuthRequest.ReadyToLaunch) {
                 LocalPaymentPendingRequest pendingRequest = localPaymentLauncher.launch(requireActivity(),
                         (LocalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest);
+                // merchants have to log paymentId to their servers
+                Log.i("Sample-server", ((LocalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest)
+                        .getRequestParams()
+                        .getPaymentId()
+                );
                 if (pendingRequest instanceof LocalPaymentPendingRequest.Started) {
                     storePendingRequest((LocalPaymentPendingRequest.Started) pendingRequest);
                 } else if (pendingRequest instanceof LocalPaymentPendingRequest.Failure) {

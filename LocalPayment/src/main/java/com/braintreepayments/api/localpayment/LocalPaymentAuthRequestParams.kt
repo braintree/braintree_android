@@ -10,10 +10,10 @@ import com.braintreepayments.api.BrowserSwitchOptions
  * @property approvalUrl used for payment approval.
  * @property paymentId of the local payment after creation.
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 data class LocalPaymentAuthRequestParams @JvmOverloads internal constructor(
     val request: LocalPaymentRequest,
     val approvalUrl: String,
     val paymentId: String,
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     var browserSwitchOptions: BrowserSwitchOptions? = null
 )

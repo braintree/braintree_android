@@ -8,6 +8,8 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.core.GetReturnLinkUseCase
+import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
@@ -23,11 +25,10 @@ internal class PayPalInternalClient(
     private val braintreeClient: BraintreeClient,
     private val dataCollector: DataCollector = DataCollector(braintreeClient),
     private val apiClient: ApiClient = ApiClient(braintreeClient),
-    private val deviceInspector: DeviceInspector = DeviceInspector()
+    private val deviceInspector: DeviceInspector = DeviceInspector(),
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository)
 ) {
-    private val cancelUrl = "${braintreeClient.appLinkReturnUri}://onetouch/v1/cancel"
-    private val successUrl = "${braintreeClient.appLinkReturnUri}://onetouch/v1/success"
-    private val appLink = braintreeClient.appLinkReturnUri?.toString()
 
     fun sendRequest(
         context: Context,
@@ -48,18 +49,37 @@ internal class PayPalInternalClient(
                     CREATE_SINGLE_PAYMENT_ENDPOINT
                 }
                 val url = "/v1/$endpoint"
-                val appLinkReturn = if (isBillingAgreement) appLink else null
 
                 if (isBillingAgreement && (payPalRequest as PayPalVaultRequest).enablePayPalAppSwitch) {
                     payPalRequest.enablePayPalAppSwitch = isPayPalInstalled(context)
                 }
 
+                val returnLinkResult = getReturnLinkUseCase()
+                val navigationLink: String = when (returnLinkResult) {
+                    is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
+                    is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> returnLinkResult.deepLinkFallbackUrlScheme
+                    is GetReturnLinkUseCase.ReturnLinkResult.Failure -> {
+                        callback.onResult(null, returnLinkResult.exception)
+                        return@getConfiguration
+                    }
+                }
+                val appLinkParam = if (
+                    returnLinkResult is GetReturnLinkUseCase.ReturnLinkResult.AppLink && isBillingAgreement
+                ) {
+                    merchantRepository.appLinkReturnUri?.toString()
+                } else {
+                    null
+                }
+
+                val cancelUrl = "$navigationLink://onetouch/v1/cancel"
+                val successUrl = "$navigationLink://onetouch/v1/success"
+
                 val requestBody = payPalRequest.createRequestBody(
                     configuration = configuration,
-                    authorization = braintreeClient.authorization,
+                    authorization = merchantRepository.authorization,
                     successUrl = successUrl,
                     cancelUrl = cancelUrl,
-                    appLink = appLinkReturn
+                    appLink = appLinkParam
                 ) ?: throw JSONException("Error creating requestBody")
 
                 sendPost(
@@ -128,12 +148,21 @@ internal class PayPalInternalClient(
                     )
                 }
 
+                val returnLink: String = when (val returnLinkResult = getReturnLinkUseCase()) {
+                    is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
+                    is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> returnLinkResult.deepLinkFallbackUrlScheme
+                    is GetReturnLinkUseCase.ReturnLinkResult.Failure -> {
+                        callback.onResult(null, returnLinkResult.exception)
+                        return@sendPOST
+                    }
+                }
+
                 val paymentAuthRequest = PayPalPaymentAuthRequestParams(
                     payPalRequest = payPalRequest,
                     browserSwitchOptions = null,
                     clientMetadataId = clientMetadataId,
                     pairingId = pairingId,
-                    successUrl = successUrl
+                    successUrl = "$returnLink://onetouch/v1/success"
                 )
 
                 if (isAppSwitchEnabled(payPalRequest) && isPayPalInstalled(context)) {
@@ -162,7 +191,7 @@ internal class PayPalInternalClient(
 
     fun isAppSwitchEnabled(payPalRequest: PayPalRequest): Boolean {
         return (payPalRequest is PayPalVaultRequest) &&
-                payPalRequest.enablePayPalAppSwitch
+            payPalRequest.enablePayPalAppSwitch
     }
 
     fun isPayPalInstalled(context: Context): Boolean {
@@ -209,7 +238,17 @@ internal class PayPalInternalClient(
         riskCorrelationId: String,
         callback: PayPalInternalClientEditCallback
     ) {
-        val params = editFiParameters(payPalVaultEditRequest.editPayPalVaultId).toMutableMap()
+
+        val returnLink: String = when (val returnLinkResult = getReturnLinkUseCase()) {
+            is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
+            is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> returnLinkResult.deepLinkFallbackUrlScheme
+            is GetReturnLinkUseCase.ReturnLinkResult.Failure -> {
+                callback.onPayPalVaultEditResult(null, returnLinkResult.exception)
+                return
+            }
+        }
+
+        val params = editFiParameters(payPalVaultEditRequest.editPayPalVaultId, returnLink).toMutableMap()
 
         params["correlation_id"] = riskCorrelationId
 
@@ -230,7 +269,7 @@ internal class PayPalInternalClient(
                         riskCorrelationId,
                         null,
                         agreementSetup.getString("approvalUrl"),
-                        successUrl
+                        "$returnLink://onetouch/v1/success"
                     )
 
                     callback.onPayPalVaultEditResult(params, null)
@@ -241,12 +280,12 @@ internal class PayPalInternalClient(
         }
     }
 
-    private fun editFiParameters(editPayPalVaultId: String): Map<String, Any> {
+    private fun editFiParameters(editPayPalVaultId: String, returnLink: String): Map<String, Any> {
         val parameters = mutableMapOf<String, Any>()
 
         parameters["edit_paypal_vault_id"] = editPayPalVaultId
-        parameters["return_url"] = successUrl
-        parameters["cancel_url"] = cancelUrl
+        parameters["return_url"] = "$returnLink://onetouch/v1/success"
+        parameters["cancel_url"] = "$returnLink://onetouch/v1/cancel"
 
         return parameters
     }
