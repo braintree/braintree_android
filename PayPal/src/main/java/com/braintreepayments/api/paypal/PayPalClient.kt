@@ -5,7 +5,6 @@ import android.net.Uri
 import android.text.TextUtils
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.AnalyticsEventParams
-import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
@@ -25,8 +24,7 @@ import org.json.JSONObject
 class PayPalClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient = PayPalInternalClient(braintreeClient),
-    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
-    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance
 ) {
     /**
      * Used for linking events from the client to server side request
@@ -43,6 +41,11 @@ class PayPalClient internal constructor(
      * True if `tokenize()` was called with a Vault request object type
      */
     private var isVaultRequest = false
+
+    /**
+     * Used for sending Shopper Insights session ID provided by merchant to FPTI
+     */
+    private var shopperSessionId: String? = null
 
     /**
      * Initializes a new [PayPalClient] instance
@@ -74,11 +77,7 @@ class PayPalClient internal constructor(
         payPalRequest: PayPalRequest,
         callback: PayPalPaymentAuthCallback
     ) {
-        // The shopper insights server SDK integration
-        payPalRequest.shopperSessionId?.let {
-            analyticsParamRepository.setSessionId(it)
-        }
-
+        shopperSessionId = payPalRequest.shopperSessionId
         isVaultRequest = payPalRequest is PayPalVaultRequest
 
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsParams)
@@ -337,7 +336,8 @@ class PayPalClient internal constructor(
             return AnalyticsEventParams(
                 payPalContextId = payPalContextId,
                 linkType = linkType?.stringValue,
-                isVaultRequest = isVaultRequest
+                isVaultRequest = isVaultRequest,
+                shopperSessionId = shopperSessionId
             )
         }
 

@@ -45,11 +45,7 @@ class ShopperInsightsClient internal constructor(
     constructor(context: Context, authorization: String, shopperSessionId: String? = null) : this(
         BraintreeClient(context, authorization),
         shopperSessionId = shopperSessionId
-    ) {
-        if (shopperSessionId != null) {
-            analyticsParamRepository.setSessionId(sessionId = shopperSessionId)
-        }
-    }
+    )
 
     /**
      * Retrieves recommended payment methods based on the provided shopper insights request.
@@ -66,12 +62,13 @@ class ShopperInsightsClient internal constructor(
         experiment: String? = null,
         callback: ShopperInsightsCallback
     ) {
-        if (shopperSessionId == null) {
-            analyticsParamRepository.resetSessionId()
-        }
+        analyticsParamRepository.resetSessionId()
         braintreeClient.sendAnalyticsEvent(
             GET_RECOMMENDED_PAYMENTS_STARTED,
-            AnalyticsEventParams(experiment = experiment)
+            AnalyticsEventParams(
+                experiment = experiment,
+                shopperSessionId = shopperSessionId
+            )
         )
 
         if (request.email == null && request.phone == null) {
@@ -147,7 +144,7 @@ class ShopperInsightsClient internal constructor(
         callback: ShopperInsightsCallback,
         error: Exception
     ) {
-        braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_FAILED)
+        braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_FAILED, analyticsParams)
         callback.onResult(ShopperInsightsResult.Failure(error))
     }
 
@@ -157,7 +154,7 @@ class ShopperInsightsClient internal constructor(
         isPayPalRecommended: Boolean,
         isVenmoRecommended: Boolean,
     ) {
-        braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_SUCCEEDED)
+        braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_SUCCEEDED, analyticsParams)
         callback.onResult(
             ShopperInsightsResult.Success(
                 ShopperInsightsInfo(
@@ -185,7 +182,8 @@ class ShopperInsightsClient internal constructor(
             PAYPAL_PRESENTED,
             AnalyticsEventParams(
                 experiment = experiment,
-                paymentMethodsDisplayed = paymentMethodsDisplayed
+                paymentMethodsDisplayed = paymentMethodsDisplayed,
+                shopperSessionId = shopperSessionId
             )
         )
     }
@@ -195,7 +193,7 @@ class ShopperInsightsClient internal constructor(
      * This method sends analytics to help improve the Shopper Insights feature experience.
      */
     fun sendPayPalSelectedEvent() {
-        braintreeClient.sendAnalyticsEvent(PAYPAL_SELECTED)
+        braintreeClient.sendAnalyticsEvent(PAYPAL_SELECTED, analyticsParams)
     }
 
     /**
@@ -214,7 +212,8 @@ class ShopperInsightsClient internal constructor(
             VENMO_PRESENTED,
             AnalyticsEventParams(
                 experiment = experiment,
-                paymentMethodsDisplayed = paymentMethodsDisplayed
+                paymentMethodsDisplayed = paymentMethodsDisplayed,
+                shopperSessionId = shopperSessionId
             )
         )
     }
@@ -224,7 +223,7 @@ class ShopperInsightsClient internal constructor(
      * This method sends analytics to help improve the Shopper Insights feature experience.
      */
     fun sendVenmoSelectedEvent() {
-        braintreeClient.sendAnalyticsEvent(VENMO_SELECTED)
+        braintreeClient.sendAnalyticsEvent(VENMO_SELECTED, analyticsParams)
     }
 
     /**
@@ -239,6 +238,10 @@ class ShopperInsightsClient internal constructor(
      */
     fun isVenmoAppInstalled(context: Context): Boolean {
         return deviceInspector.isVenmoInstalled(context)
+    }
+
+    private val analyticsParams: AnalyticsEventParams get() {
+        return AnalyticsEventParams(shopperSessionId = shopperSessionId)
     }
 
     companion object {

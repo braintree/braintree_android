@@ -45,7 +45,8 @@ class AnalyticsClient internal constructor(
             endpoint = analyticsEventParams.endpoint,
             experiment = analyticsEventParams.experiment,
             paymentMethodsDisplayed = analyticsEventParams.paymentMethodsDisplayed,
-            appSwitchUrl = analyticsEventParams.appSwitchUrl
+            appSwitchUrl = analyticsEventParams.appSwitchUrl,
+            shopperSessionId = analyticsEventParams.shopperSessionId
         )
         configurationLoader.loadConfiguration { result ->
             if (result is ConfigurationLoaderResult.Success) {
@@ -242,6 +243,7 @@ class AnalyticsClient internal constructor(
             .putOpt(FPTI_KEY_MERCHANT_PAYMENT_METHODS_DISPLAYED,
                 event.paymentMethodsDisplayed.ifEmpty { null })
             .putOpt(FPTI_KEY_URL, event.appSwitchUrl)
+            .putOpt(FPTI_KEY_SHOPPER_SESSION_ID, event.shopperSessionId)
         return json.toString()
     }
 
@@ -295,6 +297,7 @@ class AnalyticsClient internal constructor(
         private const val FPTI_KEY_MERCHANT_EXPERIMENT = "experiment"
         private const val FPTI_KEY_MERCHANT_PAYMENT_METHODS_DISPLAYED = "payment_methods_displayed"
         private const val FPTI_KEY_URL = "url"
+        private const val FPTI_KEY_SHOPPER_SESSION_ID = "shopper_session_id"
 
         private const val FPTI_BATCH_KEY_VENMO_INSTALLED = "venmo_installed"
         private const val FPTI_BATCH_KEY_PAYPAL_INSTALLED = "paypal_installed"

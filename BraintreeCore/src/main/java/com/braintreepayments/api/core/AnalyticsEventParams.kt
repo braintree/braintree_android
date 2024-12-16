@@ -17,6 +17,8 @@ import androidx.annotation.RestrictTo
  * the experiment, as a JSON string, that the merchant sent to the us.
  * @property paymentMethodsDisplayed A ShopperInsights module specific event that indicates the
  * order of payment methods displayed to the shopper by the merchant.
+ * @property shopperSessionId The Shopper Insights customer session ID created by a merchant's
+ * server SDK or graphQL integration.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 data class AnalyticsEventParams @JvmOverloads constructor(
@@ -28,5 +30,6 @@ data class AnalyticsEventParams @JvmOverloads constructor(
     var endpoint: String? = null,
     val experiment: String? = null,
     val paymentMethodsDisplayed: List<String> = emptyList(),
-    val appSwitchUrl: String? = null
+    val appSwitchUrl: String? = null,
+    val shopperSessionId: String? = null
 )
