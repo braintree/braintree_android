@@ -170,7 +170,6 @@ class ShopperInsightsClient internal constructor(
      * This method sends analytics to help improve the Shopper Insights feature experience.
      * @param buttonType Represents the tapped button type.
      * @param presentmentDetails JSON string representing an experiment you want to run.
-     * @param shopperSessionId: the shopper session ID returned from your server SDK request
      */
     fun sendPresentedEvent(
         buttonType: ButtonType,
