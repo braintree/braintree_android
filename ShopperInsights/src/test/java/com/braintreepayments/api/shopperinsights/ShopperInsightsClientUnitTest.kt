@@ -437,7 +437,9 @@ class ShopperInsightsClientUnitTest {
     }
 
     @Test
-    fun `test paypal presented analytics event`() {
+    fun `test paypal button presented analytics event`() {
+
+        // A Test type, with a button in the first position displayed in the mini cart.
         val presentmentDetails = PresentmentDetails(
             ExperimentType.TEST,
             ButtonOrder.FIRST,
@@ -456,6 +458,34 @@ class ShopperInsightsClientUnitTest {
                 ExperimentType.TEST,
                 ButtonOrder.FIRST,
                 PageType.MINI_CART
+            )
+        )
+        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:button-presented",
+            params) }
+    }
+
+    @Test
+    fun `test venmo button presented analytics event`() {
+
+        // A Control type, with a button in the second position displayed on the homepage.
+        val presentmentDetails = PresentmentDetails(
+            ExperimentType.CONTROL,
+            ButtonOrder.SECOND,
+            PageType.HOMEPAGE
+        )
+
+        val params = AnalyticsEventParams(
+            experiment = presentmentDetails?.type?.formattedExperiment(),
+            shopperSessionId = shopperSessionId,
+            buttonType = ButtonType.VENMO.toString(),
+            buttonOrder = presentmentDetails?.buttonOrder.toString()
+        )
+        sut.sendPresentedEvent(
+            ButtonType.VENMO,
+            PresentmentDetails(
+                ExperimentType.CONTROL,
+                ButtonOrder.SECOND,
+                PageType.HOMEPAGE
             )
         )
         verify { braintreeClient.sendAnalyticsEvent("shopper-insights:button-presented",
