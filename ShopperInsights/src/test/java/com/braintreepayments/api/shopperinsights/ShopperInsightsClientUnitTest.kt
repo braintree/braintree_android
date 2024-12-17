@@ -446,20 +446,18 @@ class ShopperInsightsClientUnitTest {
 
         val params = AnalyticsEventParams(
             experiment = presentmentDetails?.type?.formattedExperiment(),
-            paymentMethodsDisplayed = listOf("PayPal", "Venmo", "other"),
             shopperSessionId = shopperSessionId,
             buttonType = ButtonType.PAYPAL.toString(),
             buttonOrder = presentmentDetails?.buttonOrder.toString()
         )
         sut.sendPresentedEvent(
-            shopperSessionId,
+            ButtonType.PAYPAL,
             PresentmentDetails(
                 ExperimentType.TEST,
                 ButtonOrder.FIRST,
                 PageType.MINI_CART
             ),
-            listOf("PayPal", "Venmo", "other"),
-            ButtonType.PAYPAL
+            shopperSessionId
         )
         verify { braintreeClient.sendAnalyticsEvent("shopper-insights:button-presented",
             params) }

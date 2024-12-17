@@ -7,15 +7,15 @@ enum class ButtonType(internal val stringValue: String) {
     /**
      * PayPal button
      */
-    PAYPAL("paypal"),
+    PAYPAL("PayPal"),
 
     /**
      * Venmo button
      */
-    VENMO("venmo"),
+    VENMO("Venmo"),
 
     /**
      * Other button
      */
-    OTHER("other"),
+    OTHER("Other"),
 }
