@@ -1,6 +1,5 @@
 package com.braintreepayments.api.shopperinsights
 
-
 /**
  * Initializes a new PresentmentDetails instance
  *
