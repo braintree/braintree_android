@@ -182,7 +182,7 @@ class ShopperInsightsClient internal constructor(
             buttonOrder = presentmentDetails.buttonOrder.toString()
         )
 
-        braintreeClient.sendAnalyticsEvent(BUTTON_PRESENTED, params )
+        braintreeClient.sendAnalyticsEvent(BUTTON_PRESENTED, params)
     }
 
     /**
