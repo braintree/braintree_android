@@ -438,22 +438,37 @@ class ShopperInsightsClientUnitTest {
 
     @Test
     fun `test paypal presented analytics event`() {
-        sut.sendPayPalPresentedEvent()
-        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:paypal-presented",
-            AnalyticsEventParams(shopperSessionId = shopperSessionId)) }
+        val presentmentDetails = PresentmentDetails(
+            ExperimentType.TEST,
+            ButtonOrder.FIRST,
+            PageType.MINI_CART
+        )
+
+        val params = AnalyticsEventParams(
+            experiment = presentmentDetails?.type?.formattedExperiment(),
+            paymentMethodsDisplayed = listOf("PayPal", "Venmo", "other"),
+            shopperSessionId = shopperSessionId,
+            buttonType = ButtonType.PAYPAL.toString(),
+            buttonOrder = presentmentDetails?.buttonOrder.toString()
+        )
+        sut.sendPresentedEvent(
+            shopperSessionId,
+            PresentmentDetails(
+                ExperimentType.TEST,
+                ButtonOrder.FIRST,
+                PageType.MINI_CART
+            ),
+            listOf("PayPal", "Venmo", "other"),
+            ButtonType.PAYPAL
+        )
+        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:button-presented",
+            params) }
     }
 
     @Test
     fun `test paypal selected analytics event`() {
         sut.sendPayPalSelectedEvent()
         verify { braintreeClient.sendAnalyticsEvent("shopper-insights:paypal-selected",
-            AnalyticsEventParams(shopperSessionId = shopperSessionId)) }
-    }
-
-    @Test
-    fun `test venmo presented analytics event`() {
-        sut.sendVenmoPresentedEvent()
-        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:venmo-presented",
             AnalyticsEventParams(shopperSessionId = shopperSessionId)) }
     }
 
