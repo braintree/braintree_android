@@ -456,8 +456,7 @@ class ShopperInsightsClientUnitTest {
                 ExperimentType.TEST,
                 ButtonOrder.FIRST,
                 PageType.MINI_CART
-            ),
-            shopperSessionId
+            )
         )
         verify { braintreeClient.sendAnalyticsEvent("shopper-insights:button-presented",
             params) }

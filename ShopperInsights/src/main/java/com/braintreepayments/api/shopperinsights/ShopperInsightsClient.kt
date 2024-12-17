@@ -174,8 +174,7 @@ class ShopperInsightsClient internal constructor(
      */
     fun sendPresentedEvent(
         buttonType: ButtonType,
-        presentmentDetails: PresentmentDetails,
-        shopperSessionId: String? = null,
+        presentmentDetails: PresentmentDetails
     ) {
 
         val params = AnalyticsEventParams(

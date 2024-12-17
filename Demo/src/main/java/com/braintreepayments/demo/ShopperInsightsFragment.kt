@@ -204,8 +204,7 @@ class ShopperInsightsFragment : BaseFragment() {
                                 ExperimentType.TEST,
                                 ButtonOrder.OTHER,
                                 PageType.HOMEPAGE
-                            ),
-                            shopperSessionId
+                            )
                         )
                     }
 
@@ -217,8 +216,7 @@ class ShopperInsightsFragment : BaseFragment() {
                                 ExperimentType.TEST,
                                 ButtonOrder.OTHER,
                                 PageType.HOMEPAGE
-                            ),
-                            shopperSessionId
+                            )
                         )
                     }
 
