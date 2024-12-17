@@ -46,7 +46,10 @@ class AnalyticsClient internal constructor(
             experiment = analyticsEventParams.experiment,
             paymentMethodsDisplayed = analyticsEventParams.paymentMethodsDisplayed,
             appSwitchUrl = analyticsEventParams.appSwitchUrl,
-            shopperSessionId = analyticsEventParams.shopperSessionId
+            shopperSessionId = analyticsEventParams.shopperSessionId,
+            buttonType = analyticsEventParams.buttonType,
+            buttonOrder = analyticsEventParams.buttonOrder,
+            pageType = analyticsEventParams.pageType
         )
         configurationLoader.loadConfiguration { result ->
             if (result is ConfigurationLoaderResult.Success) {
