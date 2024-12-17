@@ -175,7 +175,6 @@ class ShopperInsightsClient internal constructor(
         buttonType: ButtonType,
         presentmentDetails: PresentmentDetails
     ) {
-
         val params = AnalyticsEventParams(
             experiment = presentmentDetails.type?.formattedExperiment(),
             shopperSessionId = shopperSessionId,
