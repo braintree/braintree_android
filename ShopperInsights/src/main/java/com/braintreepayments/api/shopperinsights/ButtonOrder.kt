@@ -3,50 +3,50 @@ package com.braintreepayments.api.shopperinsights
 /**
  * The order or ranking in which payment buttons appear.
  */
-enum class ButtonOrder {
+enum class ButtonOrder(internal val stringValue: String) {
 
     /**
      * First place
      */
-    FIRST,
+    FIRST("1"),
 
     /**
      * Second place
      */
-    SECOND,
+    SECOND("2"),
 
     /**
      * Third place
      */
-    THIRD,
+    THIRD("3"),
 
     /**
      * Fourth place
      */
-    FOURTH,
+    FOURTH("4"),
 
     /**
      * Fifth place
      */
-    FIFTH,
+    FIFTH("5"),
 
     /**
      * Sixth place
      */
-    SIXTH,
+    SIXTH("6"),
 
     /**
      * Seventh place
      */
-    SEVENTH,
+    SEVENTH("7"),
 
     /**
      * Eighth place
      */
-    Eights,
+    Eighth("8"),
 
     /**
      * Greater than Eighth place
      */
-    OTHER
+    OTHER("other")
 }

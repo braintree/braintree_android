@@ -202,7 +202,7 @@ class ShopperInsightsFragment : BaseFragment() {
                             ButtonType.PAYPAL,
                             PresentmentDetails(
                                 ExperimentType.TEST,
-                                ButtonOrder.OTHER,
+                                ButtonOrder.FIRST,
                                 PageType.HOMEPAGE
                             )
                         )
