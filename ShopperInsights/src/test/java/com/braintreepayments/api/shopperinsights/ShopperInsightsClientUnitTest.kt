@@ -494,16 +494,56 @@ class ShopperInsightsClientUnitTest {
 
     @Test
     fun `test paypal selected analytics event`() {
-        sut.sendPayPalSelectedEvent()
-        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:paypal-selected",
-            AnalyticsEventParams(shopperSessionId = shopperSessionId)) }
+        // A Test type, with a button in the first position displayed in the mini cart.
+        val presentmentDetails = PresentmentDetails(
+            ExperimentType.TEST,
+            ButtonOrder.FIRST,
+            PageType.MINI_CART
+        )
+
+        val params = AnalyticsEventParams(
+            experiment = presentmentDetails?.type?.formattedExperiment(),
+            shopperSessionId = shopperSessionId,
+            buttonType = ButtonType.PAYPAL.toString(),
+            buttonOrder = presentmentDetails?.buttonOrder.toString()
+        )
+        sut.sendSelectedEvent(
+            ButtonType.PAYPAL,
+            PresentmentDetails(
+                ExperimentType.TEST,
+                ButtonOrder.FIRST,
+                PageType.MINI_CART
+            )
+        )
+        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:button-selected",
+            params) }
     }
 
     @Test
     fun `test venmo selected analytics event`() {
-        sut.sendVenmoSelectedEvent()
-        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:venmo-selected",
-            AnalyticsEventParams(shopperSessionId = shopperSessionId)) }
+        // A Test type, with a button in the first position displayed in the mini cart.
+        val presentmentDetails = PresentmentDetails(
+            ExperimentType.TEST,
+            ButtonOrder.FIRST,
+            PageType.MINI_CART
+        )
+
+        val params = AnalyticsEventParams(
+            experiment = presentmentDetails?.type?.formattedExperiment(),
+            shopperSessionId = shopperSessionId,
+            buttonType = ButtonType.VENMO.toString(),
+            buttonOrder = presentmentDetails?.buttonOrder.toString()
+        )
+        sut.sendSelectedEvent(
+            ButtonType.VENMO,
+            PresentmentDetails(
+                ExperimentType.TEST,
+                ButtonOrder.FIRST,
+                PageType.MINI_CART
+            )
+        )
+        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:button-selected",
+            params) }
     }
 
     @Test

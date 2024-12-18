@@ -10,11 +10,10 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.TokenizationKey
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_PRESENTED
+import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_SELECTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_FAILED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_STARTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_SUCCEEDED
-import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.PAYPAL_SELECTED
-import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.VENMO_SELECTED
 
 /**
  * Use [ShopperInsightsClient] to optimize your checkout experience
@@ -186,19 +185,23 @@ class ShopperInsightsClient internal constructor(
     }
 
     /**
-     * Call this method when the PayPal button has been selected/tapped by the buyer.
+     * Call this method when the PayPal button has been successfully displayed to the buyer.
      * This method sends analytics to help improve the Shopper Insights feature experience.
+     * @param buttonType Represents the tapped button type.
+     * @param presentmentDetails JSON string representing an experiment you want to run.
      */
-    fun sendPayPalSelectedEvent() {
-        braintreeClient.sendAnalyticsEvent(PAYPAL_SELECTED, analyticsParams)
-    }
+    fun sendSelectedEvent(
+        buttonType: ButtonType,
+        presentmentDetails: PresentmentDetails
+    ) {
+        val params = AnalyticsEventParams(
+            experiment = presentmentDetails.type?.formattedExperiment(),
+            shopperSessionId = shopperSessionId,
+            buttonType = buttonType.toString(),
+            buttonOrder = presentmentDetails.buttonOrder.toString()
+        )
 
-    /**
-     * Call this method when the Venmo button has been selected/tapped by the buyer.
-     * This method sends analytics to help improve the Shopper Insights feature experience.
-     */
-    fun sendVenmoSelectedEvent() {
-        braintreeClient.sendAnalyticsEvent(VENMO_SELECTED, analyticsParams)
+        braintreeClient.sendAnalyticsEvent(BUTTON_SELECTED, params)
     }
 
     /**
