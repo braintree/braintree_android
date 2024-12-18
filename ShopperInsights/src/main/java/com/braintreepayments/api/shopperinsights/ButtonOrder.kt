@@ -50,7 +50,7 @@ enum class ButtonOrder(internal val stringValue: String) {
      */
     OTHER("other");
 
-    fun getStringRepresentation(): String {
+    internal fun getStringRepresentation(): String {
         return stringValue
     }
 }

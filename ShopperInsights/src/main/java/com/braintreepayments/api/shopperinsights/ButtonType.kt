@@ -19,7 +19,7 @@ enum class ButtonType(internal val stringValue: String) {
      */
     OTHER("Other");
 
-    fun getStringRepresentation(): String {
+    internal fun getStringRepresentation(): String {
         return stringValue
     }
 }
