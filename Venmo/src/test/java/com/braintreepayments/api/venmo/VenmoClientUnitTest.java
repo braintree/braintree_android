@@ -960,9 +960,11 @@ public class VenmoClientUnitTest {
         assertTrue(result instanceof VenmoResult.Failure);
         assertEquals(error, ((VenmoResult.Failure) result).getError());
 
-        AnalyticsEventParams params = new AnalyticsEventParams();
-        params.setLinkType(LINK_TYPE);
-        params.setVaultRequest(true);
+        AnalyticsEventParams params = new AnalyticsEventParams(
+            null,
+            LINK_TYPE,
+            true
+        );
         verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, expectedVaultAnalyticsParams);
     }
 

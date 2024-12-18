@@ -387,10 +387,12 @@ class VenmoClient internal constructor(
 
     private val analyticsParams: AnalyticsEventParams
         get() {
-            val eventParameters = AnalyticsEventParams(appSwitchUrl = venmoRepository.venmoUrl.toString())
-            eventParameters.payPalContextId = payPalContextId
-            eventParameters.linkType = LINK_TYPE
-            eventParameters.isVaultRequest = isVaultRequest
+            val eventParameters = AnalyticsEventParams(
+                payPalContextId = payPalContextId,
+                linkType = LINK_TYPE,
+                isVaultRequest = isVaultRequest,
+                appSwitchUrl = venmoRepository.venmoUrl.toString(),
+            )
             return eventParameters
         }
 
