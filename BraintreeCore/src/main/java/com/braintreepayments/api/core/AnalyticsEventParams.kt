@@ -19,6 +19,9 @@ import androidx.annotation.RestrictTo
  * order of payment methods displayed to the shopper by the merchant.
  * @property shopperSessionId The Shopper Insights customer session ID created by a merchant's
  * server SDK or graphQL integration.
+ * @property buttonType buttonType Represents the tapped button type.
+ * @property buttonOrder The order or ranking in which payment buttons appear.
+ * @property pageType The page or view that a button is displayed on.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 data class AnalyticsEventParams @JvmOverloads constructor(

@@ -168,8 +168,10 @@ class ShopperInsightsClient internal constructor(
     /**
      * Call this method when the PayPal button has been successfully displayed to the buyer.
      * This method sends analytics to help improve the Shopper Insights feature experience.
-     * @param buttonType Represents the tapped button type.
-     * @param presentmentDetails JSON string representing an experiment you want to run.
+     * @param buttonType Type of button presented - PayPal, Venmo, or Other.
+     * @param presentmentDetails Detailed information, including button order, experiment type,
+     * and page type about the payment button that is sent to analytics to help improve the Shopper
+     * Insights feature experience.
      */
     fun sendPresentedEvent(
         buttonType: ButtonType,

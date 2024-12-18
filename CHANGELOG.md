@@ -7,11 +7,7 @@
     * Add `shopperSessionId` parameter to `ShopperInsightsClient`
 * BraintreePayPal
     * Add `shopperSessionId` to `PayPalCheckoutRequest` and `PayPalVaultRequest`
-    * Replace `sendPayPalPresentedEvent()` and `sendVenmoPresentedEvent()` with `sendPresentedEvent(for buttonType: ButtonType, presentmentDetails: PresentmentDetail, shopperSessionId: String)`
-      * Add values to the following parameters to `PresentmentDetails`:
-        * `ExperimentType`
-        * `PageType`
-        * `ButtonOrder`
+    * Replace `sendPayPalPresentedEvent()` and `sendVenmoPresentedEvent()` with `sendPresentedEvent()`
 
 ## 5.3.0 (2024-12-11)
 

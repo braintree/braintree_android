@@ -1,10 +1,13 @@
 package com.braintreepayments.api.shopperinsights
 
-enum class ExperimentType(val rawValue: String) {
+/**
+ * An ExperimentType that is either a control or test type.
+ */
+enum class ExperimentType(private val rawValue: String) {
     CONTROL("control"),
     TEST("test");
 
-    fun formattedExperiment(): String {
+    internal fun formattedExperiment(): String {
         return """
             [
                 { "exp_name" : "PaymentReady" }
