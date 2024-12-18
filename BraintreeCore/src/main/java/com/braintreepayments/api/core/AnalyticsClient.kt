@@ -46,7 +46,10 @@ class AnalyticsClient internal constructor(
             experiment = analyticsEventParams.experiment,
             paymentMethodsDisplayed = analyticsEventParams.paymentMethodsDisplayed,
             appSwitchUrl = analyticsEventParams.appSwitchUrl,
-            shopperSessionId = analyticsEventParams.shopperSessionId
+            shopperSessionId = analyticsEventParams.shopperSessionId,
+            buttonType = analyticsEventParams.buttonType,
+            buttonOrder = analyticsEventParams.buttonOrder,
+            pageType = analyticsEventParams.pageType
         )
         configurationLoader.loadConfiguration { result ->
             if (result is ConfigurationLoaderResult.Success) {
@@ -244,6 +247,9 @@ class AnalyticsClient internal constructor(
                 event.paymentMethodsDisplayed.ifEmpty { null })
             .putOpt(FPTI_KEY_URL, event.appSwitchUrl)
             .putOpt(FPTI_KEY_SHOPPER_SESSION_ID, event.shopperSessionId)
+            .putOpt(FPTI_KEY_BUTTON_TYPE, event.buttonType)
+            .putOpt(FPTI_KEY_BUTTON_POSITION, event.buttonOrder)
+            .putOpt(FPTI_KEY_PAGE_TYPE, event.pageType)
         return json.toString()
     }
 
@@ -298,6 +304,9 @@ class AnalyticsClient internal constructor(
         private const val FPTI_KEY_MERCHANT_PAYMENT_METHODS_DISPLAYED = "payment_methods_displayed"
         private const val FPTI_KEY_URL = "url"
         private const val FPTI_KEY_SHOPPER_SESSION_ID = "shopper_session_id"
+        private const val FPTI_KEY_BUTTON_TYPE = "button_type"
+        private const val FPTI_KEY_BUTTON_POSITION = "button_position"
+        private const val FPTI_KEY_PAGE_TYPE = "page_type"
 
         private const val FPTI_BATCH_KEY_VENMO_INSTALLED = "venmo_installed"
         private const val FPTI_BATCH_KEY_PAYPAL_INSTALLED = "paypal_installed"

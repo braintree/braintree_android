@@ -18,6 +18,11 @@ import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
 import com.braintreepayments.api.paypal.PayPalPaymentAuthResult
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
+import com.braintreepayments.api.shopperinsights.ButtonOrder
+import com.braintreepayments.api.shopperinsights.ButtonType
+import com.braintreepayments.api.shopperinsights.ExperimentType
+import com.braintreepayments.api.shopperinsights.PageType
+import com.braintreepayments.api.shopperinsights.PresentmentDetails
 import com.braintreepayments.api.shopperinsights.ShopperInsightsBuyerPhone
 import com.braintreepayments.api.shopperinsights.ShopperInsightsClient
 import com.braintreepayments.api.shopperinsights.ShopperInsightsRequest
@@ -193,17 +198,25 @@ class ShopperInsightsFragment : BaseFragment() {
                 is ShopperInsightsResult.Success -> {
                     if (result.response.isPayPalRecommended) {
                         payPalVaultButton.isEnabled = true
-                        shopperInsightsClient.sendPayPalPresentedEvent(
-                            """{"exp_name":"PaymentReady","treatment_name":"control"}""",
-                            listOf("PayPal", "Venmo", "other")
+                        shopperInsightsClient.sendPresentedEvent(
+                            ButtonType.PAYPAL,
+                            PresentmentDetails(
+                                ExperimentType.TEST,
+                                ButtonOrder.FIRST,
+                                PageType.HOMEPAGE
+                            )
                         )
                     }
 
                     if (result.response.isVenmoRecommended) {
                         venmoButton.isEnabled = true
-                        shopperInsightsClient.sendVenmoPresentedEvent(
-                            """{"exp_name":"PaymentReady","treatment_name":"test"}""",
-                            listOf("Venmo", "PayPal", "other")
+                        shopperInsightsClient.sendPresentedEvent(
+                            ButtonType.VENMO,
+                            PresentmentDetails(
+                                ExperimentType.TEST,
+                                ButtonOrder.OTHER,
+                                PageType.HOMEPAGE
+                            )
                         )
                     }
 
