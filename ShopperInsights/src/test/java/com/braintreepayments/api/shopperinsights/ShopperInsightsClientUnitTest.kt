@@ -449,8 +449,9 @@ class ShopperInsightsClientUnitTest {
         val params = AnalyticsEventParams(
             experiment = presentmentDetails?.type?.formattedExperiment(),
             shopperSessionId = shopperSessionId,
-            buttonType = ButtonType.PAYPAL.toString(),
-            buttonOrder = presentmentDetails?.buttonOrder.toString()
+            buttonType = ButtonType.PAYPAL.getStringRepresentation(),
+            buttonOrder = presentmentDetails?.buttonOrder?.getStringRepresentation(),
+            pageType = presentmentDetails?.pageType?.getStringRepresentation()
         )
         sut.sendPresentedEvent(
             ButtonType.PAYPAL,
@@ -477,8 +478,9 @@ class ShopperInsightsClientUnitTest {
         val params = AnalyticsEventParams(
             experiment = presentmentDetails?.type?.formattedExperiment(),
             shopperSessionId = shopperSessionId,
-            buttonType = ButtonType.VENMO.toString(),
-            buttonOrder = presentmentDetails?.buttonOrder.toString()
+            buttonType = ButtonType.VENMO.getStringRepresentation(),
+            buttonOrder = presentmentDetails?.buttonOrder?.getStringRepresentation(),
+            pageType = presentmentDetails?.pageType?.getStringRepresentation()
         )
         sut.sendPresentedEvent(
             ButtonType.VENMO,
