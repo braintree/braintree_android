@@ -182,7 +182,7 @@ class ShopperInsightsClient internal constructor(
             shopperSessionId = shopperSessionId,
             buttonType = buttonType.getStringRepresentation(),
             buttonOrder = presentmentDetails.buttonOrder.getStringRepresentation(),
-            pageType = presentmentDetails.pageType.toString()
+            pageType = presentmentDetails.pageType.getStringRepresentation()
         )
 
         braintreeClient.sendAnalyticsEvent(BUTTON_PRESENTED, params)
