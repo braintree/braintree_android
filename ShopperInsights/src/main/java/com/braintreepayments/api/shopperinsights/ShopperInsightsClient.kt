@@ -180,8 +180,9 @@ class ShopperInsightsClient internal constructor(
         val params = AnalyticsEventParams(
             experiment = presentmentDetails.type?.formattedExperiment(),
             shopperSessionId = shopperSessionId,
-            buttonType = buttonType.toString(),
-            buttonOrder = presentmentDetails.buttonOrder.toString()
+            buttonType = buttonType.getStringRepresentation(),
+            buttonOrder = presentmentDetails.buttonOrder.getStringRepresentation(),
+            pageType = presentmentDetails.pageType.toString()
         )
 
         braintreeClient.sendAnalyticsEvent(BUTTON_PRESENTED, params)

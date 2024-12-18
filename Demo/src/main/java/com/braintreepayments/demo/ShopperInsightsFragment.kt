@@ -203,7 +203,7 @@ class ShopperInsightsFragment : BaseFragment() {
                             PresentmentDetails(
                                 ExperimentType.TEST,
                                 ButtonOrder.FIRST,
-                                PageType.HOMEPAGE
+                                PageType.homepage
                             )
                         )
                     }
@@ -215,7 +215,7 @@ class ShopperInsightsFragment : BaseFragment() {
                             PresentmentDetails(
                                 ExperimentType.TEST,
                                 ButtonOrder.OTHER,
-                                PageType.HOMEPAGE
+                                PageType.homepage
                             )
                         )
                     }
