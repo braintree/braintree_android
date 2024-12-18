@@ -443,7 +443,7 @@ class ShopperInsightsClientUnitTest {
         val presentmentDetails = PresentmentDetails(
             ExperimentType.TEST,
             ButtonOrder.FIRST,
-            PageType.mini_cart
+            PageType.MINI_CART
         )
 
         val params = AnalyticsEventParams(
@@ -457,7 +457,7 @@ class ShopperInsightsClientUnitTest {
             PresentmentDetails(
                 ExperimentType.TEST,
                 ButtonOrder.FIRST,
-                PageType.mini_cart
+                PageType.MINI_CART
             )
         )
         verify { braintreeClient.sendAnalyticsEvent("shopper-insights:button-presented",
@@ -471,7 +471,7 @@ class ShopperInsightsClientUnitTest {
         val presentmentDetails = PresentmentDetails(
             ExperimentType.CONTROL,
             ButtonOrder.SECOND,
-            PageType.homepage
+            PageType.HOMEPAGE
         )
 
         val params = AnalyticsEventParams(
@@ -485,7 +485,7 @@ class ShopperInsightsClientUnitTest {
             PresentmentDetails(
                 ExperimentType.CONTROL,
                 ButtonOrder.SECOND,
-                PageType.homepage
+                PageType.HOMEPAGE
             )
         )
         verify { braintreeClient.sendAnalyticsEvent("shopper-insights:button-presented",

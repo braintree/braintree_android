@@ -52,7 +52,7 @@ enum class PageType(internal val stringValue: String) {
     /**
      * The mini cart
      */
-    MINI_CAR("mini_cart"),
+    MINI_CART("mini_cart"),
 
     /**
      * Some other page
