@@ -438,7 +438,6 @@ class ShopperInsightsClientUnitTest {
 
     @Test
     fun `test paypal button presented analytics event`() {
-
         // A Test type, with a button in the first position displayed in the mini cart.
         val presentmentDetails = PresentmentDetails(
             ExperimentType.TEST,
@@ -467,7 +466,6 @@ class ShopperInsightsClientUnitTest {
 
     @Test
     fun `test venmo button presented analytics event`() {
-
         // A Control type, with a button in the second position displayed on the homepage.
         val presentmentDetails = PresentmentDetails(
             ExperimentType.CONTROL,
@@ -490,22 +488,35 @@ class ShopperInsightsClientUnitTest {
                 PageType.HOMEPAGE
             )
         )
+
         verify { braintreeClient.sendAnalyticsEvent("shopper-insights:button-presented",
             params) }
     }
 
     @Test
     fun `test paypal selected analytics event`() {
-        sut.sendPayPalSelectedEvent()
-        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:paypal-selected",
-            AnalyticsEventParams(shopperSessionId = shopperSessionId)) }
+        val params = AnalyticsEventParams(
+            shopperSessionId = shopperSessionId,
+            buttonType = ButtonType.PAYPAL.getStringRepresentation()
+        )
+        sut.sendSelectedEvent(
+            ButtonType.PAYPAL
+        )
+        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:button-selected",
+            params) }
     }
 
     @Test
     fun `test venmo selected analytics event`() {
-        sut.sendVenmoSelectedEvent()
-        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:venmo-selected",
-            AnalyticsEventParams(shopperSessionId = shopperSessionId)) }
+        val params = AnalyticsEventParams(
+            shopperSessionId = shopperSessionId,
+            buttonType = ButtonType.VENMO.getStringRepresentation(),
+        )
+        sut.sendSelectedEvent(
+            ButtonType.VENMO,
+        )
+        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:button-selected",
+            params) }
     }
 
     @Test
