@@ -9,12 +9,11 @@ import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.TokenizationKey
+import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_FAILED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_STARTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_SUCCEEDED
-import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.PAYPAL_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.PAYPAL_SELECTED
-import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.VENMO_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.VENMO_SELECTED
 
 /**
@@ -169,23 +168,24 @@ class ShopperInsightsClient internal constructor(
     /**
      * Call this method when the PayPal button has been successfully displayed to the buyer.
      * This method sends analytics to help improve the Shopper Insights feature experience.
-     *
-     * @param experiment optional JSON string representing an experiment you want to run
-     * @param paymentMethodsDisplayed optional The list of available payment methods,
-     * rendered in the same order in which they are displayed
+     * @param buttonType Type of button presented - PayPal, Venmo, or Other.
+     * @param presentmentDetails Detailed information, including button order, experiment type,
+     * and page type about the payment button that is sent to analytics to help improve the Shopper
+     * Insights feature experience.
      */
-    fun sendPayPalPresentedEvent(
-        experiment: String? = null,
-        paymentMethodsDisplayed: List<String> = emptyList()
+    fun sendPresentedEvent(
+        buttonType: ButtonType,
+        presentmentDetails: PresentmentDetails
     ) {
-        braintreeClient.sendAnalyticsEvent(
-            PAYPAL_PRESENTED,
-            AnalyticsEventParams(
-                experiment = experiment,
-                paymentMethodsDisplayed = paymentMethodsDisplayed,
-                shopperSessionId = shopperSessionId
-            )
+        val params = AnalyticsEventParams(
+            experiment = presentmentDetails.type?.formattedExperiment(),
+            shopperSessionId = shopperSessionId,
+            buttonType = buttonType.getStringRepresentation(),
+            buttonOrder = presentmentDetails.buttonOrder.getStringRepresentation(),
+            pageType = presentmentDetails.pageType.getStringRepresentation()
         )
+
+        braintreeClient.sendAnalyticsEvent(BUTTON_PRESENTED, params)
     }
 
     /**
@@ -194,28 +194,6 @@ class ShopperInsightsClient internal constructor(
      */
     fun sendPayPalSelectedEvent() {
         braintreeClient.sendAnalyticsEvent(PAYPAL_SELECTED, analyticsParams)
-    }
-
-    /**
-     * Call this method when the Venmo button has been successfully displayed to the buyer.
-     * This method sends analytics to help improve the Shopper Insights feature experience.
-     *
-     * @param experiment optional JSON string representing an experiment you want to run
-     * @param paymentMethodsDisplayed optional The list of available payment methods,
-     * rendered in the same order in which they are displayed
-     */
-    fun sendVenmoPresentedEvent(
-        experiment: String? = null,
-        paymentMethodsDisplayed: List<String> = emptyList()
-    ) {
-        braintreeClient.sendAnalyticsEvent(
-            VENMO_PRESENTED,
-            AnalyticsEventParams(
-                experiment = experiment,
-                paymentMethodsDisplayed = paymentMethodsDisplayed,
-                shopperSessionId = shopperSessionId
-            )
-        )
     }
 
     /**
