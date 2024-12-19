@@ -188,7 +188,7 @@ class ShopperInsightsClient internal constructor(
     }
 
     /**
-     * Call this method when the PayPal, Venmo or Other button has been successfully displayed to the buyer.
+     * Call this method when the PayPal, Venmo or Other button has been selected/tapped by the buyer.
      * This method sends analytics to help improve the Shopper Insights feature experience.
      * @param buttonType Type of button presented - PayPal, Venmo, or Other.
      */
