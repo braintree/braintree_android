@@ -8,6 +8,7 @@
 * BraintreePayPal
     * Add `shopperSessionId` to `PayPalCheckoutRequest` and `PayPalVaultRequest`
     * Replace `sendPayPalPresentedEvent()` and `sendVenmoPresentedEvent()` with `sendPresentedEvent()`
+    * Replace `sendPayPalSelectedEvent()` and `sendVenmoSelectedEvent()` with `sendSelectedEvent()`
 
 ## 5.3.0 (2024-12-11)
 
