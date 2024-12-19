@@ -191,20 +191,13 @@ class ShopperInsightsClient internal constructor(
      * Call this method when the PayPal, Venmo or Other button has been successfully displayed to the buyer.
      * This method sends analytics to help improve the Shopper Insights feature experience.
      * @param buttonType Type of button presented - PayPal, Venmo, or Other.
-     * @param presentmentDetails Detailed information, including button order, experiment type,
-     * and page type about the payment button that is sent to analytics to help improve the Shopper
-     * Insights feature experience.
      */
     fun sendSelectedEvent(
         buttonType: ButtonType,
-        presentmentDetails: PresentmentDetails
     ) {
         val params = AnalyticsEventParams(
-            experiment = presentmentDetails.type?.formattedExperiment(),
             shopperSessionId = shopperSessionId,
             buttonType = buttonType.getStringRepresentation(),
-            buttonOrder = presentmentDetails.buttonOrder.getStringRepresentation(),
-            pageType = presentmentDetails.pageType.getStringRepresentation()
         )
 
         braintreeClient.sendAnalyticsEvent(BUTTON_SELECTED, params)

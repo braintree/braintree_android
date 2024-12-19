@@ -237,12 +237,7 @@ class ShopperInsightsFragment : BaseFragment() {
 
     private fun launchPayPalVault() {
         shopperInsightsClient.sendSelectedEvent(
-            ButtonType.PAYPAL,
-            PresentmentDetails(
-                ExperimentType.CONTROL,
-                ButtonOrder.FIRST,
-                PageType.ORDER_CONFIRMATION
-            )
+            ButtonType.PAYPAL
         )
 
         payPalClient.createPaymentAuthRequest(
@@ -282,12 +277,7 @@ class ShopperInsightsFragment : BaseFragment() {
 
     private fun launchVenmo() {
         shopperInsightsClient.sendSelectedEvent(
-            ButtonType.VENMO,
-            PresentmentDetails(
-                ExperimentType.TEST,
-                ButtonOrder.THIRD,
-                PageType.ORDER_REVIEW
-            )
+            ButtonType.VENMO
         )
 
         val venmoRequest = VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE)
