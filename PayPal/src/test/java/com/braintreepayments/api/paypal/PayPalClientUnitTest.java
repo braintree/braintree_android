@@ -9,8 +9,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static java.util.Collections.emptyList;
-
 import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
@@ -120,7 +118,7 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
             PayPalAnalytics.TOKENIZATION_STARTED,
-            new AnalyticsEventParams(null, null, true, null, null, null, null, Collections.emptyList(), null, "test-shopper-session-id")
+            new AnalyticsEventParams(null, null, true, null, null, null, null, null, "test-shopper-session-id")
         );
     }
 
@@ -639,7 +637,6 @@ public class PayPalClientUnitTest {
                 null,
                 null,
                 null,
-                emptyList(),
                 "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN&switch_initiated_time=17166111926211"
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_SUCCEEDED, appSwitchParams);
@@ -681,7 +678,6 @@ public class PayPalClientUnitTest {
                 null,
                 null,
                 null,
-                emptyList(),
                 "https://some-scheme/onetouch/v1/cancel?token=SOME-BA&switch_initiated_time=17166111926211"
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, appSwitchParams);
