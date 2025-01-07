@@ -62,6 +62,7 @@ public class PayPalRequestFactory {
             postalAddress.setStreetAddress("123 Fake Street");
             postalAddress.setExtendedAddress("Floor A");
             postalAddress.setLocality("San Francisco");
+            postalAddress.setPostalCode("12345");
             postalAddress.setRegion("CA");
             postalAddress.setCountryCodeAlpha2("US");
 
