@@ -44,7 +44,6 @@ class AnalyticsClient internal constructor(
             endTime = analyticsEventParams.endTime,
             endpoint = analyticsEventParams.endpoint,
             experiment = analyticsEventParams.experiment,
-            paymentMethodsDisplayed = analyticsEventParams.paymentMethodsDisplayed,
             appSwitchUrl = analyticsEventParams.appSwitchUrl,
             shopperSessionId = analyticsEventParams.shopperSessionId,
             buttonType = analyticsEventParams.buttonType,
@@ -243,8 +242,6 @@ class AnalyticsClient internal constructor(
             .putOpt(FPTI_KEY_END_TIME, event.endTime)
             .putOpt(FPTI_KEY_ENDPOINT, event.endpoint)
             .putOpt(FPTI_KEY_MERCHANT_EXPERIMENT, event.experiment)
-            .putOpt(FPTI_KEY_MERCHANT_PAYMENT_METHODS_DISPLAYED,
-                event.paymentMethodsDisplayed.ifEmpty { null })
             .putOpt(FPTI_KEY_URL, event.appSwitchUrl)
             .putOpt(FPTI_KEY_SHOPPER_SESSION_ID, event.shopperSessionId)
             .putOpt(FPTI_KEY_BUTTON_TYPE, event.buttonType)
