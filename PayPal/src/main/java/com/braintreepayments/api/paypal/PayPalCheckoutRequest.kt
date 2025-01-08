@@ -54,6 +54,8 @@ import org.json.JSONObject
  *
  * @property shouldOfferPayLater Offers PayPal Pay Later if the customer qualifies. Defaults to
  * false.
+ *
+ * @property contactInformation Contact information of the recipient for the order
  */
 @Parcelize
 class PayPalCheckoutRequest @JvmOverloads constructor(
