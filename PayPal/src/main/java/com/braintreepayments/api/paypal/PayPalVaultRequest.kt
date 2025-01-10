@@ -66,7 +66,7 @@ class PayPalVaultRequest
 ) {
 
     @Throws(JSONException::class)
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "CyclomaticComplexMethod")
     override fun createRequestBody(
         configuration: Configuration?,
         authorization: Authorization?,
