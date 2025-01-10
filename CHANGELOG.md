@@ -3,7 +3,7 @@
 ## unreleased
 
 * PayPal
-  * Add `shippingCallbackURL` to `PayPalCheckoutRequest`
+  * Add `shippingCallbackUrl` to `PayPalCheckoutRequest`
 
 ## 5.3.0 (2024-12-11)
 
