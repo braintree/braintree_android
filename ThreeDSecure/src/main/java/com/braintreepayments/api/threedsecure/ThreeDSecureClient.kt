@@ -286,7 +286,7 @@ class ThreeDSecureClient internal constructor(
         if (threeDSecureVersion?.startsWith("2.") == false) {
             val threeDSecureV1UnsupportedMessage =
                 "3D Secure v1 is deprecated and no longer supported. See " +
-                    "https://developer.paypal.com/braintree/docs/guides/3d-secure/client-side/android/v4 " +
+                    "https://developer.paypal.com/braintree/docs/guides/3d-secure/client-side/android/v5 " +
                     "for more information."
             callbackCreatePaymentAuthFailure(
                 callback,

@@ -142,7 +142,7 @@ class VenmoLauncher internal constructor(
             return BraintreeException(
                 "AndroidManifest.xml is incorrectly configured or another app defines the same " +
                     "browser switch url as this app. See https://developer.paypal.com/" +
-                    "braintree/docs/guides/client-sdk/setup/android/v4#browser-switch-setup " +
+                    "braintree/docs/guides/client-sdk/setup/android/v5#browser-switch-setup " +
                     "for the correct configuration: " + exception.message
             )
         }

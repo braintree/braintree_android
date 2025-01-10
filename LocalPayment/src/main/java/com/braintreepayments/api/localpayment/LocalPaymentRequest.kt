@@ -32,7 +32,7 @@ import org.json.JSONObject
  *       the supported country codes for a given local payment type listed.
  *       For local payments supported in multiple countries, this value
  *       may determine which banks are presented to the customer.
- *       @see [Supported Country Codes](https://developer.paypal.com/braintree/docs/guides/local-payment-methods/client-side-custom/android/v4.invoke-payment-flow)
+ *       @see [Supported Country Codes](https://developer.paypal.com/braintree/docs/guides/local-payment-methods/client-side-custom/android/v5.invoke-payment-flow)
  * @property phone Optional - Phone number of the customer.
  * @property isShippingAddressRequired - Indicates whether or not the payment needs to be shipped.
  *                                    For digital goods, this should be false. Defaults to false.

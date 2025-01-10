@@ -25,7 +25,7 @@ internal class ConfigurationLoader(
         val authorization = merchantRepository.authorization
         if (authorization is InvalidAuthorization) {
             val clientSDKSetupURL =
-                "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization"
+                "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v5#initialization"
             val message = "Valid authorization required. See $clientSDKSetupURL for more info."
 
             // NOTE: timing information is null when configuration comes from cache

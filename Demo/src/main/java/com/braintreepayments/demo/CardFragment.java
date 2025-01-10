@@ -81,10 +81,10 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         super.onCreate(onSaveInstanceState);
 
         americanExpressClient = new AmericanExpressClient(requireContext(), super.getAuthStringArg());
-        cardClient = new CardClient(requireContext(), super.getAuthStringArg());
-        threeDSecureClient = new ThreeDSecureClient(requireContext(), super.getAuthStringArg());
+        cardClient = new CardClient(requireContext(), "BORKED");
+        threeDSecureClient = new ThreeDSecureClient(requireContext(), "BORKED");
 
-        dataCollector = new DataCollector(requireContext(), super.getAuthStringArg());
+        dataCollector = new DataCollector(requireContext(), "BORKED");
 
         if (onSaveInstanceState != null) {
             threeDSecureRequested = onSaveInstanceState.getBoolean(EXTRA_THREE_D_SECURE_REQUESTED);

@@ -19,7 +19,7 @@ import org.json.JSONException
 import org.json.JSONObject
 
 /**
- * Used to tokenize PayPal accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4)
+ * Used to tokenize PayPal accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v5)
  */
 class PayPalClient internal constructor(
     private val braintreeClient: BraintreeClient,
@@ -375,7 +375,7 @@ class PayPalClient internal constructor(
         private fun createPayPalError(): Exception {
             return BraintreeException(
                 "PayPal is not enabled. " +
-                    "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
+                    "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v5 " +
                     "for more information."
             )
         }
