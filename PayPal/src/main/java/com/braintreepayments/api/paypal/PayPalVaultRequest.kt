@@ -90,7 +90,9 @@ class PayPalVaultRequest
             parameters.put(DESCRIPTION_KEY, billingAgreementDescription)
         }
 
-        parameters.putOpt(PAYER_EMAIL_KEY, userAuthenticationEmail)
+        if (!userAuthenticationEmail.isNullOrEmpty()) {
+            parameters.put(PAYER_EMAIL_KEY, userAuthenticationEmail)
+        }
 
         userPhoneNumber?.let { parameters.put(PHONE_NUMBER_KEY, it.toJson()) }
 
