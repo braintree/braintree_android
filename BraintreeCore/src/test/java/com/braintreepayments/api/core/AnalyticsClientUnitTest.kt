@@ -40,10 +40,14 @@ class AnalyticsClientUnitTest {
     private lateinit var workManager: WorkManager
     private lateinit var analyticsDatabase: AnalyticsDatabase
     private lateinit var analyticsEventBlobDao: AnalyticsEventBlobDao
+    private val merchantRepository: MerchantRepository = mockk(relaxed = true)
+
+    private lateinit var configurationLoader: ConfigurationLoader
 
     private lateinit var sut: AnalyticsClient
 
     private var timestamp: Long = 0
+    private val returnUrlScheme = "com.braintreepayments.demo.braintree"
 
     @Before
     @Throws(InvalidArgumentException::class, GeneralSecurityException::class, IOException::class)
@@ -67,17 +71,25 @@ class AnalyticsClientUnitTest {
 
         every { analyticsDatabase.analyticsEventBlobDao() } returns analyticsEventBlobDao
         every { analyticsParamRepository.sessionId } returns sessionId
-
+        every { analyticsParamRepository.sessionId } returns sessionId
         every { time.currentTime } returns 123
+        every { merchantRepository.authorization } returns authorization
+        every { merchantRepository.applicationContext } returns context
+        every { merchantRepository.returnUrlScheme } returns returnUrlScheme
+
+        configurationLoader = MockkConfigurationLoaderBuilder()
+            .configuration(configuration)
+            .build()
 
         sut = AnalyticsClient(
-            context = context,
             httpClient = httpClient,
             analyticsDatabase = analyticsDatabase,
             workManager = workManager,
             deviceInspector = deviceInspector,
             analyticsParamRepository = analyticsParamRepository,
-            time = time
+            time = time,
+            configurationLoader = configurationLoader,
+            merchantRepository = merchantRepository
         )
     }
 
@@ -93,9 +105,7 @@ class AnalyticsClientUnitTest {
             )
         } returns mockk()
 
-        val event = AnalyticsEvent(eventName, timestamp = 123)
-
-        sut.sendEvent(configuration, event, integration, authorization)
+        sut.sendEvent(eventName, AnalyticsEventParams(appSwitchUrl = returnUrlScheme))
 
         val workSpec = workRequestSlot.captured.workSpec
         assertEquals(AnalyticsWriteToDbWorker::class.java.name, workSpec.workerClassName)
@@ -107,7 +117,8 @@ class AnalyticsClientUnitTest {
           "event_name": "sample-event-name",
           "t": 123,
           "is_vault": false,
-          "tenant_name": "Braintree"
+          "tenant_name": "Braintree",
+          "url": "$returnUrlScheme"
         }
         """
         val actualJSON = workSpec.input.getString(WORK_INPUT_KEY_ANALYTICS_JSON)!!
@@ -132,7 +143,14 @@ class AnalyticsClientUnitTest {
             timestamp = 456
         )
 
-        sut.sendEvent(configuration, event, integration, authorization)
+        sut.sendEvent(
+            eventName = eventName,
+            analyticsEventParams = AnalyticsEventParams(
+                payPalContextId = "fake-paypal-context-id",
+                linkType = "fake-link-type",
+                isVaultRequest = true,
+            )
+        )
 
         val workSpec = workRequestSlot.captured.workSpec
         assertEquals(30000, workSpec.initialDelay)
@@ -203,8 +221,14 @@ class AnalyticsClientUnitTest {
             .putString(AnalyticsClient.WORK_INPUT_KEY_SESSION_ID, sessionId)
             .putString(AnalyticsClient.WORK_INPUT_KEY_INTEGRATION, integration.stringValue)
             .build()
-        val sut =
-            AnalyticsClient(context, httpClient, analyticsDatabase, workManager, deviceInspector)
+        val sut = AnalyticsClient(
+            httpClient = httpClient,
+            analyticsDatabase = analyticsDatabase,
+            workManager = workManager,
+            deviceInspector = deviceInspector,
+            configurationLoader = configurationLoader,
+            merchantRepository = merchantRepository
+        )
         sut.performAnalyticsUpload(inputData)
 
         // or confirmVerified(httpClient)
@@ -512,8 +536,7 @@ class AnalyticsClientUnitTest {
             deviceInspector.getDeviceMetadata(context, configuration, sessionId, integration)
         } returns metadata
 
-        val event = AnalyticsEvent(eventName, timestamp)
-        sut.sendEvent(configuration, event, integration, authorization)
+        sut.sendEvent(eventName)
 
         sut.reportCrash(context, configuration, integration, null)
 
@@ -523,7 +546,7 @@ class AnalyticsClientUnitTest {
 
     @Test
     fun `sendEvent enqueues work to upload analytic events with sessionId in the name`() {
-        sut.sendEvent(configuration, AnalyticsEvent("event-name", timestamp), integration, authorization)
+        sut.sendEvent("event-name")
 
         verify {
             workManager.enqueueUniqueWork(

@@ -375,8 +375,9 @@ public class LocalPaymentClientUnitTest {
         sut.createPaymentAuthRequest(getIdealLocalPaymentRequest(), localPaymentAuthCallback);
 
         verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED, new AnalyticsEventParams());
-        AnalyticsEventParams params = new AnalyticsEventParams();
-        params.setPayPalContextId("some-paypal-context-id");
+        AnalyticsEventParams params = new AnalyticsEventParams(
+            "some-paypal-context-id"
+        );
         verify(braintreeClient).sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED, params);
     }
 

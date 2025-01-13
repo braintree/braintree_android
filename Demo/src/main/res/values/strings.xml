@@ -93,6 +93,8 @@
     <string name="venmo">Venmo</string>
     <string name="vault_venmo">Vault Venmo</string>
     <string name="vault_venmo_summary">Vault Venmo payment methods on creation. Requires a customer id to be set.</string>
+    <string name="use_app_links_return">Use App Link</string>
+    <string name="use_app_links_return_summary">Use merchant App Link, instead of deeplink, when redirecting back from Venmo flow.</string>
     <string name="amex">Amex</string>
     <string name="amex_rewards_balance">Get Rewards Balance</string>
     <string name="amex_rewards_balance_summary">Fetch Amex Rewards Balance on Card Tokenization. Requires a Client Token and relevant configurations.</string>

@@ -95,28 +95,6 @@ public class SynchronousHttpClientUnitTest {
     }
 
     @Test
-    public void request_whenConnectionIsHttps_usesDefaultSSLSocketFactoryWhenNoFactoryIsSet()
-            throws Exception {
-        final HttpRequest httpRequest = spy(new HttpRequest()
-                .path("sample/path")
-                .method("GET")
-                .baseUrl("https://www.sample.com"));
-
-        URL url = mock(URL.class);
-        when(httpRequest.getURL()).thenReturn(url);
-
-        HttpsURLConnection connection = mock(HttpsURLConnection.class);
-        when(url.openConnection()).thenReturn(connection);
-
-        when(connection.getResponseCode()).thenReturn(200);
-        when(httpResponseParser.parse(200, connection)).thenReturn("http_ok");
-
-        SynchronousHttpClient sut = new SynchronousHttpClient(null, httpResponseParser);
-        sut.request(httpRequest);
-        verify(connection).setSSLSocketFactory(any(TLSSocketFactory.class));
-    }
-
-    @Test
     public void request_whenConnectionIsHttps_setsSSLSocketFactory() throws Exception {
         final HttpRequest httpRequest = spy(new HttpRequest()
                 .path("sample/path")
@@ -135,36 +113,6 @@ public class SynchronousHttpClientUnitTest {
         SynchronousHttpClient sut = new SynchronousHttpClient(sslSocketFactory, httpResponseParser);
         sut.request(httpRequest);
         verify(connection).setSSLSocketFactory(sslSocketFactory);
-    }
-
-    @Test
-    public void request_whenConnectionIsHttps_andSSLSocketFactoryIsNull_throwsSSLException()
-            throws Exception {
-        final HttpRequest httpRequest = spy(new HttpRequest()
-                .path("sample/path")
-                .method("GET")
-                .baseUrl("https://www.sample.com"));
-
-        URL url = mock(URL.class);
-        when(httpRequest.getURL()).thenReturn(url);
-
-        HttpsURLConnection connection = mock(HttpsURLConnection.class);
-        when(url.openConnection()).thenReturn(connection);
-
-        when(connection.getResponseCode()).thenReturn(200);
-        when(httpResponseParser.parse(200, connection)).thenReturn("http_ok");
-
-        final SynchronousHttpClient sut = new SynchronousHttpClient(null, httpResponseParser);
-        sut.setSSLSocketFactory(null);
-        SSLException exception = assertThrows(SSLException.class, new ThrowingRunnable() {
-            @Override
-            public void run() throws Throwable {
-                sut.request(httpRequest);
-            }
-        });
-
-        assertEquals(exception.getMessage(),
-                "SSLSocketFactory was not set or failed to initialize");
     }
 
     @Test

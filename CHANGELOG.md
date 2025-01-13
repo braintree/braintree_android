@@ -3,11 +3,26 @@
 ## unreleased
 
 * PayPal
-    * Add PayPal App Switch for one time checkout flow (BETA)
-        * Add `enablePayPalAppSwitch` property to `PayPalCheckoutRequest` for App Switch support 
-        * Require `PayPalCheckoutRequest.userAuthenticationEmail` for App Switch support
-        * Require `PayPalClient.appLinkReturnUrl` for App Switch support
-        * **Note:** This feature is currently in beta and may change or be removed in future releases.
+  * Add PayPal App Switch for one time checkout flow (BETA)
+    * Add `enablePayPalAppSwitch` property to `PayPalCheckoutRequest` for App Switch support 
+    * Require `PayPalCheckoutRequest.userAuthenticationEmail` for App Switch support
+    * Require `PayPalClient.appLinkReturnUrl` for App Switch support
+    * **Note:** This feature is currently in beta and may change or be removed in future releases.
+  * Fix bug to ensure that `PayPalVaultRequest.userAuthenticationEmail` is not sent as an empty string
+  
+## 5.3.0 (2024-12-11)
+
+* PayPal
+  * Add `deepLinkFallbackUrlScheme` to `PayPalClient` constructor params for supporting deep link fallback
+  * Send `url` in `event_params` for App Switch events to PayPal's analytics service (FPTI)
+* LocalPayment
+  * Make LocalPaymentAuthRequestParams public (fixes #1207)
+* ThreeDSecure
+  * Add `ThreeDSecureRequest.requestorAppUrl`
+* Venmo
+  * Add `VenmoClient` constructor with `appLinkReturnUri` argument to use App Links when redirecting back from the Venmo flow
+  * Add `deepLinkFallbackUrlScheme` to `VenmoClient` constructor params for supporting deep link fallback
+  * Deprecate `VenmoClient` constructor with `returnUrlScheme` argument
 
 ## 5.2.0 (2024-10-30)
 

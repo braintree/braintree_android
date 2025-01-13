@@ -10,7 +10,6 @@ import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.ManifestValidator
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
-import com.braintreepayments.api.sharedutils.Time
 import com.braintreepayments.api.testutils.Fixtures
 import io.mockk.*
 import org.json.JSONException
@@ -319,32 +318,12 @@ class BraintreeClientUnitTest {
             .configuration(configuration)
             .build()
 
-        val time: Time = mockk()
-        every { time.currentTime } returns 123
-
-        val sut = createBraintreeClient(configurationLoader, time)
-        sut.sendAnalyticsEvent("event.started")
-
-        verify {
-            analyticsClient.sendEvent(
-                configuration,
-                match { it.name == "event.started" && it.timestamp == 123L },
-                IntegrationType.CUSTOM,
-                authorization
-            )
-        }
-    }
-
-    @Test
-    fun sendAnalyticsEvent_whenConfigurationLoadFails_doesNothing() {
-        val configurationLoader = MockkConfigurationLoaderBuilder()
-            .configurationError(Exception("error"))
-            .build()
-
         val sut = createBraintreeClient(configurationLoader)
         sut.sendAnalyticsEvent("event.started")
 
-        verify { analyticsClient wasNot Called }
+        verify {
+            analyticsClient.sendEvent("event.started")
+        }
     }
 
     @Test
@@ -416,10 +395,10 @@ class BraintreeClientUnitTest {
 
         val callbackSlot = slot<ConfigurationLoaderCallback>()
         verify {
-            configurationLoader.loadConfiguration(authorization, capture(callbackSlot))
+            configurationLoader.loadConfiguration(capture(callbackSlot))
         }
 
-        callbackSlot.captured.onResult(configuration, null, null)
+        callbackSlot.captured.onResult(ConfigurationLoaderResult.Success(configuration))
 
         verify {
             analyticsClient.reportCrash(
@@ -449,7 +428,6 @@ class BraintreeClientUnitTest {
 
     private fun createBraintreeClient(
         configurationLoader: ConfigurationLoader = mockk(),
-        time: Time = Time(),
         appLinkReturnUri: Uri? = Uri.parse("https://example.com"),
         merchantRepository: MerchantRepository = MerchantRepository.instance
     ) = BraintreeClient(
@@ -463,7 +441,6 @@ class BraintreeClientUnitTest {
         analyticsClient = analyticsClient,
         manifestValidator = manifestValidator,
         configurationLoader = configurationLoader,
-        time = time,
         merchantRepository = merchantRepository,
     )
 }

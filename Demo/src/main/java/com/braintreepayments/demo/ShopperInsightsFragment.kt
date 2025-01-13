@@ -69,8 +69,9 @@ class ShopperInsightsFragment : BaseFragment() {
 
         venmoClient = VenmoClient(requireContext(), super.getAuthStringArg(), null)
         payPalClient = PayPalClient(
-            requireContext(), super.getAuthStringArg(),
-            Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/")
+            requireContext(),
+            super.getAuthStringArg(),
+            Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"),
         )
 
         return inflater.inflate(R.layout.fragment_shopping_insights, container, false)
@@ -192,16 +193,16 @@ class ShopperInsightsFragment : BaseFragment() {
                     if (result.response.isPayPalRecommended) {
                         payPalVaultButton.isEnabled = true
                         shopperInsightsClient.sendPayPalPresentedEvent(
-                            "dummy_paypal_presented_experiment",
-                            listOf("PayPal, Apple Pay, Google Pay")
+                            """{"exp_name":"PaymentReady","treatment_name":"control"}""",
+                            listOf("PayPal", "Venmo", "other")
                         )
                     }
 
                     if (result.response.isVenmoRecommended) {
                         venmoButton.isEnabled = true
                         shopperInsightsClient.sendVenmoPresentedEvent(
-                            "dummy_venmo_presented_experiment",
-                            listOf("Apple Pay, Venmo, Google Pay")
+                            """{"exp_name":"PaymentReady","treatment_name":"test"}""",
+                            listOf("Venmo", "PayPal", "other")
                         )
                     }
 

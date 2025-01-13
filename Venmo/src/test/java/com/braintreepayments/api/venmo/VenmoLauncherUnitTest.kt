@@ -1,14 +1,18 @@
 package com.braintreepayments.api.venmo
 
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.BrowserSwitchStartResult
+import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import junit.framework.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
@@ -23,6 +27,8 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class VenmoLauncherUnitTest {
     private val browserSwitchClient: BrowserSwitchClient = mockk(relaxed = true)
+    private val venmoRepository: VenmoRepository = mockk(relaxed = true)
+    private val analyticsClient: AnalyticsClient = mockk(relaxed = true)
     private val activity: ComponentActivity = mockk(relaxed = true)
     private val paymentAuthRequestParams: VenmoPaymentAuthRequestParams = mockk(relaxed = true)
     private val intent: Intent = mockk(relaxed = true)
@@ -31,10 +37,26 @@ class VenmoLauncherUnitTest {
 
     private lateinit var sut: VenmoLauncher
 
+    private val appSwitchUrl = Uri.parse("http://example.com")
+
     @Before
     fun setup() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
-        sut = VenmoLauncher(browserSwitchClient)
+        every { venmoRepository.venmoUrl } returns appSwitchUrl
+
+        sut = VenmoLauncher(browserSwitchClient, venmoRepository, lazy { analyticsClient })
+    }
+
+    @Test
+    fun `when launch is invoked, app switch started analytics event is sent`() {
+        sut.launch(activity, VenmoPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        verify {
+            analyticsClient.sendEvent(
+                eventName = VenmoAnalytics.APP_SWITCH_STARTED,
+                analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
+            )
+        }
     }
 
     @Test
@@ -42,14 +64,28 @@ class VenmoLauncherUnitTest {
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
         every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
 
-        val pendingRequest =
-            sut.launch(activity, VenmoPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+        val pendingRequest = sut.launch(activity, VenmoPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
 
         assertTrue(pendingRequest is VenmoPendingRequest.Started)
         assertEquals(
             startedPendingRequest.pendingRequest,
             (pendingRequest as VenmoPendingRequest.Started).pendingRequestString
         )
+    }
+
+    @Test
+    fun `when launch is called and Started is returned, app switch succeeded analytics event is sent`() {
+        val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
+        every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
+
+        sut.launch(activity, VenmoPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        verify {
+            analyticsClient.sendEvent(
+                eventName = VenmoAnalytics.APP_SWITCH_SUCCEEDED,
+                analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
+            )
+        }
     }
 
     @Test
@@ -67,7 +103,22 @@ class VenmoLauncherUnitTest {
     }
 
     @Test
-    @Throws(BrowserSwitchException::class)
+    fun `when launch is called and Failure is returned, app switch failed analytics event is sent`() {
+        every { paymentAuthRequestParams.browserSwitchOptions } returns options
+        every { browserSwitchClient.start(eq(activity), eq(options)) } returns
+            BrowserSwitchStartResult.Failure(BrowserSwitchException("error"))
+
+        sut.launch(activity, VenmoPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        verify {
+            analyticsClient.sendEvent(
+                eventName = VenmoAnalytics.APP_SWITCH_FAILED,
+                analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
+            )
+        }
+    }
+
+    @Test
     fun `launch when device cant perform browser switch returns pending request failure`() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         val exception = BrowserSwitchException("browser switch error")
@@ -93,6 +144,35 @@ class VenmoLauncherUnitTest {
     }
 
     @Test
+    @Throws(BrowserSwitchException::class)
+    fun `when launch is called with a manifest error, app switch failed analytics event is sent`() {
+        every { paymentAuthRequestParams.browserSwitchOptions } returns options
+        every { browserSwitchClient.assertCanPerformBrowserSwitch(eq(activity), eq(options)) } throws
+            BrowserSwitchException("browser switch error")
+
+        sut.launch(activity, VenmoPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        verify {
+            analyticsClient.sendEvent(
+                eventName = VenmoAnalytics.APP_SWITCH_FAILED,
+                analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
+            )
+        }
+    }
+
+    @Test
+    fun `when handleReturnToApp is invoked, app switch started analytics event is sent`() {
+        sut.handleReturnToApp(VenmoPendingRequest.Started(pendingRequestString), intent)
+
+        verify {
+            analyticsClient.sendEvent(
+                eventName = VenmoAnalytics.HANDLE_RETURN_STARTED,
+                analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
+            )
+        }
+    }
+
+    @Test
     fun `handleReturnToApp when result exists returns result`() {
         val browserSwitchFinalResult = mockk<BrowserSwitchFinalResult.Success>()
         every {
@@ -114,6 +194,21 @@ class VenmoLauncherUnitTest {
     }
 
     @Test
+    fun `when handleReturnToApp is called with Success, handle return succeeded analytics event is sent`() {
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            mockk<BrowserSwitchFinalResult.Success>()
+
+        sut.handleReturnToApp(VenmoPendingRequest.Started(pendingRequestString), intent)
+
+        verify {
+            analyticsClient.sendEvent(
+                eventName = VenmoAnalytics.HANDLE_RETURN_SUCCEEDED,
+                analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
+            )
+        }
+    }
+
+    @Test
     fun `handleReturnToApp when result does not exist returns null`() {
         every {
             browserSwitchClient.completeRequest(
@@ -128,6 +223,36 @@ class VenmoLauncherUnitTest {
         )
 
         assertTrue(paymentAuthResult is VenmoPaymentAuthResult.NoResult)
+    }
+
+    @Test
+    fun `when handleReturnToApp is called without a result, handle return no result analytics event is sent`() {
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            BrowserSwitchFinalResult.NoResult
+
+        sut.handleReturnToApp(VenmoPendingRequest.Started(pendingRequestString), intent)
+
+        verify {
+            analyticsClient.sendEvent(
+                eventName = VenmoAnalytics.HANDLE_RETURN_NO_RESULT,
+                analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
+            )
+        }
+    }
+
+    @Test
+    fun `when handleReturnToApp is called with a failure, handle return failed analytics event is sent`() {
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns
+            mockk<BrowserSwitchFinalResult.Failure>(relaxed = true)
+
+        sut.handleReturnToApp(VenmoPendingRequest.Started(pendingRequestString), intent)
+
+        verify {
+            analyticsClient.sendEvent(
+                eventName = VenmoAnalytics.HANDLE_RETURN_FAILED,
+                analyticsEventParams = AnalyticsEventParams(appSwitchUrl = appSwitchUrl.toString())
+            )
+        }
     }
 
     @Test
