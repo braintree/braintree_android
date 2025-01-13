@@ -11,7 +11,6 @@ import com.braintreepayments.api.core.GetReturnLinkUseCase
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
-import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
 import org.json.JSONException
 import org.json.JSONObject
 
