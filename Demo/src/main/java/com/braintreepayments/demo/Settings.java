@@ -12,6 +12,7 @@ public class Settings {
     private static final String ENVIRONMENT = "environment";
 
     static final String SANDBOX_ENV_NAME = "Sandbox";
+    static final String STAGE_ENV_NAME = "Stage";
     static final String PRODUCTION_ENV_NAME = "Production";
 
     private static final String PRODUCTION_BASE_SERVER_URL = "https://braintree-production-merchant-455d21469113.herokuapp.com";
@@ -19,6 +20,8 @@ public class Settings {
 
     private static final String SANDBOX_BASE_SERVER_URL = "https://braintree-demo-merchant-63b7a2204f6e.herokuapp.com";
     private static final String SANDBOX_TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn";
+
+    private static final String STAGE_TOKENIZATION_KEY = "sandbox_jy4fvpfg_v7x2rb226dx4pr7b";
 
     static final String LOCAL_PAYMENTS_TOKENIZATION_KEY = "sandbox_f252zhq7_hh4cpc39zq4rgjcg";
     private static final String XO_SANDBOX_TOKENIZATION_KEY = "sandbox_rz48bqvw_jcyycfw6f9j4nj9c";
@@ -53,6 +56,8 @@ public class Settings {
     public static String getEnvironmentUrl(Context context) {
         String environment = getEnvironment(context);
         if (SANDBOX_ENV_NAME.equals(environment)) {
+            return SANDBOX_BASE_SERVER_URL;
+        } else if (STAGE_ENV_NAME.equals(environment)) {
             return SANDBOX_BASE_SERVER_URL;
         } else if (PRODUCTION_ENV_NAME.equals(environment)) {
             return PRODUCTION_BASE_SERVER_URL;
@@ -94,6 +99,8 @@ public class Settings {
 
         if (SANDBOX_ENV_NAME.equals(environment)) {
             return SANDBOX_TOKENIZATION_KEY;
+        } else if (STAGE_ENV_NAME.equals(environment)) {
+            return STAGE_TOKENIZATION_KEY;
         } else if (PRODUCTION_ENV_NAME.equals(environment)) {
             return PRODUCTION_TOKENIZATION_KEY;
         } else {
