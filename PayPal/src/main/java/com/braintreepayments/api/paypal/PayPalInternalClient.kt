@@ -188,8 +188,8 @@ internal class PayPalInternalClient(
     }
 
     fun isPayPalInstalled(context: Context): Boolean {
-        return deviceInspector.isPayPalInstalled(context)
-            || deviceInspector.isPayPalBetaInstalled(context)
+        return deviceInspector.isPayPalInstalled(context) ||
+            deviceInspector.isPayPalBetaInstalled(context)
     }
 
     private fun findPairingId(redirectUri: Uri): String? {
