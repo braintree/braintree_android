@@ -62,6 +62,10 @@ class DeviceInspector(
         return appHelper.isAppInstalled(context, PAYPAL_APP_PACKAGE)
     }
 
+    fun isPayPalBetaInstalled(context: Context?): Boolean {
+        return appHelper.isAppInstalled(context, PAYPAL_APP_PACKAGE_BETA)
+    }
+
     fun isVenmoInstalled(context: Context?): Boolean {
         return appHelper.isAppInstalled(context, VENMO_APP_PACKAGE)
     }
@@ -124,6 +128,7 @@ class DeviceInspector(
 
     companion object {
         private const val PAYPAL_APP_PACKAGE = "com.paypal.android.p2pmobile"
+        private const val PAYPAL_APP_PACKAGE_BETA = "com.paypal.android.p2pmobile.pp_beta"
         private const val VENMO_APP_PACKAGE = "com.venmo"
         private const val VENMO_APP_SWITCH_ACTIVITY = "controller.SetupMerchantActivity"
 
