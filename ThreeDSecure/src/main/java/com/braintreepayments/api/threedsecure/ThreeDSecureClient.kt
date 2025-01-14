@@ -204,7 +204,7 @@ class ThreeDSecureClient internal constructor(
                     configuration,
                     request
                 ) { consumerSessionId: String?, _ ->
-                    if (consumerSessionId != null && !consumerSessionId.isEmpty()) {
+                    if (!consumerSessionId.isNullOrEmpty()) {
                             lookupJSON.put("dfReferenceId", consumerSessionId)
                     } else {
                         callbackPrepareLookupFailure(
