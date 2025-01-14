@@ -204,11 +204,17 @@ class ThreeDSecureClient internal constructor(
                     configuration,
                     request
                 ) { consumerSessionId: String?, _ ->
-                    if (consumerSessionId != null) {
-                        try {
+                    if (consumerSessionId != null && !consumerSessionId.isEmpty()) {
                             lookupJSON.put("dfReferenceId", consumerSessionId)
-                        } catch (ignored: JSONException) {
-                        }
+                    } else {
+                        callbackPrepareLookupFailure(
+                            callback,
+                            ThreeDSecurePrepareLookupResult.Failure(
+                                BraintreeException("There was an error retrieving the dfReferenceId.")
+                            )
+                        )
+
+                        return@initialize
                     }
                     braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED)
                     callback.onPrepareLookupResult(
