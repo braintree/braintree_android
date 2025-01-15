@@ -149,7 +149,8 @@ public class PayPalFragment extends BaseFragment {
                 activity,
                 buyerEmailAddress,
                 buyerPhoneCountryCode,
-                buyerPhoneNationalNumber
+                buyerPhoneNationalNumber,
+                    null
             );
         } else {
             payPalRequest = createPayPalCheckoutRequest(
@@ -157,7 +158,8 @@ public class PayPalFragment extends BaseFragment {
                 amount,
                 buyerEmailAddress,
                 buyerPhoneCountryCode,
-                buyerPhoneNationalNumber
+                buyerPhoneNationalNumber,
+                    null
             );
         }
         payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest,

@@ -16,6 +16,7 @@ import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.testutils.Fixtures;
 
 import org.json.JSONException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -32,6 +33,7 @@ public class PayPalVaultRequestUnitTest {
     public void newPayPalVaultRequest_setsDefaultValues() {
         PayPalVaultRequest request = new PayPalVaultRequest(false);
 
+        assertNull(request.getShopperSessionId());
         assertNull(request.getLocaleCode());
         assertFalse(request.isShippingAddressRequired());
         assertNull(request.getShippingAddressOverride());
@@ -46,6 +48,7 @@ public class PayPalVaultRequestUnitTest {
     public void setsValuesCorrectly() {
         PostalAddress postalAddress = new PostalAddress();
         PayPalVaultRequest request = new PayPalVaultRequest(true);
+        request.setShopperSessionId("shopper-insights-id");
         request.setLocaleCode("US");
         request.setBillingAgreementDescription("Billing Agreement Description");
         request.setShippingAddressRequired(true);
@@ -75,6 +78,7 @@ public class PayPalVaultRequestUnitTest {
         request.setRecurringBillingDetails(billingDetails);
         request.setRecurringBillingPlanType(PayPalRecurringBillingPlanType.RECURRING);
 
+        assertEquals("shopper-insights-id", request.getShopperSessionId());
         assertEquals("US", request.getLocaleCode());
         assertEquals("Billing Agreement Description", request.getBillingAgreementDescription());
         assertTrue(request.isShippingAddressRequired());
@@ -212,11 +216,11 @@ public class PayPalVaultRequestUnitTest {
         assertTrue(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
     }
 
+    @Test
     public void createRequestBody_sets_enablePayPalSwitch_and_userAuthenticationEmail_not_null() throws JSONException {
         String versionSDK = String.valueOf(Build.VERSION.SDK_INT);
         String payerEmail = "payer_email@example.com";
         PayPalVaultRequest request = new PayPalVaultRequest(true);
-
         request.setEnablePayPalAppSwitch(true);
         request.setUserAuthenticationEmail(payerEmail);
         String requestBody = request.createRequestBody(
@@ -231,6 +235,21 @@ public class PayPalVaultRequestUnitTest {
         assertTrue(requestBody.contains("\"os_type\":" + "\"Android\""));
         assertTrue(requestBody.contains("\"os_version\":" + "\"" + versionSDK + "\""));
         assertTrue(requestBody.contains("\"merchant_app_return_url\":" + "\"universal_url\""));
+    }
+
+    @Test
+    public void createRequestBody_sets_shopper_insights_session_id() throws JSONException {
+        PayPalVaultRequest request = new PayPalVaultRequest(true);
+        request.setShopperSessionId("shopper-insights-id");
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url",
+                "universal_url"
+        );
+
+        assertTrue(requestBody.contains("\"shopper_session_id\":" + "\"shopper-insights-id\""));
     }
 
     @Test

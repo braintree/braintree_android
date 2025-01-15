@@ -15,8 +15,11 @@ import androidx.annotation.RestrictTo
  * @property endpoint The endpoint being called.
  * @property experiment Currently a ShopperInsights module specific event that indicates
  * the experiment, as a JSON string, that the merchant sent to the us.
- * @property paymentMethodsDisplayed A ShopperInsights module specific event that indicates the
- * order of payment methods displayed to the shopper by the merchant.
+ * @property shopperSessionId The Shopper Insights customer session ID created by a merchant's
+ * server SDK or graphQL integration.
+ * @property buttonType buttonType Represents the tapped button type.
+ * @property buttonOrder The order or ranking in which payment buttons appear.
+ * @property pageType The page or view that a button is displayed on.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 data class AnalyticsEventParams @JvmOverloads constructor(
@@ -27,6 +30,9 @@ data class AnalyticsEventParams @JvmOverloads constructor(
     val endTime: Long? = null,
     val endpoint: String? = null,
     val experiment: String? = null,
-    val paymentMethodsDisplayed: List<String> = emptyList(),
-    val appSwitchUrl: String? = null
+    val appSwitchUrl: String? = null,
+    val shopperSessionId: String? = null,
+    val buttonType: String? = null,
+    val buttonOrder: String? = null,
+    val pageType: String? = null
 )

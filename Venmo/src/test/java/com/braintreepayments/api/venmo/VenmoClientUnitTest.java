@@ -42,8 +42,6 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 
-import java.util.ArrayList;
-
 @RunWith(RobolectricTestRunner.class)
 public class VenmoClientUnitTest {
 
@@ -75,7 +73,6 @@ public class VenmoClientUnitTest {
         null,
         null,
         null,
-        new ArrayList<>(),
         appSwitchUrl.toString()
     );
     private final AnalyticsEventParams expectedVaultAnalyticsParams = new AnalyticsEventParams(
@@ -86,7 +83,6 @@ public class VenmoClientUnitTest {
         null,
         null,
         null,
-        new ArrayList<>(),
         appSwitchUrl.toString()
     );
 
