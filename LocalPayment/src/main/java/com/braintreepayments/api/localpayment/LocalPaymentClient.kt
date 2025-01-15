@@ -213,8 +213,9 @@ class LocalPaymentClient internal constructor(
     }
 
     private fun sendAnalyticsEvent(eventName: String) {
-        val eventParameters = AnalyticsEventParams()
-        eventParameters.payPalContextId = payPalContextId
+        val eventParameters = AnalyticsEventParams(
+            payPalContextId = payPalContextId
+        )
         braintreeClient.sendAnalyticsEvent(eventName, eventParameters)
     }
 

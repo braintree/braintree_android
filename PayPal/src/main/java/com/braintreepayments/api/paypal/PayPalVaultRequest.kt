@@ -68,7 +68,7 @@ class PayPalVaultRequest
 
     @OptIn(ExperimentalBetaApi::class)
     @Throws(JSONException::class)
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "CyclomaticComplexMethod")
     override fun createRequestBody(
         configuration: Configuration?,
         authorization: Authorization?,
@@ -92,7 +92,9 @@ class PayPalVaultRequest
             parameters.put(DESCRIPTION_KEY, billingAgreementDescription)
         }
 
-        parameters.putOpt(PAYER_EMAIL_KEY, userAuthenticationEmail)
+        if (!userAuthenticationEmail.isNullOrEmpty()) {
+            parameters.put(PAYER_EMAIL_KEY, userAuthenticationEmail)
+        }
 
         parameters.putOpt(SHOPPER_SESSION_ID, shopperSessionId)
 
