@@ -2,16 +2,17 @@
 
 ## unreleased
 
+* PayPal
+  * Fix bug to ensure that `PayPalVaultRequest.userAuthenticationEmail` is not sent as an empty string
 * ShopperInsights (BETA)
-    * Add `isPayPalAppInstalled` and `isVenmoAppInstalled` methods
-    * Add `shopperSessionId` parameter to `ShopperInsightsClient`
+  * Add `isPayPalAppInstalled` and `isVenmoAppInstalled` methods
+  * Add `shopperSessionId` parameter to `ShopperInsightsClient`
 * BraintreePayPal
-    * Add `shopperSessionId` to `PayPalCheckoutRequest` and `PayPalVaultRequest`
-    * Fix bug to ensure that `PayPalVaultRequest.userAuthenticationEmail` is not sent as an empty string
-    * Replace `sendPayPalPresentedEvent()` and `sendVenmoPresentedEvent()` with `sendPresentedEvent()`
-    * Replace `sendPayPalSelectedEvent()` and `sendVenmoSelectedEvent()` with `sendSelectedEvent()`
+  * Add `shopperSessionId` to `PayPalCheckoutRequest` and `PayPalVaultRequest`
+  * Replace `sendPayPalPresentedEvent()` and `sendVenmoPresentedEvent()` with `sendPresentedEvent()`
+  * Replace `sendPayPalSelectedEvent()` and `sendVenmoSelectedEvent()` with `sendSelectedEvent()`
 * ThreeDSecure
-    * Return error if no `dfReferenceId` is returned in the 3D Secure flow
+  * Return error if no `dfReferenceId` is returned in the 3D Secure flow
 
 ## 5.3.0 (2024-12-11)
 
