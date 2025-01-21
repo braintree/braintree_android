@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.4.0 (2025-01-21)
  
 * PayPal
   * Fix bug to ensure that `PayPalVaultRequest.userAuthenticationEmail` is not sent as an empty string
