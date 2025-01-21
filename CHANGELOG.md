@@ -4,6 +4,7 @@
  
 * PayPal
   * Fix bug to ensure that `PayPalVaultRequest.userAuthenticationEmail` is not sent as an empty string
+  * Fix bug where `intent=order` was not working
 * ThreeDSecure
   * Return error if no `dfReferenceId` is returned in the 3D Secure flow
   
