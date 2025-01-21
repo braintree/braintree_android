@@ -49,7 +49,7 @@ class PayPalVaultRequest
     override var riskCorrelationId: String? = null,
     override var userAuthenticationEmail: String? = null,
     override var userPhoneNumber: PayPalPhoneNumber? = null,
-    override var lineItems: List<PayPalLineItem> = emptyList(),
+    override var lineItems: List<PayPalLineItem> = emptyList()
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -62,7 +62,7 @@ class PayPalVaultRequest
     merchantAccountId = merchantAccountId,
     riskCorrelationId = riskCorrelationId,
     userAuthenticationEmail = userAuthenticationEmail,
-    lineItems = lineItems
+    lineItems = lineItems,
 ) {
 
     @Throws(JSONException::class)

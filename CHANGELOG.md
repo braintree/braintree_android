@@ -1,10 +1,11 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.4.0 (2025-01-21)
  
 * PayPal
   * Fix bug to ensure that `PayPalVaultRequest.userAuthenticationEmail` is not sent as an empty string
   * Fix bug where `intent=order` was not working
+  * Add `shippingCallbackUrl` to `PayPalCheckoutRequest`
 * ThreeDSecure
   * Return error if no `dfReferenceId` is returned in the 3D Secure flow
   
