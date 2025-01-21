@@ -5,6 +5,14 @@
   * Add `PayPalContactInformation` request object
   * Add `PayPalCheckoutRequest.contactInformation` optional property
 
+## 5.4.0 (2025-01-21)
+ 
+* PayPal
+  * Fix bug to ensure that `PayPalVaultRequest.userAuthenticationEmail` is not sent as an empty string
+  * Add `shippingCallbackUrl` to `PayPalCheckoutRequest`
+* ThreeDSecure
+  * Return error if no `dfReferenceId` is returned in the 3D Secure flow
+  
 ## 5.3.0 (2024-12-11)
 
 * PayPal
