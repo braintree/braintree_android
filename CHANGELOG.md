@@ -1,6 +1,7 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+
 * PayPal
   * Add `PayPalContactInformation` request object
   * Add `PayPalCheckoutRequest.contactInformation` optional property
