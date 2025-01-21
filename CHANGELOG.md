@@ -4,6 +4,7 @@
  
 * PayPal
   * Fix bug to ensure that `PayPalVaultRequest.userAuthenticationEmail` is not sent as an empty string
+  * Add `shippingCallbackUrl` to `PayPalCheckoutRequest`
 * ThreeDSecure
   * Return error if no `dfReferenceId` is returned in the 3D Secure flow
   
