@@ -84,9 +84,6 @@ internal class CardinalClient {
 
         val cardinalConfigurationParameters = CardinalConfigurationParameters().apply {
             environment = cardinalEnvironment
-            // 1:1 mapping doesn't exist even their documentation seems to say this property exists
-//            requestTimeout = REQUEST_TIMEOUT
-//            isEnableDFSync = true // not sure what this is either
         }
 
         cardinalConfigurationParameters.uiType = when (request.uiType) {
