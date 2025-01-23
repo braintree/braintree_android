@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.5.0 (2025-01-23)
 
 * PayPal
   * Add `PayPalContactInformation` request object
