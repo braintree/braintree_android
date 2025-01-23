@@ -9,7 +9,6 @@ import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.InvalidArgumentException
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.threedsecure.ThreeDSecureParams.Companion.fromJson
-import com.cardinalcommerce.ThreeDotOh.models.CardinalActionCode
 import org.json.JSONException
 import org.json.JSONObject
 

@@ -253,7 +253,7 @@ class CardinalClientUnitTest {
         val threeDSecureParams = mockk<ThreeDSecureParams>(relaxed = true)
         every { threeDSecureParams.lookup } returns threeDSecureLookup
 
-        sut.continueLookup(threeDSecureParams, cardinalChallengeObserver)
+        sut.lookupChallenge(threeDSecureParams, cardinalChallengeObserver)
         verify {
             cardinalInstance.cca_continue(
                 "sample-transaction-id",
@@ -279,7 +279,7 @@ class CardinalClientUnitTest {
         every { threeDSecureParams.lookup } returns threeDSecureLookup
 
         try {
-            sut.continueLookup(threeDSecureParams, cardinalChallengeObserver)
+            sut.lookupChallenge(threeDSecureParams, cardinalChallengeObserver)
             fail("should not get here")
         } catch (e: BraintreeException) {
             assertEquals("Cardinal SDK cca_continue Error.", e.message)
@@ -292,7 +292,7 @@ class CardinalClientUnitTest {
         val sut = CardinalClient()
 
         try {
-            sut.continueLookup(mockk(), null)
+            sut.lookupChallenge(mockk(), null)
         } catch (e: BraintreeException) {
             assertEquals("challengeObserver is null", e.message)
         }

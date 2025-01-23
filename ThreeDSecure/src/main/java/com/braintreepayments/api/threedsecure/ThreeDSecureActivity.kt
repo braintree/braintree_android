@@ -78,7 +78,7 @@ internal class ThreeDSecureActivity : AppCompatActivity() {
         val threeDSecureParams = extras.parcelable<ThreeDSecureParams>(EXTRA_THREE_D_SECURE_RESULT)
         if (threeDSecureParams != null) {
             try {
-                cardinalClient.continueLookup(threeDSecureParams, challengeObserver)
+                cardinalClient.lookupChallenge(threeDSecureParams, challengeObserver)
             } catch (e: BraintreeException) {
                 finishWithError(e.message)
             }

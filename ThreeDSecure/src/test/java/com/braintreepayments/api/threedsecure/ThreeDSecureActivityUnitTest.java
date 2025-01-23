@@ -51,7 +51,7 @@ public class ThreeDSecureActivityUnitTest {
 
         ArgumentCaptor<ThreeDSecureParams> captor =
                 ArgumentCaptor.forClass(ThreeDSecureParams.class);
-        verify(cardinalClient).continueLookup(captor.capture(), any());
+        verify(cardinalClient).lookupChallenge(captor.capture(), any());
 
         ThreeDSecureParams actualResult = captor.getValue();
         ThreeDSecureLookup actualLookup = actualResult.getLookup();
@@ -78,7 +78,7 @@ public class ThreeDSecureActivityUnitTest {
 
         CardinalClient cardinalClient = mock(CardinalClient.class);
         doThrow(cardinalError).when(cardinalClient)
-                .continueLookup(any(ThreeDSecureParams.class), any());
+                .lookupChallenge(any(ThreeDSecureParams.class), any());
 
         sut.launchCardinalAuthChallenge(cardinalClient);
         verify(sut).finish();
@@ -100,7 +100,7 @@ public class ThreeDSecureActivityUnitTest {
         CardinalClient cardinalClient = mock(CardinalClient.class);
         sut.launchCardinalAuthChallenge(cardinalClient);
 
-        verify(cardinalClient, never()).continueLookup(any(ThreeDSecureParams.class),
+        verify(cardinalClient, never()).lookupChallenge(any(ThreeDSecureParams.class),
                 any(CardinalChallengeObserver.class));
         verify(sut).finish();
 

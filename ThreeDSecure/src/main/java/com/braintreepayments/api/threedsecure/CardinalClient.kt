@@ -51,7 +51,7 @@ internal class CardinalClient {
 
     @Throws(BraintreeException::class)
     @Suppress("TooGenericExceptionCaught")
-    fun continueLookup(
+    fun lookupChallenge(
         threeDSecureParams: ThreeDSecureParams,
         challengeObserver: CardinalChallengeObserver?
     ) {
@@ -62,7 +62,6 @@ internal class CardinalClient {
         val paReq = lookup?.pareq
         try {
             CardinalService.getInstance().doChallenge(challengeObserver, CardinalChallengeParameters("threeDSServerTransactionId", "acsTransactionId", "acsReferenceNumber", "acsSignedContent", "threeDSRequestorAppURL", transactionId), 60000)
-//            Cardinal.getInstance().cca_continue(transactionId, paReq, challengeObserver)
         } catch (e: RuntimeException) {
             throw BraintreeException("Cardinal SDK cca_continue Error.", e)
         }
@@ -107,11 +106,6 @@ internal class CardinalClient {
         request.requestorAppUrl?.let {
             cardinalConfigurationParameters.threeDSRequestorAppURL = it
         }
-//        try {
-//            CardinalService.getInstance().configure(context, cardinalConfigurationParameters)
-//        } catch (e: RuntimeException) {
-//            throw BraintreeException("Cardinal SDK configure Error.", e)
-//        }
     }
 
     fun cleanup() {
@@ -128,9 +122,5 @@ internal class CardinalClient {
             ThreeDSecureRenderType.OOB -> CardinalRenderType.OOB
             ThreeDSecureRenderType.RENDER_HTML -> CardinalRenderType.HTML
         }
-    }
-
-    companion object {
-        private const val REQUEST_TIMEOUT = 8000
     }
 }
