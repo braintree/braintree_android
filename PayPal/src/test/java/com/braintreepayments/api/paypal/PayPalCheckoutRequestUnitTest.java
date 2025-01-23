@@ -225,5 +225,37 @@ public class PayPalCheckoutRequestUnitTest {
 
         assertTrue(requestBody.contains("\"phone_number\":{\"country_code\":\"1\",\"national_number\":\"1231231234\"}"));
     }
-}
 
+    @Test
+    public void createRequestBody_sets_contactInformation_when_not_null() throws JSONException {
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+
+        request.setContactInformation(new PayPalContactInformation("some@email.com", new PayPalPhoneNumber("1", "1234567890")));
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url",
+                null
+        );
+
+        assertTrue(requestBody.contains("\"recipient_email\":\"some@email.com\""));
+        assertTrue(requestBody.contains("\"international_phone\":{\"country_code\":\"1\",\"national_number\":\"1234567890\"}"));
+    }
+
+    @Test
+    public void createRequestBody_does_not_set_contactInformation_when_contactInformation_is_null() throws JSONException {
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url",
+                null
+        );
+
+        assertFalse(requestBody.contains("\"recipient_email\":\"some@email.com\""));
+        assertFalse(requestBody.contains("\"international_phone\":{\"country_code\":\"1\",\"national_number\":\"1234567890\"}"));
+    }
+}

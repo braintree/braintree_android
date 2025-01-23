@@ -1,7 +1,10 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+
 * PayPal
+  * Add `PayPalContactInformation` request object
+  * Add `PayPalCheckoutRequest.contactInformation` optional property
   * Fix bug where `intent=order` was not being set as expected
 
 ## 5.4.0 (2025-01-21)

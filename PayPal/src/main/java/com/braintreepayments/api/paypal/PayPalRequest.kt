@@ -133,5 +133,7 @@ abstract class PayPalRequest internal constructor(
         internal const val PLAN_METADATA_KEY: String = "plan_metadata"
         internal const val PHONE_NUMBER_KEY: String = "phone_number"
         internal const val SHIPPING_CALLBACK_URL_KEY: String = "shipping_callback_url"
+        internal const val RECIPIENT_EMAIL_KEY: String = "recipient_email"
+        internal const val RECIPIENT_PHONE_NUMBER_KEY: String = "international_phone"
     }
 }
