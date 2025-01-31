@@ -128,49 +128,6 @@ public class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    public void prepareLookup_returnsValidLookupJSONString_whenCardinalSetupFails()
-        throws JSONException, BraintreeException {
-        CardinalClient cardinalClient = new MockCardinalClientBuilder()
-            .error(new Exception("cardinal error"))
-            .build();
-
-        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-            .configuration(threeDSecureEnabledConfig)
-            .build();
-
-        ThreeDSecureClient sut = new ThreeDSecureClient(
-            braintreeClient,
-            cardinalClient,
-            new ThreeDSecureAPI(braintreeClient),
-            merchantRepository
-        );
-
-        ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
-        sut.prepareLookup(activity, basicRequest, callback);
-
-        ArgumentCaptor<ThreeDSecurePrepareLookupResult> captor = ArgumentCaptor.forClass(ThreeDSecurePrepareLookupResult.class);
-        verify(callback).onPrepareLookupResult(captor.capture());
-
-        ThreeDSecurePrepareLookupResult prepareLookupResult = captor.getValue();
-        assertTrue(prepareLookupResult instanceof ThreeDSecurePrepareLookupResult.Success);
-        assertSame(basicRequest, ((ThreeDSecurePrepareLookupResult.Success) prepareLookupResult).getRequest());
-
-        String clientData = ((ThreeDSecurePrepareLookupResult.Success) prepareLookupResult).getClientData();
-        JSONObject lookup = new JSONObject(clientData);
-        Assert.assertEquals("encoded_auth_fingerprint",
-            lookup.getString("authorizationFingerprint"));
-        Assert.assertEquals(lookup.getString("braintreeLibraryVersion"),
-            "Android-" + com.braintreepayments.api.core.BuildConfig.VERSION_NAME);
-        Assert.assertEquals(lookup.getString("nonce"), "a-nonce");
-        assertFalse(lookup.has("dfReferenceId"));
-
-        JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
-        Assert.assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
-        Assert.assertEquals(clientMetaData.getString("sdkVersion"),
-            "Android/" + com.braintreepayments.api.core.BuildConfig.VERSION_NAME);
-    }
-
-    @Test
     public void prepareLookup_initializesCardinal() throws BraintreeException {
         CardinalClient cardinalClient = new MockCardinalClientBuilder()
             .successReferenceId("fake-df")
@@ -221,6 +178,37 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecurePrepareLookupResult prepareLookupResult = captor.getValue();
         assertTrue(prepareLookupResult instanceof ThreeDSecurePrepareLookupResult.Failure);
         assertEquals(initializeRuntimeError, ((ThreeDSecurePrepareLookupResult.Failure) prepareLookupResult).getError());
+    }
+
+    @Test
+    public void prepareLookup_whenDfReferenceIdMissing_forwardsError() throws BraintreeException {
+        CardinalClient cardinalClient = new MockCardinalClientBuilder()
+                .successReferenceId("")
+                .build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(threeDSecureEnabledConfig)
+                .build();
+
+        ThreeDSecureClient sut = new ThreeDSecureClient(
+                braintreeClient,
+                cardinalClient,
+                new ThreeDSecureAPI(braintreeClient),
+                merchantRepository
+        );
+
+        ThreeDSecurePrepareLookupCallback callback = mock(ThreeDSecurePrepareLookupCallback.class);
+        sut.prepareLookup(activity, basicRequest, callback);
+
+        ArgumentCaptor<ThreeDSecurePrepareLookupResult> captor = ArgumentCaptor.forClass(ThreeDSecurePrepareLookupResult.class);
+        verify(callback).onPrepareLookupResult(captor.capture());
+        ThreeDSecurePrepareLookupResult prepareLookupResult = captor.getValue();
+        assertTrue(prepareLookupResult instanceof ThreeDSecurePrepareLookupResult.Failure);
+        Exception error = ((ThreeDSecurePrepareLookupResult.Failure) prepareLookupResult).getError();
+
+        TestCase.assertTrue(error instanceof BraintreeException);
+        Assert.assertEquals(error.getMessage(),
+                "There was an error retrieving the dfReferenceId.");
     }
 
     @Test

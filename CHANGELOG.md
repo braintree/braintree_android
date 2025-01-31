@@ -4,11 +4,25 @@
 
 * PayPal
   * Add PayPal App Switch for one time checkout flow (BETA)
-    * Add `enablePayPalAppSwitch` property to `PayPalCheckoutRequest` for App Switch support 
-    * Require `PayPalCheckoutRequest.userAuthenticationEmail` for App Switch support
-    * Require `PayPalClient.appLinkReturnUrl` for App Switch support
-    * **Note:** This feature is currently in beta and may change or be removed in future releases.
+      * Add `enablePayPalAppSwitch` property to `PayPalCheckoutRequest` for App Switch support
+      * Require `PayPalCheckoutRequest.userAuthenticationEmail` for App Switch support
+      * Require `PayPalClient.appLinkReturnUrl` for App Switch support
+      * **Note:** This feature is currently in beta and may change or be removed in future releases.
+
+## 5.5.0 (2025-01-23)
+
+* PayPal
+  * Add `PayPalContactInformation` request object
+  * Add `PayPalCheckoutRequest.contactInformation` optional property
+  * Fix bug where `intent=order` was not being set as expected
+
+## 5.4.0 (2025-01-21)
+ 
+* PayPal
   * Fix bug to ensure that `PayPalVaultRequest.userAuthenticationEmail` is not sent as an empty string
+  * Add `shippingCallbackUrl` to `PayPalCheckoutRequest`
+* ThreeDSecure
+  * Return error if no `dfReferenceId` is returned in the 3D Secure flow
   
 ## 5.3.0 (2024-12-11)
 

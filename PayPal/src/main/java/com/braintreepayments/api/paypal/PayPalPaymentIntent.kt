@@ -26,7 +26,7 @@ enum class PayPalPaymentIntent(internal val stringValue: String) {
         @JvmStatic
         @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         fun fromString(string: String?): PayPalPaymentIntent? {
-            return PayPalPaymentIntent.values().firstOrNull { it.stringValue == string }
+            return entries.firstOrNull { it.stringValue.equals(string, ignoreCase = true) }
         }
     }
 }

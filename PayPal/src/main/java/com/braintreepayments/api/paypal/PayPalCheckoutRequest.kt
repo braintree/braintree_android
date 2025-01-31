@@ -1,6 +1,7 @@
 package com.braintreepayments.api.paypal
 
 import android.os.Build
+import android.net.Uri
 import android.text.TextUtils
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.ClientToken
@@ -55,6 +56,12 @@ import org.json.JSONObject
  *
  * @property shouldOfferPayLater Offers PayPal Pay Later if the customer qualifies. Defaults to
  * false.
+ *
+ * @property shippingCallbackUrl Server side shipping callback URL to be notified when a customer
+ * updates their shipping address or options. A callback request will be sent to the merchant server
+ * at this URL.
+ *
+ * @property contactInformation Contact information of the recipient for the order
  */
 @Parcelize
 class PayPalCheckoutRequest @JvmOverloads constructor(
@@ -66,6 +73,8 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     var shouldRequestBillingAgreement: Boolean = false,
     var shouldOfferPayLater: Boolean = false,
     override var enablePayPalAppSwitch: Boolean = false,
+    var shippingCallbackUrl: Uri? = null,
+    var contactInformation: PayPalContactInformation? = null,
     override var localeCode: String? = null,
     override var billingAgreementDescription: String? = null,
     override var isShippingAddressRequired: Boolean = false,
@@ -77,7 +86,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     override var riskCorrelationId: String? = null,
     override var userAuthenticationEmail: String? = null,
     override var userPhoneNumber: PayPalPhoneNumber? = null,
-    override var lineItems: List<PayPalLineItem> = emptyList(),
+    override var lineItems: List<PayPalLineItem> = emptyList()
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -108,6 +117,10 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
             .put(CANCEL_URL_KEY, cancelUrl)
             .put(OFFER_PAY_LATER_KEY, shouldOfferPayLater)
 
+        shippingCallbackUrl?.let {
+            if (it.toString().isNotEmpty()) parameters.put(SHIPPING_CALLBACK_URL_KEY, it)
+        }
+
         if (authorization is ClientToken) {
             parameters.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.bearer)
         } else {
@@ -128,6 +141,15 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
         }
 
         userPhoneNumber?.let { parameters.put(PHONE_NUMBER_KEY, it.toJson()) }
+        contactInformation?.let { info ->
+            info.recipientEmail?.let { parameters.put(RECIPIENT_EMAIL_KEY, it) }
+            info.recipentPhoneNumber?.let {
+                parameters.put(
+                    RECIPIENT_PHONE_NUMBER_KEY,
+                    it.toJson()
+                )
+            }
+        }
 
         if (enablePayPalAppSwitch && !appLink.isNullOrEmpty() && !userAuthenticationEmail.isNullOrEmpty()) {
             parameters.put(ENABLE_APP_SWITCH_KEY, enablePayPalAppSwitch)

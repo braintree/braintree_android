@@ -7,6 +7,7 @@ import com.braintreepayments.api.paypal.PayPalBillingCycle;
 import com.braintreepayments.api.paypal.PayPalBillingInterval;
 import com.braintreepayments.api.paypal.PayPalBillingPricing;
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest;
+import com.braintreepayments.api.paypal.PayPalContactInformation;
 import com.braintreepayments.api.paypal.PayPalLandingPageType;
 import com.braintreepayments.api.paypal.PayPalPaymentIntent;
 import com.braintreepayments.api.paypal.PayPalPaymentUserAction;
@@ -112,7 +113,8 @@ public class PayPalRequestFactory {
         String amount,
         String buyerEmailAddress,
         String buyerPhoneCountryCode,
-        String buyerPhoneNationalNumber
+        String buyerPhoneNationalNumber,
+        Boolean isContactInformationEnabled
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
 
@@ -161,6 +163,10 @@ public class PayPalRequestFactory {
             shippingAddress.setPostalCode("94103");
 
             request.setShippingAddressOverride(shippingAddress);
+        }
+
+        if (isContactInformationEnabled) {
+            request.setContactInformation(new PayPalContactInformation("some@email.com", new PayPalPhoneNumber("1", "1234567890")));
         }
 
         return request;
