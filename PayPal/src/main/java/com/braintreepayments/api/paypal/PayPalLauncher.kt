@@ -148,11 +148,6 @@ class PayPalLauncher internal constructor(
         }
     }
 
-    private fun findPairingId(redirectUri: Uri): String? {
-        return redirectUri.getQueryParameter("ba_token")
-            ?: redirectUri.getQueryParameter("token")
-    }
-
     @Throws(BrowserSwitchException::class)
     private fun assertCanPerformBrowserSwitch(
         activity: ComponentActivity,
