@@ -1,7 +1,6 @@
 package com.braintreepayments.api.paypal
 
 import android.content.Intent
-import android.net.Uri
 import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
