@@ -1,6 +1,7 @@
 package com.braintreepayments.api.paypal
 
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
@@ -8,20 +9,23 @@ import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.atomicevent.AtomicEventManager
 
 /**
  * Responsible for launching PayPal user authentication in a web browser
  */
 class PayPalLauncher internal constructor(
     private val browserSwitchClient: BrowserSwitchClient,
-    lazyAnalyticsClient: Lazy<AnalyticsClient>
+    lazyAnalyticsClient: Lazy<AnalyticsClient>,
+    private val atomicEventManager: AtomicEventManager
 ) {
     /**
      * Used to launch the PayPal flow in a web browser and deliver results to your Activity
      */
     constructor() : this(
         browserSwitchClient = BrowserSwitchClient(),
-        lazyAnalyticsClient = AnalyticsClient.lazyInstance
+        lazyAnalyticsClient = AnalyticsClient.lazyInstance,
+        atomicEventManager = AtomicEventManager.create()
     )
 
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
@@ -86,10 +90,9 @@ class PayPalLauncher internal constructor(
         return when (val browserSwitchResult =
             browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
             is BrowserSwitchFinalResult.Success -> {
+                sendAtomicEvent(Uri.parse(intent.data.toString()))
                 analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_SUCCEEDED)
-                PayPalPaymentAuthResult.Success(
-                    browserSwitchResult
-                )
+                PayPalPaymentAuthResult.Success(browserSwitchResult)
             }
 
             is BrowserSwitchFinalResult.Failure -> {
@@ -103,6 +106,19 @@ class PayPalLauncher internal constructor(
                 analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_NO_RESULT)
                 PayPalPaymentAuthResult.NoResult
             }
+        }
+    }
+
+
+    private fun sendAtomicEvent(uri: Uri) {
+        var endTime: Long?= null
+        uri.getQueryParameter("switch_initiated_time")
+            ?.toLong()?.let {
+                endTime = System.currentTimeMillis() - it
+                atomicEventManager.performEndEventUpload(endTime)
+            }
+        if (uri.path?.contains("cancel") == true) {
+            atomicEventManager.performCancelEndEventUpload(endTime)
         }
     }
 

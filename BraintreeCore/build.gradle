@@ -64,6 +64,7 @@ dependencies {
     implementation libs.kotlin.stdlib
 
     implementation libs.androidx.room.runtime
+    implementation libs.gson
 
     // Ref: https://stackoverflow.com/a/51067251
     ksp libs.androidx.room.compiler

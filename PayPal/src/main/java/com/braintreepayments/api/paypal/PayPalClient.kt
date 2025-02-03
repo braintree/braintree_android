@@ -13,6 +13,7 @@ import com.braintreepayments.api.core.GetReturnLinkUseCase
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.UserCanceledException
+import com.braintreepayments.api.core.atomicevent.AtomicEventManager
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
@@ -25,7 +26,8 @@ class PayPalClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient = PayPalInternalClient(braintreeClient),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
-    private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository)
+    private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
+    private val atomicEventManager: AtomicEventManager =  AtomicEventManager.create()
 ) {
 
     /**
@@ -90,7 +92,7 @@ class PayPalClient internal constructor(
         isVaultRequest = payPalRequest is PayPalVaultRequest
 
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsParams)
-
+        atomicEventManager.performStartAtomicEventsUpload()
         braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
             if (error != null) {
                 callbackCreatePaymentAuthFailure(callback, PayPalPaymentAuthRequest.Failure(error))
