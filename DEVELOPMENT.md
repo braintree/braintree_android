@@ -4,8 +4,9 @@ This document outlines development practices that we follow internally while dev
 
 ## Setup
 
-* Make sure Java 8 is installed and available in your `PATH`.
-* If you do not have the Android SDK installed, run `./gradlew build` 3 times to download the Android SDK and install all required tools as well as set your `local.properties` file (we use [sdk-manager-plugin](https://github.com/JakeWharton/sdk-manager-plugin) to do this automatically).
+* Make sure to add a Personal Access Token to GitHub and clone via https.
+* Make sure Java is installed and available in your `PATH`.
+  * You'll need Java 11 for 4.x and Java 17 for 5.x.
 * If you do have the Android SDK installed, add a `local.properties` file to the top level directory with `sdk.dir=/path/to/your/sdk/.android-sdk`
 * Run `./gradlew :Demo:installDebug` to install the [Demo](Demo) app on a device.
 * See [the testing section](#tests) for more about setting up and running tests.
@@ -41,7 +42,6 @@ The individual components may be of interest for advanced integrations and are e
 * Android Studio
 * Gradle
 * Android SDK >= 21
-* Host app does not integrate with the Kount SDK
 * Host app has a secure, authenticated server with a [Braintree server-side integration](https://developer.paypal.com/braintree/docs/start/hello-server)
 
 ## Committing
