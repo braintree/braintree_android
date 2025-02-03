@@ -23,7 +23,9 @@ internal class PayPalInternalClient(
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
     private val payPalTokenResponseRepository: PayPalTokenResponseRepository = PayPalTokenResponseRepository.instance,
-    private val payPalSetPaymentTokenUseCase: PayPalSetPaymentTokenUseCase = PayPalSetPaymentTokenUseCase(payPalTokenResponseRepository)
+    private val payPalSetPaymentTokenUseCase: PayPalSetPaymentTokenUseCase = PayPalSetPaymentTokenUseCase(
+        payPalTokenResponseRepository
+    )
 ) {
 
     fun sendRequest(
@@ -163,9 +165,13 @@ internal class PayPalInternalClient(
 
                 if (isAppSwitchEnabled(payPalRequest) && isPayPalInstalled(context)) {
                     if (!pairingId.isNullOrEmpty()) {
-                        paymentAuthRequest.approvalUrl = createAppSwitchUri(parsedRedirectUri).toString()
+                        paymentAuthRequest.approvalUrl =
+                            createAppSwitchUri(parsedRedirectUri).toString()
                     } else {
-                        callback.onResult(null, BraintreeException("Missing Token for PayPal App Switch."))
+                        callback.onResult(
+                            null,
+                            BraintreeException("Missing Token for PayPal App Switch.")
+                        )
                     }
                 } else {
                     paymentAuthRequest.approvalUrl = parsedRedirectUri.toString()

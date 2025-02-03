@@ -20,7 +20,9 @@ class PayPalLauncher internal constructor(
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val payPalTokenResponseRepository: PayPalTokenResponseRepository = PayPalTokenResponseRepository.instance,
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
-    private val payPalGetPaymentTokenUseCase: PayPalGetPaymentTokenUseCase = PayPalGetPaymentTokenUseCase(payPalTokenResponseRepository),
+    private val payPalGetPaymentTokenUseCase: PayPalGetPaymentTokenUseCase = PayPalGetPaymentTokenUseCase(
+        payPalTokenResponseRepository
+    ),
     lazyAnalyticsClient: Lazy<AnalyticsClient>
 ) {
     /**
@@ -93,9 +95,11 @@ class PayPalLauncher internal constructor(
             is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> {
                 returnLinkResult.appLinkReturnUri.toString()
             }
+
             is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> {
                 returnLinkResult.deepLinkFallbackUrlScheme
             }
+
             else -> null
         }
         val pairingId = payPalGetPaymentTokenUseCase()
