@@ -19,7 +19,9 @@ import com.braintreepayments.api.core.MerchantRepository
 class PayPalLauncher internal constructor(
     private val browserSwitchClient: BrowserSwitchClient,
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val payPalTokenResponseRepository: PayPalTokenResponseRepository = PayPalTokenResponseRepository.instance,
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
+    private val payPalGetPaymentTokenUseCase: PayPalGetPaymentTokenUseCase = PayPalGetPaymentTokenUseCase(payPalTokenResponseRepository),
     lazyAnalyticsClient: Lazy<AnalyticsClient>
 ) {
     /**
@@ -97,7 +99,7 @@ class PayPalLauncher internal constructor(
             }
             else -> null
         }
-        val pairingId = appSwitchUrl?.let { findPairingId(Uri.parse(it)) }
+        val pairingId = payPalGetPaymentTokenUseCase()
         analyticsClient.sendEvent(
             PayPalAnalytics.HANDLE_RETURN_STARTED,
             AnalyticsEventParams(

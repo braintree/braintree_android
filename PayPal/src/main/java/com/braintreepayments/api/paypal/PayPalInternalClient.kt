@@ -21,7 +21,9 @@ internal class PayPalInternalClient(
     private val apiClient: ApiClient = ApiClient(braintreeClient),
     private val deviceInspector: DeviceInspector = DeviceInspector(),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
-    private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository)
+    private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
+    private val payPalTokenResponseRepository: PayPalTokenResponseRepository = PayPalTokenResponseRepository.instance,
+    private val payPalSetPaymentTokenUseCase: PayPalSetPaymentTokenUseCase = PayPalSetPaymentTokenUseCase(payPalTokenResponseRepository)
 ) {
 
     fun sendRequest(
@@ -127,6 +129,7 @@ internal class PayPalInternalClient(
                 val parsedRedirectUri = Uri.parse(paypalPaymentResource.redirectUrl)
 
                 val pairingId = findPairingId(parsedRedirectUri)
+                payPalSetPaymentTokenUseCase.setPaymentToken(pairingId)
                 val clientMetadataId = payPalRequest.riskCorrelationId ?: run {
                     val dataCollectorRequest = DataCollectorInternalRequest(
                         payPalRequest.hasUserLocationConsent
@@ -185,7 +188,8 @@ internal class PayPalInternalClient(
     fun isAppSwitchEnabled(payPalRequest: PayPalRequest) = payPalRequest.enablePayPalAppSwitch
 
     fun isPayPalInstalled(context: Context): Boolean {
-        return deviceInspector.isPayPalInstalled(context)
+        return deviceInspector.isPayPalInstalled(context) ||
+            deviceInspector.isPayPalBetaInstalled(context)
     }
 
     private fun findPairingId(redirectUri: Uri): String? {
