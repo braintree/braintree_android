@@ -120,7 +120,6 @@ internal class PayPalInternalClient(
             url = url,
             data = requestBody,
         ) { responseBody: String?, httpError: Exception? ->
-
             if (responseBody == null) {
                 callback.onResult(null, httpError)
                 return@sendPOST
@@ -129,7 +128,6 @@ internal class PayPalInternalClient(
             try {
                 val paypalPaymentResource = fromJson(responseBody)
                 val parsedRedirectUri = Uri.parse(paypalPaymentResource.redirectUrl)
-
                 val pairingId = findPairingId(parsedRedirectUri)
                 payPalSetPaymentTokenUseCase.setPaymentToken(pairingId)
                 val clientMetadataId = payPalRequest.riskCorrelationId ?: run {
@@ -176,7 +174,6 @@ internal class PayPalInternalClient(
                 } else {
                     paymentAuthRequest.approvalUrl = parsedRedirectUri.toString()
                 }
-
                 callback.onResult(paymentAuthRequest, null)
             } catch (exception: JSONException) {
                 callback.onResult(null, exception)
