@@ -18,6 +18,7 @@ import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
 import org.json.JSONObject
+import java.net.URLEncoder
 
 /**
  * Used to tokenize PayPal accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4)
@@ -122,6 +123,31 @@ class PayPalClient internal constructor(
                 payPalContextId = payPalResponse.pairingId
                 val isAppSwitchFlow = internalPayPalClient.isAppSwitchEnabled(payPalRequest) &&
                     internalPayPalClient.isPayPalInstalled(context)
+
+                if (isAppSwitchFlow && payPalResponse.approvalUrl?.contains("/checkoutnow?token") == true) {
+                    payPalResponse.approvalUrl?.let {
+                        val spl = it.split("token")
+                        payPalResponse.approvalUrl =
+                            "https://paypal.com/app-switch-checkout?ec_token" + spl[1]
+                        if (payPalRequest is PayPalCheckoutRequest) {
+                            payPalResponse.approvalUrl += "&amount=" + payPalRequest.amount + "&order=" + URLEncoder.encode(
+                                payPalRequest.displayName
+                            )
+                        }
+                    }
+                }
+                else if (isAppSwitchFlow && payPalResponse.approvalUrl?.contains("/agreements/approve?ba_token") == true){
+                    payPalResponse.approvalUrl?.let {
+                        val spl = it.split("ba_token")
+                        payPalResponse.approvalUrl = "https://paypal.com/app-switch-checkout?ba_token" + spl[1]
+                        if (payPalRequest is PayPalCheckoutRequest){
+                            payPalResponse.approvalUrl += "&amount=" + payPalRequest.amount + "&order=" + URLEncoder.encode(
+                                payPalRequest.displayName
+                            )
+                        }
+                    }
+                }
+
                 linkType = if (isAppSwitchFlow) LinkType.APP_SWITCH else LinkType.APP_LINK
 
                 try {

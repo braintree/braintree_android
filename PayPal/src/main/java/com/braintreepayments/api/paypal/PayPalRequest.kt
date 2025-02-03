@@ -87,7 +87,8 @@ abstract class PayPalRequest internal constructor(
     open var riskCorrelationId: String? = null,
     open var userAuthenticationEmail: String? = null,
     open var userPhoneNumber: PayPalPhoneNumber? = null,
-    open var lineItems: List<PayPalLineItem> = emptyList()
+    open var lineItems: List<PayPalLineItem> = emptyList(),
+    open var enablePayPalAppSwitch: Boolean = true
 ) : Parcelable {
 
     @Throws(JSONException::class)

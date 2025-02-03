@@ -37,7 +37,7 @@ class PayPalVaultRequest
     var shouldOfferCredit: Boolean = false,
     var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
     var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
-    var enablePayPalAppSwitch: Boolean = false,
+    override var enablePayPalAppSwitch: Boolean = false,
     override var localeCode: String? = null,
     override var billingAgreementDescription: String? = null,
     override var isShippingAddressRequired: Boolean = false,
