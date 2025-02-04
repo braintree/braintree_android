@@ -79,6 +79,7 @@ class ShopperInsightsFragment : BaseFragment() {
             requireContext(),
             super.getAuthStringArg(),
             Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"),
+            "com.braintreepayments.demo.braintree"
         )
 
         return inflater.inflate(R.layout.fragment_shopping_insights, container, false)
