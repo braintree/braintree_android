@@ -67,6 +67,9 @@ public class PayPalInternalClientUnitTest {
     private MerchantRepository merchantRepository = mock(MerchantRepository.class);
     private GetReturnLinkUseCase getReturnLinkUseCase = mock(GetReturnLinkUseCase.class);
 
+    private PayPalTokenResponseRepository tokenRepository = mock(PayPalTokenResponseRepository.class);
+    private PayPalSetPaymentTokenUseCase tokenUseCase = mock(PayPalSetPaymentTokenUseCase.class);
+
     @Before
     public void beforeEach() throws JSONException {
         context = mock(Context.class);
@@ -100,7 +103,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PostalAddress shippingAddressOverride = new PostalAddress();
@@ -181,7 +186,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PostalAddress shippingAddressOverride = new PostalAddress();
@@ -257,7 +264,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
         PostalAddress shippingAddressOverride = new PostalAddress();
         shippingAddressOverride.setRecipientName("Brianna Tree");
@@ -359,7 +368,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -395,7 +406,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(false);
@@ -431,7 +444,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -467,7 +482,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -503,7 +520,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -540,7 +559,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -578,7 +599,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -614,7 +637,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -648,7 +673,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -686,7 +713,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -719,7 +748,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -750,7 +781,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -791,7 +824,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -831,7 +866,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -874,7 +911,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
@@ -910,7 +949,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -953,7 +994,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -977,7 +1020,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -1002,7 +1047,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -1029,7 +1076,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
@@ -1050,7 +1099,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         sut.tokenize(payPalAccount, callback);
@@ -1074,7 +1125,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         sut.tokenize(payPalAccount, callback);
@@ -1105,7 +1158,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         sut.tokenize(payPalAccount, callback);
@@ -1130,7 +1185,9 @@ public class PayPalInternalClientUnitTest {
             apiClient,
             deviceInspector,
             merchantRepository,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            tokenRepository,
+            tokenUseCase
         );
 
         PayPalCheckoutRequest payPalRequest = new PayPalCheckoutRequest("1.00", true);
