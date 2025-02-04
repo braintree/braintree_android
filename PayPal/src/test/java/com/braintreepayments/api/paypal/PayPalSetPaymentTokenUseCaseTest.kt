@@ -10,8 +10,9 @@ class PayPalSetPaymentTokenUseCaseTest {
         val payPalTokenResponseRepository = PayPalTokenResponseRepository()
         val payPalSetPaymentTokenUseCase = PayPalSetPaymentTokenUseCase(payPalTokenResponseRepository)
 
-        payPalSetPaymentTokenUseCase.setPaymentToken("paymentToken")
+        val sampleToken = "Payment token"
+        payPalSetPaymentTokenUseCase.setPaymentToken(sampleToken)
 
-        assertEquals(payPalTokenResponseRepository.paymentToken, "paymentToken")
+        assertEquals(payPalTokenResponseRepository.paymentToken, sampleToken)
     }
 }
