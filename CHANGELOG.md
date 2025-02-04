@@ -1,5 +1,15 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* ShopperInsights (BETA)
+  * Add `isPayPalAppInstalled` and `isVenmoAppInstalled` methods
+  * Add `shopperSessionId` parameter to `ShopperInsightsClient`
+* PayPal
+  * Add `shopperSessionId` to `PayPalCheckoutRequest` and `PayPalVaultRequest`
+  * Replace `sendPayPalPresentedEvent()` and `sendVenmoPresentedEvent()` with `sendPresentedEvent()`
+  * Replace `sendPayPalSelectedEvent()` and `sendVenmoSelectedEvent()` with `sendSelectedEvent()`
+
 ## 5.5.0 (2025-01-23)
 
 * PayPal
@@ -14,7 +24,7 @@
   * Add `shippingCallbackUrl` to `PayPalCheckoutRequest`
 * ThreeDSecure
   * Return error if no `dfReferenceId` is returned in the 3D Secure flow
-  
+
 ## 5.3.0 (2024-12-11)
 
 * PayPal

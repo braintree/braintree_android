@@ -9,6 +9,7 @@ import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.GetReturnLinkUseCase
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
@@ -27,7 +28,6 @@ class PayPalClient internal constructor(
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository)
 ) {
-
     /**
      * Used for linking events from the client to server side request
      * In the PayPal flow this will be either an EC token or a Billing Agreement token
@@ -43,6 +43,11 @@ class PayPalClient internal constructor(
      * True if `tokenize()` was called with a Vault request object type
      */
     private var isVaultRequest = false
+
+    /**
+     * Used for sending Shopper Insights session ID provided by merchant to FPTI
+     */
+    private var shopperSessionId: String? = null
 
     /**
      * The final URL string used to open the app switch flow
@@ -82,11 +87,13 @@ class PayPalClient internal constructor(
      * @param payPalRequest a [PayPalRequest] used to customize the request.
      * @param callback      [PayPalPaymentAuthCallback]
      */
+    @OptIn(ExperimentalBetaApi::class)
     fun createPaymentAuthRequest(
         context: Context,
         payPalRequest: PayPalRequest,
         callback: PayPalPaymentAuthCallback
     ) {
+        shopperSessionId = payPalRequest.shopperSessionId
         isVaultRequest = payPalRequest is PayPalVaultRequest
 
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsParams)
@@ -363,7 +370,8 @@ class PayPalClient internal constructor(
             return AnalyticsEventParams(
                 payPalContextId = payPalContextId,
                 linkType = linkType?.stringValue,
-                isVaultRequest = isVaultRequest
+                isVaultRequest = isVaultRequest,
+                shopperSessionId = shopperSessionId
             )
         }
 

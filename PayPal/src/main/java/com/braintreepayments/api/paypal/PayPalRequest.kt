@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.PostalAddress
 import org.json.JSONException
 
@@ -72,6 +73,8 @@ import org.json.JSONException
  * where the user has a PayPal Account with the same email.
  * @property userPhoneNumber User phone number used to initiate a quicker authentication flow in
  * cases where the user has a PayPal Account with the phone number.
+ * @property shopperSessionId the shopper session ID returned from your shopper insights server SDK
+ * integration
  * @property lineItems The line items for this transaction. It can include up to 249 line items.
  */
 abstract class PayPalRequest internal constructor(
@@ -87,6 +90,9 @@ abstract class PayPalRequest internal constructor(
     open var riskCorrelationId: String? = null,
     open var userAuthenticationEmail: String? = null,
     open var userPhoneNumber: PayPalPhoneNumber? = null,
+
+    @property:ExperimentalBetaApi
+    open var shopperSessionId: String? = null,
     open var lineItems: List<PayPalLineItem> = emptyList()
 ) : Parcelable {
 
@@ -135,5 +141,6 @@ abstract class PayPalRequest internal constructor(
         internal const val SHIPPING_CALLBACK_URL_KEY: String = "shipping_callback_url"
         internal const val RECIPIENT_EMAIL_KEY: String = "recipient_email"
         internal const val RECIPIENT_PHONE_NUMBER_KEY: String = "international_phone"
+        internal const val SHOPPER_SESSION_ID: String = "shopper_session_id"
     }
 }

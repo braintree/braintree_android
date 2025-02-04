@@ -155,7 +155,8 @@ public class PayPalFragment extends BaseFragment {
                 activity,
                 buyerEmailAddress,
                 buyerPhoneCountryCode,
-                buyerPhoneNationalNumber
+                buyerPhoneNationalNumber,
+                    "fake-session-id"
             );
         } else {
             payPalRequest = createPayPalCheckoutRequest(
@@ -164,7 +165,8 @@ public class PayPalFragment extends BaseFragment {
                 buyerEmailAddress,
                 buyerPhoneCountryCode,
                 buyerPhoneNationalNumber,
-                isContactInformationEnabled
+                isContactInformationEnabled,
+                    null
             );
         }
         payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest,
