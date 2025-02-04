@@ -18,7 +18,8 @@ class AtomicEventManager internal constructor(
         }
     }
 
-    fun performStartAtomicEventsUpload(){
+    // Start Atomic Event upload
+    fun performStartAtomicEventsUpload() {
 
         val startAtomicLoggerDataProvider = AtomicLoggerDataProvider(
             metricType = AtomicLoggerMetricEventType.START,
@@ -54,12 +55,8 @@ class AtomicEventManager internal constructor(
         }
     }
 
-    fun performEndEventUpload(endTime: Long?) {
-        performEndAtomicEventUpload()
-        performEndTimeExponentialAtomicEventUpload(endTime)
-    }
-
-    private fun performEndAtomicEventUpload(){
+    // End Atomic Event upload
+    fun performEndAtomicEventUpload() {
 
         val endAtomicLoggerDataProvider = AtomicLoggerDataProvider(
             metricType = AtomicLoggerMetricEventType.END,
@@ -75,7 +72,7 @@ class AtomicEventManager internal constructor(
             flow = AtomicEventConstants.Flow.MODXO_VAULTED_NOT_RECURRING,
             viewName = AtomicEventConstants.VIEW.RETURN_TO_MERCHANT,
             startViewName = AtomicEventConstants.VIEW.PAY_WITH_MODULE,
-            startTask =  AtomicEventConstants.Task.SELECT_AGREE_AND_CONTINUE,
+            startTask = AtomicEventConstants.Task.SELECT_AGREE_AND_CONTINUE,
             platform = AtomicEventConstants.PLATFORM,
             guid = UUIDHelper().formattedUUID
         )
@@ -97,6 +94,49 @@ class AtomicEventManager internal constructor(
         }
     }
 
+    // Cancel Atomic Event upload
+    fun performCancelEndAtomicEventUpload() {
+        val endTimeAtomicLoggerDataProvider = AtomicLoggerDataProvider(
+            metricType = AtomicLoggerMetricEventType.END,
+            domain = AtomicLoggerDomain.BT_SDK,
+            startDomain = AtomicLoggerDomain.XO,
+            wasResumed = "false",
+            isCrossApp = "true",
+            interaction = AtomicEventConstants.InteractionType.CLICK_CANCEL_AND_RETURN_TO_MERCHANT,
+            status = AtomicLoggerStatus.OK,
+            navType = AtomicEventConstants.NavType.NAVIGATE,
+            task = AtomicEventConstants.Task.SELECT_CANCEL_AND_RETURN_TO_MERCHANT_LINK,
+            flow = AtomicEventConstants.Flow.MODXO_VAULTED_NOT_RECURRING,
+            viewName = AtomicEventConstants.VIEW.RETURN_TO_MERCHANT,
+            startViewName = AtomicEventConstants.VIEW.PAY_WITH_MODULE,
+            startTask = AtomicEventConstants.Task.SELECT_CANCEL_AND_RETURN_TO_MERCHANT_LINK,
+            platform = AtomicEventConstants.PLATFORM,
+            guid = UUIDHelper().formattedUUID
+        )
+
+        val gson = Gson()
+        val atomicPayload =
+            gson.toJson(JSONArray().put(endTimeAtomicLoggerDataProvider.getPayload()))
+
+        try {
+            httpClient.post(
+                path = AE_URL,
+                data = atomicPayload,
+                configuration = null,
+                authorization = null,
+                callback = null
+            )
+            Log.d("Trace-BT", "Atomic Server Logger API call invoked successfully.")
+        } catch (e: Exception) {
+            Log.d("Trace-BT", "Exception in performAtomicEventsUpload: $e")
+        }
+    }
+
+    fun performEndEventUpload(endTime: Long?) {
+        performEndAtomicEventUpload()
+        performEndTimeExponentialAtomicEventUpload(endTime)
+    }
+
     private fun performEndTimeExponentialAtomicEventUpload(endTime: Long?) {
         val endTimeAtomicLoggerDataProvider = AtomicLoggerDataProvider(
             metricType = AtomicLoggerMetricEventType.EXPONENTIAL_TIME,
@@ -111,14 +151,15 @@ class AtomicEventManager internal constructor(
             flow = AtomicEventConstants.Flow.MODXO_VAULTED_NOT_RECURRING,
             viewName = AtomicEventConstants.VIEW.RETURN_TO_MERCHANT,
             startViewName = AtomicEventConstants.VIEW.PAY_WITH_MODULE,
-            startTask =  AtomicEventConstants.Task.SELECT_AGREE_AND_CONTINUE,
+            startTask = AtomicEventConstants.Task.SELECT_AGREE_AND_CONTINUE,
             platform = AtomicEventConstants.PLATFORM,
             metricValue = endTime,
             guid = UUIDHelper().formattedUUID
         )
 
         val gson = Gson()
-        val atomicPayload = gson.toJson(JSONArray().put(endTimeAtomicLoggerDataProvider.getPayload()))
+        val atomicPayload =
+            gson.toJson(JSONArray().put(endTimeAtomicLoggerDataProvider.getPayload()))
 
         try {
             httpClient.post(
@@ -133,47 +174,10 @@ class AtomicEventManager internal constructor(
             Log.d("Trace-BT", "Exception in performAtomicEventsUpload: $e")
         }
     }
-
 
     fun performCancelEndEventUpload(endTime: Long?) {
         performCancelEndAtomicEventUpload()
         performCancelEndTimeExponentialAtomicEventUpload(endTime)
-    }
-
-    private fun performCancelEndAtomicEventUpload() {
-        val endTimeAtomicLoggerDataProvider = AtomicLoggerDataProvider(
-            metricType = AtomicLoggerMetricEventType.END,
-            domain = AtomicLoggerDomain.BT_SDK,
-            startDomain = AtomicLoggerDomain.XO,
-            wasResumed = "false",
-            isCrossApp = "true",
-            interaction = AtomicEventConstants.InteractionType.CLICK_CANCEL_AND_RETURN_TO_MERCHANT,
-            status = AtomicLoggerStatus.OK,
-            navType = AtomicEventConstants.NavType.NAVIGATE,
-            task = AtomicEventConstants.Task.SELECT_CANCEL_AND_RETURN_TO_MERCHANT_LINK,
-            flow = AtomicEventConstants.Flow.MODXO_VAULTED_NOT_RECURRING,
-            viewName = AtomicEventConstants.VIEW.RETURN_TO_MERCHANT,
-            startViewName = AtomicEventConstants.VIEW.PAY_WITH_MODULE,
-            startTask =  AtomicEventConstants.Task.SELECT_CANCEL_AND_RETURN_TO_MERCHANT_LINK,
-            platform = AtomicEventConstants.PLATFORM,
-            guid = UUIDHelper().formattedUUID
-        )
-
-        val gson = Gson()
-        val atomicPayload = gson.toJson(JSONArray().put(endTimeAtomicLoggerDataProvider.getPayload()))
-
-        try {
-            httpClient.post(
-                path = AE_URL,
-                data = atomicPayload,
-                configuration = null,
-                authorization = null,
-                callback = null
-            )
-            Log.d("Trace-BT", "Atomic Server Logger API call invoked successfully.")
-        } catch (e: Exception) {
-            Log.d("Trace-BT", "Exception in performAtomicEventsUpload: $e")
-        }
     }
 
     private fun performCancelEndTimeExponentialAtomicEventUpload(endTime: Long?) {
@@ -190,14 +194,15 @@ class AtomicEventManager internal constructor(
             flow = AtomicEventConstants.Flow.MODXO_VAULTED_NOT_RECURRING,
             viewName = AtomicEventConstants.VIEW.RETURN_TO_MERCHANT,
             startViewName = AtomicEventConstants.VIEW.PAY_WITH_MODULE,
-            startTask =  AtomicEventConstants.Task.SELECT_CANCEL_AND_RETURN_TO_MERCHANT_LINK,
+            startTask = AtomicEventConstants.Task.SELECT_CANCEL_AND_RETURN_TO_MERCHANT_LINK,
             platform = AtomicEventConstants.PLATFORM,
             metricValue = endTime,
             guid = UUIDHelper().formattedUUID
         )
 
         val gson = Gson()
-        val atomicPayload = gson.toJson(JSONArray().put(endTimeAtomicLoggerDataProvider.getPayload()))
+        val atomicPayload =
+            gson.toJson(JSONArray().put(endTimeAtomicLoggerDataProvider.getPayload()))
 
         try {
             httpClient.post(
