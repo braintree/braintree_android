@@ -125,14 +125,14 @@ internal class PayPalInternalClient(
             try {
                 val paypalPaymentResource = PayPalPaymentResource.fromJson(responseBody)
                 val parsedRedirectUri = Uri.parse(paypalPaymentResource.redirectUrl)
-                val pairingId = findPairingId(parsedRedirectUri)
-                payPalSetPaymentTokenUseCase.setPaymentToken(pairingId)
+                val paypalContextId = extractPayPalContextId(parsedRedirectUri)
+                payPalSetPaymentTokenUseCase.setPaymentToken(paypalContextId)
                 val clientMetadataId = payPalRequest.riskCorrelationId ?: run {
                     val dataCollectorRequest = DataCollectorInternalRequest(
                         payPalRequest.hasUserLocationConsent
                     ).apply {
                         applicationGuid = dataCollector.getPayPalInstallationGUID(context)
-                        clientMetadataId = pairingId
+                        clientMetadataId = paypalContextId
                     }
                     dataCollector.getClientMetadataId(
                         context = context,
@@ -152,11 +152,11 @@ internal class PayPalInternalClient(
                     payPalRequest = payPalRequest,
                     browserSwitchOptions = null,
                     clientMetadataId = clientMetadataId,
-                    pairingId = pairingId,
+                    pairingId = paypalContextId,
                     successUrl = "$returnLink://onetouch/v1/success"
                 )
                 if (isAppSwitchEnabled(payPalRequest) && isPayPalInstalled(context)) {
-                    if (!pairingId.isNullOrEmpty()) {
+                    if (!paypalContextId.isNullOrEmpty()) {
                         paymentAuthRequest.approvalUrl =
                             createAppSwitchUri(parsedRedirectUri).toString()
                     } else {
@@ -187,7 +187,7 @@ internal class PayPalInternalClient(
         return deviceInspector.isPayPalInstalled(context)
     }
 
-    private fun findPairingId(redirectUri: Uri): String? {
+    private fun extractPayPalContextId(redirectUri: Uri): String? {
         return redirectUri.getQueryParameter("ba_token")
             ?: redirectUri.getQueryParameter("token")
     }
