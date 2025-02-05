@@ -102,11 +102,11 @@ class PayPalLauncher internal constructor(
 
             else -> null
         }
-        val pairingId = payPalGetPaymentTokenUseCase()
+        val paypalContextId = payPalGetPaymentTokenUseCase()
         analyticsClient.sendEvent(
             PayPalAnalytics.HANDLE_RETURN_STARTED,
             AnalyticsEventParams(
-                payPalContextId = pairingId,
+                payPalContextId = paypalContextId,
                 appSwitchUrl = appSwitchUrl
             )
         )
@@ -116,7 +116,7 @@ class PayPalLauncher internal constructor(
                 analyticsClient.sendEvent(
                     PayPalAnalytics.HANDLE_RETURN_SUCCEEDED,
                     AnalyticsEventParams(
-                        payPalContextId = pairingId,
+                        payPalContextId = paypalContextId,
                         appSwitchUrl = appSwitchUrl
                     )
                 )
@@ -129,7 +129,7 @@ class PayPalLauncher internal constructor(
                 analyticsClient.sendEvent(
                     PayPalAnalytics.HANDLE_RETURN_FAILED,
                     AnalyticsEventParams(
-                        payPalContextId = pairingId,
+                        payPalContextId = paypalContextId,
                         appSwitchUrl = appSwitchUrl
                     )
                 )
@@ -142,7 +142,7 @@ class PayPalLauncher internal constructor(
                 analyticsClient.sendEvent(
                     PayPalAnalytics.HANDLE_RETURN_NO_RESULT,
                     AnalyticsEventParams(
-                        payPalContextId = pairingId,
+                        payPalContextId = paypalContextId,
                         appSwitchUrl = appSwitchUrl
                     )
                 )
