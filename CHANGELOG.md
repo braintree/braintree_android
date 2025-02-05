@@ -8,7 +8,7 @@
       * Require `PayPalCheckoutRequest.userAuthenticationEmail` for App Switch support
       * Require `PayPalClient.appLinkReturnUrl` for App Switch support
       * **Note:** This feature is currently in beta and may change or be removed in future releases.
-  * Send `pairingId` as `payPalContextId` in `PayPalLauncher.handleReturnToApp()`.
+  * Send `payPalContextId` in `PayPalLauncher.handleReturnToApp` related events.
 
 ## 5.5.0 (2025-01-23)
 

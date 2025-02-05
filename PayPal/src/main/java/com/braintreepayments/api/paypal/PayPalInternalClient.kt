@@ -152,7 +152,7 @@ internal class PayPalInternalClient(
                     payPalRequest = payPalRequest,
                     browserSwitchOptions = null,
                     clientMetadataId = clientMetadataId,
-                    pairingId = paypalContextId,
+                    paypalContextId = paypalContextId,
                     successUrl = "$returnLink://onetouch/v1/success"
                 )
                 if (isAppSwitchEnabled(payPalRequest) && isPayPalInstalled(context)) {
