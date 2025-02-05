@@ -11,7 +11,6 @@ import com.braintreepayments.api.core.GetReturnLinkUseCase
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
-import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -21,7 +20,11 @@ internal class PayPalInternalClient(
     private val apiClient: ApiClient = ApiClient(braintreeClient),
     private val deviceInspector: DeviceInspector = DeviceInspector(),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
-    private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository)
+    private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
+    private val payPalTokenResponseRepository: PayPalTokenResponseRepository = PayPalTokenResponseRepository.instance,
+    private val payPalSetPaymentTokenUseCase: PayPalSetPaymentTokenUseCase = PayPalSetPaymentTokenUseCase(
+        payPalTokenResponseRepository
+    )
 ) {
 
     fun sendRequest(
@@ -113,20 +116,17 @@ internal class PayPalInternalClient(
         callback: PayPalInternalClientCallback
     ) {
         braintreeClient.sendPOST(
-            url = url,
-            data = requestBody,
+            url = url, data = requestBody,
         ) { responseBody: String?, httpError: Exception? ->
-
             if (responseBody == null) {
                 callback.onResult(null, httpError)
                 return@sendPOST
             }
-
             try {
-                val paypalPaymentResource = fromJson(responseBody)
+                val paypalPaymentResource = PayPalPaymentResource.fromJson(responseBody)
                 val parsedRedirectUri = Uri.parse(paypalPaymentResource.redirectUrl)
-
                 val pairingId = findPairingId(parsedRedirectUri)
+                payPalSetPaymentTokenUseCase.setPaymentToken(pairingId)
                 val clientMetadataId = payPalRequest.riskCorrelationId ?: run {
                     val dataCollectorRequest = DataCollectorInternalRequest(
                         payPalRequest.hasUserLocationConsent
@@ -140,7 +140,6 @@ internal class PayPalInternalClient(
                         configuration = configuration
                     )
                 }
-
                 val returnLink: String = when (val returnLinkResult = getReturnLinkUseCase()) {
                     is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
                     is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> returnLinkResult.deepLinkFallbackUrlScheme
@@ -149,7 +148,6 @@ internal class PayPalInternalClient(
                         return@sendPOST
                     }
                 }
-
                 val paymentAuthRequest = PayPalPaymentAuthRequestParams(
                     payPalRequest = payPalRequest,
                     browserSwitchOptions = null,
@@ -157,17 +155,18 @@ internal class PayPalInternalClient(
                     pairingId = pairingId,
                     successUrl = "$returnLink://onetouch/v1/success"
                 )
-
                 if (isAppSwitchEnabled(payPalRequest) && isPayPalInstalled(context)) {
                     if (!pairingId.isNullOrEmpty()) {
-                        paymentAuthRequest.approvalUrl = createAppSwitchUri(parsedRedirectUri).toString()
+                        paymentAuthRequest.approvalUrl =
+                            createAppSwitchUri(parsedRedirectUri).toString()
                     } else {
-                        callback.onResult(null, BraintreeException("Missing Token for PayPal App Switch."))
+                        callback.onResult(
+                            null, BraintreeException("Missing Token for PayPal App Switch.")
+                        )
                     }
                 } else {
                     paymentAuthRequest.approvalUrl = parsedRedirectUri.toString()
                 }
-
                 callback.onResult(paymentAuthRequest, null)
             } catch (exception: JSONException) {
                 callback.onResult(null, exception)
