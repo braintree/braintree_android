@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.6.0 (2025-02-05)
 
 * ShopperInsights (BETA)
   * Add `isPayPalAppInstalled` and `isVenmoAppInstalled` methods
