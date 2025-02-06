@@ -30,6 +30,7 @@ public class PayPalCheckoutRequestUnitTest {
     public void newPayPalCheckoutRequest_setsDefaultValues() {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", false);
 
+        assertNull(request.getShopperSessionId());
         assertNotNull(request.getAmount());
         assertNull(request.getCurrencyCode());
         assertNull(request.getLocaleCode());
@@ -49,6 +50,7 @@ public class PayPalCheckoutRequestUnitTest {
     public void setsValuesCorrectly(@TestParameter boolean appSwitchEnabled) {
         PostalAddress postalAddress = new PostalAddress();
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+        request.setShopperSessionId("shopper-insights-id");
         request.setCurrencyCode("USD");
         request.setShouldOfferPayLater(true);
         request.setIntent(PayPalPaymentIntent.SALE);
@@ -65,6 +67,7 @@ public class PayPalCheckoutRequestUnitTest {
         request.setUserAuthenticationEmail("test-email");
         request.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
 
+        assertEquals("shopper-insights-id", request.getShopperSessionId());
         assertEquals("1.00", request.getAmount());
         assertEquals("USD", request.getCurrencyCode());
         assertEquals("US", request.getLocaleCode());
@@ -182,11 +185,27 @@ public class PayPalCheckoutRequestUnitTest {
                 mock(Authorization.class),
                 "success_url",
                 "cancel_url",
-                null
+                "universal_url"
         );
 
         JSONObject jsonObject = new JSONObject(requestBody);
         assertEquals(urlString, jsonObject.getString("shipping_callback_url"));
+    }
+
+    @Test
+    public void createRequestBody_sets_shopper_insights_session_id() throws JSONException {
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+        request.setShopperSessionId("shopper-insights-id");
+
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url",
+                "universal_url"
+        );
+
+        assertTrue(requestBody.contains("\"shopper_session_id\":" + "\"shopper-insights-id\""));
     }
 
     @Test

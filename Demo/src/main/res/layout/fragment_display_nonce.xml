@@ -22,18 +22,21 @@
                 android:id="@+id/nonce"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textIsSelectable="true"
                 tools:text="Nonce" />
 
             <TextView
                 android:id="@+id/nonce_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textIsSelectable="true"
                 tools:text="Nonce Details" />
 
             <TextView
                 android:id="@+id/device_data"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textIsSelectable="true"
                 tools:text="Device Data" />
         </LinearLayout>
     </ScrollView>
