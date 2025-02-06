@@ -15,18 +15,19 @@ public abstract class BaseFragment extends Fragment {
 
     @CallSuper
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
-        getActivity().setProgressBarIndeterminateVisibility(true);
+        // during rotation, fragment is not attached to the activity and NPE is thrown
+        requireActivity().setProgressBarIndeterminateVisibility(true);
     }
 
     @CallSuper
     public void onCancel(int requestCode) {
-        getActivity().setProgressBarIndeterminateVisibility(false);
+        requireActivity().setProgressBarIndeterminateVisibility(false);
         Log.d(getClass().getSimpleName(), "Cancel received: " + requestCode);
     }
 
     @CallSuper
     protected void handleError(Exception error) {
-        getActivity().setProgressBarIndeterminateVisibility(false);
+        requireActivity().setProgressBarIndeterminateVisibility(false);
 
         Log.d(getClass().getSimpleName(), "Error received (" + error.getClass() + "): " + error.getMessage());
         Log.d(getClass().getSimpleName(), error.toString());
