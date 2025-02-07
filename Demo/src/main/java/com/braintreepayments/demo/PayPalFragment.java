@@ -156,7 +156,7 @@ public class PayPalFragment extends BaseFragment {
                 buyerEmailAddress,
                 buyerPhoneCountryCode,
                 buyerPhoneNationalNumber,
-                    "fake-session-id"
+                    null
             );
         } else {
             payPalRequest = createPayPalCheckoutRequest(
