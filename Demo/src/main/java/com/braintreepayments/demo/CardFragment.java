@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.card.Card;
@@ -75,6 +76,8 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     private DataCollector dataCollector;
 
     private String cardFormActionLabel;
+
+    private CardViewModel cardViewModel = new ViewModelProvider(this).get(CardViewModel.class);
 
     @Override
     public void onCreate(Bundle onSaveInstanceState) {
