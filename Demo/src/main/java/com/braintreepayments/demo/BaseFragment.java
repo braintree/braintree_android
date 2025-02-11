@@ -16,23 +16,29 @@ public abstract class BaseFragment extends Fragment {
     @CallSuper
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         // during rotation, fragment is not attached to the activity and NPE is thrown
-        requireActivity().setProgressBarIndeterminateVisibility(true);
+        if (getActivity() != null) {
+            requireActivity().setProgressBarIndeterminateVisibility(true);
+        }
     }
 
     @CallSuper
     public void onCancel(int requestCode) {
-        requireActivity().setProgressBarIndeterminateVisibility(false);
-        Log.d(getClass().getSimpleName(), "Cancel received: " + requestCode);
+        if (getActivity() != null) {
+            requireActivity().setProgressBarIndeterminateVisibility(false);
+            Log.d(getClass().getSimpleName(), "Cancel received: " + requestCode);
+        }
     }
 
     @CallSuper
     protected void handleError(Exception error) {
-        requireActivity().setProgressBarIndeterminateVisibility(false);
+        if (getActivity() != null) {
+            requireActivity().setProgressBarIndeterminateVisibility(false);
 
-        Log.d(getClass().getSimpleName(), "Error received (" + error.getClass() + "): " + error.getMessage());
-        Log.d(getClass().getSimpleName(), error.toString());
+            Log.d(getClass().getSimpleName(), "Error received (" + error.getClass() + "): " + error.getMessage());
+            Log.d(getClass().getSimpleName(), error.toString());
 
-        showDialog("An error occurred (" + error.getClass() + "): " + error.getMessage());
+            showDialog("An error occurred (" + error.getClass() + "): " + error.getMessage());
+        }
     }
 
     protected DemoActivity getDemoActivity() {
