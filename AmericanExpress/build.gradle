@@ -39,6 +39,7 @@ dependencies {
     testImplementation libs.robolectric
     testImplementation libs.mockito.core
     testImplementation libs.json.assert
+    testImplementation libs.test.parameter.injector
     testImplementation project(':TestUtils')
 }
 

@@ -106,6 +106,7 @@ dependencies {
     androidTestImplementation project(':TestUtils')
 
     testImplementation libs.junit
+    testImplementation libs.test.parameter.injector
 }
 
 task demoApkSize {

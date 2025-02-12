@@ -83,9 +83,9 @@ class LocalPaymentClient internal constructor(
                         request
                     ) { localPaymentResult: LocalPaymentAuthRequestParams?, createPaymentMethodError: Exception? ->
                         if (localPaymentResult != null) {
-                            val pairingId = localPaymentResult.paymentId
-                            if (pairingId.isNotEmpty()) {
-                                payPalContextId = pairingId
+                            val paypalContextId = localPaymentResult.paymentId
+                            if (paypalContextId.isNotEmpty()) {
+                                payPalContextId = paypalContextId
                             }
                             buildBrowserSwitchOptions(
                                 localPaymentResult,

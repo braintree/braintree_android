@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypal
 
+import android.os.Build
 import android.net.Uri
 import android.text.TextUtils
 import com.braintreepayments.api.core.Authorization
@@ -72,6 +73,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     var currencyCode: String? = null,
     var shouldRequestBillingAgreement: Boolean = false,
     var shouldOfferPayLater: Boolean = false,
+    override var enablePayPalAppSwitch: Boolean = false,
     var shippingCallbackUrl: Uri? = null,
     var contactInformation: PayPalContactInformation? = null,
     override var localeCode: String? = null,
@@ -97,6 +99,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     displayName = displayName,
     merchantAccountId = merchantAccountId,
     riskCorrelationId = riskCorrelationId,
+    enablePayPalAppSwitch = enablePayPalAppSwitch,
     userAuthenticationEmail = userAuthenticationEmail,
     lineItems = lineItems
 ) {
@@ -140,10 +143,21 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
         }
 
         userPhoneNumber?.let { parameters.put(PHONE_NUMBER_KEY, it.toJson()) }
-
         contactInformation?.let { info ->
             info.recipientEmail?.let { parameters.put(RECIPIENT_EMAIL_KEY, it) }
-            info.recipentPhoneNumber?.let { parameters.put(RECIPIENT_PHONE_NUMBER_KEY, it.toJson()) }
+            info.recipentPhoneNumber?.let {
+                parameters.put(
+                    RECIPIENT_PHONE_NUMBER_KEY,
+                    it.toJson()
+                )
+            }
+        }
+
+        if (enablePayPalAppSwitch && !appLink.isNullOrEmpty() && !userAuthenticationEmail.isNullOrEmpty()) {
+            parameters.put(ENABLE_APP_SWITCH_KEY, enablePayPalAppSwitch)
+            parameters.put(OS_VERSION_KEY, Build.VERSION.SDK_INT.toString())
+            parameters.put(OS_TYPE_KEY, "Android")
+            parameters.put(MERCHANT_APP_RETURN_URL_KEY, appLink)
         }
 
         parameters.putOpt(SHOPPER_SESSION_ID, shopperSessionId)
