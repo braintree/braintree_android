@@ -5,6 +5,7 @@ import android.text.TextUtils
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.ClientToken
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.PostalAddress
 import com.braintreepayments.api.core.PostalAddressParser
 import kotlinx.parcelize.Parcelize
@@ -49,7 +50,7 @@ class PayPalVaultRequest
     override var riskCorrelationId: String? = null,
     override var userAuthenticationEmail: String? = null,
     override var userPhoneNumber: PayPalPhoneNumber? = null,
-    override var lineItems: List<PayPalLineItem> = emptyList(),
+    override var lineItems: List<PayPalLineItem> = emptyList()
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -62,11 +63,12 @@ class PayPalVaultRequest
     merchantAccountId = merchantAccountId,
     riskCorrelationId = riskCorrelationId,
     userAuthenticationEmail = userAuthenticationEmail,
-    lineItems = lineItems
+    lineItems = lineItems,
 ) {
 
+    @OptIn(ExperimentalBetaApi::class)
     @Throws(JSONException::class)
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "CyclomaticComplexMethod")
     override fun createRequestBody(
         configuration: Configuration?,
         authorization: Authorization?,
@@ -90,7 +92,11 @@ class PayPalVaultRequest
             parameters.put(DESCRIPTION_KEY, billingAgreementDescription)
         }
 
-        parameters.putOpt(PAYER_EMAIL_KEY, userAuthenticationEmail)
+        if (!userAuthenticationEmail.isNullOrEmpty()) {
+            parameters.put(PAYER_EMAIL_KEY, userAuthenticationEmail)
+        }
+
+        parameters.putOpt(SHOPPER_SESSION_ID, shopperSessionId)
 
         userPhoneNumber?.let { parameters.put(PHONE_NUMBER_KEY, it.toJson()) }
 

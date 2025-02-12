@@ -27,20 +27,6 @@ public class TLSSocketFactory extends SSLSocketFactory {
 
     private final SSLSocketFactory internalSSLSocketFactory;
 
-    static TLSSocketFactory newInstance() throws SSLException {
-        return new TLSSocketFactory();
-    }
-
-    TLSSocketFactory() throws SSLException {
-        try {
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, null, null); // use system security providers
-            internalSSLSocketFactory = sslContext.getSocketFactory();
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            throw new SSLException(e.getMessage());
-        }
-    }
-
     /**
      * @see <a href="http://developer.android.com/training/articles/security-ssl.html#UnknownCa">Android Documentation</a>
      */

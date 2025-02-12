@@ -7,6 +7,7 @@ import com.braintreepayments.api.paypal.PayPalBillingCycle;
 import com.braintreepayments.api.paypal.PayPalBillingInterval;
 import com.braintreepayments.api.paypal.PayPalBillingPricing;
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest;
+import com.braintreepayments.api.paypal.PayPalContactInformation;
 import com.braintreepayments.api.paypal.PayPalLandingPageType;
 import com.braintreepayments.api.paypal.PayPalPaymentIntent;
 import com.braintreepayments.api.paypal.PayPalPaymentUserAction;
@@ -25,17 +26,27 @@ public class PayPalRequestFactory {
         Context context,
         String buyerEmailAddress,
         String buyerPhoneCountryCode,
-        String buyerPhoneNationalNumber
+        String buyerPhoneNationalNumber,
+        String shopperInsightsSessionId
     ) {
 
         PayPalVaultRequest request = new PayPalVaultRequest(true);
 
-        if (!buyerEmailAddress.isEmpty()) {
+        if (buyerEmailAddress != null && !buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
         }
 
-        if (!buyerPhoneCountryCode.isEmpty() && !buyerPhoneNationalNumber.isEmpty()) {
-            request.setUserPhoneNumber(new PayPalPhoneNumber(buyerPhoneCountryCode, buyerPhoneNationalNumber));
+        if ((buyerPhoneCountryCode != null && !buyerPhoneCountryCode.isEmpty())
+                && (buyerPhoneNationalNumber != null && !buyerPhoneNationalNumber.isEmpty())) {
+
+            request.setUserPhoneNumber(new PayPalPhoneNumber(
+                    buyerPhoneCountryCode,
+                    buyerPhoneNationalNumber)
+            );
+        }
+
+        if (shopperInsightsSessionId != null && !shopperInsightsSessionId.isEmpty()) {
+            request.setShopperSessionId(shopperInsightsSessionId);
         }
 
         if (Settings.isPayPalAppSwithEnabled(context)) {
@@ -61,6 +72,7 @@ public class PayPalRequestFactory {
             postalAddress.setStreetAddress("123 Fake Street");
             postalAddress.setExtendedAddress("Floor A");
             postalAddress.setLocality("San Francisco");
+            postalAddress.setPostalCode("12345");
             postalAddress.setRegion("CA");
             postalAddress.setCountryCodeAlpha2("US");
 
@@ -111,16 +123,26 @@ public class PayPalRequestFactory {
         String amount,
         String buyerEmailAddress,
         String buyerPhoneCountryCode,
-        String buyerPhoneNationalNumber
+        String buyerPhoneNationalNumber,
+        Boolean isContactInformationEnabled,
+        String shopperInsightsSessionId
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
 
-        if (!buyerEmailAddress.isEmpty()) {
+        if (buyerEmailAddress != null && !buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
         }
 
-        if (!buyerPhoneCountryCode.isEmpty() && !buyerPhoneNationalNumber.isEmpty()) {
-            request.setUserPhoneNumber(new PayPalPhoneNumber(buyerPhoneCountryCode, buyerPhoneNationalNumber));
+        if ((buyerPhoneCountryCode != null && !buyerPhoneCountryCode.isEmpty())
+                && (buyerPhoneNationalNumber != null && !buyerPhoneNationalNumber.isEmpty())) {
+            request.setUserPhoneNumber(new PayPalPhoneNumber(
+                    buyerPhoneCountryCode,
+                    buyerPhoneNationalNumber)
+            );
+        }
+
+        if (shopperInsightsSessionId != null && !shopperInsightsSessionId.isEmpty()) {
+            request.setShopperSessionId(shopperInsightsSessionId);
         }
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
@@ -156,6 +178,10 @@ public class PayPalRequestFactory {
             shippingAddress.setPostalCode("94103");
 
             request.setShippingAddressOverride(shippingAddress);
+        }
+
+        if (isContactInformationEnabled) {
+            request.setContactInformation(new PayPalContactInformation("some@email.com", new PayPalPhoneNumber("1", "1234567890")));
         }
 
         return request;

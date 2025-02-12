@@ -42,8 +42,6 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 
-import java.util.ArrayList;
-
 @RunWith(RobolectricTestRunner.class)
 public class VenmoClientUnitTest {
 
@@ -75,7 +73,6 @@ public class VenmoClientUnitTest {
         null,
         null,
         null,
-        new ArrayList<>(),
         appSwitchUrl.toString()
     );
     private final AnalyticsEventParams expectedVaultAnalyticsParams = new AnalyticsEventParams(
@@ -86,7 +83,6 @@ public class VenmoClientUnitTest {
         null,
         null,
         null,
-        new ArrayList<>(),
         appSwitchUrl.toString()
     );
 
@@ -960,9 +956,11 @@ public class VenmoClientUnitTest {
         assertTrue(result instanceof VenmoResult.Failure);
         assertEquals(error, ((VenmoResult.Failure) result).getError());
 
-        AnalyticsEventParams params = new AnalyticsEventParams();
-        params.setLinkType(LINK_TYPE);
-        params.setVaultRequest(true);
+        AnalyticsEventParams params = new AnalyticsEventParams(
+            null,
+            LINK_TYPE,
+            true
+        );
         verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, expectedVaultAnalyticsParams);
     }
 

@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypal;
 
+import android.net.Uri;
 import android.os.Parcel;
 
 import com.braintreepayments.api.core.Authorization;
@@ -7,6 +8,7 @@ import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.core.PostalAddress;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -27,6 +29,7 @@ public class PayPalCheckoutRequestUnitTest {
     public void newPayPalCheckoutRequest_setsDefaultValues() {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", false);
 
+        assertNull(request.getShopperSessionId());
         assertNotNull(request.getAmount());
         assertNull(request.getCurrencyCode());
         assertNull(request.getLocaleCode());
@@ -44,6 +47,7 @@ public class PayPalCheckoutRequestUnitTest {
     public void setsValuesCorrectly() {
         PostalAddress postalAddress = new PostalAddress();
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+        request.setShopperSessionId("shopper-insights-id");
         request.setCurrencyCode("USD");
         request.setShouldOfferPayLater(true);
         request.setIntent(PayPalPaymentIntent.SALE);
@@ -58,6 +62,7 @@ public class PayPalCheckoutRequestUnitTest {
         request.setRiskCorrelationId("123-correlation");
         request.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
 
+        assertEquals("shopper-insights-id", request.getShopperSessionId());
         assertEquals("1.00", request.getAmount());
         assertEquals("USD", request.getCurrencyCode());
         assertEquals("US", request.getLocaleCode());
@@ -157,6 +162,74 @@ public class PayPalCheckoutRequestUnitTest {
     }
 
     @Test
+    public void createRequestBody_sets_shippingCallbackUri_when_not_null() throws JSONException {
+        String urlString = "https://www.example.com/path";
+        Uri uri = Uri.parse(urlString);
+
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+        request.setShippingCallbackUrl(uri);
+
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url",
+                "universal_url"
+        );
+
+        JSONObject jsonObject = new JSONObject(requestBody);
+        assertEquals(urlString, jsonObject.getString("shipping_callback_url"));
+    }
+
+    @Test
+    public void createRequestBody_sets_shopper_insights_session_id() throws JSONException {
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+        request.setShopperSessionId("shopper-insights-id");
+
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url",
+                "universal_url"
+        );
+
+        assertTrue(requestBody.contains("\"shopper_session_id\":" + "\"shopper-insights-id\""));
+    }
+
+    @Test
+    public void createRequestBody_does_not_set_shippingCallbackUri_when_null() throws JSONException {
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url",
+                null
+        );
+
+        JSONObject jsonObject = new JSONObject(requestBody);
+        assertFalse(jsonObject.has("shipping_callback_url"));
+    }
+
+    @Test
+    public void createRequestBody_does_not_set_shippingCallbackUri_when_empty() throws JSONException {
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+        request.setShippingCallbackUrl(Uri.parse(""));
+
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url",
+                null
+        );
+
+        JSONObject jsonObject = new JSONObject(requestBody);
+        assertFalse(jsonObject.has("shipping_callback_url"));
+    }
+
     public void createRequestBody_sets_userPhoneNumber_when_not_null() throws JSONException {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
 
@@ -170,5 +243,38 @@ public class PayPalCheckoutRequestUnitTest {
         );
 
         assertTrue(requestBody.contains("\"phone_number\":{\"country_code\":\"1\",\"national_number\":\"1231231234\"}"));
+    }
+
+    @Test
+    public void createRequestBody_sets_contactInformation_when_not_null() throws JSONException {
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+
+        request.setContactInformation(new PayPalContactInformation("some@email.com", new PayPalPhoneNumber("1", "1234567890")));
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url",
+                null
+        );
+
+        assertTrue(requestBody.contains("\"recipient_email\":\"some@email.com\""));
+        assertTrue(requestBody.contains("\"international_phone\":{\"country_code\":\"1\",\"national_number\":\"1234567890\"}"));
+    }
+
+    @Test
+    public void createRequestBody_does_not_set_contactInformation_when_contactInformation_is_null() throws JSONException {
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url",
+                null
+        );
+
+        assertFalse(requestBody.contains("\"recipient_email\":\"some@email.com\""));
+        assertFalse(requestBody.contains("\"international_phone\":{\"country_code\":\"1\",\"national_number\":\"1234567890\"}"));
     }
 }

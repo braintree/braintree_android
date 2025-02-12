@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import static java.util.Collections.emptyList;
 
 import android.content.Context;
+
 import android.net.Uri;
 
 import androidx.fragment.app.FragmentActivity;
@@ -20,6 +21,7 @@ import com.braintreepayments.api.BrowserSwitchFinalResult;
 import com.braintreepayments.api.BrowserSwitchOptions;
 import com.braintreepayments.api.core.AnalyticsEventParams;
 import com.braintreepayments.api.core.Authorization;
+import com.braintreepayments.api.core.AnalyticsParamRepository;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.BraintreeRequestCodes;
@@ -45,6 +47,8 @@ import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
+import java.util.Collections;
+
 @RunWith(RobolectricTestRunner.class)
 public class PayPalClientUnitTest {
 
@@ -62,7 +66,7 @@ public class PayPalClientUnitTest {
     @Before
     public void beforeEach() throws JSONException {
         activity = mock(FragmentActivity.class);
-
+        merchantRepository = mock(MerchantRepository.class);
         payPalEnabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL);
         payPalDisabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_DISABLED_PAYPAL);
 
@@ -83,6 +87,7 @@ public class PayPalClientUnitTest {
     public void createPaymentAuthRequest_callsBackPayPalResponse_sendsStartedAnalytics() throws JSONException {
         PayPalVaultRequest payPalVaultRequest = new PayPalVaultRequest(true);
         payPalVaultRequest.setMerchantAccountId("sample-merchant-account-id");
+        payPalVaultRequest.setShopperSessionId("test-shopper-session-id");
 
         PayPalPaymentAuthRequestParams paymentAuthRequest = new PayPalPaymentAuthRequestParams(
             payPalVaultRequest,
@@ -127,7 +132,7 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
             PayPalAnalytics.TOKENIZATION_STARTED,
-            new AnalyticsEventParams(null, null, true, null, null, null)
+            new AnalyticsEventParams(null, null, true, null, null, null, null, null, "test-shopper-session-id")
         );
     }
 
@@ -295,8 +300,11 @@ public class PayPalClientUnitTest {
                 "for more information.",
             ((PayPalPaymentAuthRequest.Failure) request).getError().getMessage());
 
-        AnalyticsEventParams params = new AnalyticsEventParams();
-        params.setVaultRequest(false);
+        AnalyticsEventParams params = new AnalyticsEventParams(
+            null,
+            null,
+            false
+        );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params);
     }
 
@@ -320,8 +328,11 @@ public class PayPalClientUnitTest {
         assertTrue(request instanceof PayPalPaymentAuthRequest.Failure);
         assertEquals(authError, ((PayPalPaymentAuthRequest.Failure) request).getError());
 
-        AnalyticsEventParams params = new AnalyticsEventParams();
-        params.setVaultRequest(false);
+        AnalyticsEventParams params = new AnalyticsEventParams(
+            null,
+            null,
+            false
+        );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params);
     }
 
@@ -345,8 +356,11 @@ public class PayPalClientUnitTest {
         assertTrue(request instanceof PayPalPaymentAuthRequest.Failure);
         assertEquals(authError, ((PayPalPaymentAuthRequest.Failure) request).getError());
 
-        AnalyticsEventParams params = new AnalyticsEventParams();
-        params.setVaultRequest(true);
+        AnalyticsEventParams params = new AnalyticsEventParams(
+            null,
+            null,
+            true
+        );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params);
     }
 
@@ -425,9 +439,11 @@ public class PayPalClientUnitTest {
         assertFalse(browserSwitchOptions.isLaunchAsNewTask());
 
 
-        AnalyticsEventParams params = new AnalyticsEventParams();
-        params.setVaultRequest(true);
-        params.setLinkType("universal");
+        AnalyticsEventParams params = new AnalyticsEventParams(
+            null,
+            "universal",
+            true
+        );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_STARTED, params);
     }
 
@@ -552,8 +568,11 @@ public class PayPalClientUnitTest {
         PayPalResult result = captor.getValue();
         assertTrue(result instanceof PayPalResult.Cancel);
 
-        AnalyticsEventParams params = new AnalyticsEventParams();
-        params.setVaultRequest(false);
+        AnalyticsEventParams params = new AnalyticsEventParams(
+            null,
+            null,
+            false
+        );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params);
     }
 
@@ -593,9 +612,11 @@ public class PayPalClientUnitTest {
         assertTrue(result instanceof PayPalResult.Success);
         assertEquals(payPalAccountNonce, ((PayPalResult.Success) result).getNonce());
 
-        AnalyticsEventParams params = new AnalyticsEventParams();
-        params.setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN");
-        params.setVaultRequest(false);
+        AnalyticsEventParams params = new AnalyticsEventParams(
+            "EC-HERMES-SANDBOX-EC-TOKEN",
+            null,
+            false
+        );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, params);
     }
 
@@ -773,8 +794,9 @@ public class PayPalClientUnitTest {
         assertTrue(result instanceof PayPalResult.Success);
         assertEquals(payPalAccountNonce, ((PayPalResult.Success) result).getNonce());
 
-        AnalyticsEventParams params = new AnalyticsEventParams();
-        params.setPayPalContextId("EC-HERMES-SANDBOX-EC-TOKEN");
+        AnalyticsEventParams params = new AnalyticsEventParams(
+            "EC-HERMES-SANDBOX-EC-TOKEN"
+        );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, params);
         AnalyticsEventParams appSwitchParams = new AnalyticsEventParams(
                 "EC-HERMES-SANDBOX-EC-TOKEN",
@@ -784,7 +806,6 @@ public class PayPalClientUnitTest {
                 null,
                 null,
                 null,
-                emptyList(),
                 "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN&switch_initiated_time=17166111926211"
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_SUCCEEDED, appSwitchParams);
@@ -815,8 +836,9 @@ public class PayPalClientUnitTest {
 
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback);
 
-        AnalyticsEventParams params = new AnalyticsEventParams();
-        params.setPayPalContextId("SOME-BA");
+        AnalyticsEventParams params = new AnalyticsEventParams(
+            "SOME-BA"
+        );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params);
         AnalyticsEventParams appSwitchParams = new AnalyticsEventParams(
                 "SOME-BA",
@@ -826,7 +848,6 @@ public class PayPalClientUnitTest {
                 null,
                 null,
                 null,
-                emptyList(),
                 "https://some-scheme/onetouch/v1/cancel?token=SOME-BA&switch_initiated_time=17166111926211"
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, appSwitchParams);

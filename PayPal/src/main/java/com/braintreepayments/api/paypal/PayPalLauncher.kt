@@ -7,17 +7,22 @@ import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthResult
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditPendingRequest
+import com.braintreepayments.api.core.GetReturnLinkUseCase
+import com.braintreepayments.api.core.MerchantRepository
 
 /**
  * Responsible for launching PayPal user authentication in a web browser
  */
 class PayPalLauncher internal constructor(
     private val browserSwitchClient: BrowserSwitchClient,
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
     lazyAnalyticsClient: Lazy<AnalyticsClient>
 ) {
     /**
@@ -113,7 +118,20 @@ class PayPalLauncher internal constructor(
         pendingRequest: PayPalPendingRequest.Started,
         intent: Intent
     ): PayPalPaymentAuthResult {
-        analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_STARTED)
+        analyticsClient.sendEvent(
+            PayPalAnalytics.HANDLE_RETURN_STARTED,
+            AnalyticsEventParams(
+                appSwitchUrl = when (val returnLinkResult = getReturnLinkUseCase()) {
+                    is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> {
+                        returnLinkResult.appLinkReturnUri.toString()
+                    }
+                    is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> {
+                        returnLinkResult.deepLinkFallbackUrlScheme
+                    }
+                    else -> null
+                }
+            )
+        )
         return when (val browserSwitchResult =
             browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
             is BrowserSwitchFinalResult.Success -> {
