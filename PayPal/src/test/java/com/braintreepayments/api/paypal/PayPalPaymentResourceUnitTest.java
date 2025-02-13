@@ -6,19 +6,32 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-import com.braintreepayments.api.paypal.PayPalPaymentResource;
-
 public class PayPalPaymentResourceUnitTest {
 
     @Test
-    public void fromJson_parsesRedirectUrlFromOneTimePaymentResource() throws JSONException {
+    public void fromJson_parsesRedirectUrlFromOneTimePaymentResource_appSwitchFlow() throws JSONException {
         String oneTimePaymentJson = new JSONObject()
                 .put("paymentResource", new JSONObject()
                         .put("redirectUrl", "www.example.com/redirect")
+                        .put("launchPayPalApp", true)
                 ).toString();
 
         PayPalPaymentResource sut = PayPalPaymentResource.fromJson(oneTimePaymentJson);
         assertEquals("www.example.com/redirect", sut.getRedirectUrl());
+        assertTrue(sut.isAppSwitchFlow());
+    }
+
+    @Test
+    public void fromJson_parsesRedirectUrlFromOneTimePaymentResource_fallbackFlow() throws JSONException {
+        String oneTimePaymentJson = new JSONObject()
+                .put("paymentResource", new JSONObject()
+                        .put("redirectUrl", "www.example.com/redirect")
+                        .put("launchPayPalApp", false)
+                ).toString();
+
+        PayPalPaymentResource sut = PayPalPaymentResource.fromJson(oneTimePaymentJson);
+        assertEquals("www.example.com/redirect", sut.getRedirectUrl());
+        assertFalse(sut.isAppSwitchFlow());
     }
 
     @Test
@@ -30,6 +43,7 @@ public class PayPalPaymentResourceUnitTest {
 
         PayPalPaymentResource sut = PayPalPaymentResource.fromJson(billingAgreementJson);
         assertEquals("www.example.com/redirect", sut.getRedirectUrl());
+        assertFalse(sut.isAppSwitchFlow());
     }
 
     @Test
@@ -42,5 +56,6 @@ public class PayPalPaymentResourceUnitTest {
 
         PayPalPaymentResource sut = PayPalPaymentResource.fromJson(billingAgreementJson);
         assertEquals("www.paypal.example.com/redirect", sut.getRedirectUrl());
+        assertTrue(sut.isAppSwitchFlow());
     }
 }
