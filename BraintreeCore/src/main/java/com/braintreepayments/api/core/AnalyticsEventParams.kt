@@ -35,5 +35,5 @@ data class AnalyticsEventParams @JvmOverloads constructor(
     val buttonType: String? = null,
     val buttonOrder: String? = null,
     val pageType: String? = null,
-    val launchPayPalApp : Boolean? = null
+    val launchPayPalApp: Boolean? = null
 )
