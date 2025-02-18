@@ -2,6 +2,7 @@ package com.braintreepayments.api.paypal
 
 import android.content.Context
 import android.net.Uri
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
@@ -67,6 +68,10 @@ internal class PayPalInternalClient(
                 } else {
                     null
                 }
+                braintreeClient.sendAnalyticsEvent(
+                    PayPalAnalytics.APP_SWITCH_LAUNCH_PAYPAL_APP,
+                    AnalyticsEventParams(launchPayPalApp = appLinkParam.isNullOrEmpty())
+                )
 
                 val cancelUrl = "$navigationLink://onetouch/v1/cancel"
                 val successUrl = "$navigationLink://onetouch/v1/success"

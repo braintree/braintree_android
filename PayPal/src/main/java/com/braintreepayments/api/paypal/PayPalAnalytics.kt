@@ -15,6 +15,7 @@ internal object PayPalAnalytics {
     const val HANDLE_RETURN_NO_RESULT = "paypal:tokenize:handle-return:no-result"
 
     // App Switch events
+    const val APP_SWITCH_LAUNCH_PAYPAL_APP = "paypal:app-switch:launchPayPalApp"
     const val APP_SWITCH_STARTED = "paypal:tokenize:app-switch:started"
     const val APP_SWITCH_SUCCEEDED = "paypal:tokenize:app-switch:succeeded"
     const val APP_SWITCH_FAILED = "paypal:tokenize:app-switch:failed"
