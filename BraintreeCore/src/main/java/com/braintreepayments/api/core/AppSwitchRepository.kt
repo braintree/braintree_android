@@ -1,6 +1,8 @@
 package com.braintreepayments.api.core
 
-// should possibly be a higher level repo
+/**
+ * Repository to hold the state of the app switch flow.
+ */
 class AppSwitchRepository {
     var isAppSwitchFlow = false
 
