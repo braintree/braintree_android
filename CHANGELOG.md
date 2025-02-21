@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+* All Modules
+    * Reduce minimum required Java version to Java 11
+
 ## 5.6.0 (2025-02-05)
 
 * ShopperInsights (BETA)
