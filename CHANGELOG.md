@@ -1,6 +1,7 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+
 * All Modules
     * Reduce minimum required Java version to Java 11
 
