@@ -41,10 +41,13 @@ internal data class PayPalPaymentResource(
                 val isAppSwitchFlow = Json.optBoolean(paymentResource, LAUNCH_PAYPAL_APP_KEY, false)
                 PayPalPaymentResource(redirectUrl, isAppSwitchFlow)
             } else {
-                var isAppSwitchFlow = true
                 val redirectJson = json.optJSONObject(AGREEMENT_SETUP_KEY)
+                var isAppSwitchFlow = true
                 val payPalApprovalURL = Json.optString(redirectJson, PAYPAL_APP_APPROVAL_URL_KEY, "")
                 var redirectUrl = payPalApprovalURL
+                // Presence of `payPalApprovalURL` indicates that this is an app-switch flow.
+                // In case `payPalApprovalURL` is empty and we end up using `approvalUrl` instead,
+                // one wouldn't go through the app-switch flow.
                 payPalApprovalURL.ifEmpty {
                     isAppSwitchFlow = false
                     redirectUrl = Json.optString(redirectJson, APPROVAL_URL_KEY, "")

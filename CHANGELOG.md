@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+  * Fix a bug to correctly log app switch flow analytics.
+
 ## 5.6.0 (2025-02-05)
 
 * ShopperInsights (BETA)
