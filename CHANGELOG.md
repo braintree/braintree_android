@@ -6,7 +6,6 @@
   * Add PayPal App Switch for one time checkout flow (BETA)
       * Add `enablePayPalAppSwitch` property to `PayPalCheckoutRequest` for App Switch support
       * Require `PayPalCheckoutRequest.userAuthenticationEmail` for App Switch support
-      * Require `PayPalClient.appLinkReturnUrl` for App Switch support
       * **Note:** This feature is currently in beta and may change or be removed in future releases.
   * Send `payPalContextId` in `PayPalLauncher.handleReturnToApp` related events.
 
