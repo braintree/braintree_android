@@ -138,11 +138,7 @@ internal class PayPalInternalClient(
                         applicationGuid = dataCollector.getPayPalInstallationGUID(context)
                         clientMetadataId = paypalContextId
                     }
-                    dataCollector.getClientMetadataId(
-                        context = context,
-                        request = dataCollectorRequest,
-                        configuration = configuration
-                    )
+                    dataCollector.getClientMetadataId(context, dataCollectorRequest, configuration)
                 }
                 val returnLink: String = when (val returnLinkResult = getReturnLinkUseCase()) {
                     is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
