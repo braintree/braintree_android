@@ -145,6 +145,10 @@ public class PayPalRequestFactory {
             request.setShopperSessionId(shopperInsightsSessionId);
         }
 
+        if (Settings.isPayPalAppSwithEnabled(context)) {
+            request.setEnablePayPalAppSwitch(true);
+        }
+
         request.setDisplayName(Settings.getPayPalDisplayName(context));
 
         String landingPageType = Settings.getPayPalLandingPageType(context);

@@ -127,7 +127,7 @@ class PayPalClient internal constructor(
         ) { payPalResponse: PayPalPaymentAuthRequestParams?,
             error: Exception? ->
             if (payPalResponse != null) {
-                payPalContextId = payPalResponse.pairingId
+                payPalContextId = payPalResponse.paypalContextId
                 val isAppSwitchFlow = getAppSwitchUseCase() && internalPayPalClient.isAppSwitchEnabled(payPalRequest) &&
                     internalPayPalClient.isPayPalInstalled(context)
                 linkType = if (isAppSwitchFlow) LinkType.APP_SWITCH else LinkType.APP_LINK
@@ -232,9 +232,9 @@ class PayPalClient internal constructor(
         }
 
         approvalUrl?.let {
-            val pairingId = Uri.parse(approvalUrl).getQueryParameter(tokenKey)
-            if (!pairingId.isNullOrEmpty()) {
-                payPalContextId = pairingId
+            val paypalContextId = Uri.parse(approvalUrl).getQueryParameter(tokenKey)
+            if (!paypalContextId.isNullOrEmpty()) {
+                payPalContextId = paypalContextId
             }
         }
 
