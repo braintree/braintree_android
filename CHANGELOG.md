@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.7.0 (2025-02-24)
 
 * PayPal
   * Add PayPal App Switch for one time checkout flow (BETA)
