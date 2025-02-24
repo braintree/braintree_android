@@ -107,7 +107,7 @@ public class PayPalInternalClientUnitTest {
             deviceInspector,
             merchantRepository,
             getReturnLinkUseCase,
-            setAppSwitchUseCase
+            setAppSwitchUseCase,
             tokenRepository,
             tokenUseCase
         );
