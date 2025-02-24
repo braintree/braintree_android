@@ -3,12 +3,14 @@ package com.braintreepayments.api.paypal
 import android.content.Context
 import android.net.Uri
 import com.braintreepayments.api.core.ApiClient
+import com.braintreepayments.api.core.AppSwitchRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.GetReturnLinkUseCase
 import com.braintreepayments.api.core.MerchantRepository
+import com.braintreepayments.api.core.SetAppSwitchUseCase
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import org.json.JSONException
@@ -21,6 +23,7 @@ internal class PayPalInternalClient(
     private val deviceInspector: DeviceInspector = DeviceInspector(),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
+    private val setAppSwitchUseCase: SetAppSwitchUseCase = SetAppSwitchUseCase(AppSwitchRepository.instance),
     private val payPalTokenResponseRepository: PayPalTokenResponseRepository = PayPalTokenResponseRepository.instance,
     private val payPalSetPaymentTokenUseCase: PayPalSetPaymentTokenUseCase = PayPalSetPaymentTokenUseCase(
         payPalTokenResponseRepository
@@ -125,6 +128,7 @@ internal class PayPalInternalClient(
             try {
                 val paypalPaymentResource = PayPalPaymentResource.fromJson(responseBody)
                 val parsedRedirectUri = Uri.parse(paypalPaymentResource.redirectUrl)
+                setAppSwitchUseCase(paypalPaymentResource.isAppSwitchFlow)
                 val paypalContextId = extractPayPalContextId(parsedRedirectUri)
                 payPalSetPaymentTokenUseCase.setPaymentToken(paypalContextId)
                 val clientMetadataId = payPalRequest.riskCorrelationId ?: run {
@@ -134,11 +138,7 @@ internal class PayPalInternalClient(
                         applicationGuid = dataCollector.getPayPalInstallationGUID(context)
                         clientMetadataId = paypalContextId
                     }
-                    dataCollector.getClientMetadataId(
-                        context = context,
-                        request = dataCollectorRequest,
-                        configuration = configuration
-                    )
+                    dataCollector.getClientMetadataId(context, dataCollectorRequest, configuration)
                 }
                 val returnLink: String = when (val returnLinkResult = getReturnLinkUseCase()) {
                     is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
