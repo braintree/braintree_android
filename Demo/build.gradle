@@ -56,8 +56,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility versions.javaSourceCompatibility
-        targetCompatibility versions.javaTargetCompatibility
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     namespace 'com.braintreepayments.demo'
