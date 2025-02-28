@@ -6,12 +6,13 @@ import android.os.Parcel;
 import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.core.PostalAddress;
+import com.google.testing.junit.testparameterinjector.TestParameter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RobolectricTestParameterInjector;
 
 import java.util.ArrayList;
 
@@ -22,7 +23,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(RobolectricTestParameterInjector.class)
 public class PayPalCheckoutRequestUnitTest {
 
     @Test
@@ -40,11 +41,13 @@ public class PayPalCheckoutRequestUnitTest {
         assertNull(request.getLandingPageType());
         assertNull(request.getBillingAgreementDescription());
         assertFalse(request.getShouldOfferPayLater());
+        assertFalse(request.getEnablePayPalAppSwitch());
+        assertNull(request.getUserAuthenticationEmail());
         assertFalse(request.getHasUserLocationConsent());
     }
 
     @Test
-    public void setsValuesCorrectly() {
+    public void setsValuesCorrectly(@TestParameter boolean appSwitchEnabled) {
         PostalAddress postalAddress = new PostalAddress();
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
         request.setShopperSessionId("shopper-insights-id");
@@ -60,6 +63,8 @@ public class PayPalCheckoutRequestUnitTest {
         request.setUserAction(PayPalPaymentUserAction.USER_ACTION_COMMIT);
         request.setDisplayName("Display Name");
         request.setRiskCorrelationId("123-correlation");
+        request.setEnablePayPalAppSwitch(appSwitchEnabled);
+        request.setUserAuthenticationEmail("test-email");
         request.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
 
         assertEquals("shopper-insights-id", request.getShopperSessionId());
@@ -74,13 +79,15 @@ public class PayPalCheckoutRequestUnitTest {
         assertEquals(PayPalPaymentUserAction.USER_ACTION_COMMIT, request.getUserAction());
         assertEquals("Display Name", request.getDisplayName());
         assertEquals("123-correlation", request.getRiskCorrelationId());
+        assertEquals(appSwitchEnabled, request.getEnablePayPalAppSwitch());
+        assertEquals("test-email", request.getUserAuthenticationEmail());
         assertEquals(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
         assertTrue(request.getShouldOfferPayLater());
         assertTrue(request.getHasUserLocationConsent());
     }
 
     @Test
-    public void parcelsCorrectly() {
+    public void parcelsCorrectly(@TestParameter boolean appSwitchEnabled) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("12.34", true);
         request.setCurrencyCode("USD");
         request.setLocaleCode("en-US");
@@ -98,6 +105,8 @@ public class PayPalCheckoutRequestUnitTest {
         request.setDisplayName("Display Name");
         request.setRiskCorrelationId("123-correlation");
         request.setMerchantAccountId("merchant_account_id");
+        request.setEnablePayPalAppSwitch(appSwitchEnabled);
+        request.setUserAuthenticationEmail("test-email");
 
         ArrayList<PayPalLineItem> lineItems = new ArrayList<>();
         lineItems.add(new PayPalLineItem(PayPalLineItemKind.DEBIT, "An Item", "1", "1"));
@@ -115,6 +124,8 @@ public class PayPalCheckoutRequestUnitTest {
             result.getBillingAgreementDescription());
         assertTrue(result.isShippingAddressRequired());
         assertTrue(result.isShippingAddressEditable());
+        assertEquals(appSwitchEnabled, result.getEnablePayPalAppSwitch());
+        assertEquals("test-email", result.getUserAuthenticationEmail());
         assertEquals("Postal Address", result.getShippingAddressOverride().getRecipientName());
         assertEquals(PayPalPaymentIntent.SALE, result.getIntent());
         assertEquals(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN, result.getLandingPageType());

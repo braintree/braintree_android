@@ -5,11 +5,13 @@ import android.net.Uri
 import android.text.TextUtils
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.AppSwitchRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.core.GetAppSwitchUseCase
 import com.braintreepayments.api.core.GetReturnLinkUseCase
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.TokenizationKey
@@ -36,7 +38,8 @@ class PayPalClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient = PayPalInternalClient(braintreeClient),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
-    private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository)
+    private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
+    private val getAppSwitchUseCase: GetAppSwitchUseCase = GetAppSwitchUseCase(AppSwitchRepository.instance)
 ) {
     /**
      * Used for linking events from the client to server side request
@@ -133,8 +136,8 @@ class PayPalClient internal constructor(
             payPalRequest
         ) { payPalResponse: PayPalPaymentAuthRequestParams?, error: Exception? ->
             if (payPalResponse != null) {
-                payPalContextId = payPalResponse.pairingId
-                val isAppSwitchFlow = internalPayPalClient.isAppSwitchEnabled(payPalRequest) &&
+                payPalContextId = payPalResponse.paypalContextId
+                val isAppSwitchFlow = getAppSwitchUseCase() && internalPayPalClient.isAppSwitchEnabled(payPalRequest) &&
                     internalPayPalClient.isPayPalInstalled(context)
                 linkType = if (isAppSwitchFlow) LinkType.APP_SWITCH else LinkType.APP_LINK
 
@@ -256,9 +259,9 @@ class PayPalClient internal constructor(
         }
 
         approvalUrl?.let {
-            val pairingId = Uri.parse(approvalUrl).getQueryParameter(tokenKey)
-            if (!pairingId.isNullOrEmpty()) {
-                payPalContextId = pairingId
+            val paypalContextId = Uri.parse(approvalUrl).getQueryParameter(tokenKey)
+            if (!paypalContextId.isNullOrEmpty()) {
+                payPalContextId = paypalContextId
             }
         }
 

@@ -22,7 +22,11 @@ import com.braintreepayments.api.core.MerchantRepository
 class PayPalLauncher internal constructor(
     private val browserSwitchClient: BrowserSwitchClient,
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val payPalTokenResponseRepository: PayPalTokenResponseRepository = PayPalTokenResponseRepository.instance,
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
+    private val payPalGetPaymentTokenUseCase: PayPalGetPaymentTokenUseCase = PayPalGetPaymentTokenUseCase(
+        payPalTokenResponseRepository
+    ),
     lazyAnalyticsClient: Lazy<AnalyticsClient>
 ) {
     /**
@@ -118,38 +122,61 @@ class PayPalLauncher internal constructor(
         pendingRequest: PayPalPendingRequest.Started,
         intent: Intent
     ): PayPalPaymentAuthResult {
+        val appSwitchUrl = when (val returnLinkResult = getReturnLinkUseCase()) {
+            is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> {
+                returnLinkResult.appLinkReturnUri.toString()
+            }
+
+            is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> {
+                returnLinkResult.deepLinkFallbackUrlScheme
+            }
+
+            else -> null
+        }
+        val paypalContextId = payPalGetPaymentTokenUseCase()
         analyticsClient.sendEvent(
             PayPalAnalytics.HANDLE_RETURN_STARTED,
             AnalyticsEventParams(
-                appSwitchUrl = when (val returnLinkResult = getReturnLinkUseCase()) {
-                    is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> {
-                        returnLinkResult.appLinkReturnUri.toString()
-                    }
-                    is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> {
-                        returnLinkResult.deepLinkFallbackUrlScheme
-                    }
-                    else -> null
-                }
+                payPalContextId = paypalContextId,
+                appSwitchUrl = appSwitchUrl
             )
         )
         return when (val browserSwitchResult =
             browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)) {
             is BrowserSwitchFinalResult.Success -> {
-                analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_SUCCEEDED)
+                analyticsClient.sendEvent(
+                    PayPalAnalytics.HANDLE_RETURN_SUCCEEDED,
+                    AnalyticsEventParams(
+                        payPalContextId = paypalContextId,
+                        appSwitchUrl = appSwitchUrl
+                    )
+                )
                 PayPalPaymentAuthResult.Success(
                     browserSwitchResult
                 )
             }
 
             is BrowserSwitchFinalResult.Failure -> {
-                analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_FAILED)
+                analyticsClient.sendEvent(
+                    PayPalAnalytics.HANDLE_RETURN_FAILED,
+                    AnalyticsEventParams(
+                        payPalContextId = paypalContextId,
+                        appSwitchUrl = appSwitchUrl
+                    )
+                )
                 PayPalPaymentAuthResult.Failure(
                     browserSwitchResult.error
                 )
             }
 
             is BrowserSwitchFinalResult.NoResult -> {
-                analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_NO_RESULT)
+                analyticsClient.sendEvent(
+                    PayPalAnalytics.HANDLE_RETURN_NO_RESULT,
+                    AnalyticsEventParams(
+                        payPalContextId = paypalContextId,
+                        appSwitchUrl = appSwitchUrl
+                    )
+                )
                 PayPalPaymentAuthResult.NoResult
             }
         }

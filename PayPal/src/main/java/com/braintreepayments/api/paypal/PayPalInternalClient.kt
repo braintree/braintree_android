@@ -3,6 +3,7 @@ package com.braintreepayments.api.paypal
 import android.content.Context
 import android.net.Uri
 import com.braintreepayments.api.core.ApiClient
+import com.braintreepayments.api.core.AppSwitchRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
@@ -10,13 +11,14 @@ import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.GetReturnLinkUseCase
 import com.braintreepayments.api.core.MerchantRepository
+import com.braintreepayments.api.core.SetAppSwitchUseCase
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
-import com.braintreepayments.api.paypal.PayPalPaymentResource.Companion.fromJson
 import com.braintreepayments.api.paypal.vaultedit.PayPalInternalClientEditCallback
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditAuthRequestParams
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultEditRequest
 import com.braintreepayments.api.paypal.vaultedit.PayPalVaultErrorHandlingEditRequest
+
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -27,7 +29,12 @@ internal class PayPalInternalClient(
     private val apiClient: ApiClient = ApiClient(braintreeClient),
     private val deviceInspector: DeviceInspector = DeviceInspector(),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
-    private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository)
+    private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
+    private val setAppSwitchUseCase: SetAppSwitchUseCase = SetAppSwitchUseCase(AppSwitchRepository.instance),
+    private val payPalTokenResponseRepository: PayPalTokenResponseRepository = PayPalTokenResponseRepository.instance,
+    private val payPalSetPaymentTokenUseCase: PayPalSetPaymentTokenUseCase = PayPalSetPaymentTokenUseCase(
+        payPalTokenResponseRepository
+    )
 ) {
 
     fun sendRequest(
@@ -50,7 +57,7 @@ internal class PayPalInternalClient(
                 }
                 val url = "/v1/$endpoint"
 
-                if (isBillingAgreement && (payPalRequest as PayPalVaultRequest).enablePayPalAppSwitch) {
+                if (payPalRequest.enablePayPalAppSwitch) {
                     payPalRequest.enablePayPalAppSwitch = isPayPalInstalled(context)
                 }
 
@@ -64,7 +71,7 @@ internal class PayPalInternalClient(
                     }
                 }
                 val appLinkParam = if (
-                    returnLinkResult is GetReturnLinkUseCase.ReturnLinkResult.AppLink && isBillingAgreement
+                    returnLinkResult is GetReturnLinkUseCase.ReturnLinkResult.AppLink
                 ) {
                     merchantRepository.appLinkReturnUri?.toString()
                 } else {
@@ -119,35 +126,28 @@ internal class PayPalInternalClient(
         callback: PayPalInternalClientCallback
     ) {
         braintreeClient.sendPOST(
-            url = url,
-            data = requestBody,
+            url = url, data = requestBody,
         ) { responseBody: String?, httpError: Exception? ->
-
             if (responseBody == null) {
                 callback.onResult(null, httpError)
                 return@sendPOST
             }
-
             try {
-                val paypalPaymentResource = fromJson(responseBody)
+                val paypalPaymentResource = PayPalPaymentResource.fromJson(responseBody)
                 val parsedRedirectUri = Uri.parse(paypalPaymentResource.redirectUrl)
-
-                val pairingId = findPairingId(parsedRedirectUri)
+                setAppSwitchUseCase(paypalPaymentResource.isAppSwitchFlow)
+                val paypalContextId = extractPayPalContextId(parsedRedirectUri)
+                payPalSetPaymentTokenUseCase.setPaymentToken(paypalContextId)
                 val clientMetadataId = payPalRequest.riskCorrelationId ?: run {
                     val dataCollectorRequest = DataCollectorInternalRequest(
                         payPalRequest.hasUserLocationConsent
                     ).apply {
                         applicationGuid = dataCollector.getPayPalInstallationGUID(context)
-                        clientMetadataId = pairingId
+                        clientMetadataId = paypalContextId
                     }
 
-                    dataCollector.getClientMetadataId(
-                        context = context,
-                        request = dataCollectorRequest,
-                        configuration = configuration
-                    )
+                       dataCollector.getClientMetadataId(context, dataCollectorRequest, configuration)
                 }
-
                 val returnLink: String = when (val returnLinkResult = getReturnLinkUseCase()) {
                     is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
                     is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> returnLinkResult.deepLinkFallbackUrlScheme
@@ -156,25 +156,25 @@ internal class PayPalInternalClient(
                         return@sendPOST
                     }
                 }
-
                 val paymentAuthRequest = PayPalPaymentAuthRequestParams(
                     payPalRequest = payPalRequest,
                     browserSwitchOptions = null,
                     clientMetadataId = clientMetadataId,
-                    pairingId = pairingId,
+                    paypalContextId = paypalContextId,
                     successUrl = "$returnLink://onetouch/v1/success"
                 )
-
                 if (isAppSwitchEnabled(payPalRequest) && isPayPalInstalled(context)) {
-                    if (!pairingId.isNullOrEmpty()) {
-                        paymentAuthRequest.approvalUrl = createAppSwitchUri(parsedRedirectUri).toString()
+                    if (!paypalContextId.isNullOrEmpty()) {
+                        paymentAuthRequest.approvalUrl =
+                            createAppSwitchUri(parsedRedirectUri).toString()
                     } else {
-                        callback.onResult(null, BraintreeException("Missing BA Token for PayPal App Switch."))
+                        callback.onResult(
+                            null, BraintreeException("Missing Token for PayPal App Switch.")
+                        )
                     }
                 } else {
                     paymentAuthRequest.approvalUrl = parsedRedirectUri.toString()
                 }
-
                 callback.onResult(paymentAuthRequest, null)
             } catch (exception: JSONException) {
                 callback.onResult(null, exception)
@@ -189,16 +189,13 @@ internal class PayPalInternalClient(
             .build()
     }
 
-    fun isAppSwitchEnabled(payPalRequest: PayPalRequest): Boolean {
-        return (payPalRequest is PayPalVaultRequest) &&
-            payPalRequest.enablePayPalAppSwitch
-    }
+    fun isAppSwitchEnabled(payPalRequest: PayPalRequest) = payPalRequest.enablePayPalAppSwitch
 
     fun isPayPalInstalled(context: Context): Boolean {
         return deviceInspector.isPayPalInstalled(context)
     }
 
-    private fun findPairingId(redirectUri: Uri): String? {
+    private fun extractPayPalContextId(redirectUri: Uri): String? {
         return redirectUri.getQueryParameter("ba_token")
             ?: redirectUri.getQueryParameter("token")
     }

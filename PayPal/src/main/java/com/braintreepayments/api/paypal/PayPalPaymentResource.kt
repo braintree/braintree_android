@@ -11,7 +11,8 @@ import org.json.JSONObject
  * containing an EC token
  */
 internal data class PayPalPaymentResource(
-    val redirectUrl: String
+    val redirectUrl: String,
+    val isAppSwitchFlow: Boolean = false
 ) {
 
     companion object {
@@ -20,6 +21,7 @@ internal data class PayPalPaymentResource(
         private const val AGREEMENT_SETUP_KEY = "agreementSetup"
         private const val APPROVAL_URL_KEY = "approvalUrl"
         private const val PAYPAL_APP_APPROVAL_URL_KEY = "paypalAppApprovalUrl"
+        private const val LAUNCH_PAYPAL_APP_KEY = "launchPayPalApp"
 
         /**
          * Create a PayPalPaymentResource from a jsonString. Checks for keys associated with Single
@@ -34,20 +36,24 @@ internal data class PayPalPaymentResource(
         fun fromJson(jsonString: String): PayPalPaymentResource {
             val json = JSONObject(jsonString)
             val paymentResource = json.optJSONObject(PAYMENT_RESOURCE_KEY)
-            val redirectUrl = if (paymentResource != null) {
-                Json.optString(paymentResource, REDIRECT_URL_KEY, "")
+            return if (paymentResource != null) {
+                val redirectUrl = Json.optString(paymentResource, REDIRECT_URL_KEY, "")
+                val isAppSwitchFlow = Json.optBoolean(paymentResource, LAUNCH_PAYPAL_APP_KEY, false)
+                PayPalPaymentResource(redirectUrl, isAppSwitchFlow)
             } else {
                 val redirectJson = json.optJSONObject(AGREEMENT_SETUP_KEY)
+                var isAppSwitchFlow = true
                 val payPalApprovalURL = Json.optString(redirectJson, PAYPAL_APP_APPROVAL_URL_KEY, "")
+                var redirectUrl = payPalApprovalURL
+                // Presence of `payPalApprovalURL` indicates that this is an app-switch flow.
+                // In case `payPalApprovalURL` is empty and we end up using `approvalUrl` instead,
+                // one wouldn't go through the app-switch flow.
                 payPalApprovalURL.ifEmpty {
-                    Json.optString(
-                        redirectJson,
-                        APPROVAL_URL_KEY,
-                        ""
-                    )
+                    isAppSwitchFlow = false
+                    redirectUrl = Json.optString(redirectJson, APPROVAL_URL_KEY, "")
                 }
+                PayPalPaymentResource(redirectUrl = redirectUrl, isAppSwitchFlow = isAppSwitchFlow)
             }
-            return PayPalPaymentResource(redirectUrl)
         }
     }
 }

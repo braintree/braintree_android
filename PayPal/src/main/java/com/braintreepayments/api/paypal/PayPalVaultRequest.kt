@@ -27,9 +27,6 @@ import org.json.JSONObject
  * @property shouldOfferCredit Offers PayPal Credit if the customer qualifies. Defaults to false.
  * @property recurringBillingDetails Optional: Recurring billing product details.
  * @property recurringBillingPlanType Optional: Recurring billing plan type, or charge pattern.
- * @property enablePayPalAppSwitch Used to determine if the customer will use the PayPal app switch flow.
- * Defaults to `false`.
- * - Warning: This property is currently in beta and may change or be removed in future releases.
  */
 @Parcelize
 class PayPalVaultRequest
@@ -38,7 +35,7 @@ class PayPalVaultRequest
     var shouldOfferCredit: Boolean = false,
     var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
     var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
-    var enablePayPalAppSwitch: Boolean = false,
+    override var enablePayPalAppSwitch: Boolean = false,
     override var localeCode: String? = null,
     override var billingAgreementDescription: String? = null,
     override var isShippingAddressRequired: Boolean = false,
@@ -62,6 +59,7 @@ class PayPalVaultRequest
     displayName = displayName,
     merchantAccountId = merchantAccountId,
     riskCorrelationId = riskCorrelationId,
+    enablePayPalAppSwitch = enablePayPalAppSwitch,
     userAuthenticationEmail = userAuthenticationEmail,
     lineItems = lineItems,
 ) {
