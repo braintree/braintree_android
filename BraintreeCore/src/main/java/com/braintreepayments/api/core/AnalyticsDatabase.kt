@@ -42,7 +42,8 @@ internal abstract class AnalyticsDatabase : RoomDatabase() {
                     context.applicationContext,
                     AnalyticsDatabase::class.java,
                     "analytics_database"
-                ).build()
+                ).fallbackToDestructiveMigration()
+                .build()
                 INSTANCE = instance
                 // return instance
                 instance
