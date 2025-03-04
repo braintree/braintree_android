@@ -154,7 +154,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
                 .setup(activity);
 
         if (getArguments().getBoolean(MainFragment.EXTRA_COLLECT_DEVICE_DATA, false)) {
-            dataCollector.collectDeviceData(activity, new DataCollectorRequest(true), dataCollectorResult -> {
+            dataCollector.collectDeviceData(requireActivity(), new DataCollectorRequest(true), dataCollectorResult -> {
                 if (dataCollectorResult instanceof DataCollectorResult.Success) {
                     deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
                 }
@@ -193,7 +193,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
     }
 
     public void onPurchase(View v) {
-        getActivity().setProgressBarIndeterminateVisibility(true);
+        requireActivity().setProgressBarIndeterminateVisibility(true);
 
         Card card = new Card();
         card.setNumber(cardForm.getCardNumber());
@@ -225,6 +225,7 @@ public class CardFragment extends BaseFragment implements OnCardFormSubmitListen
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         final FragmentActivity activity = getActivity();
+        if(activity == null) return;
         if (!threeDSecureRequested && paymentMethodNonce instanceof CardNonce &&
                 Settings.isThreeDSecureEnabled(activity) && !(paymentMethodNonce instanceof ThreeDSecureNonce)) {
             threeDSecureRequested = true;

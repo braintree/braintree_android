@@ -5,6 +5,16 @@
 * All Modules
     * Reduce minimum required Java version to Java 11
 
+## 5.7.0 (2025-02-24)
+
+* PayPal
+  * Add PayPal App Switch for one time checkout flow (BETA)
+      * Add `enablePayPalAppSwitch` property to `PayPalCheckoutRequest` for App Switch support
+      * Require `PayPalCheckoutRequest.userAuthenticationEmail` for App Switch support
+      * **Note:** This feature is currently in beta and may change or be removed in future releases.
+  * Send `payPalContextId` in `PayPalLauncher.handleReturnToApp` related events.
+  * Fix a bug to correctly log app switch flow analytics.
+
 ## 5.6.0 (2025-02-05)
 
 * ShopperInsights (BETA)

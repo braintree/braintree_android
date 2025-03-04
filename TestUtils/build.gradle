@@ -47,6 +47,7 @@ dependencies {
     compileOnly libs.json.assert
     compileOnly libs.mockk
     compileOnly libs.mockito.core
+    compileOnly libs.test.parameter.injector
 
     implementation project(':BraintreeCore')
     implementation project(':ThreeDSecure')

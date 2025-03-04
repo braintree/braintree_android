@@ -65,6 +65,7 @@ dependencies {
     testImplementation libs.kotlin.stdlib
     testImplementation libs.coroutines.core
     testImplementation libs.mockk
+    testImplementation libs.test.parameter.injector
     testImplementation libs.androidx.test.core
 }
 

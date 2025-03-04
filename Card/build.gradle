@@ -54,6 +54,7 @@ dependencies {
     testImplementation libs.androidx.core.ktx
     testImplementation libs.kotlin.stdlib
     testImplementation libs.kotlin.test
+    testImplementation libs.test.parameter.injector
 
     androidTestImplementation project(':TestUtils')
     androidTestImplementation libs.androidx.test.rules

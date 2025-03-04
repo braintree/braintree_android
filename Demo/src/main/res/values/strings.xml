@@ -8,7 +8,7 @@
     <string name="nonce_placeholder">Nonce: %s</string>
     <string name="device_data_placeholder">Device Data: %s</string>
     <string name="google_pay">Google Pay</string>
-    <string name="paypal_button">PayPal Web</string>
+    <string name="paypal_button">PayPal</string>
     <string name="visa_checkout_button">Visa Checkout</string>
     <string name="ideal_button">Pay with iDEAL</string>
     <string name="local_payment_button">Local Payment</string>

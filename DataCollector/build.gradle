@@ -58,6 +58,7 @@ dependencies {
     testImplementation libs.json.assert
     testImplementation libs.mockito.core
     testImplementation libs.mockk
+    testImplementation libs.test.parameter.injector
 
     testImplementation project(':TestUtils')
 

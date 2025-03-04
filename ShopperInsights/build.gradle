@@ -50,6 +50,7 @@ dependencies {
     testImplementation libs.mockk
     testImplementation libs.robolectric
     testImplementation libs.androidx.junit
+    testImplementation libs.test.parameter.injector
     testImplementation project(':TestUtils')
 }
 
