@@ -4,7 +4,6 @@ import androidx.room.testing.MigrationTestHelper
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import java.io.IOException
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,16 +28,5 @@ class AnalyticsDatabaseMigrationTest {
         }
 
         helper.runMigrationsAndValidate(testDb, 8, true)
-    }
-
-    @Ignore("Doesn't work yet")
-    @Test
-    @Throws(IOException::class)
-    fun testDestructiveMigrationOnDbVersionDowngrade() {
-        helper.createDatabase(testDb, 8).apply {
-            close()
-        }
-
-        helper.runMigrationsAndValidate(testDb, 1, false)
     }
 }
