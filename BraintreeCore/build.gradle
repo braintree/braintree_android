@@ -55,6 +55,16 @@ android {
         // Adds exported schema location as test app assets.
         androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
     }
+
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+
+    kotlin {
+        jvmToolchain {
+            languageVersion.set(JavaLanguageVersion.of("11"))
+        }
+    }
 }
 
 ksp {

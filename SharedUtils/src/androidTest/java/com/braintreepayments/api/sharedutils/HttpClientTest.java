@@ -34,7 +34,7 @@ public class HttpClientTest {
             assertNull(responseBody);
             assertNotNull(httpError);
             countDownLatch.countDown();
-        });
+        }, HttpClient.RetryStrategy.NO_RETRY);
 
         countDownLatch.await();
     }
