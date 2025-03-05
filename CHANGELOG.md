@@ -4,6 +4,8 @@
 
 * All Modules
     * Reduce minimum required Java version to Java 11
+* BraintreeCore
+    * Bump `browser-switch` version to `3.0.0`
 
 ## 5.7.0 (2025-02-24)
 
