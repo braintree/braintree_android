@@ -27,6 +27,7 @@ class AnalyticsDatabaseMigrationTest {
             close()
         }
 
+        // validate all schemas; doesn't validate the values in a DB
         helper.runMigrationsAndValidate(testDb, 8, true)
     }
 }
