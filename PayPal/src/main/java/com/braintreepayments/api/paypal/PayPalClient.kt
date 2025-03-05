@@ -131,7 +131,7 @@ class PayPalClient internal constructor(
             if (payPalResponse != null) {
                 payPalContextId = payPalResponse.paypalContextId
                 val isAppSwitchFlow = getAppSwitchUseCase() && internalPayPalClient.isAppSwitchEnabled(payPalRequest) &&
-                    internalPayPalClient.isPayPalInstalled(context)
+                        internalPayPalClient.isPayPalInstalled(context)
                 linkType = if (isAppSwitchFlow) LinkType.APP_SWITCH else LinkType.APP_LINK
 
                 try {
@@ -392,8 +392,8 @@ class PayPalClient internal constructor(
         private fun createPayPalError(): Exception {
             return BraintreeException(
                 "PayPal is not enabled. " +
-                    "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
-                    "for more information."
+                        "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
+                        "for more information."
             )
         }
     }
