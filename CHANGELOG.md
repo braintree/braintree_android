@@ -2,7 +2,7 @@
 
 ## unreleased
 
-* PayPal
+* All Modules
   * Fix a bug where host app crashes when updating from a newer version of BT SDK to an older version of BT SDK. 
 
 ## 5.7.0 (2025-02-24)
