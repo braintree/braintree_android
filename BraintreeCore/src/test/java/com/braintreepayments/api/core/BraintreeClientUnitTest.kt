@@ -327,22 +327,6 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun isUrlSchemeDeclaredInAndroidManifest_forwardsInvocationToManifestValidator() {
-        every {
-            manifestValidator.isUrlSchemeDeclaredInAndroidManifest(
-                applicationContext,
-                "a-url-scheme",
-                FragmentActivity::class.java
-            )
-        } returns true
-
-        val sut = createBraintreeClient(configurationLoader)
-        assertTrue(
-            sut.isUrlSchemeDeclaredInAndroidManifest("a-url-scheme", FragmentActivity::class.java)
-        )
-    }
-
-    @Test
     fun manifestActivityInfo_forwardsInvocationToManifestValidator() {
         val activityInfo = ActivityInfo()
         every {

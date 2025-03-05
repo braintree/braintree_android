@@ -28,7 +28,7 @@ basics for updating your Braintree integration from v4 to v5.
 V5 of the Braintree Android SDK bumps the following supported versions:
 
 * Minimum supported Android API 23
-* Requires Gradle JDK 17+
+* Requires Java 11+
 * Requires Kotlin 1.9.10+
 * Requires Android Gradle Plugin 8.1.4+ (Giraffe or higher)
 

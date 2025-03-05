@@ -223,17 +223,6 @@ class BraintreeClient internal constructor(
     /**
      * @suppress
      */
-    fun <T> isUrlSchemeDeclaredInAndroidManifest(urlScheme: String?, klass: Class<T>?): Boolean {
-        return manifestValidator.isUrlSchemeDeclaredInAndroidManifest(
-            merchantRepository.applicationContext,
-            urlScheme,
-            klass
-        )
-    }
-
-    /**
-     * @suppress
-     */
     fun <T> getManifestActivityInfo(klass: Class<T>?): ActivityInfo? {
         return manifestValidator.getActivityInfo(merchantRepository.applicationContext, klass)
     }
