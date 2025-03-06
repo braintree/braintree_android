@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.8.0 (2025-03-06)
 
 * All Modules
   * Fix a bug where host app crashes when updating from a newer version of BT SDK to an older version of BT SDK.
