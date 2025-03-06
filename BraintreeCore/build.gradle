@@ -51,6 +51,11 @@ android {
         targetCompatibility versions.javaTargetCompatibility
     }
 
+    sourceSets {
+        // Adds exported schema location as test app assets.
+        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+    }
+
     kotlinOptions {
         jvmTarget = "11"
     }
@@ -86,6 +91,7 @@ dependencies {
     androidTestImplementation libs.androidx.test.runner
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.work.testing
+    androidTestImplementation libs.androidx.room.testing
     androidTestImplementation project(':Card')
     androidTestImplementation project(':PayPal')
     androidTestImplementation project(':TestUtils')

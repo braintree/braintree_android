@@ -3,17 +3,18 @@
 ## unreleased
 
 * All Modules
-    * Reduce minimum required Java version to Java 11
+  * Fix a bug where host app crashes when updating from a newer version of BT SDK to an older version of BT SDK.
+  * Reduce minimum required Java version to Java 11
 * BraintreeCore
-    * Bump `browser-switch` version to `3.0.0`
+  * Bump `browser-switch` version to `3.0.0`
 
 ## 5.7.0 (2025-02-24)
 
 * PayPal
   * Add PayPal App Switch for one time checkout flow (BETA)
-      * Add `enablePayPalAppSwitch` property to `PayPalCheckoutRequest` for App Switch support
-      * Require `PayPalCheckoutRequest.userAuthenticationEmail` for App Switch support
-      * **Note:** This feature is currently in beta and may change or be removed in future releases.
+    * Add `enablePayPalAppSwitch` property to `PayPalCheckoutRequest` for App Switch support
+    * Require `PayPalCheckoutRequest.userAuthenticationEmail` for App Switch support
+    * **Note:** This feature is currently in beta and may change or be removed in future releases.
   * Send `payPalContextId` in `PayPalLauncher.handleReturnToApp` related events.
   * Fix a bug to correctly log app switch flow analytics.
 
