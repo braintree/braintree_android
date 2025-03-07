@@ -131,7 +131,7 @@ class MainFragment : BaseFragment() {
     private fun launchCards() {
         fetchAuthorizationAndHandleError { authString ->
             val action = MainFragmentDirections.actionMainFragmentToCardFragment()
-            action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(activity))
+            action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(requireContext()))
             action.setAuthString(authString)
             findNavController().navigate(action)
         }
@@ -140,7 +140,7 @@ class MainFragment : BaseFragment() {
     private fun launchPayPal() {
         fetchAuthorizationAndHandleError { authString ->
             val action = MainFragmentDirections.actionMainFragmentToPayPalFragment()
-            action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(activity))
+            action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(requireContext()))
             action.setAuthString(authString)
             findNavController().navigate(action)
         }
