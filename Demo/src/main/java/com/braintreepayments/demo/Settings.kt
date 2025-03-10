@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import androidx.core.content.edit
 
+@Suppress("TooManyFunctions")
 object Settings {
 
     private const val ENVIRONMENT = "environment"
