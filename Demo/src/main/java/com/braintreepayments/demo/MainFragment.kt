@@ -164,9 +164,16 @@ class MainFragment : BaseFragment() {
 
     private fun launchLocalPayment() {
         fetchAuthorizationAndHandleError { authString ->
-            val action = MainFragmentDirections.actionMainFragmentToLocalPaymentFragment()
-                .setAuthString(authString)
-            findNavController().navigate(action)
+            // Local Payment uses a different tokenization key than the rest of the demo app.
+            val localPaymentTokenizationKey = Settings.getLocalPaymentsTokenizationKey(requireContext())
+            if (localPaymentTokenizationKey != null) {
+                val action = MainFragmentDirections.actionMainFragmentToLocalPaymentFragment()
+                    .setAuthString(localPaymentTokenizationKey)
+                findNavController().navigate(action)
+            } else {
+                handleError(IllegalStateException("The Sandbox environment must be used for the provided Local" +
+                    " Payments tokenization key."))
+            }
         }
     }
 
