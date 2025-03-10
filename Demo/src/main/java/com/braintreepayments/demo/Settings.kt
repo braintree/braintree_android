@@ -3,13 +3,14 @@ package com.braintreepayments.demo
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import androidx.core.content.edit
 
 object Settings {
 
     private const val ENVIRONMENT = "environment"
 
     const val SANDBOX_ENV_NAME = "Sandbox"
-    const val PRODUCTION_ENV_NAME = "Production"
+    private const val PRODUCTION_ENV_NAME = "Production"
 
     private const val PRODUCTION_BASE_SERVER_URL = "https://braintree-production-merchant-455d21469113.herokuapp.com"
     private const val PRODUCTION_TOKENIZATION_KEY = "production_t2wns2y2_dfy45jdj3dxkmz5m"
@@ -17,17 +18,18 @@ object Settings {
     private const val SANDBOX_BASE_SERVER_URL = "https://braintree-demo-merchant-63b7a2204f6e.herokuapp.com"
     private const val SANDBOX_TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
 
-    const val LOCAL_PAYMENTS_TOKENIZATION_KEY = "sandbox_f252zhq7_hh4cpc39zq4rgjcg"
+    private const val LOCAL_PAYMENTS_TOKENIZATION_KEY = "sandbox_f252zhq7_hh4cpc39zq4rgjcg"
     private const val XO_SANDBOX_TOKENIZATION_KEY = "sandbox_rz48bqvw_jcyycfw6f9j4nj9c"
 
     private var sharedPreferences: SharedPreferences? = null
 
     @JvmStatic
     fun getPreferences(context: Context): SharedPreferences {
-        if (sharedPreferences == null) {
-            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
+        return sharedPreferences ?: run {
+            val prefs = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
+            sharedPreferences = prefs
+            prefs
         }
-        return sharedPreferences!!
     }
 
     @JvmStatic
@@ -37,10 +39,9 @@ object Settings {
 
     @JvmStatic
     fun setEnvironment(context: Context, environment: String) {
-        getPreferences(context)
-            .edit()
-            .putString(ENVIRONMENT, environment)
-            .apply()
+        getPreferences(context).edit {
+            putString(ENVIRONMENT, environment)
+        }
 
         DemoApplication.resetApiClient()
     }
@@ -88,11 +89,6 @@ object Settings {
         } else {
             null
         }
-    }
-
-    @JvmStatic
-    fun useTokenizationKey(context: Context): Boolean {
-        return getAuthorizationType(context) == context.getString(R.string.tokenization_key)
     }
 
     @JvmStatic
@@ -156,12 +152,6 @@ object Settings {
     }
 
     @JvmStatic
-    fun getGooglePayMerchantId(context: Context): String {
-        return getPreferences(context).getString("google_pay_merchant_id", "18278000977346790994")
-            ?: "18278000977346790994"
-    }
-
-    @JvmStatic
     fun getGooglePayAllowedCountriesForShipping(context: Context): List<String> {
         val preference = getPreferences(context).getString("google_pay_allowed_countries_for_shipping", "US") ?: "US"
         return preference.split(",").map { it.trim() }
@@ -203,11 +193,6 @@ object Settings {
     }
 
     @JvmStatic
-    fun isPayPalSignatureVerificationDisabled(context: Context): Boolean {
-        return getPreferences(context).getBoolean("paypal_disable_signature_verification", true)
-    }
-
-    @JvmStatic
     fun usePayPalAddressOverride(context: Context): Boolean {
         return getPreferences(context).getBoolean("paypal_address_override", true)
     }
@@ -240,11 +225,6 @@ object Settings {
     @JvmStatic
     fun isAmexRewardsBalanceEnabled(context: Context): Boolean {
         return getPreferences(context).getBoolean("amex_rewards_balance", false)
-    }
-
-    @JvmStatic
-    fun isManualBrowserSwitchingEnabled(context: Context): Boolean {
-        return getPreferences(context).getBoolean("enable_manual_browser_switching", false)
     }
 
     @JvmStatic
