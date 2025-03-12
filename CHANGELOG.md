@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+  * Make `PayPalCheckoutRequest.userAuthenticationEmail` optional for App Switch flows
+
 ## 5.8.0 (2025-03-06)
 
 * All Modules
