@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+  * Add `contactPreference` property to `PayPalCheckoutRequest`
+
 ## 5.8.0 (2025-03-06)
 
 * All Modules
