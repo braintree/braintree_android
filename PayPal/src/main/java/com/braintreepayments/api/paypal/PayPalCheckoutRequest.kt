@@ -1,7 +1,7 @@
 package com.braintreepayments.api.paypal
 
-import android.os.Build
 import android.net.Uri
+import android.os.Build
 import android.text.TextUtils
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.ClientToken
@@ -63,6 +63,8 @@ import org.json.JSONObject
  * at this URL.
  *
  * @property contactInformation Contact information of the recipient for the order
+ *
+ * @property contactPreference Preference for the contact information section within the payment flow
  */
 @Parcelize
 class PayPalCheckoutRequest @JvmOverloads constructor(
@@ -76,6 +78,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     override var enablePayPalAppSwitch: Boolean = false,
     var shippingCallbackUrl: Uri? = null,
     var contactInformation: PayPalContactInformation? = null,
+    var contactPreference: PayPalContactPreference? = null,
     override var localeCode: String? = null,
     override var billingAgreementDescription: String? = null,
     override var isShippingAddressRequired: Boolean = false,
@@ -87,7 +90,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     override var riskCorrelationId: String? = null,
     override var userAuthenticationEmail: String? = null,
     override var userPhoneNumber: PayPalPhoneNumber? = null,
-    override var lineItems: List<PayPalLineItem> = emptyList()
+    override var lineItems: List<PayPalLineItem> = emptyList(),
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -146,11 +149,11 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
         contactInformation?.let { info ->
             info.recipientEmail?.let { parameters.put(RECIPIENT_EMAIL_KEY, it) }
             info.recipentPhoneNumber?.let {
-                parameters.put(
-                    RECIPIENT_PHONE_NUMBER_KEY,
-                    it.toJson()
-                )
+                parameters.put(RECIPIENT_PHONE_NUMBER_KEY, it.toJson())
             }
+        }
+        contactPreference?.let { preference ->
+            parameters.put(CONTACT_PREFERENCE_KEY, preference.stringValue)
         }
 
         if (enablePayPalAppSwitch && !appLink.isNullOrEmpty() && !userAuthenticationEmail.isNullOrEmpty()) {
@@ -160,7 +163,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
             parameters.put(MERCHANT_APP_RETURN_URL_KEY, appLink)
         }
 
-        parameters.putOpt(SHOPPER_SESSION_ID, shopperSessionId)
+        parameters.putOpt(SHOPPER_SESSION_ID_KEY, shopperSessionId)
 
         if (currencyCode == null) {
             currencyCode = configuration?.payPalCurrencyIsoCode
