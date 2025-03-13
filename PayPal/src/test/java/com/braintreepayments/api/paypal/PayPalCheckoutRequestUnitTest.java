@@ -290,7 +290,7 @@ public class PayPalCheckoutRequestUnitTest {
     }
 
     @Test
-    public void createRequestBody_does_not_set_contactPreference_when_not_null() throws JSONException {
+    public void createRequestBody_sets_contactPreference_when_not_null() throws JSONException {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
 
         request.setContactPreference(PayPalContactPreference.UPDATE_CONTACT_INFORMATION);
@@ -306,7 +306,7 @@ public class PayPalCheckoutRequestUnitTest {
     }
 
     @Test
-    public void createRequestBody_sets_contactPreference_when_not_null() throws JSONException {
+    public void createRequestBody_does_not_set_contactPreference_when_null() throws JSONException {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
 
         String requestBody = request.createRequestBody(
