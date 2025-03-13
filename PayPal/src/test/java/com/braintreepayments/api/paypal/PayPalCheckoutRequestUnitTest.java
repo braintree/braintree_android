@@ -259,8 +259,8 @@ public class PayPalCheckoutRequestUnitTest {
     @Test
     public void createRequestBody_sets_contactInformation_when_not_null() throws JSONException {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
-
         request.setContactInformation(new PayPalContactInformation("some@email.com", new PayPalPhoneNumber("1", "1234567890")));
+
         String requestBody = request.createRequestBody(
                 mock(Configuration.class),
                 mock(Authorization.class),
@@ -292,8 +292,8 @@ public class PayPalCheckoutRequestUnitTest {
     @Test
     public void createRequestBody_sets_contactPreference_when_not_null() throws JSONException {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
-
         request.setContactPreference(PayPalContactPreference.UPDATE_CONTACT_INFORMATION);
+
         String requestBody = request.createRequestBody(
             mock(Configuration.class),
             mock(Authorization.class),
