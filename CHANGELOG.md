@@ -3,7 +3,7 @@
 ## unreleased
 
 * PayPal
-  * Add `contactPreference` property to `PayPalCheckoutRequest`
+  * Add `contactPreference` property to `PayPalCheckoutRequest` - This property is required to enable the contact information section in the payment flow.
 
 ## 5.8.0 (2025-03-06)
 
