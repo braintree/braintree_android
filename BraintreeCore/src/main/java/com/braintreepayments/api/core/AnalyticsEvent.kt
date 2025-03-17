@@ -19,5 +19,6 @@ internal data class AnalyticsEvent(
     val shopperSessionId: String? = null,
     val buttonType: String? = null,
     val buttonOrder: String? = null,
-    val pageType: String? = null
+    val pageType: String? = null,
+    val errorDescription: String? = null
 )
