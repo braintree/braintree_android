@@ -64,7 +64,8 @@ import org.json.JSONObject
  *
  * @property contactInformation Contact information of the recipient for the order
  *
- * @property contactPreference Preference for the contact information section within the payment flow
+ * @property contactPreference Preference for the contact information section within the payment flow. Defaults to
+ * [PayPalContactPreference.NO_CONTACT_INFORMATION] if not set.
  */
 @Parcelize
 class PayPalCheckoutRequest @JvmOverloads constructor(
