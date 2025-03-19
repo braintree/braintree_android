@@ -328,7 +328,7 @@ class PayPalClient internal constructor(
         cancel: PayPalResult.Cancel,
         isAppSwitchFlow: Boolean
     ) {
-        errorDescription = "App Switch has been cancelled"
+        errorDescription = APP_SWITCH_ERROR_CANCELED
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, analyticsParams)
 
         if (isAppSwitchFlow) {
@@ -396,5 +396,6 @@ class PayPalClient internal constructor(
                     "for more information."
             )
         }
+        private const val APP_SWITCH_ERROR_CANCELED = "App Switch has been cancelled"
     }
 }

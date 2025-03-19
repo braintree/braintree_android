@@ -145,7 +145,7 @@ class PayPalLauncher internal constructor(
                     AnalyticsEventParams(
                         payPalContextId = paypalContextId,
                         appSwitchUrl = appSwitchUrl,
-                        errorDescription = "App handle return no result"
+                        errorDescription = APP_SWITCH_NO_RESULT
                     )
                 )
                 PayPalPaymentAuthResult.NoResult
@@ -170,5 +170,6 @@ class PayPalLauncher internal constructor(
                     "for the correct configuration: " + exception.message
             )
         }
+        private const val APP_SWITCH_NO_RESULT = "App handle return no result"
     }
 }
