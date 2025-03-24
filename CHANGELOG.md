@@ -3,7 +3,7 @@
 ## unreleased
 
 * ThreeDSecure
-    * Bump Cardinal version to `2.2.7-7` - this supports Android 15 edge to edge screens.
+    * Bump Cardinal version to `2.2.7-7` (fixes #1236).
 
 ## 5.8.0 (2025-03-06)
 
