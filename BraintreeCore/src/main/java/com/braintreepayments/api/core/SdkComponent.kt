@@ -10,8 +10,6 @@ import androidx.work.WorkManager
 internal class SdkComponent(
     applicationContext: Context,
 ) {
-    val analyticsDatabase: AnalyticsDatabase = AnalyticsDatabase.getInstance(applicationContext)
-    val workManager: WorkManager = WorkManager.getInstance(applicationContext)
     val configurationCache: ConfigurationCache = ConfigurationCache.getInstance(applicationContext)
 
     companion object {
@@ -33,16 +31,6 @@ internal class SdkComponent(
             return checkNotNull(instance)
         }
     }
-}
-
-internal class AnalyticsDatabaseProvider {
-    val analyticsDatabase: AnalyticsDatabase
-        get() = SdkComponent.getInstance().analyticsDatabase
-}
-
-internal class WorkManagerProvider {
-    val workManager: WorkManager
-        get() = SdkComponent.getInstance().workManager
 }
 
 internal class ConfigurationCacheProvider {

@@ -2,24 +2,15 @@ package com.braintreepayments.api.core
 
 import android.content.Context
 import androidx.annotation.RestrictTo
-import androidx.work.Data
-import androidx.work.ExistingWorkPolicy
-import androidx.work.ListenableWorker
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
 import com.braintreepayments.api.sharedutils.Time
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 @Suppress("SwallowedException", "TooGenericExceptionCaught")
 class AnalyticsClient internal constructor(
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
-    private val analyticsDatabase: AnalyticsDatabase = AnalyticsDatabaseProvider().analyticsDatabase,
-    private val workManager: WorkManager = WorkManagerProvider().workManager,
     private val deviceInspector: DeviceInspector = DeviceInspector(),
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
     private val time: Time = Time(),
@@ -52,112 +43,22 @@ class AnalyticsClient internal constructor(
         )
         configurationLoader.loadConfiguration { result ->
             if (result is ConfigurationLoaderResult.Success) {
-                scheduleAnalyticsWriteInBackground(analyticsEvent, merchantRepository.authorization)
-                scheduleAnalyticsUploadInBackground(
+
+                val metadata = deviceInspector.getDeviceMetadata(
+                    applicationContext,
+                    result.configuration,
+                    analyticsParamRepository.sessionId,
+                    merchantRepository.integrationType
+                )
+                val eventJson = mapAnalyticsEventToFPTIEventJSON(analyticsEvent)
+                val analyticsRequest = createFPTIPayload(merchantRepository.authorization, listOf(eventJson), metadata)
+                httpClient.post(
+                    path = FPTI_ANALYTICS_URL,
+                    data = analyticsRequest.toString(),
                     configuration = result.configuration,
                     authorization = merchantRepository.authorization,
-                    integration = merchantRepository.integrationType
+                    callback = null
                 )
-            }
-        }
-    }
-
-    private fun scheduleAnalyticsWriteInBackground(
-        event: AnalyticsEvent,
-        authorization: Authorization
-    ) {
-        val json = mapAnalyticsEventToFPTIEventJSON(event)
-        val inputData = Data.Builder()
-            .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
-            .putString(WORK_INPUT_KEY_ANALYTICS_JSON, json)
-            .putString(WORK_INPUT_KEY_SESSION_ID, analyticsParamRepository.sessionId)
-            .build()
-
-        val analyticsWorkRequest = OneTimeWorkRequest.Builder(AnalyticsWriteToDbWorker::class.java)
-            .setInputData(inputData)
-            .build()
-        workManager.enqueueUniqueWork(
-            WORK_NAME_ANALYTICS_WRITE, ExistingWorkPolicy.APPEND_OR_REPLACE, analyticsWorkRequest
-        )
-    }
-
-    fun performAnalyticsWrite(inputData: Data): ListenableWorker.Result {
-        val analyticsJSON = inputData.getString(WORK_INPUT_KEY_ANALYTICS_JSON)
-        val sessionId = inputData.getString(WORK_INPUT_KEY_SESSION_ID)
-        return if (analyticsJSON == null || sessionId == null) {
-            ListenableWorker.Result.failure()
-        } else {
-            val eventBlob = AnalyticsEventBlob(
-                jsonString = analyticsJSON,
-                sessionId = sessionId
-            )
-            val analyticsBlobDao = analyticsDatabase.analyticsEventBlobDao()
-            analyticsBlobDao.insertEventBlob(eventBlob)
-            ListenableWorker.Result.success()
-        }
-    }
-
-    private fun scheduleAnalyticsUploadInBackground(
-        configuration: Configuration,
-        authorization: Authorization,
-        integration: IntegrationType?
-    ): UUID {
-        val sessionId = analyticsParamRepository.sessionId
-        val inputData = Data.Builder()
-            .putString(WORK_INPUT_KEY_AUTHORIZATION, authorization.toString())
-            .putString(WORK_INPUT_KEY_CONFIGURATION, configuration.toJson())
-            .putString(WORK_INPUT_KEY_SESSION_ID, sessionId)
-            .putString(WORK_INPUT_KEY_INTEGRATION, integration?.stringValue)
-            .build()
-
-        val analyticsWorkRequest = OneTimeWorkRequest.Builder(AnalyticsUploadWorker::class.java)
-            .setInitialDelay(DELAY_TIME_SECONDS, TimeUnit.SECONDS)
-            .setInputData(inputData)
-            .build()
-        workManager.enqueueUniqueWork(
-            WORK_NAME_ANALYTICS_UPLOAD + sessionId,
-            ExistingWorkPolicy.KEEP,
-            analyticsWorkRequest
-        )
-        return analyticsWorkRequest.id
-    }
-
-    fun performAnalyticsUpload(inputData: Data): ListenableWorker.Result {
-        val configuration = getConfigurationFromData(inputData)
-        val authorization = getAuthorizationFromData(inputData)
-        val sessionId = inputData.getString(WORK_INPUT_KEY_SESSION_ID)
-        val integration = inputData.getString(WORK_INPUT_KEY_INTEGRATION)
-        return when (null) {
-            configuration, authorization, sessionId, integration -> {
-                ListenableWorker.Result.failure()
-            }
-
-            else -> {
-                try {
-                    val analyticsEventBlobDao = analyticsDatabase.analyticsEventBlobDao()
-                    val eventBlobs = analyticsEventBlobDao.getBlobsBySessionId(sessionId)
-                    if (eventBlobs.isNotEmpty()) {
-                        val metadata = deviceInspector.getDeviceMetadata(
-                            applicationContext,
-                            configuration,
-                            sessionId,
-                            IntegrationType.fromString(integration)
-                        )
-                        val analyticsRequest =
-                            createFPTIPayload(authorization, eventBlobs, metadata)
-
-                        httpClient.post(
-                            FPTI_ANALYTICS_URL,
-                            analyticsRequest.toString(),
-                            configuration,
-                            authorization
-                        )
-                        analyticsEventBlobDao.deleteEventBlobs(eventBlobs)
-                    }
-                    ListenableWorker.Result.success()
-                } catch (e: Exception) {
-                    ListenableWorker.Result.failure()
-                }
             }
         }
     }
@@ -182,14 +83,8 @@ class AnalyticsClient internal constructor(
             timestamp = time.currentTime
         )
         val eventJSON = mapAnalyticsEventToFPTIEventJSON(event)
-        val eventBlobs = listOf(
-            AnalyticsEventBlob(
-                jsonString = eventJSON,
-                sessionId = ""
-            )
-        )
         try {
-            val analyticsRequest = createFPTIPayload(authorization, eventBlobs, metadata)
+            val analyticsRequest = createFPTIPayload(authorization, listOf(eventJSON), metadata)
             httpClient.post(
                 path = FPTI_ANALYTICS_URL,
                 data = analyticsRequest.toString(),
@@ -204,7 +99,7 @@ class AnalyticsClient internal constructor(
     @Throws(JSONException::class)
     private fun createFPTIPayload(
         authorization: Authorization?,
-        eventBlobs: List<AnalyticsEventBlob>,
+        events: List<JSONObject>,
         metadata: DeviceMetadata
     ): JSONObject {
         val batchParamsJSON = mapDeviceMetadataToFPTIBatchParamsJSON(metadata)
@@ -220,8 +115,8 @@ class AnalyticsClient internal constructor(
         eventsContainerJSON.put(FPTI_KEY_BATCH_PARAMS, batchParamsJSON)
 
         val eventParamsJSON = JSONArray()
-        for (blob in eventBlobs) {
-            eventParamsJSON.put(JSONObject(blob.jsonString))
+        for (event in events) {
+            eventParamsJSON.put(event)
         }
         eventsContainerJSON.put(FPTI_KEY_EVENT_PARAMS, eventParamsJSON)
 
@@ -230,8 +125,8 @@ class AnalyticsClient internal constructor(
         return JSONObject().put(FPTI_KEY_EVENTS, eventsArray)
     }
 
-    private fun mapAnalyticsEventToFPTIEventJSON(event: AnalyticsEvent): String {
-        val json = JSONObject()
+    private fun mapAnalyticsEventToFPTIEventJSON(event: AnalyticsEvent): JSONObject {
+        return JSONObject()
             .put(FPTI_KEY_EVENT_NAME, event.name)
             .put(FPTI_KEY_TIMESTAMP, event.timestamp)
             .put(FPTI_KEY_IS_VAULT, event.isVaultRequest)
@@ -247,7 +142,6 @@ class AnalyticsClient internal constructor(
             .putOpt(FPTI_KEY_BUTTON_TYPE, event.buttonType)
             .putOpt(FPTI_KEY_BUTTON_POSITION, event.buttonOrder)
             .putOpt(FPTI_KEY_PAGE_TYPE, event.pageType)
-        return json.toString()
     }
 
     @Throws(JSONException::class)
@@ -298,7 +192,6 @@ class AnalyticsClient internal constructor(
         private const val FPTI_KEY_END_TIME = "end_time"
         private const val FPTI_KEY_ENDPOINT = "endpoint"
         private const val FPTI_KEY_MERCHANT_EXPERIMENT = "experiment"
-        private const val FPTI_KEY_MERCHANT_PAYMENT_METHODS_DISPLAYED = "payment_methods_displayed"
         private const val FPTI_KEY_URL = "url"
         private const val FPTI_KEY_SHOPPER_SESSION_ID = "shopper_session_id"
         private const val FPTI_KEY_BUTTON_TYPE = "button_type"
@@ -323,30 +216,5 @@ class AnalyticsClient internal constructor(
         private const val FPTI_BATCH_KEY_MERCHANT_ID = "merchant_id"
         private const val FPTI_BATCH_KEY_PLATFORM = "platform"
         private const val FPTI_BATCH_KEY_SESSION_ID = "session_id"
-
-        const val WORK_NAME_ANALYTICS_UPLOAD = "uploadAnalytics"
-        const val WORK_NAME_ANALYTICS_WRITE = "writeAnalyticsToDb"
-
-        const val WORK_INPUT_KEY_AUTHORIZATION = "authorization"
-        const val WORK_INPUT_KEY_CONFIGURATION = "configuration"
-        const val WORK_INPUT_KEY_INTEGRATION = "integration"
-        const val WORK_INPUT_KEY_SESSION_ID = "sessionId"
-        const val WORK_INPUT_KEY_ANALYTICS_JSON = "analyticsJson"
-
-        private const val DELAY_TIME_SECONDS = 30L
-
-        private fun getAuthorizationFromData(inputData: Data?): Authorization? =
-            inputData?.getString(WORK_INPUT_KEY_AUTHORIZATION)?.let {
-                Authorization.fromString(it)
-            }
-
-        private fun getConfigurationFromData(inputData: Data?): Configuration? =
-            inputData?.getString(WORK_INPUT_KEY_CONFIGURATION)?.let {
-                try {
-                    Configuration.fromJson(it)
-                } catch (ignored: JSONException) {
-                    null
-                }
-            }
     }
 }
