@@ -40,7 +40,7 @@ class PayPalClient internal constructor(
     /**
      * Used for sending the type of flow, universal vs deeplink to FPTI
      */
-    private var linkType: LinkType? = null
+    private var linkType: LinkType = if (getReturnLinkUseCase() is GetReturnLinkUseCase.ReturnLinkResult.AppLink) LinkType.APP_LINK else LinkType.DEEP_LINK
 
     /**
      * True if `tokenize()` was called with a Vault request object type
@@ -129,8 +129,8 @@ class PayPalClient internal constructor(
             if (payPalResponse != null) {
                 payPalContextId = payPalResponse.paypalContextId
                 val isAppSwitchFlow = getAppSwitchUseCase() && internalPayPalClient.isAppSwitchEnabled(payPalRequest) &&
-                    internalPayPalClient.isPayPalInstalled(context)
-                linkType = if (isAppSwitchFlow) LinkType.APP_SWITCH else LinkType.APP_LINK
+                    internalPayPalClient.isPayPalInstalled(context) && getReturnLinkUseCase() is GetReturnLinkUseCase.ReturnLinkResult.AppLink
+                linkType = if (getReturnLinkUseCase() is GetReturnLinkUseCase.ReturnLinkResult.AppLink) LinkType.APP_LINK else LinkType.DEEP_LINK
 
                 try {
                     payPalResponse.browserSwitchOptions = buildBrowserSwitchOptions(payPalResponse)
