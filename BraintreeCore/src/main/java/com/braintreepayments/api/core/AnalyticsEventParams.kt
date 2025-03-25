@@ -34,5 +34,6 @@ data class AnalyticsEventParams @JvmOverloads constructor(
     val shopperSessionId: String? = null,
     val buttonType: String? = null,
     val buttonOrder: String? = null,
-    val pageType: String? = null
+    val pageType: String? = null,
+    val errorDescription: String? = null,
 )
