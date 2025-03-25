@@ -1,7 +1,6 @@
 package com.braintreepayments.api.core
 
 import android.content.Context
-import androidx.work.WorkManager
 
 /**
  * Component class that is created when the BT SDK is launched. It contains dependencies that need to be injected that

@@ -16,7 +16,7 @@ internal class ConfigurationLoader(
      * This should be refactored to remove the circular dependency.
      */
     lazyAnalyticsClient: Lazy<AnalyticsClient> = lazy {
-        AnalyticsClient(httpClient = httpClient)
+        AnalyticsClient()
     },
 ) {
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
@@ -59,7 +59,8 @@ internal class ConfigurationLoader(
                                 startTime = timing?.startTime,
                                 endTime = timing?.endTime,
                                 endpoint = "/v1/configuration"
-                            )
+                            ),
+                            sendImmediately = false
                         )
                     } catch (jsonException: JSONException) {
                         callback.onResult(ConfigurationLoaderResult.Failure(jsonException))
