@@ -78,8 +78,6 @@ class BraintreeClient internal constructor(
                 it.deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
             }
         }
-
-        applicationContext.deleteDatabase("analytics_database")
     }
 
     /**
