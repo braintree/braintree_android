@@ -239,7 +239,8 @@ class ConfigurationLoaderUnitTest {
                     startTime = 0,
                     endTime = 10,
                     endpoint = "/v1/configuration"
-                )
+                ),
+                sendImmediately = false
             )
         }
 

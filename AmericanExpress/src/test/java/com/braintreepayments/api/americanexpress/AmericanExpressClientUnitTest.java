@@ -159,8 +159,8 @@ public class AmericanExpressClientUnitTest {
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
         AnalyticsEventParams params = new AnalyticsEventParams();
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, params);
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_SUCCEEDED, params);
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, params, true);
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_SUCCEEDED, params, true);
     }
 
     @Test
@@ -173,8 +173,8 @@ public class AmericanExpressClientUnitTest {
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
         AnalyticsEventParams params = new AnalyticsEventParams();
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, params);
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED, params);
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, params, true);
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED, params, true);
     }
 
     @Test
@@ -186,7 +186,7 @@ public class AmericanExpressClientUnitTest {
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
         AnalyticsEventParams params = new AnalyticsEventParams();
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, params);
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED, params);
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, params, true);
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED, params, true);
     }
 }

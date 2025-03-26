@@ -16,7 +16,6 @@ import androidx.fragment.app.FragmentActivity;
 import com.braintreepayments.api.BrowserSwitchFinalResult;
 import com.braintreepayments.api.BrowserSwitchOptions;
 import com.braintreepayments.api.core.AnalyticsEventParams;
-import com.braintreepayments.api.core.AnalyticsParamRepository;
 import com.braintreepayments.api.core.AppSwitchRepository;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;
@@ -36,8 +35,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
-
-import java.util.Collections;
 
 @RunWith(RobolectricTestRunner.class)
 public class PayPalClientUnitTest {
@@ -126,7 +123,8 @@ public class PayPalClientUnitTest {
 
         verify(braintreeClient).sendAnalyticsEvent(
             PayPalAnalytics.TOKENIZATION_STARTED,
-            new AnalyticsEventParams(null, null, true, null, null, null, null, null, "test-shopper-session-id")
+            new AnalyticsEventParams(null, null, true, null, null, null, null, null, "test-shopper-session-id"),
+            true
         );
     }
 
@@ -299,7 +297,7 @@ public class PayPalClientUnitTest {
             null,
             false
         );
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
     }
 
     @Test
@@ -327,7 +325,7 @@ public class PayPalClientUnitTest {
             null,
             false
         );
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
     }
 
     @Test
@@ -355,7 +353,7 @@ public class PayPalClientUnitTest {
             null,
             true
         );
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
     }
 
 
@@ -438,7 +436,7 @@ public class PayPalClientUnitTest {
             "universal",
             true
         );
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_STARTED, params);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_STARTED, params, true);
     }
 
     @Test
@@ -567,7 +565,7 @@ public class PayPalClientUnitTest {
             null,
             false
         );
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params, true);
     }
 
     @Test
@@ -611,7 +609,7 @@ public class PayPalClientUnitTest {
             null,
             false
         );
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, params);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, params, true);
     }
 
     @Test
@@ -653,7 +651,7 @@ public class PayPalClientUnitTest {
         AnalyticsEventParams params = new AnalyticsEventParams(
             "EC-HERMES-SANDBOX-EC-TOKEN"
         );
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, params);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, params, true);
         AnalyticsEventParams appSwitchParams = new AnalyticsEventParams(
                 "EC-HERMES-SANDBOX-EC-TOKEN",
                 null,
@@ -664,7 +662,7 @@ public class PayPalClientUnitTest {
                 null,
                 "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN&switch_initiated_time=17166111926211"
         );
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_SUCCEEDED, appSwitchParams);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_SUCCEEDED, appSwitchParams, true);
     }
 
     @Test
@@ -695,7 +693,7 @@ public class PayPalClientUnitTest {
         AnalyticsEventParams params = new AnalyticsEventParams(
             "SOME-BA"
         );
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
         AnalyticsEventParams appSwitchParams = new AnalyticsEventParams(
                 "SOME-BA",
                 null,
@@ -706,7 +704,7 @@ public class PayPalClientUnitTest {
                 null,
                 "https://some-scheme/onetouch/v1/cancel?token=SOME-BA&switch_initiated_time=17166111926211"
         );
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, appSwitchParams);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, appSwitchParams, true);
     }
 
     @Test
@@ -742,7 +740,7 @@ public class PayPalClientUnitTest {
         assertTrue(result instanceof PayPalResult.Cancel);
 
         AnalyticsEventParams params = new AnalyticsEventParams();
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params);
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_CANCELED, params);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params, true);
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_CANCELED, params, true);
     }
 }

@@ -384,14 +384,7 @@ class BraintreeClientUnitTest {
 
         callbackSlot.captured.onResult(ConfigurationLoaderResult.Success(configuration))
 
-        verify {
-            analyticsClient.reportCrash(
-                applicationContext,
-                any(),
-                IntegrationType.CUSTOM,
-                authorization
-            )
-        }
+        verify { analyticsClient.reportCrash(any()) }
     }
 
     @Test
