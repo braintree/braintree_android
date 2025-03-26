@@ -316,7 +316,10 @@ class PayPalClient internal constructor(
         callback: PayPalPaymentAuthCallback,
         failure: PayPalPaymentAuthRequest.Failure
     ) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, analyticsParams)
+        braintreeClient.sendAnalyticsEvent(
+            PayPalAnalytics.TOKENIZATION_FAILED,
+            analyticsParams.copy(errorDescription = failure.error.message)
+        )
         callback.onPayPalPaymentAuthRequest(failure)
     }
 
@@ -339,12 +342,18 @@ class PayPalClient internal constructor(
         failure: PayPalResult.Failure,
         isAppSwitchFlow: Boolean
     ) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, analyticsParams)
+        braintreeClient.sendAnalyticsEvent(
+            PayPalAnalytics.TOKENIZATION_FAILED,
+            analyticsParams.copy(errorDescription = failure.error.message)
+        )
 
         if (isAppSwitchFlow) {
             braintreeClient.sendAnalyticsEvent(
                 PayPalAnalytics.APP_SWITCH_FAILED,
-                analyticsParams.copy(appSwitchUrl = appSwitchUrlString)
+                analyticsParams.copy(
+                    appSwitchUrl = appSwitchUrlString,
+                    errorDescription = failure.error.message
+                )
             )
         }
 

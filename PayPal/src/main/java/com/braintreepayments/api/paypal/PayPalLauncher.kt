@@ -120,9 +120,7 @@ class PayPalLauncher internal constructor(
                         appSwitchUrl = appSwitchUrl
                     )
                 )
-                PayPalPaymentAuthResult.Success(
-                    browserSwitchResult
-                )
+                PayPalPaymentAuthResult.Success(browserSwitchResult)
             }
 
             is BrowserSwitchFinalResult.Failure -> {
@@ -130,12 +128,11 @@ class PayPalLauncher internal constructor(
                     PayPalAnalytics.HANDLE_RETURN_FAILED,
                     AnalyticsEventParams(
                         payPalContextId = paypalContextId,
-                        appSwitchUrl = appSwitchUrl
+                        appSwitchUrl = appSwitchUrl,
+                        errorDescription = browserSwitchResult.error.message
                     )
                 )
-                PayPalPaymentAuthResult.Failure(
-                    browserSwitchResult.error
-                )
+                PayPalPaymentAuthResult.Failure(browserSwitchResult.error)
             }
 
             is BrowserSwitchFinalResult.NoResult -> {
