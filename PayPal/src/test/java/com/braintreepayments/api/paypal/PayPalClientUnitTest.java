@@ -289,10 +289,7 @@ public class PayPalClientUnitTest {
 
         PayPalPaymentAuthRequest request = captor.getValue();
         assertTrue(request instanceof PayPalPaymentAuthRequest.Failure);
-        assertEquals("PayPal is not enabled. " +
-                "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
-                "for more information.",
-            ((PayPalPaymentAuthRequest.Failure) request).getError().getMessage());
+        assertEquals(PAYPAL_NOT_ENABLED_MESSAGE, ((PayPalPaymentAuthRequest.Failure) request).getError().getMessage());
 
         AnalyticsEventParams params = new AnalyticsEventParams(
             null,
