@@ -10,6 +10,8 @@ class AnalyticsParamRepository(
     private val uuidHelper: UUIDHelper = UUIDHelper()
 ) {
 
+    var linkType: LinkType? = null
+
     private lateinit var _sessionId: String
 
     /**

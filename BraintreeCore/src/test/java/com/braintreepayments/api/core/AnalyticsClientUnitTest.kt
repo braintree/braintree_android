@@ -18,18 +18,19 @@ class AnalyticsClientUnitTest {
 
     private val analyticsApi: AnalyticsApi = mockk(relaxed = true)
     private val analyticsEventRepository: AnalyticsEventRepository = mockk(relaxed = true)
+    private val analyticsParamRepository: AnalyticsParamRepository = mockk(relaxed = true)
     private val time: Time = mockk()
     private lateinit var configurationLoader: ConfigurationLoader
 
     private val configuration: Configuration = fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
     private val eventName = "sample-event-name"
     private val timestamp = 123L
+    private val linkType = LinkType.APP_LINK
 
     private lateinit var sut: AnalyticsClient
 
     private val analyticsEventParams = AnalyticsEventParams(
         payPalContextId = "sample-paypal-context-id",
-        linkType = "sample-link-type",
         isVaultRequest = true,
         startTime = 789,
         endTime = 987,
@@ -46,7 +47,7 @@ class AnalyticsClientUnitTest {
         name = eventName,
         timestamp = timestamp,
         payPalContextId = analyticsEventParams.payPalContextId,
-        linkType = analyticsEventParams.linkType,
+        linkType = linkType.stringValue,
         isVaultRequest = analyticsEventParams.isVaultRequest,
         startTime = analyticsEventParams.startTime,
         endTime = analyticsEventParams.endTime,
@@ -63,6 +64,7 @@ class AnalyticsClientUnitTest {
     @Throws(InvalidArgumentException::class, GeneralSecurityException::class, IOException::class)
     fun beforeEach() {
         every { time.currentTime } returns timestamp
+        every { analyticsParamRepository.linkType } returns linkType
 
         configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
@@ -70,6 +72,7 @@ class AnalyticsClientUnitTest {
 
         sut = AnalyticsClient(
             analyticsApi = analyticsApi,
+            analyticsParamRepository = analyticsParamRepository,
             analyticsEventRepository = analyticsEventRepository,
             time = time,
             configurationLoader = configurationLoader,

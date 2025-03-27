@@ -16,7 +16,10 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.ClientToken
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.GetReturnLinkTypeUseCase
+import com.braintreepayments.api.core.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
 import com.braintreepayments.api.core.GetReturnLinkUseCase
+import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.MetadataBuilder
 import org.json.JSONException
@@ -34,6 +37,7 @@ class VenmoClient internal constructor(
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val venmoRepository: VenmoRepository = VenmoRepository.instance,
+    getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(merchantRepository),
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository)
 ) {
     /**
@@ -46,6 +50,13 @@ class VenmoClient internal constructor(
      * True if `tokenize()` was called with a Vault request object type
      */
     private var isVaultRequest = false
+
+    init {
+        analyticsParamRepository.linkType = when (getReturnLinkTypeUseCase()) {
+            ReturnLinkTypeResult.APP_LINK -> LinkType.APP_LINK
+            ReturnLinkTypeResult.DEEP_LINK -> LinkType.DEEP_LINK
+        }
+    }
 
     /**
      * Initializes a new [VenmoClient] instance
@@ -389,14 +400,9 @@ class VenmoClient internal constructor(
         get() {
             val eventParameters = AnalyticsEventParams(
                 payPalContextId = payPalContextId,
-                linkType = LINK_TYPE,
                 isVaultRequest = isVaultRequest,
                 appSwitchUrl = venmoRepository.venmoUrl.toString(),
             )
             return eventParameters
         }
-
-    companion object {
-        private const val LINK_TYPE = "universal"
-    }
 }
