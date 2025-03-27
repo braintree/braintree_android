@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypal;
 
+import static com.braintreepayments.api.paypal.PayPalClient.BROWSER_SWITCH_EXCEPTION_MESSAGE;
 import static com.braintreepayments.api.paypal.PayPalClient.PAYPAL_NOT_ENABLED_MESSAGE;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -735,7 +736,7 @@ public class PayPalClientUnitTest {
                 null,
                 null,
                 null,
-                "The response contained inconsistent data."
+                BROWSER_SWITCH_EXCEPTION_MESSAGE
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
         AnalyticsEventParams appSwitchParams = new AnalyticsEventParams(
@@ -751,7 +752,7 @@ public class PayPalClientUnitTest {
                 null,
                 null,
                 null,
-                "The response contained inconsistent data."
+                BROWSER_SWITCH_EXCEPTION_MESSAGE
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, appSwitchParams, true);
     }
