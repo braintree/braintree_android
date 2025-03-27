@@ -308,7 +308,7 @@ class PayPalClient internal constructor(
             }
             return urlResponseData
         } else {
-            throw PayPalBrowserSwitchException("The response contained inconsistent data.")
+            throw PayPalBrowserSwitchException(BROWSER_SWITCH_EXCEPTION_MESSAGE)
         }
     }
 
@@ -316,7 +316,10 @@ class PayPalClient internal constructor(
         callback: PayPalPaymentAuthCallback,
         failure: PayPalPaymentAuthRequest.Failure
     ) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, analyticsParams)
+        braintreeClient.sendAnalyticsEvent(
+            PayPalAnalytics.TOKENIZATION_FAILED,
+            analyticsParams.copy(errorDescription = failure.error.message)
+        )
         callback.onPayPalPaymentAuthRequest(failure)
     }
 
@@ -339,12 +342,18 @@ class PayPalClient internal constructor(
         failure: PayPalResult.Failure,
         isAppSwitchFlow: Boolean
     ) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, analyticsParams)
+        braintreeClient.sendAnalyticsEvent(
+            PayPalAnalytics.TOKENIZATION_FAILED,
+            analyticsParams.copy(errorDescription = failure.error.message)
+        )
 
         if (isAppSwitchFlow) {
             braintreeClient.sendAnalyticsEvent(
                 PayPalAnalytics.APP_SWITCH_FAILED,
-                analyticsParams.copy(appSwitchUrl = appSwitchUrlString)
+                analyticsParams.copy(
+                    appSwitchUrl = appSwitchUrlString,
+                    errorDescription = failure.error.message
+                )
             )
         }
 
@@ -383,12 +392,13 @@ class PayPalClient internal constructor(
     }
 
     companion object {
+        internal const val PAYPAL_NOT_ENABLED_MESSAGE = "PayPal is not enabled. " +
+            "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v5 " +
+            "for more information."
+
+        internal const val BROWSER_SWITCH_EXCEPTION_MESSAGE = "The response contained inconsistent data."
         private fun createPayPalError(): Exception {
-            return BraintreeException(
-                "PayPal is not enabled. " +
-                    "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
-                    "for more information."
-            )
+            return BraintreeException(PAYPAL_NOT_ENABLED_MESSAGE)
         }
     }
 }

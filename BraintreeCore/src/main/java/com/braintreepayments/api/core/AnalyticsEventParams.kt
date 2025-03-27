@@ -20,6 +20,7 @@ import androidx.annotation.RestrictTo
  * @property buttonType buttonType Represents the tapped button type.
  * @property buttonOrder The order or ranking in which payment buttons appear.
  * @property pageType The page or view that a button is displayed on.
+ * @property errorDescription use this to provide more detail on a failure event.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 data class AnalyticsEventParams @JvmOverloads constructor(
@@ -34,5 +35,6 @@ data class AnalyticsEventParams @JvmOverloads constructor(
     val shopperSessionId: String? = null,
     val buttonType: String? = null,
     val buttonOrder: String? = null,
-    val pageType: String? = null
+    val pageType: String? = null,
+    val errorDescription: String? = null,
 )
