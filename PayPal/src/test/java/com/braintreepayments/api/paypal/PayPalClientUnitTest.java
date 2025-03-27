@@ -1,5 +1,6 @@
 package com.braintreepayments.api.paypal;
 
+import static com.braintreepayments.api.paypal.PayPalClient.PAYPAL_NOT_ENABLED_MESSAGE;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertFalse;
@@ -305,7 +306,7 @@ public class PayPalClientUnitTest {
                 null,
                 null,
                 null,
-                "PayPal is not enabled. See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 for more information."
+                PAYPAL_NOT_ENABLED_MESSAGE
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
     }
@@ -314,7 +315,8 @@ public class PayPalClientUnitTest {
     public void createPaymentAuthRequest_whenCheckoutRequest_whenConfigError_forwardsErrorToListener() {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
-        Exception authError = new Exception("Error fetching auth");
+        String errorMessage = "Error fetching auth";
+        Exception authError = new Exception(errorMessage);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configurationError(authError)
             .build();
@@ -343,7 +345,7 @@ public class PayPalClientUnitTest {
                 null,
                 null,
                 null,
-                "Error fetching auth"
+                errorMessage
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
     }
@@ -352,7 +354,8 @@ public class PayPalClientUnitTest {
     public void requestBillingAgreement_whenConfigError_forwardsErrorToListener() {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
-        Exception authError = new Exception("Error fetching auth");
+        String errorMessage = "Error fetching auth";
+        Exception authError = new Exception(errorMessage);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configurationError(authError)
             .build();
@@ -381,7 +384,7 @@ public class PayPalClientUnitTest {
                 null,
                 null,
                 null,
-                "Error fetching auth"
+                errorMessage
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
     }

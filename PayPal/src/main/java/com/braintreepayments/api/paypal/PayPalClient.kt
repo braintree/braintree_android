@@ -392,12 +392,11 @@ class PayPalClient internal constructor(
     }
 
     companion object {
+        internal const val PAYPAL_NOT_ENABLED_MESSAGE = "PayPal is not enabled. " +
+            "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
+            "for more information."
         private fun createPayPalError(): Exception {
-            return BraintreeException(
-                "PayPal is not enabled. " +
-                    "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
-                    "for more information."
-            )
+            return BraintreeException(PAYPAL_NOT_ENABLED_MESSAGE)
         }
     }
 }
