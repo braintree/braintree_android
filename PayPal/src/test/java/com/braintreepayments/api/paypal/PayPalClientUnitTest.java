@@ -722,18 +722,18 @@ public class PayPalClientUnitTest {
 
         AnalyticsEventParams params = new AnalyticsEventParams(
             "SOME-BA",
-                null,
-                false,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                BROWSER_SWITCH_EXCEPTION_MESSAGE
+            null,
+            false,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            BROWSER_SWITCH_EXCEPTION_MESSAGE
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
         AnalyticsEventParams appSwitchParams = new AnalyticsEventParams(
