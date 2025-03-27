@@ -295,7 +295,17 @@ public class PayPalClientUnitTest {
         AnalyticsEventParams params = new AnalyticsEventParams(
             null,
             null,
-            false
+            false,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "PayPal is not enabled. See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 for more information."
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
     }
@@ -323,7 +333,17 @@ public class PayPalClientUnitTest {
         AnalyticsEventParams params = new AnalyticsEventParams(
             null,
             null,
-            false
+            false,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "Error fetching auth"
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
     }
@@ -351,11 +371,20 @@ public class PayPalClientUnitTest {
         AnalyticsEventParams params = new AnalyticsEventParams(
             null,
             null,
-            true
+            true,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "Error fetching auth"
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
     }
-
 
     @Test
     public void createPaymentAuthRequest_whenVaultRequest_sendsPayPalRequestViaInternalClient() {
@@ -691,7 +720,19 @@ public class PayPalClientUnitTest {
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback);
 
         AnalyticsEventParams params = new AnalyticsEventParams(
-            "SOME-BA"
+            "SOME-BA",
+                null,
+                false,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "The response contained inconsistent data."
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
         AnalyticsEventParams appSwitchParams = new AnalyticsEventParams(
@@ -702,7 +743,12 @@ public class PayPalClientUnitTest {
                 null,
                 null,
                 null,
-                "https://some-scheme/onetouch/v1/cancel?token=SOME-BA&switch_initiated_time=17166111926211"
+                "https://some-scheme/onetouch/v1/cancel?token=SOME-BA&switch_initiated_time=17166111926211",
+                null,
+                null,
+                null,
+                null,
+                "The response contained inconsistent data."
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, appSwitchParams, true);
     }
