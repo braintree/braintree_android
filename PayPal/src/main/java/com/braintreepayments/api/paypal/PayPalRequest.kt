@@ -145,6 +145,7 @@ abstract class PayPalRequest internal constructor(
         internal const val SHIPPING_CALLBACK_URL_KEY: String = "shipping_callback_url"
         internal const val RECIPIENT_EMAIL_KEY: String = "recipient_email"
         internal const val RECIPIENT_PHONE_NUMBER_KEY: String = "international_phone"
-        internal const val SHOPPER_SESSION_ID: String = "shopper_session_id"
+        internal const val CONTACT_PREFERENCE_KEY: String = "contact_preference"
+        internal const val SHOPPER_SESSION_ID_KEY: String = "shopper_session_id"
     }
 }

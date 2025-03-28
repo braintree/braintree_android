@@ -8,6 +8,7 @@ import com.braintreepayments.api.paypal.PayPalBillingInterval;
 import com.braintreepayments.api.paypal.PayPalBillingPricing;
 import com.braintreepayments.api.paypal.PayPalCheckoutRequest;
 import com.braintreepayments.api.paypal.PayPalContactInformation;
+import com.braintreepayments.api.paypal.PayPalContactPreference;
 import com.braintreepayments.api.paypal.PayPalLandingPageType;
 import com.braintreepayments.api.paypal.PayPalPaymentIntent;
 import com.braintreepayments.api.paypal.PayPalPaymentUserAction;
@@ -37,11 +38,11 @@ public class PayPalRequestFactory {
         }
 
         if ((buyerPhoneCountryCode != null && !buyerPhoneCountryCode.isEmpty())
-                && (buyerPhoneNationalNumber != null && !buyerPhoneNationalNumber.isEmpty())) {
+            && (buyerPhoneNationalNumber != null && !buyerPhoneNationalNumber.isEmpty())) {
 
             request.setUserPhoneNumber(new PayPalPhoneNumber(
-                    buyerPhoneCountryCode,
-                    buyerPhoneNationalNumber)
+                buyerPhoneCountryCode,
+                buyerPhoneNationalNumber)
             );
         }
 
@@ -87,9 +88,9 @@ public class PayPalRequestFactory {
             );
 
             PayPalBillingCycle billingCycle = new PayPalBillingCycle(
-                    false,
+                false,
                 1,
-                    PayPalBillingInterval.MONTH,
+                PayPalBillingInterval.MONTH,
                 1,
                 1,
                 "2024-08-01",
@@ -134,10 +135,10 @@ public class PayPalRequestFactory {
         }
 
         if ((buyerPhoneCountryCode != null && !buyerPhoneCountryCode.isEmpty())
-                && (buyerPhoneNationalNumber != null && !buyerPhoneNationalNumber.isEmpty())) {
+            && (buyerPhoneNationalNumber != null && !buyerPhoneNationalNumber.isEmpty())) {
             request.setUserPhoneNumber(new PayPalPhoneNumber(
-                    buyerPhoneCountryCode,
-                    buyerPhoneNationalNumber)
+                buyerPhoneCountryCode,
+                buyerPhoneNationalNumber)
             );
         }
 
@@ -186,6 +187,7 @@ public class PayPalRequestFactory {
 
         if (isContactInformationEnabled) {
             request.setContactInformation(new PayPalContactInformation("some@email.com", new PayPalPhoneNumber("1", "1234567890")));
+            request.setContactPreference(PayPalContactPreference.UPDATE_CONTACT_INFORMATION);
         }
 
         return request;
