@@ -1,10 +1,8 @@
 package com.braintreepayments.api.core
 
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.annotation.RestrictTo
-import com.braintreepayments.api.core.GetReturnLinkUseCase.ReturnLinkResult
+import com.braintreepayments.api.core.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
 
 /**
  * Use case that returns a return link that should be used for navigating from App Switch / CCT back into the merchant
@@ -15,7 +13,10 @@ import com.braintreepayments.api.core.GetReturnLinkUseCase.ReturnLinkResult
  * will be returned.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class GetReturnLinkUseCase(private val merchantRepository: MerchantRepository) {
+class GetReturnLinkUseCase(
+    private val merchantRepository: MerchantRepository,
+    private val getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(merchantRepository),
+) {
 
     sealed class ReturnLinkResult {
         data class AppLink(val appLinkReturnUri: Uri) : ReturnLinkResult()
@@ -26,22 +27,15 @@ class GetReturnLinkUseCase(private val merchantRepository: MerchantRepository) {
     }
 
     operator fun invoke(): ReturnLinkResult {
-        val context = merchantRepository.applicationContext
-        val intent = Intent(Intent.ACTION_VIEW, merchantRepository.appLinkReturnUri).apply {
-            addCategory(Intent.CATEGORY_BROWSABLE)
-        }
-        val resolvedActivity = context.packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
-        return if (resolvedActivity?.activityInfo?.packageName == context.packageName) {
-            merchantRepository.appLinkReturnUri?.let {
-                ReturnLinkResult.AppLink(it)
-            } ?: run {
-                ReturnLinkResult.Failure(BraintreeException("App Link Return Uri is null"))
+        return when (getReturnLinkTypeUseCase()) {
+            ReturnLinkTypeResult.APP_LINK -> {
+                merchantRepository.appLinkReturnUri?.let { ReturnLinkResult.AppLink(it) }
+                    ?: ReturnLinkResult.Failure(BraintreeException("App Link Return Uri is null"))
             }
-        } else {
-            merchantRepository.deepLinkFallbackUrlScheme?.let {
-                ReturnLinkResult.DeepLink(it)
-            } ?: run {
-                ReturnLinkResult.Failure(BraintreeException("Deep Link fallback return url is null"))
+
+            ReturnLinkTypeResult.DEEP_LINK -> {
+                merchantRepository.deepLinkFallbackUrlScheme?.let { ReturnLinkResult.DeepLink(it) }
+                    ?: ReturnLinkResult.Failure(BraintreeException("Deep Link fallback return url is null"))
             }
         }
     }

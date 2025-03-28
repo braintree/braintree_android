@@ -8,6 +8,7 @@ import org.json.JSONException
 @Suppress("SwallowedException", "TooGenericExceptionCaught")
 class AnalyticsClient internal constructor(
     private val analyticsApi: AnalyticsApi = AnalyticsApi(),
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
     private val analyticsEventRepository: AnalyticsEventRepository = AnalyticsEventRepository.instance,
     private val time: Time = Time(),
     private val configurationLoader: ConfigurationLoader = ConfigurationLoader.instance,
@@ -22,7 +23,7 @@ class AnalyticsClient internal constructor(
             name = eventName,
             timestamp = time.currentTime,
             payPalContextId = analyticsEventParams.payPalContextId,
-            linkType = analyticsEventParams.linkType,
+            linkType = analyticsParamRepository.linkType?.stringValue,
             isVaultRequest = analyticsEventParams.isVaultRequest,
             startTime = analyticsEventParams.startTime,
             endTime = analyticsEventParams.endTime,

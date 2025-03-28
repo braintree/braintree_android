@@ -26,8 +26,10 @@ import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.BraintreeRequestCodes;
 import com.braintreepayments.api.core.Configuration;
+import com.braintreepayments.api.core.GetReturnLinkTypeUseCase;
 import com.braintreepayments.api.core.GetReturnLinkUseCase;
 import com.braintreepayments.api.core.IntegrationType;
+import com.braintreepayments.api.core.LinkType;
 import com.braintreepayments.api.core.MerchantRepository;
 import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.testutils.MockBraintreeClientBuilder;
@@ -52,6 +54,7 @@ public class VenmoClientUnitTest {
     private VenmoPaymentAuthRequestCallback venmoPaymentAuthRequestCallback;
     private VenmoSharedPrefsWriter sharedPrefsWriter;
     private AnalyticsParamRepository analyticsParamRepository;
+    private GetReturnLinkTypeUseCase getReturnLinkTypeUseCase;
 
     private VenmoApi venmoApi;
     private ApiClient apiClient;
@@ -67,7 +70,6 @@ public class VenmoClientUnitTest {
     private final Uri appSwitchUrl = Uri.parse("https://example.com");
     private final AnalyticsEventParams expectedAnalyticsParams = new AnalyticsEventParams(
         null,
-        LINK_TYPE,
         false,
         null,
         null,
@@ -77,7 +79,6 @@ public class VenmoClientUnitTest {
     );
     private final AnalyticsEventParams expectedVaultAnalyticsParams = new AnalyticsEventParams(
         null,
-        LINK_TYPE,
         true,
         null,
         null,
@@ -96,6 +97,7 @@ public class VenmoClientUnitTest {
         venmoApi = mock(VenmoApi.class);
         apiClient = mock(ApiClient.class);
         analyticsParamRepository = mock(AnalyticsParamRepository.class);
+        getReturnLinkTypeUseCase = mock(GetReturnLinkTypeUseCase.class);
 
         venmoEnabledConfiguration =
             Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO);
@@ -115,6 +117,51 @@ public class VenmoClientUnitTest {
         when(merchantRepository.getApplicationContext()).thenReturn(context);
         when(venmoRepository.getVenmoUrl()).thenReturn(appSwitchUrl);
         when(getReturnLinkUseCase.invoke()).thenReturn(new GetReturnLinkUseCase.ReturnLinkResult.AppLink(appSwitchUrl));
+        when(getReturnLinkTypeUseCase.invoke()).thenReturn(GetReturnLinkTypeUseCase.ReturnLinkTypeResult.APP_LINK);
+    }
+
+    @Test
+    public void initialization_sets_app_link_in_analyticsParamRepository() {
+        when(getReturnLinkTypeUseCase.invoke()).thenReturn(GetReturnLinkTypeUseCase.ReturnLinkTypeResult.APP_LINK);
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+            .configuration(venmoEnabledConfiguration)
+            .build();
+
+        new VenmoClient(
+            braintreeClient,
+            apiClient,
+            venmoApi,
+            sharedPrefsWriter,
+            analyticsParamRepository,
+            merchantRepository,
+            venmoRepository,
+            getReturnLinkTypeUseCase,
+            getReturnLinkUseCase
+        );
+
+        verify(analyticsParamRepository).setLinkType(LinkType.APP_LINK);
+    }
+
+    @Test
+    public void initialization_sets_deep_link_in_analyticsParamRepository() {
+        when(getReturnLinkTypeUseCase.invoke()).thenReturn(GetReturnLinkTypeUseCase.ReturnLinkTypeResult.DEEP_LINK);
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+            .configuration(venmoEnabledConfiguration)
+            .build();
+
+        new VenmoClient(
+            braintreeClient,
+            apiClient,
+            venmoApi,
+            sharedPrefsWriter,
+            analyticsParamRepository,
+            merchantRepository,
+            venmoRepository,
+            getReturnLinkTypeUseCase,
+            getReturnLinkUseCase
+        );
+
+        verify(analyticsParamRepository).setLinkType(LinkType.DEEP_LINK);
     }
 
     @Test
@@ -144,6 +191,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
@@ -183,6 +231,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
@@ -234,6 +283,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
@@ -265,6 +315,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
@@ -302,6 +353,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
@@ -340,6 +392,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
@@ -383,6 +436,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
@@ -419,6 +473,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
@@ -455,6 +510,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
@@ -485,6 +541,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
@@ -516,6 +573,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
@@ -547,6 +605,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
@@ -577,6 +636,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback);
@@ -606,6 +666,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
 
@@ -633,6 +694,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
 
@@ -669,6 +731,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
 
@@ -708,6 +771,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
 
@@ -751,6 +815,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
 
@@ -773,6 +838,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
 
@@ -809,6 +875,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
 
@@ -833,6 +900,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
 
@@ -865,6 +933,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
 
@@ -907,6 +976,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
 
@@ -944,6 +1014,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
 
@@ -956,11 +1027,6 @@ public class VenmoClientUnitTest {
         assertTrue(result instanceof VenmoResult.Failure);
         assertEquals(error, ((VenmoResult.Failure) result).getError());
 
-        AnalyticsEventParams params = new AnalyticsEventParams(
-            null,
-            LINK_TYPE,
-            true
-        );
         verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, expectedVaultAnalyticsParams, true);
     }
 
@@ -992,6 +1058,7 @@ public class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         );
 

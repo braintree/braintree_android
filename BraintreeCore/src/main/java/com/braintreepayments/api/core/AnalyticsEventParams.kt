@@ -8,7 +8,6 @@ import androidx.annotation.RestrictTo
  * all parameters are required at each call site.
  *
  * @property payPalContextId Used for linking events from the client to server side request.
- * @property linkType Indicates whether a deeplink or an app link was used to launch the app. Also see [LinkType].
  * @property isVaultRequest Indicates whether the request was a BillingAgreement(BA)/Vault request.
  * @property startTime [HttpResponseTiming] start time.
  * @property endTime [HttpResponseTiming] end time.
@@ -25,7 +24,6 @@ import androidx.annotation.RestrictTo
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 data class AnalyticsEventParams @JvmOverloads constructor(
     val payPalContextId: String? = null,
-    val linkType: String? = null,
     val isVaultRequest: Boolean = false,
     val startTime: Long? = null,
     val endTime: Long? = null,
