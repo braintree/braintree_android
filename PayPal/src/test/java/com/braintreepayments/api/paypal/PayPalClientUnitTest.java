@@ -1,5 +1,7 @@
 package com.braintreepayments.api.paypal;
 
+import static com.braintreepayments.api.paypal.PayPalClient.BROWSER_SWITCH_EXCEPTION_MESSAGE;
+import static com.braintreepayments.api.paypal.PayPalClient.PAYPAL_NOT_ENABLED_MESSAGE;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertFalse;
@@ -360,14 +362,21 @@ public class PayPalClientUnitTest {
 
         PayPalPaymentAuthRequest request = captor.getValue();
         assertTrue(request instanceof PayPalPaymentAuthRequest.Failure);
-        assertEquals("PayPal is not enabled. " +
-                "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
-                "for more information.",
-            ((PayPalPaymentAuthRequest.Failure) request).getError().getMessage());
+        assertEquals(PAYPAL_NOT_ENABLED_MESSAGE, ((PayPalPaymentAuthRequest.Failure) request).getError().getMessage());
 
         AnalyticsEventParams params = new AnalyticsEventParams(
             null,
-            false
+            false,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            PAYPAL_NOT_ENABLED_MESSAGE
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
     }
@@ -376,7 +385,8 @@ public class PayPalClientUnitTest {
     public void createPaymentAuthRequest_whenCheckoutRequest_whenConfigError_forwardsErrorToListener() {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
-        Exception authError = new Exception("Error fetching auth");
+        String errorMessage = "Error fetching auth";
+        Exception authError = new Exception(errorMessage);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configurationError(authError)
             .build();
@@ -394,7 +404,17 @@ public class PayPalClientUnitTest {
 
         AnalyticsEventParams params = new AnalyticsEventParams(
             null,
-            false
+            false,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            errorMessage
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
     }
@@ -403,7 +423,8 @@ public class PayPalClientUnitTest {
     public void requestBillingAgreement_whenConfigError_forwardsErrorToListener() {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
-        Exception authError = new Exception("Error fetching auth");
+        String errorMessage = "Error fetching auth";
+        Exception authError = new Exception(errorMessage);
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configurationError(authError)
             .build();
@@ -421,11 +442,20 @@ public class PayPalClientUnitTest {
 
         AnalyticsEventParams params = new AnalyticsEventParams(
             null,
-            true
+            true,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            errorMessage
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
     }
-
 
     @Test
     public void createPaymentAuthRequest_whenVaultRequest_sendsPayPalRequestViaInternalClient() {
@@ -757,17 +787,33 @@ public class PayPalClientUnitTest {
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback);
 
         AnalyticsEventParams params = new AnalyticsEventParams(
-            "SOME-BA"
-        );
-        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
-        AnalyticsEventParams appSwitchParams = new AnalyticsEventParams(
             "SOME-BA",
             false,
             null,
             null,
             null,
             null,
-            "https://some-scheme/onetouch/v1/cancel?token=SOME-BA&switch_initiated_time=17166111926211"
+            null,
+            null,
+            null,
+            null,
+            null,
+            BROWSER_SWITCH_EXCEPTION_MESSAGE
+        );
+        verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
+        AnalyticsEventParams appSwitchParams = new AnalyticsEventParams(
+                "SOME-BA",
+                false,
+                null,
+                null,
+                null,
+                null,
+                "https://some-scheme/onetouch/v1/cancel?token=SOME-BA&switch_initiated_time=17166111926211",
+                null,
+                null,
+                null,
+                null,
+                BROWSER_SWITCH_EXCEPTION_MESSAGE
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, appSwitchParams, true);
     }

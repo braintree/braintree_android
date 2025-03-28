@@ -33,7 +33,8 @@ class AnalyticsClient internal constructor(
             shopperSessionId = analyticsEventParams.shopperSessionId,
             buttonType = analyticsEventParams.buttonType,
             buttonOrder = analyticsEventParams.buttonOrder,
-            pageType = analyticsEventParams.pageType
+            pageType = analyticsEventParams.pageType,
+            errorDescription = analyticsEventParams.errorDescription
         )
         if (sendImmediately) {
             configurationLoader.loadConfiguration { result ->
