@@ -71,7 +71,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient, analyticsParamRepository);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(eq(CardAnalytics.CARD_TOKENIZE_STARTED), any());
+        verify(braintreeClient).sendAnalyticsEvent(eq(CardAnalytics.CARD_TOKENIZE_STARTED), any(), eq(true));
     }
 
     @Test
@@ -150,7 +150,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient, analyticsParamRepository);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(eq(CardAnalytics.CARD_TOKENIZE_SUCCEEDED), any());
+        verify(braintreeClient).sendAnalyticsEvent(eq(CardAnalytics.CARD_TOKENIZE_SUCCEEDED), any(), eq(true));
     }
 
     @Test
@@ -166,7 +166,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient, analyticsParamRepository);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(eq(CardAnalytics.CARD_TOKENIZE_SUCCEEDED), any());
+        verify(braintreeClient).sendAnalyticsEvent(eq(CardAnalytics.CARD_TOKENIZE_SUCCEEDED), any(), eq(true));
     }
 
     @Test
@@ -229,7 +229,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient, analyticsParamRepository);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(eq(CardAnalytics.CARD_TOKENIZE_FAILED), any());
+        verify(braintreeClient).sendAnalyticsEvent(eq(CardAnalytics.CARD_TOKENIZE_FAILED), any(), eq(true));
     }
 
     @Test
@@ -246,7 +246,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient, analyticsParamRepository);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(eq(CardAnalytics.CARD_TOKENIZE_FAILED), any());
+        verify(braintreeClient).sendAnalyticsEvent(eq(CardAnalytics.CARD_TOKENIZE_FAILED), any(), eq(true));
     }
 
     @Test

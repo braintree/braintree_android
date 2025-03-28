@@ -5,6 +5,7 @@ import android.net.Uri
 import android.text.TextUtils
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.AppSwitchRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
@@ -12,6 +13,8 @@ import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.GetAppSwitchUseCase
+import com.braintreepayments.api.core.GetReturnLinkTypeUseCase
+import com.braintreepayments.api.core.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
 import com.braintreepayments.api.core.GetReturnLinkUseCase
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
@@ -28,19 +31,16 @@ class PayPalClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient = PayPalInternalClient(braintreeClient),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(merchantRepository),
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
-    private val getAppSwitchUseCase: GetAppSwitchUseCase = GetAppSwitchUseCase(AppSwitchRepository.instance)
+    private val getAppSwitchUseCase: GetAppSwitchUseCase = GetAppSwitchUseCase(AppSwitchRepository.instance),
+    analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
 ) {
     /**
      * Used for linking events from the client to server side request
      * In the PayPal flow this will be either an EC token or a Billing Agreement token
      */
     private var payPalContextId: String? = null
-
-    /**
-     * Used for sending the type of flow, universal vs deeplink to FPTI
-     */
-    private var linkType: LinkType? = null
 
     /**
      * True if `tokenize()` was called with a Vault request object type
@@ -80,6 +80,13 @@ class PayPalClient internal constructor(
             appLinkReturnUri = appLinkReturnUrl
         )
     )
+
+    init {
+        analyticsParamRepository.linkType = when (getReturnLinkTypeUseCase()) {
+            ReturnLinkTypeResult.APP_LINK -> LinkType.APP_LINK
+            ReturnLinkTypeResult.DEEP_LINK -> LinkType.DEEP_LINK
+        }
+    }
 
     /**
      * Starts the PayPal payment flow by creating a [PayPalPaymentAuthRequestParams] to be
@@ -130,7 +137,6 @@ class PayPalClient internal constructor(
                 payPalContextId = payPalResponse.paypalContextId
                 val isAppSwitchFlow = getAppSwitchUseCase() && internalPayPalClient.isAppSwitchEnabled(payPalRequest) &&
                     internalPayPalClient.isPayPalInstalled(context)
-                linkType = if (isAppSwitchFlow) LinkType.APP_SWITCH else LinkType.APP_LINK
 
                 try {
                     payPalResponse.browserSwitchOptions = buildBrowserSwitchOptions(payPalResponse)
@@ -308,7 +314,7 @@ class PayPalClient internal constructor(
             }
             return urlResponseData
         } else {
-            throw PayPalBrowserSwitchException("The response contained inconsistent data.")
+            throw PayPalBrowserSwitchException(BROWSER_SWITCH_EXCEPTION_MESSAGE)
         }
     }
 
@@ -316,7 +322,10 @@ class PayPalClient internal constructor(
         callback: PayPalPaymentAuthCallback,
         failure: PayPalPaymentAuthRequest.Failure
     ) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, analyticsParams)
+        braintreeClient.sendAnalyticsEvent(
+            PayPalAnalytics.TOKENIZATION_FAILED,
+            analyticsParams.copy(errorDescription = failure.error.message)
+        )
         callback.onPayPalPaymentAuthRequest(failure)
     }
 
@@ -339,12 +348,18 @@ class PayPalClient internal constructor(
         failure: PayPalResult.Failure,
         isAppSwitchFlow: Boolean
     ) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, analyticsParams)
+        braintreeClient.sendAnalyticsEvent(
+            PayPalAnalytics.TOKENIZATION_FAILED,
+            analyticsParams.copy(errorDescription = failure.error.message)
+        )
 
         if (isAppSwitchFlow) {
             braintreeClient.sendAnalyticsEvent(
                 PayPalAnalytics.APP_SWITCH_FAILED,
-                analyticsParams.copy(appSwitchUrl = appSwitchUrlString)
+                analyticsParams.copy(
+                    appSwitchUrl = appSwitchUrlString,
+                    errorDescription = failure.error.message
+                )
             )
         }
 
@@ -372,7 +387,6 @@ class PayPalClient internal constructor(
         get() {
             return AnalyticsEventParams(
                 payPalContextId = payPalContextId,
-                linkType = linkType?.stringValue,
                 isVaultRequest = isVaultRequest,
                 shopperSessionId = shopperSessionId
             )
@@ -383,12 +397,13 @@ class PayPalClient internal constructor(
     }
 
     companion object {
+        internal const val PAYPAL_NOT_ENABLED_MESSAGE = "PayPal is not enabled. " +
+            "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v5 " +
+            "for more information."
+
+        internal const val BROWSER_SWITCH_EXCEPTION_MESSAGE = "The response contained inconsistent data."
         private fun createPayPalError(): Exception {
-            return BraintreeException(
-                "PayPal is not enabled. " +
-                    "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4 " +
-                    "for more information."
-            )
+            return BraintreeException(PAYPAL_NOT_ENABLED_MESSAGE)
         }
     }
 }

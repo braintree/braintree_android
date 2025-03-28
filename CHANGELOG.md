@@ -4,6 +4,9 @@
 
 * PayPal
   * Make `PayPalCheckoutRequest.userAuthenticationEmail` optional for App Switch flows
+  * Add `error_desc` tag to the analytics events we are sending to FPTI.
+* ThreeDSecure
+  * Bump Cardinal version to `2.2.7-7` (fixes #1236).
 
 ## 5.8.0 (2025-03-06)
 

@@ -1,9 +1,5 @@
 package com.braintreepayments.api.core
 
-import android.content.Context
-import android.content.Intent
-import android.content.pm.ActivityInfo
-import android.content.pm.ResolveInfo
 import android.net.Uri
 import io.mockk.every
 import io.mockk.mockk
@@ -18,10 +14,7 @@ import kotlin.test.assertTrue
 class GetReturnLinkUseCaseUnitTest {
 
     private val merchantRepository: MerchantRepository = mockk(relaxed = true)
-    private val context: Context = mockk(relaxed = true)
-    private val resolveInfo = ResolveInfo()
-    private val activityInfo = ActivityInfo()
-    private val contextPackageName = "context.package.name"
+    private val getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = mockk(relaxed = true)
     private val appLinkReturnUri = Uri.parse("https://example.com")
     private val deepLinkFallbackUrlScheme = "com.braintreepayments.demo"
 
@@ -29,19 +22,15 @@ class GetReturnLinkUseCaseUnitTest {
 
     @Before
     fun setUp() {
-        every { merchantRepository.applicationContext } returns context
         every { merchantRepository.appLinkReturnUri } returns appLinkReturnUri
         every { merchantRepository.deepLinkFallbackUrlScheme } returns deepLinkFallbackUrlScheme
-        every { context.packageName } returns contextPackageName
-        resolveInfo.activityInfo = activityInfo
-        every { context.packageManager.resolveActivity(any<Intent>(), any<Int>()) } returns resolveInfo
 
-        subject = GetReturnLinkUseCase(merchantRepository)
+        subject = GetReturnLinkUseCase(merchantRepository, getReturnLinkTypeUseCase)
     }
 
     @Test
-    fun `when invoke is called and app link is available, APP_LINK is returned`() {
-        activityInfo.packageName = "context.package.name"
+    fun `when invoke is called and app link is available, AppLink is returned`() {
+        every { getReturnLinkTypeUseCase() } returns GetReturnLinkTypeUseCase.ReturnLinkTypeResult.APP_LINK
 
         val result = subject()
 
@@ -49,8 +38,8 @@ class GetReturnLinkUseCaseUnitTest {
     }
 
     @Test
-    fun `when invoke is called and app link is not available, DEEP_LINK is returned`() {
-        activityInfo.packageName = "different.package.name"
+    fun `when invoke is called and app link is not available, DeepLink is returned`() {
+        every { getReturnLinkTypeUseCase() } returns GetReturnLinkTypeUseCase.ReturnLinkTypeResult.DEEP_LINK
 
         val result = subject()
 
@@ -59,7 +48,7 @@ class GetReturnLinkUseCaseUnitTest {
 
     @Test
     fun `when invoke is called and deep link is available but null, Failure is returned`() {
-        activityInfo.packageName = "different.package.name"
+        every { getReturnLinkTypeUseCase() } returns GetReturnLinkTypeUseCase.ReturnLinkTypeResult.DEEP_LINK
         every { merchantRepository.deepLinkFallbackUrlScheme } returns null
 
         val result = subject()
@@ -73,7 +62,7 @@ class GetReturnLinkUseCaseUnitTest {
 
     @Test
     fun `when invoke is called and app link is available but null, Failure is returned`() {
-        activityInfo.packageName = "context.package.name"
+        every { getReturnLinkTypeUseCase() } returns GetReturnLinkTypeUseCase.ReturnLinkTypeResult.APP_LINK
         every { merchantRepository.appLinkReturnUri } returns null
 
         val result = subject()

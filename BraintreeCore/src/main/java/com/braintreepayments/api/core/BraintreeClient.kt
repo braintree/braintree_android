@@ -103,9 +103,10 @@ class BraintreeClient internal constructor(
      */
     fun sendAnalyticsEvent(
         eventName: String,
-        params: AnalyticsEventParams = AnalyticsEventParams()
+        params: AnalyticsEventParams = AnalyticsEventParams(),
+        sendImmediately: Boolean = true,
     ) {
-        analyticsClient.sendEvent(eventName, params)
+        analyticsClient.sendEvent(eventName, params, sendImmediately)
     }
 
     /**
@@ -191,8 +192,9 @@ class BraintreeClient internal constructor(
                                         endpoint = finalQuery
                                     )
                                     sendAnalyticsEvent(
-                                        CoreAnalytics.API_REQUEST_LATENCY,
-                                        params
+                                        eventName = CoreAnalytics.API_REQUEST_LATENCY,
+                                        params = params,
+                                        sendImmediately = false
                                     )
                                 }
                             responseCallback.onResult(it.body, null)
@@ -232,12 +234,7 @@ class BraintreeClient internal constructor(
      */
     internal fun reportCrash() =
         getConfiguration { configuration, _ ->
-            analyticsClient.reportCrash(
-                merchantRepository.applicationContext,
-                configuration,
-                merchantRepository.integrationType,
-                merchantRepository.authorization
-            )
+            analyticsClient.reportCrash(configuration)
         }
 
     // TODO: Make launches browser switch as new task a property of `BraintreeOptions`
@@ -252,12 +249,13 @@ class BraintreeClient internal constructor(
         )
 
         sendAnalyticsEvent(
-            CoreAnalytics.API_REQUEST_LATENCY,
-            AnalyticsEventParams(
+            eventName = CoreAnalytics.API_REQUEST_LATENCY,
+            params = AnalyticsEventParams(
                 startTime = timing.startTime,
                 endTime = timing.endTime,
                 endpoint = cleanedPath
-            )
+            ),
+            sendImmediately = false
         )
     }
 
