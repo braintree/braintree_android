@@ -3,7 +3,10 @@
 ## unreleased
 
 * PayPal
+  * Add `error_desc` tag to the analytics events we are sending to FPTI.
   * Add `contactPreference` property to `PayPalCheckoutRequest` - This property is required to enable the contact information section in the payment flow.
+* ThreeDSecure
+  * Bump Cardinal version to `2.2.7-7` (fixes #1236).
 
 ## 5.8.0 (2025-03-06)
 

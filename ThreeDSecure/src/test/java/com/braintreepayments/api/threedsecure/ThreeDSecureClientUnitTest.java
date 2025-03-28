@@ -266,7 +266,7 @@ public class ThreeDSecureClientUnitTest {
         );
         sut.createPaymentAuthRequest(activity, basicRequest, paymentAuthRequestCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_STARTED, new AnalyticsEventParams());
+        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_STARTED, new AnalyticsEventParams(), true);
     }
 
     @Test
@@ -481,8 +481,8 @@ public class ThreeDSecureClientUnitTest {
         );
         sut.createPaymentAuthRequest(activity, basicRequest, paymentAuthRequestCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_STARTED, new AnalyticsEventParams());
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED, new AnalyticsEventParams());
+        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_STARTED, new AnalyticsEventParams(), true);
+        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED, new AnalyticsEventParams(), true);
     }
 
     @Test
@@ -542,7 +542,7 @@ public class ThreeDSecureClientUnitTest {
             ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
         sut.sendAnalyticsAndCallbackResult(threeDSecureParams, paymentAuthRequestCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED, new AnalyticsEventParams());
+        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED, new AnalyticsEventParams(), true);
     }
 
     @Test
@@ -568,8 +568,8 @@ public class ThreeDSecureClientUnitTest {
             ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
         sut.sendAnalyticsAndCallbackResult(threeDSecureParams, paymentAuthRequestCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED, new AnalyticsEventParams());
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.CHALLENGE_REQUIRED, new AnalyticsEventParams());
+        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED, new AnalyticsEventParams(), true);
+        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.CHALLENGE_REQUIRED, new AnalyticsEventParams(), true);
     }
 
     @Test
@@ -689,7 +689,7 @@ public class ThreeDSecureClientUnitTest {
         assertTrue(error instanceof BraintreeException);
         assertEquals("Error", error.getMessage());
 
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED, new AnalyticsEventParams());
+        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED, new AnalyticsEventParams(), true);
     }
 
     @Test
@@ -717,7 +717,7 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureResult result = captor.getValue();
         assertTrue(result instanceof ThreeDSecureResult.Cancel);
 
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_CANCELED, new AnalyticsEventParams());
+        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_CANCELED, new AnalyticsEventParams(), true);
     }
 
     @Test
@@ -753,8 +753,8 @@ public class ThreeDSecureClientUnitTest {
         ThreeDSecureResult result = captor.getValue();
         assertTrue(result instanceof ThreeDSecureResult.Success);
         assertEquals(((ThreeDSecureResult.Success) result).getNonce(), threeDSecureParams.getThreeDSecureNonce());
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_SUCCEEDED, new AnalyticsEventParams());
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_SUCCEEDED, new AnalyticsEventParams());
+        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_SUCCEEDED, new AnalyticsEventParams(), true);
+        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_SUCCEEDED, new AnalyticsEventParams(), true);
     }
 
     @Test
@@ -795,8 +795,8 @@ public class ThreeDSecureClientUnitTest {
         // TODO: add back assertion when file is converted to Kotlin
         // assertEquals(((ThreeDSecureResult.Failure) result).getNonce(), paymentAuthResult.getThreeDSecureParams().getThreeDSecureNonce());
 
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED, new AnalyticsEventParams());
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED, new AnalyticsEventParams());
+        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED, new AnalyticsEventParams(), true);
+        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED, new AnalyticsEventParams(), true);
     }
 
     @Test
@@ -835,8 +835,8 @@ public class ThreeDSecureClientUnitTest {
         assertTrue(result instanceof ThreeDSecureResult.Failure);
         assertEquals(exception, ((ThreeDSecureResult.Failure) result).getError());
 
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED, new AnalyticsEventParams());
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED, new AnalyticsEventParams());
+        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED, new AnalyticsEventParams(), true);
+        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED, new AnalyticsEventParams(), true);
     }
 
     // endregion
