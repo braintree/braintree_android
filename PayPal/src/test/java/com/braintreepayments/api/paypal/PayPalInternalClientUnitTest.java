@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.net.Uri;
 
+import com.braintreepayments.api.core.AnalyticsParamRepository;
 import com.braintreepayments.api.core.ApiClient;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;
@@ -70,6 +71,7 @@ public class PayPalInternalClientUnitTest {
 
     private SetAppSwitchUseCase setAppSwitchUseCase = mock(SetAppSwitchUseCase.class);
 
+    private AnalyticsParamRepository analyticsParamRepository = mock(AnalyticsParamRepository.class);
     private PayPalTokenResponseRepository tokenRepository = mock(PayPalTokenResponseRepository.class);
     private PayPalSetPaymentTokenUseCase tokenUseCase = mock(PayPalSetPaymentTokenUseCase.class);
 
@@ -108,6 +110,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -192,6 +195,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -271,6 +275,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -376,6 +381,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -415,6 +421,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -454,6 +461,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -493,6 +501,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -532,6 +541,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -572,6 +582,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -613,6 +624,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -652,6 +664,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -689,6 +702,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -730,6 +744,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -766,6 +781,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -800,6 +816,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -844,6 +861,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -870,6 +888,40 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
+    public void sendRequest_sets_analyticsParamRepository_payPalServerSideAttemptedAppSwitch_to_true() {
+        when(dataCollector.getClientMetadataId(context, configuration, true)).thenReturn("sample-client-metadata-id");
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+            .configuration(configuration)
+            .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_BA_TOKEN_PARAM)
+            .build();
+
+        when(merchantRepository.getAuthorization()).thenReturn(clientToken);
+        when(merchantRepository.getAppLinkReturnUri()).thenReturn(Uri.parse("https://example.com"));
+
+        PayPalInternalClient sut = new PayPalInternalClient(
+            braintreeClient,
+            dataCollector,
+            apiClient,
+            deviceInspector,
+            merchantRepository,
+            getReturnLinkUseCase,
+            setAppSwitchUseCase,
+            analyticsParamRepository,
+            tokenRepository,
+            tokenUseCase
+        );
+
+        PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
+        payPalRequest.setMerchantAccountId("sample-merchant-account-id");
+        payPalRequest.setRiskCorrelationId("sample-client-metadata-id");
+
+        sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
+
+        verify(analyticsParamRepository).setPayPalServerSideAttemptedAppSwitch(false);
+    }
+
+    @Test
     public void sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess_returnsPayPalURL() {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configuration(configuration)
@@ -887,6 +939,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -933,6 +986,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -972,6 +1026,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -1018,6 +1073,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -1045,6 +1101,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -1073,6 +1130,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -1103,6 +1161,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -1127,6 +1186,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -1154,6 +1214,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -1188,6 +1249,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );
@@ -1216,6 +1278,7 @@ public class PayPalInternalClientUnitTest {
             merchantRepository,
             getReturnLinkUseCase,
             setAppSwitchUseCase,
+            analyticsParamRepository,
             tokenRepository,
             tokenUseCase
         );

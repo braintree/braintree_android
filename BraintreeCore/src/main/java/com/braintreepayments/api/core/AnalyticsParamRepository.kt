@@ -10,7 +10,20 @@ class AnalyticsParamRepository(
     private val uuidHelper: UUIDHelper = UUIDHelper()
 ) {
 
+    /**
+     * Link type used for navigating back to the merchant app. See [LinkType].
+     */
     var linkType: LinkType? = null
+
+    /**
+     * App switch enabled by the merchant request
+     */
+    var merchantEnabledAppSwitch: Boolean? = null
+
+    /**
+     * App switch attempted based on the server side response
+     */
+    var payPalServerSideAttemptedAppSwitch: Boolean? = null
 
     private lateinit var _sessionId: String
 
@@ -28,8 +41,11 @@ class AnalyticsParamRepository(
     /**
      * Clears the session ID value from the repository
      */
-    fun resetSessionId() {
+    fun reset() {
         _sessionId = uuidHelper.formattedUUID
+        linkType = null
+        merchantEnabledAppSwitch = null
+        payPalServerSideAttemptedAppSwitch = null
     }
 
     companion object {

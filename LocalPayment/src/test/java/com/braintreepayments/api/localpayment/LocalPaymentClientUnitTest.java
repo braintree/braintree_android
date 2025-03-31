@@ -81,7 +81,7 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, dataCollector, localPaymentApi, analyticsParamRepository);
         sut.createPaymentAuthRequest(getIdealLocalPaymentRequest(), localPaymentAuthCallback);
 
-        verify(analyticsParamRepository).resetSessionId();
+        verify(analyticsParamRepository).reset();
     }
 
     @Test

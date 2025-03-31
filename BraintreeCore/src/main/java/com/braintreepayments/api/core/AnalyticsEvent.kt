@@ -21,4 +21,6 @@ internal data class AnalyticsEvent(
     val buttonOrder: String? = null,
     val pageType: String? = null,
     val errorDescription: String? = null,
+    val merchantEnabledAppSwitch: Boolean? = null,
+    val payPalServerSideAttemptedAppSwitch: Boolean? = null,
 )
