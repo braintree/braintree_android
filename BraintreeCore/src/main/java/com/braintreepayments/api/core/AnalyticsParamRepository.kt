@@ -39,7 +39,11 @@ class AnalyticsParamRepository(
         }
 
     /**
-     * Clears the session ID value from the repository
+     * Resets the [sessionId] and clears all other repository values.
+     *
+     * Note that this function is called in different spots of the SDK lifecycle for different payment modules. Some
+     * modules call reset during launch of the SDK. The PayPal module calls reset at the end of the payment flow to
+     * persist the [sessionId] value set from the Shopper Insights module.
      */
     fun reset() {
         _sessionId = uuidHelper.formattedUUID

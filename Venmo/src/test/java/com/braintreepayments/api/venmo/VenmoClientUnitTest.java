@@ -66,7 +66,6 @@ public class VenmoClientUnitTest {
     private final Uri SUCCESS_URL_WITHOUT_RESOURCE_ID = Uri.parse("sample-scheme://x-callback-url/vzero/auth/venmo/success?username=venmojoe&payment_method_nonce=fakenonce");
     private final Uri CANCEL_URL = Uri.parse("sample-scheme://x-callback-url/vzero/auth/venmo/cancel");
 
-    private final String LINK_TYPE = "universal";
     private final Uri appSwitchUrl = Uri.parse("https://example.com");
     private final AnalyticsEventParams expectedAnalyticsParams = new AnalyticsEventParams(
         null,

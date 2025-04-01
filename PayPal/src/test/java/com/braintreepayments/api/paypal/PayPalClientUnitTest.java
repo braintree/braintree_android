@@ -379,6 +379,7 @@ public class PayPalClientUnitTest {
             PAYPAL_NOT_ENABLED_MESSAGE
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true);
+        verify(analyticsParamRepository).reset();
     }
 
     @Test
@@ -458,21 +459,6 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void createPaymentAuthRequest_invokes_analyticsParamRepository_reset() {
-        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
-
-        BraintreeClient braintreeClient =
-            new MockBraintreeClientBuilder().configuration(payPalEnabledConfig).build();
-
-        PayPalVaultRequest payPalRequest = new PayPalVaultRequest(true);
-
-        PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, getReturnLinkTypeUseCase, getReturnLinkUseCase, getAppSwitchUseCase, analyticsParamRepository);
-        sut.createPaymentAuthRequest(activity, payPalRequest, paymentAuthCallback);
-
-        verify(analyticsParamRepository).reset();
-    }
-
-    @Test
     public void createPaymentAuthRequest_sets_analyticsParamRepository_merchantEnabledAppSwitch() {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
@@ -485,7 +471,7 @@ public class PayPalClientUnitTest {
             null,
             null,
             true
-            );
+        );
 
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, getReturnLinkTypeUseCase, getReturnLinkUseCase, getAppSwitchUseCase, analyticsParamRepository);
         sut.createPaymentAuthRequest(activity, payPalRequest, paymentAuthCallback);
@@ -700,6 +686,7 @@ public class PayPalClientUnitTest {
             false
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params, true);
+        verify(analyticsParamRepository).reset();
     }
 
     @Test
@@ -743,6 +730,7 @@ public class PayPalClientUnitTest {
             false
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, params, true);
+        verify(analyticsParamRepository).reset();
     }
 
     @Test
@@ -852,6 +840,7 @@ public class PayPalClientUnitTest {
             BROWSER_SWITCH_EXCEPTION_MESSAGE
         );
         verify(braintreeClient).sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, appSwitchParams, true);
+        verify(analyticsParamRepository).reset();
     }
 
     @Test
