@@ -459,7 +459,7 @@ public class PayPalClientUnitTest {
     }
 
     @Test
-    public void createPaymentAuthRequest_sets_analyticsParamRepository_merchantEnabledAppSwitch() {
+    public void createPaymentAuthRequest_sets_analyticsParamRepository_didEnablePayPalAppSwitch() {
         PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
         BraintreeClient braintreeClient =
@@ -476,7 +476,7 @@ public class PayPalClientUnitTest {
         PayPalClient sut = new PayPalClient(braintreeClient, payPalInternalClient, merchantRepository, getReturnLinkTypeUseCase, getReturnLinkUseCase, getAppSwitchUseCase, analyticsParamRepository);
         sut.createPaymentAuthRequest(activity, payPalRequest, paymentAuthCallback);
 
-        verify(analyticsParamRepository).setMerchantEnabledAppSwitch(true);
+        verify(analyticsParamRepository).setDidEnablePayPalAppSwitch(true);
     }
 
     @Test

@@ -888,7 +888,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_sets_analyticsParamRepository_payPalServerSideAttemptedAppSwitch_to_true() {
+    public void sendRequest_sets_analyticsParamRepository_sets_didPayPalServerAttemptAppSwitch_to_false() {
         when(dataCollector.getClientMetadataId(context, configuration, true)).thenReturn("sample-client-metadata-id");
 
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
@@ -918,7 +918,7 @@ public class PayPalInternalClientUnitTest {
 
         sut.sendRequest(context, payPalRequest, payPalInternalClientCallback);
 
-        verify(analyticsParamRepository).setPayPalServerSideAttemptedAppSwitch(false);
+        verify(analyticsParamRepository).setDidPayPalServerAttemptAppSwitch(false);
     }
 
     @Test

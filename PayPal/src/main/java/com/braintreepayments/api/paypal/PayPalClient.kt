@@ -105,7 +105,7 @@ class PayPalClient internal constructor(
     ) {
         shopperSessionId = payPalRequest.shopperSessionId
         isVaultRequest = payPalRequest is PayPalVaultRequest
-        analyticsParamRepository.merchantEnabledAppSwitch = payPalRequest.enablePayPalAppSwitch
+        analyticsParamRepository.didEnablePayPalAppSwitch = payPalRequest.enablePayPalAppSwitch
 
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsParams)
 

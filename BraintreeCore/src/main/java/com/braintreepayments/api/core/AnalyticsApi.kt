@@ -81,8 +81,8 @@ internal class AnalyticsApi(
             .putOpt(FPTI_KEY_BUTTON_TYPE, event.buttonType)
             .putOpt(FPTI_KEY_BUTTON_POSITION, event.buttonOrder)
             .putOpt(FPTI_KEY_PAGE_TYPE, event.pageType)
-            .putOpt(FPTI_KEY_MERCHANT_ENABLED_APP_SWITCH, event.merchantEnabledAppSwitch)
-            .putOpt(FPTI_KEY_PAYPAL_ATTEMPTED_APP_SWITCH, event.payPalServerSideAttemptedAppSwitch)
+            .putOpt(FPTI_KEY_MERCHANT_ENABLED_APP_SWITCH, event.didEnablePayPalAppSwitch)
+            .putOpt(FPTI_KEY_PAYPAL_ATTEMPTED_APP_SWITCH, event.didPayPalServerAttemptAppSwitch)
     }
 
     @Throws(JSONException::class)

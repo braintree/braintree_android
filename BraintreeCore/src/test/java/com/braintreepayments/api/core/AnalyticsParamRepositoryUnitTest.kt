@@ -22,8 +22,8 @@ class AnalyticsParamRepositoryUnitTest {
 
         every { uuidHelper.formattedUUID } returnsMany listOf(uuid, newUuid)
 
-        sut.payPalServerSideAttemptedAppSwitch = true
-        sut.merchantEnabledAppSwitch = true
+        sut.didPayPalServerAttemptAppSwitch = true
+        sut.didEnablePayPalAppSwitch = true
     }
 
     @Test
@@ -40,13 +40,13 @@ class AnalyticsParamRepositoryUnitTest {
     @Test
     fun `invoking reset resets all of the repository's values`() {
         assertEquals(uuid, sut.sessionId)
-        assertEquals(true, sut.payPalServerSideAttemptedAppSwitch)
-        assertEquals(true, sut.merchantEnabledAppSwitch)
+        assertEquals(true, sut.didPayPalServerAttemptAppSwitch)
+        assertEquals(true, sut.didEnablePayPalAppSwitch)
 
         sut.reset()
 
         assertEquals(newUuid, sut.sessionId)
-        assertNull(sut.payPalServerSideAttemptedAppSwitch)
-        assertNull(sut.merchantEnabledAppSwitch)
+        assertNull(sut.didPayPalServerAttemptAppSwitch)
+        assertNull(sut.didEnablePayPalAppSwitch)
     }
 }

@@ -56,8 +56,8 @@ class AnalyticsApiUnitTest {
         buttonType = "button-type",
         buttonOrder = "button-order",
         pageType = "page-type",
-        merchantEnabledAppSwitch = true,
-        payPalServerSideAttemptedAppSwitch = true
+        didEnablePayPalAppSwitch = true,
+        didPayPalServerAttemptAppSwitch = true
     )
 
     @Before
@@ -160,9 +160,9 @@ class AnalyticsApiUnitTest {
                             "event_params": [
                                 {
                                     "tenant_name": "Braintree",
-                                    "attempted_app_switch": ${event.payPalServerSideAttemptedAppSwitch},
+                                    "attempted_app_switch": ${event.didPayPalServerAttemptAppSwitch},
                                     "page_type": "${event.pageType}",
-                                    "merchant_enabled_app_switch": ${event.merchantEnabledAppSwitch},
+                                    "merchant_enabled_app_switch": ${event.didEnablePayPalAppSwitch},
                                     "button_type": "${event.buttonType}",
                                     "end_time": ${event.endTime},
                                     "is_vault": ${event.isVaultRequest},
@@ -213,9 +213,9 @@ class AnalyticsApiUnitTest {
                             "event_params": [
                                 {
                                     "tenant_name": "Braintree",
-                                    "attempted_app_switch": ${event.payPalServerSideAttemptedAppSwitch},
+                                    "attempted_app_switch": ${event.didPayPalServerAttemptAppSwitch},
                                     "page_type": "${event.pageType}",
-                                    "merchant_enabled_app_switch": ${event.merchantEnabledAppSwitch},
+                                    "merchant_enabled_app_switch": ${event.didEnablePayPalAppSwitch},
                                     "button_type": "${event.buttonType}",
                                     "end_time": ${event.endTime},
                                     "is_vault": ${event.isVaultRequest},

@@ -130,7 +130,7 @@ internal class PayPalInternalClient(
             try {
                 val paypalPaymentResource = PayPalPaymentResource.fromJson(responseBody)
                 val parsedRedirectUri = Uri.parse(paypalPaymentResource.redirectUrl)
-                analyticsParamRepository.payPalServerSideAttemptedAppSwitch = paypalPaymentResource.isAppSwitchFlow
+                analyticsParamRepository.didPayPalServerAttemptAppSwitch = paypalPaymentResource.isAppSwitchFlow
 
                 setAppSwitchUseCase(paypalPaymentResource.isAppSwitchFlow)
                 val paypalContextId = extractPayPalContextId(parsedRedirectUri)

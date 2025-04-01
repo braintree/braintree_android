@@ -35,8 +35,8 @@ class AnalyticsClient internal constructor(
             buttonOrder = analyticsEventParams.buttonOrder,
             pageType = analyticsEventParams.pageType,
             errorDescription = analyticsEventParams.errorDescription,
-            merchantEnabledAppSwitch = analyticsParamRepository.merchantEnabledAppSwitch,
-            payPalServerSideAttemptedAppSwitch = analyticsParamRepository.payPalServerSideAttemptedAppSwitch
+            didEnablePayPalAppSwitch = analyticsParamRepository.didEnablePayPalAppSwitch,
+            didPayPalServerAttemptAppSwitch = analyticsParamRepository.didPayPalServerAttemptAppSwitch
         )
         if (sendImmediately) {
             configurationLoader.loadConfiguration { result ->

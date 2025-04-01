@@ -58,8 +58,8 @@ class AnalyticsClientUnitTest {
         buttonType = analyticsEventParams.buttonType,
         buttonOrder = analyticsEventParams.buttonOrder,
         pageType = analyticsEventParams.pageType,
-        merchantEnabledAppSwitch = true,
-        payPalServerSideAttemptedAppSwitch = true,
+        didEnablePayPalAppSwitch = true,
+        didPayPalServerAttemptAppSwitch = true,
     )
 
     @Before
@@ -67,8 +67,8 @@ class AnalyticsClientUnitTest {
     fun beforeEach() {
         every { time.currentTime } returns timestamp
         every { analyticsParamRepository.linkType } returns linkType
-        every { analyticsParamRepository.merchantEnabledAppSwitch } returns true
-        every { analyticsParamRepository.payPalServerSideAttemptedAppSwitch } returns true
+        every { analyticsParamRepository.didEnablePayPalAppSwitch } returns true
+        every { analyticsParamRepository.didPayPalServerAttemptAppSwitch } returns true
 
         configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
