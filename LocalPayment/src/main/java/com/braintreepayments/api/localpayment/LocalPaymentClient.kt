@@ -58,7 +58,7 @@ class LocalPaymentClient internal constructor(
         request: LocalPaymentRequest,
         callback: LocalPaymentAuthCallback
     ) {
-        analyticsParamRepository.resetSessionId()
+        analyticsParamRepository.reset()
         braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED)
 
         var exception: Exception? = null

@@ -210,7 +210,7 @@ public class GooglePayClientUnitTest {
 
         sut.createPaymentAuthRequest(mock(), mock());
 
-        verify(analyticsParamRepository).resetSessionId();
+        verify(analyticsParamRepository).reset();
     }
 
     @Test

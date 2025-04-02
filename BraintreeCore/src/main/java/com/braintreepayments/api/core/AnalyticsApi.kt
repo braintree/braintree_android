@@ -81,6 +81,8 @@ internal class AnalyticsApi(
             .putOpt(FPTI_KEY_BUTTON_TYPE, event.buttonType)
             .putOpt(FPTI_KEY_BUTTON_POSITION, event.buttonOrder)
             .putOpt(FPTI_KEY_PAGE_TYPE, event.pageType)
+            .putOpt(FPTI_KEY_MERCHANT_ENABLED_APP_SWITCH, event.didEnablePayPalAppSwitch)
+            .putOpt(FPTI_KEY_PAYPAL_ATTEMPTED_APP_SWITCH, event.didPayPalServerAttemptAppSwitch)
             .putOpt(FPTI_KEY_ERROR_DESC, event.errorDescription)
     }
 
@@ -134,6 +136,8 @@ internal class AnalyticsApi(
         private const val FPTI_KEY_BUTTON_TYPE = "button_type"
         private const val FPTI_KEY_BUTTON_POSITION = "button_position"
         private const val FPTI_KEY_PAGE_TYPE = "page_type"
+        private const val FPTI_KEY_MERCHANT_ENABLED_APP_SWITCH = "merchant_enabled_app_switch"
+        private const val FPTI_KEY_PAYPAL_ATTEMPTED_APP_SWITCH = "attempted_app_switch"
         private const val FPTI_KEY_ERROR_DESC = "error_desc"
 
         private const val FPTI_BATCH_KEY_VENMO_INSTALLED = "venmo_installed"
