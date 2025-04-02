@@ -185,7 +185,7 @@ class GooglePayClient internal constructor(
         request: GooglePayRequest,
         callback: GooglePayPaymentAuthRequestCallback
     ) {
-        analyticsParamRepository.resetSessionId()
+        analyticsParamRepository.reset()
         braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_REQUEST_STARTED)
 
         if (!validateManifest()) {

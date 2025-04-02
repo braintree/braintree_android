@@ -60,7 +60,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient, analyticsParamRepository);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(analyticsParamRepository).resetSessionId();
+        verify(analyticsParamRepository).reset();
     }
 
     @Test
