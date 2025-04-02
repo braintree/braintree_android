@@ -5,6 +5,7 @@ import android.net.Uri
 import android.webkit.URLUtil
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
@@ -58,7 +59,10 @@ class SEPADirectDebitClient internal constructor(
                             SEPADirectDebitPaymentAuthRequest.ReadyToLaunch(params)
                         )
                     } catch (exception: JSONException) {
-                        braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_FAILED)
+                        braintreeClient.sendAnalyticsEvent(
+                            SEPADirectDebitAnalytics.CREATE_MANDATE_FAILED,
+                            AnalyticsEventParams(errorDescription = exception.message)
+                        )
                         callbackCreatePaymentAuthFailure(
                             callback,
                             SEPADirectDebitPaymentAuthRequest.Failure(exception)
@@ -86,14 +90,21 @@ class SEPADirectDebitClient internal constructor(
                         }
                     }
                 } else {
-                    braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_FAILED)
+                    val errorMessage = "An unexpected error occurred."
+                    braintreeClient.sendAnalyticsEvent(
+                        SEPADirectDebitAnalytics.CREATE_MANDATE_FAILED,
+                        AnalyticsEventParams(errorDescription = errorMessage)
+                    )
                     callbackCreatePaymentAuthFailure(
                         callback,
-                        SEPADirectDebitPaymentAuthRequest.Failure(BraintreeException("An unexpected error occurred."))
+                        SEPADirectDebitPaymentAuthRequest.Failure(BraintreeException(errorMessage))
                     )
                 }
             } else if (createMandateError != null) {
-                braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_FAILED)
+                braintreeClient.sendAnalyticsEvent(
+                    SEPADirectDebitAnalytics.CREATE_MANDATE_FAILED,
+                    AnalyticsEventParams(errorDescription = createMandateError.message)
+                )
                 callbackCreatePaymentAuthFailure(
                     callback,
                     SEPADirectDebitPaymentAuthRequest.Failure(createMandateError)
@@ -155,7 +166,10 @@ class SEPADirectDebitClient internal constructor(
         callback: SEPADirectDebitPaymentAuthRequestCallback,
         result: SEPADirectDebitPaymentAuthRequest.Failure
     ) {
-        braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_FAILED)
+        braintreeClient.sendAnalyticsEvent(
+            SEPADirectDebitAnalytics.TOKENIZE_FAILED,
+            AnalyticsEventParams(errorDescription = result.error.message)
+        )
         callback.onSEPADirectDebitPaymentAuthResult(result)
     }
 
@@ -176,7 +190,10 @@ class SEPADirectDebitClient internal constructor(
         callback: SEPADirectDebitTokenizeCallback,
         result: SEPADirectDebitResult.Failure
     ) {
-        braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_FAILED)
+        braintreeClient.sendAnalyticsEvent(
+            SEPADirectDebitAnalytics.TOKENIZE_FAILED,
+            AnalyticsEventParams(errorDescription = result.error.message)
+        )
         callback.onSEPADirectDebitResult(result)
     }
 
