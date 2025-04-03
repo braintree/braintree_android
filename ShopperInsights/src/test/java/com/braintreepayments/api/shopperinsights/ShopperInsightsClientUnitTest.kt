@@ -578,7 +578,8 @@ class ShopperInsightsClientUnitTest {
                 .sendAnalyticsEvent("shopper-insights:get-recommended-payments:failed",
                     AnalyticsEventParams(
                         shopperSessionId = shopperSessionId,
-                        errorDescription = "One of ShopperInsightsRequest.email or ShopperInsightsRequest.phone must be non-null."
+                        errorDescription = "One of ShopperInsightsRequest.email or " +
+                            "ShopperInsightsRequest.phone must be non-null."
                     )
                 )
         }
