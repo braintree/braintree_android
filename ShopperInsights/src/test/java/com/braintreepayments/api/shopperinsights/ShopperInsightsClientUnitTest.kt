@@ -576,7 +576,11 @@ class ShopperInsightsClientUnitTest {
         verify {
             braintreeClient
                 .sendAnalyticsEvent("shopper-insights:get-recommended-payments:failed",
-                    AnalyticsEventParams(shopperSessionId = shopperSessionId))
+                    AnalyticsEventParams(
+                        shopperSessionId = shopperSessionId,
+                        errorDescription = "One of ShopperInsightsRequest.email or ShopperInsightsRequest.phone must be non-null."
+                    )
+                )
         }
     }
 }
