@@ -2,6 +2,7 @@ package com.braintreepayments.api.threedsecure
 
 import android.content.Context
 import androidx.annotation.RestrictTo
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BuildConfig
@@ -337,7 +338,10 @@ class ThreeDSecureClient internal constructor(
                 ) { threeDSecureResult: ThreeDSecureParams?, error: Exception? ->
                     if (threeDSecureResult != null) {
                         if (threeDSecureResult.hasError()) {
-                            braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED)
+                            braintreeClient.sendAnalyticsEvent(
+                                ThreeDSecureAnalytics.JWT_AUTH_FAILED,
+                                AnalyticsEventParams(errorDescription = threeDSecureResult.errorMessage)
+                            )
                             callbackTokenizeFailure(
                                 callback,
                                 ThreeDSecureResult.Failure(
@@ -351,7 +355,10 @@ class ThreeDSecureClient internal constructor(
                             callbackTokenizeSuccess(callback, ThreeDSecureResult.Success(it))
                         }
                     } else if (error != null) {
-                        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED)
+                        braintreeClient.sendAnalyticsEvent(
+                            ThreeDSecureAnalytics.JWT_AUTH_FAILED,
+                            AnalyticsEventParams(errorDescription = error.message)
+                        )
                         callbackTokenizeFailure(
                             callback,
                             ThreeDSecureResult.Failure(
@@ -371,7 +378,7 @@ class ThreeDSecureClient internal constructor(
                 CardinalActionCode.CANCEL -> callbackCancel(callback)
 
                 else -> {
-                    braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED)
+                    braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED,)
                     callbackTokenizeFailure(
                         callback,
                         ThreeDSecureResult.Failure(
@@ -388,7 +395,10 @@ class ThreeDSecureClient internal constructor(
         callback: ThreeDSecurePaymentAuthRequestCallback,
         failure: ThreeDSecurePaymentAuthRequest.Failure
     ) {
-        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED)
+        braintreeClient.sendAnalyticsEvent(
+            ThreeDSecureAnalytics.VERIFY_FAILED,
+            AnalyticsEventParams(errorDescription = failure.error.message)
+        )
         callback.onThreeDSecurePaymentAuthRequest(failure)
     }
 
@@ -396,8 +406,14 @@ class ThreeDSecureClient internal constructor(
         callback: ThreeDSecurePrepareLookupCallback,
         result: ThreeDSecurePrepareLookupResult.Failure
     ) {
-        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_FAILED)
-        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED)
+        braintreeClient.sendAnalyticsEvent(
+            ThreeDSecureAnalytics.LOOKUP_FAILED,
+            AnalyticsEventParams(errorDescription = result.error.message)
+        )
+        braintreeClient.sendAnalyticsEvent(
+            ThreeDSecureAnalytics.VERIFY_FAILED,
+            AnalyticsEventParams(errorDescription = result.error.message)
+        )
         callback.onPrepareLookupResult(result)
     }
 
@@ -405,7 +421,10 @@ class ThreeDSecureClient internal constructor(
         callback: ThreeDSecureTokenizeCallback,
         result: ThreeDSecureResult.Failure
     ) {
-        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED)
+        braintreeClient.sendAnalyticsEvent(
+            ThreeDSecureAnalytics.VERIFY_FAILED,
+            AnalyticsEventParams(errorDescription = result.error.message)
+        )
         callback.onThreeDSecureResult(result)
     }
 
