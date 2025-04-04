@@ -16,13 +16,13 @@ class MockkPayPalInternalClientBuilder {
     }
 
     fun sendRequestError(error: Exception?): MockkPayPalInternalClientBuilder {
-        this.error = error;
-        return this;
+        this.error = error
+        return this
     }
 
     fun tokenizeSuccess(tokenizeSuccess: PayPalAccountNonce): MockkPayPalInternalClientBuilder {
-        this.tokenizeSuccess = tokenizeSuccess;
-        return this;
+        this.tokenizeSuccess = tokenizeSuccess
+        return this
     }
 
     internal fun build(): PayPalInternalClient {
@@ -37,9 +37,9 @@ class MockkPayPalInternalClientBuilder {
         } answers {
             val callback = invocation.args[2] as PayPalInternalClientCallback
             if (successResponse != null) {
-                callback.onResult(successResponse, null);
+                callback.onResult(successResponse, null)
             } else if (error != null) {
-                callback.onResult(null, error);
+                callback.onResult(null, error)
             }
             null
         }

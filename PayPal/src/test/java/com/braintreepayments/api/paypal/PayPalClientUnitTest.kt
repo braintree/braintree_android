@@ -21,7 +21,6 @@ import com.braintreepayments.api.core.GetReturnLinkUseCase.ReturnLinkResult.Deep
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.testutils.Fixtures
-import com.braintreepayments.api.testutils.MockBraintreeClientBuilder
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import io.mockk.every
 import io.mockk.mockk
@@ -47,7 +46,8 @@ class PayPalClientUnitTest {
     private var mockkPaymentAuthCallback: PayPalPaymentAuthCallback = mockk(relaxed = true)
 
     private var mockkMerchantRepository: MerchantRepository = mockk(relaxed = true)
-    private var mockkGetReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = mockk<GetReturnLinkTypeUseCase>(relaxed = true)
+    private var mockkGetReturnLinkTypeUseCase: GetReturnLinkTypeUseCase =
+        mockk<GetReturnLinkTypeUseCase>(relaxed = true)
     private var mockkGetReturnLinkUseCase: GetReturnLinkUseCase = mockk(relaxed = true)
     private val appSwitchRepository: AppSwitchRepository? = null
     private var mockkGetAppSwitchUseCase: GetAppSwitchUseCase = mockk(relaxed = true)
@@ -192,16 +192,7 @@ class PayPalClientUnitTest {
         verify {
             braintreeClient.sendAnalyticsEvent(
                 PayPalAnalytics.TOKENIZATION_STARTED,
-                AnalyticsEventParams(
-                    null,
-                    true,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    "test-shopper-session-id"
-                ),
+                AnalyticsEventParams(shopperSessionId = "test-shopper-session-id"),
                 true
             )
         }
@@ -268,7 +259,7 @@ class PayPalClientUnitTest {
 
         every { mockkMerchantRepository.appLinkReturnUri } returns Uri.parse("www.example.com")
 
-        val braintreeClient = MockBraintreeClientBuilder().configuration(payPalEnabledConfig)
+        val braintreeClient = MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig)
             .build()
 
         val sut = PayPalClient(
@@ -662,7 +653,6 @@ class PayPalClientUnitTest {
         )
         TestCase.assertFalse(browserSwitchOptions.isLaunchAsNewTask)
 
-
         val params = AnalyticsEventParams(
             null,
             true
@@ -674,10 +664,8 @@ class PayPalClientUnitTest {
     @Throws(JSONException::class)
     fun tokenize_withBillingAgreement_tokenizesResponseOnSuccess() {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
-
         val approvalUrl =
             "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&ba_token=EC-HERMES-SANDBOX-EC-TOKEN"
-
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>(relaxed = true)
 
         every { browserSwitchResult.requestMetadata } returns
@@ -922,7 +910,7 @@ class PayPalClientUnitTest {
         sut.tokenize(payPalPaymentAuthResult, mockkPayPalTokenizeCallback)
 
         val slot = slot<PayPalResult>()
-        verify { mockkPayPalTokenizeCallback .onPayPalResult(capture(slot)) }
+        verify { mockkPayPalTokenizeCallback.onPayPalResult(capture(slot)) }
 
         val result = slot.captured
         Assert.assertTrue(result is PayPalResult.Success)
@@ -931,13 +919,9 @@ class PayPalClientUnitTest {
         val params = AnalyticsEventParams("EC-HERMES-SANDBOX-EC-TOKEN")
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, params, true) }
         val appSwitchParams = AnalyticsEventParams(
-            "EC-HERMES-SANDBOX-EC-TOKEN",
-            false,
-            null,
-            null,
-            null,
-            null,
-            "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN&switch_initiated_time=17166111926211"
+            payPalContextId = "EC-HERMES-SANDBOX-EC-TOKEN",
+            isVaultRequest = false,
+            appSwitchUrl = "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN&switch_initiated_time=17166111926211"
         )
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_SUCCEEDED, appSwitchParams, true) }
     }
@@ -946,10 +930,8 @@ class PayPalClientUnitTest {
     @Throws(JSONException::class)
     fun tokenize_whenPayPalNotEnabled_sendsAppSwitchFailedEvents() {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
-
         val approvalUrl =
             "https://some-scheme/onetouch/v1/cancel?switch_initiated_time=17166111926211"
-
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>()
 
         every { browserSwitchResult.requestMetadata } returns

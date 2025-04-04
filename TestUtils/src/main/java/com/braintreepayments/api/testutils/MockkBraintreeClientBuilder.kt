@@ -36,8 +36,8 @@ class MockkBraintreeClientBuilder {
     }
 
     fun launchesBrowserSwitchAsNewTask(launchesBrowserSwitchAsNewTask: Boolean): MockkBraintreeClientBuilder {
-        this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask;
-        return this;
+        this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask
+        return this
     }
 
     fun build(): BraintreeClient {
