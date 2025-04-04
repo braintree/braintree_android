@@ -57,7 +57,8 @@ class AnalyticsApiUnitTest {
         buttonOrder = "button-order",
         pageType = "page-type",
         didEnablePayPalAppSwitch = true,
-        didPayPalServerAttemptAppSwitch = true
+        didPayPalServerAttemptAppSwitch = true,
+        errorDescription = "error-description"
     )
 
     @Before
@@ -174,6 +175,7 @@ class AnalyticsApiUnitTest {
                                     "t": ${event.timestamp},
                                     "experiment": "${event.experiment}",
                                     "shopper_session_id": "${event.shopperSessionId}",
+                                    "error_desc": "${event.errorDescription}",
                                     "event_name": "${event.name}",
                                     "button_position": "${event.buttonOrder}"
                                 }
@@ -227,6 +229,7 @@ class AnalyticsApiUnitTest {
                                     "t": ${event.timestamp},
                                     "experiment": "${event.experiment}",
                                     "shopper_session_id": "${event.shopperSessionId}",
+                                    "error_desc": "${event.errorDescription}",
                                     "event_name": "${event.name}",
                                     "button_position": "${event.buttonOrder}"
                                 }
