@@ -3,6 +3,7 @@
 ## unreleased
 
 * PayPal
+  * Make `PayPalCheckoutRequest.userAuthenticationEmail` optional for App Switch flows
   * Add `error_desc` tag to the analytics events we are sending to FPTI.
   * Send `merchant_enabled_app_switch` and `attempted_app_switch` in `event_params` for App Switch events to PayPal's analytics service (FPTI)
 * ThreeDSecure

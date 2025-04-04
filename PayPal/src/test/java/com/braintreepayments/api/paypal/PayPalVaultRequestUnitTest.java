@@ -1,12 +1,5 @@
 package com.braintreepayments.api.paypal;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertSame;
-import static org.mockito.Mockito.mock;
-
 import android.os.Build;
 import android.os.Parcel;
 
@@ -14,19 +7,28 @@ import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.testutils.Fixtures;
+import com.google.testing.junit.testparameterinjector.TestParameter;
 
 import org.json.JSONException;
-import org.junit.Assert;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RobolectricTestParameterInjector;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@RunWith(RobolectricTestRunner.class)
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
+
+@RunWith(RobolectricTestParameterInjector.class)
 public class PayPalVaultRequestUnitTest {
 
     @Test
@@ -301,6 +303,30 @@ public class PayPalVaultRequestUnitTest {
         );
 
         JSONAssert.assertEquals(Fixtures.PAYPAL_REQUEST_JSON, requestBody, false);
+    }
+
+    @Test
+    public void createRequestBody_sets_appSwitchParameters_irrespectiveOf_userAuthenticationEmail_emptyOrNot(
+        @TestParameter({"", "some@email.com"}) String payerEmail
+    ) throws JSONException {
+        PayPalVaultRequest request = new PayPalVaultRequest( true);
+        request.setEnablePayPalAppSwitch(true);
+        request.setUserAuthenticationEmail(payerEmail);
+        String appLink = "universal_url";
+
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url",
+                appLink
+        );
+
+        JSONObject jsonObject = new JSONObject(requestBody);
+        assertTrue(jsonObject.getBoolean("launch_paypal_app"));
+        assertEquals("Android", jsonObject.getString("os_type"));
+        assertEquals(appLink, jsonObject.getString("merchant_app_return_url"));
+        assertNotNull(jsonObject.getString("os_version"));
     }
 
     @Test
