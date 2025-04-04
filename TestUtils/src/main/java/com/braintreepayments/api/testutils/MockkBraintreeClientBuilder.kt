@@ -18,6 +18,8 @@ class MockkBraintreeClientBuilder {
     private var configurationException: Exception? = null
     private var authorizationSuccess: Authorization? = null
 
+    private var launchesBrowserSwitchAsNewTask: Boolean = false
+
     fun configurationSuccess(configurationSuccess: Configuration): MockkBraintreeClientBuilder {
         this.configurationSuccess = configurationSuccess
         return this
@@ -33,8 +35,15 @@ class MockkBraintreeClientBuilder {
         return this
     }
 
+    fun launchesBrowserSwitchAsNewTask(launchesBrowserSwitchAsNewTask: Boolean): MockkBraintreeClientBuilder {
+        this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask;
+        return this;
+    }
+
     fun build(): BraintreeClient {
         val braintreeClient = mockk<BraintreeClient>(relaxed = true)
+
+        every { braintreeClient.launchesBrowserSwitchAsNewTask() } returns launchesBrowserSwitchAsNewTask
 
         every { braintreeClient.getConfiguration(any()) } answers { call ->
             val callback = call.invocation.args[0] as ConfigurationCallback
