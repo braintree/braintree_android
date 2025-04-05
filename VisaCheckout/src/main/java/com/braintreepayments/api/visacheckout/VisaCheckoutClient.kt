@@ -2,6 +2,7 @@ package com.braintreepayments.api.visacheckout
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.Configuration
@@ -136,7 +137,10 @@ class VisaCheckoutClient internal constructor(
         callback: VisaCheckoutTokenizeCallback,
         result: VisaCheckoutResult.Failure
     ) {
-        braintreeClient.sendAnalyticsEvent(VisaCheckoutAnalytics.TOKENIZE_FAILED)
+        braintreeClient.sendAnalyticsEvent(
+            VisaCheckoutAnalytics.TOKENIZE_FAILED,
+            AnalyticsEventParams(errorDescription = result.error.message)
+        )
         callback.onVisaCheckoutResult(result)
     }
 

@@ -3,6 +3,7 @@ package com.braintreepayments.api.googlepay
 import android.content.Context
 import android.text.TextUtils
 import androidx.annotation.RestrictTo
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeClient
@@ -582,7 +583,10 @@ class GooglePayClient internal constructor(
         callback: GooglePayPaymentAuthRequestCallback
     ) {
         callback.onGooglePayPaymentAuthRequest(request)
-        braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_REQUEST_FAILED)
+        braintreeClient.sendAnalyticsEvent(
+            GooglePayAnalytics.PAYMENT_REQUEST_FAILED,
+            AnalyticsEventParams(errorDescription = request.error.message)
+        )
     }
 
     private fun callbackTokenizeSuccess(
@@ -603,7 +607,10 @@ class GooglePayClient internal constructor(
         callback: GooglePayTokenizeCallback
     ) {
         callback.onGooglePayResult(result)
-        braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.TOKENIZE_FAILED)
+        braintreeClient.sendAnalyticsEvent(
+            GooglePayAnalytics.TOKENIZE_FAILED,
+            AnalyticsEventParams(errorDescription = result.error.message)
+        )
     }
 
     companion object {

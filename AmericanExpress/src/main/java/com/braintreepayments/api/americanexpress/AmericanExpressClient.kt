@@ -2,6 +2,7 @@ package com.braintreepayments.api.americanexpress
 
 import android.content.Context
 import android.net.Uri
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.ApiClient.Companion.versionedPath
 import com.braintreepayments.api.core.BraintreeClient
 import org.json.JSONException
@@ -74,7 +75,10 @@ class AmericanExpressClient internal constructor(
         callback: AmericanExpressGetRewardsBalanceCallback
     ) {
         callback.onAmericanExpressResult(result)
-        braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED)
+        braintreeClient.sendAnalyticsEvent(
+            AmericanExpressAnalytics.REWARDS_BALANCE_FAILED,
+            AnalyticsEventParams(errorDescription = result.error.message)
+        )
     }
 
     companion object {

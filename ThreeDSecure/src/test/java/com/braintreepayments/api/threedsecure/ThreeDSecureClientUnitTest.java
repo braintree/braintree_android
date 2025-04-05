@@ -111,7 +111,6 @@ public class ThreeDSecureClientUnitTest {
         assertTrue(prepareLookupResult instanceof ThreeDSecurePrepareLookupResult.Success);
         assertSame(basicRequest, ((ThreeDSecurePrepareLookupResult.Success) prepareLookupResult).getRequest());
 
-
         String clientData = ((ThreeDSecurePrepareLookupResult.Success) prepareLookupResult).getClientData();
         JSONObject lookup = new JSONObject(clientData);
         Assert.assertEquals("encoded_auth_fingerprint",
@@ -481,8 +480,11 @@ public class ThreeDSecureClientUnitTest {
         );
         sut.createPaymentAuthRequest(activity, basicRequest, paymentAuthRequestCallback);
 
+        ArgumentCaptor<AnalyticsEventParams> verifyCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
+
         verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_STARTED, new AnalyticsEventParams(), true);
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED, new AnalyticsEventParams(), true);
+        verify(braintreeClient).sendAnalyticsEvent(eq(ThreeDSecureAnalytics.VERIFY_FAILED), verifyCaptor.capture(), eq(true));
+        assertEquals("cardinal error", verifyCaptor.getValue().getErrorDescription());
     }
 
     @Test
@@ -667,7 +669,8 @@ public class ThreeDSecureClientUnitTest {
 
         ValidateResponse validateResponse = mock(ValidateResponse.class);
         when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.TIMEOUT);
-        when(validateResponse.getErrorDescription()).thenReturn("Error");
+        String errorMessage = "Error";
+        when(validateResponse.getErrorDescription()).thenReturn(errorMessage);
 
         ThreeDSecureClient sut = new ThreeDSecureClient(
             braintreeClient,
@@ -687,9 +690,11 @@ public class ThreeDSecureClientUnitTest {
 
         Exception error = ((ThreeDSecureResult.Failure) result).getError();
         assertTrue(error instanceof BraintreeException);
-        assertEquals("Error", error.getMessage());
+        assertEquals(errorMessage, error.getMessage());
 
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED, new AnalyticsEventParams(), true);
+        ArgumentCaptor<AnalyticsEventParams> paramCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
+        verify(braintreeClient).sendAnalyticsEvent(eq(ThreeDSecureAnalytics.VERIFY_FAILED), paramCaptor.capture(), eq(true));
+        assertEquals(errorMessage, paramCaptor.getValue().getErrorDescription());
     }
 
     @Test
@@ -808,7 +813,8 @@ public class ThreeDSecureClientUnitTest {
         ValidateResponse validateResponse = mock(ValidateResponse.class);
         when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.SUCCESS);
 
-        final Exception exception = new Exception("error");
+        String exceptionMessage = "error";
+        final Exception exception = new Exception(exceptionMessage);
 
         doAnswer((Answer<Void>) invocation -> {
             ThreeDSecureResultCallback callback =
@@ -835,8 +841,13 @@ public class ThreeDSecureClientUnitTest {
         assertTrue(result instanceof ThreeDSecureResult.Failure);
         assertEquals(exception, ((ThreeDSecureResult.Failure) result).getError());
 
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED, new AnalyticsEventParams(), true);
-        verify(braintreeClient).sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_FAILED, new AnalyticsEventParams(), true);
+        ArgumentCaptor<AnalyticsEventParams> jwtCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
+        ArgumentCaptor<AnalyticsEventParams> verifyCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
+
+        verify(braintreeClient).sendAnalyticsEvent(eq(ThreeDSecureAnalytics.JWT_AUTH_FAILED), jwtCaptor.capture(), eq(true));
+        verify(braintreeClient).sendAnalyticsEvent(eq(ThreeDSecureAnalytics.VERIFY_FAILED), verifyCaptor.capture(), eq(true));
+        assertEquals(exceptionMessage, jwtCaptor.getValue().getErrorDescription());
+        assertEquals(exceptionMessage, verifyCaptor.getValue().getErrorDescription());
     }
 
     // endregion

@@ -12,6 +12,7 @@ import android.net.Uri;
 
 import com.braintreepayments.api.BrowserSwitchFinalResult;
 import com.braintreepayments.api.BrowserSwitchOptions;
+import com.braintreepayments.api.core.AnalyticsEventParams;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.BraintreeRequestCodes;
@@ -150,8 +151,13 @@ public class SEPADirectDebitClientUnitTest {
         Exception error = ((SEPADirectDebitPaymentAuthRequest.Failure) paymentAuthRequest).getError();
         assertTrue(error instanceof BraintreeException);
         assertEquals("An unexpected error occurred.", error.getMessage());
-        verify(braintreeClient).sendAnalyticsEvent(eq(SEPADirectDebitAnalytics.CREATE_MANDATE_FAILED), any(), eq(true));
-        verify(braintreeClient).sendAnalyticsEvent(eq(SEPADirectDebitAnalytics.TOKENIZE_FAILED), any(), eq(true));
+
+        ArgumentCaptor<AnalyticsEventParams> createMandateFailedCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
+        ArgumentCaptor<AnalyticsEventParams> tokenizeFailedCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
+        verify(braintreeClient).sendAnalyticsEvent(eq(SEPADirectDebitAnalytics.CREATE_MANDATE_FAILED), createMandateFailedCaptor.capture(), eq(true));
+        assertEquals("An unexpected error occurred.", createMandateFailedCaptor.getValue().getErrorDescription());
+        verify(braintreeClient).sendAnalyticsEvent(eq(SEPADirectDebitAnalytics.TOKENIZE_FAILED), tokenizeFailedCaptor.capture(), eq(true));
+        assertEquals("An unexpected error occurred.", tokenizeFailedCaptor.getValue().getErrorDescription());
     }
 
     @Test
@@ -197,10 +203,14 @@ public class SEPADirectDebitClientUnitTest {
         assertTrue(paymentAuthRequest instanceof SEPADirectDebitPaymentAuthRequest.Failure);
         Exception actualError = ((SEPADirectDebitPaymentAuthRequest.Failure) paymentAuthRequest).getError();
         assertEquals(error, actualError);
-        verify(braintreeClient).sendAnalyticsEvent(eq(SEPADirectDebitAnalytics.CREATE_MANDATE_FAILED), any(), eq(true));
-        verify(braintreeClient).sendAnalyticsEvent(eq(SEPADirectDebitAnalytics.TOKENIZE_FAILED), any(), eq(true));
-    }
 
+        ArgumentCaptor<AnalyticsEventParams> createMandateFailedCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
+        ArgumentCaptor<AnalyticsEventParams> tokenizeFailedCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
+        verify(braintreeClient).sendAnalyticsEvent(eq(SEPADirectDebitAnalytics.CREATE_MANDATE_FAILED), createMandateFailedCaptor.capture(), eq(true));
+        verify(braintreeClient).sendAnalyticsEvent(eq(SEPADirectDebitAnalytics.TOKENIZE_FAILED), tokenizeFailedCaptor.capture(), eq(true));
+        assertEquals(error.getMessage(), createMandateFailedCaptor.getValue().getErrorDescription());
+        assertEquals(error.getMessage(), tokenizeFailedCaptor.getValue().getErrorDescription());
+    }
 
     @Test
     public void tokenize_whenDeepLinkContainsSuccess_callsTokenize_andSendsAnalytics()
@@ -311,7 +321,11 @@ public class SEPADirectDebitClientUnitTest {
         SEPADirectDebitResult result = captor.getValue();
         assertTrue(result instanceof SEPADirectDebitResult.Failure);
         assertEquals(exception, ((SEPADirectDebitResult.Failure) result).getError());
-        verify(braintreeClient).sendAnalyticsEvent(eq(SEPADirectDebitAnalytics.TOKENIZE_FAILED), any(), eq(true));
+
+        ArgumentCaptor<AnalyticsEventParams> tokenizeFailedCaptor = ArgumentCaptor.forClass(AnalyticsEventParams.class);
+        verify(braintreeClient).sendAnalyticsEvent(eq(SEPADirectDebitAnalytics.TOKENIZE_FAILED), tokenizeFailedCaptor.capture(), eq(true));
+        assertEquals(exception.getMessage(), tokenizeFailedCaptor.getValue().getErrorDescription());
+
         verify(sepaDirectDebitApi).tokenize(eq("1234"), eq("customer-id"),
             eq("bank-reference-token"), eq("ONE_OFF"),
             any(SEPADirectDebitInternalTokenizeCallback.class));

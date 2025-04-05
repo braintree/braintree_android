@@ -18,6 +18,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.braintreepayments.api.core.AnalyticsEventParams;
 import com.braintreepayments.api.core.AnalyticsParamRepository;
 import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.BraintreeClient;
@@ -517,10 +518,12 @@ public class GooglePayClientUnitTest {
         Exception exception = ((GooglePayPaymentAuthRequest.Failure) request).getError();
 
         assertTrue(exception instanceof BraintreeException);
+        String expectedMessage = "Google Pay is not enabled for your Braintree account, or Google Play Services are not configured correctly.";
         assertEquals(
-                "Google Pay is not enabled for your Braintree account, or Google Play Services are not configured correctly.",
+                expectedMessage,
                 exception.getMessage());
-        verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.PAYMENT_REQUEST_FAILED), any(), eq(true));
+        AnalyticsEventParams params = new AnalyticsEventParams(null, false, null, null, null, null, null, null, null, null, null, expectedMessage);
+        verify(braintreeClient).sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_REQUEST_FAILED, params , true);
     }
 
     @Test
@@ -1187,7 +1190,8 @@ public class GooglePayClientUnitTest {
             merchantRepository
         );
 
-        Exception error = new Exception("Error");
+        String errorMessage = "Error message";
+        Exception error = new Exception(errorMessage);
         GooglePayPaymentAuthResult
                 googlePayPaymentAuthResult = new GooglePayPaymentAuthResult(null, error);
         sut.tokenize(googlePayPaymentAuthResult, activityResultCallback);
@@ -1198,8 +1202,9 @@ public class GooglePayClientUnitTest {
         GooglePayResult result = captor.getValue();
         assertTrue(result instanceof GooglePayResult.Failure);
         assertEquals(error, ((GooglePayResult.Failure) result).getError());
+        AnalyticsEventParams errorParams = new AnalyticsEventParams(null, false, null, null, null, null, null, null, null, null, null, errorMessage);
         verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.TOKENIZE_STARTED), any(), eq(true));
-        verify(braintreeClient).sendAnalyticsEvent(eq(GooglePayAnalytics.TOKENIZE_FAILED), any(), eq(true));
+        verify(braintreeClient).sendAnalyticsEvent(GooglePayAnalytics.TOKENIZE_FAILED, errorParams, true);
     }
 
     @Test
