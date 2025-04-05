@@ -192,7 +192,10 @@ class PayPalClientUnitTest {
         verify {
             braintreeClient.sendAnalyticsEvent(
                 PayPalAnalytics.TOKENIZATION_STARTED,
-                AnalyticsEventParams(shopperSessionId = "test-shopper-session-id"),
+                AnalyticsEventParams(
+                    isVaultRequest = true,
+                    shopperSessionId = "test-shopper-session-id"
+                ),
                 true
             )
         }
