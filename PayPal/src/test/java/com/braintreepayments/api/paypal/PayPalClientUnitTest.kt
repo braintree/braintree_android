@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentActivity
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
+import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
@@ -80,14 +81,9 @@ class PayPalClientUnitTest {
         val braintreeClient =
             MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
 
-        PayPalClient(
+        testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
 
         verify { analyticsParamRepository.linkType = LinkType.APP_LINK }
@@ -113,14 +109,9 @@ class PayPalClientUnitTest {
         val braintreeClient =
             MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
 
-        PayPalClient(
+        testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
 
         verify { analyticsParamRepository.linkType = LinkType.DEEP_LINK }
@@ -147,14 +138,9 @@ class PayPalClientUnitTest {
         val braintreeClient =
             MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
 
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
         sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback)
 
@@ -220,14 +206,9 @@ class PayPalClientUnitTest {
             MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig)
                 .launchesBrowserSwitchAsNewTask(true).build()
 
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
         sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback)
 
@@ -264,14 +245,9 @@ class PayPalClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig)
             .build()
 
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
         sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback)
 
@@ -308,14 +284,9 @@ class PayPalClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig)
             .build()
 
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
         sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback)
 
@@ -354,14 +325,9 @@ class PayPalClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig)
             .build()
 
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
         sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback)
 
@@ -380,14 +346,9 @@ class PayPalClientUnitTest {
         val braintreeClient =
             MockkBraintreeClientBuilder().configurationSuccess(payPalDisabledConfig).build()
 
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
         sut.createPaymentAuthRequest(
             activity, PayPalCheckoutRequest("1.00", true),
@@ -422,14 +383,9 @@ class PayPalClientUnitTest {
             .configurationError(authError)
             .build()
 
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
         sut.createPaymentAuthRequest(
             activity,
@@ -461,14 +417,9 @@ class PayPalClientUnitTest {
             .configurationError(authError)
             .build()
 
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
         sut.createPaymentAuthRequest(activity, PayPalVaultRequest(true), paymentAuthCallback)
 
@@ -501,14 +452,9 @@ class PayPalClientUnitTest {
             true
         )
 
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
         sut.createPaymentAuthRequest(activity, payPalRequest, paymentAuthCallback)
 
@@ -524,14 +470,9 @@ class PayPalClientUnitTest {
 
         val payPalRequest = PayPalVaultRequest(true)
 
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
         sut.createPaymentAuthRequest(activity, payPalRequest, paymentAuthCallback)
 
@@ -553,14 +494,9 @@ class PayPalClientUnitTest {
 
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
 
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
         sut.createPaymentAuthRequest(activity, payPalRequest, paymentAuthCallback)
 
@@ -599,14 +535,9 @@ class PayPalClientUnitTest {
         val braintreeClient =
             MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
 
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
         sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback)
 
@@ -655,14 +586,9 @@ class PayPalClientUnitTest {
 
         val payPalPaymentAuthResult = PayPalPaymentAuthResult.Success(browserSwitchResult)
         val braintreeClient = MockkBraintreeClientBuilder().build()
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
 
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback)
@@ -716,14 +642,9 @@ class PayPalClientUnitTest {
 
         val payPalPaymentAuthResult = PayPalPaymentAuthResult.Success(browserSwitchResult)
         val braintreeClient = MockkBraintreeClientBuilder().build()
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
 
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback)
@@ -775,14 +696,9 @@ class PayPalClientUnitTest {
 
         val payPalPaymentAuthResult = PayPalPaymentAuthResult.Success(browserSwitchResult)
         val braintreeClient = MockkBraintreeClientBuilder().build()
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
 
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback)
@@ -825,14 +741,9 @@ class PayPalClientUnitTest {
 
         val payPalPaymentAuthResult = PayPalPaymentAuthResult.Success(browserSwitchResult)
         val braintreeClient = MockkBraintreeClientBuilder().build()
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
 
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback)
@@ -881,14 +792,9 @@ class PayPalClientUnitTest {
 
         val payPalPaymentAuthResult = PayPalPaymentAuthResult.Success(browserSwitchResult)
         val braintreeClient = MockkBraintreeClientBuilder().build()
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
 
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback)
@@ -944,14 +850,9 @@ class PayPalClientUnitTest {
 
         val payPalPaymentAuthResult = PayPalPaymentAuthResult.Success(browserSwitchResult)
         val braintreeClient = MockkBraintreeClientBuilder().build()
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
 
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback)
@@ -995,14 +896,9 @@ class PayPalClientUnitTest {
 
         val payPalPaymentAuthResult = PayPalPaymentAuthResult.Success(browserSwitchResult)
         val braintreeClient = MockkBraintreeClientBuilder().build()
-        val sut = PayPalClient(
+        val sut = testPaypalClient(
             braintreeClient,
             payPalInternalClient,
-            merchantRepository,
-            getReturnLinkTypeUseCase,
-            getReturnLinkUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
         )
 
         sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback)
@@ -1017,4 +913,17 @@ class PayPalClientUnitTest {
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params, true) }
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_CANCELED, params, true) }
     }
+
+    private fun testPaypalClient(
+        braintreeClient: BraintreeClient,
+        payPalInternalClient: PayPalInternalClient
+    ): PayPalClient = PayPalClient(
+        braintreeClient,
+        payPalInternalClient,
+        merchantRepository,
+        getReturnLinkTypeUseCase,
+        getReturnLinkUseCase,
+        getAppSwitchUseCase,
+        analyticsParamRepository
+    )
 }
