@@ -20,7 +20,8 @@ import com.braintreepayments.api.sharedutils.HttpResponseCallback;
 import org.mockito.stubbing.Answer;
 
 /**
- * This outputs a Mockito mock of BraintreeClient. For newer kotlin tests, please use MockkBraintreeClientBuilder that outputs a mockk mock.
+ * This outputs a Mockito mock of BraintreeClient.
+ * For writing tests in kotlin, use {@link com.braintreepayments.api.testutils.MockkBraintreeClientBuilder} that outputs a mockk mock.
  */
 @Deprecated
 public class MockBraintreeClientBuilder {
