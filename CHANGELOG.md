@@ -4,7 +4,6 @@
 
 * All Modules
   * Add `error_desc` tag to the analytics events we are sending to FPTI.
-    * Adding error description to all analytics events that represent a failure use-case.
 * PayPal
   * Send `merchant_enabled_app_switch` and `attempted_app_switch` in `event_params` for App Switch events to PayPal's analytics service (FPTI)
 * ThreeDSecure
