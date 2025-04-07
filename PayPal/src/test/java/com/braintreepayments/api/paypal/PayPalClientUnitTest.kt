@@ -29,7 +29,6 @@ import io.mockk.verify
 import junit.framework.TestCase
 import org.json.JSONException
 import org.json.JSONObject
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
