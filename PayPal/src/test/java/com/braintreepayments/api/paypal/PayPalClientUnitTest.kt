@@ -26,10 +26,12 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import junit.framework.Assert
 import junit.framework.TestCase
 import org.json.JSONException
 import org.json.JSONObject
+import org.junit.Assert
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -136,16 +138,14 @@ class PayPalClientUnitTest {
         payPalVaultRequest.shopperSessionId = "test-shopper-session-id"
 
         val paymentAuthRequest = PayPalPaymentAuthRequestParams(
-            payPalVaultRequest,
-            null,
-            "https://example.com/approval/url",
-            "sample-client-metadata-id",
-            null,
-            "https://example.com/success/url"
+            payPalRequest = payPalVaultRequest,
+            browserSwitchOptions = null,
+            approvalUrl = "https://example.com/approval/url",
+            clientMetadataId = "sample-client-metadata-id",
+            successUrl = "https://example.com/success/url"
         )
         val payPalInternalClient =
-            MockkPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest)
-                .build()
+            MockkPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest).build()
 
         val braintreeClient =
             MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
@@ -165,29 +165,29 @@ class PayPalClientUnitTest {
         verify { mockkPaymentAuthCallback.onPayPalPaymentAuthRequest(capture(slot)) }
 
         val request = slot.captured
-        Assert.assertTrue(request is PayPalPaymentAuthRequest.ReadyToLaunch)
+        assertTrue(request is PayPalPaymentAuthRequest.ReadyToLaunch)
         val paymentAuthRequestCaptured =
             (request as PayPalPaymentAuthRequest.ReadyToLaunch).requestParams
 
         val browserSwitchOptions = paymentAuthRequestCaptured.browserSwitchOptions
-        Assert.assertEquals(
+        assertEquals(
             BraintreeRequestCodes.PAYPAL.code,
             browserSwitchOptions!!.requestCode
         )
         TestCase.assertFalse(browserSwitchOptions.isLaunchAsNewTask)
 
-        Assert.assertEquals(
+        assertEquals(
             Uri.parse("https://example.com/approval/url"),
             browserSwitchOptions.url
         )
 
         val metadata = browserSwitchOptions.metadata
-        Assert.assertEquals("https://example.com/approval/url", metadata!!.get("approval-url"))
-        Assert.assertEquals("https://example.com/success/url", metadata.get("success-url"))
-        Assert.assertEquals("billing-agreement", metadata.get("payment-type"))
-        Assert.assertEquals("sample-client-metadata-id", metadata.get("client-metadata-id"))
-        Assert.assertEquals("sample-merchant-account-id", metadata.get("merchant-account-id"))
-        Assert.assertEquals("paypal-browser", metadata.get("source"))
+        assertEquals("https://example.com/approval/url", metadata!!.get("approval-url"))
+        assertEquals("https://example.com/success/url", metadata.get("success-url"))
+        assertEquals("billing-agreement", metadata.get("payment-type"))
+        assertEquals("sample-client-metadata-id", metadata.get("client-metadata-id"))
+        assertEquals("sample-merchant-account-id", metadata.get("merchant-account-id"))
+        assertEquals("paypal-browser", metadata.get("source"))
 
         verify {
             braintreeClient.sendAnalyticsEvent(
@@ -238,8 +238,8 @@ class PayPalClientUnitTest {
         verify { mockkPaymentAuthCallback.onPayPalPaymentAuthRequest(capture(slot)) }
 
         val request = slot.captured
-        Assert.assertTrue(request is PayPalPaymentAuthRequest.ReadyToLaunch)
-        Assert.assertTrue(
+        assertTrue(request is PayPalPaymentAuthRequest.ReadyToLaunch)
+        assertTrue(
             (request as PayPalPaymentAuthRequest.ReadyToLaunch)
                 .requestParams.browserSwitchOptions?.isLaunchAsNewTask == true)
     }
@@ -282,8 +282,8 @@ class PayPalClientUnitTest {
         verify { mockkPaymentAuthCallback.onPayPalPaymentAuthRequest(capture(slot)) }
 
         val request = slot.captured
-        Assert.assertTrue(request is PayPalPaymentAuthRequest.ReadyToLaunch)
-        Assert.assertEquals(
+        assertTrue(request is PayPalPaymentAuthRequest.ReadyToLaunch)
+        assertEquals(
             mockkMerchantRepository.appLinkReturnUri,
             (request as PayPalPaymentAuthRequest.ReadyToLaunch).requestParams.browserSwitchOptions!!.appLinkUri
         )
@@ -326,8 +326,8 @@ class PayPalClientUnitTest {
         verify { mockkPaymentAuthCallback.onPayPalPaymentAuthRequest(capture(slot)) }
 
         val request = slot.captured
-        Assert.assertTrue(request is PayPalPaymentAuthRequest.ReadyToLaunch)
-        Assert.assertEquals(
+        assertTrue(request is PayPalPaymentAuthRequest.ReadyToLaunch)
+        assertEquals(
             "com.braintreepayments.demo",
             (request as PayPalPaymentAuthRequest.ReadyToLaunch).requestParams.browserSwitchOptions!!.returnUrlScheme
         )
@@ -372,8 +372,8 @@ class PayPalClientUnitTest {
         verify { mockkPaymentAuthCallback.onPayPalPaymentAuthRequest(capture(slot)) }
 
         val request = slot.captured
-        Assert.assertTrue(request is PayPalPaymentAuthRequest.Failure)
-        Assert.assertEquals(exception, (request as PayPalPaymentAuthRequest.Failure).error)
+        assertTrue(request is PayPalPaymentAuthRequest.Failure)
+        assertEquals(exception, (request as PayPalPaymentAuthRequest.Failure).error)
     }
 
     @Test
@@ -401,8 +401,8 @@ class PayPalClientUnitTest {
         verify { mockkPaymentAuthCallback.onPayPalPaymentAuthRequest(capture(slot)) }
 
         val request = slot.captured
-        Assert.assertTrue(request is PayPalPaymentAuthRequest.Failure)
-        Assert.assertEquals(
+        assertTrue(request is PayPalPaymentAuthRequest.Failure)
+        assertEquals(
             PayPalClient.Companion.PAYPAL_NOT_ENABLED_MESSAGE,
             (request as PayPalPaymentAuthRequest.Failure).error.message
         )
@@ -444,8 +444,8 @@ class PayPalClientUnitTest {
         verify { mockkPaymentAuthCallback.onPayPalPaymentAuthRequest(capture(slot)) }
 
         val request = slot.captured
-        Assert.assertTrue(request is PayPalPaymentAuthRequest.Failure)
-        Assert.assertEquals(authError, (request as PayPalPaymentAuthRequest.Failure).error)
+        assertTrue(request is PayPalPaymentAuthRequest.Failure)
+        assertEquals(authError, (request as PayPalPaymentAuthRequest.Failure).error)
 
         val params = AnalyticsEventParams(
             isVaultRequest = false,
@@ -479,8 +479,8 @@ class PayPalClientUnitTest {
         verify { mockkPaymentAuthCallback.onPayPalPaymentAuthRequest(capture(slot)) }
 
         val request = slot.captured
-        Assert.assertTrue(request is PayPalPaymentAuthRequest.Failure)
-        Assert.assertEquals(authError, (request as PayPalPaymentAuthRequest.Failure).error)
+        assertTrue(request is PayPalPaymentAuthRequest.Failure)
+        assertEquals(authError, (request as PayPalPaymentAuthRequest.Failure).error)
 
         val params = AnalyticsEventParams(
             isVaultRequest = true,
@@ -617,12 +617,12 @@ class PayPalClientUnitTest {
         verify { mockkPaymentAuthCallback.onPayPalPaymentAuthRequest(capture(slot)) }
 
         val request = slot.captured
-        Assert.assertTrue(request is PayPalPaymentAuthRequest.ReadyToLaunch)
+        assertTrue(request is PayPalPaymentAuthRequest.ReadyToLaunch)
         val paymentAuthRequestCaptured =
             (request as PayPalPaymentAuthRequest.ReadyToLaunch).requestParams
 
         val browserSwitchOptions = paymentAuthRequestCaptured.browserSwitchOptions
-        Assert.assertEquals(
+        assertEquals(
             BraintreeRequestCodes.PAYPAL.code,
             browserSwitchOptions!!.requestCode
         )
@@ -680,7 +680,7 @@ class PayPalClientUnitTest {
 
         val payPalAccount = slot.captured
         val tokenizePayload = payPalAccount.buildJSON()
-        Assert.assertEquals(
+        assertEquals(
             "sample-merchant-account-id",
             tokenizePayload.get("merchant_account_id")
         )
@@ -741,7 +741,7 @@ class PayPalClientUnitTest {
 
         val payPalAccount = slot.captured
         val tokenizePayload = payPalAccount.buildJSON()
-        Assert.assertEquals(
+        assertEquals(
             "sample-merchant-account-id",
             tokenizePayload.get("merchant_account_id")
         )
@@ -794,7 +794,7 @@ class PayPalClientUnitTest {
         verify { mockkPayPalTokenizeCallback.onPayPalResult(capture(slot)) }
 
         val result = slot.captured
-        Assert.assertTrue(result is PayPalResult.Cancel)
+        assertTrue(result is PayPalResult.Cancel)
 
         val params = AnalyticsEventParams(null, false)
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params, true) }
@@ -844,8 +844,8 @@ class PayPalClientUnitTest {
         verify { mockkPayPalTokenizeCallback.onPayPalResult(capture(slot)) }
 
         val result = slot.captured
-        Assert.assertTrue(result is PayPalResult.Success)
-        Assert.assertEquals(payPalAccountNonce, (result as PayPalResult.Success).nonce)
+        assertTrue(result is PayPalResult.Success)
+        assertEquals(payPalAccountNonce, (result as PayPalResult.Success).nonce)
 
         val params = AnalyticsEventParams(
             "EC-HERMES-SANDBOX-EC-TOKEN",
@@ -900,8 +900,8 @@ class PayPalClientUnitTest {
         verify { mockkPayPalTokenizeCallback.onPayPalResult(capture(slot)) }
 
         val result = slot.captured
-        Assert.assertTrue(result is PayPalResult.Success)
-        Assert.assertEquals(payPalAccountNonce, (result as PayPalResult.Success).nonce)
+        assertTrue(result is PayPalResult.Success)
+        assertEquals(payPalAccountNonce, (result as PayPalResult.Success).nonce)
 
         val params = AnalyticsEventParams("EC-HERMES-SANDBOX-EC-TOKEN")
         verify {
@@ -1014,7 +1014,7 @@ class PayPalClientUnitTest {
         verify { mockkPayPalTokenizeCallback.onPayPalResult(capture(slot)) }
 
         val result = slot.captured
-        Assert.assertTrue(result is PayPalResult.Cancel)
+        assertTrue(result is PayPalResult.Cancel)
 
         val params = AnalyticsEventParams()
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params, true) }
