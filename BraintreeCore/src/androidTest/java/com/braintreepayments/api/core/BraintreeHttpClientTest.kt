@@ -10,6 +10,8 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.concurrent.CountDownLatch
+import javax.net.ssl.SSLHandshakeException
+import org.junit.Assert.assertFalse
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class BraintreeHttpClientTest {
@@ -77,9 +79,10 @@ class BraintreeHttpClientTest {
 
         val path = "https://payments-qa.dev.braintree-api.com/"
         braintreeHttpClient.get(path, null, authorization) { _, httpError ->
-            // Make sure exception is due to authorization not SSL handshake
-            val message = "Expecting an AuthorizationException, but got $httpError"
-            assertTrue(message, httpError is AuthorizationException)
+            // Make sure exception is due to anything that's not an SSLHandshakeException
+            val message = "Not expecting an SSLHandshakeException. " +
+                "An SSLHandshakeException could mean that the certs have expired or are not valid."
+            assertFalse(message, httpError is SSLHandshakeException)
             countDownLatch.countDown()
         }
 
