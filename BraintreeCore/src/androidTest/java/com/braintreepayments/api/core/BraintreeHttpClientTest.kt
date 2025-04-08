@@ -68,4 +68,21 @@ class BraintreeHttpClientTest {
 
         countDownLatch.await()
     }
+
+    @Throws(InterruptedException::class)
+    @Test(timeout = 10000)
+    fun requestSslCertificateSuccessfulInGraphQL() {
+        val authorization = fromString(Fixtures.TOKENIZATION_KEY)
+        val braintreeHttpClient = BraintreeHttpClient()
+
+        val path = "https://payments-qa.dev.braintree-api.com/"
+        braintreeHttpClient.get(path, null, authorization) { _, httpError ->
+            // Make sure exception is due to authorization not SSL handshake
+            val message = "Expecting an AuthorizationException, but got $httpError"
+            assertTrue(message, httpError is AuthorizationException)
+            countDownLatch.countDown()
+        }
+
+        countDownLatch.await()
+    }
 }
