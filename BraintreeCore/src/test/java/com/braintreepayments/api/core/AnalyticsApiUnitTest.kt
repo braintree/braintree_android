@@ -55,7 +55,10 @@ class AnalyticsApiUnitTest {
         shopperSessionId = "shopper-session-id",
         buttonType = "button-type",
         buttonOrder = "button-order",
-        pageType = "page-type"
+        pageType = "page-type",
+        didEnablePayPalAppSwitch = true,
+        didPayPalServerAttemptAppSwitch = true,
+        errorDescription = "error-description"
     )
 
     @Before
@@ -158,7 +161,9 @@ class AnalyticsApiUnitTest {
                             "event_params": [
                                 {
                                     "tenant_name": "Braintree",
+                                    "attempted_app_switch": ${event.didPayPalServerAttemptAppSwitch},
                                     "page_type": "${event.pageType}",
+                                    "merchant_enabled_app_switch": ${event.didEnablePayPalAppSwitch},
                                     "button_type": "${event.buttonType}",
                                     "end_time": ${event.endTime},
                                     "is_vault": ${event.isVaultRequest},
@@ -170,6 +175,7 @@ class AnalyticsApiUnitTest {
                                     "t": ${event.timestamp},
                                     "experiment": "${event.experiment}",
                                     "shopper_session_id": "${event.shopperSessionId}",
+                                    "error_desc": "${event.errorDescription}",
                                     "event_name": "${event.name}",
                                     "button_position": "${event.buttonOrder}"
                                 }
@@ -209,7 +215,9 @@ class AnalyticsApiUnitTest {
                             "event_params": [
                                 {
                                     "tenant_name": "Braintree",
+                                    "attempted_app_switch": ${event.didPayPalServerAttemptAppSwitch},
                                     "page_type": "${event.pageType}",
+                                    "merchant_enabled_app_switch": ${event.didEnablePayPalAppSwitch},
                                     "button_type": "${event.buttonType}",
                                     "end_time": ${event.endTime},
                                     "is_vault": ${event.isVaultRequest},
@@ -221,6 +229,7 @@ class AnalyticsApiUnitTest {
                                     "t": ${event.timestamp},
                                     "experiment": "${event.experiment}",
                                     "shopper_session_id": "${event.shopperSessionId}",
+                                    "error_desc": "${event.errorDescription}",
                                     "event_name": "${event.name}",
                                     "button_position": "${event.buttonOrder}"
                                 }

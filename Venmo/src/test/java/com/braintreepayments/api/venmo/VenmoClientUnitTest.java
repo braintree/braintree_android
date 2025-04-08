@@ -66,7 +66,6 @@ public class VenmoClientUnitTest {
     private final Uri SUCCESS_URL_WITHOUT_RESOURCE_ID = Uri.parse("sample-scheme://x-callback-url/vzero/auth/venmo/success?username=venmojoe&payment_method_nonce=fakenonce");
     private final Uri CANCEL_URL = Uri.parse("sample-scheme://x-callback-url/vzero/auth/venmo/cancel");
 
-    private final String LINK_TYPE = "universal";
     private final Uri appSwitchUrl = Uri.parse("https://example.com");
     private final AnalyticsEventParams expectedAnalyticsParams = new AnalyticsEventParams(
         null,
@@ -198,6 +197,7 @@ public class VenmoClientUnitTest {
 
         verify(venmoPaymentAuthRequestCallback).onVenmoPaymentAuthRequest(captor.capture());
         verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, expectedAnalyticsParams, true);
+        verify(analyticsParamRepository).reset();
         VenmoPaymentAuthRequest paymentAuthRequest = captor.getValue();
         assertTrue(paymentAuthRequest instanceof VenmoPaymentAuthRequest.Failure);
         assertEquals(
@@ -706,7 +706,7 @@ public class VenmoClientUnitTest {
         VenmoResult result = captor.getValue();
         assertTrue(result instanceof VenmoResult.Cancel);
         verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_CANCELED, expectedAnalyticsParams, true);
-
+        verify(analyticsParamRepository).reset();
     }
 
     @Test
@@ -747,6 +747,7 @@ public class VenmoClientUnitTest {
         assertEquals("venmojoe", nonce.getUsername());
 
         verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_SUCCEEDED, expectedAnalyticsParams, true);
+        verify(analyticsParamRepository).reset();
     }
 
     @Test
@@ -784,6 +785,7 @@ public class VenmoClientUnitTest {
         assertTrue(result instanceof VenmoResult.Failure);
         assertEquals(graphQLError, ((VenmoResult.Failure) result).getError());
         verify(braintreeClient).sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, expectedAnalyticsParams, true);
+        verify(analyticsParamRepository).reset();
     }
 
     @Test

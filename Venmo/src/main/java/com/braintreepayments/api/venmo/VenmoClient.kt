@@ -379,21 +379,25 @@ class VenmoClient internal constructor(
     ) {
         braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, analyticsParams)
         callback.onVenmoPaymentAuthRequest(request)
+        analyticsParamRepository.reset()
     }
 
     private fun callbackSuccess(callback: VenmoTokenizeCallback, venmoResult: VenmoResult) {
         braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_SUCCEEDED, analyticsParams)
         callback.onVenmoResult(venmoResult)
+        analyticsParamRepository.reset()
     }
 
     private fun callbackTokenizeCancel(callback: VenmoTokenizeCallback) {
         braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_CANCELED, analyticsParams)
         callback.onVenmoResult(VenmoResult.Cancel)
+        analyticsParamRepository.reset()
     }
 
     private fun callbackTokenizeFailure(callback: VenmoTokenizeCallback, venmoResult: VenmoResult) {
         braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_FAILED, analyticsParams)
         callback.onVenmoResult(venmoResult)
+        analyticsParamRepository.reset()
     }
 
     private val analyticsParams: AnalyticsEventParams

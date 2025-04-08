@@ -4,6 +4,7 @@
 
 * PayPal
   * Add `error_desc` tag to the analytics events we are sending to FPTI.
+  * Send `merchant_enabled_app_switch` and `attempted_app_switch` in `event_params` for App Switch events to PayPal's analytics service (FPTI)
   * Add `contactPreference` property to `PayPalCheckoutRequest` - This property is required to enable the contact information section in the payment flow.
 * ThreeDSecure
   * Bump Cardinal version to `2.2.7-7` (fixes #1236).
