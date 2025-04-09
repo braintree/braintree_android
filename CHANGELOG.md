@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.9.0 (2025-04-09)
 
 * All Modules
   * Add `error_desc` tag to the analytics events we are sending to FPTI.
