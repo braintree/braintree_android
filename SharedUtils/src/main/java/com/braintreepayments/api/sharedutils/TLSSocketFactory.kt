@@ -1,5 +1,6 @@
 package com.braintreepayments.api.sharedutils
 
+import androidx.annotation.RestrictTo
 import java.io.IOException
 import java.io.InputStream
 import java.net.InetAddress
@@ -17,7 +18,8 @@ import javax.net.ssl.TrustManagerFactory
  * `TLSSocketFactory` is a custom implementation of [SSLSocketFactory] that enforces the use of specific TLS protocols
  * (TLSv1.2 and TLSv1.3) and allows for the management of trusted certificates from a provided [InputStream].
  */
-internal class TLSSocketFactory(
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+class TLSSocketFactory(
     certificateStream: InputStream,
     keyStore: KeyStore = KeyStore.getInstance(KeyStore.getDefaultType()),
     certificateFactory: CertificateFactory = CertificateFactory.getInstance("X.509"),
