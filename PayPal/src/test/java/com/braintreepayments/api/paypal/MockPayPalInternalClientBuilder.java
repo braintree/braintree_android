@@ -9,6 +9,11 @@ import android.content.Context;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+/**
+ * @deprecated This outputs a Mockito mock of PayPalInternalClient.
+ * For writing tests in kotlin, use {@link com.braintreepayments.api.paypal.MockkPayPalInternalClientBuilder} that outputs a mockk mock.
+ */
+@Deprecated
 public class MockPayPalInternalClientBuilder {
 
     private Exception error;
