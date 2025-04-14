@@ -23,7 +23,7 @@ class GooglePayLauncherUnitTest {
     @Before
     fun beforeEach() {
         every {
-            activityResultRegistry?.register(
+            activityResultRegistry.register(
                 any(),
                 any(),
                 any<ActivityResultContract<GooglePayPaymentAuthRequestParams, Any>>(),
@@ -38,7 +38,7 @@ class GooglePayLauncherUnitTest {
         val lifecycleOwner = FragmentActivity()
 
         val registry = mockk<ActivityResultRegistry>(relaxed = true)
-        GooglePayLauncher(registry, lifecycleOwner, callback!!)
+        GooglePayLauncher(registry, lifecycleOwner, callback)
 
         verify {
             registry.register(
@@ -53,8 +53,8 @@ class GooglePayLauncherUnitTest {
     fun launch_launchesActivity() {
         val lifecycleOwner = FragmentActivity()
         val sut = GooglePayLauncher(
-            activityResultRegistry!!, lifecycleOwner,
-            callback!!
+            activityResultRegistry, lifecycleOwner,
+            callback
         )
 
         val googlePayRequest = GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL)
