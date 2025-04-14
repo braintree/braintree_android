@@ -19,6 +19,7 @@ import javax.net.ssl.TrustManagerFactory
  * (TLSv1.2 and TLSv1.3) and allows for the management of trusted certificates from a provided [InputStream].
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+@Suppress("TooGenericExceptionCaught", "SwallowedException")
 class TLSSocketFactory(
     certificateStream: InputStream,
     keyStore: KeyStore = KeyStore.getInstance(KeyStore.getDefaultType()),
