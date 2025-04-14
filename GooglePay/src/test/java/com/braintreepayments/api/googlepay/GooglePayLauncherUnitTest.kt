@@ -16,7 +16,8 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class GooglePayLauncherUnitTest {
 
-    private val activityResultLauncher = mockk<ActivityResultLauncher<GooglePayPaymentAuthRequestParams?>>(relaxed = true)
+    private val activityResultLauncher =
+        mockk<ActivityResultLauncher<GooglePayPaymentAuthRequestParams?>>(relaxed = true)
     private val callback = mockk<GooglePayLauncherCallback>(relaxed = true)
     private val activityResultRegistry = mockk<ActivityResultRegistry>(relaxed = true)
 
