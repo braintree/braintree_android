@@ -2,6 +2,7 @@ package com.braintreepayments.api.card
 
 import android.content.Context
 import com.braintreepayments.api.card.CardNonce.Companion.fromJSON
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.BraintreeClient
@@ -61,7 +62,7 @@ class CardClient internal constructor(
      * @param callback [CardTokenizeCallback]
      */
     fun tokenize(card: Card, callback: CardTokenizeCallback) {
-        analyticsParamRepository.resetSessionId()
+        analyticsParamRepository.reset()
         braintreeClient.sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_STARTED)
         braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
             if (error != null) {
@@ -118,12 +119,15 @@ class CardClient internal constructor(
         }
     }
 
-    private fun callbackFailure(callback: CardTokenizeCallback, cardResult: CardResult) {
-        braintreeClient.sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_FAILED)
+    private fun callbackFailure(callback: CardTokenizeCallback, cardResult: CardResult.Failure) {
+        braintreeClient.sendAnalyticsEvent(
+            CardAnalytics.CARD_TOKENIZE_FAILED,
+            AnalyticsEventParams(errorDescription = cardResult.error.message)
+        )
         callback.onCardResult(cardResult)
     }
 
-    private fun callbackSuccess(callback: CardTokenizeCallback, cardResult: CardResult) {
+    private fun callbackSuccess(callback: CardTokenizeCallback, cardResult: CardResult.Success) {
         braintreeClient.sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_SUCCEEDED)
         callback.onCardResult(cardResult)
     }

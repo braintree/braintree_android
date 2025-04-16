@@ -173,20 +173,23 @@ public class AmericanExpressClientUnitTest {
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
         AnalyticsEventParams params = new AnalyticsEventParams();
+        AnalyticsEventParams errorParams = new AnalyticsEventParams(null, false, null, null, null, null, null, null, null, null, null, "Bad fingerprint");
         verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, params, true);
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED, params, true);
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED, errorParams, true);
     }
 
     @Test
     public void getRewardsBalance_sendsAnalyticsEventOnParseError() {
+        String notJson = "Big blob that is not a valid JSON object";
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
-                .sendGETSuccessfulResponse("-- not json --")
+                .sendGETSuccessfulResponse(notJson)
                 .build();
         AmericanExpressClient sut = new AmericanExpressClient(braintreeClient);
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
 
         AnalyticsEventParams params = new AnalyticsEventParams();
+        AnalyticsEventParams errorParams = new AnalyticsEventParams(null, false, null, null, null, null, null, null, null, null, null, "Value " + notJson.split(" ")[0] + " of type java.lang.String cannot be converted to JSONObject");
         verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, params, true);
-        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED, params, true);
+        verify(braintreeClient).sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED, errorParams, true);
     }
 }

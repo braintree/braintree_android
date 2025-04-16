@@ -60,7 +60,7 @@ class ShopperInsightsClient internal constructor(
         experiment: String? = null,
         callback: ShopperInsightsCallback
     ) {
-        analyticsParamRepository.resetSessionId()
+        analyticsParamRepository.reset()
         braintreeClient.sendAnalyticsEvent(
             GET_RECOMMENDED_PAYMENTS_STARTED,
             AnalyticsEventParams(
@@ -142,7 +142,10 @@ class ShopperInsightsClient internal constructor(
         callback: ShopperInsightsCallback,
         error: Exception
     ) {
-        braintreeClient.sendAnalyticsEvent(GET_RECOMMENDED_PAYMENTS_FAILED, analyticsParams)
+        braintreeClient.sendAnalyticsEvent(
+            GET_RECOMMENDED_PAYMENTS_FAILED,
+            analyticsParams.copy(errorDescription = error.message)
+        )
         callback.onResult(ShopperInsightsResult.Failure(error))
     }
 

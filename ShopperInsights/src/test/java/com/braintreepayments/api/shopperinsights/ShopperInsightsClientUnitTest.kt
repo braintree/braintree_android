@@ -73,7 +73,7 @@ class ShopperInsightsClientUnitTest {
     fun `when getRecommendedPaymentMethods is called without shopper session id, session id is reset`() {
         sut.getRecommendedPaymentMethods(mockk(relaxed = true), "some_experiment", mockk(relaxed = true))
 
-        verify { analyticsParamRepository.resetSessionId() }
+        verify { analyticsParamRepository.reset() }
     }
 
     @Test
@@ -576,7 +576,12 @@ class ShopperInsightsClientUnitTest {
         verify {
             braintreeClient
                 .sendAnalyticsEvent("shopper-insights:get-recommended-payments:failed",
-                    AnalyticsEventParams(shopperSessionId = shopperSessionId))
+                    AnalyticsEventParams(
+                        shopperSessionId = shopperSessionId,
+                        errorDescription = "One of ShopperInsightsRequest.email or " +
+                            "ShopperInsightsRequest.phone must be non-null."
+                    )
+                )
         }
     }
 }

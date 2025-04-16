@@ -54,6 +54,7 @@ dependencies {
 
     androidTestImplementation libs.androidx.test.runner
     androidTestImplementation libs.androidx.junit
+    testImplementation libs.mockk
 }
 
 // region signing and publishing

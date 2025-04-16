@@ -9,6 +9,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.braintreepayments.api.core.AnalyticsEventParams;
 import com.braintreepayments.api.core.AnalyticsParamRepository;
 import com.braintreepayments.api.core.ApiClient;
 import com.braintreepayments.api.core.BraintreeClient;
@@ -60,7 +61,7 @@ public class CardClientUnitTest {
         CardClient sut = new CardClient(braintreeClient, apiClient, analyticsParamRepository);
         sut.tokenize(card, cardTokenizeCallback);
 
-        verify(analyticsParamRepository).resetSessionId();
+        verify(analyticsParamRepository).reset();
     }
 
     @Test
@@ -266,5 +267,20 @@ public class CardClientUnitTest {
         assertTrue(result instanceof CardResult.Failure);
         Exception actualError = ((CardResult.Failure) result).getError();
         assertEquals(configError, actualError);
+    }
+
+    @Test
+    public void tokenizeException_analyticsEventIsSentWithErrorDescription() {
+        String errorDescription = "Configuration error.";
+        Exception configError = new Exception(errorDescription);
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configurationError(configError)
+                .build();
+
+        CardClient sut = new CardClient(braintreeClient, apiClient, analyticsParamRepository);
+        sut.tokenize(card, cardTokenizeCallback);
+
+        AnalyticsEventParams errorParams = new AnalyticsEventParams(null, false, null, null, null, null, null, null, null, null, null, errorDescription);
+        verify(braintreeClient).sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_FAILED, errorParams, true);
     }
 }

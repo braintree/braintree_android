@@ -2,6 +2,7 @@ package com.braintreepayments.api.paypal
 
 import android.content.Context
 import android.net.Uri
+import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.AppSwitchRepository
 import com.braintreepayments.api.core.BraintreeClient
@@ -24,6 +25,7 @@ internal class PayPalInternalClient(
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
     private val setAppSwitchUseCase: SetAppSwitchUseCase = SetAppSwitchUseCase(AppSwitchRepository.instance),
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
     private val payPalTokenResponseRepository: PayPalTokenResponseRepository = PayPalTokenResponseRepository.instance,
     private val payPalSetPaymentTokenUseCase: PayPalSetPaymentTokenUseCase = PayPalSetPaymentTokenUseCase(
         payPalTokenResponseRepository
@@ -128,6 +130,8 @@ internal class PayPalInternalClient(
             try {
                 val paypalPaymentResource = PayPalPaymentResource.fromJson(responseBody)
                 val parsedRedirectUri = Uri.parse(paypalPaymentResource.redirectUrl)
+                analyticsParamRepository.didPayPalServerAttemptAppSwitch = paypalPaymentResource.isAppSwitchFlow
+
                 setAppSwitchUseCase(paypalPaymentResource.isAppSwitchFlow)
                 val paypalContextId = extractPayPalContextId(parsedRedirectUri)
                 payPalSetPaymentTokenUseCase.setPaymentToken(paypalContextId)

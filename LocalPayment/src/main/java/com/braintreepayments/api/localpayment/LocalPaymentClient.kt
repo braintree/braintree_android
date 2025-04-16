@@ -58,7 +58,7 @@ class LocalPaymentClient internal constructor(
         request: LocalPaymentRequest,
         callback: LocalPaymentAuthCallback
     ) {
-        analyticsParamRepository.resetSessionId()
+        analyticsParamRepository.reset()
         braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED)
 
         var exception: Exception? = null
@@ -143,7 +143,7 @@ class LocalPaymentClient internal constructor(
     }
 
     private fun authRequestFailure(error: Exception, callback: LocalPaymentAuthCallback) {
-        sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED)
+        sendAnalyticsEvent(eventName = LocalPaymentAnalytics.PAYMENT_FAILED, errorDescription = error.message)
         callback.onLocalPaymentAuthRequest(LocalPaymentAuthRequest.Failure(error))
     }
 
@@ -208,13 +208,14 @@ class LocalPaymentClient internal constructor(
     }
 
     private fun tokenizeFailure(error: Exception, callback: LocalPaymentTokenizeCallback) {
-        sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED)
+        sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, errorDescription = error.message)
         callback.onLocalPaymentResult(LocalPaymentResult.Failure(error))
     }
 
-    private fun sendAnalyticsEvent(eventName: String) {
+    private fun sendAnalyticsEvent(eventName: String, errorDescription: String? = null) {
         val eventParameters = AnalyticsEventParams(
-            payPalContextId = payPalContextId
+            payPalContextId = payPalContextId,
+            errorDescription = errorDescription
         )
         braintreeClient.sendAnalyticsEvent(eventName, eventParameters)
     }

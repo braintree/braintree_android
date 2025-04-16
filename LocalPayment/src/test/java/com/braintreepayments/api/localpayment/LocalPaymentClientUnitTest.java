@@ -81,7 +81,7 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentClient sut = new LocalPaymentClient(braintreeClient, dataCollector, localPaymentApi, analyticsParamRepository);
         sut.createPaymentAuthRequest(getIdealLocalPaymentRequest(), localPaymentAuthCallback);
 
-        verify(analyticsParamRepository).resetSessionId();
+        verify(analyticsParamRepository).reset();
     }
 
     @Test
@@ -106,9 +106,10 @@ public class LocalPaymentClientUnitTest {
         );
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback);
 
+        String errorDescription = "LocalPaymentRequest is invalid, paymentType and amount are required.";
         verify(braintreeClient).sendAnalyticsEvent(
             LocalPaymentAnalytics.PAYMENT_FAILED,
-            new AnalyticsEventParams(),
+            new AnalyticsEventParams(null, false, null, null, null, null, null, null, null, null, null, errorDescription),
             true
         );
     }
@@ -215,9 +216,10 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback);
 
+        String errorDescription = "An error occurred creating the local payment method.";
         verify(braintreeClient).sendAnalyticsEvent(
             LocalPaymentAnalytics.PAYMENT_FAILED,
-            new AnalyticsEventParams(),
+            new AnalyticsEventParams(null, false, null, null, null, null, null, null, null, null, null, errorDescription),
             true
         );
     }
@@ -504,9 +506,11 @@ public class LocalPaymentClientUnitTest {
         assertTrue(result instanceof LocalPaymentResult.Failure);
         Exception exception = ((LocalPaymentResult.Failure) result).getError();
         assertEquals(postError, exception);
+
+        AnalyticsEventParams params = new AnalyticsEventParams(null, false, null, null, null, null, null, null, null, null, null, "POST failed");
         verify(braintreeClient).sendAnalyticsEvent(
             LocalPaymentAnalytics.PAYMENT_FAILED,
-            new AnalyticsEventParams(),
+            params,
             true
         );
     }

@@ -1,5 +1,6 @@
 package com.braintreepayments.api.visacheckout
 
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
 import com.braintreepayments.api.testutils.Fixtures
@@ -250,6 +251,11 @@ class VisaCheckoutClientUnitTest {
         val listener = mockk<VisaCheckoutTokenizeCallback>(relaxed = true)
         sut.tokenize(visaPaymentSummary, listener)
         verify { braintreeClient.sendAnalyticsEvent(VisaCheckoutAnalytics.TOKENIZE_STARTED) }
-        verify { braintreeClient.sendAnalyticsEvent(VisaCheckoutAnalytics.TOKENIZE_FAILED) }
+        verify {
+            braintreeClient.sendAnalyticsEvent(
+                VisaCheckoutAnalytics.TOKENIZE_FAILED,
+                AnalyticsEventParams(errorDescription = tokenizeError.message)
+            )
+        }
     }
 }

@@ -5,6 +5,7 @@ import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class AnalyticsParamRepositoryUnitTest {
 
@@ -20,6 +21,9 @@ class AnalyticsParamRepositoryUnitTest {
         sut = AnalyticsParamRepository(uuidHelper)
 
         every { uuidHelper.formattedUUID } returnsMany listOf(uuid, newUuid)
+
+        sut.didPayPalServerAttemptAppSwitch = true
+        sut.didEnablePayPalAppSwitch = true
     }
 
     @Test
@@ -34,11 +38,15 @@ class AnalyticsParamRepositoryUnitTest {
     }
 
     @Test
-    fun `resetSessionId resets the session ID`() {
+    fun `invoking reset resets all of the repository's values`() {
         assertEquals(uuid, sut.sessionId)
+        assertEquals(true, sut.didPayPalServerAttemptAppSwitch)
+        assertEquals(true, sut.didEnablePayPalAppSwitch)
 
-        sut.resetSessionId()
+        sut.reset()
 
         assertEquals(newUuid, sut.sessionId)
+        assertNull(sut.didPayPalServerAttemptAppSwitch)
+        assertNull(sut.didEnablePayPalAppSwitch)
     }
 }
