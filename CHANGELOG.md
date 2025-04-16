@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* ThreeDSecure
+  * Bump Cardinal version to `2.2.7-7` which provides support for Android 15.
+
 ## 4.49.1 (2024-07-15)
 
 * PayPal
