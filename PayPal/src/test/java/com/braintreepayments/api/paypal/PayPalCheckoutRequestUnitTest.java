@@ -193,6 +193,30 @@ public class PayPalCheckoutRequestUnitTest {
     }
 
     @Test
+    public void createRequestBody_sets_appSwitchParameters_irrespectiveOf_userAuthenticationEmail_emptyOrNot(
+        @TestParameter({"", "some@email.com"}) String payerEmail
+    ) throws JSONException {
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+        request.setEnablePayPalAppSwitch(true);
+        request.setUserAuthenticationEmail(payerEmail);
+        String appLink = "universal_url";
+
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url",
+                appLink
+        );
+
+        JSONObject jsonObject = new JSONObject(requestBody);
+        assertTrue(jsonObject.getBoolean("launch_paypal_app"));
+        assertEquals("Android", jsonObject.getString("os_type"));
+        assertEquals(appLink, jsonObject.getString("merchant_app_return_url"));
+        assertNotNull(jsonObject.getString("os_version"));
+    }
+
+    @Test
     public void createRequestBody_sets_shopper_insights_session_id() throws JSONException {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
         request.setShopperSessionId("shopper-insights-id");

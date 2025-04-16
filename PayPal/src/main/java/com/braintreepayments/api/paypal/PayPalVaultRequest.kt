@@ -98,7 +98,7 @@ class PayPalVaultRequest
 
         userPhoneNumber?.let { parameters.put(PHONE_NUMBER_KEY, it.toJson()) }
 
-        if (enablePayPalAppSwitch && !appLink.isNullOrEmpty() && !userAuthenticationEmail.isNullOrEmpty()) {
+        if (enablePayPalAppSwitch && !appLink.isNullOrEmpty()) {
             parameters.put(ENABLE_APP_SWITCH_KEY, enablePayPalAppSwitch)
             parameters.put(OS_VERSION_KEY, Build.VERSION.SDK_INT.toString())
             parameters.put(OS_TYPE_KEY, "Android")
