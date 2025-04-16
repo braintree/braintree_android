@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.braintreepayments.api.PayPalCheckoutRequest;
 import com.braintreepayments.api.PayPalPaymentIntent;
+import com.braintreepayments.api.PayPalPhoneNumber;
 import com.braintreepayments.api.PayPalRequest;
 import com.braintreepayments.api.PayPalVaultRequest;
 import com.braintreepayments.api.PostalAddress;
@@ -12,7 +13,9 @@ public class PayPalRequestFactory {
 
     public static PayPalVaultRequest createPayPalVaultRequest(
         Context context,
-        String buyerEmailAddress
+        String buyerEmailAddress,
+        String buyerPhoneCountryCode,
+        String buyerPhoneNationalNumber
     ) {
 
         PayPalVaultRequest request = new PayPalVaultRequest();
@@ -21,6 +24,10 @@ public class PayPalRequestFactory {
         request.setAppLinkEnabled(useAppLink);
         if (!buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
+        }
+
+        if (!buyerPhoneCountryCode.isEmpty() && !buyerPhoneNationalNumber.isEmpty()) {
+            request.setUserPhoneNumber(new PayPalPhoneNumber(buyerPhoneCountryCode, buyerPhoneNationalNumber));
         }
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));
@@ -54,7 +61,9 @@ public class PayPalRequestFactory {
     public static PayPalCheckoutRequest createPayPalCheckoutRequest(
         Context context,
         String amount,
-        String buyerEmailAddress
+        String buyerEmailAddress,
+        String buyerPhoneCountryCode,
+        String buyerPhoneNationalNumber
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount);
 
@@ -62,6 +71,10 @@ public class PayPalRequestFactory {
         request.setAppLinkEnabled(useAppLink);
         if (!buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
+        }
+
+        if (!buyerPhoneCountryCode.isEmpty() && !buyerPhoneNationalNumber.isEmpty()) {
+            request.setUserPhoneNumber(new PayPalPhoneNumber(buyerPhoneCountryCode, buyerPhoneNationalNumber));
         }
 
         request.setDisplayName(Settings.getPayPalDisplayName(context));

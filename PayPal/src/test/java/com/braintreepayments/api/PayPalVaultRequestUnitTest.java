@@ -125,4 +125,19 @@ public class PayPalVaultRequestUnitTest {
 
         assertTrue(requestBody.contains("\"payer_email\":" + "\"" + payerEmail + "\""));
     }
+
+    @Test
+    public void createRequestBody_sets_userPhoneNumber_when_not_null() throws JSONException {
+        PayPalVaultRequest request = new PayPalVaultRequest(true);
+
+        request.setUserPhoneNumber(new PayPalPhoneNumber("1", "1231231234"));
+        String requestBody = request.createRequestBody(
+            mock(Configuration.class),
+            mock(Authorization.class),
+            "success_url",
+            "cancel_url"
+        );
+
+        assertTrue(requestBody.contains("\"phone_number\":{\"country_code\":\"1\",\"national_number\":\"1231231234\"}"));
+    }
 }

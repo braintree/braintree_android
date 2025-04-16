@@ -2,6 +2,10 @@
 
 ## unreleased
 
+* BraintreeCore
+  * Update `endpoint` syntax sent to FPTI for 3D Secure and Venmo flows
+* PayPal
+  * Add `userPhoneNumber` property to `PayPalVaultRequest` and `PayPalCheckoutRequest`
 * ThreeDSecure
   * Bump Cardinal version to `2.2.7-7` which provides support for Android 15.
 
