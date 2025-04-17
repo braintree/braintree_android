@@ -92,7 +92,7 @@ ext {
     minSdkVersion = 21
     minSdkVersionPayPalMessaging = 23
     versionCode = 196
-    targetSdkVersion = 34
+    targetSdkVersion = 35
     versionName = version
 }
 
