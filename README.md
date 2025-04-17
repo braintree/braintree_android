@@ -23,7 +23,7 @@ For an integration offering card payments, add the following dependency in your 
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:card:4.49.1'
+  implementation 'com.braintreepayments.api:card:4.50.0'
 }
 ```
 
@@ -31,7 +31,7 @@ To preview the latest work in progress builds, add the following SNAPSHOT depend
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:card:4.49.2-SNAPSHOT'
+  implementation 'com.braintreepayments.api:card:4.50.1-SNAPSHOT'
 }
 ```
 

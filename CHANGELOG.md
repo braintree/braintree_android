@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 4.50.0 (2025-04-17)
 
 * BraintreeCore
   * Update `endpoint` syntax sent to FPTI for 3D Secure and Venmo flows
