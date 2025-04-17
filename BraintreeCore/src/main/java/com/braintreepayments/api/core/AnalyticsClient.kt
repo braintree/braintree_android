@@ -1,17 +1,19 @@
 package com.braintreepayments.api.core
 
 import android.content.Context
+import android.util.Log
 import androidx.annotation.RestrictTo
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ListenableWorker
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.Time
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
@@ -151,7 +153,15 @@ class AnalyticsClient internal constructor(
                             analyticsRequest.toString(),
                             configuration,
                             authorization
-                        )
+                        ) { response: HttpResponse?, httpError: Exception? ->
+                            httpError?.let { error ->
+                                Log.e(
+                                    "PayPalAnalytics",
+                                    "Exception occurred: ${error::class.java.name}: ${error.message}"
+                                )
+                                Log.e("PayPalAnalytics", Log.getStackTraceString(error))
+                            }
+                        }
                         analyticsEventBlobDao.deleteEventBlobs(eventBlobs)
                     }
                     ListenableWorker.Result.success()

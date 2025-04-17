@@ -39,21 +39,21 @@ public class BaseHttpResponseParser implements HttpResponseParser {
             case HTTP_OK: case HTTP_CREATED: case HTTP_ACCEPTED:
                 return responseBody;
             case HTTP_BAD_REQUEST: case HTTP_UNPROCESSABLE_ENTITY:
-                throw new UnprocessableEntityException(responseBody);
+                throw new UnprocessableEntityException("ResponseCode: " + responseCode + " ResponseBody: " + responseBody);
             case HTTP_UNAUTHORIZED:
-                throw new AuthenticationException(responseBody);
+                throw new AuthenticationException("ResponseCode: " + responseCode + " ResponseBody: " + responseBody);
             case HTTP_FORBIDDEN:
-                throw new AuthorizationException(responseBody);
+                throw new AuthorizationException("ResponseCode: " + responseCode + " ResponseBody: " + responseBody);
             case HTTP_UPGRADE_REQUIRED:
-                throw new UpgradeRequiredException(responseBody);
+                throw new UpgradeRequiredException("ResponseCode: " + responseCode + " ResponseBody: " + responseBody);
             case HTTP_TOO_MANY_REQUESTS:
                 throw new RateLimitException("You are being rate-limited. Please try again in a few minutes.");
             case HTTP_INTERNAL_ERROR:
-                throw new ServerException(responseBody);
+                throw new ServerException("ResponseCode: " + responseCode + " ResponseBody: " + responseBody);
             case HTTP_UNAVAILABLE:
-                throw new ServiceUnavailableException(responseBody);
+                throw new ServiceUnavailableException("ResponseCode: " + responseCode + " ResponseBody: " + responseBody);
             default:
-                throw new UnexpectedException(responseBody);
+                throw new UnexpectedException("ResponseCode: " + responseCode + " ResponseBody: " + responseBody);
         }
     }
 
