@@ -154,6 +154,13 @@ class AnalyticsClient internal constructor(
                             configuration,
                             authorization
                         ) { response: HttpResponse?, httpError: Exception? ->
+                            response?.let {
+                                Log.e(
+                                    "PayPalAnalytics",
+                                    "Analytics upload successful - response: ${response.body}"
+                                )
+                            }
+
                             httpError?.let { error ->
                                 Log.e(
                                     "PayPalAnalytics",
