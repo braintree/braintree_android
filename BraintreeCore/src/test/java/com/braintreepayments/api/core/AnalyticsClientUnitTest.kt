@@ -8,6 +8,7 @@ import com.braintreepayments.api.core.AnalyticsClient.Companion.WORK_INPUT_KEY_S
 import com.braintreepayments.api.core.AnalyticsClient.Companion.WORK_NAME_ANALYTICS_UPLOAD
 import com.braintreepayments.api.core.Authorization.Companion.fromString
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
+import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.sharedutils.Time
 import com.braintreepayments.api.testutils.Fixtures
 import io.mockk.*
@@ -264,6 +265,8 @@ class AnalyticsClientUnitTest {
                 "https://api-m.paypal.com/v1/tracking/batch/events",
                 capture(analyticsJSONSlot),
                 any(),
+                any(),
+                any(),
                 any()
             )
         }
@@ -363,7 +366,7 @@ class AnalyticsClientUnitTest {
         every { analyticsEventBlobDao.getBlobsBySessionId(sessionId) } returns blobs
 
         val analyticsJSONSlot = slot<String>()
-        every { httpClient.post(any(), capture(analyticsJSONSlot), any(), any()) }
+        every { httpClient.post(any(), capture(analyticsJSONSlot), any(), any(), any(), any()) }
 
         sut.performAnalyticsUpload(inputData)
 
@@ -457,7 +460,7 @@ class AnalyticsClientUnitTest {
         every { analyticsEventBlobDao.getBlobsBySessionId(sessionId) } returns blobs
 
         val httpError = Exception("error")
-        every { httpClient.post(any(), any(), any(), any()) } throws httpError
+        every { httpClient.post(any(), any(), any(), any(), any(), any()) } throws httpError
 
         val result = sut.performAnalyticsUpload(inputData)
         assertTrue(result is ListenableWorker.Result.Failure)
