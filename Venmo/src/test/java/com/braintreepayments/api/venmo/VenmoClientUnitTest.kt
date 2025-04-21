@@ -168,7 +168,7 @@ class VenmoClientUnitTest {
 
         every { merchantRepository.authorization } returns clientToken
 
-        venmoApi = MockVenmoApiBuilder()
+        venmoApi = MockkVenmoApiBuilder()
             .createPaymentContextSuccess("venmo-payment-context-id")
             .build()
 
@@ -228,7 +228,7 @@ class VenmoClientUnitTest {
         every { merchantRepository.authorization } returns clientToken
         every { getReturnLinkUseCase.invoke() } returns GetReturnLinkUseCase.ReturnLinkResult.DeepLink("com.example")
 
-        venmoApi = MockVenmoApiBuilder()
+        venmoApi = MockkVenmoApiBuilder()
             .createPaymentContextSuccess("venmo-payment-context-id")
             .build()
 
@@ -381,7 +381,7 @@ class VenmoClientUnitTest {
 
         every { merchantRepository.authorization } returns clientToken
 
-        venmoApi = MockVenmoApiBuilder()
+        venmoApi = MockkVenmoApiBuilder()
             .createPaymentContextSuccess("venmo-payment-context-id")
             .build()
 
@@ -419,7 +419,7 @@ class VenmoClientUnitTest {
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
-        venmoApi = MockVenmoApiBuilder()
+        venmoApi = MockkVenmoApiBuilder()
             .createPaymentContextSuccess("venmo-payment-context-id")
             .build()
 
@@ -464,7 +464,7 @@ class VenmoClientUnitTest {
         every { getReturnLinkUseCase.invoke() } returns
                 GetReturnLinkUseCase.ReturnLinkResult.Failure(exception)
 
-        venmoApi = MockVenmoApiBuilder()
+        venmoApi = MockkVenmoApiBuilder()
             .createPaymentContextSuccess("venmo-payment-context-id")
             .build()
 
@@ -501,7 +501,7 @@ class VenmoClientUnitTest {
 
         every { merchantRepository.authorization } returns clientToken
 
-        venmoApi = MockVenmoApiBuilder()
+        venmoApi = MockkVenmoApiBuilder()
             .createPaymentContextSuccess("venmo-payment-context-id")
             .build()
 
@@ -576,7 +576,7 @@ class VenmoClientUnitTest {
 
         every { merchantRepository.authorization } returns clientToken
 
-        venmoApi = MockVenmoApiBuilder()
+        venmoApi = MockkVenmoApiBuilder()
             .createPaymentContextSuccess("venmo-payment-context-id")
             .build()
 
@@ -610,7 +610,7 @@ class VenmoClientUnitTest {
 
         every { merchantRepository.authorization } returns clientToken
 
-        venmoApi = MockVenmoApiBuilder()
+        venmoApi = MockkVenmoApiBuilder()
             .createPaymentContextSuccess("venmo-payment-context-id")
             .build()
 
@@ -644,7 +644,7 @@ class VenmoClientUnitTest {
             .sendGraphQLPOSTErrorResponse(graphQLError)
             .build()
 
-        venmoApi = MockVenmoApiBuilder()
+        venmoApi = MockkVenmoApiBuilder()
             .createPaymentContextError(graphQLError)
             .build()
 
@@ -766,7 +766,7 @@ class VenmoClientUnitTest {
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
         every { merchantRepository.authorization } returns clientToken
 
-        venmoApi = MockVenmoApiBuilder()
+        venmoApi = MockkVenmoApiBuilder()
             .createNonceFromPaymentContextSuccess(VenmoAccountNonce.fromJSON(
                 JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE)))
             .build()
@@ -812,7 +812,7 @@ class VenmoClientUnitTest {
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
         every { merchantRepository.authorization } returns clientToken
 
-        venmoApi = MockVenmoApiBuilder()
+        venmoApi = MockkVenmoApiBuilder()
             .createNonceFromPaymentContextError(graphQLError)
             .build()
 
@@ -860,7 +860,7 @@ class VenmoClientUnitTest {
         var nonce = mockk<VenmoAccountNonce>()
         every { nonce.string } returns "some-nonce"
 
-        venmoApi = MockVenmoApiBuilder()
+        venmoApi = MockkVenmoApiBuilder()
             .createNonceFromPaymentContextSuccess(nonce)
             .build()
 
@@ -915,7 +915,7 @@ class VenmoClientUnitTest {
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
         every { merchantRepository.authorization } returns clientToken
 
-        var venmoApi = MockVenmoApiBuilder()
+        var venmoApi = MockkVenmoApiBuilder()
             .createNonceFromPaymentContextSuccess(VenmoAccountNonce.fromJSON(
                 JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE)))
             .build()
@@ -971,7 +971,7 @@ class VenmoClientUnitTest {
         every { merchantRepository.authorization } returns clientToken
 
         var venmoAccountNonce = mockk<VenmoAccountNonce>()
-        venmoApi = MockVenmoApiBuilder()
+        venmoApi = MockkVenmoApiBuilder()
             .vaultVenmoAccountNonceSuccess(venmoAccountNonce)
             .build()
 
@@ -1016,7 +1016,7 @@ class VenmoClientUnitTest {
         var venmoAccountNonce = VenmoAccountNonce.fromJSON(
             JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE))
 
-        venmoApi = MockVenmoApiBuilder()
+        venmoApi = MockkVenmoApiBuilder()
             .createNonceFromPaymentContextSuccess(venmoAccountNonce)
             .vaultVenmoAccountNonceSuccess(venmoAccountNonce)
             .build()
@@ -1058,7 +1058,7 @@ class VenmoClientUnitTest {
         every { merchantRepository.authorization } returns clientToken
 
         var error = Exception("error")
-        venmoApi = MockVenmoApiBuilder()
+        venmoApi = MockkVenmoApiBuilder()
             .vaultVenmoAccountNonceError(error)
             .build()
 
@@ -1107,7 +1107,7 @@ class VenmoClientUnitTest {
             JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE))
         var error = Exception("error")
 
-        venmoApi = MockVenmoApiBuilder()
+        venmoApi = MockkVenmoApiBuilder()
             .createNonceFromPaymentContextSuccess(venmoAccountNonce)
             .vaultVenmoAccountNonceError(error)
             .build()

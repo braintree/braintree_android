@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 
 import org.mockito.stubbing.Answer;
 
+@Deprecated
 public class MockVenmoApiBuilder {
 
     private String venmoPaymentContextId;
