@@ -12,13 +12,14 @@ import io.mockk.mockk
 class MockkBraintreeClientBuilder {
 
     private var sendGraphQLPostSuccess: String? = null
-    private var sendGraphQLPOSTError: ErrorWithResponse? = null
+    private var sendGraphQLPOSTError: Exception? = null
 
     private var configurationSuccess: Configuration? = null
     private var configurationException: Exception? = null
     private var authorizationSuccess: Authorization? = null
 
     private var launchesBrowserSwitchAsNewTask: Boolean = false
+    private var returnUrlScheme: String = ""
 
     fun configurationSuccess(configurationSuccess: Configuration): MockkBraintreeClientBuilder {
         this.configurationSuccess = configurationSuccess
@@ -40,6 +41,11 @@ class MockkBraintreeClientBuilder {
         return this
     }
 
+    fun returnUrlScheme(url: String): MockkBraintreeClientBuilder {
+        this.returnUrlScheme = url
+        return this
+    }
+
     fun build(): BraintreeClient {
         val braintreeClient = mockk<BraintreeClient>(relaxed = true)
 
@@ -56,6 +62,8 @@ class MockkBraintreeClientBuilder {
                 ?: sendGraphQLPOSTError?.let { callback.onResult(null, it) }
         }
 
+        every { braintreeClient.getReturnUrlScheme() } returns returnUrlScheme
+
         return braintreeClient
     }
 
@@ -64,7 +72,7 @@ class MockkBraintreeClientBuilder {
         return this
     }
 
-    fun sendGraphQLPOSTErrorResponse(sendGraphQLPOSTError: ErrorWithResponse?): MockkBraintreeClientBuilder {
+    fun sendGraphQLPOSTErrorResponse(sendGraphQLPOSTError: Exception?): MockkBraintreeClientBuilder {
         this.sendGraphQLPOSTError = sendGraphQLPOSTError
         return this
     }
