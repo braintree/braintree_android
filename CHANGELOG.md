@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* ShopperInsights (BETA)
+  * Add `PageType.PAYMENT_METHOD_SELECTION` and `PageType.PAYMENT_METHOD_ADDITION`
+
 ## 5.9.0 (2025-04-09)
 
 * All Modules
