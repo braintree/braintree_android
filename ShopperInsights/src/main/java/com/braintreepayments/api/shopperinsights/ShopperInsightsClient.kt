@@ -24,6 +24,7 @@ import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RE
  * Note: **This feature is in beta. It's public API may change in future releases.**
  */
 @ExperimentalBetaApi
+@Deprecated("Use ShopperInsightsClientV2 instead")
 class ShopperInsightsClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
