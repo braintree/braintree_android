@@ -62,27 +62,19 @@ class VenmoClientUnitTest {
     private val SUCCESS_URL: Uri =
         Uri.parse("sample-scheme://x-callback-url/vzero/auth/venmo/success?resource_id=a-resource-id")
     private val SUCCESS_URL_WITHOUT_RESOURCE_ID: Uri =
-        Uri.parse("sample-scheme://x-callback-url/vzero/auth/venmo/success?username=venmojoe&payment_method_nonce=fakenonce")
+        Uri.parse(
+            "sample-scheme://x-callback-url/vzero/auth/venmo/success?username=venmojoe&payment_method_nonce=fakenonce"
+        )
     private val CANCEL_URL: Uri = Uri.parse("sample-scheme://x-callback-url/vzero/auth/venmo/cancel")
     private val appSwitchUrl: Uri = Uri.parse("https://example.com")
 
     private val expectedAnalyticsParams: AnalyticsEventParams  = AnalyticsEventParams(
-        null,
-        false,
-        null,
-        null,
-        null,
-        null,
+        null, false, null, null, null, null,
         appSwitchUrl.toString()
     )
 
     private val expectedVaultAnalyticsParams: AnalyticsEventParams  = AnalyticsEventParams(
-        null,
-        true,
-        null,
-        null,
-        null,
-        null,
+        null, true, null, null, null, null,
         appSwitchUrl.toString()
     )
 
@@ -312,7 +304,8 @@ class VenmoClientUnitTest {
         var authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify{ venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
         assertTrue { authRequestSlot.captured is VenmoPaymentAuthRequest.Failure }
-        assertEquals("Configuration fetching error",  (authRequestSlot.captured as VenmoPaymentAuthRequest.Failure).error.message)
+        assertEquals("Configuration fetching error",
+            (authRequestSlot.captured as VenmoPaymentAuthRequest.Failure).error.message)
 
         var analyticsSlot = slot<AnalyticsEventParams>()
         verify {
