@@ -23,7 +23,7 @@ For an integration offering card payments, add the following dependency in your 
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:card:5.9.0'
+    implementation 'com.braintreepayments.api:card:5.9.0'
 }
 ```
 
@@ -31,7 +31,7 @@ To preview the latest work in progress builds, add the following SNAPSHOT depend
 
 ```groovy
 dependencies {
-  implementation 'com.braintreepayments.api:card:5.0.0-beta2-SNAPSHOT'
+    implementation 'com.braintreepayments.api:card:5.0.0-beta2-SNAPSHOT'
 }
 ```
 
@@ -65,12 +65,12 @@ For more details on how to add and managed build dependencies, see the [**Androi
 
 This SDK abides by our Client SDK Deprecation Policy. For more information on the potential statuses of an SDK check our [developer docs](https://developer.paypal.com/braintree/docs/guides/client-sdk/deprecation-policy).
 
-| Major version number | Status | Released | Deprecated | Unsupported |
-|----------------------| -- | -------- | ---------- | ----------- |
-| 5.x.x                | Active | October 2024 | TBA | TBA |
-| 4.x.x                | Inactive | June 2021 | October 2025 | October 2026 |
-| 3.x.x                | Unsupported | February 2019 | June 2022 | June 2023 |
-| 2.x.x                | Unsupported | November 2015 | March 2020 | March 2021 |
+| Major version number | Status      | Released      | Deprecated   | Unsupported  |
+|----------------------|-------------|---------------|--------------|--------------|
+| 5.x.x                | Active      | October 2024  | TBA          | TBA          |
+| 4.x.x                | Inactive    | June 2021     | October 2025 | October 2026 |
+| 3.x.x                | Unsupported | February 2019 | June 2022    | June 2023    |
+| 2.x.x                | Unsupported | November 2015 | March 2020   | March 2021   |
 
 Versions 3.x.x and below are unsupported.
 
