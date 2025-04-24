@@ -13,7 +13,7 @@ internal class MockkVenmoApiBuilder {
     private var vaultVenmoAccountNonceError: Exception? = null
 
     fun createPaymentContextSuccess(venmoPaymentContextId: String): MockkVenmoApiBuilder {
-        this.venmoPaymentContextId = venmoPaymentContextId;
+        this.venmoPaymentContextId = venmoPaymentContextId
         return this
     }
 
@@ -35,7 +35,7 @@ internal class MockkVenmoApiBuilder {
     }
 
     fun vaultVenmoAccountNonceSuccess(
-        vaultVenmoAccountNonceSuccess: VenmoAccountNonce ): MockkVenmoApiBuilder {
+        vaultVenmoAccountNonceSuccess: VenmoAccountNonce): MockkVenmoApiBuilder {
         this.vaultVenmoAccountNonceSuccess = vaultVenmoAccountNonceSuccess
         return this
     }
@@ -46,7 +46,7 @@ internal class MockkVenmoApiBuilder {
     }
 
     fun build(): VenmoApi {
-        val venmoApi= mockk<VenmoApi>(relaxed = true)
+        val venmoApi = mockk<VenmoApi>(relaxed = true)
 
         every { venmoApi.createPaymentContext(
             any<VenmoRequest>(),

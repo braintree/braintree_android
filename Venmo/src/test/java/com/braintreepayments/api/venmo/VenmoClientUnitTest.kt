@@ -52,7 +52,7 @@ class VenmoClientUnitTest {
     private lateinit var paymentAuthResult: VenmoPaymentAuthResult.Success
 
     private var merchantRepository = mockk<MerchantRepository>(relaxed = true)
-    private var venmoRepository= mockk<VenmoRepository>(relaxed = true)
+    private var venmoRepository = mockk<VenmoRepository>(relaxed = true)
     private var getReturnLinkUseCase = mockk<GetReturnLinkUseCase>(relaxed = true)
 
     private val venmoEnabledConfiguration: Configuration =
@@ -68,24 +68,23 @@ class VenmoClientUnitTest {
     private val CANCEL_URL: Uri = Uri.parse("sample-scheme://x-callback-url/vzero/auth/venmo/cancel")
     private val appSwitchUrl: Uri = Uri.parse("https://example.com")
 
-    private val expectedAnalyticsParams: AnalyticsEventParams  = AnalyticsEventParams(
+    private val expectedAnalyticsParams: AnalyticsEventParams = AnalyticsEventParams(
         null, false, null, null, null, null,
         appSwitchUrl.toString()
     )
 
-    private val expectedVaultAnalyticsParams: AnalyticsEventParams  = AnalyticsEventParams(
+    private val expectedVaultAnalyticsParams: AnalyticsEventParams = AnalyticsEventParams(
         null, true, null, null, null, null,
         appSwitchUrl.toString()
     )
 
     @Before
-    fun beforeEach(){
+    fun beforeEach() {
         apiClient = mockk(relaxed = true)
         venmoApi = mockk(relaxed = true)
         analyticsParamRepository = mockk(relaxed = true)
         getReturnLinkTypeUseCase = mockk(relaxed = true)
         context = ApplicationProvider.getApplicationContext()
-
 
         venmoTokenizeCallback = mockk(relaxed = true)
         venmoPaymentAuthRequestCallback = mockk(relaxed = true)
@@ -302,7 +301,7 @@ class VenmoClientUnitTest {
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
 
         var authRequestSlot = slot<VenmoPaymentAuthRequest>()
-        verify{ venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
+        verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
         assertTrue { authRequestSlot.captured is VenmoPaymentAuthRequest.Failure }
         assertEquals("Configuration fetching error",
             (authRequestSlot.captured as VenmoPaymentAuthRequest.Failure).error.message)
@@ -346,7 +345,7 @@ class VenmoClientUnitTest {
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
 
         var authRequestSlot = slot<VenmoPaymentAuthRequest>()
-        verify{ venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
+        verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
         assertTrue(authRequestSlot.captured is VenmoPaymentAuthRequest.Failure)
         assertEquals(
             "Venmo is not enabled",
@@ -398,7 +397,7 @@ class VenmoClientUnitTest {
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
 
         var authRequestSlot = slot<VenmoPaymentAuthRequest>()
-        verify{ venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
+        verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
         var paymentAuthRequest = authRequestSlot.captured
         assertTrue { paymentAuthRequest is VenmoPaymentAuthRequest.ReadyToLaunch }
         var params = (paymentAuthRequest as VenmoPaymentAuthRequest.ReadyToLaunch).requestParams
@@ -436,14 +435,14 @@ class VenmoClientUnitTest {
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
 
         var authRequestSlot = slot<VenmoPaymentAuthRequest>()
-        verify{ venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
+        verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
         var paymentAuthRequest = authRequestSlot.captured
         assertTrue { paymentAuthRequest is VenmoPaymentAuthRequest.ReadyToLaunch }
         var params = (paymentAuthRequest as VenmoPaymentAuthRequest.ReadyToLaunch).requestParams
         var url = params.browserSwitchOptions.url
-        assertEquals("https://example.com/success", url!!.getQueryParameter("x-success"));
-        assertEquals("https://example.com/error", url.getQueryParameter("x-error"));
-        assertEquals("https://example.com/cancel", url.getQueryParameter("x-cancel"));
+        assertEquals("https://example.com/success", url!!.getQueryParameter("x-success"))
+        assertEquals("https://example.com/error", url.getQueryParameter("x-error"))
+        assertEquals("https://example.com/cancel", url.getQueryParameter("x-cancel"))
     }
 
     @Test
@@ -481,7 +480,7 @@ class VenmoClientUnitTest {
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
 
         var authRequestSlot = slot<VenmoPaymentAuthRequest>()
-        verify{ venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
+        verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
         assertTrue(authRequestSlot.captured is VenmoPaymentAuthRequest.Failure)
         assertEquals(exception, (authRequestSlot.captured as VenmoPaymentAuthRequest.Failure).error)
     }
@@ -518,7 +517,7 @@ class VenmoClientUnitTest {
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
 
         var authRequestSlot = slot<VenmoPaymentAuthRequest>()
-        verify{ venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
+        verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
         var paymentAuthRequest = authRequestSlot.captured
         assertTrue { paymentAuthRequest is VenmoPaymentAuthRequest.ReadyToLaunch }
         var params = (paymentAuthRequest as VenmoPaymentAuthRequest.ReadyToLaunch).requestParams
@@ -631,7 +630,7 @@ class VenmoClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_whenVenmoApiError_forwardsErrorToListener_andSendsAnalytics() {
-        var graphQLError =  BraintreeException("GraphQL error")
+        var graphQLError = BraintreeException("GraphQL error")
         var braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .sendGraphQLPOSTErrorResponse(graphQLError)
@@ -660,7 +659,7 @@ class VenmoClientUnitTest {
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
 
         var authRequestSlot = slot<VenmoPaymentAuthRequest>()
-        verify{ venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
+        verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
         assertTrue(authRequestSlot.captured is VenmoPaymentAuthRequest.Failure)
         assertEquals(graphQLError, (authRequestSlot.captured as VenmoPaymentAuthRequest.Failure).error)
 
@@ -796,7 +795,7 @@ class VenmoClientUnitTest {
 
     @Test
     fun tokenize_onGraphQLPostFailure_forwardsExceptionToListener_andSendsAnalytics() {
-        var graphQLError =  BraintreeException("GraphQL error")
+        var graphQLError = BraintreeException("GraphQL error")
         var braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .sendGraphQLPOSTErrorResponse(graphQLError)
@@ -873,7 +872,7 @@ class VenmoClientUnitTest {
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback)
 
         var callbackSlot = slot<VenmoInternalCallback>()
-        verify { venmoApi.vaultVenmoAccountNonce( "some-nonce", capture(callbackSlot)) }
+        verify { venmoApi.vaultVenmoAccountNonce("some-nonce", capture(callbackSlot)) }
     }
 
     @Test
