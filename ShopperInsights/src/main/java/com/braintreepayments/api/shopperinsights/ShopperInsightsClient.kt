@@ -181,11 +181,11 @@ class ShopperInsightsClient internal constructor(
         presentmentDetails: PresentmentDetails
     ) {
         val params = AnalyticsEventParams(
-            experiment = presentmentDetails.type?.formattedExperiment(),
+            experiment = presentmentDetails.type.formattedExperiment(),
             shopperSessionId = shopperSessionId,
-            buttonType = buttonType.getStringRepresentation(),
-            buttonOrder = presentmentDetails.buttonOrder.getStringRepresentation(),
-            pageType = presentmentDetails.pageType.getStringRepresentation()
+            buttonType = buttonType.stringValue,
+            buttonOrder = presentmentDetails.buttonOrder.stringValue,
+            pageType = presentmentDetails.pageType.stringValue
         )
 
         braintreeClient.sendAnalyticsEvent(BUTTON_PRESENTED, params)
@@ -201,7 +201,7 @@ class ShopperInsightsClient internal constructor(
     ) {
         val params = AnalyticsEventParams(
             shopperSessionId = shopperSessionId,
-            buttonType = buttonType.getStringRepresentation(),
+            buttonType = buttonType.stringValue,
         )
 
         braintreeClient.sendAnalyticsEvent(BUTTON_SELECTED, params)
@@ -221,9 +221,10 @@ class ShopperInsightsClient internal constructor(
         return deviceInspector.isVenmoInstalled(context)
     }
 
-    private val analyticsParams: AnalyticsEventParams get() {
-        return AnalyticsEventParams(shopperSessionId = shopperSessionId)
-    }
+    private val analyticsParams: AnalyticsEventParams
+        get() {
+            return AnalyticsEventParams(shopperSessionId = shopperSessionId)
+        }
 
     companion object {
         // Default values

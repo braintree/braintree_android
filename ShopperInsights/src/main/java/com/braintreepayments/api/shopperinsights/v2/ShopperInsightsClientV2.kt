@@ -2,8 +2,14 @@ package com.braintreepayments.api.shopperinsights.v2
 
 import android.content.Context
 import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.shopperinsights.ButtonType
+import com.braintreepayments.api.shopperinsights.PresentmentDetails
+import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_PRESENTED
+import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_SELECTED
 
 /**
  * Use [ShopperInsightsClientV2] to optimize your checkout experience by prioritizing the customer’s preferred payment
@@ -20,7 +26,8 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 @ExperimentalBetaApi
 class ShopperInsightsClientV2 internal constructor(
     private val braintreeClient: BraintreeClient,
-    lazyAnalyticsClient: Lazy<AnalyticsClient>
+    private val deviceInspector: DeviceInspector = DeviceInspector(),
+    lazyAnalyticsClient: Lazy<AnalyticsClient> = AnalyticsClient.lazyInstance
 ) {
 
     /**
@@ -31,9 +38,62 @@ class ShopperInsightsClientV2 internal constructor(
         context: Context,
         authorization: String
     ) : this(
-        BraintreeClient(context, authorization),
-        lazyAnalyticsClient = AnalyticsClient.lazyInstance
+        BraintreeClient(context, authorization)
     )
 
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
+
+    /**
+     * Call this method when the PayPal, Venmo or Other button has been successfully displayed to the buyer.
+     * This method sends analytics to help improve the Shopper Insights feature experience.
+     * @param buttonType Type of button presented - PayPal, Venmo, or Other.
+     * @param presentmentDetails Detailed information, including button order, experiment type, and page type about the
+     * payment button that is sent to analytics to help improve the Shopper Insights feature experience.
+     * @param sessionId The shopper session ID
+     */
+    fun sendPresentedEvent(
+        buttonType: ButtonType,
+        presentmentDetails: PresentmentDetails,
+        sessionId: String,
+    ) {
+        val params = AnalyticsEventParams(
+            experiment = presentmentDetails.type.formattedExperiment(),
+            shopperSessionId = sessionId,
+            buttonType = buttonType.stringValue,
+            buttonOrder = presentmentDetails.buttonOrder.stringValue,
+            pageType = presentmentDetails.pageType.stringValue
+        )
+        analyticsClient.sendEvent(BUTTON_PRESENTED, params)
+    }
+
+    /**
+     * Call this method when the PayPal, Venmo or Other button has been selected/tapped by the buyer.
+     * This method sends analytics to help improve the Shopper Insights feature experience.
+     * @param buttonType Type of button presented - PayPal, Venmo, or Other.
+     * @param sessionId The shopper session ID
+     */
+    fun sendSelectedEvent(
+        buttonType: ButtonType,
+        sessionId: String,
+    ) {
+        val params = AnalyticsEventParams(
+            shopperSessionId = sessionId,
+            buttonType = buttonType.stringValue,
+        )
+        analyticsClient.sendEvent(BUTTON_SELECTED, params)
+    }
+
+    /**
+     * Indicates whether the PayPal App is installed.
+     */
+    fun isPayPalAppInstalled(context: Context): Boolean {
+        return deviceInspector.isPayPalInstalled(context)
+    }
+
+    /**
+     * Indicates whether the Venmo App is installed.
+     */
+    fun isVenmoAppInstalled(context: Context): Boolean {
+        return deviceInspector.isVenmoInstalled(context)
+    }
 }

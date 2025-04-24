@@ -67,9 +67,5 @@ enum class PageType(internal val stringValue: String) {
     /**
      * Some other page
      */
-    OTHER("other");
-
-    internal fun getStringRepresentation(): String {
-        return stringValue
-    }
+    OTHER("other")
 }

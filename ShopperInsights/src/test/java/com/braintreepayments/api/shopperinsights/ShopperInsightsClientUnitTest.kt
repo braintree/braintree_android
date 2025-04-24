@@ -446,11 +446,11 @@ class ShopperInsightsClientUnitTest {
         )
 
         val params = AnalyticsEventParams(
-            experiment = presentmentDetails?.type?.formattedExperiment(),
+            experiment = presentmentDetails.type.formattedExperiment(),
             shopperSessionId = shopperSessionId,
-            buttonType = ButtonType.PAYPAL.getStringRepresentation(),
-            buttonOrder = presentmentDetails?.buttonOrder?.getStringRepresentation(),
-            pageType = presentmentDetails?.pageType?.getStringRepresentation()
+            buttonType = ButtonType.PAYPAL.stringValue,
+            buttonOrder = presentmentDetails.buttonOrder.stringValue,
+            pageType = presentmentDetails.pageType.stringValue
         )
         sut.sendPresentedEvent(
             ButtonType.PAYPAL,
@@ -474,11 +474,11 @@ class ShopperInsightsClientUnitTest {
         )
 
         val params = AnalyticsEventParams(
-            experiment = presentmentDetails?.type?.formattedExperiment(),
+            experiment = presentmentDetails.type.formattedExperiment(),
             shopperSessionId = shopperSessionId,
-            buttonType = ButtonType.VENMO.getStringRepresentation(),
-            buttonOrder = presentmentDetails?.buttonOrder?.getStringRepresentation(),
-            pageType = presentmentDetails?.pageType?.getStringRepresentation()
+            buttonType = ButtonType.VENMO.stringValue,
+            buttonOrder = presentmentDetails.buttonOrder.stringValue,
+            pageType = presentmentDetails.pageType.stringValue
         )
         sut.sendPresentedEvent(
             ButtonType.VENMO,
@@ -497,7 +497,7 @@ class ShopperInsightsClientUnitTest {
     fun `test paypal selected analytics event`() {
         val params = AnalyticsEventParams(
             shopperSessionId = shopperSessionId,
-            buttonType = ButtonType.PAYPAL.getStringRepresentation()
+            buttonType = ButtonType.PAYPAL.stringValue
         )
         sut.sendSelectedEvent(
             ButtonType.PAYPAL
@@ -510,7 +510,7 @@ class ShopperInsightsClientUnitTest {
     fun `test venmo selected analytics event`() {
         val params = AnalyticsEventParams(
             shopperSessionId = shopperSessionId,
-            buttonType = ButtonType.VENMO.getStringRepresentation(),
+            buttonType = ButtonType.VENMO.stringValue,
         )
         sut.sendSelectedEvent(
             ButtonType.VENMO,
