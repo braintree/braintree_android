@@ -1,5 +1,8 @@
 # Braintree Android SDK Release Notes
 
+## unreleased 
+* PayPal
+  * Add `amountBreakdown` and `unitAmount` properties to `PayPalRecurringBillingDetails`
 ## 5.9.0 (2025-04-09)
 
 * All Modules
