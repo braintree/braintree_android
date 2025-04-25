@@ -7,6 +7,9 @@ import static org.mockito.Mockito.mock;
 
 import org.mockito.stubbing.Answer;
 
+/**
+ * Replaced by {@link MockkVenmoApiBuilder} as tests are being converted to kotlin
+ */
 @Deprecated
 public class MockVenmoApiBuilder {
 

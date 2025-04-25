@@ -51,9 +51,9 @@ class VenmoClientUnitTest {
     private lateinit var venmoPaymentAuthRequestCallback: VenmoPaymentAuthRequestCallback
     private lateinit var paymentAuthResult: VenmoPaymentAuthResult.Success
 
-    private var merchantRepository = mockk<MerchantRepository>(relaxed = true)
-    private var venmoRepository = mockk<VenmoRepository>(relaxed = true)
-    private var getReturnLinkUseCase = mockk<GetReturnLinkUseCase>(relaxed = true)
+    private val merchantRepository = mockk<MerchantRepository>(relaxed = true)
+    private val venmoRepository = mockk<VenmoRepository>(relaxed = true)
+    private val getReturnLinkUseCase = mockk<GetReturnLinkUseCase>(relaxed = true)
 
     private val venmoEnabledConfiguration: Configuration =
         Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO)
@@ -69,13 +69,11 @@ class VenmoClientUnitTest {
     private val appSwitchUrl: Uri = Uri.parse("https://example.com")
 
     private val expectedAnalyticsParams: AnalyticsEventParams = AnalyticsEventParams(
-        null, false, null, null, null, null,
-        appSwitchUrl.toString()
+        appSwitchUrl = appSwitchUrl.toString()
     )
 
     private val expectedVaultAnalyticsParams: AnalyticsEventParams = AnalyticsEventParams(
-        null, true, null, null, null, null,
-        appSwitchUrl.toString()
+        isVaultRequest = true, appSwitchUrl = appSwitchUrl.toString()
     )
 
     @Before
@@ -94,7 +92,6 @@ class VenmoClientUnitTest {
         tokenizationKey = Authorization.fromString(Fixtures.TOKENIZATION_KEY)
         browserSwitchResult = mockk(relaxed = true)
         paymentAuthResult = VenmoPaymentAuthResult.Success(browserSwitchResult)
-        // Why are static looking values in the before?
 
         every { analyticsParamRepository.sessionId } returns "session-id"
         every { merchantRepository.integrationType } returns IntegrationType.CUSTOM
@@ -107,7 +104,7 @@ class VenmoClientUnitTest {
     @Test
     fun initialization_sets_app_link_in_analyticsParamRepository() {
         every { getReturnLinkTypeUseCase.invoke() } returns GetReturnLinkTypeUseCase.ReturnLinkTypeResult.APP_LINK
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
@@ -129,7 +126,7 @@ class VenmoClientUnitTest {
     @Test
     fun initialization_sets_deep_link_in_analyticsParamRepository() {
         every { getReturnLinkTypeUseCase.invoke() } returns GetReturnLinkTypeUseCase.ReturnLinkTypeResult.DEEP_LINK
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
@@ -150,10 +147,10 @@ class VenmoClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_whenCreatePaymentContextFails_collectAddressWithEcdDisabled() {
-        var errorDesc = "Cannot collect customer data when ECD is disabled. Enable this feature " +
+        val errorDesc = "Cannot collect customer data when ECD is disabled. Enable this feature " +
                 "in the Control Panel to collect this data."
 
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
@@ -163,10 +160,10 @@ class VenmoClientUnitTest {
             .createPaymentContextSuccess("venmo-payment-context-id")
             .build()
 
-        var authRequestSlot = slot<VenmoPaymentAuthRequest>()
-        var analyticsSlot = slot<AnalyticsEventParams>()
+        val authRequestSlot = slot<VenmoPaymentAuthRequest>()
+        val analyticsSlot = slot<AnalyticsEventParams>()
 
-        var request = VenmoRequest(
+        val request = VenmoRequest(
             paymentMethodUsage = VenmoPaymentMethodUsage.SINGLE_USE,
             profileId = "sample-venmo-merchant",
             collectCustomerBillingAddress = true
@@ -211,7 +208,7 @@ class VenmoClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_withDeepLink_whenCreatePaymentContextSucceeds_createsVenmoAuthChallenge() {
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .returnUrlScheme("com.example")
             .build()
@@ -223,7 +220,7 @@ class VenmoClientUnitTest {
             .createPaymentContextSuccess("venmo-payment-context-id")
             .build()
 
-        var request = VenmoRequest(
+        val request = VenmoRequest(
             paymentMethodUsage = VenmoPaymentMethodUsage.SINGLE_USE,
             profileId = "sample-venmo-merchant",
             shouldVault = false
@@ -242,20 +239,20 @@ class VenmoClientUnitTest {
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
 
-        var authRequestSlot = slot<VenmoPaymentAuthRequest>()
+        val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verifyOrder {
             braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_STARTED, AnalyticsEventParams(), true)
             venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot))
         }
 
-        var paymentAuthRequest = authRequestSlot.captured
+        val paymentAuthRequest = authRequestSlot.captured
         assertTrue { paymentAuthRequest is VenmoPaymentAuthRequest.ReadyToLaunch }
 
-        var params = (paymentAuthRequest as VenmoPaymentAuthRequest.ReadyToLaunch).requestParams
+        val params = (paymentAuthRequest as VenmoPaymentAuthRequest.ReadyToLaunch).requestParams
         assertEquals(BraintreeRequestCodes.VENMO.code, params.browserSwitchOptions.requestCode)
         assertEquals("com.example", params.browserSwitchOptions.returnUrlScheme)
 
-        var url = params.browserSwitchOptions.url
+        val url = params.browserSwitchOptions.url
         assertEquals("com.example://x-callback-url/vzero/auth/venmo/success", url!!.getQueryParameter("x-success"))
         assertEquals("com.example://x-callback-url/vzero/auth/venmo/error", url.getQueryParameter("x-error"))
         assertEquals("com.example://x-callback-url/vzero/auth/venmo/cancel", url.getQueryParameter("x-cancel"))
@@ -263,9 +260,9 @@ class VenmoClientUnitTest {
         assertEquals("venmo-payment-context-id", url.getQueryParameter("resource_id"))
         assertEquals("MOBILE_APP", url.getQueryParameter("customerClient"))
 
-        var metadata = url.getQueryParameter("braintree_sdk_data")
-        var metadataString = String(Base64.decode(metadata, Base64.DEFAULT))
-        var expectedMetadata = String.format(
+        val metadata = url.getQueryParameter("braintree_sdk_data")
+        val metadataString = String(Base64.decode(metadata, Base64.DEFAULT))
+        val expectedMetadata = String.format(
             "{\"_meta\":" +
                     "{\"platform\":\"android\"," +
                     "\"sessionId\":\"session-id\"," +
@@ -277,11 +274,11 @@ class VenmoClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_whenConfigurationException_forwardsExceptionToListener() {
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(Exception("Configuration fetching error"))
             .build()
 
-        var request = VenmoRequest(
+        val request = VenmoRequest(
             paymentMethodUsage = VenmoPaymentMethodUsage.SINGLE_USE,
             profileId = null,
             shouldVault = false
@@ -300,13 +297,13 @@ class VenmoClientUnitTest {
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
 
-        var authRequestSlot = slot<VenmoPaymentAuthRequest>()
+        val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
         assertTrue { authRequestSlot.captured is VenmoPaymentAuthRequest.Failure }
         assertEquals("Configuration fetching error",
             (authRequestSlot.captured as VenmoPaymentAuthRequest.Failure).error.message)
 
-        var analyticsSlot = slot<AnalyticsEventParams>()
+        val analyticsSlot = slot<AnalyticsEventParams>()
         verify {
             braintreeClient.sendAnalyticsEvent(
                 VenmoAnalytics.TOKENIZE_FAILED,
@@ -321,11 +318,11 @@ class VenmoClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_whenVenmoNotEnabled_forwardsExceptionToListener() {
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoDisabledConfiguration)
             .build()
 
-        var request = VenmoRequest(
+        val request = VenmoRequest(
             paymentMethodUsage = VenmoPaymentMethodUsage.SINGLE_USE,
             profileId = null,
             shouldVault = false
@@ -344,7 +341,7 @@ class VenmoClientUnitTest {
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
 
-        var authRequestSlot = slot<VenmoPaymentAuthRequest>()
+        val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
         assertTrue(authRequestSlot.captured is VenmoPaymentAuthRequest.Failure)
         assertEquals(
@@ -352,7 +349,7 @@ class VenmoClientUnitTest {
             (authRequestSlot.captured as VenmoPaymentAuthRequest.Failure).error.message
         )
 
-        var analyticsSlot = slot<AnalyticsEventParams>()
+        val analyticsSlot = slot<AnalyticsEventParams>()
         verify {
             braintreeClient.sendAnalyticsEvent(
                 VenmoAnalytics.TOKENIZE_FAILED,
@@ -367,7 +364,7 @@ class VenmoClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_whenProfileIdIsNull_appSwitchesWithMerchantId() {
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
@@ -377,7 +374,7 @@ class VenmoClientUnitTest {
             .createPaymentContextSuccess("venmo-payment-context-id")
             .build()
 
-        var request = VenmoRequest(
+        val request = VenmoRequest(
             paymentMethodUsage = VenmoPaymentMethodUsage.SINGLE_USE,
             profileId = null,
             shouldVault = false
@@ -396,18 +393,18 @@ class VenmoClientUnitTest {
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
 
-        var authRequestSlot = slot<VenmoPaymentAuthRequest>()
+        val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
-        var paymentAuthRequest = authRequestSlot.captured
+        val paymentAuthRequest = authRequestSlot.captured
         assertTrue { paymentAuthRequest is VenmoPaymentAuthRequest.ReadyToLaunch }
-        var params = (paymentAuthRequest as VenmoPaymentAuthRequest.ReadyToLaunch).requestParams
-        var url = params.browserSwitchOptions.url
+        val params = (paymentAuthRequest as VenmoPaymentAuthRequest.ReadyToLaunch).requestParams
+        val url = params.browserSwitchOptions.url
         assertEquals("merchant-id", url!!.getQueryParameter("braintree_merchant_id"))
     }
 
     @Test
     fun createPaymentAuthRequest_whenAppLinkUriSet_appSwitchesWithAppLink() {
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
@@ -415,7 +412,7 @@ class VenmoClientUnitTest {
             .createPaymentContextSuccess("venmo-payment-context-id")
             .build()
 
-        var request = VenmoRequest(
+        val request = VenmoRequest(
             paymentMethodUsage = VenmoPaymentMethodUsage.SINGLE_USE,
             profileId = null,
             shouldVault = false
@@ -434,12 +431,12 @@ class VenmoClientUnitTest {
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
 
-        var authRequestSlot = slot<VenmoPaymentAuthRequest>()
+        val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
-        var paymentAuthRequest = authRequestSlot.captured
+        val paymentAuthRequest = authRequestSlot.captured
         assertTrue { paymentAuthRequest is VenmoPaymentAuthRequest.ReadyToLaunch }
-        var params = (paymentAuthRequest as VenmoPaymentAuthRequest.ReadyToLaunch).requestParams
-        var url = params.browserSwitchOptions.url
+        val params = (paymentAuthRequest as VenmoPaymentAuthRequest.ReadyToLaunch).requestParams
+        val url = params.browserSwitchOptions.url
         assertEquals("https://example.com/success", url!!.getQueryParameter("x-success"))
         assertEquals("https://example.com/error", url.getQueryParameter("x-error"))
         assertEquals("https://example.com/cancel", url.getQueryParameter("x-cancel"))
@@ -447,8 +444,8 @@ class VenmoClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_throws_error_when_getReturnLinkUseCase_returnsFailure() {
-        var exception = BraintreeException()
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val exception = BraintreeException()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
@@ -460,7 +457,7 @@ class VenmoClientUnitTest {
             .createPaymentContextSuccess("venmo-payment-context-id")
             .build()
 
-        var request = VenmoRequest(
+        val request = VenmoRequest(
             paymentMethodUsage = VenmoPaymentMethodUsage.SINGLE_USE,
             profileId = "second-pwv-profile-id",
             shouldVault = false
@@ -479,7 +476,7 @@ class VenmoClientUnitTest {
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
 
-        var authRequestSlot = slot<VenmoPaymentAuthRequest>()
+        val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
         assertTrue(authRequestSlot.captured is VenmoPaymentAuthRequest.Failure)
         assertEquals(exception, (authRequestSlot.captured as VenmoPaymentAuthRequest.Failure).error)
@@ -487,7 +484,7 @@ class VenmoClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_whenProfileIdIsSpecified_appSwitchesWithProfileIdAndAccessToken() {
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
@@ -497,7 +494,7 @@ class VenmoClientUnitTest {
             .createPaymentContextSuccess("venmo-payment-context-id")
             .build()
 
-        var request = VenmoRequest(
+        val request = VenmoRequest(
             paymentMethodUsage = VenmoPaymentMethodUsage.SINGLE_USE,
             profileId = "second-pwv-profile-id",
             shouldVault = false
@@ -516,23 +513,23 @@ class VenmoClientUnitTest {
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
 
-        var authRequestSlot = slot<VenmoPaymentAuthRequest>()
+        val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
-        var paymentAuthRequest = authRequestSlot.captured
+        val paymentAuthRequest = authRequestSlot.captured
         assertTrue { paymentAuthRequest is VenmoPaymentAuthRequest.ReadyToLaunch }
-        var params = (paymentAuthRequest as VenmoPaymentAuthRequest.ReadyToLaunch).requestParams
-        var url = params.browserSwitchOptions.url
+        val params = (paymentAuthRequest as VenmoPaymentAuthRequest.ReadyToLaunch).requestParams
+        val url = params.browserSwitchOptions.url
         assertEquals("second-pwv-profile-id", url!!.getQueryParameter("braintree_merchant_id"))
         assertEquals("venmo-payment-context-id", url.getQueryParameter("resource_id"))
     }
 
     @Test
     fun createPaymentAuthRequest_sendsAnalyticsEvent() {
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoDisabledConfiguration)
             .build()
 
-        var request = VenmoRequest(
+        val request = VenmoRequest(
             paymentMethodUsage = VenmoPaymentMethodUsage.SINGLE_USE,
             profileId = null,
             shouldVault = false
@@ -562,7 +559,7 @@ class VenmoClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_whenShouldVaultIsTrue_persistsVenmoVaultTrue() {
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
@@ -572,7 +569,7 @@ class VenmoClientUnitTest {
             .createPaymentContextSuccess("venmo-payment-context-id")
             .build()
 
-        var request = VenmoRequest(
+        val request = VenmoRequest(
             paymentMethodUsage = VenmoPaymentMethodUsage.SINGLE_USE,
             profileId = null,
             shouldVault = true
@@ -596,7 +593,7 @@ class VenmoClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_whenShouldVaultIsFalse_persistsVenmoVaultFalse() {
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
@@ -606,7 +603,7 @@ class VenmoClientUnitTest {
             .createPaymentContextSuccess("venmo-payment-context-id")
             .build()
 
-        var request = VenmoRequest(
+        val request = VenmoRequest(
             paymentMethodUsage = VenmoPaymentMethodUsage.SINGLE_USE,
             profileId = null,
             shouldVault = false
@@ -630,8 +627,8 @@ class VenmoClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_whenVenmoApiError_forwardsErrorToListener_andSendsAnalytics() {
-        var graphQLError = BraintreeException("GraphQL error")
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val graphQLError = BraintreeException("GraphQL error")
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .sendGraphQLPOSTErrorResponse(graphQLError)
             .build()
@@ -640,7 +637,7 @@ class VenmoClientUnitTest {
             .createPaymentContextError(graphQLError)
             .build()
 
-        var request = VenmoRequest(
+        val request = VenmoRequest(
             paymentMethodUsage = VenmoPaymentMethodUsage.SINGLE_USE,
             shouldVault = true
         )
@@ -658,12 +655,12 @@ class VenmoClientUnitTest {
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
 
-        var authRequestSlot = slot<VenmoPaymentAuthRequest>()
+        val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
         assertTrue(authRequestSlot.captured is VenmoPaymentAuthRequest.Failure)
         assertEquals(graphQLError, (authRequestSlot.captured as VenmoPaymentAuthRequest.Failure).error)
 
-        var analyticsSlot = slot<AnalyticsEventParams>()
+        val analyticsSlot = slot<AnalyticsEventParams>()
         verify {
             braintreeClient.sendAnalyticsEvent(
                 VenmoAnalytics.TOKENIZE_FAILED,
@@ -678,7 +675,7 @@ class VenmoClientUnitTest {
 
     @Test
     fun tokenize_withPaymentContextId_requestFromVenmoApi() {
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
@@ -716,7 +713,7 @@ class VenmoClientUnitTest {
 
     @Test
     fun tokenize_withPaymentAuthResult_whenUserCanceled_returnsCancelAndSendsAnalytics() {
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
@@ -736,7 +733,7 @@ class VenmoClientUnitTest {
         )
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback)
 
-        var resultSlot = slot<VenmoResult>()
+        val resultSlot = slot<VenmoResult>()
         verify { venmoTokenizeCallback.onVenmoResult(capture(resultSlot)) }
         assertTrue(resultSlot.captured is VenmoResult.Cancel)
         verify {
@@ -751,7 +748,7 @@ class VenmoClientUnitTest {
 
     @Test
     fun tokenize_onGraphQLPostSuccess_returnsNonceToListener_andSendsAnalytics() {
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
@@ -776,10 +773,10 @@ class VenmoClientUnitTest {
         )
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback)
 
-        var resultSlot = slot<VenmoResult>()
+        val resultSlot = slot<VenmoResult>()
         verify { venmoTokenizeCallback.onVenmoResult(capture(resultSlot)) }
         assertTrue(resultSlot.captured is VenmoResult.Success)
-        var nonce = (resultSlot.captured as VenmoResult.Success).nonce
+        val nonce = (resultSlot.captured as VenmoResult.Success).nonce
         assertEquals("fake-venmo-nonce", nonce.string)
         assertEquals("venmojoe", nonce.username)
 
@@ -795,8 +792,8 @@ class VenmoClientUnitTest {
 
     @Test
     fun tokenize_onGraphQLPostFailure_forwardsExceptionToListener_andSendsAnalytics() {
-        var graphQLError = BraintreeException("GraphQL error")
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val graphQLError = BraintreeException("GraphQL error")
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .sendGraphQLPOSTErrorResponse(graphQLError)
             .build()
@@ -821,12 +818,12 @@ class VenmoClientUnitTest {
         )
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback)
 
-        var resultSlot = slot<VenmoResult>()
+        val resultSlot = slot<VenmoResult>()
         verify { venmoTokenizeCallback.onVenmoResult(capture(resultSlot)) }
         assertTrue(resultSlot.captured is VenmoResult.Failure)
         assertEquals(graphQLError, (resultSlot.captured as VenmoResult.Failure).error)
 
-        var analyticsSlot = slot<AnalyticsEventParams>()
+        val analyticsSlot = slot<AnalyticsEventParams>()
         verify {
             braintreeClient.sendAnalyticsEvent(
                 VenmoAnalytics.TOKENIZE_FAILED,
@@ -842,14 +839,14 @@ class VenmoClientUnitTest {
 
     @Test
     fun tokenize_withPaymentContext_performsVaultRequestIfRequestPersisted() {
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
         every { merchantRepository.authorization } returns clientToken
 
-        var nonce = mockk<VenmoAccountNonce>()
+        val nonce = mockk<VenmoAccountNonce>()
         every { nonce.string } returns "some-nonce"
 
         venmoApi = MockkVenmoApiBuilder()
@@ -871,13 +868,13 @@ class VenmoClientUnitTest {
         )
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback)
 
-        var callbackSlot = slot<VenmoInternalCallback>()
+        val callbackSlot = slot<VenmoInternalCallback>()
         verify { venmoApi.vaultVenmoAccountNonce("some-nonce", capture(callbackSlot)) }
     }
 
     @Test
     fun tokenize_postsPaymentMethodNonceOnSuccess() {
-        var braintreeClient = MockkBraintreeClientBuilder().build()
+        val braintreeClient = MockkBraintreeClientBuilder().build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
         every { merchantRepository.authorization } returns clientToken
@@ -900,14 +897,14 @@ class VenmoClientUnitTest {
 
     @Test
     fun tokenize_performsVaultRequestIfRequestPersisted() {
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
         every { merchantRepository.authorization } returns clientToken
 
-        var venmoApi = MockkVenmoApiBuilder()
+        val venmoApi = MockkVenmoApiBuilder()
             .createNonceFromPaymentContextSuccess(VenmoAccountNonce.fromJSON(
                 JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE)))
             .build()
@@ -932,7 +929,7 @@ class VenmoClientUnitTest {
 
     @Test
     fun tokenize_doesNotPerformRequestIfTokenizationKeyUsed() {
-        var braintreeClient = MockkBraintreeClientBuilder().build()
+        val braintreeClient = MockkBraintreeClientBuilder().build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
         every { sharedPrefsWriter.getVenmoVaultOption(context) } returns true
@@ -957,12 +954,12 @@ class VenmoClientUnitTest {
 
     @Test
     fun tokenize_withSuccessfulVaultCall_forwardsResultToActivityResultListener_andSendsAnalytics() {
-        var braintreeClient = MockkBraintreeClientBuilder().build()
+        val braintreeClient = MockkBraintreeClientBuilder().build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL_WITHOUT_RESOURCE_ID
         every { merchantRepository.authorization } returns clientToken
 
-        var venmoAccountNonce = mockk<VenmoAccountNonce>()
+        val venmoAccountNonce = mockk<VenmoAccountNonce>()
         venmoApi = MockkVenmoApiBuilder()
             .vaultVenmoAccountNonceSuccess(venmoAccountNonce)
             .build()
@@ -982,10 +979,10 @@ class VenmoClientUnitTest {
         )
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback)
 
-        var resultSlot = slot<VenmoResult>()
+        val resultSlot = slot<VenmoResult>()
         verify { venmoTokenizeCallback.onVenmoResult(capture(resultSlot)) }
         assertTrue(resultSlot.captured is VenmoResult.Success)
-        var nonce = (resultSlot.captured as VenmoResult.Success).nonce
+        val nonce = (resultSlot.captured as VenmoResult.Success).nonce
         assertEquals(venmoAccountNonce, nonce)
         verify {
             braintreeClient.sendAnalyticsEvent(
@@ -998,14 +995,14 @@ class VenmoClientUnitTest {
 
     @Test
     fun tokenize_withPaymentContext_withSuccessfulVaultCall_forwardsNonceToCallback_andSendsAnalytics() {
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
             .build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
         every { merchantRepository.authorization } returns clientToken
 
-        var venmoAccountNonce = VenmoAccountNonce.fromJSON(
+        val venmoAccountNonce = VenmoAccountNonce.fromJSON(
             JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE))
 
         venmoApi = MockkVenmoApiBuilder()
@@ -1028,10 +1025,10 @@ class VenmoClientUnitTest {
         )
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback)
 
-        var resultSlot = slot<VenmoResult>()
+        val resultSlot = slot<VenmoResult>()
         verify { venmoTokenizeCallback.onVenmoResult(capture(resultSlot)) }
         assertTrue(resultSlot.captured is VenmoResult.Success)
-        var nonce = (resultSlot.captured as VenmoResult.Success).nonce
+        val nonce = (resultSlot.captured as VenmoResult.Success).nonce
         assertEquals(venmoAccountNonce, nonce)
         verify {
             braintreeClient.sendAnalyticsEvent(
@@ -1044,12 +1041,12 @@ class VenmoClientUnitTest {
 
     @Test
     fun tokenize_withFailedVaultCall_forwardsErrorToActivityResultListener_andSendsAnalytics() {
-        var braintreeClient = MockkBraintreeClientBuilder().build()
+        val braintreeClient = MockkBraintreeClientBuilder().build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL_WITHOUT_RESOURCE_ID
         every { merchantRepository.authorization } returns clientToken
 
-        var error = Exception("error")
+        val error = Exception("error")
         venmoApi = MockkVenmoApiBuilder()
             .vaultVenmoAccountNonceError(error)
             .build()
@@ -1069,12 +1066,12 @@ class VenmoClientUnitTest {
         )
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback)
 
-        var resultSlot = slot<VenmoResult>()
+        val resultSlot = slot<VenmoResult>()
         verify { venmoTokenizeCallback.onVenmoResult(capture(resultSlot)) }
         assertTrue(resultSlot.captured is VenmoResult.Failure)
         assertEquals(error, (resultSlot.captured as VenmoResult.Failure).error)
 
-        var analyticsSlot = slot<AnalyticsEventParams>()
+        val analyticsSlot = slot<AnalyticsEventParams>()
         verify {
             braintreeClient.sendAnalyticsEvent(
                 VenmoAnalytics.TOKENIZE_FAILED,
@@ -1088,16 +1085,16 @@ class VenmoClientUnitTest {
 
     @Test
     fun tokenize_withPaymentContext_withFailedVaultCall_forwardsErrorToCallback_andSendsAnalytics() {
-        var braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
             .build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
         every { merchantRepository.authorization } returns clientToken
 
-        var venmoAccountNonce = VenmoAccountNonce.fromJSON(
+        val venmoAccountNonce = VenmoAccountNonce.fromJSON(
             JSONObject(Fixtures.PAYMENT_METHODS_VENMO_ACCOUNT_RESPONSE))
-        var error = Exception("error")
+        val error = Exception("error")
 
         venmoApi = MockkVenmoApiBuilder()
             .createNonceFromPaymentContextSuccess(venmoAccountNonce)
@@ -1119,12 +1116,12 @@ class VenmoClientUnitTest {
         )
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback)
 
-        var resultSlot = slot<VenmoResult>()
+        val resultSlot = slot<VenmoResult>()
         verify { venmoTokenizeCallback.onVenmoResult(capture(resultSlot)) }
         assertTrue(resultSlot.captured is VenmoResult.Failure)
         assertEquals(error, (resultSlot.captured as VenmoResult.Failure).error)
 
-        var analyticsSlot = slot<AnalyticsEventParams>()
+        val analyticsSlot = slot<AnalyticsEventParams>()
         verify {
             braintreeClient.sendAnalyticsEvent(
                 VenmoAnalytics.TOKENIZE_FAILED,

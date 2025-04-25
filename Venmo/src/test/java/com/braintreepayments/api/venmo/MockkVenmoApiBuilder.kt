@@ -23,19 +23,22 @@ internal class MockkVenmoApiBuilder {
     }
 
     fun createNonceFromPaymentContextSuccess(
-        createNonceFromPaymentContextSuccess: VenmoAccountNonce): MockkVenmoApiBuilder {
+        createNonceFromPaymentContextSuccess: VenmoAccountNonce
+    ): MockkVenmoApiBuilder {
         this.createNonceFromPaymentContextSuccess = createNonceFromPaymentContextSuccess
         return this
     }
 
     fun createNonceFromPaymentContextError(
-        createNonceFromPaymentContextError: Exception): MockkVenmoApiBuilder {
+        createNonceFromPaymentContextError: Exception
+    ): MockkVenmoApiBuilder {
         this.createNonceFromPaymentContextError = createNonceFromPaymentContextError
         return this
     }
 
     fun vaultVenmoAccountNonceSuccess(
-        vaultVenmoAccountNonceSuccess: VenmoAccountNonce): MockkVenmoApiBuilder {
+        vaultVenmoAccountNonceSuccess: VenmoAccountNonce
+    ): MockkVenmoApiBuilder {
         this.vaultVenmoAccountNonceSuccess = vaultVenmoAccountNonceSuccess
         return this
     }
