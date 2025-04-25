@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 /**
- * Class to parse and contain a recurring billing amount breakdown.
+ * A recurring billing amount breakdown.
  *
  * @property itemTotal - Total amount of the items before any taxes or discounts
  * @property shipping - Cost of shipping the items
