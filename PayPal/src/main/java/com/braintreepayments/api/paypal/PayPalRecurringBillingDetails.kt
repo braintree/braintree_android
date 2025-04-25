@@ -22,6 +22,8 @@ import org.json.JSONObject
  * @property productQuantity Quantity associated with the product.
  * @property shippingAmount The shipping amount for the billing cycle at the time of checkout.
  * @property taxAmount The taxes for the billing cycle at the time of checkout.
+ * @property unitAmount This property is for checkout with vault requests only.
+ * @property amountBreakdown This pro
  */
 @Parcelize
 data class PayPalRecurringBillingDetails @JvmOverloads constructor(
@@ -35,6 +37,8 @@ data class PayPalRecurringBillingDetails @JvmOverloads constructor(
     var productQuantity: Int? = null,
     var shippingAmount: String? = null,
     var taxAmount: String? = null,
+    val unitAmount: String? = null,
+    val amountBreakdown: RecurringBillingAmountBreakdown? = null,
 ) : Parcelable {
 
     fun toJson(): JSONObject {
