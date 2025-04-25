@@ -142,13 +142,13 @@ public class PayPalVaultRequestUnitTest {
         billingCycle.setPricing(billingPricing);
 
         RecurringBillingAmountBreakdown amountBreakdown = new RecurringBillingAmountBreakdown(
-                100.0, // itemTotal
-                10.0,  // shipping
-                5.0,   // handling
-                8.5,   // taxTotal
-                2.0,   // insurance
-                1.0,   // shippingDiscount
-                3.0    // discount
+                "100.00", // itemTotal
+                "10.00",  // shipping
+                "5.00",   // handling
+                "8.50",   // taxTotal
+                "2.00",   // insurance
+                "1.00",   // shippingDiscount
+                "3.00"    // discount
         );
 
         PayPalRecurringBillingDetails billingDetails = new PayPalRecurringBillingDetails(
@@ -222,13 +222,13 @@ public class PayPalVaultRequestUnitTest {
         assertEquals("1.00", resultBillingPricing.getAmount());
         assertEquals(PayPalPricingModel.FIXED, resultBillingPricing.getPricingModel());
 
-        assertEquals(100.0, billingDetails.getAmountBreakdown().getItemTotal());
-        assertEquals(10.0, billingDetails.getAmountBreakdown().getShipping());
-        assertEquals(5.0, billingDetails.getAmountBreakdown().getHandling());
-        assertEquals(8.5, billingDetails.getAmountBreakdown().getTaxTotal());
-        assertEquals(2.0, billingDetails.getAmountBreakdown().getInsurance());
-        assertEquals(1.0, billingDetails.getAmountBreakdown().getShippingDiscount());
-        assertEquals(3.0, billingDetails.getAmountBreakdown().getDiscount());
+        assertEquals("100.00", billingDetails.getAmountBreakdown().getItemTotal());
+        assertEquals("10.00", billingDetails.getAmountBreakdown().getShipping());
+        assertEquals("5.00", billingDetails.getAmountBreakdown().getHandling());
+        assertEquals("8.50", billingDetails.getAmountBreakdown().getTaxTotal());
+        assertEquals("2.00", billingDetails.getAmountBreakdown().getInsurance());
+        assertEquals("1.00", billingDetails.getAmountBreakdown().getShippingDiscount());
+        assertEquals("3.00", billingDetails.getAmountBreakdown().getDiscount());
     }
 
     @Test

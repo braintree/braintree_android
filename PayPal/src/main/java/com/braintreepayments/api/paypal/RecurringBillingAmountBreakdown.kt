@@ -16,11 +16,11 @@ import kotlinx.android.parcel.Parcelize
  */
 @Parcelize
 data class RecurringBillingAmountBreakdown(
-    val itemTotal: Double,
-    val shipping: Double,
-    val handling: Double,
-    val taxTotal: Double,
-    val insurance: Double,
-    val shippingDiscount: Double,
-    val discount: Double
+    val itemTotal: String,
+    val shipping: String,
+    val handling: String,
+    val taxTotal: String,
+    val insurance: String,
+    val shippingDiscount: String,
+    val discount: String
 ) : Parcelable
