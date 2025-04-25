@@ -94,6 +94,8 @@ abstract class PayPalRequest internal constructor(
     open var enablePayPalAppSwitch: Boolean = false,
     open var userAuthenticationEmail: String? = null,
     open var userPhoneNumber: PayPalPhoneNumber? = null,
+    open var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
+    open var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
 
     @property:ExperimentalBetaApi
     open var shopperSessionId: String? = null,

@@ -33,8 +33,8 @@ class PayPalVaultRequest
 @JvmOverloads constructor(
     override val hasUserLocationConsent: Boolean,
     var shouldOfferCredit: Boolean = false,
-    var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
-    var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
+    override var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
+    override var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
     override var enablePayPalAppSwitch: Boolean = false,
     override var localeCode: String? = null,
     override var billingAgreementDescription: String? = null,
