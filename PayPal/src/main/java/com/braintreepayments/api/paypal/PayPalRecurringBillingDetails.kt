@@ -23,7 +23,7 @@ import org.json.JSONObject
  * @property shippingAmount The shipping amount for the billing cycle at the time of checkout.
  * @property taxAmount The taxes for the billing cycle at the time of checkout.
  * @property unitAmount This property is for checkout with vault requests only.
- * @property amountBreakdown This pro
+ * @property amountBreakdown Breakdown of items associated to the total cost
  */
 @Parcelize
 data class PayPalRecurringBillingDetails @JvmOverloads constructor(
