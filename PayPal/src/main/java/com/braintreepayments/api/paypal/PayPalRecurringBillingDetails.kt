@@ -38,8 +38,8 @@ data class PayPalRecurringBillingDetails @JvmOverloads constructor(
     var productQuantity: Int? = null,
     var shippingAmount: String? = null,
     var taxAmount: String? = null,
-    val unitAmount: String? = null,
-    val amountBreakdown: RecurringBillingAmountBreakdown? = null,
+    var unitAmount: String? = null,
+    var amountBreakdown: RecurringBillingAmountBreakdown? = null,
 ) : Parcelable {
 
     fun toJson(): JSONObject {
