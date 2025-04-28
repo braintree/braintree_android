@@ -6,13 +6,13 @@ import kotlinx.android.parcel.Parcelize
 /**
  * A recurring billing amount breakdown.
  *
- * @property itemTotal - Total amount of the items before any taxes or discounts
  * @property shipping - Cost of shipping the items
  * @property taxTotal - Total tax amount applied to the transaction
+ * @property itemTotal - Total amount of the items before any taxes or discounts
  */
 @Parcelize
 data class RecurringBillingAmountBreakdown(
-    val itemTotal: String,
     val shipping: String,
     val taxTotal: String,
+    val itemTotal: String,
 ) : Parcelable
