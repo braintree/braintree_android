@@ -8,19 +8,11 @@ import kotlinx.android.parcel.Parcelize
  *
  * @property itemTotal - Total amount of the items before any taxes or discounts
  * @property shipping - Cost of shipping the items
- * @property handling - Cost associated with handling the items (e.g., packaging or processing)
  * @property taxTotal - Total tax amount applied to the transaction
- * @property insurance - Cost of insurance applied to the shipment or items
- * @property shippingDiscount - Discount amount applied specifically to shipping
- * @property discount - General discount applied to the total transaction
  */
 @Parcelize
 data class RecurringBillingAmountBreakdown(
     val itemTotal: String,
     val shipping: String,
-    val handling: String,
     val taxTotal: String,
-    val insurance: String,
-    val shippingDiscount: String,
-    val discount: String
 ) : Parcelable
