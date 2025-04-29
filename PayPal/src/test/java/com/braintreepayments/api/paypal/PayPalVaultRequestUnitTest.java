@@ -142,13 +142,9 @@ public class PayPalVaultRequestUnitTest {
         billingCycle.setPricing(billingPricing);
 
         RecurringBillingAmountBreakdown amountBreakdown = new RecurringBillingAmountBreakdown(
-                "100.00", // itemTotal
                 "10.00",  // shipping
-                "5.00",   // handling
                 "8.50",   // taxTotal
-                "2.00",   // insurance
-                "1.00",   // shippingDiscount
-                "3.00"    // discount
+                "100.00" // itemTotal
         );
 
         PayPalRecurringBillingDetails billingDetails = new PayPalRecurringBillingDetails(
@@ -224,11 +220,7 @@ public class PayPalVaultRequestUnitTest {
 
         assertEquals("100.00", billingDetails.getAmountBreakdown().getItemTotal());
         assertEquals("10.00", billingDetails.getAmountBreakdown().getShipping());
-        assertEquals("5.00", billingDetails.getAmountBreakdown().getHandling());
         assertEquals("8.50", billingDetails.getAmountBreakdown().getTaxTotal());
-        assertEquals("2.00", billingDetails.getAmountBreakdown().getInsurance());
-        assertEquals("1.00", billingDetails.getAmountBreakdown().getShippingDiscount());
-        assertEquals("3.00", billingDetails.getAmountBreakdown().getDiscount());
     }
 
     @Test
