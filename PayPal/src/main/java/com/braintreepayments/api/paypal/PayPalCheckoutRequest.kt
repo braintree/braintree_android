@@ -67,8 +67,7 @@ import org.json.JSONObject
  * @property contactPreference Preference for the contact information section within the payment flow. Defaults to
  * [PayPalContactPreference.NO_CONTACT_INFORMATION] if not set.
  *
- * @property amountBreakdown Breakdown of items associated to the total cost - this property is
- * for checkout with vault requests only.
+ * @property amountBreakdown Breakdown of items associated to the total cost
  */
 @Parcelize
 class PayPalCheckoutRequest @JvmOverloads constructor(
