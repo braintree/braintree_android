@@ -14,8 +14,7 @@ import kotlinx.android.parcel.Parcelize
  *                       Required when `amountBreakdown` is provided.
  *
  * @property taxTotal - (optional) Total tax amount applied to the transaction.
- *                      Required only if both `lineItems.taxAmount` and `amountBreakdown` are
- *                      provided. Should match the sum of tax amounts from all line items.
+ *                      Required if `lineItems.taxAmount` is provided. Should match the sum of tax amounts from all line items.
  *
  * @property shippingTotal - (optional) Cost of shipping the items.
  *                            Optional in all flows.
