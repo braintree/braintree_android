@@ -11,7 +11,6 @@ import kotlinx.android.parcel.Parcelize
  * not accepted based depending on the checkout flow (e.g., one-time vs subscription).
  *
  * @property itemTotal - Total amount of the items before any taxes or discounts.
- *                       Required when `amountBreakdown` is provided.
  *
  * @property taxTotal - (optional) Total tax amount applied to the transaction.
  *                      Required if `lineItems.taxAmount` is provided. Should match the sum of tax amounts from all line items.
