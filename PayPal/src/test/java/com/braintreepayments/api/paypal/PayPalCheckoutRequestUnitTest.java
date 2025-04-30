@@ -343,4 +343,60 @@ public class PayPalCheckoutRequestUnitTest {
 
         assertFalse(requestBody.contains("contact_preference"));
     }
+
+    @Test
+    public void newPayPalCheckoutRequest_setsAmountBreakdown_requiredFieldsOnly() {
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", false);
+
+        RecurringBillingAmountBreakdown amountBreakdown =
+                new RecurringBillingAmountBreakdown(
+                        "10.00",  // itemTotal
+                        null,     // insurance
+                        null,     // discount
+                        null,     // handling
+                        null,     // shippingDiscount
+                        null,     // shippingTotal
+                        null      // taxTotal
+                );
+
+        request.setAmountBreakdown(amountBreakdown);
+
+        RecurringBillingAmountBreakdown result = request.getAmountBreakdown();
+        assertNotNull(result);
+        assertEquals("10.00", result.getItemTotal());
+        assertNull(result.getInsurance());
+        assertNull(result.getDiscount());
+        assertNull(result.getHandling());
+        assertNull(result.getShippingDiscount());
+        assertNull(result.getShippingTotal());
+        assertNull(result.getTaxTotal());
+    }
+
+    @Test
+    public void newPayPalCheckoutRequest_setsAmountBreakdown_AllFields() {
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", false);
+
+        RecurringBillingAmountBreakdown breakdownWithAllFields =
+                new RecurringBillingAmountBreakdown(
+                        "20.00",  // itemTotal
+                        "1.00",   // insurance
+                        "2.00",   // discount
+                        "0.50",   // handling
+                        "0.25",   // shippingDiscount
+                        "3.00",   // shippingTotal
+                        "1.75"    // taxTotal
+                );
+
+        request.setAmountBreakdown(breakdownWithAllFields);
+
+        RecurringBillingAmountBreakdown result = request.getAmountBreakdown();
+        assertNotNull(result);
+        assertEquals("20.00", result.getItemTotal());
+        assertEquals("1.00", result.getInsurance());
+        assertEquals("2.00", result.getDiscount());
+        assertEquals("0.50", result.getHandling());
+        assertEquals("0.25", result.getShippingDiscount());
+        assertEquals("3.00", result.getShippingTotal());
+        assertEquals("1.75", result.getTaxTotal());
+    }
 }
