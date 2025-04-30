@@ -16,7 +16,6 @@ import kotlinx.android.parcel.Parcelize
  *                      Required if `lineItems.taxAmount` is provided. Should match the sum of tax amounts from all line items.
  *
  * @property shippingTotal - (optional) Cost of shipping the items.
- *                            Optional in all flows.
  *
  * @property handling - (optional) Cost associated with handling the items
  *                      (e.g., packaging or processing).
