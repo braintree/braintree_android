@@ -13,22 +13,23 @@ import kotlinx.android.parcel.Parcelize
  * @property itemTotal - Total amount of the items before any taxes or discounts.
  *
  * @property taxTotal - (optional) Total tax amount applied to the transaction.
- *                      Required if `lineItems.taxAmount` is provided. Should match the sum of tax amounts from all line items.
+ *                      Required if `lineItems.taxAmount` is provided. Should match the sum of tax
+ *                      amounts from all line items.
  *
  * @property shippingTotal - (optional) Cost of shipping the items.
  *
  * @property handling - (optional) Cost associated with handling the items
- *                      (e.g., packaging or processing). Not accepted if [PayPalRecurringBillingDetails] are included.
+ *                      (e.g., packaging or processing). Not accepted if
+ *                      [PayPalRecurringBillingDetails] are included.
  *
  * @property insurance - (optional) Cost of insurance applied to the shipment or items.
- *                       Not accepted in one-time checkout flows; allowed in other flows like
- *                       subscriptions.
+ *                       Not accepted if [PayPalRecurringBillingDetails] are included.
  *
  * @property shippingDiscount - (optional) Discount amount applied specifically to shipping.
- *                               Not accepted in one-time checkout flows; allowed in other flows.
+ *                               Not accepted if [PayPalRecurringBillingDetails] are included.
  *
  * @property discount - (optional) General discount applied to the total transaction.
- *                      Not accepted in one-time checkout flows; allowed in other flows.
+ *                      Not accepted if [PayPalRecurringBillingDetails] are included.
  */
 
 
