@@ -32,7 +32,6 @@ import kotlinx.android.parcel.Parcelize
  *                      Not accepted if [PayPalRecurringBillingDetails] are included.
  */
 
-
 @Parcelize
 data class AmountBreakdown(
     val itemTotal: String,
