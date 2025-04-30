@@ -160,7 +160,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
             parameters.put(CONTACT_PREFERENCE_KEY, preference.stringValue)
         }
 
-        if (enablePayPalAppSwitch && !appLink.isNullOrEmpty() && !userAuthenticationEmail.isNullOrEmpty()) {
+        if (enablePayPalAppSwitch && !appLink.isNullOrEmpty()) {
             parameters.put(ENABLE_APP_SWITCH_KEY, enablePayPalAppSwitch)
             parameters.put(OS_VERSION_KEY, Build.VERSION.SDK_INT.toString())
             parameters.put(OS_TYPE_KEY, "Android")

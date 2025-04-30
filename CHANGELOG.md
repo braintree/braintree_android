@@ -5,6 +5,11 @@
 * PayPal
   * Add `amountBreakdown` property to `PayPalRequest`
   
+## 5.10.0 (2025-04-29)
+
+* PayPal
+  * Make `PayPalCheckoutRequest.userAuthenticationEmail` optional for App Switch flows
+
 ## 5.9.0 (2025-04-09)
 
 * All Modules
