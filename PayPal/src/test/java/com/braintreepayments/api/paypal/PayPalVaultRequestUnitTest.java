@@ -149,18 +149,8 @@ public class PayPalVaultRequestUnitTest {
         billingCycle.setStartDate("2024-04-06T00:00:00Z");
         billingCycle.setPricing(billingPricing);
 
-        PayPalRecurringBillingDetails billingDetails = new PayPalRecurringBillingDetails(
-                List.of(billingCycle), // billingCycles
-                "11.00",               // totalAmount
-                "USD",                 // currencyISOCode
-                null,                  // productName
-                null,                  // oneTimeFeeAmount
-                null,                  // productDescription
-                null,                  // productAmount
-                null,                  // productQuantity
-                null,                  // shippingAmount
-                null                  // taxAmount
-        );
+        PayPalRecurringBillingDetails billingDetails =
+                new PayPalRecurringBillingDetails(List.of(billingCycle), "11.00", "USD");
 
         billingDetails.setOneTimeFeeAmount("2.00");
         billingDetails.setProductName("A Product");
