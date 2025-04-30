@@ -348,20 +348,20 @@ public class PayPalCheckoutRequestUnitTest {
     public void newPayPalCheckoutRequest_setsAmountBreakdown_requiredFieldsOnly() {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", false);
 
-        RecurringBillingAmountBreakdown amountBreakdown =
-                new RecurringBillingAmountBreakdown(
+        AmountBreakdown amountBreakdown =
+                new AmountBreakdown(
                         "10.00",  // itemTotal
-                        null,     // insurance
-                        null,     // discount
-                        null,     // handling
-                        null,     // shippingDiscount
+                        null,     // taxTotal
                         null,     // shippingTotal
-                        null      // taxTotal
+                        null,     // handling
+                        null,     // insurance
+                        null,     // shippingDiscount
+                        null      // discount
                 );
 
         request.setAmountBreakdown(amountBreakdown);
 
-        RecurringBillingAmountBreakdown result = request.getAmountBreakdown();
+        AmountBreakdown result = request.getAmountBreakdown();
         assertNotNull(result);
         assertEquals("10.00", result.getItemTotal());
         assertNull(result.getInsurance());
@@ -376,20 +376,20 @@ public class PayPalCheckoutRequestUnitTest {
     public void newPayPalCheckoutRequest_setsAmountBreakdown_AllFields() {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", false);
 
-        RecurringBillingAmountBreakdown breakdownWithAllFields =
-                new RecurringBillingAmountBreakdown(
+        AmountBreakdown breakdownWithAllFields =
+                new AmountBreakdown(
                         "20.00",  // itemTotal
-                        "1.00",   // insurance
-                        "2.00",   // discount
-                        "0.50",   // handling
-                        "0.25",   // shippingDiscount
+                        "1.75",   // taxTotal
                         "3.00",   // shippingTotal
-                        "1.75"    // taxTotal
+                        "0.50",   // handling
+                        "1.00",   // insurance
+                        "0.25",   // shippingDiscount
+                        "2.00"    // discount
                 );
 
         request.setAmountBreakdown(breakdownWithAllFields);
 
-        RecurringBillingAmountBreakdown result = request.getAmountBreakdown();
+        AmountBreakdown result = request.getAmountBreakdown();
         assertNotNull(result);
         assertEquals("20.00", result.getItemTotal());
         assertEquals("1.00", result.getInsurance());
