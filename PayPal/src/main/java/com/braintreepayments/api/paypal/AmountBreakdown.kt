@@ -18,9 +18,7 @@ import kotlinx.android.parcel.Parcelize
  * @property shippingTotal - (optional) Cost of shipping the items.
  *
  * @property handling - (optional) Cost associated with handling the items
- *                      (e.g., packaging or processing).
- *                      Not accepted in one-time checkout flows; allowed in other flows like
- *                      subscriptions.
+ *                      (e.g., packaging or processing). Not accepted if [PayPalRecurringBillingDetails] are included.
  *
  * @property insurance - (optional) Cost of insurance applied to the shipment or items.
  *                       Not accepted in one-time checkout flows; allowed in other flows like
