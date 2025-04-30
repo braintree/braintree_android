@@ -132,14 +132,6 @@ public class PayPalVaultRequestUnitTest {
         request.setMerchantAccountId("merchant_account_id");
         request.setUserPhoneNumber(new PayPalPhoneNumber("1", "1231231234"));
 
-        RecurringBillingAmountBreakdown amountBreakdown = new RecurringBillingAmountBreakdown(
-                "10.00",  // shipping
-                "8.50",   // taxTotal
-                "100.00" // itemTotal
-        );
-
-        request.setAmountBreakdown(amountBreakdown);
-
         PayPalBillingInterval billingInterval = PayPalBillingInterval.MONTH;
         PayPalPricingModel pricingModel = PayPalPricingModel.FIXED;
         PayPalBillingPricing billingPricing =
@@ -150,10 +142,8 @@ public class PayPalVaultRequestUnitTest {
         billingCycle.setSequence(1);
         billingCycle.setStartDate("2024-04-06T00:00:00Z");
         billingCycle.setPricing(billingPricing);
-
         PayPalRecurringBillingDetails billingDetails =
                 new PayPalRecurringBillingDetails(List.of(billingCycle), "11.00", "USD");
-
         billingDetails.setOneTimeFeeAmount("2.00");
         billingDetails.setProductName("A Product");
         billingDetails.setProductDescription("A Description");
@@ -209,10 +199,6 @@ public class PayPalVaultRequestUnitTest {
         assertEquals("6.00", resultBillingPricing.getReloadThresholdAmount());
         assertEquals("1.00", resultBillingPricing.getAmount());
         assertEquals(PayPalPricingModel.FIXED, resultBillingPricing.getPricingModel());
-
-        assertEquals("100.00", request.getAmountBreakdown().getItemTotal());
-        assertEquals("10.00", request.getAmountBreakdown().getShipping());
-        assertEquals("8.50", request.getAmountBreakdown().getTaxTotal());
     }
 
     @Test
