@@ -12,13 +12,10 @@ import kotlinx.android.parcel.Parcelize
  *
  * @property itemTotal - Total amount of the items before any taxes or discounts.
  *                       Required when `amountBreakdown` is provided.
- *                       If missing, an error with `"issue" => "ITEM_TOTAL_REQUIRED"` will be
- *                       returned.
  *
  * @property taxTotal - (optional) Total tax amount applied to the transaction.
  *                      Required only if both `lineItems.taxAmount` and `amountBreakdown` are
  *                      provided. Should match the sum of tax amounts from all line items.
- *                      If `amountBreakdown` is not present, the Gateway will calculate this value.
  *
  * @property shippingTotal - (optional) Cost of shipping the items.
  *                            Optional in all flows.
