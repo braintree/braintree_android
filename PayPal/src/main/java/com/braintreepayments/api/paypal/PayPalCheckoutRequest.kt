@@ -94,6 +94,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     override var lineItems: List<PayPalLineItem> = emptyList(),
     override var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
     override var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
+    override var amountBreakdown: RecurringBillingAmountBreakdown? = null,
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,

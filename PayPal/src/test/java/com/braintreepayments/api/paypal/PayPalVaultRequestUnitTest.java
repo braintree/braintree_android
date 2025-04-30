@@ -130,6 +130,14 @@ public class PayPalVaultRequestUnitTest {
         request.setMerchantAccountId("merchant_account_id");
         request.setUserPhoneNumber(new PayPalPhoneNumber("1", "1231231234"));
 
+        RecurringBillingAmountBreakdown amountBreakdown = new RecurringBillingAmountBreakdown(
+                "10.00",  // shipping
+                "8.50",   // taxTotal
+                "100.00" // itemTotal
+        );
+
+        request.setAmountBreakdown(amountBreakdown);
+
         PayPalBillingInterval billingInterval = PayPalBillingInterval.MONTH;
         PayPalPricingModel pricingModel = PayPalPricingModel.FIXED;
         PayPalBillingPricing billingPricing =
@@ -141,12 +149,6 @@ public class PayPalVaultRequestUnitTest {
         billingCycle.setStartDate("2024-04-06T00:00:00Z");
         billingCycle.setPricing(billingPricing);
 
-        RecurringBillingAmountBreakdown amountBreakdown = new RecurringBillingAmountBreakdown(
-                "10.00",  // shipping
-                "8.50",   // taxTotal
-                "100.00" // itemTotal
-        );
-
         PayPalRecurringBillingDetails billingDetails = new PayPalRecurringBillingDetails(
                 List.of(billingCycle), // billingCycles
                 "11.00",               // totalAmount
@@ -157,9 +159,7 @@ public class PayPalVaultRequestUnitTest {
                 null,                  // productAmount
                 null,                  // productQuantity
                 null,                  // shippingAmount
-                null,                  // taxAmount
-                "11.00",               // unitAmount
-                amountBreakdown        // amountBreakdown
+                null                  // taxAmount
         );
 
         billingDetails.setOneTimeFeeAmount("2.00");
@@ -218,9 +218,9 @@ public class PayPalVaultRequestUnitTest {
         assertEquals("1.00", resultBillingPricing.getAmount());
         assertEquals(PayPalPricingModel.FIXED, resultBillingPricing.getPricingModel());
 
-        assertEquals("100.00", billingDetails.getAmountBreakdown().getItemTotal());
-        assertEquals("10.00", billingDetails.getAmountBreakdown().getShipping());
-        assertEquals("8.50", billingDetails.getAmountBreakdown().getTaxTotal());
+        assertEquals("100.00", request.getAmountBreakdown().getItemTotal());
+        assertEquals("10.00", request.getAmountBreakdown().getShipping());
+        assertEquals("8.50", request.getAmountBreakdown().getTaxTotal());
     }
 
     @Test
