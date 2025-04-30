@@ -3,7 +3,7 @@
 ## unreleased 
 
 * PayPal
-  * Add `amountBreakdown` and `unitAmount` properties to `PayPalRecurringBillingDetails`
+  * Add `amountBreakdown` property to `PayPalRequest`
   
 ## 5.9.0 (2025-04-09)
 
