@@ -45,7 +45,8 @@ class PayPalVaultRequest
     override var riskCorrelationId: String? = null,
     override var userAuthenticationEmail: String? = null,
     override var userPhoneNumber: PayPalPhoneNumber? = null,
-    override var lineItems: List<PayPalLineItem> = emptyList()
+    override var lineItems: List<PayPalLineItem> = emptyList(),
+    override var amountBreakdown: RecurringBillingAmountBreakdown? = null,
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
