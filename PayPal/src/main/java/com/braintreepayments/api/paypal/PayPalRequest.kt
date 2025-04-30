@@ -81,8 +81,6 @@ import org.json.JSONException
  * @property lineItems The line items for this transaction. It can include up to 249 line items.
  * @property recurringBillingDetails Optional: Recurring billing product details.
  * @property recurringBillingPlanType Optional: Recurring billing plan type, or charge pattern.
- * @property amountBreakdown Breakdown of items associated to the total cost - this property is
- * for checkout with vault requests only.
  */
 abstract class PayPalRequest internal constructor(
     open val hasUserLocationConsent: Boolean,
@@ -100,7 +98,6 @@ abstract class PayPalRequest internal constructor(
     open var userPhoneNumber: PayPalPhoneNumber? = null,
     open var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
     open var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
-    open var amountBreakdown: RecurringBillingAmountBreakdown? = null,
 
     @property:ExperimentalBetaApi
     open var shopperSessionId: String? = null,
