@@ -88,24 +88,23 @@ class MockkBraintreeClientBuilder {
 
         every {
             braintreeClient.sendPOST(any<String>(), any<String>(), responseCallback = any<HttpResponseCallback>())
-        } answers {
-            val callback = arg<HttpResponseCallback>(2)
-            if (sendPOSTSuccess != null) {
-                callback.onResult(sendPOSTSuccess, null)
-            } else if (sendPOSTError != null) {
-                callback.onResult(null, sendPOSTError)
-            }
+        } answers { call ->
+            val callback = call.invocation.args[2] as HttpResponseCallback
+            sendPOSTSuccess?.let { callback.onResult(it, null) }
+                ?: sendPOSTError?.let { callback.onResult(null, it) }
         }
 
         every {
-            braintreeClient.sendPOST(any<String>(), any<String>(), any<Map<String, String>>(), any<HttpResponseCallback>())
-        } answers {
-            val callback = arg<HttpResponseCallback>(3)
-            if (sendPOSTSuccess != null) {
-                callback.onResult(sendPOSTSuccess, null)
-            } else if (sendPOSTError != null) {
-                callback.onResult(null, sendPOSTError)
-            }
+            braintreeClient.sendPOST(
+                any<String>(),
+                any<String>(),
+                any<Map<String, String>>(),
+                any<HttpResponseCallback>()
+            )
+        } answers { call ->
+            val callback = call.invocation.args[3] as HttpResponseCallback
+            sendPOSTSuccess?.let { callback.onResult(it, null) }
+                ?: sendPOSTError?.let { callback.onResult(null, it) }
         }
 
         return braintreeClient

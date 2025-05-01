@@ -6,7 +6,7 @@ import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import com.braintreepayments.api.testutils.TestConfigurationBuilder
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode
-import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
+import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -30,7 +30,7 @@ class ThreeDSecureClientUnitTest {
     private val paymentAuthRequestCallback: ThreeDSecurePaymentAuthRequestCallback = mockk(relaxed = true)
     private val threeDSecureTokenizeCallback: ThreeDSecureTokenizeCallback = mockk(relaxed = true)
 
-    private lateinit  var threeDSecureEnabledConfig: Configuration
+    private lateinit var threeDSecureEnabledConfig: Configuration
     private lateinit var basicRequest: ThreeDSecureRequest
     private lateinit var threeDSecureParams: ThreeDSecureParams
 
@@ -84,13 +84,19 @@ class ThreeDSecureClientUnitTest {
         val clientData = prepareLookupResult.clientData
         val lookup = JSONObject(clientData)
         assertEquals("encoded_auth_fingerprint", lookup.getString("authorizationFingerprint"))
-        assertEquals("Android-${com.braintreepayments.api.core.BuildConfig.VERSION_NAME}", lookup.getString("braintreeLibraryVersion"))
+        assertEquals(
+            "Android-${com.braintreepayments.api.core.BuildConfig.VERSION_NAME}",
+            lookup.getString("braintreeLibraryVersion")
+        )
         assertEquals("fake-df", lookup.getString("dfReferenceId"))
         assertEquals("a-nonce", lookup.getString("nonce"))
 
         val clientMetaData = lookup.getJSONObject("clientMetadata")
         assertEquals("2", clientMetaData.getString("requestedThreeDSecureVersion"))
-        assertEquals("Android/${com.braintreepayments.api.core.BuildConfig.VERSION_NAME}", clientMetaData.getString("sdkVersion"))
+        assertEquals(
+            "Android/${com.braintreepayments.api.core.BuildConfig.VERSION_NAME}",
+            clientMetaData.getString("sdkVersion")
+        )
     }
 
     @Test
@@ -625,7 +631,7 @@ class ThreeDSecureClientUnitTest {
         val cardinalClient = MockkCardinalClientBuilder().build()
         val braintreeClient = MockkBraintreeClientBuilder().build()
 
-        var validateResponse = mockk<ValidateResponse> {
+        val validateResponse = mockk<ValidateResponse> {
             every { actionCode } returns CardinalActionCode.TIMEOUT
             every { errorDescription } returns errorMessage
         }
@@ -693,7 +699,7 @@ class ThreeDSecureClientUnitTest {
         every {
             threeDSecureAPI.authenticateCardinalJWT(any(), any(), any())
         } answers { call ->
-            var callback = call.invocation.args[2] as ThreeDSecureResultCallback
+            val callback = call.invocation.args[2] as ThreeDSecureResultCallback
             callback.onThreeDSecureResult(threeDSecureParams, null)
         }
 
@@ -753,8 +759,18 @@ class ThreeDSecureClientUnitTest {
         assertTrue(result is ThreeDSecureResult.Failure)
         assertEquals(result.nonce, paymentAuthResult.threeDSecureParams!!.threeDSecureNonce)
 
-        verify { braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED, any<AnalyticsEventParams>()) }
-        verify { braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_FAILED, any<AnalyticsEventParams>()) }
+        verify {
+            braintreeClient.sendAnalyticsEvent(
+                ThreeDSecureAnalytics.JWT_AUTH_FAILED,
+                any<AnalyticsEventParams>()
+            )
+        }
+        verify {
+            braintreeClient.sendAnalyticsEvent(
+                ThreeDSecureAnalytics.JWT_AUTH_FAILED,
+                any<AnalyticsEventParams>()
+            )
+        }
     }
 
     @Test
@@ -772,7 +788,7 @@ class ThreeDSecureClientUnitTest {
         every {
             threeDSecureAPI.authenticateCardinalJWT(any(), any(), any())
         } answers { call ->
-            var callback = call.invocation.args[2] as ThreeDSecureResultCallback
+            val callback = call.invocation.args[2] as ThreeDSecureResultCallback
             callback.onThreeDSecureResult(null, exception)
         }
 

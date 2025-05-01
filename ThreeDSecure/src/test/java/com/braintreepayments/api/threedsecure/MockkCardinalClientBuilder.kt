@@ -50,7 +50,7 @@ internal class MockkCardinalClientBuilder {
                     any<CardinalInitializeCallback>()
                 )
             } answers { call ->
-                var callback = call.invocation.args[3] as CardinalInitializeCallback
+                val callback = call.invocation.args[3] as CardinalInitializeCallback
                 if (successReferenceId != null) {
                     callback.onResult(successReferenceId, null)
                 } else if (error != null) {
