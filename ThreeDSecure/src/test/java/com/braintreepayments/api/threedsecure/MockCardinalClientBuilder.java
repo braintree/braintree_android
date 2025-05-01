@@ -13,6 +13,7 @@ import com.braintreepayments.api.core.Configuration;
 
 import org.mockito.stubbing.Answer;
 
+@Deprecated
 public class MockCardinalClientBuilder {
 
     private Exception error;
