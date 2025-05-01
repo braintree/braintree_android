@@ -6,14 +6,14 @@ import kotlinx.android.parcel.Parcelize
 /**
  * A recurring billing amount breakdown.
  *
- * This object is only used in `PayPalCheckoutRequest` to customize how the transaction amount is
- * broken down. If provided, `itemTotal` becomes required. Some fields are conditionally required or
+ * This object is only used in [PayPalCheckoutRequest] to customize how the transaction amount is
+ * broken down. If provided, [itemTotal] becomes required. Some fields are conditionally required or
  * not accepted based depending on the checkout flow (e.g., one-time vs subscription).
  *
  * @property itemTotal - Total amount of the items before any taxes or discounts.
  *
  * @property taxTotal - (optional) Total tax amount applied to the transaction.
- *                      Required if `lineItems.taxAmount` is provided. Should match the sum of tax
+ *                      Required if [lineItems.taxAmount] is provided. Should match the sum of tax
  *                      amounts from all line items.
  *
  * @property shippingTotal - (optional) Cost of shipping the items.
