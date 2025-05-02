@@ -7,6 +7,7 @@ import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.IntegrationType
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.paypal.PayPalAccountNonce
@@ -237,11 +238,7 @@ class GooglePayClientUnitTest {
             merchantRepository.authorization
         } returns
                 Authorization.fromString("sandbox_tokenization_string")
-
-        every {
-            analyticsParamRepository.sessionId
-        } returns
-                ""
+        every { merchantRepository.integrationType } returns IntegrationType.CUSTOM
 
         val googlePayRequest =
             GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL).apply {
@@ -311,10 +308,10 @@ class GooglePayClientUnitTest {
             "integration_merchant_id",
             paypalTokenizationSpecificationParams.getString("braintree:merchantId")
         )
-//        assertEquals(
-//            "{\"source\":\"client\",\"version\":\"$googlePayModuleVersion\",\"platform\":\"android\"}",
-//            paypalTokenizationSpecificationParams.getString("braintree:metadata")
-//        )
+        assertEquals(
+            "{\"source\":\"client\",\"integration\":\"CUSTOM\",\"sessionId\":\"\",\"version\":\"$googlePayModuleVersion\",\"platform\":\"android\"}",
+            paypalTokenizationSpecificationParams.getString("braintree:metadata")
+        )
         assertFalse(paypalTokenizationSpecificationParams.has("braintree:clientKey"))
         assertEquals(
             "paypal-client-id-for-google-payment",
@@ -344,10 +341,10 @@ class GooglePayClientUnitTest {
         assertEquals("v1", cardTokenizationSpecificationParams.getString("braintree:apiVersion"))
         assertEquals(googlePayModuleVersion, cardTokenizationSpecificationParams.getString("braintree:sdkVersion"))
         assertEquals("integration_merchant_id", cardTokenizationSpecificationParams.getString("braintree:merchantId"))
-//        assertEquals(
-//            "{\"source\":\"client\",\"version\":\"$googlePayModuleVersion\",\"platform\":\"android\"}",
-//            cardTokenizationSpecificationParams.getString("braintree:metadata")
-//        )
+        assertEquals(
+            "{\"source\":\"client\",\"integration\":\"CUSTOM\",\"sessionId\":\"\",\"version\":\"$googlePayModuleVersion\",\"platform\":\"android\"}",
+            cardTokenizationSpecificationParams.getString("braintree:metadata")
+        )
         assertEquals(
             "sandbox_tokenization_string",
             cardTokenizationSpecificationParams.getString("braintree:clientKey")
