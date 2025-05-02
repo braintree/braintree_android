@@ -235,6 +235,9 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
         }
 
         parameters.put(EXPERIENCE_PROFILE_KEY, experienceProfile)
+
+        parameters.put(AMOUNT_BREAKDOWN_KEY, amountBreakdown)
+
         return parameters.toString()
     }
 }
