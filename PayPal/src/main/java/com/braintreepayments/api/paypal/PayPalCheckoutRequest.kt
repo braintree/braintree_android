@@ -67,6 +67,10 @@ import org.json.JSONObject
  * @property contactPreference Preference for the contact information section within the payment flow. Defaults to
  * [PayPalContactPreference.NO_CONTACT_INFORMATION] if not set.
  *
+ * @property recurringBillingDetails Recurring billing product details.
+ *
+ * @property recurringBillingPlanType Recurring billing plan type, or charge pattern.
+ *
  * @property amountBreakdown Breakdown of items associated to the total cost
  */
 @Parcelize

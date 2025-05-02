@@ -364,9 +364,9 @@ public class PayPalCheckoutRequestUnitTest {
         AmountBreakdown result = request.getAmountBreakdown();
         assertNotNull(result);
         assertEquals("10.00", result.getItemTotal());
-        assertNull(result.getInsurance());
-        assertNull(result.getDiscount());
-        assertNull(result.getHandling());
+        assertNull(result.getInsuranceTotal());
+        assertNull(result.getDiscountTotal());
+        assertNull(result.getHandlingTotal());
         assertNull(result.getShippingDiscount());
         assertNull(result.getShippingTotal());
         assertNull(result.getTaxTotal());
@@ -392,9 +392,9 @@ public class PayPalCheckoutRequestUnitTest {
         AmountBreakdown result = request.getAmountBreakdown();
         assertNotNull(result);
         assertEquals("20.00", result.getItemTotal());
-        assertEquals("1.00", result.getInsurance());
-        assertEquals("2.00", result.getDiscount());
-        assertEquals("0.50", result.getHandling());
+        assertEquals("1.00", result.getInsuranceTotal());
+        assertEquals("2.00", result.getDiscountTotal());
+        assertEquals("0.50", result.getHandlingTotal());
         assertEquals("0.25", result.getShippingDiscount());
         assertEquals("3.00", result.getShippingTotal());
         assertEquals("1.75", result.getTaxTotal());

@@ -18,17 +18,17 @@ import kotlinx.android.parcel.Parcelize
  *
  * @property shippingTotal - (optional) Cost of shipping the items.
  *
- * @property handling - (optional) Cost associated with handling the items
+ * @property handlingTotal - (optional) Cost associated with handling the items
  *                      (e.g., packaging or processing). Not accepted if
  *                      [PayPalRecurringBillingDetails] are included.
  *
- * @property insurance - (optional) Cost of insurance applied to the shipment or items.
+ * @property insuranceTotal - (optional) Cost of insurance applied to the shipment or items.
  *                       Not accepted if [PayPalRecurringBillingDetails] are included.
  *
  * @property shippingDiscount - (optional) Discount amount applied specifically to shipping.
  *                               Not accepted if [PayPalRecurringBillingDetails] are included.
  *
- * @property discount - (optional) General discount applied to the total transaction.
+ * @property discountTotal - (optional) General discount applied to the total transaction.
  *                      Not accepted if [PayPalRecurringBillingDetails] are included.
  */
 
@@ -37,8 +37,8 @@ data class AmountBreakdown(
     val itemTotal: String,
     val taxTotal: String?,
     val shippingTotal: String?,
-    val handling: String?,
-    val insurance: String?,
+    val handlingTotal: String?,
+    val insuranceTotal: String?,
     val shippingDiscount: String?,
-    val discount: String?
+    val discountTotal: String?
 ) : Parcelable
