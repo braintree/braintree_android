@@ -309,7 +309,8 @@ class GooglePayClientUnitTest {
             paypalTokenizationSpecificationParams.getString("braintree:merchantId")
         )
         assertEquals(
-            "{\"source\":\"client\",\"integration\":\"CUSTOM\",\"sessionId\":\"\",\"version\":\"$googlePayModuleVersion\",\"platform\":\"android\"}",
+            "{\"source\":\"client\",\"integration\":\"CUSTOM\"," +
+                    "\"sessionId\":\"\",\"version\":\"$googlePayModuleVersion\",\"platform\":\"android\"}",
             paypalTokenizationSpecificationParams.getString("braintree:metadata")
         )
         assertFalse(paypalTokenizationSpecificationParams.has("braintree:clientKey"))
@@ -342,7 +343,8 @@ class GooglePayClientUnitTest {
         assertEquals(googlePayModuleVersion, cardTokenizationSpecificationParams.getString("braintree:sdkVersion"))
         assertEquals("integration_merchant_id", cardTokenizationSpecificationParams.getString("braintree:merchantId"))
         assertEquals(
-            "{\"source\":\"client\",\"integration\":\"CUSTOM\",\"sessionId\":\"\",\"version\":\"$googlePayModuleVersion\",\"platform\":\"android\"}",
+            "{\"source\":\"client\",\"integration\":\"CUSTOM\"," +
+                    "\"sessionId\":\"\",\"version\":\"$googlePayModuleVersion\",\"platform\":\"android\"}",
             cardTokenizationSpecificationParams.getString("braintree:metadata")
         )
         assertEquals(
