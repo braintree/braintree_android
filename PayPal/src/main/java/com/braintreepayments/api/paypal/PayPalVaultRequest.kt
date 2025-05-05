@@ -25,14 +25,16 @@ import org.json.JSONObject
  * @see [Examples of prominent in-app disclosures](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en.Prominent%20in-app%20disclosure)
  *
  * @property shouldOfferCredit Offers PayPal Credit if the customer qualifies. Defaults to false.
+ * @property recurringBillingDetails Optional: Recurring billing product details.
+ * @property recurringBillingPlanType Optional: Recurring billing plan type, or charge pattern.
  */
 @Parcelize
 class PayPalVaultRequest
 @JvmOverloads constructor(
     override val hasUserLocationConsent: Boolean,
     var shouldOfferCredit: Boolean = false,
-    override var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
-    override var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
+    var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
+    var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
     override var enablePayPalAppSwitch: Boolean = false,
     override var localeCode: String? = null,
     override var billingAgreementDescription: String? = null,
@@ -45,7 +47,7 @@ class PayPalVaultRequest
     override var riskCorrelationId: String? = null,
     override var userAuthenticationEmail: String? = null,
     override var userPhoneNumber: PayPalPhoneNumber? = null,
-    override var lineItems: List<PayPalLineItem> = emptyList(),
+    override var lineItems: List<PayPalLineItem> = emptyList()
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,

@@ -1,10 +1,5 @@
 # Braintree Android SDK Release Notes
 
-## unreleased 
-
-* PayPal
-  * Add `recurringBillingDetails`, `recurringBillingPlanType`, and `amountBreakdown` properties to `PayPalCheckoutRequest`. Enables RBA metadata to be passed for the PayPal Checkout Vault with Purchase flow
-  
 ## 5.10.0 (2025-04-29)
 
 * PayPal
