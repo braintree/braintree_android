@@ -9,7 +9,7 @@ import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import io.mockk.every
 import io.mockk.mockk
 
-@Suppress("MagicNumber")
+@Suppress("MagicNumber", "TooManyFunctions")
 class MockkBraintreeClientBuilder {
 
     private var sendGraphQLPostSuccess: String? = null
