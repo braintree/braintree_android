@@ -9,10 +9,14 @@ import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import io.mockk.every
 import io.mockk.mockk
 
+@Suppress("MagicNumber")
 class MockkBraintreeClientBuilder {
 
     private var sendGraphQLPostSuccess: String? = null
     private var sendGraphQLPOSTError: Exception? = null
+
+    private var sendPOSTSuccess: String? = null
+    private var sendPOSTError: Exception? = null
 
     private var configurationSuccess: Configuration? = null
     private var configurationException: Exception? = null
@@ -52,6 +56,26 @@ class MockkBraintreeClientBuilder {
         return this
     }
 
+    fun sendGraphQLPOSTSuccessfulResponse(sendGraphQLPostSuccess: String): MockkBraintreeClientBuilder {
+        this.sendGraphQLPostSuccess = sendGraphQLPostSuccess
+        return this
+    }
+
+    fun sendGraphQLPOSTErrorResponse(sendGraphQLPOSTError: Exception?): MockkBraintreeClientBuilder {
+        this.sendGraphQLPOSTError = sendGraphQLPOSTError
+        return this
+    }
+
+    fun sendPOSTSuccessfulResponse(sendPostSuccess: String): MockkBraintreeClientBuilder {
+        this.sendPOSTSuccess = sendPostSuccess
+        return this
+    }
+
+    fun sendPOSTErrorResponse(sendPOSTError: Exception?): MockkBraintreeClientBuilder {
+        this.sendPOSTError = sendPOSTError
+        return this
+    }
+
     fun build(): BraintreeClient {
         val braintreeClient = mockk<BraintreeClient>(relaxed = true)
 
@@ -72,16 +96,27 @@ class MockkBraintreeClientBuilder {
 
         every { braintreeClient.getManifestActivityInfo(any<Class<*>>()) } returns activityInfo
 
+        every {
+            braintreeClient.sendPOST(any<String>(), any<String>(), responseCallback = any<HttpResponseCallback>())
+        } answers { call ->
+            val callback = call.invocation.args[2] as HttpResponseCallback
+            sendPOSTSuccess?.let { callback.onResult(it, null) }
+                ?: sendPOSTError?.let { callback.onResult(null, it) }
+        }
+
+        every {
+            braintreeClient.sendPOST(
+                any<String>(),
+                any<String>(),
+                any<Map<String, String>>(),
+                any<HttpResponseCallback>()
+            )
+        } answers { call ->
+            val callback = call.invocation.args[3] as HttpResponseCallback
+            sendPOSTSuccess?.let { callback.onResult(it, null) }
+                ?: sendPOSTError?.let { callback.onResult(null, it) }
+        }
+
         return braintreeClient
-    }
-
-    fun sendGraphQLPOSTSuccessfulResponse(sendGraphQLPostSuccess: String): MockkBraintreeClientBuilder {
-        this.sendGraphQLPostSuccess = sendGraphQLPostSuccess
-        return this
-    }
-
-    fun sendGraphQLPOSTErrorResponse(sendGraphQLPOSTError: Exception?): MockkBraintreeClientBuilder {
-        this.sendGraphQLPOSTError = sendGraphQLPOSTError
-        return this
     }
 }
