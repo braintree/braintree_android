@@ -1,5 +1,6 @@
 package com.braintreepayments.api.testutils
 
+import android.content.pm.ActivityInfo
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.Configuration
@@ -8,7 +9,7 @@ import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import io.mockk.every
 import io.mockk.mockk
 
-@Suppress("MagicNumber")
+@Suppress("MagicNumber", "TooManyFunctions")
 class MockkBraintreeClientBuilder {
 
     private var sendGraphQLPostSuccess: String? = null
@@ -20,6 +21,7 @@ class MockkBraintreeClientBuilder {
     private var configurationSuccess: Configuration? = null
     private var configurationException: Exception? = null
     private var authorizationSuccess: Authorization? = null
+    private var activityInfo: ActivityInfo? = null
 
     private var launchesBrowserSwitchAsNewTask: Boolean = false
     private var returnUrlScheme: String = ""
@@ -36,6 +38,11 @@ class MockkBraintreeClientBuilder {
 
     fun authorizationSuccess(authorizationSuccess: Authorization): MockkBraintreeClientBuilder {
         this.authorizationSuccess = authorizationSuccess
+        return this
+    }
+
+    fun activityInfo(activityInfo: ActivityInfo): MockkBraintreeClientBuilder {
+        this.activityInfo = activityInfo
         return this
     }
 
@@ -86,6 +93,8 @@ class MockkBraintreeClientBuilder {
         }
 
         every { braintreeClient.getReturnUrlScheme() } returns returnUrlScheme
+
+        every { braintreeClient.getManifestActivityInfo(any<Class<*>>()) } returns activityInfo
 
         every {
             braintreeClient.sendPOST(any<String>(), any<String>(), responseCallback = any<HttpResponseCallback>())

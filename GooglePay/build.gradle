@@ -63,6 +63,7 @@ dependencies {
     testImplementation libs.json.assert
     testImplementation libs.androidx.core.ktx
     testImplementation libs.kotlin.stdlib
+    testImplementation libs.kotlin.test
     testImplementation libs.coroutines.core
     testImplementation libs.mockk
     testImplementation libs.test.parameter.injector
