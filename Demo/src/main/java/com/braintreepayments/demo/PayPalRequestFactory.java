@@ -3,6 +3,7 @@ package com.braintreepayments.demo;
 import android.content.Context;
 
 import com.braintreepayments.api.core.PostalAddress;
+import com.braintreepayments.api.paypal.AmountBreakdown;
 import com.braintreepayments.api.paypal.PayPalBillingCycle;
 import com.braintreepayments.api.paypal.PayPalBillingInterval;
 import com.braintreepayments.api.paypal.PayPalBillingPricing;
@@ -10,6 +11,9 @@ import com.braintreepayments.api.paypal.PayPalCheckoutRequest;
 import com.braintreepayments.api.paypal.PayPalContactInformation;
 import com.braintreepayments.api.paypal.PayPalContactPreference;
 import com.braintreepayments.api.paypal.PayPalLandingPageType;
+import com.braintreepayments.api.paypal.PayPalLineItem;
+import com.braintreepayments.api.paypal.PayPalLineItemKind;
+import com.braintreepayments.api.paypal.PayPalLineItemUpcType;
 import com.braintreepayments.api.paypal.PayPalPaymentIntent;
 import com.braintreepayments.api.paypal.PayPalPaymentUserAction;
 import com.braintreepayments.api.paypal.PayPalPricingModel;
@@ -18,7 +22,9 @@ import com.braintreepayments.api.paypal.PayPalRecurringBillingPlanType;
 import com.braintreepayments.api.paypal.PayPalPhoneNumber;
 import com.braintreepayments.api.paypal.PayPalVaultRequest;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PayPalRequestFactory {
@@ -119,6 +125,31 @@ public class PayPalRequestFactory {
         return request;
     }
 
+    private static List<PayPalLineItem> buildLineItems(Float unitItemPrice,
+                                                       Float setupFee,
+                                                       Float immediateBillingAmount) {
+        Float totalAmount = unitItemPrice
+                + (setupFee != null ? setupFee : 0.00f)
+                + (immediateBillingAmount != null ? immediateBillingAmount : 0.00f);
+
+        PayPalLineItem item = new PayPalLineItem(
+                PayPalLineItemKind.CREDIT,
+                "Subscription Setup + First Cycle",
+                "1",
+                totalAmount.toString()
+        );
+
+        item.setDescription("Includes setup and first cycle");
+        item.setImageUrl("http://example.com/image.jpg");
+        item.setProductCode("sub-setup-001");
+        item.setUnitTaxAmount("0.50"); // Only include if you use taxTotal in AmountBreakdown
+        item.setUpcType(PayPalLineItemUpcType.UPC_TYPE_2);
+        item.setUpcCode("upc-001");
+        item.setUrl("http://example.com");
+
+        return Collections.singletonList(item);
+    }
+
     public static PayPalCheckoutRequest createPayPalCheckoutRequest(
         Context context,
         String amount,
@@ -129,6 +160,30 @@ public class PayPalRequestFactory {
         String shopperInsightsSessionId
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
+
+        List<PayPalLineItem> lineItems = buildLineItems(
+                10.00f,
+                5.00f,
+                3.00f
+        );
+
+        request.setLineItems(lineItems);
+
+        var amountF = Float.parseFloat(amount) - 1;
+
+        // Should equal item_total + tax_total + shipping + handling + insurance
+        // - shipping_discount - discount.
+        AmountBreakdown breakdown = new AmountBreakdown(
+                Float.toString(amountF), // item_total (required)
+                "0.50",  // tax_total (add) (optional, include only if line_items.tax_amount exists)
+                "0.50",  // shipping_total (add)
+                "0.50",  // handling (add)
+                "0.50",  // insurance (add)
+                "0.50",  // shipping_discount (subtract)
+                "0.50"   // discount (subtract)
+        );
+
+        request.setAmountBreakdown(breakdown);
 
         if (buyerEmailAddress != null && !buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
