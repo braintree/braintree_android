@@ -2,6 +2,7 @@ package com.braintreepayments.api.paypal
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import org.json.JSONObject
 
 /**
  * A recurring billing amount breakdown.
@@ -41,4 +42,18 @@ data class AmountBreakdown(
     val insuranceTotal: String?,
     val shippingDiscount: String?,
     val discountTotal: String?
-) : Parcelable
+) : Parcelable {
+
+    fun toJson(): JSONObject {
+        return JSONObject().apply {
+            put("item_total", itemTotal)
+            put("shipping", shippingTotal)
+            put("handling", handlingTotal)
+            put("tax_total", taxTotal)
+            put("insurance", insuranceTotal)
+            put("shipping_discount", shippingDiscount)
+            put("discount", discountTotal)
+        }
+    }
+}
+
