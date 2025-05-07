@@ -57,16 +57,12 @@ data class AmountBreakdown(
     }
 
     companion object {
-        fun fromJson(json: JSONObject): AmountBreakdown {
-            return AmountBreakdown(
-                itemTotal = json.getString("item_total"),
-                shippingTotal = json.optString("shipping", null),
-                handlingTotal = json.optString("handling", null),
-                taxTotal = json.optString("tax_total", null),
-                insuranceTotal = json.optString("insurance", null),
-                shippingDiscount = json.optString("shipping_discount", null),
-                discountTotal = json.optString("discount", null)
-            )
-        }
+        private const val KEY_ITEM_TOTAL = "item_total"
+        private const val KEY_TAX_TOTAL = "tax_total"
+        private const val KEY_SHIPPING = "shipping"
+        private const val KEY_HANDLING = "handling"
+        private const val KEY_INSURANCE = "insurance"
+        private const val KEY_SHIPPING_DISCOUNT = "shipping_discount"
+        private const val KEY_DISCOUNT = "discount"
     }
 }
