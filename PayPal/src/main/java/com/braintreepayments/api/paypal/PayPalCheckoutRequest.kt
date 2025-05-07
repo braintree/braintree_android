@@ -240,8 +240,8 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
 
         parameters.put(EXPERIENCE_PROFILE_KEY, experienceProfile)
 
-        amountBreakdown?.let {
-            parameters.putOpt(AMOUNT_BREAKDOWN_KEY, it.toJson())
+        if (amountBreakdown != null) {
+            parameters.putOpt(AMOUNT_BREAKDOWN_KEY, amountBreakdown?.toJson())
         }
 
         return parameters.toString()
