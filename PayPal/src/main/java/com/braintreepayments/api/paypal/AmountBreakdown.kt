@@ -47,12 +47,26 @@ data class AmountBreakdown(
     fun toJson(): JSONObject {
         return JSONObject().apply {
             put("item_total", itemTotal)
-            put("shipping", shippingTotal)
-            put("handling", handlingTotal)
-            put("tax_total", taxTotal)
-            put("insurance", insuranceTotal)
-            put("shipping_discount", shippingDiscount)
-            put("discount", discountTotal)
+            putOpt("shipping", shippingTotal)
+            putOpt("handling", handlingTotal)
+            putOpt("tax_total", taxTotal)
+            putOpt("insurance", insuranceTotal)
+            putOpt("shipping_discount", shippingDiscount)
+            putOpt("discount", discountTotal)
+        }
+    }
+
+    companion object {
+        fun fromJson(json: JSONObject): AmountBreakdown {
+            return AmountBreakdown(
+                itemTotal = json.getString("item_total"),
+                shippingTotal = json.optString("shipping", null),
+                handlingTotal = json.optString("handling", null),
+                taxTotal = json.optString("tax_total", null),
+                insuranceTotal = json.optString("insurance", null),
+                shippingDiscount = json.optString("shipping_discount", null),
+                discountTotal = json.optString("discount", null)
+            )
         }
     }
 }
