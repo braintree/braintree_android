@@ -52,6 +52,7 @@ dependencies {
 
     testImplementation libs.robolectric
     testImplementation libs.mockk
+    testImplementation libs.kotlin.test
     testImplementation libs.mockito.core
     testImplementation libs.json.assert
     testImplementation libs.androidx.test.core

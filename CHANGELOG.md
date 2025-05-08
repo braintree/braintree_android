@@ -3,7 +3,12 @@
 ## unreleased
 
 * ShopperInsights (BETA)
-  * Add `PageType.PAYMENT_METHOD_SELECTION` and `PageType.PAYMENT_METHOD_ADDITION`
+    * Add `PageType.PAYMENT_METHOD_SELECTION` and `PageType.PAYMENT_METHOD_ADDITION`
+
+## 5.10.0 (2025-04-29)
+
+* PayPal
+  * Make `PayPalCheckoutRequest.userAuthenticationEmail` optional for App Switch flows
 
 ## 5.9.0 (2025-04-09)
 
