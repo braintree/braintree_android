@@ -3,7 +3,6 @@ package com.braintreepayments.demo;
 import android.content.Context;
 
 import com.braintreepayments.api.core.PostalAddress;
-import com.braintreepayments.api.paypal.AmountBreakdown;
 import com.braintreepayments.api.paypal.PayPalBillingCycle;
 import com.braintreepayments.api.paypal.PayPalBillingInterval;
 import com.braintreepayments.api.paypal.PayPalBillingPricing;
@@ -11,9 +10,6 @@ import com.braintreepayments.api.paypal.PayPalCheckoutRequest;
 import com.braintreepayments.api.paypal.PayPalContactInformation;
 import com.braintreepayments.api.paypal.PayPalContactPreference;
 import com.braintreepayments.api.paypal.PayPalLandingPageType;
-import com.braintreepayments.api.paypal.PayPalLineItem;
-import com.braintreepayments.api.paypal.PayPalLineItemKind;
-import com.braintreepayments.api.paypal.PayPalLineItemUpcType;
 import com.braintreepayments.api.paypal.PayPalPaymentIntent;
 import com.braintreepayments.api.paypal.PayPalPaymentUserAction;
 import com.braintreepayments.api.paypal.PayPalPricingModel;

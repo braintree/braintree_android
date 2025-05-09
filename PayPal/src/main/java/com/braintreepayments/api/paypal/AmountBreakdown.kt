@@ -46,13 +46,13 @@ data class AmountBreakdown(
 
     fun toJson(): JSONObject {
         return JSONObject().apply {
-            put("item_total", itemTotal)
-            putOpt("shipping", shippingTotal)
-            putOpt("handling", handlingTotal)
-            putOpt("tax_total", taxTotal)
-            putOpt("insurance", insuranceTotal)
-            putOpt("shipping_discount", shippingDiscount)
-            putOpt("discount", discountTotal)
+            put(KEY_ITEM_TOTAL, itemTotal)
+            putOpt(KEY_SHIPPING, shippingTotal)
+            putOpt(KEY_HANDLING, handlingTotal)
+            putOpt(KEY_TAX_TOTAL, taxTotal)
+            putOpt(KEY_INSURANCE, insuranceTotal)
+            putOpt(KEY_SHIPPING_DISCOUNT, shippingDiscount)
+            putOpt(KEY_DISCOUNT, discountTotal)
         }
     }
 
