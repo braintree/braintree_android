@@ -399,4 +399,39 @@ public class PayPalCheckoutRequestUnitTest {
         assertEquals("3.00", result.getShippingTotal());
         assertEquals("1.75", result.getTaxTotal());
     }
+
+    @Test
+    public void createRequestBody_sets_amountBeakdown() throws JSONException {
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("1.00", true);
+
+        AmountBreakdown breakdownWithAllFields =
+                new AmountBreakdown(
+                        "20.00",  // itemTotal
+                        "1.75",   // taxTotal
+                        "3.00",   // shippingTotal
+                        "0.50",   // handling
+                        "1.00",   // insurance
+                        "0.25",   // shippingDiscount
+                        "2.00"    // discount
+                );
+
+        request.setAmountBreakdown(breakdownWithAllFields);
+
+        String requestBody = request.createRequestBody(
+                mock(Configuration.class),
+                mock(Authorization.class),
+                "success_url",
+                "cancel_url",
+                null
+        );
+
+        // Amount breakdown assertions
+        assertTrue(requestBody.contains("\"item_total\":\"20.00\""));
+        assertTrue(requestBody.contains("\"shipping\":\"3.00\""));
+        assertTrue(requestBody.contains("\"handling\":\"0.50\""));
+        assertTrue(requestBody.contains("\"tax_total\":\"1.75\""));
+        assertTrue(requestBody.contains("\"insurance\":\"1.00\""));
+        assertTrue(requestBody.contains("\"shipping_discount\":\"0.25\""));
+        assertTrue(requestBody.contains("\"discount\":\"2.00\""));
+    }
 }
