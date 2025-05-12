@@ -28,8 +28,10 @@ class CardClientUnitTest {
     private var apiClient: ApiClient = mockk(relaxed = true)
     private val analyticsParamRepository: AnalyticsParamRepository = mockk(relaxed = true)
 
-    private val graphQLEnabledConfig: Configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL)
-    private val graphQLDisabledConfig: Configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
+    private val graphQLEnabledConfig: Configuration =
+        Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL)
+    private val graphQLDisabledConfig: Configuration =
+        Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
 
     @Test
     fun tokenize_resetsSessionId() {
