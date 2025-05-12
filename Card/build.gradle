@@ -48,6 +48,7 @@ dependencies {
 
     testImplementation libs.robolectric
     testImplementation libs.mockito.core
+    testImplementation libs.mockk
     testImplementation libs.json.assert
     testImplementation project(':TestUtils')
     testImplementation project(':ThreeDSecure')
