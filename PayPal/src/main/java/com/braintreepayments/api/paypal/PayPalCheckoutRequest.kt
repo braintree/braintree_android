@@ -246,7 +246,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
 
         recurringBillingPlanType?.let { parameters.put(PLAN_TYPE_KEY, it) }
         recurringBillingDetails?.let { parameters.put(PLAN_METADATA_KEY, it.toJson()); }
-        
+
         return parameters.toString()
     }
 }
