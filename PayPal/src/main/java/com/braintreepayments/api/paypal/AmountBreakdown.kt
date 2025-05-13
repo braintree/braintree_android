@@ -44,7 +44,7 @@ data class AmountBreakdown(
     val discountTotal: String?
 ) : Parcelable {
 
-    fun toJson(): JSONObject {
+    internal fun toJson(): JSONObject {
         return JSONObject().apply {
             put(KEY_ITEM_TOTAL, itemTotal)
             putOpt(KEY_SHIPPING, shippingTotal)
