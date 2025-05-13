@@ -10,6 +10,9 @@ import com.braintreepayments.api.paypal.PayPalCheckoutRequest;
 import com.braintreepayments.api.paypal.PayPalContactInformation;
 import com.braintreepayments.api.paypal.PayPalContactPreference;
 import com.braintreepayments.api.paypal.PayPalLandingPageType;
+import com.braintreepayments.api.paypal.PayPalLineItem;
+import com.braintreepayments.api.paypal.PayPalLineItemKind;
+import com.braintreepayments.api.paypal.PayPalLineItemUpcType;
 import com.braintreepayments.api.paypal.PayPalPaymentIntent;
 import com.braintreepayments.api.paypal.PayPalPaymentUserAction;
 import com.braintreepayments.api.paypal.PayPalPricingModel;
@@ -18,6 +21,7 @@ import com.braintreepayments.api.paypal.PayPalRecurringBillingPlanType;
 import com.braintreepayments.api.paypal.PayPalPhoneNumber;
 import com.braintreepayments.api.paypal.PayPalVaultRequest;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PayPalRequestFactory {
@@ -191,5 +195,32 @@ public class PayPalRequestFactory {
         }
 
         return request;
+    }
+
+    private static List<PayPalLineItem> buildLineItems(Float unitItemPrice,
+                                                       Float setupFee,
+                                                       Float immediateBillingAmount) {
+        Float totalAmount = unitItemPrice
+                + (setupFee != null ? setupFee : 0.00f)
+                + (immediateBillingAmount != null ? immediateBillingAmount : 0.00f);
+
+        PayPalLineItem item = new PayPalLineItem(
+                PayPalLineItemKind.CREDIT,
+                "Subscription Setup + First Cycle 54321",
+                "1",
+                totalAmount.toString()
+        );
+
+        item.setDescription("Includes setup and first cycle 12345");
+        item.setImageUrl("http://example.com/image.jpg");
+        item.setProductCode("sub-setup-001");
+        item.setUpcType(PayPalLineItemUpcType.UPC_TYPE_2);
+        item.setUpcCode("upc-001");
+        item.setUrl("http://example.com");
+
+        // Only include if you use taxTotal in AmountBreakdown
+        item.setUnitTaxAmount("0.50");
+
+        return Collections.singletonList(item);
     }
 }
