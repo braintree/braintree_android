@@ -17,7 +17,6 @@ import com.braintreepayments.api.paypal.PayPalRecurringBillingDetails;
 import com.braintreepayments.api.paypal.PayPalRecurringBillingPlanType;
 import com.braintreepayments.api.paypal.PayPalPhoneNumber;
 import com.braintreepayments.api.paypal.PayPalVaultRequest;
-
 import java.util.ArrayList;
 import java.util.List;
 
