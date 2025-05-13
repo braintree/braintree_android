@@ -1,7 +1,9 @@
-package com.braintreepayments.api.shopperinsights.v2
+package com.braintreepayments.api.shopperinsights.v2.internal
 
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
+import com.braintreepayments.api.shopperinsights.v2.PurchaseUnit
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import io.mockk.every
 import io.mockk.mockk
@@ -9,6 +11,7 @@ import io.mockk.verify
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import org.junit.Before
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 
@@ -22,6 +25,43 @@ class CreateCustomerSessionApiUnitTest {
         venmoAppInstalled = false,
         purchaseUnits = null
     )
+
+    private val customerSessionRequestWithPurchaseUnits = customerSessionRequest.copy(
+        purchaseUnits = listOf(
+            PurchaseUnit(amount = "100.00", currencyCode = "USD"),
+            PurchaseUnit(amount = "200.00", currencyCode = "EUR")
+        )
+    )
+
+    private val expectedJsonRequestObjects = CustomerSessionRequestBuilder.JsonRequestObjects(
+        customer = JSONObject().apply {
+            put("hashedEmail", "hashedEmail")
+            put("hashedPhoneNumber", "hashedPhoneNumber")
+            put("paypalAppInstalled", true)
+            put("venmoAppInstalled", false)
+        },
+        purchaseUnits = JSONArray().apply {
+            put(JSONObject().apply {
+                put("amount", JSONObject().apply {
+                    put("value", "100.00")
+                    put("currencyCode", "USD")
+                })
+            })
+            put(JSONObject().apply {
+                put("amount", JSONObject().apply {
+                    put("value", "200.00")
+                    put("currencyCode", "EUR")
+                })
+            })
+        }
+    )
+
+    lateinit var braintreeClient: BraintreeClient
+
+    @Before
+    fun setup() {
+        braintreeClient = mockk<BraintreeClient>(relaxed = true)
+    }
 
     @Test
     fun `when execute is called and a responseBody is returned, callback with Success is invoked`() {
@@ -40,7 +80,16 @@ class CreateCustomerSessionApiUnitTest {
             .sendGraphQLPOSTSuccessfulResponse(responseBody)
             .build()
 
-        val createCustomerSessionApi = CreateCustomerSessionApi(braintreeClient)
+        val customerSessionRequestBuilder = mockk<CustomerSessionRequestBuilder>(relaxed = true)
+        val responseParser = mockk<ShopperInsightsResponseParser> {
+            every { parseSessionId(responseBody, "createCustomerSession") } returns sessionId
+        }
+
+        val createCustomerSessionApi = CreateCustomerSessionApi(
+            braintreeClient = braintreeClient,
+            customerSessionRequestBuilder = customerSessionRequestBuilder,
+            responseParser = responseParser
+        )
 
         val callback = mockk<(CreateCustomerSessionApi.CreateCustomerSessionResult) -> Unit>(relaxed = true)
         createCustomerSessionApi.execute(customerSessionRequest, callback)
@@ -56,7 +105,14 @@ class CreateCustomerSessionApiUnitTest {
             .sendGraphQLPOSTErrorResponse(error)
             .build()
 
-        val createCustomerSessionApi = CreateCustomerSessionApi(braintreeClient)
+        val customerSessionRequestBuilder = mockk<CustomerSessionRequestBuilder>(relaxed = true)
+        val responseParser = mockk<ShopperInsightsResponseParser>(relaxed = true)
+
+        val createCustomerSessionApi = CreateCustomerSessionApi(
+            braintreeClient = braintreeClient,
+            customerSessionRequestBuilder = customerSessionRequestBuilder,
+            responseParser = responseParser
+        )
 
         val callback = mockk<(CreateCustomerSessionApi.CreateCustomerSessionResult) -> Unit>(relaxed = true)
         createCustomerSessionApi.execute(customerSessionRequest, callback)
@@ -67,11 +123,18 @@ class CreateCustomerSessionApiUnitTest {
     @Test
     fun `when execute is called and a JSONException is thrown, callback with Error is invoked`() {
         val exception = JSONException("Test exception")
-        val createCustomerSessionApi = CreateCustomerSessionApi(mockk())
-        val callback = mockk<(CreateCustomerSessionApi.CreateCustomerSessionResult) -> Unit>(relaxed = true)
-        val customerSessionRequest = mockk<CustomerSessionRequest>(relaxed = true)
-        every { customerSessionRequest.hashedEmail } throws exception
+        val customerSessionRequestBuilder = mockk<CustomerSessionRequestBuilder> {
+            every { createRequestObjects(any()) } throws exception
+        }
+        val responseParser = mockk<ShopperInsightsResponseParser>(relaxed = true)
 
+        val createCustomerSessionApi = CreateCustomerSessionApi(
+            braintreeClient = braintreeClient,
+            customerSessionRequestBuilder = customerSessionRequestBuilder,
+            responseParser = responseParser
+        )
+
+        val callback = mockk<(CreateCustomerSessionApi.CreateCustomerSessionResult) -> Unit>(relaxed = true)
         createCustomerSessionApi.execute(customerSessionRequest, callback)
 
         verify { callback.invoke(CreateCustomerSessionApi.CreateCustomerSessionResult.Error(exception)) }
@@ -79,15 +142,9 @@ class CreateCustomerSessionApiUnitTest {
 
     @Test
     fun `when execute is called, the correct GraphQL request body is sent`() {
-        val braintreeClient = mockk<BraintreeClient>(relaxed = true)
-        val createCustomerSessionApi = CreateCustomerSessionApi(braintreeClient)
-
-        val customerSessionRequestWithPurchaseUnits = customerSessionRequest.copy(
-            purchaseUnits = listOf(
-                PurchaseUnit(amount = "100.00", currencyCode = "USD"),
-                PurchaseUnit(amount = "200.00", currencyCode = "EUR")
-            )
-        )
+        val customerSessionRequestBuilder = mockk<CustomerSessionRequestBuilder> {
+            every { createRequestObjects(customerSessionRequestWithPurchaseUnits) } returns expectedJsonRequestObjects
+        }
 
         val expectedRequestBody = JSONObject().apply {
             put(
@@ -129,8 +186,13 @@ class CreateCustomerSessionApiUnitTest {
             )
         }
 
-        val callback = mockk<(CreateCustomerSessionApi.CreateCustomerSessionResult) -> Unit>(relaxed = true)
-        createCustomerSessionApi.execute(customerSessionRequestWithPurchaseUnits, callback)
+        val createCustomerSessionApi = CreateCustomerSessionApi(
+            braintreeClient = braintreeClient,
+            customerSessionRequestBuilder = customerSessionRequestBuilder,
+            responseParser = mockk<ShopperInsightsResponseParser>(relaxed = true)
+        )
+
+        createCustomerSessionApi.execute(customerSessionRequestWithPurchaseUnits, mockk(relaxed = true))
 
         verify {
             braintreeClient.sendGraphQLPOST(withArg { actualRequestBody ->
