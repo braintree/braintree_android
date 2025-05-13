@@ -125,7 +125,8 @@ public class PayPalRequestFactory {
         String buyerPhoneCountryCode,
         String buyerPhoneNationalNumber,
         Boolean isContactInformationEnabled,
-        String shopperInsightsSessionId
+        String shopperInsightsSessionId,
+        Boolean isAmountBreakdownEnabled
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
 
