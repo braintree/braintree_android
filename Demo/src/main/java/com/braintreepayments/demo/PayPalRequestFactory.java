@@ -3,6 +3,7 @@ package com.braintreepayments.demo;
 import android.content.Context;
 
 import com.braintreepayments.api.core.PostalAddress;
+import com.braintreepayments.api.paypal.AmountBreakdown;
 import com.braintreepayments.api.paypal.PayPalBillingCycle;
 import com.braintreepayments.api.paypal.PayPalBillingInterval;
 import com.braintreepayments.api.paypal.PayPalBillingPricing;
@@ -122,6 +123,64 @@ public class PayPalRequestFactory {
         return request;
     }
 
+    private static Float calculateItemTotal(
+            String amount,
+            String taxTotal,
+            String shippingTotal,
+            String handling,
+            String insurance,
+            String discountTotal,
+            String shippingDiscount
+    ) {
+        float tax = Float.parseFloat(taxTotal);
+        float shipping = Float.parseFloat(shippingTotal);
+        float handlingFee = Float.parseFloat(handling);
+        float insuranceFee = Float.parseFloat(insurance);
+        float discount = Float.parseFloat(discountTotal);
+        float shippingDisc = Float.parseFloat(shippingDiscount);
+        float total = Float.parseFloat(amount);
+
+        float itemTotal = total - (tax + shipping + handlingFee + insuranceFee - shippingDisc - discount);
+
+        return itemTotal;
+    }
+
+    private static void setRecurringBilling(PayPalCheckoutRequest request, String amount) {
+        PayPalBillingPricing billingPricing = new PayPalBillingPricing(
+                PayPalPricingModel.FIXED,
+                amount, // matches the adjusted total
+                "99.99"
+        );
+
+        PayPalBillingCycle billingCycle = new PayPalBillingCycle(
+                false,
+                1,
+                PayPalBillingInterval.MONTH,
+                1,
+                1,
+                "2024-08-01",
+                billingPricing
+        );
+
+        List<PayPalBillingCycle> billingCycles = new ArrayList<>();
+        billingCycles.add(billingCycle);
+        PayPalRecurringBillingDetails payPalRecurringBillingDetails = new PayPalRecurringBillingDetails(
+                billingCycles,
+                "32.56",
+                "USD",
+                "Vogue Magazine Subscription",
+                "9.99",
+                "Home delivery to Chicago, IL",
+                "19.99",
+                1,
+                "1.99",
+                "0.59"
+        );
+
+        request.setRecurringBillingDetails(payPalRecurringBillingDetails);
+        request.setRecurringBillingPlanType(PayPalRecurringBillingPlanType.SUBSCRIPTION);
+    }
+
     public static PayPalCheckoutRequest createPayPalCheckoutRequest(
         Context context,
         String amount,
@@ -133,6 +192,49 @@ public class PayPalRequestFactory {
         Boolean isAmountBreakdownEnabled
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
+
+        if (isAmountBreakdownEnabled) {
+            String taxTotal = "0.50";
+            String shippingTotal = "0.50";
+            String handling = "0.50";
+            String insurance = "0.50";
+            String discountTotal = "0.50";
+            String shippingDiscount = "0.50";
+
+            Float itemTotal = calculateItemTotal(
+                    amount,
+                    taxTotal,
+                    shippingTotal,
+                    handling,
+                    insurance,
+                    discountTotal,
+                    shippingDiscount
+            );
+
+            List<PayPalLineItem> lineItems = buildLineItems(
+                    itemTotal,
+                    5.00f,
+                    3.00f
+            );
+
+            request.setLineItems(lineItems);
+
+            // Should equal item_total + tax_total + shipping + handling + insurance
+            // - shipping_discount - discount.
+            AmountBreakdown breakdown = new AmountBreakdown(
+                    String.format("%.2f", itemTotal), // item_total (required)
+                    taxTotal,  // tax_total (add) (optional, include only if line_items.tax_amount exists)
+                    shippingTotal,  // shipping_total (add)
+                    handling,  // handling (add)
+                    insurance,  // insurance (add)
+                    shippingDiscount,  // shipping_discount (subtract)
+                    discountTotal // discount (subtract)
+            );
+
+            request.setAmountBreakdown(breakdown);
+
+            setRecurringBilling(request, String.format("%.2f", itemTotal));
+        }
 
         if (buyerEmailAddress != null && !buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
