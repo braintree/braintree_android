@@ -754,7 +754,7 @@ class ThreeDSecureClientUnitTest {
         sut.tokenize(paymentAuthResult, threeDSecureTokenizeCallback)
 
         val captorList = mutableListOf<ThreeDSecureResult>()
-        verify { threeDSecureTokenizeCallback.onThreeDSecureResult(capture(captorList)) }
+        verify(exactly = 1) { threeDSecureTokenizeCallback.onThreeDSecureResult(capture(captorList)) }
         val result = captorList.first()
         assertTrue(result is ThreeDSecureResult.Failure)
         assertEquals(result.nonce, paymentAuthResult.threeDSecureParams?.threeDSecureNonce)
