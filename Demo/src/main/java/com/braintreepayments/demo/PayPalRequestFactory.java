@@ -140,7 +140,11 @@ public class PayPalRequestFactory {
         float shippingDisc = Float.parseFloat(shippingDiscount);
         float total = Float.parseFloat(amount);
 
-        float itemTotal = total - (tax + shipping + handlingFee + insuranceFee - shippingDisc - discount);
+        // Should equal item_total + tax_total + shipping + handling + insurance
+        // - shipping_discount - discount.
+        float additions = tax + shipping + handlingFee + insuranceFee;
+        float subtractions = shippingDisc + discount;
+        float itemTotal = total - (additions - subtractions);
 
         return itemTotal;
     }
@@ -222,16 +226,14 @@ public class PayPalRequestFactory {
 
             request.setLineItems(lineItems);
 
-            // Should equal item_total + tax_total + shipping + handling + insurance
-            // - shipping_discount - discount.
             AmountBreakdown breakdown = new AmountBreakdown(
-                    String.format("%.2f", itemTotal), // item_total (required)
-                    taxTotal,  // tax_total (add) (optional, include only if line_items.tax_amount exists)
-                    shippingTotal,  // shipping_total (add)
-                    handling,  // handling (add)
-                    insurance,  // insurance (add)
-                    shippingDiscount,  // shipping_discount (subtract)
-                    discountTotal // discount (subtract)
+                    String.format("%.2f", itemTotal),
+                    taxTotal,
+                    shippingTotal,
+                    handling,
+                    insurance,
+                    shippingDiscount,
+                    discountTotal
             );
 
             request.setAmountBreakdown(breakdown);
