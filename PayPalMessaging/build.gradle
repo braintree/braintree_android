@@ -44,7 +44,7 @@ dependencies {
     implementation deps.coreKtx
     implementation deps.kotlinStdLib
     implementation deps.appCompat
-    implementation('com.paypal.messages:paypal-messages:1.0.1')
+    implementation('com.paypal.messages:paypal-messages:1.0.3')
 
     testImplementation deps.robolectric
     testImplementation deps.jsonAssert
