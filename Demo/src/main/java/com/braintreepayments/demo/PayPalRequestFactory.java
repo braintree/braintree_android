@@ -152,8 +152,7 @@ public class PayPalRequestFactory {
     private static void setRecurringBilling(PayPalCheckoutRequest request, String amount) {
         PayPalBillingPricing billingPricing = new PayPalBillingPricing(
                 PayPalPricingModel.FIXED,
-                amount, // matches the adjusted total
-                "99.99"
+                amount // matches the adjusted total
         );
 
         PayPalBillingCycle billingCycle = new PayPalBillingCycle(
@@ -193,7 +192,7 @@ public class PayPalRequestFactory {
         String shopperInsightsSessionId,
         Boolean isAmountBreakdownEnabled
     ) {
-        PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest("10.99", true);
 
         if (isAmountBreakdownEnabled) {
 
@@ -225,7 +224,7 @@ public class PayPalRequestFactory {
             request.setLineItems(lineItems);
 
             AmountBreakdown breakdown = new AmountBreakdown(
-                    String.format("%.2f", itemTotal),
+                    "9.99",
                     taxTotal,
                     shippingTotal,
                     null,
