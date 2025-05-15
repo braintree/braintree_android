@@ -170,15 +170,13 @@ public class PayPalRequestFactory {
         billingCycles.add(billingCycle);
         PayPalRecurringBillingDetails payPalRecurringBillingDetails = new PayPalRecurringBillingDetails(
                 billingCycles,
-                "32.56",
+                "9.99",
                 "USD",
                 "Vogue Magazine Subscription",
                 "9.99",
                 "Home delivery to Chicago, IL",
-                "19.99",
-                1,
-                "1.99",
-                "0.59"
+                null,
+                1
         );
 
         request.setRecurringBillingDetails(payPalRecurringBillingDetails);
@@ -230,10 +228,10 @@ public class PayPalRequestFactory {
                     String.format("%.2f", itemTotal),
                     taxTotal,
                     shippingTotal,
-                    handling,
-                    insurance,
-                    shippingDiscount,
-                    discountTotal
+                    null,
+                    null,
+                    null,
+                    null
             );
 
             request.setAmountBreakdown(breakdown);
