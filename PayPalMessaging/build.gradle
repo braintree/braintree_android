@@ -49,7 +49,7 @@ dependencies {
     implementation libs.androidx.core.ktx
     implementation libs.kotlin.stdlib
     implementation libs.androidx.appcompat
-    implementation('com.paypal.messages:paypal-messages:1.0.1')
+    implementation('com.paypal.messages:paypal-messages:1.0.3')
 
     testImplementation libs.robolectric
     testImplementation libs.json.assert
