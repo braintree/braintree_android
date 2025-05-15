@@ -1,6 +1,7 @@
 # Braintree Android SDK Release Notes
 
-## Unreleased
+## unreleased
+
 * PayPal Messaging
   * Bump `paypal-messages` to version `1.0.3`
 
