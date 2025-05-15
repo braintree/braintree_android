@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* ThreeDSecure
+    * Fix an issue where the `ThreeDSecureTokenizeCallback` would return a `Failure` and `Success` result (fixes #1321)
+
 ## 5.10.0 (2025-04-29)
 
 * PayPal
