@@ -192,9 +192,12 @@ public class PayPalRequestFactory {
         String shopperInsightsSessionId,
         Boolean isAmountBreakdownEnabled
     ) {
-        PayPalCheckoutRequest request = new PayPalCheckoutRequest("10.99", true);
+        PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
 
+        // TODO Unscheduled and Installment
         if (isAmountBreakdownEnabled) {
+
+            request = new PayPalCheckoutRequest("10.99", true);
 
             request.setShouldRequestBillingAgreement(true);
 
