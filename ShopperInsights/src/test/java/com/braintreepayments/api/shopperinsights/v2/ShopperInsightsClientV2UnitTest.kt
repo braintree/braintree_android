@@ -13,8 +13,11 @@ import com.braintreepayments.api.shopperinsights.PageType
 import com.braintreepayments.api.shopperinsights.PresentmentDetails
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_SELECTED
+import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessionApi
+import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessionApi.CreateCustomerSessionResult
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
@@ -26,6 +29,7 @@ class ShopperInsightsClientV2UnitTest {
     private val braintreeClient = mockk<BraintreeClient>(relaxed = true)
     private val deviceInspector = mockk<DeviceInspector>(relaxed = true)
     private val analyticsClient: AnalyticsClient = mockk(relaxed = true)
+    private val createCustomerSessionApi = mockk<CreateCustomerSessionApi>(relaxed = true)
 
     private val context = mockk<Context>(relaxed = true)
 
@@ -37,6 +41,7 @@ class ShopperInsightsClientV2UnitTest {
     fun setUp() {
         subject = ShopperInsightsClientV2(
             braintreeClient = braintreeClient,
+            createCustomerSessionApi = createCustomerSessionApi,
             deviceInspector = deviceInspector,
             lazy { analyticsClient }
         )
@@ -101,5 +106,43 @@ class ShopperInsightsClientV2UnitTest {
         val result = subject.isVenmoAppInstalled(context)
 
         assertEquals(venmoInstalled, result)
+    }
+
+    @Test
+    fun `when createCustomerSession is called and succeeds, callback is invoked with Success`() {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val callbackSlot = slot<(CreateCustomerSessionResult) -> Unit>()
+        val sessionId = "test-session-id"
+
+        every {
+            createCustomerSessionApi.execute(customerSessionRequest, capture(callbackSlot))
+        } answers {
+            callbackSlot.captured(CreateCustomerSessionResult.Success(sessionId))
+        }
+
+        var result: CustomerSessionResult? = null
+        subject.createCustomerSession(customerSessionRequest) { result = it }
+
+        assert(result is CustomerSessionResult.Success)
+        assertEquals(sessionId, (result as CustomerSessionResult.Success).sessionId)
+    }
+
+    @Test
+    fun `when createCustomerSession is called and fails, callback is invoked with Failure`() {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val callbackSlot = slot<(CreateCustomerSessionResult) -> Unit>()
+        val error = Exception("Test error")
+
+        every {
+            createCustomerSessionApi.execute(customerSessionRequest, capture(callbackSlot))
+        } answers {
+            callbackSlot.captured(CreateCustomerSessionResult.Error(error))
+        }
+
+        var result: CustomerSessionResult? = null
+        subject.createCustomerSession(customerSessionRequest) { result = it }
+
+        assert(result is CustomerSessionResult.Failure)
+        assertEquals(error, (result as CustomerSessionResult.Failure).error)
     }
 }
