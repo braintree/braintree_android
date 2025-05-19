@@ -195,7 +195,6 @@ public class PayPalRequestFactory {
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
 
-        // TODO Unscheduled and Installment
         if (isAmountBreakdownEnabled) {
 
             request = new PayPalCheckoutRequest("10.99", true);
