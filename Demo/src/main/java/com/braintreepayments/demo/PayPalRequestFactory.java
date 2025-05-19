@@ -140,10 +140,11 @@ public class PayPalRequestFactory {
         float shippingDisc = Float.parseFloat(shippingDiscount);
         float total = Float.parseFloat(amount);
 
-        // Should equal item_total + tax_total + shipping + handling + insurance
-        // - shipping_discount - discount.
         float additions = tax + shipping + handlingFee + insuranceFee;
         float subtractions = shippingDisc + discount;
+
+        // Should equal item_total + tax_total + shipping + handling + insurance
+        // - shipping_discount - discount.
         float itemTotal = total - (additions - subtractions);
 
         return itemTotal;
