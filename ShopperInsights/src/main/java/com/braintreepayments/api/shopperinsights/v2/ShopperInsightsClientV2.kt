@@ -10,6 +10,7 @@ import com.braintreepayments.api.shopperinsights.ButtonType
 import com.braintreepayments.api.shopperinsights.PresentmentDetails
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_SELECTED
+import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessionApi
 
 /**
  * Use [ShopperInsightsClientV2] to optimize your checkout experience by prioritizing the customer’s preferred payment
@@ -26,6 +27,7 @@ import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON
 @ExperimentalBetaApi
 class ShopperInsightsClientV2 internal constructor(
     private val braintreeClient: BraintreeClient,
+    private val createCustomerSessionApi: CreateCustomerSessionApi = CreateCustomerSessionApi(braintreeClient),
     private val deviceInspector: DeviceInspector = DeviceInspector(),
     lazyAnalyticsClient: Lazy<AnalyticsClient> = AnalyticsClient.lazyInstance
 ) {
@@ -42,6 +44,31 @@ class ShopperInsightsClientV2 internal constructor(
     )
 
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
+
+    /**
+     * Creates a new customer session.
+     *
+     * @param customerSessionRequest: a [CustomerSessionRequest] object containing the request parameters
+     * @param customerSessionCallback: a callback that returns the result of the customer session creation
+     *
+     * Note: **This feature is in beta. It's public API may change in future releases.**
+     */
+    fun createCustomerSession(
+        customerSessionRequest: CustomerSessionRequest,
+        customerSessionCallback: (customerSessionResult: CustomerSessionResult) -> Unit
+    ) {
+        createCustomerSessionApi.execute(customerSessionRequest) { createCustomerSessionResult ->
+            when (createCustomerSessionResult) {
+                is CreateCustomerSessionApi.CreateCustomerSessionResult.Success -> {
+                    customerSessionCallback(CustomerSessionResult.Success(createCustomerSessionResult.sessionId))
+                }
+
+                is CreateCustomerSessionApi.CreateCustomerSessionResult.Error -> {
+                    customerSessionCallback(CustomerSessionResult.Failure(createCustomerSessionResult.error))
+                }
+            }
+        }
+    }
 
     /**
      * Call this method when the PayPal, Venmo or Other button has been successfully displayed to the buyer.
