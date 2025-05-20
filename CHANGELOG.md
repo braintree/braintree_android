@@ -2,6 +2,10 @@
 
 ## unreleased
 
+* ThreeDSecure
+    * Fix an issue where the `ThreeDSecureTokenizeCallback` would return a `Failure` and `Success` result (fixes #1321)
+* PayPal Messaging
+    * Bump `paypal-messages` to version `1.0.3`
 * ShopperInsights (BETA)
     * Add `PageType.PAYMENT_METHOD_SELECTION` and `PageType.PAYMENT_METHOD_ADDITION`
 

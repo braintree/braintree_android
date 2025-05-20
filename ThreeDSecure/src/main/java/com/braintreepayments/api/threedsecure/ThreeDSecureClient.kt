@@ -349,10 +349,11 @@ class ThreeDSecureClient internal constructor(
                                     threeDSecureResult.threeDSecureNonce
                                 )
                             )
-                        }
-                        threeDSecureResult.threeDSecureNonce?.let {
-                            braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_SUCCEEDED)
-                            callbackTokenizeSuccess(callback, ThreeDSecureResult.Success(it))
+                        } else {
+                            threeDSecureResult.threeDSecureNonce?.let {
+                                braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_SUCCEEDED)
+                                callbackTokenizeSuccess(callback, ThreeDSecureResult.Success(it))
+                            }
                         }
                     } else if (error != null) {
                         braintreeClient.sendAnalyticsEvent(
