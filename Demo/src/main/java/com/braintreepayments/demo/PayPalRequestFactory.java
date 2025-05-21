@@ -123,33 +123,6 @@ public class PayPalRequestFactory {
         return request;
     }
 
-    private static Float calculateItemTotal(
-            String amount,
-            String taxTotal,
-            String shippingTotal,
-            String handling,
-            String insurance,
-            String discountTotal,
-            String shippingDiscount
-    ) {
-        float tax = Float.parseFloat(taxTotal);
-        float shipping = Float.parseFloat(shippingTotal);
-        float handlingFee = Float.parseFloat(handling);
-        float insuranceFee = Float.parseFloat(insurance);
-        float discount = Float.parseFloat(discountTotal);
-        float shippingDisc = Float.parseFloat(shippingDiscount);
-        float total = Float.parseFloat(amount);
-
-        float additions = tax + shipping + handlingFee + insuranceFee;
-        float subtractions = shippingDisc + discount;
-
-        // Should equal item_total + tax_total + shipping + handling + insurance
-        // - shipping_discount - discount.
-        float itemTotal = total - (additions - subtractions);
-
-        return itemTotal;
-    }
-
     private static void setRecurringBilling(PayPalCheckoutRequest request, String amount) {
         PayPalBillingPricing billingPricing = new PayPalBillingPricing(
                 PayPalPricingModel.FIXED,
@@ -208,15 +181,7 @@ public class PayPalRequestFactory {
             String discountTotal = "0.50";
             String shippingDiscount = "0.50";
 
-            Float itemTotal = calculateItemTotal(
-                    amount,
-                    taxTotal,
-                    shippingTotal,
-                    handling,
-                    insurance,
-                    discountTotal,
-                    shippingDiscount
-            );
+            Float itemTotal = 9.99f;
 
             List<PayPalLineItem> lineItems = buildLineItems(
                     itemTotal,
@@ -227,7 +192,7 @@ public class PayPalRequestFactory {
             request.setLineItems(lineItems);
 
             AmountBreakdown breakdown = new AmountBreakdown(
-                    "9.99",
+                    String.format("%.2f", itemTotal),
                     taxTotal,
                     shippingTotal,
                     null,
@@ -304,9 +269,11 @@ public class PayPalRequestFactory {
         return request;
     }
 
-    private static List<PayPalLineItem> buildLineItems(Float unitItemPrice,
-                                                       Float setupFee,
-                                                       Float immediateBillingAmount) {
+    private static List<PayPalLineItem> buildLineItems(
+            Float unitItemPrice,
+            Float setupFee,
+            Float immediateBillingAmount
+    ) {
         Float totalAmount = unitItemPrice
                 + (setupFee != null ? setupFee : 0.00f)
                 + (immediateBillingAmount != null ? immediateBillingAmount : 0.00f);
