@@ -176,10 +176,6 @@ public class PayPalRequestFactory {
 
             String taxTotal = "0.50";
             String shippingTotal = "0.50";
-            String handling = "0.50";
-            String insurance = "0.50";
-            String discountTotal = "0.50";
-            String shippingDiscount = "0.50";
 
             Float itemTotal = 9.99f;
 
