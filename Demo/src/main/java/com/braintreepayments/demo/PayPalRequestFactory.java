@@ -177,10 +177,10 @@ public class PayPalRequestFactory {
             String taxTotal = "0.50";
             String shippingTotal = "0.50";
 
-            Float itemTotal = 9.99f;
+            String itemTotal = "9.99";
 
             List<PayPalLineItem> lineItems = buildLineItems(
-                    itemTotal,
+                    Float.parseFloat(itemTotal),
                     5.00f,
                     3.00f
             );
@@ -188,7 +188,7 @@ public class PayPalRequestFactory {
             request.setLineItems(lineItems);
 
             AmountBreakdown breakdown = new AmountBreakdown(
-                    String.format("%.2f", itemTotal),
+                    itemTotal,
                     taxTotal,
                     shippingTotal,
                     null,
