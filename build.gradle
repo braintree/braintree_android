@@ -85,13 +85,13 @@ allprojects {
     }
 }
 
-version '4.51.0'
+version '4.51.1-SNAPSHOT'
 group 'com.braintreepayments'
 ext {
     compileSdkVersion = 34
     minSdkVersion = 21
     minSdkVersionPayPalMessaging = 23
-    versionCode = 197
+    versionCode = 198
     targetSdkVersion = 35
     versionName = version
 }
