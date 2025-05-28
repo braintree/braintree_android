@@ -51,6 +51,7 @@ public class PayPalRequestFactory {
             postalAddress.setLocality("San Francisco");
             postalAddress.setRegion("CA");
             postalAddress.setCountryCodeAlpha2("US");
+            postalAddress.setPostalCode("94103");
 
             request.setShippingAddressOverride(postalAddress);
         }
