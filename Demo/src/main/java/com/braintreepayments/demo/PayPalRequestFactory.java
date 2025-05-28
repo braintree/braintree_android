@@ -169,14 +169,12 @@ public class PayPalRequestFactory {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
 
         if (isAmountBreakdownEnabled) {
-
             request = new PayPalCheckoutRequest("10.99", true);
 
             request.setShouldRequestBillingAgreement(true);
 
             String taxTotal = "0.50";
             String shippingTotal = "0.50";
-
             String itemTotal = "9.99";
 
             List<PayPalLineItem> lineItems = buildLineItems(
