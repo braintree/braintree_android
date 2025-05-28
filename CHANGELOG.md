@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.11.0 (2025-05-28)
 
 * ThreeDSecure
     * Fix an issue where the `ThreeDSecureTokenizeCallback` would return a `Failure` and `Success` result (fixes #1321)
