@@ -57,6 +57,7 @@ public class PayPalVaultRequestUnitTest {
         request.setShippingAddressOverride(postalAddress);
         request.setDisplayName("Display Name");
         request.setRiskCorrelationId("123-correlation");
+        request.setUserAction(PayPalVaultUserAction.USER_ACTION_SETUP_NOW);
         request.setLandingPageType(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN);
         request.setShouldOfferCredit(true);
         PayPalBillingInterval billingInterval = PayPalBillingInterval.MONTH;
@@ -87,6 +88,7 @@ public class PayPalVaultRequestUnitTest {
         assertEquals(postalAddress, request.getShippingAddressOverride());
         assertEquals("Display Name", request.getDisplayName());
         assertEquals("123-correlation", request.getRiskCorrelationId());
+        assertEquals(PayPalVaultUserAction.USER_ACTION_SETUP_NOW, request.getUserAction());
         assertEquals(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
         assertTrue(request.getShouldOfferCredit());
         assertTrue(request.getHasUserLocationConsent());
@@ -131,6 +133,7 @@ public class PayPalVaultRequestUnitTest {
         request.setRiskCorrelationId("123-correlation");
         request.setMerchantAccountId("merchant_account_id");
         request.setUserPhoneNumber(new PayPalPhoneNumber("1", "1231231234"));
+        request.setUserAction(PayPalVaultUserAction.USER_ACTION_SETUP_NOW);
 
         PayPalBillingInterval billingInterval = PayPalBillingInterval.MONTH;
         PayPalPricingModel pricingModel = PayPalPricingModel.FIXED;
@@ -177,6 +180,7 @@ public class PayPalVaultRequestUnitTest {
         assertEquals("An Item", result.getLineItems().get(0).getName());
         assertEquals("1", result.getUserPhoneNumber().getCountryCode());
         assertEquals("1231231234", result.getUserPhoneNumber().getNationalNumber());
+        assertEquals(PayPalVaultUserAction.USER_ACTION_SETUP_NOW, result.getUserAction());
         assertTrue(result.getHasUserLocationConsent());
         assertEquals(PayPalRecurringBillingPlanType.RECURRING, result.getRecurringBillingPlanType());
         assertEquals("USD", result.getRecurringBillingDetails().getCurrencyISOCode());

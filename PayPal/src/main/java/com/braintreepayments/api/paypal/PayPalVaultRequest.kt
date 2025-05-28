@@ -36,7 +36,6 @@ class PayPalVaultRequest
     var shouldOfferCredit: Boolean = false,
     var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
     var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
-    var userAction: PayPalVaultUserAction = PayPalVaultUserAction.USER_ACTION_DEFAULT,
     override var enablePayPalAppSwitch: Boolean = false,
     override var localeCode: String? = null,
     override var billingAgreementDescription: String? = null,
@@ -49,8 +48,9 @@ class PayPalVaultRequest
     override var riskCorrelationId: String? = null,
     override var userAuthenticationEmail: String? = null,
     override var userPhoneNumber: PayPalPhoneNumber? = null,
-    override var lineItems: List<PayPalLineItem> = emptyList()
-) : PayPalRequest(
+    override var lineItems: List<PayPalLineItem> = emptyList(),
+    var userAction: PayPalVaultUserAction = PayPalVaultUserAction.USER_ACTION_DEFAULT
+    ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
     billingAgreementDescription = billingAgreementDescription,
