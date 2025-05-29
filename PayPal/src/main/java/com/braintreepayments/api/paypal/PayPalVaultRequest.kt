@@ -49,7 +49,7 @@ class PayPalVaultRequest
     override var userPhoneNumber: PayPalPhoneNumber? = null,
     override var lineItems: List<PayPalLineItem> = emptyList(),
     override var userAction: PayPalPaymentUserAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT
-    ) : PayPalRequest(
+) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
     billingAgreementDescription = billingAgreementDescription,
