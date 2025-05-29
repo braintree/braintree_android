@@ -27,7 +27,6 @@ import org.json.JSONObject
  * @property shouldOfferCredit Offers PayPal Credit if the customer qualifies. Defaults to false.
  * @property recurringBillingDetails Optional: Recurring billing product details.
  * @property recurringBillingPlanType Optional: Recurring billing plan type, or charge pattern.
- * @property userAction The call-to-action in the PayPal Vault flow.
  */
 @Parcelize
 class PayPalVaultRequest
@@ -49,7 +48,7 @@ class PayPalVaultRequest
     override var userAuthenticationEmail: String? = null,
     override var userPhoneNumber: PayPalPhoneNumber? = null,
     override var lineItems: List<PayPalLineItem> = emptyList(),
-    var userAction: PayPalVaultUserAction = PayPalVaultUserAction.USER_ACTION_DEFAULT
+    override var userAction: PayPalPaymentUserAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT
     ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -64,6 +63,7 @@ class PayPalVaultRequest
     enablePayPalAppSwitch = enablePayPalAppSwitch,
     userAuthenticationEmail = userAuthenticationEmail,
     lineItems = lineItems,
+    userAction = userAction,
 ) {
 
     @OptIn(ExperimentalBetaApi::class)
@@ -120,7 +120,7 @@ class PayPalVaultRequest
             experienceProfile.put(LOCALE_CODE_KEY, localeCode)
         }
 
-        if (userAction != PayPalVaultUserAction.USER_ACTION_DEFAULT) {
+        if (userAction != PayPalPaymentUserAction.USER_ACTION_DEFAULT) {
             experienceProfile.put(USER_ACTION_KEY, userAction.stringValue)
         }
 
