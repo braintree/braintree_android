@@ -79,6 +79,7 @@ import org.json.JSONException
  * @property shopperSessionId the shopper session ID returned from your shopper insights server SDK
  * integration
  * @property lineItems The line items for this transaction. It can include up to 249 line items.
+ * @property userAction The call to action for the PayPal flow.
  */
 abstract class PayPalRequest internal constructor(
     open val hasUserLocationConsent: Boolean,
@@ -97,7 +98,8 @@ abstract class PayPalRequest internal constructor(
 
     @property:ExperimentalBetaApi
     open var shopperSessionId: String? = null,
-    open var lineItems: List<PayPalLineItem> = emptyList()
+    open var lineItems: List<PayPalLineItem> = emptyList(),
+    open var userAction: PayPalPaymentUserAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT
 ) : Parcelable {
 
     @Throws(JSONException::class)

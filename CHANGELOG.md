@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+  * Add `userAction` property to `PayPalVaultRequest`
+
 ## 5.11.0 (2025-05-28)
 
 * ThreeDSecure
