@@ -35,67 +35,61 @@ internal class PayPalInternalClient(
     fun sendRequest(
         context: Context,
         payPalRequest: PayPalRequest,
+        configuration: Configuration,
         callback: PayPalInternalClientCallback
     ) {
-        braintreeClient.getConfiguration { configuration: Configuration?, configError: Exception? ->
-            if (configuration == null) {
-                callback.onResult(null, configError)
-                return@getConfiguration
+        try {
+            val isBillingAgreement = payPalRequest is PayPalVaultRequest
+            val endpoint = if (isBillingAgreement) {
+                SETUP_BILLING_AGREEMENT_ENDPOINT
+            } else {
+                CREATE_SINGLE_PAYMENT_ENDPOINT
+            }
+            val url = "/v1/$endpoint"
+
+            if (payPalRequest.enablePayPalAppSwitch) {
+                payPalRequest.enablePayPalAppSwitch = isPayPalInstalled(context)
             }
 
-            try {
-                val isBillingAgreement = payPalRequest is PayPalVaultRequest
-                val endpoint = if (isBillingAgreement) {
-                    SETUP_BILLING_AGREEMENT_ENDPOINT
-                } else {
-                    CREATE_SINGLE_PAYMENT_ENDPOINT
+            val returnLinkResult = getReturnLinkUseCase()
+            val navigationLink: String = when (returnLinkResult) {
+                is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
+                is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> returnLinkResult.deepLinkFallbackUrlScheme
+                is GetReturnLinkUseCase.ReturnLinkResult.Failure -> {
+                    callback.onResult(null, returnLinkResult.exception)
+                    return
                 }
-                val url = "/v1/$endpoint"
+            }
+            val appLinkParam = if (
+                returnLinkResult is GetReturnLinkUseCase.ReturnLinkResult.AppLink
+            ) {
+                merchantRepository.appLinkReturnUri?.toString()
+            } else {
+                null
+            }
 
-                if (payPalRequest.enablePayPalAppSwitch) {
-                    payPalRequest.enablePayPalAppSwitch = isPayPalInstalled(context)
-                }
+            val cancelUrl = "$navigationLink://onetouch/v1/cancel"
+            val successUrl = "$navigationLink://onetouch/v1/success"
 
-                val returnLinkResult = getReturnLinkUseCase()
-                val navigationLink: String = when (returnLinkResult) {
-                    is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
-                    is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> returnLinkResult.deepLinkFallbackUrlScheme
-                    is GetReturnLinkUseCase.ReturnLinkResult.Failure -> {
-                        callback.onResult(null, returnLinkResult.exception)
-                        return@getConfiguration
-                    }
-                }
-                val appLinkParam = if (
-                    returnLinkResult is GetReturnLinkUseCase.ReturnLinkResult.AppLink
-                ) {
-                    merchantRepository.appLinkReturnUri?.toString()
-                } else {
-                    null
-                }
+            val requestBody = payPalRequest.createRequestBody(
+                configuration = configuration,
+                authorization = merchantRepository.authorization,
+                successUrl = successUrl,
+                cancelUrl = cancelUrl,
+                appLink = appLinkParam
+            ) ?: throw JSONException("Error creating requestBody")
 
-                val cancelUrl = "$navigationLink://onetouch/v1/cancel"
-                val successUrl = "$navigationLink://onetouch/v1/success"
-
-                val requestBody = payPalRequest.createRequestBody(
-                    configuration = configuration,
-                    authorization = merchantRepository.authorization,
-                    successUrl = successUrl,
-                    cancelUrl = cancelUrl,
-                    appLink = appLinkParam
-                ) ?: throw JSONException("Error creating requestBody")
-
-                sendPost(
-                    url = url,
-                    requestBody = requestBody,
-                    payPalRequest = payPalRequest,
-                    context = context,
-                    configuration = configuration,
-                    callback = callback
-                )
-            } catch (exception: JSONException) {
+            sendPost(
+                url = url,
+                requestBody = requestBody,
+                payPalRequest = payPalRequest,
+                context = context,
+                configuration = configuration,
+                callback = callback
+            )
+        } catch (exception: JSONException) {
                 callback.onResult(null, exception)
             }
-        }
     }
 
     fun tokenize(payPalAccount: PayPalAccount, callback: PayPalInternalTokenizeCallback) {
