@@ -3,6 +3,7 @@ package com.braintreepayments.demo;
 import android.content.Context;
 
 import com.braintreepayments.api.core.PostalAddress;
+import com.braintreepayments.api.paypal.AmountBreakdown;
 import com.braintreepayments.api.paypal.PayPalBillingCycle;
 import com.braintreepayments.api.paypal.PayPalBillingInterval;
 import com.braintreepayments.api.paypal.PayPalBillingPricing;
@@ -10,6 +11,9 @@ import com.braintreepayments.api.paypal.PayPalCheckoutRequest;
 import com.braintreepayments.api.paypal.PayPalContactInformation;
 import com.braintreepayments.api.paypal.PayPalContactPreference;
 import com.braintreepayments.api.paypal.PayPalLandingPageType;
+import com.braintreepayments.api.paypal.PayPalLineItem;
+import com.braintreepayments.api.paypal.PayPalLineItemKind;
+import com.braintreepayments.api.paypal.PayPalLineItemUpcType;
 import com.braintreepayments.api.paypal.PayPalPaymentIntent;
 import com.braintreepayments.api.paypal.PayPalPaymentUserAction;
 import com.braintreepayments.api.paypal.PayPalPricingModel;
@@ -18,6 +22,7 @@ import com.braintreepayments.api.paypal.PayPalRecurringBillingPlanType;
 import com.braintreepayments.api.paypal.PayPalPhoneNumber;
 import com.braintreepayments.api.paypal.PayPalVaultRequest;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PayPalRequestFactory {
@@ -118,6 +123,39 @@ public class PayPalRequestFactory {
         return request;
     }
 
+    private static void setRecurringBilling(PayPalCheckoutRequest request, String amount) {
+        PayPalBillingPricing billingPricing = new PayPalBillingPricing(
+                PayPalPricingModel.FIXED,
+                amount // matches the adjusted total
+        );
+
+        PayPalBillingCycle billingCycle = new PayPalBillingCycle(
+                false,
+                1,
+                PayPalBillingInterval.MONTH,
+                1,
+                1,
+                "2024-08-01",
+                billingPricing
+        );
+
+        List<PayPalBillingCycle> billingCycles = new ArrayList<>();
+        billingCycles.add(billingCycle);
+        PayPalRecurringBillingDetails payPalRecurringBillingDetails = new PayPalRecurringBillingDetails(
+                billingCycles,
+                "9.99",
+                "USD",
+                "Vogue Magazine Subscription",
+                "9.99",
+                "Home delivery to Chicago, IL",
+                null,
+                1
+        );
+
+        request.setRecurringBillingDetails(payPalRecurringBillingDetails);
+        request.setRecurringBillingPlanType(PayPalRecurringBillingPlanType.SUBSCRIPTION);
+    }
+
     public static PayPalCheckoutRequest createPayPalCheckoutRequest(
         Context context,
         String amount,
@@ -125,9 +163,42 @@ public class PayPalRequestFactory {
         String buyerPhoneCountryCode,
         String buyerPhoneNationalNumber,
         Boolean isContactInformationEnabled,
-        String shopperInsightsSessionId
+        String shopperInsightsSessionId,
+        Boolean isAmountBreakdownEnabled
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
+
+        if (isAmountBreakdownEnabled) {
+            request = new PayPalCheckoutRequest("10.99", true);
+
+            request.setShouldRequestBillingAgreement(true);
+
+            String taxTotal = "0.50";
+            String shippingTotal = "0.50";
+            String itemTotal = "9.99";
+
+            List<PayPalLineItem> lineItems = buildLineItems(
+                    Float.parseFloat(itemTotal),
+                    5.00f,
+                    3.00f
+            );
+
+            request.setLineItems(lineItems);
+
+            AmountBreakdown breakdown = new AmountBreakdown(
+                    itemTotal,
+                    taxTotal,
+                    shippingTotal,
+                    null,
+                    null,
+                    null,
+                    null
+            );
+
+            request.setAmountBreakdown(breakdown);
+
+            setRecurringBilling(request, String.format("%.2f", itemTotal));
+        }
 
         if (buyerEmailAddress != null && !buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
@@ -190,5 +261,34 @@ public class PayPalRequestFactory {
         }
 
         return request;
+    }
+
+    private static List<PayPalLineItem> buildLineItems(
+            Float unitItemPrice,
+            Float setupFee,
+            Float immediateBillingAmount
+    ) {
+        Float totalAmount = unitItemPrice
+                + (setupFee != null ? setupFee : 0.00f)
+                + (immediateBillingAmount != null ? immediateBillingAmount : 0.00f);
+
+        PayPalLineItem item = new PayPalLineItem(
+                PayPalLineItemKind.CREDIT,
+                "Subscription Setup + First Cycle 54321",
+                "1",
+                totalAmount.toString()
+        );
+
+        item.setDescription("Includes setup and first cycle 12345");
+        item.setImageUrl("http://example.com/image.jpg");
+        item.setProductCode("sub-setup-001");
+        item.setUpcType(PayPalLineItemUpcType.UPC_TYPE_2);
+        item.setUpcCode("upc-001");
+        item.setUrl("http://example.com");
+
+        // Only include if you use taxTotal in AmountBreakdown
+        item.setUnitTaxAmount("0.50");
+
+        return Collections.singletonList(item);
     }
 }
