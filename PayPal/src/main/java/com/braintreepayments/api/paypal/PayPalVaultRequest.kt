@@ -47,7 +47,8 @@ class PayPalVaultRequest
     override var riskCorrelationId: String? = null,
     override var userAuthenticationEmail: String? = null,
     override var userPhoneNumber: PayPalPhoneNumber? = null,
-    override var lineItems: List<PayPalLineItem> = emptyList()
+    override var lineItems: List<PayPalLineItem> = emptyList(),
+    override var userAction: PayPalPaymentUserAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -62,6 +63,7 @@ class PayPalVaultRequest
     enablePayPalAppSwitch = enablePayPalAppSwitch,
     userAuthenticationEmail = userAuthenticationEmail,
     lineItems = lineItems,
+    userAction = userAction,
 ) {
 
     @OptIn(ExperimentalBetaApi::class)
@@ -116,6 +118,10 @@ class PayPalVaultRequest
 
         if (localeCode != null) {
             experienceProfile.put(LOCALE_CODE_KEY, localeCode)
+        }
+
+        if (userAction != PayPalPaymentUserAction.USER_ACTION_DEFAULT) {
+            experienceProfile.put(USER_ACTION_KEY, userAction.stringValue)
         }
 
         if (shippingAddressOverride != null) {
