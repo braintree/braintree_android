@@ -17,6 +17,7 @@ class SetAppSwitchUseCase(
      * 2. PayPal app installed
      * 3. PayPal response indicates an app switch flow
      *
+     * @param merchantEnabledAppSwitch whether the merchant has enabled app switch in their request.
      * @param appSwitchFlowFromPayPalResponse whether the PayPal response indicates an app switch flow.
      */
     operator fun invoke(
