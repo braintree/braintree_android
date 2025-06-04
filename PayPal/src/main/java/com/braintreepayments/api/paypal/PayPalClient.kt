@@ -6,13 +6,11 @@ import android.text.TextUtils
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
-import com.braintreepayments.api.core.AppSwitchRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import com.braintreepayments.api.core.GetAppSwitchUseCase
 import com.braintreepayments.api.core.GetReturnLinkTypeUseCase
 import com.braintreepayments.api.core.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
 import com.braintreepayments.api.core.GetReturnLinkUseCase
@@ -33,7 +31,6 @@ class PayPalClient internal constructor(
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(merchantRepository),
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
-    private val getAppSwitchUseCase: GetAppSwitchUseCase = GetAppSwitchUseCase(AppSwitchRepository.instance),
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
 ) {
     /**
@@ -136,16 +133,9 @@ class PayPalClient internal constructor(
             error: Exception? ->
             if (payPalResponse != null) {
                 payPalContextId = payPalResponse.paypalContextId
-                val isAppSwitchFlow = getAppSwitchUseCase() && internalPayPalClient.isAppSwitchEnabled(payPalRequest) &&
-                    internalPayPalClient.isPayPalInstalled(context)
 
                 try {
                     payPalResponse.browserSwitchOptions = buildBrowserSwitchOptions(payPalResponse)
-
-                    if (isAppSwitchFlow) {
-                        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_STARTED, analyticsParams)
-                    }
-
                     callback.onPayPalPaymentAuthRequest(PayPalPaymentAuthRequest.ReadyToLaunch(payPalResponse))
                 } catch (exception: Exception) {
                     when (exception) {
@@ -266,18 +256,17 @@ class PayPalClient internal constructor(
                     callbackTokenizeSuccess(
                         callback,
                         PayPalResult.Success(payPalAccountNonce),
-                        isAppSwitchFlow
                     )
                 } else if (error != null) {
-                    callbackTokenizeFailure(callback, PayPalResult.Failure(error), isAppSwitchFlow)
+                    callbackTokenizeFailure(callback, PayPalResult.Failure(error))
                 }
             }
         } catch (e: UserCanceledException) {
             callbackBrowserSwitchCancel(callback, PayPalResult.Cancel, isAppSwitchFlow)
         } catch (e: JSONException) {
-            callbackTokenizeFailure(callback, PayPalResult.Failure(e), isAppSwitchFlow)
+            callbackTokenizeFailure(callback, PayPalResult.Failure(e))
         } catch (e: PayPalBrowserSwitchException) {
-            callbackTokenizeFailure(callback, PayPalResult.Failure(e), isAppSwitchFlow)
+            callbackTokenizeFailure(callback, PayPalResult.Failure(e))
         }
     }
 
@@ -349,23 +338,11 @@ class PayPalClient internal constructor(
     private fun callbackTokenizeFailure(
         callback: PayPalTokenizeCallback,
         failure: PayPalResult.Failure,
-        isAppSwitchFlow: Boolean
     ) {
         braintreeClient.sendAnalyticsEvent(
             PayPalAnalytics.TOKENIZATION_FAILED,
             analyticsParams.copy(errorDescription = failure.error.message)
         )
-
-        if (isAppSwitchFlow) {
-            braintreeClient.sendAnalyticsEvent(
-                PayPalAnalytics.APP_SWITCH_FAILED,
-                analyticsParams.copy(
-                    appSwitchUrl = appSwitchUrlString,
-                    errorDescription = failure.error.message
-                )
-            )
-        }
-
         callback.onPayPalResult(failure)
         analyticsParamRepository.reset()
     }
@@ -373,17 +350,8 @@ class PayPalClient internal constructor(
     private fun callbackTokenizeSuccess(
         callback: PayPalTokenizeCallback,
         success: PayPalResult.Success,
-        isAppSwitchFlow: Boolean
     ) {
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, analyticsParams)
-
-        if (isAppSwitchFlow) {
-            braintreeClient.sendAnalyticsEvent(
-                PayPalAnalytics.APP_SWITCH_SUCCEEDED,
-                analyticsParams.copy(appSwitchUrl = appSwitchUrlString)
-            )
-        }
-
         callback.onPayPalResult(success)
         analyticsParamRepository.reset()
     }

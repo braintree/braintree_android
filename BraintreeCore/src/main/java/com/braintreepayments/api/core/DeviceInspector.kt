@@ -14,6 +14,7 @@ import com.braintreepayments.api.sharedutils.SignatureVerifier
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class DeviceInspector(
+    private val context: Context,
     private val appHelper: AppHelper = AppHelper(),
     private val signatureVerifier: SignatureVerifier = SignatureVerifier(),
 ) {
@@ -58,7 +59,7 @@ class DeviceInspector(
         return isVenmoIntentAvailable && isVenmoSignatureValid
     }
 
-    fun isPayPalInstalled(context: Context?): Boolean {
+    fun isPayPalInstalled(): Boolean {
         return appHelper.isAppInstalled(context, PAYPAL_APP_PACKAGE)
     }
 
@@ -135,6 +136,7 @@ class DeviceInspector(
                     "$VENMO_APP_PACKAGE.$VENMO_APP_SWITCH_ACTIVITY"
                 )
             )
+
         internal fun getDropInVersion(): String? {
             try {
                 val dropInBuildConfigClass = Class.forName("com.braintreepayments.api.dropin.BuildConfig")

@@ -8,7 +8,9 @@ import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.AppSwitchRepository
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.GetAppSwitchUseCase
 import com.braintreepayments.api.core.GetReturnLinkUseCase
 import com.braintreepayments.api.core.MerchantRepository
 
@@ -20,6 +22,7 @@ class PayPalLauncher internal constructor(
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val payPalTokenResponseRepository: PayPalTokenResponseRepository = PayPalTokenResponseRepository.instance,
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
+    private val getAppSwitchUseCase: GetAppSwitchUseCase = GetAppSwitchUseCase(AppSwitchRepository.instance),
     private val payPalGetPaymentTokenUseCase: PayPalGetPaymentTokenUseCase = PayPalGetPaymentTokenUseCase(
         payPalTokenResponseRepository
     ),
@@ -51,19 +54,37 @@ class PayPalLauncher internal constructor(
         activity: ComponentActivity,
         paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch
     ): PayPalPendingRequest {
+        val isAppSwitch = getAppSwitchUseCase()
+        val appSwitchUrl = (getReturnLinkUseCase() as? GetReturnLinkUseCase.ReturnLinkResult.AppLink)
+            ?.appLinkReturnUri?.toString()
+
         try {
             assertCanPerformBrowserSwitch(activity, paymentAuthRequest.requestParams)
         } catch (browserSwitchException: BrowserSwitchException) {
             val manifestInvalidError = createBrowserSwitchError(browserSwitchException)
+            sendAppSwitchEvent(isAppSwitch, PayPalAnalytics.APP_SWITCH_FAILED, appSwitchUrl, manifestInvalidError)
             return PayPalPendingRequest.Failure(manifestInvalidError)
         }
-        return paymentAuthRequest.requestParams.browserSwitchOptions?.let { options ->
-            when (val request = browserSwitchClient.start(activity, options)) {
-                is BrowserSwitchStartResult.Failure -> PayPalPendingRequest.Failure(request.error)
-                is BrowserSwitchStartResult.Started -> PayPalPendingRequest.Started(request.pendingRequest)
+
+        val options = paymentAuthRequest.requestParams.browserSwitchOptions
+        if (options == null) {
+            val error = BraintreeException("BrowserSwitchOptions is null")
+            sendAppSwitchEvent(isAppSwitch, PayPalAnalytics.APP_SWITCH_FAILED, appSwitchUrl, error)
+            return PayPalPendingRequest.Failure(error)
+        }
+
+        sendAppSwitchEvent(isAppSwitch, PayPalAnalytics.APP_SWITCH_STARTED, appSwitchUrl)
+
+        return when (val request = browserSwitchClient.start(activity, options)) {
+            is BrowserSwitchStartResult.Failure -> {
+                sendAppSwitchEvent(isAppSwitch, PayPalAnalytics.APP_SWITCH_FAILED, appSwitchUrl, request.error)
+                PayPalPendingRequest.Failure(request.error)
             }
-        } ?: run {
-            PayPalPendingRequest.Failure(BraintreeException("BrowserSwitchOptions is null"))
+
+            is BrowserSwitchStartResult.Started -> {
+                sendAppSwitchEvent(isAppSwitch, PayPalAnalytics.APP_SWITCH_SUCCEEDED, appSwitchUrl)
+                PayPalPendingRequest.Started(request.pendingRequest)
+            }
         }
     }
 
@@ -154,6 +175,24 @@ class PayPalLauncher internal constructor(
         params: PayPalPaymentAuthRequestParams
     ) {
         browserSwitchClient.assertCanPerformBrowserSwitch(activity, params.browserSwitchOptions)
+    }
+
+    private fun sendAppSwitchEvent(
+        isAppSwitch: Boolean,
+        event: String,
+        appSwitchUrl: String?,
+        error: Throwable? = null
+    ) {
+        if (isAppSwitch) {
+            analyticsClient.sendEvent(
+                event,
+                AnalyticsEventParams(
+                    payPalContextId = payPalGetPaymentTokenUseCase(),
+                    appSwitchUrl = appSwitchUrl,
+                    errorDescription = error?.message
+                )
+            )
+        }
     }
 
     companion object {
