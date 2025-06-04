@@ -72,7 +72,7 @@ class AnalyticsApiUnitTest {
             )
         } returns deviceMetadata
         every { deviceInspector.isVenmoInstalled(merchantRepository.applicationContext) } returns false
-        every { deviceInspector.isPayPalInstalled(merchantRepository.applicationContext) } returns false
+        every { deviceInspector.isPayPalInstalled() } returns false
         every { merchantRepository.integrationType } returns integrationType
 
         sut = AnalyticsApi(

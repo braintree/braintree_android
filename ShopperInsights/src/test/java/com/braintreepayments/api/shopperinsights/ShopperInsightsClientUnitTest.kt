@@ -421,6 +421,7 @@ class ShopperInsightsClientUnitTest {
             analyticsParamRepository,
             api,
             merchantRepository,
+            deviceInspector
         )
 
         val request = ShopperInsightsRequest("some-email", null)
@@ -521,7 +522,7 @@ class ShopperInsightsClientUnitTest {
 
     @Test
     fun `test isPayPalAppInstalled returns true when deviceInspector returns true`() {
-        every { deviceInspector.isPayPalInstalled(context) } returns true
+        every { deviceInspector.isPayPalInstalled() } returns true
         assertTrue { sut.isPayPalAppInstalled(context) }
     }
 
@@ -533,7 +534,7 @@ class ShopperInsightsClientUnitTest {
 
     @Test
     fun `test isPayPalAppInstalled returns false when deviceInspector returns false`() {
-        every { deviceInspector.isPayPalInstalled(context) } returns false
+        every { deviceInspector.isPayPalInstalled() } returns false
         assertFalse { sut.isPayPalAppInstalled(context) }
     }
 

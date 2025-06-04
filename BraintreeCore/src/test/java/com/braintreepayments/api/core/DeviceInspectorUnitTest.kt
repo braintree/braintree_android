@@ -10,12 +10,18 @@ import android.content.res.Resources
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Build.VERSION
-import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.sharedutils.AppHelper
 import com.braintreepayments.api.sharedutils.SignatureVerifier
-import io.mockk.*
+import com.braintreepayments.api.testutils.Fixtures
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.slot
+import io.mockk.verify
 import org.json.JSONException
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,8 +53,9 @@ class DeviceInspectorUnitTest {
         every { resources.configuration } returns configuration
 
         sut = DeviceInspector(
-            appHelper,
-            signatureVerifier,
+            context = context,
+            appHelper = appHelper,
+            signatureVerifier = signatureVerifier,
         )
     }
 
@@ -363,7 +370,7 @@ class DeviceInspectorUnitTest {
     @Test
     fun isPayPalInstalled_forwardsIsPayPalInstalledResultFromAppHelper() {
         every { appHelper.isAppInstalled(context, "com.paypal.android.p2pmobile") } returns true
-        assertTrue(sut.isPayPalInstalled(context))
+        assertTrue(sut.isPayPalInstalled())
     }
 
     @Test

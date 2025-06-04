@@ -9,7 +9,7 @@ import org.json.JSONObject
  */
 internal class AnalyticsApi(
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
-    private val deviceInspector: DeviceInspector = DeviceInspector(),
+    private val deviceInspector: DeviceInspector = DeviceInspectorProvider().deviceInspector,
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
 ) {
@@ -89,7 +89,7 @@ internal class AnalyticsApi(
     @Throws(JSONException::class)
     private fun mapDeviceMetadataToFPTIBatchParamsJSON(metadata: DeviceMetadata): JSONObject {
         val isVenmoInstalled = deviceInspector.isVenmoInstalled(merchantRepository.applicationContext)
-        val isPayPalInstalled = deviceInspector.isPayPalInstalled(merchantRepository.applicationContext)
+        val isPayPalInstalled = deviceInspector.isPayPalInstalled()
         return metadata.run {
             JSONObject()
                 .put(FPTI_BATCH_KEY_APP_ID, appId)
