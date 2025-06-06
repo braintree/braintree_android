@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+  * Reduce configuration calls for PayPal flow
+
 ## 5.11.0 (2025-05-28)
 
 * ThreeDSecure
