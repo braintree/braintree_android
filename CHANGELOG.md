@@ -1,6 +1,7 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+
 * PayPal
   * Reduce configuration calls for PayPal flow
 
