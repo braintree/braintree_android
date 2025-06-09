@@ -566,7 +566,7 @@ public class PayPalInternalClientUnitTest {
     }
 
     @Test
-    public void sendRequest_withShippingAddressSpecified_sendsAddressOverrideBasedOnShippingAdressEditability()
+    public void sendRequest_withShippingAddressSpecified_sendsAddressOverrideBasedOnShippingAddressEditability()
         throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
             .configuration(configuration)
@@ -949,9 +949,11 @@ public class PayPalInternalClientUnitTest {
         payPalRequest.setUserAuthenticationEmail("example@mail.com");
         payPalRequest.setEnablePayPalAppSwitch(true);
 
-        when(deviceInspector.isPayPalInstalled(context)).thenReturn(true);
+        when(deviceInspector.isPayPalInstalled()).thenReturn(true);
 
         sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback);
+
+        verify(setAppSwitchUseCase).invoke(true,true );
 
         ArgumentCaptor<PayPalPaymentAuthRequestParams> captor = ArgumentCaptor.forClass(
             PayPalPaymentAuthRequestParams.class);
