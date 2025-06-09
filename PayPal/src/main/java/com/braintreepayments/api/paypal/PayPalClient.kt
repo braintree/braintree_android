@@ -114,8 +114,13 @@ class PayPalClient internal constructor(
                     callback,
                     PayPalPaymentAuthRequest.Failure(createPayPalError())
                 )
+            } else if (configuration != null) {
+                sendPayPalRequest(context, payPalRequest, configuration, callback)
             } else {
-                sendPayPalRequest(context, payPalRequest, callback)
+                callbackCreatePaymentAuthFailure(
+                    callback,
+                    PayPalPaymentAuthRequest.Failure(BraintreeException("No configuration or error returned"))
+                )
             }
         }
     }
@@ -124,11 +129,13 @@ class PayPalClient internal constructor(
     private fun sendPayPalRequest(
         context: Context,
         payPalRequest: PayPalRequest,
+        configuration: Configuration,
         callback: PayPalPaymentAuthCallback
     ) {
         internalPayPalClient.sendRequest(
             context,
-            payPalRequest
+            payPalRequest,
+            configuration,
         ) { payPalResponse: PayPalPaymentAuthRequestParams?,
             error: Exception? ->
             if (payPalResponse != null) {

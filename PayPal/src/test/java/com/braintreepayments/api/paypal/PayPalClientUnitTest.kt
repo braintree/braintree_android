@@ -477,6 +477,7 @@ class PayPalClientUnitTest {
             payPalInternalClient.sendRequest(
                 activity,
                 payPalRequest,
+                any<Configuration>(),
                 any<PayPalInternalClientCallback>()
             )
         }
@@ -501,6 +502,7 @@ class PayPalClientUnitTest {
             payPalInternalClient.sendRequest(
                 activity,
                 payPalRequest,
+                any<Configuration>(),
                 any<PayPalInternalClientCallback>()
             )
         }

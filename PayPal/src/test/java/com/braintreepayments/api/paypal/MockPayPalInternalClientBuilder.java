@@ -6,6 +6,8 @@ import static org.mockito.Mockito.mock;
 
 import android.content.Context;
 
+import com.braintreepayments.api.core.Configuration;
+
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -43,7 +45,7 @@ public class MockPayPalInternalClientBuilder {
             @Override
             public Void answer(InvocationOnMock invocation) {
                 PayPalInternalClientCallback callback =
-                        (PayPalInternalClientCallback) invocation.getArguments()[2];
+                        (PayPalInternalClientCallback) invocation.getArguments()[3];
                 if (successResponse != null) {
                     callback.onResult(successResponse, null);
                 } else if (error != null) {
@@ -52,7 +54,7 @@ public class MockPayPalInternalClientBuilder {
                 return null;
             }
         }).when(payPalInternalClient).sendRequest(any(Context.class), any(PayPalRequest.class),
-                any(PayPalInternalClientCallback.class));
+                any(Configuration.class), any(PayPalInternalClientCallback.class));
 
         doAnswer(new Answer<Void>() {
             @Override
