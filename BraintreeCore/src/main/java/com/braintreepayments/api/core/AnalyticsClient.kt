@@ -39,11 +39,11 @@ class AnalyticsClient internal constructor(
             didPayPalServerAttemptAppSwitch = analyticsParamRepository.didPayPalServerAttemptAppSwitch
         )
         if (sendImmediately) {
-            configurationLoader.loadConfiguration { result ->
-                if (result is ConfigurationLoaderResult.Success) {
-                    executeEventsApi(event, result.configuration)
-                }
-            }
+//            configurationLoader.loadConfiguration { result ->
+//                if (result is ConfigurationLoaderResult.Success) {
+//                    executeEventsApi(event, result.configuration)
+//                }
+//            }
         } else {
             analyticsEventRepository.addEvent(event)
         }

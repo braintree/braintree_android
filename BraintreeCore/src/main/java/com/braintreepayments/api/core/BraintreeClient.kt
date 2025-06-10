@@ -141,10 +141,11 @@ class BraintreeClient internal constructor(
         url: String,
         data: String,
         additionalHeaders: Map<String, String> = emptyMap(),
+        configuration: Configuration? = null,
         responseCallback: HttpResponseCallback,
     ) {
-        getConfiguration { configuration, configError ->
-            if (configuration != null) {
+//        getConfiguration { configuration, configError ->
+//            if (configuration != null) {
                 httpClient.post(
                     path = url,
                     data = data,
@@ -163,10 +164,10 @@ class BraintreeClient internal constructor(
                         responseCallback.onResult(null, error)
                     }
                 }
-            } else {
-                responseCallback.onResult(null, configError)
-            }
-        }
+//            } else {
+//                responseCallback.onResult(null, configError)
+//            }
+//        }
     }
 
     /**

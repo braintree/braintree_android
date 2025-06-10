@@ -2,6 +2,7 @@ package com.braintreepayments.api.core
 
 import android.net.Uri
 import android.util.Base64
+import android.util.Log
 import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.Time
 import org.json.JSONException
@@ -52,6 +53,9 @@ internal class ConfigurationLoader(
                         val configuration = Configuration.fromJson(responseBody)
                         saveConfigurationToCache(configuration, authorization, configUrl)
                         callback.onResult(ConfigurationLoaderResult.Success(configuration, timing))
+
+                        val duration = timing?.let { it.endTime - it.startTime }
+                        Log.e("asdf", "configuration call duration: $duration")
 
                         analyticsClient.sendEvent(
                             eventName = CoreAnalytics.API_REQUEST_LATENCY,

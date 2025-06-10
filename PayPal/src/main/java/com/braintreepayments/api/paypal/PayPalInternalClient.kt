@@ -116,7 +116,9 @@ internal class PayPalInternalClient(
         callback: PayPalInternalClientCallback
     ) {
         braintreeClient.sendPOST(
-            url = url, data = requestBody,
+            url = url,
+            data = requestBody,
+            configuration = configuration
         ) { responseBody: String?, httpError: Exception? ->
             if (responseBody == null) {
                 callback.onResult(null, httpError)

@@ -45,6 +45,7 @@ android {
 dependencies {
     implementation libs.androidx.annotation
     implementation libs.kotlin.stdlib
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     testImplementation libs.junit
     testImplementation libs.androidx.test.core
