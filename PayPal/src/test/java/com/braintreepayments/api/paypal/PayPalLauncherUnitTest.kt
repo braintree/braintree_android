@@ -145,7 +145,7 @@ class PayPalLauncherUnitTest {
         }
         verify {
             analyticsClient.sendEvent(
-                if(isAppSwitch) PayPalAnalytics.APP_SWITCH_SUCCEEDED else PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED,
+                if (isAppSwitch) PayPalAnalytics.APP_SWITCH_SUCCEEDED else PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED,
                 AnalyticsEventParams(
                     payPalContextId = paymentToken,
                     appSwitchUrl = returnUrl,
@@ -166,7 +166,7 @@ class PayPalLauncherUnitTest {
 
         verify {
             analyticsClient.sendEvent(
-                if(isAppSwitch) PayPalAnalytics.APP_SWITCH_FAILED else PayPalAnalytics.BROWSER_PRESENTATION_FAILED,
+                if (isAppSwitch) PayPalAnalytics.APP_SWITCH_FAILED else PayPalAnalytics.BROWSER_PRESENTATION_FAILED,
                 AnalyticsEventParams(
                     payPalContextId = paymentToken,
                     appSwitchUrl = returnUrl,
