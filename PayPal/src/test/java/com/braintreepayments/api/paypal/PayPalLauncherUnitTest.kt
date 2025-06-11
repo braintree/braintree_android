@@ -123,7 +123,9 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun `launch sends APP_SWITCH_STARTED and APP_SWITCH_SUCCEEDED analytics events when app switch is enabled`(@TestParameter isAppSwitch: Boolean) {
+    fun `launch sends APP_SWITCH_STARTED and APP_SWITCH_SUCCEEDED analytics events when app switch is enabled`(
+        @TestParameter isAppSwitch: Boolean
+    ) {
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
         every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
         every { getAppSwitchUseCase() } returns isAppSwitch
@@ -145,7 +147,11 @@ class PayPalLauncherUnitTest {
         }
         verify {
             analyticsClient.sendEvent(
-                if (isAppSwitch) PayPalAnalytics.APP_SWITCH_SUCCEEDED else PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED,
+                if (isAppSwitch) {
+                    PayPalAnalytics.APP_SWITCH_SUCCEEDED
+                } else {
+                    PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED
+                },
                 AnalyticsEventParams(
                     payPalContextId = paymentToken,
                     appSwitchUrl = returnUrl,
@@ -155,7 +161,9 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun `launch sends APP_SWITCH_FAILED analytics event when browser switch cannot be performed`(@TestParameter isAppSwitch: Boolean) {
+    fun `launch sends APP_SWITCH_FAILED analytics event when browser switch cannot be performed`(
+        @TestParameter isAppSwitch: Boolean
+    ) {
         every { getAppSwitchUseCase() } returns isAppSwitch
         val exception = BrowserSwitchException("browser switch error")
         every {

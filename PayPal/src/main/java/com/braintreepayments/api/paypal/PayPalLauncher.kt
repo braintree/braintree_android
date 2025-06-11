@@ -63,7 +63,12 @@ class PayPalLauncher internal constructor(
         } catch (browserSwitchException: BrowserSwitchException) {
             val manifestInvalidError = createBrowserSwitchError(browserSwitchException)
             sendAppSwitchEvent(isAppSwitch, PayPalAnalytics.APP_SWITCH_FAILED, appSwitchReturnUrl, manifestInvalidError)
-            sendBrowserSwitchEvent(!isAppSwitch, PayPalAnalytics.BROWSER_PRESENTATION_FAILED, appSwitchReturnUrl, manifestInvalidError)
+            sendBrowserSwitchEvent(
+                !isAppSwitch,
+                PayPalAnalytics.BROWSER_PRESENTATION_FAILED,
+                appSwitchReturnUrl,
+                manifestInvalidError
+            )
             return PayPalPendingRequest.Failure(manifestInvalidError)
         }
 
@@ -80,7 +85,12 @@ class PayPalLauncher internal constructor(
         return when (val request = browserSwitchClient.start(activity, options)) {
             is BrowserSwitchStartResult.Failure -> {
                 sendAppSwitchEvent(isAppSwitch, PayPalAnalytics.APP_SWITCH_FAILED, appSwitchReturnUrl, request.error)
-                sendBrowserSwitchEvent(!isAppSwitch, PayPalAnalytics.BROWSER_PRESENTATION_FAILED, appSwitchReturnUrl, request.error)
+                sendBrowserSwitchEvent(
+                    !isAppSwitch,
+                    PayPalAnalytics.BROWSER_PRESENTATION_FAILED,
+                    appSwitchReturnUrl,
+                    request.error
+                )
                 PayPalPendingRequest.Failure(request.error)
             }
 
