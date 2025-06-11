@@ -86,7 +86,7 @@ class PayPalLauncher internal constructor(
 
             is BrowserSwitchStartResult.Started -> {
                 sendAppSwitchEvent(isAppSwitch, PayPalAnalytics.APP_SWITCH_SUCCEEDED, appSwitchReturnUrl)
-                sendBrowserSwitchEvent(isAppSwitch, PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED, appSwitchReturnUrl)
+                sendBrowserSwitchEvent(!isAppSwitch, PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED, appSwitchReturnUrl)
                 PayPalPendingRequest.Started(request.pendingRequest)
             }
         }
@@ -181,7 +181,6 @@ class PayPalLauncher internal constructor(
         browserSwitchClient.assertCanPerformBrowserSwitch(activity, params.browserSwitchOptions)
     }
 
-    // Sends an analytics event for app switch -- both for a switch to a browser or to the native app.
     private fun sendAppSwitchEvent(
         isAppSwitch: Boolean,
         event: String,
