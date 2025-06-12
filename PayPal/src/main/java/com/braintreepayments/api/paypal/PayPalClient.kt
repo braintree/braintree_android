@@ -104,9 +104,9 @@ class PayPalClient internal constructor(
         isVaultRequest = payPalRequest is PayPalVaultRequest
         analyticsParamRepository.didEnablePayPalAppSwitch = payPalRequest.enablePayPalAppSwitch
 
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsParams)
-
         braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
+            // Moving this into the getConfiguration callback to ensure that the configuration call is made only once.
+            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsParams)
             if (error != null) {
                 callbackCreatePaymentAuthFailure(callback, PayPalPaymentAuthRequest.Failure(error))
             } else if (payPalConfigInvalid(configuration)) {
