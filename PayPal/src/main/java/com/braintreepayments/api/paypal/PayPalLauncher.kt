@@ -62,41 +62,43 @@ class PayPalLauncher internal constructor(
             assertCanPerformBrowserSwitch(activity, paymentAuthRequest.requestParams)
         } catch (browserSwitchException: BrowserSwitchException) {
             val manifestInvalidError = createBrowserSwitchError(browserSwitchException)
-            sendAppSwitchEvent(isAppSwitch, PayPalAnalytics.APP_SWITCH_FAILED, appSwitchReturnUrl, manifestInvalidError)
-            sendBrowserSwitchEvent(
-                !isAppSwitch,
-                PayPalAnalytics.BROWSER_PRESENTATION_FAILED,
-                appSwitchReturnUrl,
-                manifestInvalidError
-            )
+            if (isAppSwitch) {
+                sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, appSwitchReturnUrl, manifestInvalidError)
+            } else {
+                sendAnalyticsEvent(PayPalAnalytics.BROWSER_PRESENTATION_FAILED, appSwitchReturnUrl, manifestInvalidError)
+            }
             return PayPalPendingRequest.Failure(manifestInvalidError)
         }
 
         val options = paymentAuthRequest.requestParams.browserSwitchOptions
         if (options == null) {
             val error = BraintreeException("BrowserSwitchOptions is null")
-            sendAppSwitchEvent(isAppSwitch, PayPalAnalytics.APP_SWITCH_FAILED, appSwitchReturnUrl, error)
-            sendBrowserSwitchEvent(!isAppSwitch, PayPalAnalytics.BROWSER_PRESENTATION_FAILED, appSwitchReturnUrl, error)
+            if (isAppSwitch) {
+                sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, appSwitchReturnUrl, error)
+            } else {
+                sendAnalyticsEvent(PayPalAnalytics.BROWSER_PRESENTATION_FAILED, appSwitchReturnUrl, error)
+            }
             return PayPalPendingRequest.Failure(error)
         }
 
-        sendAppSwitchEvent(isAppSwitch, PayPalAnalytics.APP_SWITCH_STARTED, appSwitchReturnUrl)
+        sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_STARTED, appSwitchReturnUrl)
 
         return when (val request = browserSwitchClient.start(activity, options)) {
             is BrowserSwitchStartResult.Failure -> {
-                sendAppSwitchEvent(isAppSwitch, PayPalAnalytics.APP_SWITCH_FAILED, appSwitchReturnUrl, request.error)
-                sendBrowserSwitchEvent(
-                    !isAppSwitch,
-                    PayPalAnalytics.BROWSER_PRESENTATION_FAILED,
-                    appSwitchReturnUrl,
-                    request.error
-                )
+                if (isAppSwitch) {
+                    sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, appSwitchReturnUrl, request.error)
+                } else {
+                    sendAnalyticsEvent(PayPalAnalytics.BROWSER_PRESENTATION_FAILED, appSwitchReturnUrl, request.error)
+                }
                 PayPalPendingRequest.Failure(request.error)
             }
 
             is BrowserSwitchStartResult.Started -> {
-                sendAppSwitchEvent(isAppSwitch, PayPalAnalytics.APP_SWITCH_SUCCEEDED, appSwitchReturnUrl)
-                sendBrowserSwitchEvent(!isAppSwitch, PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED, appSwitchReturnUrl)
+                if (isAppSwitch) {
+                    sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_SUCCEEDED, appSwitchReturnUrl)
+                } else {
+                    sendAnalyticsEvent(PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED, appSwitchReturnUrl)
+                }
                 PayPalPendingRequest.Started(request.pendingRequest)
             }
         }
@@ -189,28 +191,6 @@ class PayPalLauncher internal constructor(
         params: PayPalPaymentAuthRequestParams
     ) {
         browserSwitchClient.assertCanPerformBrowserSwitch(activity, params.browserSwitchOptions)
-    }
-
-    private fun sendAppSwitchEvent(
-        isAppSwitch: Boolean,
-        event: String,
-        appSwitchUrl: String?,
-        error: Throwable? = null
-    ) {
-        if (isAppSwitch) {
-            sendAnalyticsEvent(event, appSwitchUrl, error)
-        }
-    }
-
-    private fun sendBrowserSwitchEvent(
-        isBrowserSwitch: Boolean,
-        event: String,
-        appSwitchUrl: String?,
-        error: Throwable? = null
-    ) {
-        if (isBrowserSwitch) {
-            sendAnalyticsEvent(event, appSwitchUrl, error)
-        }
     }
 
     private fun sendAnalyticsEvent(
