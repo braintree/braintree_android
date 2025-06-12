@@ -65,7 +65,11 @@ class PayPalLauncher internal constructor(
             if (isAppSwitch) {
                 sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_FAILED, appSwitchReturnUrl, manifestInvalidError)
             } else {
-                sendAnalyticsEvent(PayPalAnalytics.BROWSER_PRESENTATION_FAILED, appSwitchReturnUrl, manifestInvalidError)
+                sendAnalyticsEvent(
+                    PayPalAnalytics.BROWSER_PRESENTATION_FAILED,
+                    appSwitchReturnUrl,
+                    manifestInvalidError
+                )
             }
             return PayPalPendingRequest.Failure(manifestInvalidError)
         }
