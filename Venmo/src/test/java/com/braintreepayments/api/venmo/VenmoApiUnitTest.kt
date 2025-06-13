@@ -147,7 +147,9 @@ class VenmoApiUnitTest {
     @Test
     fun createPaymentContext_whenGraphQLPostSuccess_missingPaymentContextID_callsBackError() {
         val braintreeClient = MockkBraintreeClientBuilder()
-            .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_RESPONSE_WITHOUT_PAYMENT_CONTEXT_ID)
+            .sendGraphQLPOSTSuccessfulResponse(
+                Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_RESPONSE_WITHOUT_PAYMENT_CONTEXT_ID
+            )
             .build()
         val sut = VenmoApi(braintreeClient, apiClient, analyticsParamRepository, merchantRepository)
 
