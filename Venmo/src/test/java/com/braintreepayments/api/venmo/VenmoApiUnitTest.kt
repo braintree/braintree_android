@@ -31,7 +31,7 @@ class VenmoApiUnitTest {
     private lateinit var apiClient: ApiClient
     private lateinit var analyticsParamRepository: AnalyticsParamRepository
 
-    var merchantRepository: MerchantRepository = mockk(relaxed = true)
+    private val merchantRepository: MerchantRepository = mockk(relaxed = true)
 
     @Before
     fun beforeEach() {
