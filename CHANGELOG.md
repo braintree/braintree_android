@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.12.0 (2025-06-16)
 
 * PayPal
   * Reduce configuration calls for PayPal flow
