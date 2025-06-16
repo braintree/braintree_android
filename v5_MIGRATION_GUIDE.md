@@ -158,12 +158,14 @@ class MyActivity : FragmentActivity() {
 +       venmoClient = VenmoClient(this, "TOKENIZATION_KEY_OR_CLIENT_TOKEN")
     }
     
-    // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
+    // See [Android developer docs](https://developer.android.com/reference/android/app/Activity#onNewIntent(android.
+    content.Intent)) on when to use `onNewIntent`. Understand the role of `onNewIntent` for different [launch modes](https://developer.android.com/guide/components/activities/tasks-and-back-stack#ManifestForTasks)
+    (https://developer.android.com/guide/components/activities/tasks-and-back-stack#launch-modes).
     override fun onNewIntent(intent: Intent) {
 +       handleReturnToApp(intent)
     }
     
-    // ALL OTHER ACTIVITY LAUNCH MODES 
+    // Standard activity launch mode
     override fun onResume() {
 +       handleReturnToApp(intent)
     }
@@ -404,12 +406,12 @@ class MyActivity : FragmentActivity() {
 +       payPalLauncher = PayPalLauncher()
     }
     
-    // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
+    // See [Android developer docs](https://developer.android.com/reference/android/app/Activity#onNewIntent(android.content.Intent)) on when to use `onNewIntent`. Understand the role of `onNewIntent` for different [launch modes](https://developer.android.com/guide/components/activities/tasks-and-back-stack#ManifestForTasks).
     override fun onNewIntent(intent: Intent) {
 +       handleReturnToApp(intent)
     }
     
-    // ALL OTHER ACTIVITY LAUNCH MODES 
+    // Standard activity launch mode
     override fun onResume() {
 +       handleReturnToApp(intent)
     }
@@ -507,12 +509,12 @@ class MyActivity : FragmentActivity() {
 +       localPaymentLauncher = LocalPaymentLauncher()
     }
 
-    // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
+    // See [Android developer docs](https://developer.android.com/reference/android/app/Activity#onNewIntent(android.content.Intent)) on when to use `onNewIntent`. Understand the role of `onNewIntent` for different [launch modes](https://developer.android.com/guide/components/activities/tasks-and-back-stack#ManifestForTasks).
     override fun onNewIntent(intent: Intent) {
 +       handleReturnToApp(intent)
     }
     
-    // ALL OTHER ACTIVITY LAUNCH MODES 
+    // Standard activity launch mode
     override fun onResume() {
 +       handleReturnToApp(intent)
     }
@@ -602,12 +604,12 @@ class MyActivity : FragmentActivity() {
 +       sepaDirectDebitLauncher = SEPADirectDebitLauncher() 
     }
 
-    // ONLY REQUIRED IF YOUR ACTIVITY LAUNCH MODE IS SINGLE_TOP
+    // See [Android developer docs](https://developer.android.com/reference/android/app/Activity#onNewIntent(android.content.Intent)) on when to use `onNewIntent`. Understand the role of `onNewIntent` for different [launch modes](https://developer.android.com/guide/components/activities/tasks-and-back-stack#ManifestForTasks).
     override fun onNewIntent(intent: Intent) {
 +       handleReturnToApp(intent)
     }
 
-    // ALL OTHER ACTIVITY LAUNCH MODES 
+    // Standard activity launch mode
     override fun onResume() {
 +       handleReturnToApp(intent)
     }
