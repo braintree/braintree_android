@@ -4,6 +4,8 @@
 
 * PayPal
   * Reduce configuration calls for PayPal flow
+  * Move App Switch events to the `PayPalLauncher` class
+  * Add `browser-presentation:succeeded` and `browser-presentation:failed` events for the non App Switch flow
 
 ## 5.11.0 (2025-05-28)
 
