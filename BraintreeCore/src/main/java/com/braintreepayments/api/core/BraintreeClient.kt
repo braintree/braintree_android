@@ -78,6 +78,18 @@ class BraintreeClient internal constructor(
                 it.deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
             }
         }
+
+        prefetchConfiguration()
+    }
+
+    private fun prefetchConfiguration() {
+        // This method is called to prefetch the configuration when the BraintreeClient is created.
+        // It ensures that the configuration is loaded and ready for use in subsequent requests.
+        getConfiguration(callback = object : ConfigurationCallback {
+            override fun onResult(configuration: Configuration?, error: Exception?) {
+                // no op
+            }
+        })
     }
 
     /**
