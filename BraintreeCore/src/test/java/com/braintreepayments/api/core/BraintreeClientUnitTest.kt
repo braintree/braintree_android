@@ -377,19 +377,24 @@ class BraintreeClientUnitTest {
         val sut = createBraintreeClient(configurationLoader)
         sut.reportCrash()
 
-        val callbackSlot = slot<ConfigurationLoaderCallback>()
+        val callbackSlots = mutableListOf<ConfigurationLoaderCallback>()
         verify {
-            configurationLoader.loadConfiguration(capture(callbackSlot))
+            configurationLoader.loadConfiguration(capture(callbackSlots))
         }
 
-        callbackSlot.captured.onResult(ConfigurationLoaderResult.Success(configuration))
+        callbackSlots[0].onResult(ConfigurationLoaderResult.Success(configuration))
 
         verify { analyticsClient.reportCrash(any()) }
     }
 
     @Test
     fun `when BraintreeClient is initialized, merchantRepository properties are set`() {
-        createBraintreeClient(merchantRepository = merchantRepository)
+        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
+        val configurationLoader = MockkConfigurationLoaderBuilder()
+            .configuration(configuration)
+            .build()
+
+        createBraintreeClient(configurationLoader= configurationLoader, merchantRepository = merchantRepository)
         verify { merchantRepository.returnUrlScheme = "sample-return-url-scheme" }
         verify { merchantRepository.applicationContext = applicationContext }
         verify { merchantRepository.authorization = authorization }
@@ -399,7 +404,12 @@ class BraintreeClientUnitTest {
 
     @Test
     fun `when BraintreeClient is initialized and appLinkReturnUri is null, it is not set on the MerchantRepository`() {
-        createBraintreeClient(appLinkReturnUri = null, merchantRepository = merchantRepository)
+        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
+        val configurationLoader = MockkConfigurationLoaderBuilder()
+            .configuration(configuration)
+            .build()
+
+        createBraintreeClient(configurationLoader, appLinkReturnUri = null, merchantRepository = merchantRepository)
         verify(exactly = 0) { merchantRepository.appLinkReturnUri = null }
     }
 
