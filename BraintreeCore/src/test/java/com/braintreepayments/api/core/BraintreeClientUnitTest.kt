@@ -394,7 +394,7 @@ class BraintreeClientUnitTest {
             .configuration(configuration)
             .build()
 
-        createBraintreeClient(configurationLoader= configurationLoader, merchantRepository = merchantRepository)
+        createBraintreeClient(configurationLoader = configurationLoader, merchantRepository = merchantRepository)
         verify { merchantRepository.returnUrlScheme = "sample-return-url-scheme" }
         verify { merchantRepository.applicationContext = applicationContext }
         verify { merchantRepository.authorization = authorization }
