@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* All Modules
+  * Prefetching the configuration on BraintreeClient init to reduce the user perceived latency
 * PayPal
   * Reduce configuration calls for PayPal flow
 
