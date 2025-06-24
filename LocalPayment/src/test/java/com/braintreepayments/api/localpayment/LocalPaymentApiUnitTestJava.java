@@ -34,7 +34,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 @RunWith(RobolectricTestRunner.class)
-public class LocalPaymentApiUnitTest {
+public class LocalPaymentApiUnitTestJava {
 
     private LocalPaymentInternalAuthRequestCallback localPaymentInternalAuthRequestCallback;
     private LocalPaymentInternalTokenizeCallback localPaymentInternalTokenizeCallback;

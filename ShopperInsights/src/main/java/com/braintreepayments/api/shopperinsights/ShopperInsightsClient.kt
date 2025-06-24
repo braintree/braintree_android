@@ -15,6 +15,7 @@ import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_FAILED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_STARTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RECOMMENDED_PAYMENTS_SUCCEEDED
+import org.json.JSONObject
 
 /**
  * Use [ShopperInsightsClient] to optimize your checkout experience
@@ -234,4 +235,7 @@ class ShopperInsightsClient internal constructor(
         private val paymentSources = listOf("PAYPAL", "VENMO")
         private const val includeAccountDetails = true
     }
+    // In ShopperInsightsClientV2.kt
+
+
 }
