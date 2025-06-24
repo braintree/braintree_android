@@ -1,8 +1,6 @@
 package com.braintreepayments.api.localpayment
 
-import android.net.Uri
 import com.braintreepayments.api.core.AnalyticsParamRepository
-import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.IntegrationType
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.PostalAddress
