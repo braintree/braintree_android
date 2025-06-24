@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.13.0 (2025-06-24)
 
 * All Modules
   * Prefetching the configuration on BraintreeClient init to reduce the user perceived latency
