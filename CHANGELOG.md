@@ -4,8 +4,15 @@
 
 * All Modules
   * Prefetching the configuration on BraintreeClient init to reduce the user perceived latency
+* PayPal Messaging
+    * Bump `paypal-messages` to version `1.0.4`
+
+## 5.12.0 (2025-06-16)
+
 * PayPal
   * Reduce configuration calls for PayPal flow
+  * Move App Switch events to the `PayPalLauncher` class
+  * Add `browser-presentation:succeeded` and `browser-presentation:failed` events for the non App Switch flow
 
 ## 5.11.0 (2025-05-28)
 
