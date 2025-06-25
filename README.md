@@ -1,4 +1,4 @@
- # Braintree Android SDK
+# Braintree Android SDK
 
 ![GitHub Actions Tests](https://github.com/braintree/braintree_android/workflows/Tests/badge.svg)
 
