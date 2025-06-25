@@ -15,6 +15,8 @@ import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_SELECTED
 import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessionApi
 import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessionApi.CreateCustomerSessionResult
+import com.braintreepayments.api.shopperinsights.v2.internal.UpdateCustomerSessionApi
+import com.braintreepayments.api.shopperinsights.v2.internal.UpdateCustomerSessionApi.UpdateCustomerSessionResult as ApiUpdateResult
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -30,6 +32,7 @@ class ShopperInsightsClientV2UnitTest {
     private val deviceInspector = mockk<DeviceInspector>(relaxed = true)
     private val analyticsClient: AnalyticsClient = mockk(relaxed = true)
     private val createCustomerSessionApi = mockk<CreateCustomerSessionApi>(relaxed = true)
+    private val updateCustomerSessionApi = mockk<UpdateCustomerSessionApi>(relaxed = true)
 
     private val context = mockk<Context>(relaxed = true)
 
@@ -42,6 +45,7 @@ class ShopperInsightsClientV2UnitTest {
         subject = ShopperInsightsClientV2(
             braintreeClient = braintreeClient,
             createCustomerSessionApi = createCustomerSessionApi,
+            updateCustomerSessionApi = updateCustomerSessionApi,
             deviceInspector = deviceInspector,
             lazy { analyticsClient }
         )
@@ -144,5 +148,43 @@ class ShopperInsightsClientV2UnitTest {
 
         assert(result is CustomerSessionResult.Failure)
         assertEquals(error, (result as CustomerSessionResult.Failure).error)
+    }
+    @Test
+    fun `when updateCustomerSession is called and succeeds, callback is invoked with Success`() {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val callbackSlot = slot<(ApiUpdateResult) -> Unit>()
+        val sessionId = "test-session-id"
+
+        every {
+            updateCustomerSessionApi.execute(customerSessionRequest, sessionId, capture(callbackSlot))
+        } answers {
+            callbackSlot.captured(ApiUpdateResult.Success(sessionId))
+        }
+
+        var result: ShopperInsightsClientV2.UpdateCustomerSessionResult? = null
+        subject.updateCustomerSession(customerSessionRequest, sessionId) { result = it }
+
+        assert(result is ShopperInsightsClientV2.UpdateCustomerSessionResult.Success)
+        assertEquals(sessionId, (result as ShopperInsightsClientV2.UpdateCustomerSessionResult.Success).sessionId)
+    }
+
+    @Test
+    fun `when updateCustomerSession is called and fails, callback is invoked with Failure`() {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val callbackSlot = slot<(ApiUpdateResult) -> Unit>()
+        val sessionId = "test-session-id"
+        val error = Exception("Test error")
+
+        every {
+            updateCustomerSessionApi.execute(customerSessionRequest, sessionId, capture(callbackSlot))
+        } answers {
+            callbackSlot.captured(ApiUpdateResult.Error(error))
+        }
+
+        var result: ShopperInsightsClientV2.UpdateCustomerSessionResult? = null
+        subject.updateCustomerSession(customerSessionRequest, sessionId) { result = it }
+
+        assert(result is ShopperInsightsClientV2.UpdateCustomerSessionResult.Failure)
+        assertEquals(error, (result as ShopperInsightsClientV2.UpdateCustomerSessionResult.Failure).error)
     }
 }
