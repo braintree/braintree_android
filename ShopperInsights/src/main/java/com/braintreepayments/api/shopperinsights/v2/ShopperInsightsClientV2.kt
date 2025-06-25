@@ -11,6 +11,7 @@ import com.braintreepayments.api.shopperinsights.PresentmentDetails
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_SELECTED
 import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessionApi
+import com.braintreepayments.api.shopperinsights.v2.internal.UpdateCustomerSessionApi
 
 /**
  * Use [ShopperInsightsClientV2] to optimize your checkout experience by prioritizing the customer’s preferred payment
@@ -28,6 +29,7 @@ import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessi
 class ShopperInsightsClientV2 internal constructor(
     private val braintreeClient: BraintreeClient,
     private val createCustomerSessionApi: CreateCustomerSessionApi = CreateCustomerSessionApi(braintreeClient),
+    private val updateCustomerSessionApi: UpdateCustomerSessionApi = UpdateCustomerSessionApi(braintreeClient),
     private val deviceInspector: DeviceInspector = DeviceInspector(),
     lazyAnalyticsClient: Lazy<AnalyticsClient> = AnalyticsClient.lazyInstance
 ) {
@@ -122,5 +124,27 @@ class ShopperInsightsClientV2 internal constructor(
      */
     fun isVenmoAppInstalled(context: Context): Boolean {
         return deviceInspector.isVenmoInstalled(context)
+    }
+    /**
+     * Updates the customer session with the given session ID.
+     */
+    fun updateCustomerSession(
+        customerSessionRequest: CustomerSessionRequest,
+        sessionId: String,
+        callback: (UpdateCustomerSessionResult) -> Unit
+    ) {
+        updateCustomerSessionApi.execute(customerSessionRequest, sessionId) { result ->
+            when (result) {
+                is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Success ->
+                    callback(UpdateCustomerSessionResult.Success(result.sessionId))
+                is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Error ->
+                    callback(UpdateCustomerSessionResult.Failure(result.error))
+            }
+        }
+    }
+
+    sealed class UpdateCustomerSessionResult {
+        data class Success(val sessionId: String) : UpdateCustomerSessionResult()
+        data class Failure(val error: Exception) : UpdateCustomerSessionResult()
     }
 }
