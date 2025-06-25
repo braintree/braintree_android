@@ -234,5 +234,4 @@ class ShopperInsightsClient internal constructor(
         private val paymentSources = listOf("PAYPAL", "VENMO")
         private const val includeAccountDetails = true
     }
-    // In ShopperInsightsClientV2.kt
 }

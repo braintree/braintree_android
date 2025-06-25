@@ -12,8 +12,6 @@ The Braintree SDK requires Java 11 and uses Kotlin 1.9.10.
 
 ## 📣 Announcements
 
-test
-
 **Upgrade your integration to continue accepting Braintree payments** The SSL certificates for the Android SDK are set to expire by March 30, 2026. Upgrade to v4.45.0+ or v5.0.0+ to continue processing payments using the Braintree SDK. ![Click here for more details](https://github.com/braintree/braintree_android/issues/993)
 
 ## Adding It To Your Project
