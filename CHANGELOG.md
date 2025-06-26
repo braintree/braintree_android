@@ -1,16 +1,25 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.13.0 (2025-06-24)
+
+* All Modules
+  * Prefetching the configuration on BraintreeClient init to reduce the user perceived latency
+* PayPal Messaging
+  * Bump `paypal-messages` to version `1.0.4`
+
+## 5.12.0 (2025-06-16)
 
 * PayPal
   * Reduce configuration calls for PayPal flow
+  * Move App Switch events to the `PayPalLauncher` class
+  * Add `browser-presentation:succeeded` and `browser-presentation:failed` events for the non App Switch flow
 
 ## 5.11.0 (2025-05-28)
 
 * ThreeDSecure
-    * Fix an issue where the `ThreeDSecureTokenizeCallback` would return a `Failure` and `Success` result (fixes #1321)
+  * Fix an issue where the `ThreeDSecureTokenizeCallback` would return a `Failure` and `Success` result (fixes #1321)
 * PayPal Messaging
-    * Bump `paypal-messages` to version `1.0.3`
+  * Bump `paypal-messages` to version `1.0.3`
 
 ## 5.10.0 (2025-04-29)
 
