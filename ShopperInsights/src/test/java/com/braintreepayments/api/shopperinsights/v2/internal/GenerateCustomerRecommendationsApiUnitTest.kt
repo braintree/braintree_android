@@ -2,7 +2,7 @@ package com.braintreepayments.api.shopperinsights.v2.internal
 
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendationsResult
+import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendations
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
 import com.braintreepayments.api.shopperinsights.v2.PaymentOptions
 import com.braintreepayments.api.shopperinsights.v2.PurchaseUnit
@@ -151,7 +151,7 @@ class GenerateCustomerRecommendationsApiUnitTest {
 
         generateCustomerRecommendationsApi.execute(customerSessionRequest, "test-session-id", callback)
 
-        val expectedResult = CustomerRecommendationsResult(
+        val expectedResult = CustomerRecommendations(
             sessionId = sessionId,
             isInPayPalNetwork = true,
             paymentRecommendations = listOf(
