@@ -112,7 +112,6 @@ class ShopperInsightsClientV2 internal constructor(
         data class Failure(val error: Exception) : CustomerSessionResult()
     }
 
-
     /**
      * Call this method when the PayPal, Venmo or Other button has been successfully displayed to the buyer.
      * This method sends analytics to help improve the Shopper Insights feature experience.
