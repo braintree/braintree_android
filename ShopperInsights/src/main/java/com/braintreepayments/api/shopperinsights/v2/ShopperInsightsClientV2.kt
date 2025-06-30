@@ -73,6 +73,47 @@ class ShopperInsightsClientV2 internal constructor(
     }
 
     /**
+     * Updates an existing customer session.
+     *
+     * @param customerSessionRequest: a [CustomerSessionRequest] object containing the request parameters
+     * @param sessionId: the ID of the session to update
+     * @param customerSessionCallback: a callback that returns the result of the customer session update
+     *
+     * Note: **This feature is in beta. Its public API may change in future releases.**
+     */
+    fun updateCustomerSession(
+        customerSessionRequest: CustomerSessionRequest,
+        sessionId: String,
+        customerSessionCallback: (customerSessionResult: CustomerSessionResult) -> Unit
+    ) {
+        updateCustomerSessionApi.execute(customerSessionRequest, sessionId) { result ->
+            when (result) {
+                is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Success ->
+                    customerSessionCallback(CustomerSessionResult.Success(result.sessionId))
+                is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Error ->
+                    customerSessionCallback(CustomerSessionResult.Failure(result.error))
+            }
+        }
+    }
+    /**
+     * Represents the result of a customer session operation (create or update).
+     */
+    sealed class CustomerSessionResult {
+        /**
+         * Indicates the operation was successful.
+         * @param sessionId The ID of the customer session.
+         */
+        data class Success(val sessionId: String) : CustomerSessionResult()
+
+        /**
+         * Indicates the operation failed.
+         * @param error The exception describing the failure.
+         */
+        data class Failure(val error: Exception) : CustomerSessionResult()
+    }
+
+
+    /**
      * Call this method when the PayPal, Venmo or Other button has been successfully displayed to the buyer.
      * This method sends analytics to help improve the Shopper Insights feature experience.
      * @param buttonType Type of button presented - PayPal, Venmo, or Other.
@@ -124,27 +165,5 @@ class ShopperInsightsClientV2 internal constructor(
      */
     fun isVenmoAppInstalled(context: Context): Boolean {
         return deviceInspector.isVenmoInstalled(context)
-    }
-    /**
-     * Updates the customer session with the given session ID.
-     */
-    fun updateCustomerSession(
-        customerSessionRequest: CustomerSessionRequest,
-        sessionId: String,
-        callback: (UpdateCustomerSessionResult) -> Unit
-    ) {
-        updateCustomerSessionApi.execute(customerSessionRequest, sessionId) { result ->
-            when (result) {
-                is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Success ->
-                    callback(UpdateCustomerSessionResult.Success(result.sessionId))
-                is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Error ->
-                    callback(UpdateCustomerSessionResult.Failure(result.error))
-            }
-        }
-    }
-
-    sealed class UpdateCustomerSessionResult {
-        data class Success(val sessionId: String) : UpdateCustomerSessionResult()
-        data class Failure(val error: Exception) : UpdateCustomerSessionResult()
     }
 }
