@@ -95,22 +95,6 @@ class ShopperInsightsClientV2 internal constructor(
             }
         }
     }
-    /**
-     * Represents the result of a customer session operation (create or update).
-     */
-    sealed class CustomerSessionResult {
-        /**
-         * Indicates the operation was successful.
-         * @param sessionId The ID of the customer session.
-         */
-        data class Success(val sessionId: String) : CustomerSessionResult()
-
-        /**
-         * Indicates the operation failed.
-         * @param error The exception describing the failure.
-         */
-        data class Failure(val error: Exception) : CustomerSessionResult()
-    }
 
     /**
      * Call this method when the PayPal, Venmo or Other button has been successfully displayed to the buyer.

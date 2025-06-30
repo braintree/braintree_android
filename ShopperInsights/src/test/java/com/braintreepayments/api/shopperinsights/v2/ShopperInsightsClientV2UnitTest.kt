@@ -124,11 +124,11 @@ class ShopperInsightsClientV2UnitTest {
             callbackSlot.captured(CreateCustomerSessionResult.Success(sessionId))
         }
 
-        var result: ShopperInsightsClientV2.CustomerSessionResult? = null
+        var result: CustomerSessionResult? = null
         subject.createCustomerSession(customerSessionRequest) { result = it }
 
-        assert(result is ShopperInsightsClientV2.CustomerSessionResult.Success)
-        assertEquals(sessionId, (result as ShopperInsightsClientV2.CustomerSessionResult.Success).sessionId)
+        assert(result is CustomerSessionResult.Success)
+        assertEquals(sessionId, (result as CustomerSessionResult.Success).sessionId)
     }
 
     @Test
@@ -143,11 +143,11 @@ class ShopperInsightsClientV2UnitTest {
             callbackSlot.captured(CreateCustomerSessionResult.Error(error))
         }
 
-        var result: ShopperInsightsClientV2.CustomerSessionResult? = null
+        var result: CustomerSessionResult? = null
         subject.createCustomerSession(customerSessionRequest) { result = it }
 
-        assert(result is ShopperInsightsClientV2.CustomerSessionResult.Failure)
-        assertEquals(error, (result as ShopperInsightsClientV2.CustomerSessionResult.Failure).error)
+        assert(result is CustomerSessionResult.Failure)
+        assertEquals(error, (result as CustomerSessionResult.Failure).error)
     }
     @Test
     fun `when updateCustomerSession is called and succeeds, callback is invoked with Success`() {
@@ -161,11 +161,11 @@ class ShopperInsightsClientV2UnitTest {
             callbackSlot.captured(ApiUpdateResult.Success(sessionId))
         }
 
-        var result: ShopperInsightsClientV2.CustomerSessionResult? = null
+        var result: CustomerSessionResult? = null
         subject.updateCustomerSession(customerSessionRequest, sessionId) { result = it }
 
-        assert(result is ShopperInsightsClientV2.CustomerSessionResult.Success)
-        assertEquals(sessionId, (result as ShopperInsightsClientV2.CustomerSessionResult.Success).sessionId)
+        assert(result is CustomerSessionResult.Success)
+        assertEquals(sessionId, (result as CustomerSessionResult.Success).sessionId)
     }
 
     @Test
@@ -181,10 +181,10 @@ class ShopperInsightsClientV2UnitTest {
             callbackSlot.captured(ApiUpdateResult.Error(error))
         }
 
-        var result: ShopperInsightsClientV2.CustomerSessionResult? = null
+        var result: CustomerSessionResult? = null
         subject.updateCustomerSession(customerSessionRequest, sessionId) { result = it }
 
-        assert(result is ShopperInsightsClientV2.CustomerSessionResult.Failure)
-        assertEquals(error, (result as ShopperInsightsClientV2.CustomerSessionResult.Failure).error)
+        assert(result is CustomerSessionResult.Failure)
+        assertEquals(error, (result as CustomerSessionResult.Failure).error)
     }
 }
