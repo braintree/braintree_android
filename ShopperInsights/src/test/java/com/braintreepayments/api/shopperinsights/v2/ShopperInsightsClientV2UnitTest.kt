@@ -153,13 +153,13 @@ class ShopperInsightsClientV2UnitTest {
     @Test
     fun `when updateCustomerSession is called and succeeds, callback is invoked with Success`() {
         val customerSessionRequest = mockk<CustomerSessionRequest>()
-        val callbackSlot = slot<(ApiUpdateResult) -> Unit>()
+        val callbackSlot = slot<(UpdateCustomerSessionResult) -> Unit>()
         val sessionId = "test-session-id"
 
         every {
             updateCustomerSessionApi.execute(customerSessionRequest, sessionId, capture(callbackSlot))
         } answers {
-            callbackSlot.captured(ApiUpdateResult.Success(sessionId))
+            callbackSlot.captured(UpdateCustomerSessionResult.Success(sessionId))
         }
 
         var result: CustomerSessionResult? = null
@@ -172,14 +172,14 @@ class ShopperInsightsClientV2UnitTest {
     @Test
     fun `when updateCustomerSession is called and fails, callback is invoked with Failure`() {
         val customerSessionRequest = mockk<CustomerSessionRequest>()
-        val callbackSlot = slot<(ApiUpdateResult) -> Unit>()
+        val callbackSlot = slot<(UpdateCustomerSessionResult) -> Unit>()
         val sessionId = "test-session-id"
         val error = Exception("Test error")
 
         every {
             updateCustomerSessionApi.execute(customerSessionRequest, sessionId, capture(callbackSlot))
         } answers {
-            callbackSlot.captured(ApiUpdateResult.Error(error))
+            callbackSlot.captured(UpdateCustomerSessionResult.Error(error))
         }
 
         var result: CustomerSessionResult? = null
