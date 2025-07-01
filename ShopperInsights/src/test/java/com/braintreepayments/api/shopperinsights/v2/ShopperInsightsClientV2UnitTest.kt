@@ -16,7 +16,7 @@ import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON
 import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessionApi
 import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessionApi.CreateCustomerSessionResult
 import com.braintreepayments.api.shopperinsights.v2.internal.UpdateCustomerSessionApi
-import com.braintreepayments.api.shopperinsights.v2.internal.UpdateCustomerSessionApi.UpdateCustomerSessionResult as ApiUpdateResult
+import com.braintreepayments.api.shopperinsights.v2.internal.UpdateCustomerSessionApi.UpdateCustomerSessionResult
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
