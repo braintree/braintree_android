@@ -149,6 +149,7 @@ class ShopperInsightsClientV2UnitTest {
         assert(result is CustomerSessionResult.Failure)
         assertEquals(error, (result as CustomerSessionResult.Failure).error)
     }
+    
     @Test
     fun `when updateCustomerSession is called and succeeds, callback is invoked with Success`() {
         val customerSessionRequest = mockk<CustomerSessionRequest>()
