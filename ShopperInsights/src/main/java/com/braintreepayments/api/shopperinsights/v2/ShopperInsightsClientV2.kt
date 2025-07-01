@@ -74,7 +74,7 @@ class ShopperInsightsClientV2 internal constructor(
     }
 
     /**
-     * Generates customer recommendations.
+     * Generates customer payment option recommendations.
      *
      * @param customerSessionRequest Optional: a [CustomerSessionRequest] object containing the request parameters
      * @param sessionId Optional: The shopper session ID

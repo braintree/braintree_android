@@ -3,7 +3,7 @@ package com.braintreepayments.api.shopperinsights.v2
 import com.braintreepayments.api.core.ExperimentalBetaApi
 
 /**
- * Represents the result of customer recommendations generation.
+ * Represents the result of customer payment option recommendations generation.
  */
 @ExperimentalBetaApi
 sealed class CustomerRecommendationsResult {
