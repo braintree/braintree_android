@@ -12,7 +12,7 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
  * Warning: This feature is in beta. It's public API may change or be removed in future releases.
  */
 @ExperimentalBetaApi
-data class CustomerRecommendations(
+data class CustomerRecommendations internal constructor(
     val sessionId: String?,
     val isInPayPalNetwork: Boolean?,
     val paymentRecommendations: List<PaymentOptions>?
