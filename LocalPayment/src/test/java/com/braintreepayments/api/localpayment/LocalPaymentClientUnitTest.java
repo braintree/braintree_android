@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.braintreepayments.api.BrowserSwitchFinalResult;
 import com.braintreepayments.api.BrowserSwitchOptions;
+import com.braintreepayments.api.LaunchType;
 import com.braintreepayments.api.core.AnalyticsEventParams;
 import com.braintreepayments.api.core.AnalyticsParamRepository;
 import com.braintreepayments.api.core.BraintreeClient;
@@ -422,7 +423,7 @@ public class LocalPaymentClientUnitTest {
     }
 
     @Test
-    public void buildBrowserSwitchOptions_withDefaultDeepLinkHandlerEnabled_startsBrowserSwitchAsNewTaskWithProperRequestCode() {
+    public void buildBrowserSwitchOptions_startsBrowserSwitchWithClearTop() {
         when(braintreeClient.launchesBrowserSwitchAsNewTask()).thenReturn(true);
         LocalPaymentClient sut =
             new LocalPaymentClient(braintreeClient, dataCollector,
@@ -443,7 +444,8 @@ public class LocalPaymentClientUnitTest {
         LocalPaymentAuthRequestParams params = ((LocalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest).getRequestParams();
         BrowserSwitchOptions browserSwitchOptions = params.getBrowserSwitchOptions();
 
-        assertTrue(browserSwitchOptions.isLaunchAsNewTask());
+        assert browserSwitchOptions != null;
+        assertEquals(LaunchType.ACTIVITY_CLEAR_TOP, browserSwitchOptions.getLaunchType());
     }
 
     @Test
