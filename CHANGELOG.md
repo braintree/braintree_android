@@ -8,7 +8,7 @@
     * Bump `paypal-messages` to version `1.0.3`
 * ShopperInsights (BETA)
     * Add `PageType.PAYMENT_METHOD_SELECTION` and `PageType.PAYMENT_METHOD_ADDITION`
-    * Add `updateCustomerSession` public method to `ShopperInsightsClientV2` (beta)
+    * Add `updateCustomerSession` public method to `ShopperInsightsClientV2`
 
 ## 5.10.0 (2025-04-29)
 
