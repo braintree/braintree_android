@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
+import com.braintreepayments.api.LaunchType
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
@@ -114,7 +115,7 @@ class LocalPaymentClient internal constructor(
         val browserSwitchOptions = BrowserSwitchOptions()
             .requestCode(BraintreeRequestCodes.LOCAL_PAYMENT.code)
             .returnUrlScheme(braintreeClient.getReturnUrlScheme())
-            .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
+            .launchType(LaunchType.ACTIVITY_CLEAR_TOP)
             .url(Uri.parse(localPaymentAuthRequestParams.approvalUrl))
 
         try {

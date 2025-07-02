@@ -357,17 +357,6 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun returnUrlScheme_whenDefaultDeepLinkHandlerEnabled_returnsDefaultDeepLinkHandlerScheme() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        val sut = BraintreeClient(context, authorization.toString())
-        sut.launchesBrowserSwitchAsNewTask(true)
-        assertEquals(
-            "com.braintreepayments.api.core.test.braintree.deeplinkhandler",
-            sut.getReturnUrlScheme()
-        )
-    }
-
-    @Test
     @Throws(JSONException::class)
     fun reportCrash_reportsCrashViaAnalyticsClient() {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
