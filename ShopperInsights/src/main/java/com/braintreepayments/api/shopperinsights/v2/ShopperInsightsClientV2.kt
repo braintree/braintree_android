@@ -11,6 +11,7 @@ import com.braintreepayments.api.shopperinsights.PresentmentDetails
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_SELECTED
 import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessionApi
+import com.braintreepayments.api.shopperinsights.v2.internal.GenerateCustomerRecommendationsApi
 
 /**
  * Use [ShopperInsightsClientV2] to optimize your checkout experience by prioritizing the customer’s preferred payment
@@ -28,6 +29,8 @@ import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessi
 class ShopperInsightsClientV2 internal constructor(
     private val braintreeClient: BraintreeClient,
     private val createCustomerSessionApi: CreateCustomerSessionApi = CreateCustomerSessionApi(braintreeClient),
+    private val generateCustomerRecommendationsApi: GenerateCustomerRecommendationsApi =
+        GenerateCustomerRecommendationsApi(braintreeClient),
     private val deviceInspector: DeviceInspector = DeviceInspector(),
     lazyAnalyticsClient: Lazy<AnalyticsClient> = AnalyticsClient.lazyInstance
 ) {
@@ -67,6 +70,43 @@ class ShopperInsightsClientV2 internal constructor(
                     customerSessionCallback(CustomerSessionResult.Failure(createCustomerSessionResult.error))
                 }
             }
+        }
+    }
+
+    /**
+     * Generates customer payment option recommendations.
+     *
+     * @param customerSessionRequest Optional: a [CustomerSessionRequest] object containing the request parameters
+     * @param sessionId Optional: The shopper session ID
+     * @param customerRecommendationsCallback: a callback that returns the result of the
+     * customer recommendation generation
+     *
+     * Note: **This feature is in beta. It's public API may change in future releases.**
+     */
+    fun generateCustomerRecommendations(
+        customerSessionRequest: CustomerSessionRequest? = null,
+        sessionId: String? = null,
+        customerRecommendationsCallback: (customerRecommendationsResult: CustomerRecommendationsResult) -> Unit
+    ) {
+        generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId) {
+            generateCustomerRecommendationsResult ->
+                when (generateCustomerRecommendationsResult) {
+                    is GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult.Success -> {
+                        customerRecommendationsCallback(
+                            CustomerRecommendationsResult.Success(
+                                generateCustomerRecommendationsResult.customerRecommendations
+                            )
+                        )
+                    }
+
+                    is GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult.Error -> {
+                        customerRecommendationsCallback(
+                            CustomerRecommendationsResult.Failure(
+                                generateCustomerRecommendationsResult.error
+                            )
+                        )
+                    }
+                }
         }
     }
 
