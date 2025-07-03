@@ -11,6 +11,7 @@ import com.braintreepayments.api.shopperinsights.PresentmentDetails
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_SELECTED
 import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessionApi
+import com.braintreepayments.api.shopperinsights.v2.internal.UpdateCustomerSessionApi
 import com.braintreepayments.api.shopperinsights.v2.internal.GenerateCustomerRecommendationsApi
 
 /**
@@ -29,6 +30,7 @@ import com.braintreepayments.api.shopperinsights.v2.internal.GenerateCustomerRec
 class ShopperInsightsClientV2 internal constructor(
     private val braintreeClient: BraintreeClient,
     private val createCustomerSessionApi: CreateCustomerSessionApi = CreateCustomerSessionApi(braintreeClient),
+    private val updateCustomerSessionApi: UpdateCustomerSessionApi = UpdateCustomerSessionApi(braintreeClient),
     private val generateCustomerRecommendationsApi: GenerateCustomerRecommendationsApi =
         GenerateCustomerRecommendationsApi(braintreeClient),
     private val deviceInspector: DeviceInspector = DeviceInspector(),
@@ -69,6 +71,31 @@ class ShopperInsightsClientV2 internal constructor(
                 is CreateCustomerSessionApi.CreateCustomerSessionResult.Error -> {
                     customerSessionCallback(CustomerSessionResult.Failure(createCustomerSessionResult.error))
                 }
+            }
+        }
+    }
+
+    /**
+     * Updates an existing customer session.
+     *
+     * @param customerSessionRequest: a [CustomerSessionRequest] object containing the request parameters
+     * @param sessionId: the ID of the session to update
+     * @param customerSessionCallback: a callback that returns the result of the customer session update
+     *
+     * Note: **This feature is in beta. Its public API may change in future releases.**
+     */
+    fun updateCustomerSession(
+        customerSessionRequest: CustomerSessionRequest,
+        sessionId: String,
+        customerSessionCallback: (customerSessionResult: CustomerSessionResult) -> Unit
+    ) {
+        updateCustomerSessionApi.execute(customerSessionRequest, sessionId) { result ->
+            when (result) {
+                is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Success ->
+                    customerSessionCallback(CustomerSessionResult.Success(result.sessionId))
+
+                is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Error ->
+                    customerSessionCallback(CustomerSessionResult.Failure(result.error))
             }
         }
     }
