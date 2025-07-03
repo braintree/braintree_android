@@ -2,7 +2,7 @@ package com.braintreepayments.api.shopperinsights.v2.internal
 
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendationsResult
+import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendations
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
 import com.braintreepayments.api.shopperinsights.v2.PaymentOptions
 import org.json.JSONException
@@ -19,7 +19,7 @@ internal class GenerateCustomerRecommendationsApi(
 
     sealed class GenerateCustomerRecommendationsResult {
         data class Success(
-            val recommendationsResult: CustomerRecommendationsResult
+            val customerRecommendations: CustomerRecommendations
         ) : GenerateCustomerRecommendationsResult()
 
         data class Error(val error: Exception) : GenerateCustomerRecommendationsResult()
@@ -81,7 +81,7 @@ internal class GenerateCustomerRecommendationsApi(
     }
 
     @Throws(JSONException::class)
-    private fun parseRecommendationsResponse(responseBody: String): CustomerRecommendationsResult {
+    private fun parseRecommendationsResponse(responseBody: String): CustomerRecommendations {
         val jsonObject = JSONObject(responseBody)
         val data = jsonObject.getJSONObject("data")
         val recommendations = data.getJSONObject(GENERATE_CUSTOMER_RECOMMENDATIONS)
@@ -101,7 +101,7 @@ internal class GenerateCustomerRecommendationsApi(
             )
         }
 
-        return CustomerRecommendationsResult(
+        return CustomerRecommendations(
             sessionId = sessionId,
             isInPayPalNetwork = isInPayPalNetwork,
             paymentRecommendations = paymentOptions

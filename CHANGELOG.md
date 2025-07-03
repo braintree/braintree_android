@@ -10,6 +10,7 @@
     * Add `PageType.PAYMENT_METHOD_SELECTION` and `PageType.PAYMENT_METHOD_ADDITION`
     * Add `createCustomerSession` public method to `ShopperInsightsClientV2`
     * Add `updateCustomerSession` public method to `ShopperInsightsClientV2`
+    * Add `generateCustomerRecommendations` method to `ShopperInsightsClientV2`
 
 ## 5.10.0 (2025-04-29)
 

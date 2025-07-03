@@ -17,6 +17,8 @@ import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessi
 import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessionApi.CreateCustomerSessionResult
 import com.braintreepayments.api.shopperinsights.v2.internal.UpdateCustomerSessionApi
 import com.braintreepayments.api.shopperinsights.v2.internal.UpdateCustomerSessionApi.UpdateCustomerSessionResult
+import com.braintreepayments.api.shopperinsights.v2.internal.GenerateCustomerRecommendationsApi
+import com.braintreepayments.api.shopperinsights.v2.internal.GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -33,6 +35,7 @@ class ShopperInsightsClientV2UnitTest {
     private val analyticsClient: AnalyticsClient = mockk(relaxed = true)
     private val createCustomerSessionApi = mockk<CreateCustomerSessionApi>(relaxed = true)
     private val updateCustomerSessionApi = mockk<UpdateCustomerSessionApi>(relaxed = true)
+    private val generateCustomerRecommendationsApi = mockk<GenerateCustomerRecommendationsApi>(relaxed = true)
 
     private val context = mockk<Context>(relaxed = true)
 
@@ -46,6 +49,7 @@ class ShopperInsightsClientV2UnitTest {
             braintreeClient = braintreeClient,
             createCustomerSessionApi = createCustomerSessionApi,
             updateCustomerSessionApi = updateCustomerSessionApi,
+            generateCustomerRecommendationsApi = generateCustomerRecommendationsApi,
             deviceInspector = deviceInspector,
             lazy { analyticsClient }
         )
@@ -177,7 +181,11 @@ class ShopperInsightsClientV2UnitTest {
         val error = Exception("Test error")
 
         every {
-            updateCustomerSessionApi.execute(customerSessionRequest, sessionId, capture(callbackSlot))
+            updateCustomerSessionApi.execute(
+                customerSessionRequest,
+                sessionId,
+                capture(callbackSlot)
+            )
         } answers {
             callbackSlot.captured(UpdateCustomerSessionResult.Error(error))
         }
@@ -187,5 +195,44 @@ class ShopperInsightsClientV2UnitTest {
 
         assert(result is CustomerSessionResult.Failure)
         assertEquals(error, (result as CustomerSessionResult.Failure).error)
+    }
+
+    @Test
+    fun `when generateCustomerRecommendations is called and succeeds, callback is invoked with Success`() {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val sessionId = "test-session-id"
+        val callbackSlot = slot<(GenerateCustomerRecommendationsResult) -> Unit>()
+        val recommendations = mockk<CustomerRecommendations>()
+
+        every {
+            generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId, capture(callbackSlot))
+        } answers {
+            callbackSlot.captured(GenerateCustomerRecommendationsResult.Success(recommendations))
+        }
+
+        var result: CustomerRecommendationsResult? = null
+        subject.generateCustomerRecommendations(customerSessionRequest, sessionId) { result = it }
+
+        assert(result is CustomerRecommendationsResult.Success)
+        assertEquals(recommendations, (result as CustomerRecommendationsResult.Success).customerRecommendations)
+    }
+
+    @Test
+    fun `when generateCustomerRecommendations is called and fails, callback is invoked with Failure`() {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val sessionId = "test-session-id"
+        val callbackSlot = slot<(GenerateCustomerRecommendationsResult) -> Unit>()
+        val error = Exception("Test error")
+
+        every {
+            generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId, capture(callbackSlot))
+        } answers {
+            callbackSlot.captured(GenerateCustomerRecommendationsResult.Error(error))
+        }
+
+        var result: CustomerRecommendationsResult? = null
+        subject.generateCustomerRecommendations(customerSessionRequest, sessionId) { result = it }
+        assert(result is CustomerRecommendationsResult.Failure)
+        assertEquals(error, (result as CustomerRecommendationsResult.Failure).error)
     }
 }
