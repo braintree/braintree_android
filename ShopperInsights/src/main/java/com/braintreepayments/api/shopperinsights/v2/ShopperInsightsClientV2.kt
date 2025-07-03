@@ -76,7 +76,6 @@ class ShopperInsightsClientV2 internal constructor(
     }
 
     /**
-<<<<<<< HEAD
      * Updates an existing customer session.
      *
      * @param customerSessionRequest: a [CustomerSessionRequest] object containing the request parameters
