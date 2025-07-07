@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## Unreleased
+
+* BraintreeCore
+    * Bump `browser-switch` version to `3.1.0`
+
 ## 5.13.0 (2025-06-24)
 
 * All Modules
