@@ -8,6 +8,7 @@ import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.ButtonType
 import com.braintreepayments.api.shopperinsights.PresentmentDetails
+import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_SELECTED
 import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessionApi
@@ -62,13 +63,16 @@ class ShopperInsightsClientV2 internal constructor(
         customerSessionRequest: CustomerSessionRequest,
         customerSessionCallback: (customerSessionResult: CustomerSessionResult) -> Unit
     ) {
+        analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_STARTED)
         createCustomerSessionApi.execute(customerSessionRequest) { createCustomerSessionResult ->
             when (createCustomerSessionResult) {
                 is CreateCustomerSessionApi.CreateCustomerSessionResult.Success -> {
+                    analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_SUCCEEDED)
                     customerSessionCallback(CustomerSessionResult.Success(createCustomerSessionResult.sessionId))
                 }
 
                 is CreateCustomerSessionApi.CreateCustomerSessionResult.Error -> {
+                    analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_FAILED)
                     customerSessionCallback(CustomerSessionResult.Failure(createCustomerSessionResult.error))
                 }
             }
@@ -89,13 +93,18 @@ class ShopperInsightsClientV2 internal constructor(
         sessionId: String,
         customerSessionCallback: (customerSessionResult: CustomerSessionResult) -> Unit
     ) {
+        analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_STARTED)
         updateCustomerSessionApi.execute(customerSessionRequest, sessionId) { result ->
             when (result) {
-                is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Success ->
+                is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Success -> {
+                    analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_SUCCEEDED)
                     customerSessionCallback(CustomerSessionResult.Success(result.sessionId))
+                }
 
-                is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Error ->
+                is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Error -> {
+                    analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_FAILED)
                     customerSessionCallback(CustomerSessionResult.Failure(result.error))
+                }
             }
         }
     }
@@ -115,10 +124,12 @@ class ShopperInsightsClientV2 internal constructor(
         sessionId: String? = null,
         customerRecommendationsCallback: (customerRecommendationsResult: CustomerRecommendationsResult) -> Unit
     ) {
+        analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_STARTED)
         generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId) {
             generateCustomerRecommendationsResult ->
                 when (generateCustomerRecommendationsResult) {
                     is GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult.Success -> {
+                        analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_SUCCEEDED)
                         customerRecommendationsCallback(
                             CustomerRecommendationsResult.Success(
                                 generateCustomerRecommendationsResult.customerRecommendations
@@ -127,6 +138,7 @@ class ShopperInsightsClientV2 internal constructor(
                     }
 
                     is GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult.Error -> {
+                        analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_FAILED)
                         customerRecommendationsCallback(
                             CustomerRecommendationsResult.Failure(
                                 generateCustomerRecommendationsResult.error

@@ -11,6 +11,7 @@ import com.braintreepayments.api.shopperinsights.ButtonType
 import com.braintreepayments.api.shopperinsights.ExperimentType
 import com.braintreepayments.api.shopperinsights.PageType
 import com.braintreepayments.api.shopperinsights.PresentmentDetails
+import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_PRESENTED
 import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON_SELECTED
 import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessionApi
@@ -23,6 +24,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import io.mockk.verifyOrder
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -234,5 +236,25 @@ class ShopperInsightsClientV2UnitTest {
         subject.generateCustomerRecommendations(customerSessionRequest, sessionId) { result = it }
         assert(result is CustomerRecommendationsResult.Failure)
         assertEquals(error, (result as CustomerRecommendationsResult.Failure).error)
+    }
+
+    @Test
+    fun `createCustomerSession sends started and succeeded analytics events`() {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val callbackSlot = slot<(CreateCustomerSessionApi.CreateCustomerSessionResult) -> Unit>()
+        val sessionId = "test-session-id"
+
+        every {
+            createCustomerSessionApi.execute(customerSessionRequest, capture(callbackSlot))
+        } answers {
+            callbackSlot.captured(CreateCustomerSessionApi.CreateCustomerSessionResult.Success(sessionId))
+        }
+
+        subject.createCustomerSession(customerSessionRequest) {}
+
+        verifyOrder {
+            analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_STARTED)
+            analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_SUCCEEDED)
+        }
     }
 }
