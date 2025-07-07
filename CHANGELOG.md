@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+* PayPal
+  * Fix an issue where multiple Chrome Custom Tabs can be opened
+* LocalPayment
+  * Fix an issue where multiple Chrome Custom Tabs can be opened
 * BraintreeCore
     * Bump `browser-switch` version to `3.1.0`
 

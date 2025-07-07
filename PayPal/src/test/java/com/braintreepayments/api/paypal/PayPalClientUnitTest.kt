@@ -183,7 +183,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_launchesBrowserSwitchWith() {
+    fun createPaymentAuthRequest_launchesBrowserSwitchWith_ACTIVITY_CLEAR_TOP() {
         val payPalVaultRequest = PayPalVaultRequest(true)
         payPalVaultRequest.merchantAccountId = "sample-merchant-account-id"
 
