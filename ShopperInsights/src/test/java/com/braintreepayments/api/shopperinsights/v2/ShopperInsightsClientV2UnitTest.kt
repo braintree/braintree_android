@@ -257,4 +257,107 @@ class ShopperInsightsClientV2UnitTest {
             analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_SUCCEEDED)
         }
     }
+
+    @Test
+    fun `createCustomerSession sends started and failed analytics events on error`() {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val callbackSlot = slot<(CreateCustomerSessionApi.CreateCustomerSessionResult) -> Unit>()
+        val error = Exception("Test error")
+
+        every {
+            createCustomerSessionApi.execute(customerSessionRequest, capture(callbackSlot))
+        } answers {
+            callbackSlot.captured(CreateCustomerSessionApi.CreateCustomerSessionResult.Error(error))
+        }
+
+        subject.createCustomerSession(customerSessionRequest) {}
+
+        verifyOrder {
+            analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_STARTED)
+            analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_FAILED)
+        }
+    }
+
+    @Test
+    fun `updateCustomerSession sends started and succeeded analytics events`() {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val callbackSlot = slot<(UpdateCustomerSessionResult) -> Unit>()
+        val sessionId = "test-session-id"
+
+        every {
+            updateCustomerSessionApi.execute(customerSessionRequest, sessionId, capture(callbackSlot))
+        } answers {
+            callbackSlot.captured(UpdateCustomerSessionResult.Success(sessionId))
+        }
+
+        subject.updateCustomerSession(customerSessionRequest, sessionId) {}
+
+        verifyOrder {
+            analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_STARTED)
+            analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_SUCCEEDED)
+        }
+    }
+
+    @Test
+    fun `updateCustomerSession sends started and failed analytics events on error`() {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val callbackSlot = slot<(UpdateCustomerSessionResult) -> Unit>()
+        val sessionId = "test-session-id"
+        val error = Exception("Test error")
+
+        every {
+            updateCustomerSessionApi.execute(customerSessionRequest, sessionId, capture(callbackSlot))
+        } answers {
+            callbackSlot.captured(UpdateCustomerSessionResult.Error(error))
+        }
+
+        subject.updateCustomerSession(customerSessionRequest, sessionId) {}
+
+        verifyOrder {
+            analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_STARTED)
+            analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_FAILED)
+        }
+    }
+
+    @Test
+    fun `generateCustomerRecommendations sends started and succeeded analytics events`() {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val sessionId = "test-session-id"
+        val callbackSlot = slot<(GenerateCustomerRecommendationsResult) -> Unit>()
+        val recommendations = mockk<CustomerRecommendations>()
+
+        every {
+            generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId, capture(callbackSlot))
+        } answers {
+            callbackSlot.captured(GenerateCustomerRecommendationsResult.Success(recommendations))
+        }
+
+        subject.generateCustomerRecommendations(customerSessionRequest, sessionId) {}
+
+        verifyOrder {
+            analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_STARTED)
+            analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_SUCCEEDED)
+        }
+    }
+
+    @Test
+    fun `generateCustomerRecommendations sends started and failed analytics events on error`() {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val sessionId = "test-session-id"
+        val callbackSlot = slot<(GenerateCustomerRecommendationsResult) -> Unit>()
+        val error = Exception("Test error")
+
+        every {
+            generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId, capture(callbackSlot))
+        } answers {
+            callbackSlot.captured(GenerateCustomerRecommendationsResult.Error(error))
+        }
+
+        subject.generateCustomerRecommendations(customerSessionRequest, sessionId) {}
+
+        verifyOrder {
+            analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_STARTED)
+            analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_FAILED)
+        }
+    }
 }

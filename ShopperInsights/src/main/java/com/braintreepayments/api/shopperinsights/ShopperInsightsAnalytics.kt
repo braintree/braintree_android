@@ -19,11 +19,4 @@ internal object ShopperInsightsAnalytics {
     const val GET_CUSTOMER_RECOMMENDATIONS_STARTED = "shopper-insights:get-customer-recommendations:started"
     const val GET_CUSTOMER_RECOMMENDATIONS_SUCCEEDED = "shopper-insights:get-customer-recommendations:succeeded"
     const val GET_CUSTOMER_RECOMMENDATIONS_FAILED = "shopper-insights:get-customer-recommendations:failed"
-
-    const val MANAGE_CUSTOMER_SESSION_WITH_RECOMMENDATION_STARTED =
-        "shopper-insights:manage-customer-session-with-recommendations:started"
-    const val MANAGE_CUSTOMER_SESSION_WITH_RECOMMENDATION_SUCCEEDED =
-        "shopper-insights:manage-customer-session-with-recommendations:succeeded"
-    const val MANAGE_CUSTOMER_SESSION_WITH_RECOMMENDATION_FAILED =
-        "shopper-insights:manage-customer-session-with-recommendations:failed"
 }
