@@ -27,10 +27,6 @@ internal class PayPalInternalClient(
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
     private val setAppSwitchUseCase: SetAppSwitchUseCase = SetAppSwitchUseCase(AppSwitchRepository.instance),
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
-    private val payPalTokenResponseRepository: PayPalTokenResponseRepository = PayPalTokenResponseRepository.instance,
-    private val payPalSetPaymentTokenUseCase: PayPalSetPaymentTokenUseCase = PayPalSetPaymentTokenUseCase(
-        payPalTokenResponseRepository
-    )
 ) {
 
     fun sendRequest(
@@ -89,8 +85,8 @@ internal class PayPalInternalClient(
                 callback = callback
             )
         } catch (exception: JSONException) {
-                callback.onResult(null, exception)
-            }
+            callback.onResult(null, exception)
+        }
     }
 
     fun tokenize(payPalAccount: PayPalAccount, callback: PayPalInternalTokenizeCallback) {
@@ -131,8 +127,13 @@ internal class PayPalInternalClient(
                     merchantEnabledAppSwitch = payPalRequest.enablePayPalAppSwitch,
                     appSwitchFlowFromPayPalResponse = paypalPaymentResource.isAppSwitchFlow
                 )
+
                 val paypalContextId = extractPayPalContextId(parsedRedirectUri)
-                payPalSetPaymentTokenUseCase.setPaymentToken(paypalContextId)
+                if (paypalContextId.isNullOrEmpty()) {
+                    callback.onResult(null, BraintreeException("Missing Token for PayPal App Switch."))
+                    return@sendPOST
+                }
+
                 val clientMetadataId = payPalRequest.riskCorrelationId ?: run {
                     val dataCollectorRequest = DataCollectorInternalRequest(
                         payPalRequest.hasUserLocationConsent
@@ -142,6 +143,10 @@ internal class PayPalInternalClient(
                     }
                     dataCollector.getClientMetadataId(context, dataCollectorRequest, configuration)
                 }
+
+                // TODO: Store paypalContextId to clientMetadataId
+//                payPalTokenResponseRepository.storeClientMetadataId(paypalContextId, clientMetadataId)
+
                 val returnLink: String = when (val returnLinkResult = getReturnLinkUseCase()) {
                     is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
                     is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> returnLinkResult.deepLinkFallbackUrlScheme
