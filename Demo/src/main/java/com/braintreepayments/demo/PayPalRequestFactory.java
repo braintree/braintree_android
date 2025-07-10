@@ -173,12 +173,8 @@ public class PayPalRequestFactory {
 
             request.setShouldRequestBillingAgreement(true);
 
-            String taxTotal = "0.50";
-            String shippingTotal = "0.50";
-            String itemTotal = "9.99";
-
             List<PayPalLineItem> lineItems = buildLineItems(
-                    Float.parseFloat(itemTotal),
+                    9.99f,
                     5.00f,
                     3.00f
             );
@@ -186,9 +182,9 @@ public class PayPalRequestFactory {
             request.setLineItems(lineItems);
 
             AmountBreakdown breakdown = new AmountBreakdown(
-                    itemTotal,
-                    taxTotal,
-                    shippingTotal,
+                    "9.99",
+                    "0.50",
+                    "0.50",
                     null,
                     null,
                     null,
@@ -197,7 +193,8 @@ public class PayPalRequestFactory {
 
             request.setAmountBreakdown(breakdown);
 
-            setRecurringBilling(request, String.format("%.2f", itemTotal));
+            setRecurringBilling(request, "9.99");
+            request.setMerchantAccountId("quantumleapsandboxtesting-1");
         }
 
         if (buyerEmailAddress != null && !buyerEmailAddress.isEmpty()) {
