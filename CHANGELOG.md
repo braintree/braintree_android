@@ -4,6 +4,7 @@
 
 * PayPal
   * Fix an issue where multiple Chrome Custom Tabs can be opened
+  * Fix an issue where the incorrect paypalContextId was being sent in analytics events
 * LocalPayment
   * Fix an issue where multiple Chrome Custom Tabs can be opened
 * BraintreeCore
