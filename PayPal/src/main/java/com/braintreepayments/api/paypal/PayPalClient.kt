@@ -5,6 +5,7 @@ import android.net.Uri
 import android.text.TextUtils
 import androidx.core.net.toUri
 import com.braintreepayments.api.BrowserSwitchOptions
+import com.braintreepayments.api.LaunchType
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
@@ -213,7 +214,7 @@ class PayPalClient internal constructor(
         return BrowserSwitchOptions()
             .requestCode(BraintreeRequestCodes.PAYPAL.code)
             .url(Uri.parse(paymentAuthRequest.approvalUrl))
-            .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
+            .launchType(LaunchType.ACTIVITY_CLEAR_TOP)
             .metadata(metadata)
             .apply {
                 when (val returnLinkResult = getReturnLinkUseCase()) {

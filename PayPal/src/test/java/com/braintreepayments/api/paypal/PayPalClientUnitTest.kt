@@ -3,6 +3,7 @@ package com.braintreepayments.api.paypal
 import android.net.Uri
 import androidx.fragment.app.FragmentActivity
 import com.braintreepayments.api.BrowserSwitchFinalResult
+import com.braintreepayments.api.LaunchType
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
@@ -182,7 +183,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenLaunchesBrowserSwitchAsNewTaskEnabled_setsNewTaskOption() {
+    fun createPaymentAuthRequest_launchesBrowserSwitchWith_ACTIVITY_CLEAR_TOP() {
         val payPalVaultRequest = PayPalVaultRequest(true)
         payPalVaultRequest.merchantAccountId = "sample-merchant-account-id"
 
@@ -216,7 +217,8 @@ class PayPalClientUnitTest {
         assertTrue(request is PayPalPaymentAuthRequest.ReadyToLaunch)
         assertTrue(
             (request as PayPalPaymentAuthRequest.ReadyToLaunch)
-                .requestParams.browserSwitchOptions?.isLaunchAsNewTask == true)
+                .requestParams.browserSwitchOptions?.launchType == LaunchType.ACTIVITY_CLEAR_TOP
+        )
     }
 
     @Test
