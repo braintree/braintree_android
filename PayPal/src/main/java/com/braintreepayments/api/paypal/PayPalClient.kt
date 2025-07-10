@@ -348,7 +348,10 @@ class PayPalClient internal constructor(
         failure: PayPalPaymentAuthRequest.Failure,
         analyticsEventParams: AnalyticsEventParams
     ) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, analyticsEventParams)
+        braintreeClient.sendAnalyticsEvent(
+            eventName = PayPalAnalytics.TOKENIZATION_FAILED,
+            params = analyticsEventParams.copy(errorDescription = failure.error.message)
+        )
         callback.onPayPalPaymentAuthRequest(failure)
         analyticsParamRepository.reset()
     }

@@ -129,11 +129,6 @@ internal class PayPalInternalClient(
                 )
 
                 val paypalContextId = extractPayPalContextId(parsedRedirectUri)
-                if (paypalContextId.isNullOrEmpty()) {
-                    callback.onResult(null, BraintreeException("Missing Token for PayPal App Switch."))
-                    return@sendPOST
-                }
-
                 val clientMetadataId = payPalRequest.riskCorrelationId ?: run {
                     val dataCollectorRequest = DataCollectorInternalRequest(
                         payPalRequest.hasUserLocationConsent
