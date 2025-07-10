@@ -144,9 +144,6 @@ internal class PayPalInternalClient(
                     dataCollector.getClientMetadataId(context, dataCollectorRequest, configuration)
                 }
 
-                // TODO: Store paypalContextId to clientMetadataId
-//                payPalTokenResponseRepository.storeClientMetadataId(paypalContextId, clientMetadataId)
-
                 val returnLink: String = when (val returnLinkResult = getReturnLinkUseCase()) {
                     is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
                     is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> returnLinkResult.deepLinkFallbackUrlScheme

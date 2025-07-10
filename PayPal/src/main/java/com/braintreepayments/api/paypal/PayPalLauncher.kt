@@ -157,7 +157,7 @@ class PayPalLauncher internal constructor(
 
             else -> null
         }
-        val payPalContextId = intent.data?.getQueryParameter("token") ?: intent.data?.getQueryParameter("ba_token")
+        val payPalContextId = intent.data?.getQueryParameter("ba_token") ?: intent.data?.getQueryParameter("token")
         val analyticsEventParams = AnalyticsEventParams(
             payPalContextId = payPalContextId,
             appSwitchUrl = appSwitchUrl
