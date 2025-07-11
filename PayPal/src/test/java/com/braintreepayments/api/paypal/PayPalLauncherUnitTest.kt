@@ -37,10 +37,9 @@ class PayPalLauncherUnitTest {
     private val pendingRequestString = "pending_request_string"
     private val analyticsClient: AnalyticsClient = mockk(relaxed = true)
     private val merchantRepository = mockk<MerchantRepository>(relaxed = true)
-    private val payPalTokenResponseRepository = mockk<PayPalTokenResponseRepository>(relaxed = true)
     private val getReturnLinkUseCase = mockk<GetReturnLinkUseCase>()
     private val getAppSwitchUseCase = mockk<GetAppSwitchUseCase>(relaxed = true)
-    private val getPaymentTokenUseCase = mockk<PayPalGetPaymentTokenUseCase>()
+
     private val returnUrl = "https://return.url"
     private val deepLinkScheme = "deepLinkScheme"
     private val paymentToken = "paymentToken"
@@ -50,19 +49,18 @@ class PayPalLauncherUnitTest {
     @Before
     fun setup() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
+        every { paymentAuthRequestParams.paypalContextId } returns paymentToken
+        every { intent.data } returns Uri.parse("https://return.url?ba_token=$paymentToken")
 
         val appSwitchReturnUrl = Uri.parse(returnUrl)
         every { getReturnLinkUseCase() } returns GetReturnLinkUseCase.ReturnLinkResult.AppLink(
             appSwitchReturnUrl
         )
-        every { getPaymentTokenUseCase() } returns paymentToken
         sut = PayPalLauncher(
             browserSwitchClient = browserSwitchClient,
             merchantRepository = merchantRepository,
-            payPalTokenResponseRepository = payPalTokenResponseRepository,
             getReturnLinkUseCase = getReturnLinkUseCase,
             getAppSwitchUseCase = getAppSwitchUseCase,
-            payPalGetPaymentTokenUseCase = getPaymentTokenUseCase,
             lazyAnalyticsClient = lazy { analyticsClient }
         )
     }
@@ -77,7 +75,7 @@ class PayPalLauncherUnitTest {
 
         assertTrue(pendingRequest is PayPalPendingRequest.Started)
         assertEquals(
-            (startedPendingRequest as BrowserSwitchStartResult.Started).pendingRequest,
+            startedPendingRequest.pendingRequest,
             (pendingRequest as PayPalPendingRequest.Started).pendingRequestString
         )
     }
@@ -209,6 +207,9 @@ class PayPalLauncherUnitTest {
     @Test
     @Throws(JSONException::class)
     fun `handleReturnToApp sends started event`() {
+        val token = "token"
+        every { intent.data } returns Uri.parse("https://return.url?token=$token")
+
         sut.handleReturnToApp(
             PayPalPendingRequest.Started(pendingRequestString),
             intent
@@ -216,7 +217,7 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 PayPalAnalytics.HANDLE_RETURN_STARTED,
-                AnalyticsEventParams(payPalContextId = paymentToken, appSwitchUrl = returnUrl)
+                AnalyticsEventParams(payPalContextId = token, appSwitchUrl = returnUrl)
             )
         }
     }
@@ -258,7 +259,7 @@ class PayPalLauncherUnitTest {
         }
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_FAILED, slot1.captured)
-        assertSame(paymentToken, slot2.captured.payPalContextId)
+        assertEquals(paymentToken, slot2.captured.payPalContextId)
         assertSame(null, slot2.captured.appSwitchUrl)
     }
 
@@ -292,7 +293,7 @@ class PayPalLauncherUnitTest {
         verify { analyticsClient.sendEvent(any(), any()) }
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_SUCCEEDED, slot1.captured)
-        assertSame(paymentToken, slot2.captured.payPalContextId)
+        assertEquals(paymentToken, slot2.captured.payPalContextId)
         assertSame(returnUrl, slot2.captured.appSwitchUrl)
     }
 
@@ -326,7 +327,7 @@ class PayPalLauncherUnitTest {
         }
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_FAILED, slot1.captured)
-        assertSame(paymentToken, slot2.captured.payPalContextId)
+        assertEquals(paymentToken, slot2.captured.payPalContextId)
     }
 
     @Test
@@ -349,6 +350,6 @@ class PayPalLauncherUnitTest {
         verify { analyticsClient.sendEvent(any(), any()) }
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_NO_RESULT, slot1.captured)
-        assertSame(paymentToken, slot2.captured.payPalContextId)
+        assertEquals(paymentToken, slot2.captured.payPalContextId)
     }
 }
