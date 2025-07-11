@@ -130,19 +130,16 @@ class PayPalLauncherUnitTest {
 
         sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
 
-        if (isAppSwitch) {
-            // There's no browser switch event equivalent to PayPalAnalytics.APP_SWITCH_STARTED
-            // that's sent on launch()
-            verify {
-                analyticsClient.sendEvent(
-                    PayPalAnalytics.APP_SWITCH_STARTED,
-                    AnalyticsEventParams(
-                        payPalContextId = paymentToken,
-                        appSwitchUrl = returnUrl,
-                    )
+        verify {
+            analyticsClient.sendEvent(
+                if (isAppSwitch) PayPalAnalytics.APP_SWITCH_STARTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                AnalyticsEventParams(
+                    payPalContextId = paymentToken,
+                    appSwitchUrl = returnUrl,
                 )
-            }
+            )
         }
+
         verify {
             analyticsClient.sendEvent(
                 if (isAppSwitch) {
