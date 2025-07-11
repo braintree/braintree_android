@@ -5,6 +5,9 @@
 * PayPal
   * Fix an issue where multiple Chrome Custom Tabs can be opened
   * Fix an issue where the incorrect paypalContextId was being sent in analytics events
+  * Add `paypal:tokenize:browser-presentation:started` event for when the CCT is launched
+  * Only send `paypal:tokenize:browser-login:canceled` for non app switch flows
+  * Fix an issue where non app switch flows were sending app switch events
 * LocalPayment
   * Fix an issue where multiple Chrome Custom Tabs can be opened
 * BraintreeCore

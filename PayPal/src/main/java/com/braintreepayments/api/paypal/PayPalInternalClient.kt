@@ -10,6 +10,7 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.DeviceInspectorProvider
+import com.braintreepayments.api.core.GetAppSwitchUseCase
 import com.braintreepayments.api.core.GetReturnLinkUseCase
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.SetAppSwitchUseCase
@@ -26,6 +27,7 @@ internal class PayPalInternalClient(
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
     private val setAppSwitchUseCase: SetAppSwitchUseCase = SetAppSwitchUseCase(AppSwitchRepository.instance),
+    private val getAppSwitchUseCase: GetAppSwitchUseCase = GetAppSwitchUseCase(AppSwitchRepository.instance),
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
 ) {
 
@@ -154,7 +156,7 @@ internal class PayPalInternalClient(
                     paypalContextId = paypalContextId,
                     successUrl = "$returnLink://onetouch/v1/success"
                 )
-                if (payPalRequest.enablePayPalAppSwitch && deviceInspector.isPayPalInstalled()) {
+                if (getAppSwitchUseCase()) {
                     if (!paypalContextId.isNullOrEmpty()) {
                         paymentAuthRequest.approvalUrl = createAppSwitchUri(parsedRedirectUri).toString()
                     } else {

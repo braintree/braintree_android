@@ -59,7 +59,11 @@ class PayPalLauncher internal constructor(
             appSwitchUrl = appSwitchReturnUrl
         )
 
-        analyticsClient.sendEvent(PayPalAnalytics.APP_SWITCH_STARTED, analyticsEventParams)
+        if (isAppSwitch) {
+            analyticsClient.sendEvent(PayPalAnalytics.APP_SWITCH_STARTED, analyticsEventParams)
+        } else {
+            analyticsClient.sendEvent(PayPalAnalytics.BROWSER_PRESENTATION_STARTED, analyticsEventParams)
+        }
 
         try {
             assertCanPerformBrowserSwitch(activity, paymentAuthRequest.requestParams)
