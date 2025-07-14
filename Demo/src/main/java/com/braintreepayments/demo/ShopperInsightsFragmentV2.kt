@@ -27,6 +27,8 @@ import com.braintreepayments.api.shopperinsights.v2.ShopperInsightsClientV2
 @OptIn(ExperimentalBetaApi::class)
 class ShopperInsightsFragmentV2 : BaseFragment() {
 
+    private var shopperInsightsClientSuccessfullyFetched by mutableStateOf(false)
+
     private lateinit var shopperInsightsClient: ShopperInsightsClientV2
     @OptIn(ExperimentalFoundationApi::class)
     override fun onCreateView(
@@ -63,9 +65,9 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                         )
                     }
 
-                    Button(onClick = { handleCreateCustomerSession() }) { Text(text = "Create customer session") }
-                    Button(onClick = { handleUpdateCustomerSession() }) { Text(text = "Update customer session") }
-                    Button(onClick = { handleGetRecommendations() }) { Text(text = "Get recommendations") }
+                    Button(enabled = shopperInsightsClientSuccessfullyFetched, onClick = { handleCreateCustomerSession() }) { Text(text = "Create customer session") }
+                    Button(enabled = shopperInsightsClientSuccessfullyFetched, onClick = { handleUpdateCustomerSession() }) { Text(text = "Update customer session") }
+                    Button(enabled = shopperInsightsClientSuccessfullyFetched, onClick = { handleGetRecommendations() }) { Text(text = "Get recommendations") }
                 }
             }
         }
@@ -76,6 +78,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
             when(authResult) {
                 is BraintreeAuthorizationResult.Success -> {
                     shopperInsightsClient = ShopperInsightsClientV2(requireContext(), authResult.authString)
+                    shopperInsightsClientSuccessfullyFetched = true
                 }
                 is BraintreeAuthorizationResult.Error -> {
                     // Handle error, e.g., show error message
