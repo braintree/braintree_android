@@ -712,11 +712,48 @@ class PayPalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_whenCancelUriReceived_sendsAppSwitchCanceledEvents() {
+    fun tokenize_whenCancelUriReceived_sendsAppSwitchCanceledEvent() {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
 
-        val approvalUrl =
-            "https://some-scheme/onetouch/v1/cancel?switch_initiated_time=17166111926211"
+        val approvalUrl = "https://some-scheme/onetouch/v1/cancel?switch_initiated_time=17166111926211"
+
+        val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>()
+
+        every { browserSwitchResult.requestMetadata } returns
+            JSONObject().put("client-metadata-id", "sample-client-metadata-id")
+                .put("merchant-account-id", "sample-merchant-account-id")
+                .put("intent", "authorize").put("approval-url", approvalUrl)
+                .put("success-url", "https://example.com/success")
+                .put("payment-type", "single-payment")
+
+        val uri = Uri.parse(approvalUrl)
+        every { browserSwitchResult.returnUrl } returns uri
+
+        val payPalPaymentAuthResult = PayPalPaymentAuthResult.Success(browserSwitchResult)
+        val braintreeClient = MockkBraintreeClientBuilder().build()
+        val sut = testPaypalClient(
+            braintreeClient,
+            payPalInternalClient,
+        )
+
+        sut.tokenize(payPalPaymentAuthResult, payPalTokenizeCallback)
+
+        val slot = slot<PayPalResult>()
+        verify { payPalTokenizeCallback.onPayPalResult(capture(slot)) }
+
+        val result = slot.captured
+        assertTrue(result is PayPalResult.Cancel)
+
+        val params = AnalyticsEventParams()
+        verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_CANCELED, params, true) }
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun tokenize_whenCancelUriReceived_sendsBrowserLoginCanceledEvent() {
+        val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
+
+        val approvalUrl = "https://some-scheme/onetouch/v1/cancel"
 
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>()
 
@@ -747,7 +784,6 @@ class PayPalClientUnitTest {
 
         val params = AnalyticsEventParams()
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params, true) }
-        verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_CANCELED, params, true) }
     }
 
     private fun testPaypalClient(
