@@ -47,11 +47,6 @@ class PayPalClient internal constructor(
     private var shopperSessionId: String? = null
 
     /**
-     * The final URL string used to open the app switch flow
-     */
-    private var appSwitchUrlString: String? = null
-
-    /**
      * Initializes a new [PayPalClient] instance
      *
      * @param context          an Android Context
@@ -259,15 +254,12 @@ class PayPalClient internal constructor(
         val switchInitiatedTime = Uri.parse(approvalUrl).getQueryParameter("switch_initiated_time")
         val isAppSwitchFlow = !switchInitiatedTime.isNullOrEmpty()
 
-        if (isAppSwitchFlow) {
-            appSwitchUrlString = approvalUrl
-        }
-
         val paypalContextId = approvalUrl.toUri().getQueryParameter(tokenKey)?.takeIf { it.isNotEmpty() }
         val analyticsEventParams = AnalyticsEventParams(
             payPalContextId = paypalContextId,
             isVaultRequest = isVaultRequest,
-            shopperSessionId = shopperSessionId
+            shopperSessionId = shopperSessionId,
+            appSwitchUrl = paymentAuthResult.browserSwitchSuccess.returnUrl.toString()
         )
 
         try {

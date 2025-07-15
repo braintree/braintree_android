@@ -656,7 +656,11 @@ class PayPalClientUnitTest {
         val result = slot.captured
         assertTrue(result is PayPalResult.Cancel)
 
-        val params = AnalyticsEventParams(null, false)
+        val params = AnalyticsEventParams(
+            payPalContextId = null,
+            isVaultRequest = false,
+            appSwitchUrl = approvalUrl
+        )
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params, true) }
         verify { analyticsParamRepository.reset() }
     }
@@ -703,8 +707,9 @@ class PayPalClientUnitTest {
         assertEquals(payPalAccountNonce, (result as PayPalResult.Success).nonce)
 
         val params = AnalyticsEventParams(
-            "EC-HERMES-SANDBOX-EC-TOKEN",
-            false
+            payPalContextId = "EC-HERMES-SANDBOX-EC-TOKEN",
+            isVaultRequest = false,
+            appSwitchUrl = approvalUrl
         )
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, params, true) }
         verify { analyticsParamRepository.reset() }
@@ -744,7 +749,7 @@ class PayPalClientUnitTest {
         val result = slot.captured
         assertTrue(result is PayPalResult.Cancel)
 
-        val params = AnalyticsEventParams()
+        val params = AnalyticsEventParams(appSwitchUrl = approvalUrl)
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_CANCELED, params, true) }
     }
 
@@ -782,7 +787,7 @@ class PayPalClientUnitTest {
         val result = slot.captured
         assertTrue(result is PayPalResult.Cancel)
 
-        val params = AnalyticsEventParams()
+        val params = AnalyticsEventParams(appSwitchUrl = approvalUrl)
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params, true) }
     }
 

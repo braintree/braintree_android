@@ -8,6 +8,7 @@
   * Add `paypal:tokenize:browser-presentation:started` event for when the CCT is launched
   * Only send `paypal:tokenize:browser-login:canceled` for non app switch flows
   * Fix an issue where non app switch flows were sending app switch events
+  * Update `url` FPTI tag to represent the approval URL prior to checkout and the success URL after checkout
 * LocalPayment
   * Fix an issue where multiple Chrome Custom Tabs can be opened
 * BraintreeCore
