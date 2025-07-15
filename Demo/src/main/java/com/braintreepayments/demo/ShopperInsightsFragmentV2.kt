@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -23,13 +24,17 @@ import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendationsResul
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionResult
 import com.braintreepayments.api.shopperinsights.v2.ShopperInsightsClientV2
+import java.security.MessageDigest
+import java.util.UUID
+import kotlinx.coroutines.flow.update
 
 @OptIn(ExperimentalBetaApi::class)
 class ShopperInsightsFragmentV2 : BaseFragment() {
 
-    private var shopperInsightsClientSuccessfullyFetched by mutableStateOf(false)
-
+    private var shopperInsightsClientSuccessfullyInstantiated by mutableStateOf(false)
+    private val viewModel = ShopperInsightsV2ViewModel()
     private lateinit var shopperInsightsClient: ShopperInsightsClientV2
+
     @OptIn(ExperimentalFoundationApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,19 +60,39 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                             value = countryCodeText,
                             onValueChange = { newValue -> countryCodeText = newValue },
                             label = { Text("Country code") },
-                            modifier = Modifier.padding(4.dp).weight(1f)
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .weight(1f)
                         )
                         TextField(
                             value = nationalNumberText,
                             onValueChange = { newValue -> nationalNumberText = newValue },
                             label = { Text("National Number") },
-                            modifier = Modifier.padding(4.dp).weight(2f)
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .weight(2f)
                         )
                     }
 
-                    Button(enabled = shopperInsightsClientSuccessfullyFetched, onClick = { handleCreateCustomerSession() }) { Text(text = "Create customer session") }
-                    Button(enabled = shopperInsightsClientSuccessfullyFetched, onClick = { handleUpdateCustomerSession() }) { Text(text = "Update customer session") }
-                    Button(enabled = shopperInsightsClientSuccessfullyFetched, onClick = { handleGetRecommendations() }) { Text(text = "Get recommendations") }
+                    Button(
+                        enabled = shopperInsightsClientSuccessfullyInstantiated,
+                        onClick = { handleCreateCustomerSession(emailText, countryCodeText, nationalNumberText) }) {
+                        Text(text = "Create customer session")
+                    }
+                    Button(
+                        enabled = shopperInsightsClientSuccessfullyInstantiated,
+                        onClick = { handleUpdateCustomerSession(emailText, countryCodeText, nationalNumberText) }) {
+                        Text(text = "Update customer session")
+                    }
+                    Button(
+                        enabled = shopperInsightsClientSuccessfullyInstantiated,
+                        onClick = { handleGetRecommendations(viewModel.sessionId.value) }) {
+                        Text(text = "Get recommendations")
+                    }
+                    val sessionId = viewModel.sessionId.collectAsState().value
+                    Text(if (sessionId.isNotEmpty()) "Session Id = $sessionId" else "")
+                    val recommendations = viewModel.recommendations.collectAsState().value
+                    Text(if (recommendations.isNotEmpty()) "Recommendations = " else "")
                 }
             }
         }
@@ -78,7 +103,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
             when(authResult) {
                 is BraintreeAuthorizationResult.Success -> {
                     shopperInsightsClient = ShopperInsightsClientV2(requireContext(), authResult.authString)
-                    shopperInsightsClientSuccessfullyFetched = true
+                    shopperInsightsClientSuccessfullyInstantiated = true
                 }
                 is BraintreeAuthorizationResult.Error -> {
                     // Handle error, e.g., show error message
@@ -87,13 +112,15 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         }
     }
 
-    private fun handleCreateCustomerSession() {
-        val customerSessionRequest = CustomerSessionRequest()
+    private fun handleCreateCustomerSession(emailText: String, countryCodeText: String, nationalNumberText: String) {
+        val customerSessionRequest = CustomerSessionRequest(
+            hashedEmail = emailText.sha256(),
+//            hashedPhoneNumber = nationalNumberText.sha256()
+        )
         shopperInsightsClient.createCustomerSession(customerSessionRequest) { result ->
             when (result) {
                 is CustomerSessionResult.Success -> {
-                    // Handle success, e.g., store sessionId
-                    val sessionId = result.sessionId
+                    viewModel.sessionId.update { result.sessionId }
                 }
                 is CustomerSessionResult.Failure -> {
                     // Handle failure, e.g., show error message
@@ -103,13 +130,13 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         }
     }
 
-    private fun handleUpdateCustomerSession() {
-        val customerSessionRequest = CustomerSessionRequest()
-        val requestId = "session-id" // Replace with actual session ID
+    private fun handleUpdateCustomerSession(emailText: String, countryCodeText: String, nationalNumberText: String) {
+        val customerSessionRequest = CustomerSessionRequest(hashedEmail = emailText.sha256())
+        val requestId = "session-id-${UUID.randomUUID()}"
         shopperInsightsClient.updateCustomerSession(customerSessionRequest, requestId) { result ->
             when (result) {
                 is CustomerSessionResult.Success -> {
-                    // Handle success
+                    viewModel.sessionId.update { result.sessionId }
                 }
                 is CustomerSessionResult.Failure -> {
                     // Handle failure
@@ -119,12 +146,16 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         }
     }
 
-    private fun handleGetRecommendations() {
-        shopperInsightsClient.generateCustomerRecommendations { result ->
+    private fun handleGetRecommendations(sessionId: String) {
+        shopperInsightsClient.generateCustomerRecommendations(sessionId = sessionId) { result ->
             when (result) {
                 is CustomerRecommendationsResult.Success -> {
-                    // Handle success, e.g., display recommendations
-                    val recommendations = result.customerRecommendations.paymentRecommendations // Assuming sessionId contains recommendations
+                    result.customerRecommendations.isInPayPalNetwork?.let {
+                        viewModel.isInPayPalNetwork.update { it }
+                    }
+                    result.customerRecommendations.paymentRecommendations?.let {
+                        viewModel.recommendations.update { it }
+                    }
                 }
                 is CustomerRecommendationsResult.Failure -> {
                     // Handle failure, e.g., show error message
@@ -133,4 +164,15 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
             }
         }
     }
+}
+
+fun String.sha256(): String {
+    return hashString(this, "SHA-256")
+}
+
+private fun hashString(input: String, algorithm: String = "SHA-256"): String {
+    return MessageDigest
+        .getInstance(algorithm)
+        .digest(input.toByteArray())
+        .toString()
 }
