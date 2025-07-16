@@ -13,10 +13,13 @@ import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockApiClientBuilder
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import io.mockk.*
-import junit.framework.TestCase
 import org.json.JSONException
 import org.json.JSONObject
-import org.junit.Assert
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -170,13 +173,23 @@ class PayPalInternalClientUnitTest {
         )
     }
 
-    private fun createSutWithMocks(): PayPalInternalClient {
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM)
-            .build()
+    private fun createSutWithMocks(
+        apiClient: ApiClient = this.apiClient,
+        fixture: String? = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_BA_TOKEN_PARAM,
+        error: Exception? = null
+    ): Pair<PayPalInternalClient, BraintreeClient> {
+        val braintreeClient = if (error != null) {
+            MockkBraintreeClientBuilder()
+                .sendPOSTErrorResponse(error)
+                .build()
+        } else {
+            MockkBraintreeClientBuilder()
+                .sendPOSTSuccessfulResponse(fixture!!)
+                .build()
+        }
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
-        return PayPalInternalClient(
+        val sut = PayPalInternalClient(
             braintreeClient,
             dataCollector,
             apiClient,
@@ -187,6 +200,7 @@ class PayPalInternalClientUnitTest {
             getAppSwitchUseCase,
             analyticsParamRepository
         )
+        return Pair(sut, braintreeClient)
     }
 
     private fun createCheckoutRequest(): PayPalCheckoutRequest {
@@ -199,13 +213,13 @@ class PayPalInternalClientUnitTest {
     }
 
     private fun assertPayPalCheckoutParams(params: PayPalPaymentAuthRequestParams, expectedUrl: String) {
-        Assert.assertFalse(params.isBillingAgreement)
-        Assert.assertEquals(PayPalPaymentIntent.AUTHORIZE, params.intent)
-        Assert.assertEquals("sample-merchant-account-id", params.merchantAccountId)
-        Assert.assertEquals("https://example.com://onetouch/v1/success", params.successUrl)
-        Assert.assertEquals("fake-token", params.paypalContextId)
-        Assert.assertEquals("sample-client-metadata-id", params.clientMetadataId)
-        Assert.assertEquals(expectedUrl, params.approvalUrl)
+        assertFalse(params.isBillingAgreement)
+        assertEquals(PayPalPaymentIntent.AUTHORIZE, params.intent)
+        assertEquals("sample-merchant-account-id", params.merchantAccountId)
+        assertEquals("https://example.com://onetouch/v1/success", params.successUrl)
+        assertEquals("fake-token", params.paypalContextId)
+        assertEquals("sample-client-metadata-id", params.clientMetadataId)
+        assertEquals(expectedUrl, params.approvalUrl)
     }
 
     private fun createVaultRequest(): PayPalVaultRequest {
@@ -216,33 +230,22 @@ class PayPalInternalClientUnitTest {
     }
 
     private fun assertPayPalVaultParams(params: PayPalPaymentAuthRequestParams, expectedUrl: String) {
-        Assert.assertTrue(params.isBillingAgreement)
-        Assert.assertEquals("sample-merchant-account-id", params.merchantAccountId)
-        Assert.assertEquals("https://example.com://onetouch/v1/success", params.successUrl)
-        Assert.assertEquals("fake-ba-token", params.paypalContextId)
-        Assert.assertEquals("sample-client-metadata-id", params.clientMetadataId)
-        Assert.assertEquals(expectedUrl, params.approvalUrl)
+        assertTrue(params.isBillingAgreement)
+        assertEquals("sample-merchant-account-id", params.merchantAccountId)
+        assertEquals("https://example.com://onetouch/v1/success", params.successUrl)
+        assertEquals("fake-ba-token", params.paypalContextId)
+        assertEquals("sample-client-metadata-id", params.clientMetadataId)
+        assertEquals(expectedUrl, params.approvalUrl)
     }
 
     @Test
     fun sendRequest_withPayPalVaultRequest_sendsAllParameters() {
-        val braintreeClient = MockkBraintreeClientBuilder().build()
 
         every { clientToken.bearer } returns "client-token-bearer"
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
 
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, braintreeClient) = createSutWithMocks()
 
         val shippingAddressOverride = createShippingAddressOverride()
 
@@ -295,22 +298,10 @@ class PayPalInternalClientUnitTest {
     fun sendRequest_withPayPalVaultRequest_sendsAllParameters_with_deep_link() {
        every { getReturnLinkUseCase.invoke() } returns DeepLink("com.braintreepayments.demo")
 
-       val braintreeClient = MockkBraintreeClientBuilder().build()
-
        every { clientToken.bearer } returns "client-token-bearer"
        every { merchantRepository.authorization } returns clientToken
        every { merchantRepository.returnUrlScheme } returns "com.braintreepayments.demo"
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, braintreeClient) = createSutWithMocks()
 
         val shippingAddressOverride = createShippingAddressOverride()
 
@@ -361,20 +352,9 @@ class PayPalInternalClientUnitTest {
 
     @Test
     fun sendRequest_withPayPalCheckoutRequest_sendsAllParameters() {
-        val braintreeClient = MockkBraintreeClientBuilder().build()
         every { clientToken.bearer } returns "client-token-bearer"
         every { merchantRepository.authorization } returns clientToken
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, braintreeClient) = createSutWithMocks()
         val shippingAddressOverride = createShippingAddressOverride()
         val item = createPayPalLineItem()
         val payPalRequest = createPayPalCheckoutRequestWithAllParams(shippingAddressOverride, item)
@@ -398,20 +378,9 @@ class PayPalInternalClientUnitTest {
     @Test
     @Throws(JSONException::class)
     fun sendRequest_withTokenizationKey_sendsClientKeyParam() {
-        val braintreeClient = MockkBraintreeClientBuilder().build()
         every { tokenizationKey.bearer } returns "tokenization-key-bearer"
+        val (sut, braintreeClient) = createSutWithMocks()
         every { merchantRepository.authorization } returns tokenizationKey
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
 
         val payPalRequest = PayPalVaultRequest(true)
         sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
@@ -428,27 +397,15 @@ class PayPalInternalClientUnitTest {
         val result = slot.captured
         val actual = JSONObject(result)
 
-        Assert.assertFalse(actual.has("authorization_fingerprint"))
-        Assert.assertEquals("tokenization-key-bearer", actual["client_key"])
+        assertFalse(actual.has("authorization_fingerprint"))
+        assertEquals("tokenization-key-bearer", actual["client_key"])
     }
 
     @Test
     @Throws(JSONException::class)
     fun sendRequest_withEmptyDisplayName_fallsBackToPayPalConfigurationDisplayName() {
-        val braintreeClient = MockkBraintreeClientBuilder().build()
-
         every { merchantRepository.authorization } returns tokenizationKey
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, braintreeClient) = createSutWithMocks()
 
         val payPalRequest = PayPalVaultRequest(false)
         payPalRequest.displayName = ""
@@ -466,7 +423,7 @@ class PayPalInternalClientUnitTest {
         val result = slot.captured
         val actual = JSONObject(result)
 
-        Assert.assertEquals(
+        assertEquals(
             "paypal_merchant",
             (actual["experience_profile"] as JSONObject)["brand_name"]
         )
@@ -475,19 +432,8 @@ class PayPalInternalClientUnitTest {
     @Test
     @Throws(JSONException::class)
     fun sendRequest_withLocaleNotSpecified_omitsLocale() {
-        val braintreeClient = MockkBraintreeClientBuilder().build()
         every { merchantRepository.authorization } returns tokenizationKey
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, braintreeClient) = createSutWithMocks()
 
         val payPalRequest = PayPalVaultRequest(true)
         payPalRequest.localeCode = null
@@ -503,25 +449,14 @@ class PayPalInternalClientUnitTest {
         }
         val result = slot.captured
         val actual = JSONObject(result)
-        Assert.assertFalse((actual["experience_profile"] as JSONObject).has("locale_code"))
+        assertFalse((actual["experience_profile"] as JSONObject).has("locale_code"))
     }
 
     @Test
     @Throws(JSONException::class)
     fun sendRequest_withMerchantAccountIdNotSpecified_omitsMerchantAccountId() {
-        val braintreeClient = MockkBraintreeClientBuilder().build()
         every { merchantRepository.authorization } returns tokenizationKey
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, braintreeClient) = createSutWithMocks()
 
         val payPalRequest = PayPalVaultRequest(true)
         payPalRequest.merchantAccountId = null
@@ -539,26 +474,15 @@ class PayPalInternalClientUnitTest {
         val result = slot.captured
         val actual = JSONObject(result)
 
-        Assert.assertFalse(actual.has("merchant_account_id"))
+        assertFalse(actual.has("merchant_account_id"))
     }
 
     @Test
     @Throws(JSONException::class)
     fun sendRequest_withShippingAddressOverrideNotSpecified_sendsAddressOverrideFalse() {
-        val braintreeClient = MockkBraintreeClientBuilder().build()
         every { merchantRepository.authorization } returns tokenizationKey
 
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, braintreeClient) = createSutWithMocks()
 
         val payPalRequest = PayPalVaultRequest(true)
         payPalRequest.shippingAddressOverride = null
@@ -576,7 +500,7 @@ class PayPalInternalClientUnitTest {
         val result = slot.captured
         val actual = JSONObject(result)
 
-        Assert.assertEquals(
+        assertEquals(
             false,
             (actual["experience_profile"] as JSONObject)["address_override"]
         )
@@ -585,21 +509,10 @@ class PayPalInternalClientUnitTest {
     @Test
     @Throws(JSONException::class)
     fun sendRequest_withShippingAddressSpecified_sendsAddressOverrideBasedOnShippingAddressEditability() {
-        val braintreeClient = MockkBraintreeClientBuilder().build()
         every { clientToken.bearer } returns "client-token-bearer"
         every { merchantRepository.authorization } returns tokenizationKey
 
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, braintreeClient) = createSutWithMocks()
 
         val payPalRequest = PayPalVaultRequest(true)
         payPalRequest.isShippingAddressEditable = false
@@ -619,7 +532,7 @@ class PayPalInternalClientUnitTest {
         val result = slot.captured
         val actual = JSONObject(result)
 
-        Assert.assertEquals(
+        assertEquals(
             true,
             (actual["experience_profile"] as JSONObject)["address_override"]
         )
@@ -628,20 +541,9 @@ class PayPalInternalClientUnitTest {
     @Test
     @Throws(JSONException::class)
     fun sendRequest_withPayPalVaultRequest_omitsEmptyBillingAgreementDescription() {
-        val braintreeClient = MockkBraintreeClientBuilder().build()
         every { merchantRepository.authorization } returns tokenizationKey
 
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, braintreeClient) = createSutWithMocks()
 
         val payPalRequest = PayPalVaultRequest(true)
         payPalRequest.billingAgreementDescription = ""
@@ -659,27 +561,16 @@ class PayPalInternalClientUnitTest {
         val result = slot.captured
         val actual = JSONObject(result)
 
-        Assert.assertFalse(actual.has("description"))
+        assertFalse(actual.has("description"))
     }
 
     @Test
     @Throws(JSONException::class)
     fun sendRequest_withPayPalCheckoutRequest_fallsBackToPayPalConfigurationCurrencyCode() {
         val configuration = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL_INR)
-        val braintreeClient = MockkBraintreeClientBuilder().build()
         every { merchantRepository.authorization } returns tokenizationKey
 
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, braintreeClient) = createSutWithMocks()
 
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
         sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
@@ -696,29 +587,16 @@ class PayPalInternalClientUnitTest {
         val result = slot.captured
         val actual = JSONObject(result)
 
-        Assert.assertEquals("INR", actual["currency_iso_code"])
+        assertEquals("INR", actual["currency_iso_code"])
     }
 
     @Test
     @Throws(JSONException::class)
     fun sendRequest_withPayPalCheckoutRequest_omitsEmptyLineItems() {
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .sendPOSTSuccessfulResponse("{\"success\": true}")
-            .build()
 
         every { merchantRepository.authorization } returns tokenizationKey
 
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, braintreeClient) = createSutWithMocks()
 
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
         payPalRequest.lineItems = ArrayList()
@@ -735,7 +613,7 @@ class PayPalInternalClientUnitTest {
         }
         val result = slot.captured
         val actual = JSONObject(result)
-        Assert.assertFalse(actual.has("line_items"))
+        assertFalse(actual.has("line_items"))
     }
     @Test
     fun sendRequest_whenRiskCorrelationIdNotNull_setsClientMetadataIdToRiskCorrelationId() {
@@ -746,22 +624,10 @@ class PayPalInternalClientUnitTest {
                 eq(true)
             )
         } returns "sample-client-metadata-id"
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-            .build()
+
         every { merchantRepository.authorization } returns clientToken
 
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, braintreeClient) = createSutWithMocks()
 
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
         payPalRequest.riskCorrelationId = "risk-correlation-id"
@@ -773,7 +639,7 @@ class PayPalInternalClientUnitTest {
             payPalInternalClientCallback.onResult(capture(slot), null)
         }
         val payPalPaymentAuthRequestParams = slot.captured
-        Assert.assertEquals("risk-correlation-id", payPalPaymentAuthRequestParams.clientMetadataId)
+        assertEquals("risk-correlation-id", payPalPaymentAuthRequestParams.clientMetadataId)
     }
 
     @Test
@@ -785,22 +651,9 @@ class PayPalInternalClientUnitTest {
                 eq(configuration)
             )
         } returns "sample-client-metadata-id"
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-            .build()
 
         every { merchantRepository.authorization } returns clientToken
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, braintreeClient) = createSutWithMocks()
 
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
 
@@ -811,8 +664,8 @@ class PayPalInternalClientUnitTest {
             payPalInternalClientCallback.onResult(capture(slot), null)
         }
         val payPalPaymentAuthRequestParams = slot.captured
-        TestCase.assertNull(payPalRequest.riskCorrelationId)
-        Assert.assertEquals(
+        assertNull(payPalRequest.riskCorrelationId)
+        assertEquals(
             "sample-client-metadata-id",
             payPalPaymentAuthRequestParams.clientMetadataId
         )
@@ -827,16 +680,10 @@ class PayPalInternalClientUnitTest {
                 eq(true)
             )
         } returns "sample-client-metadata-id"
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_BA_TOKEN_PARAM)
-            .build()
+
+        val (sut, braintreeClient) = createSutWithMocks()
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
-        val sut = PayPalInternalClient(
-            braintreeClient, dataCollector, apiClient, deviceInspector,
-            merchantRepository, getReturnLinkUseCase, setAppSwitchUseCase,
-            getAppSwitchUseCase, analyticsParamRepository
-        )
 
         val payPalRequest = createVaultRequest()
         sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
@@ -868,24 +715,11 @@ class PayPalInternalClientUnitTest {
                 eq(true)
             )
         } returns "sample-client-metadata-id"
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_BA_TOKEN_PARAM)
-            .build()
 
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
 
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, braintreeClient) = createSutWithMocks()
 
         val payPalRequest = PayPalVaultRequest(true)
         payPalRequest.merchantAccountId = "sample-merchant-account-id"
@@ -898,71 +732,45 @@ class PayPalInternalClientUnitTest {
 
     @Test
     fun sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess_returnsPayPalURL() {
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_PAYPAL_REDIRECT_URL)
-            .build()
-
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { getAppSwitchUseCase.invoke() } returns true
+        every { deviceInspector.isPayPalInstalled() } returns true
 
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
+        val (sut, braintreeClient) = createSutWithMocks(
+            fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_PAYPAL_REDIRECT_URL
         )
 
         val payPalRequest = PayPalVaultRequest(true)
         payPalRequest.userAuthenticationEmail = "example@mail.com"
         payPalRequest.enablePayPalAppSwitch = true
 
-       every { deviceInspector.isPayPalInstalled() } returns true
+        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
 
-       sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-
-       verify { setAppSwitchUseCase.invoke(true, true) }
+        verify { setAppSwitchUseCase.invoke(true, true) }
 
         val slot = slot<PayPalPaymentAuthRequestParams>()
-        verify {
-            payPalInternalClientCallback.onResult(capture(slot), null)
-        }
+        verify { payPalInternalClientCallback.onResult(capture(slot), null) }
         val payPalPaymentAuthRequestParams = slot.captured
-        Assert.assertTrue(payPalPaymentAuthRequestParams.isBillingAgreement)
+        assertTrue(payPalPaymentAuthRequestParams.isBillingAgreement)
 
         val approvalUri = Uri.parse(payPalPaymentAuthRequestParams.approvalUrl)
         val paypalContextId = approvalUri.getQueryParameter("ba_token")
-        Assert.assertNotNull(paypalContextId)
-        Assert.assertEquals(paypalContextId, payPalPaymentAuthRequestParams.paypalContextId)
-        Assert.assertNotNull(approvalUri.getQueryParameter("source"))
-        Assert.assertNotNull(approvalUri.getQueryParameter("switch_initiated_time"))
-        Assert.assertEquals(approvalUri.host, "paypal.com")
+        assertNotNull(paypalContextId)
+        assertEquals(paypalContextId, payPalPaymentAuthRequestParams.paypalContextId)
+        assertNotNull(approvalUri.getQueryParameter("source"))
+        assertNotNull(approvalUri.getQueryParameter("switch_initiated_time"))
+        assertEquals(approvalUri.host, "paypal.com")
     }
 
     @Test
     fun sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess_returnsApprovalURL() {
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE_WITH_APPROVAL_URL)
-            .build()
 
        every { merchantRepository.authorization } returns clientToken
        every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
 
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
+        val (sut, braintreeClient) = createSutWithMocks(
+            fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_APPROVAL_URL
         )
 
         val payPalRequest = PayPalVaultRequest(true)
@@ -975,9 +783,9 @@ class PayPalInternalClientUnitTest {
 
         val expectedUrl = "https://www.example.com/some?ba_token=fake-ba-token"
         val payPalPaymentAuthRequestParams = slot.captured
-        Assert.assertTrue(payPalPaymentAuthRequestParams.isBillingAgreement)
-        Assert.assertEquals("fake-ba-token", payPalPaymentAuthRequestParams.paypalContextId)
-        Assert.assertEquals(expectedUrl, payPalPaymentAuthRequestParams.approvalUrl)
+        assertTrue(payPalPaymentAuthRequestParams.isBillingAgreement)
+        assertEquals("fake-ba-token", payPalPaymentAuthRequestParams.paypalContextId)
+        assertEquals(expectedUrl, payPalPaymentAuthRequestParams.approvalUrl)
     }
 
     @Test
@@ -986,7 +794,9 @@ class PayPalInternalClientUnitTest {
             dataCollector.getClientMetadataId(eq(context), eq(configuration), eq(true))
         } returns "sample-client-metadata-id"
 
-        val sut = createSutWithMocks()
+        val (sut, _) = createSutWithMocks(
+            fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM
+        )
         val payPalRequest = createCheckoutRequest()
         sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
 
@@ -1005,28 +815,14 @@ class PayPalInternalClientUnitTest {
                     "Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=" +
                     "com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&" +
                     "offer_paypal_credit=true&version=1"
-            assertPayPalCheckoutParams(slot.captured, expectedUrl)
+        assertPayPalCheckoutParams(slot.captured, expectedUrl)
     }
 
     @Test
     fun sendRequest_propagatesHttpErrors() {
         val httpError = Exception("http error")
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .sendPOSTErrorResponse(httpError)
-            .build()
-
         every { merchantRepository.authorization } returns clientToken
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, _) = createSutWithMocks(error = httpError)
 
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
         sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
@@ -1036,22 +832,8 @@ class PayPalInternalClientUnitTest {
 
     @Test
     fun sendRequest_propagatesMalformedJSONResponseErrors() {
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .sendPOSTSuccessfulResponse("{bad:")
-            .build()
-
         every { merchantRepository.authorization } returns clientToken
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, _) = createSutWithMocks(fixture = "{bad:")
 
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
         sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
@@ -1067,25 +849,10 @@ class PayPalInternalClientUnitTest {
     @Test
     fun sendRequest_returnLinkResultFailure_forwardsError() {
         val exception = BraintreeException()
-
         every { getReturnLinkUseCase.invoke() } returns ReturnLinkResult.Failure(exception)
-
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .sendPOSTSuccessfulResponse("{bad:")
-            .build()
-
         every { merchantRepository.authorization } returns clientToken
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+
+        val (sut, _) = createSutWithMocks(fixture = "{bad:")
 
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
         sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
@@ -1100,17 +867,7 @@ class PayPalInternalClientUnitTest {
         val callback = mockk<PayPalInternalTokenizeCallback>(relaxed = true)
         val apiClient = mockk<ApiClient>(relaxed = true)
 
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, _) = createSutWithMocks(apiClient = apiClient)
 
         sut.tokenize(payPalAccount, callback)
 
@@ -1131,17 +888,7 @@ class PayPalInternalClientUnitTest {
         val payPalAccount = mockk<PayPalAccount>(relaxed = true)
         val callback = mockk<PayPalInternalTokenizeCallback>(relaxed = true)
 
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, _) = createSutWithMocks(apiClient = apiClient)
 
         sut.tokenize(payPalAccount, callback)
 
@@ -1154,12 +901,11 @@ class PayPalInternalClientUnitTest {
             JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE)
         )
         val result = slot.captured
-        Assert.assertEquals(expectedNonce.string, result.string)
+        assertEquals(expectedNonce.string, result.string)
     }
 
     @Test
     fun tokenize_onTokenizeError_returnsErrorToCallback() {
-        val braintreeClient = MockkBraintreeClientBuilder().build()
         val error = Exception("error")
         val apiClient = MockApiClientBuilder()
             .tokenizeRESTError(error)
@@ -1167,17 +913,7 @@ class PayPalInternalClientUnitTest {
         val payPalAccount = mockk<PayPalAccount>(relaxed = true)
         val callback = mockk<PayPalInternalTokenizeCallback>(relaxed = true)
 
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, _) = createSutWithMocks(apiClient = apiClient)
 
         sut.tokenize(payPalAccount, callback)
 
@@ -1190,24 +926,10 @@ class PayPalInternalClientUnitTest {
     @Throws(Exception::class)
     fun payPalDataCollector_passes_correct_arguments_to_getClientMetadataId() {
         val configuration = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .returnUrlScheme("sample-scheme")
-            .sendPOSTSuccessfulResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-            .build()
 
         every { merchantRepository.authorization } returns clientToken
 
-        val sut = PayPalInternalClient(
-            braintreeClient,
-            dataCollector,
-            apiClient,
-            deviceInspector,
-            merchantRepository,
-            getReturnLinkUseCase,
-            setAppSwitchUseCase,
-            getAppSwitchUseCase,
-            analyticsParamRepository
-        )
+        val (sut, braintreeClient) = createSutWithMocks()
 
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
         payPalRequest.intent = PayPalPaymentIntent.AUTHORIZE
@@ -1224,6 +946,6 @@ class PayPalInternalClientUnitTest {
             )
         }
 
-        Assert.assertTrue(slot.captured.hasUserLocationConsent)
+        assertTrue(slot.captured.hasUserLocationConsent)
     }
 }
