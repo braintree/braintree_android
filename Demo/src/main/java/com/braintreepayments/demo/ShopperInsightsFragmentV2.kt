@@ -30,6 +30,7 @@ import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
 import com.braintreepayments.api.paypal.PayPalPaymentAuthResult
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
+import com.braintreepayments.api.shopperinsights.ButtonType
 import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendationsResult
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionResult
@@ -183,9 +184,10 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         nationalNumberText: String,
         sessionId: String
     ) {
-//        shopperInsightsClient.sendSelectedEvent(
-//            ButtonType.PAYPAL
-//        )
+        shopperInsightsClient.sendSelectedEvent(
+            ButtonType.PAYPAL,
+            sessionId
+        )
 
         payPalClient.createPaymentAuthRequest(
             requireContext(),
