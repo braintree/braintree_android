@@ -11,16 +11,12 @@ import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AppSwitchRepository
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.GetAppSwitchUseCase
-import com.braintreepayments.api.core.GetReturnLinkUseCase
-import com.braintreepayments.api.core.MerchantRepository
 
 /**
  * Responsible for launching PayPal user authentication in a web browser
  */
 class PayPalLauncher internal constructor(
     private val browserSwitchClient: BrowserSwitchClient,
-    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
-    private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
     private val getAppSwitchUseCase: GetAppSwitchUseCase = GetAppSwitchUseCase(AppSwitchRepository.instance),
     lazyAnalyticsClient: Lazy<AnalyticsClient>
 ) {
@@ -52,11 +48,9 @@ class PayPalLauncher internal constructor(
     ): PayPalPendingRequest {
         val isAppSwitch = getAppSwitchUseCase()
         val paypalContextId = paymentAuthRequest.requestParams.paypalContextId
-        val appSwitchReturnUrl = (getReturnLinkUseCase() as? GetReturnLinkUseCase.ReturnLinkResult.AppLink)
-            ?.appLinkReturnUri?.toString()
         val analyticsEventParams = AnalyticsEventParams(
             payPalContextId = paypalContextId,
-            appSwitchUrl = appSwitchReturnUrl
+            appSwitchUrl = paymentAuthRequest.requestParams.approvalUrl
         )
 
         if (isAppSwitch) {
@@ -131,21 +125,10 @@ class PayPalLauncher internal constructor(
         pendingRequest: PayPalPendingRequest.Started,
         intent: Intent
     ): PayPalPaymentAuthResult {
-        val appSwitchUrl = when (val returnLinkResult = getReturnLinkUseCase()) {
-            is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> {
-                returnLinkResult.appLinkReturnUri.toString()
-            }
-
-            is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> {
-                returnLinkResult.deepLinkFallbackUrlScheme
-            }
-
-            else -> null
-        }
         val payPalContextId = intent.data?.getQueryParameter("ba_token") ?: intent.data?.getQueryParameter("token")
         val analyticsEventParams = AnalyticsEventParams(
             payPalContextId = payPalContextId,
-            appSwitchUrl = appSwitchUrl
+            appSwitchUrl = intent.data?.toString()
         )
 
         analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_STARTED, analyticsEventParams)
