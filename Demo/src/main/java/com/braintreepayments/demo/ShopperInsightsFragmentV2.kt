@@ -70,6 +70,11 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
             "com.braintreepayments.demo.braintree"
         )
 
+        return view()
+    }
+
+    @Suppress("LongMethod")
+    private fun view(): View {
         return ComposeView(requireContext()).apply {
             setContent {
                 Column(modifier = Modifier.padding(8.dp)) {
@@ -172,7 +177,12 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         }
     }
 
-    private fun launchPayPalVault(emailText: String, countryCodeText: String, nationalNumberText: String, sessionId: String) {
+    private fun launchPayPalVault(
+        emailText: String,
+        countryCodeText: String,
+        nationalNumberText: String,
+        sessionId: String
+    ) {
 //        shopperInsightsClient.sendSelectedEvent(
 //            ButtonType.PAYPAL
 //        )
@@ -199,11 +209,8 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                         }
 
                         is PayPalPendingRequest.Failure -> {
-                            Toast.makeText(
-                                requireContext(),
-                                paypalPendingRequest.error.message,
-                                Toast.LENGTH_LONG
-                            ).show()
+                            Toast.makeText(requireContext(), paypalPendingRequest.error.message, Toast.LENGTH_LONG)
+                                .show()
                         }
                     }
                 }
@@ -211,11 +218,9 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         }
     }
 
-
-
     private fun initShopperInsightsClient() {
         fetchAuthorization { authResult ->
-            when(authResult) {
+            when (authResult) {
                 is BraintreeAuthorizationResult.Success -> {
                     shopperInsightsClient = ShopperInsightsClientV2(requireContext(), authResult.authString)
                     shopperInsightsClientSuccessfullyInstantiated = true
@@ -257,12 +262,12 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                     // Handle failure
                 }
             }
-
         }
     }
 
     private fun handleGetRecommendations(sessionId: String) {
-        shopperInsightsClient.generateCustomerRecommendations(sessionId = "94f0b2db-5323-4d86-add3-paypal000000") { result ->
+        val sessionId = "94f0b2db-5323-4d86-add3-paypal000000"
+        shopperInsightsClient.generateCustomerRecommendations(sessionId = sessionId) { result ->
             when (result) {
                 is CustomerRecommendationsResult.Success -> {
                     viewModel.isInPayPalNetwork.update { result.customerRecommendations.isInPayPalNetwork == true }
