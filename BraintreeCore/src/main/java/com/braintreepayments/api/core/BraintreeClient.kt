@@ -78,6 +78,18 @@ class BraintreeClient internal constructor(
                 it.deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
             }
         }
+
+        prefetchConfiguration()
+    }
+
+    private fun prefetchConfiguration() {
+        // This method is called to prefetch the configuration when the BraintreeClient is created.
+        // It ensures that the configuration is loaded and ready for use in subsequent requests.
+        getConfiguration(callback = object : ConfigurationCallback {
+            override fun onResult(configuration: Configuration?, error: Exception?) {
+                // no op
+            }
+        })
     }
 
     /**
@@ -258,23 +270,6 @@ class BraintreeClient internal constructor(
             ),
             sendImmediately = false
         )
-    }
-
-    /**
-     * Set this property to true to allow the SDK to handle deep links on behalf of the host
-     * application for browser switched flows.
-     *
-     * For web payment flows, this means launching the browser in a task separate from the calling
-     * activity.
-     *
-     * NOTE: When this property is set to true, all custom url schemes set in [BraintreeClient]
-     * constructors will be ignored.
-     *
-     * @param launchesBrowserSwitchAsNewTask set to true to allow the SDK to capture deep links.
-     * This value is false by default.
-     */
-    fun launchesBrowserSwitchAsNewTask(launchesBrowserSwitchAsNewTask: Boolean) {
-        this.launchesBrowserSwitchAsNewTask = launchesBrowserSwitchAsNewTask
     }
 
     companion object {
