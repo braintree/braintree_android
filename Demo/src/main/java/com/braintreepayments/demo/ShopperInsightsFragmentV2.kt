@@ -122,9 +122,10 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                     val sessionId = viewModel.sessionId.collectAsState().value
                     Text(if (sessionId.isNotEmpty()) "Session Id = $sessionId" else "")
                     val recommendations = viewModel.recommendations.collectAsState().value
-                    Text(if (recommendations.isNotEmpty()) "Recommendations = " else "")
+                    Text(if (recommendations.isNotEmpty()) "Recommendations = $recommendations" else "")
+                    val isInPayPalNetwork = viewModel.isInPayPalNetwork.collectAsState().value
                     Button(
-                        enabled = true, //viewModel.isInPayPalNetwork.collectAsState().value,
+                        enabled = isInPayPalNetwork,
                         onClick = { launchPayPalVault(emailText, countryCodeText, nationalNumberText, sessionId) }
                     ) {
                         Text(text = "PayPal")
@@ -264,11 +265,9 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         shopperInsightsClient.generateCustomerRecommendations(sessionId = "94f0b2db-5323-4d86-add3-paypal000000") { result ->
             when (result) {
                 is CustomerRecommendationsResult.Success -> {
-                    result.customerRecommendations.isInPayPalNetwork?.let {
-                        viewModel.isInPayPalNetwork.update { it }
-                    }
-                    result.customerRecommendations.paymentRecommendations?.let {
-                        viewModel.recommendations.update { it }
+                    viewModel.isInPayPalNetwork.update { result.customerRecommendations.isInPayPalNetwork == true }
+                    result.customerRecommendations.paymentRecommendations?.let { recommendations ->
+                        viewModel.recommendations.update { recommendations }
                     }
                 }
                 is CustomerRecommendationsResult.Failure -> {
