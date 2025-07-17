@@ -37,6 +37,12 @@ import com.braintreepayments.api.shopperinsights.v2.CustomerSessionResult
 import com.braintreepayments.api.shopperinsights.v2.ShopperInsightsClientV2
 import com.braintreepayments.api.venmo.VenmoClient
 import com.braintreepayments.api.venmo.VenmoLauncher
+import com.braintreepayments.api.venmo.VenmoPaymentAuthRequest
+import com.braintreepayments.api.venmo.VenmoPaymentAuthResult
+import com.braintreepayments.api.venmo.VenmoPaymentMethodUsage
+import com.braintreepayments.api.venmo.VenmoPendingRequest
+import com.braintreepayments.api.venmo.VenmoRequest
+import com.braintreepayments.api.venmo.VenmoResult
 import java.security.MessageDigest
 import kotlinx.coroutines.flow.update
 
@@ -53,6 +59,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
     private val paypalLauncher: PayPalLauncher = PayPalLauncher()
 
     private lateinit var paypalStartedPendingRequest: PayPalPendingRequest.Started
+    private lateinit var venmoStartedPendingRequest: VenmoPendingRequest.Started
 
     @OptIn(ExperimentalFoundationApi::class)
     override fun onCreateView(
@@ -135,6 +142,12 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                     ) {
                         Text(text = "PayPal")
                     }
+                    Button(
+                        enabled = isInPayPalNetwork,
+                        onClick = { launchVenmo(emailText, countryCodeText, nationalNumberText, sessionId) }
+                    ) {
+                        Text(text = "Venmo")
+                    }
                 }
             }
         }
@@ -142,7 +155,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-//        handleVenmoReturnToApp()
+        handleVenmoReturnToApp()
         handlePayPalReturnToApp()
     }
 
@@ -168,6 +181,37 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
 
                         is PayPalResult.Cancel -> {
                             handleError(UserCanceledException("User canceled PayPal"))
+                        }
+                    }
+                }
+            } else {
+                handleError(Exception("User did not complete payment flow"))
+            }
+        }
+    }
+
+    private fun handleVenmoReturnToApp() {
+        if (this::venmoStartedPendingRequest.isInitialized) {
+            val venmoPaymentAuthResult =
+                venmoLauncher.handleReturnToApp(venmoStartedPendingRequest, requireActivity().intent)
+            if (venmoPaymentAuthResult is VenmoPaymentAuthResult.Success) {
+                venmoClient.tokenize(venmoPaymentAuthResult) {
+                    when (it) {
+                        is VenmoResult.Success -> {
+                            val action =
+                                ShopperInsightsFragmentDirections
+                                    .actionShopperInsightsFragmentToDisplayNonceFragment(
+                                        it.nonce
+                                    )
+                            NavHostFragment.findNavController(this).navigate(action)
+                        }
+
+                        is VenmoResult.Failure -> {
+                            handleError(it.error)
+                        }
+
+                        is VenmoResult.Cancel -> {
+                            handleError(UserCanceledException("User canceled Venmo"))
                         }
                     }
                 }
@@ -214,6 +258,50 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                                 .show()
                         }
                     }
+                }
+            }
+        }
+    }
+
+    private fun launchVenmo(
+        emailText: String,
+        countryCodeText: String,
+        nationalNumberText: String,
+        sessionId: String
+    ) {
+        shopperInsightsClient.sendSelectedEvent(
+            ButtonType.VENMO,
+            sessionId
+        )
+
+        val venmoRequest = VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE)
+        venmoRequest.profileId = null
+        venmoRequest.collectCustomerBillingAddress = true
+        venmoRequest.collectCustomerShippingAddress = true
+        venmoRequest.totalAmount = "20"
+        venmoRequest.subTotalAmount = "18"
+        venmoRequest.taxAmount = "1"
+
+        venmoClient.createPaymentAuthRequest(requireContext(), venmoRequest) {
+            when (it) {
+                is VenmoPaymentAuthRequest.ReadyToLaunch -> {
+                    when (val venmoPendingRequest = venmoLauncher.launch(requireActivity(), it)) {
+                        is VenmoPendingRequest.Started -> {
+                            venmoStartedPendingRequest = venmoPendingRequest
+                        }
+
+                        is VenmoPendingRequest.Failure -> {
+                            Toast.makeText(
+                                requireContext(),
+                                venmoPendingRequest.error.message,
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
+
+                is VenmoPaymentAuthRequest.Failure -> {
+                    handleError(it.error)
                 }
             }
         }
