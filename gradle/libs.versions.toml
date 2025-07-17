@@ -1,5 +1,5 @@
 [versions]
-gradle = "8.5.2"
+gradle = "8.7.3"
 gradleNexusStagingPlugin = "0.21.2"
 kotlinGradlePlugin = "1.8.0"
 gradleNexusPublish = "1.1.0"
@@ -28,13 +28,13 @@ detekt = "1.23.6"
 dokka = "1.9.10"
 
 # Demo App
-androidxFragment = "1.6.2"
-androidxNavigation = "2.7.5"
+androidxFragment = "1.8.8"
+androidxNavigation = "2.9.1"
 androidxPreference = "1.2.1"
 androidxCardview = "1.0.0"
 androidxLegacySupportV4 = "1.0.0"
 androidxLifecycleExtensions = "2.2.0"
-androidxComposeBom = "2024.06.00"
+androidxComposeBom = "2025.06.01"
 retrofit = "2.11.0"
 gson = "2.10.1"
 eventbus = "2.4.1"
