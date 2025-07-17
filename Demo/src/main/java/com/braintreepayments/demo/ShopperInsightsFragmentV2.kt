@@ -137,13 +137,13 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                     Text(if (recommendations.isNotEmpty()) "Recommendations = $recommendations" else "")
                     val isInPayPalNetwork = viewModel.isInPayPalNetwork.collectAsState().value
                     Button(
-                        enabled = isInPayPalNetwork,
+                        enabled = isInPayPalNetwork && recommendations.first().paymentOption == "PAYPAL",
                         onClick = { launchPayPalVault(emailText, countryCodeText, nationalNumberText, sessionId) }
                     ) {
                         Text(text = "PayPal")
                     }
                     Button(
-                        enabled = isInPayPalNetwork,
+                        enabled = isInPayPalNetwork && recommendations.first().paymentOption == "VENMO",
                         onClick = { launchVenmo(emailText, countryCodeText, nationalNumberText, sessionId) }
                     ) {
                         Text(text = "Venmo")
