@@ -38,7 +38,6 @@ import com.braintreepayments.api.shopperinsights.v2.ShopperInsightsClientV2
 import com.braintreepayments.api.venmo.VenmoClient
 import com.braintreepayments.api.venmo.VenmoLauncher
 import java.security.MessageDigest
-import java.util.UUID
 import kotlinx.coroutines.flow.update
 
 @OptIn(ExperimentalBetaApi::class)
@@ -228,7 +227,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                     shopperInsightsClientSuccessfullyInstantiated = true
                 }
                 is BraintreeAuthorizationResult.Error -> {
-                    // Handle error, e.g., show error message
+                    Toast.makeText(context, "Auth failed: ${authResult.error.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -245,8 +244,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                     viewModel.sessionId.update { result.sessionId }
                 }
                 is CustomerSessionResult.Failure -> {
-                    // Handle failure, e.g., show error message
-                    val error = result.error
+                    Toast.makeText(context, "CreateCustomerSession failed: ${result.error}", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -254,21 +252,20 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
 
     private fun handleUpdateCustomerSession(emailText: String, countryCodeText: String, nationalNumberText: String) {
         val customerSessionRequest = CustomerSessionRequest(hashedEmail = emailText.sha256())
-        val requestId = "session-id-${UUID.randomUUID()}"
-        shopperInsightsClient.updateCustomerSession(customerSessionRequest, requestId) { result ->
+        val sessionId = "94f0b2db-5323-4d86-add3-paypal000000"
+        shopperInsightsClient.updateCustomerSession(customerSessionRequest, sessionId) { result ->
             when (result) {
                 is CustomerSessionResult.Success -> {
                     viewModel.sessionId.update { result.sessionId }
                 }
                 is CustomerSessionResult.Failure -> {
-                    // Handle failure
+                    Toast.makeText(context, "UpdateCustomerSession failed: ${result.error}", Toast.LENGTH_LONG).show()
                 }
             }
         }
     }
 
     private fun handleGetRecommendations(sessionId: String) {
-        val sessionId = "94f0b2db-5323-4d86-add3-paypal000000"
         shopperInsightsClient.generateCustomerRecommendations(sessionId = sessionId) { result ->
             when (result) {
                 is CustomerRecommendationsResult.Success -> {
@@ -278,8 +275,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                     }
                 }
                 is CustomerRecommendationsResult.Failure -> {
-                    // Handle failure, e.g., show error message
-                    val error = result.error
+                    Toast.makeText(context, "GetRecommendations failed: ${result.error}", Toast.LENGTH_LONG).show()
                 }
             }
         }
