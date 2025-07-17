@@ -236,7 +236,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
     private fun handleCreateCustomerSession(emailText: String, countryCodeText: String, nationalNumberText: String) {
         val customerSessionRequest = CustomerSessionRequest(
             hashedEmail = emailText.sha256(),
-//            hashedPhoneNumber = nationalNumberText.sha256()
+            hashedPhoneNumber = nationalNumberText.sha256()
         )
         shopperInsightsClient.createCustomerSession(customerSessionRequest) { result ->
             when (result) {
@@ -251,7 +251,10 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
     }
 
     private fun handleUpdateCustomerSession(emailText: String, countryCodeText: String, nationalNumberText: String) {
-        val customerSessionRequest = CustomerSessionRequest(hashedEmail = emailText.sha256())
+        val customerSessionRequest = CustomerSessionRequest(
+            hashedEmail = emailText.sha256(),
+            hashedPhoneNumber = nationalNumberText.sha256()
+        )
         val sessionId = "94f0b2db-5323-4d86-add3-paypal000000"
         shopperInsightsClient.updateCustomerSession(customerSessionRequest, sessionId) { result ->
             when (result) {
