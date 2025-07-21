@@ -68,7 +68,17 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        initShopperInsightsClient()
+        fetchAuthorization { authResult ->
+            when (authResult) {
+                is BraintreeAuthorizationResult.Success -> {
+                    shopperInsightsClient = ShopperInsightsClientV2(requireContext(), authResult.authString)
+                    shopperInsightsClientSuccessfullyInstantiated = true
+                }
+                is BraintreeAuthorizationResult.Error -> {
+                    Toast.makeText(context, "Auth failed: ${authResult.error.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
 
         venmoClient = VenmoClient(requireContext(), super.getAuthStringArg(), null)
         payPalClient = PayPalClient(
@@ -303,20 +313,6 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
 
                 is VenmoPaymentAuthRequest.Failure -> {
                     handleError(it.error)
-                }
-            }
-        }
-    }
-
-    private fun initShopperInsightsClient() {
-        fetchAuthorization { authResult ->
-            when (authResult) {
-                is BraintreeAuthorizationResult.Success -> {
-                    shopperInsightsClient = ShopperInsightsClientV2(requireContext(), authResult.authString)
-                    shopperInsightsClientSuccessfullyInstantiated = true
-                }
-                is BraintreeAuthorizationResult.Error -> {
-                    Toast.makeText(context, "Auth failed: ${authResult.error.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }

@@ -147,7 +147,7 @@ complexity:
     thresholdInEnums: 11
     ignoreDeprecated: false
     ignorePrivate: false
-    ignoreOverridden: true
+    ignoreOverridden: false
 
 coroutines:
   active: true
