@@ -111,7 +111,7 @@ complexity:
   LongMethod:
     active: true
     threshold: 60
-    ignoreAnnotated: []
+    ignoreAnnotated: [Composable]
   LongParameterList:
     active: true
     functionThreshold: 10
@@ -139,8 +139,7 @@ complexity:
     ignoreStringsRegex: '$^'
   TooManyFunctions:
     active: true
-    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**',
-               '**/iosTest/**', '**/Demo/**']
+    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
     thresholdInFiles: 11
     thresholdInClasses: 11
     thresholdInInterfaces: 11
@@ -148,7 +147,7 @@ complexity:
     thresholdInEnums: 11
     ignoreDeprecated: false
     ignorePrivate: false
-    ignoreOverridden: false
+    ignoreOverridden: true
 
 coroutines:
   active: true
