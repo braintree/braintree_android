@@ -22,7 +22,7 @@ import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
-public class AmericanExpressClientUnitTest {
+public class JavaAmericanExpressClientUnitTest {
 
     private AmericanExpressGetRewardsBalanceCallback amexRewardsCallback;
 
@@ -31,20 +31,20 @@ public class AmericanExpressClientUnitTest {
         amexRewardsCallback = mock(AmericanExpressGetRewardsBalanceCallback.class);
     }
 
-    @Test
-    public void getRewardsBalance_sendsGETRequestForAmexAwardsBalance() {
-        BraintreeClient braintreeClient = mock(BraintreeClient.class);
-        AmericanExpressClient sut = new AmericanExpressClient(braintreeClient);
-        sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
-
-        ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendGET(urlCaptor.capture(), any(HttpResponseCallback.class));
-
-        String url = urlCaptor.getValue();
-        assertEquals(
-                "/v1/payment_methods/amex_rewards_balance?paymentMethodNonce=fake-nonce&currencyIsoCode=USD",
-                url);
-    }
+//    @Test
+//    public void getRewardsBalance_sendsGETRequestForAmexAwardsBalance() {
+//        BraintreeClient braintreeClient = mock(BraintreeClient.class);
+//        AmericanExpressClient sut = new AmericanExpressClient(braintreeClient);
+//        sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback);
+//
+//        ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
+//        verify(braintreeClient).sendGET(urlCaptor.capture(), any(HttpResponseCallback.class));
+//
+//        String url = urlCaptor.getValue();
+//        assertEquals(
+//                "/v1/payment_methods/amex_rewards_balance?paymentMethodNonce=fake-nonce&currencyIsoCode=USD",
+//                url);
+//    }
 
     @Test
     public void getRewardsBalance_callsListenerWithRewardsBalanceOnSuccess() {

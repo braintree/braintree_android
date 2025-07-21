@@ -51,6 +51,8 @@ dependencies {
     testImplementation libs.json.assert
     testImplementation libs.test.parameter.injector
     testImplementation project(':TestUtils')
+    testImplementation libs.mockk
+    testImplementation libs.kotlin.test
 }
 
 // region signing and publishing
