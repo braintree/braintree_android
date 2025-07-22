@@ -44,7 +44,6 @@ import com.braintreepayments.api.venmo.VenmoPaymentMethodUsage
 import com.braintreepayments.api.venmo.VenmoPendingRequest
 import com.braintreepayments.api.venmo.VenmoRequest
 import com.braintreepayments.api.venmo.VenmoResult
-import java.security.MessageDigest
 import kotlinx.coroutines.flow.update
 
 @OptIn(ExperimentalBetaApi::class)
@@ -71,6 +70,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         fetchAuthorization { authResult ->
             when (authResult) {
                 is BraintreeAuthorizationResult.Success -> {
+                    viewModel.initShopperInsightsClient(requireContext(), authResult.authString)
                     shopperInsightsClient = ShopperInsightsClientV2(requireContext(), authResult.authString)
                     shopperInsightsClientSuccessfullyInstantiated = true
                 }
@@ -149,17 +149,23 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
             val recommendations = viewModel.recommendations.collectAsState().value
             Text(if (recommendations.isNotEmpty()) "Recommendations = $recommendations" else "")
             val isInPayPalNetwork = viewModel.isInPayPalNetwork.collectAsState().value
-            Button(
-                enabled = isInPayPalNetwork && recommendations.first().paymentOption == "PAYPAL",
-                onClick = { launchPayPalVault(emailText, countryCodeText, nationalNumberText, sessionId) }
-            ) {
-                Text(text = "PayPal")
+            if (isInPayPalNetwork && recommendations.first().paymentOption == "PAYPAL") {
+                viewModel.sendButtonPresentedEvent(ButtonType.PAYPAL, sessionId)
+                Button(
+                    enabled = true,
+                    onClick = { launchPayPalVault(emailText, countryCodeText, nationalNumberText, sessionId) }
+                ) {
+                    Text(text = "PayPal")
+                }
             }
-            Button(
-                enabled = isInPayPalNetwork && recommendations.first().paymentOption == "VENMO",
-                onClick = { launchVenmo(emailText, countryCodeText, nationalNumberText, sessionId) }
-            ) {
-                Text(text = "Venmo")
+            if (isInPayPalNetwork && recommendations.first().paymentOption == "VENMO") {
+                viewModel.sendButtonPresentedEvent(ButtonType.VENMO, sessionId)
+                Button(
+                    enabled = true,
+                    onClick = { launchVenmo(emailText, countryCodeText, nationalNumberText, sessionId) }
+                ) {
+                    Text(text = "Venmo")
+                }
             }
         }
     }
@@ -368,15 +374,4 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
             }
         }
     }
-}
-
-fun String.sha256(): String {
-    return hashString(this, "SHA-256")
-}
-
-private fun hashString(input: String, algorithm: String = "SHA-256"): String {
-    return MessageDigest
-        .getInstance(algorithm)
-        .digest(input.toByteArray())
-        .toString()
 }
