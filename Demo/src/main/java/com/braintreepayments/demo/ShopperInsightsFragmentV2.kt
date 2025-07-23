@@ -144,7 +144,6 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
             Text(if (recommendations.isNotEmpty()) "Recommendations = $recommendations" else "")
             val isInPayPalNetwork = viewModel.isInPayPalNetwork.collectAsState().value
             if (isInPayPalNetwork && recommendations.first().paymentOption == "PAYPAL") {
-                viewModel.sendButtonPresentedEvent(ButtonType.PAYPAL, sessionId)
                 Button(
                     enabled = true,
                     onClick = { launchPayPalVault(emailText, countryCodeText, nationalNumberText, sessionId) }
@@ -153,7 +152,6 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                 }
             }
             if (isInPayPalNetwork && recommendations.first().paymentOption == "VENMO") {
-                viewModel.sendButtonPresentedEvent(ButtonType.VENMO, sessionId)
                 Button(
                     enabled = true,
                     onClick = { launchVenmo(emailText, countryCodeText, nationalNumberText, sessionId) }

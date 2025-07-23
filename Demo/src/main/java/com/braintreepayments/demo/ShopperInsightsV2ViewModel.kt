@@ -74,6 +74,17 @@ class ShopperInsightsV2ViewModel : ViewModel() {
                     result.customerRecommendations.paymentRecommendations?.let { recommendations ->
                         this@ShopperInsightsV2ViewModel.recommendations.update { recommendations }
                     }
+                    if (isInPayPalNetwork.value == true) {
+                        val paymentOption = this@ShopperInsightsV2ViewModel.recommendations.value.first().paymentOption
+                        val buttonType = if (paymentOption == "PAYPAL") {
+                            ButtonType.PAYPAL
+                        } else if (paymentOption == "VENMO") {
+                            ButtonType.VENMO
+                        } else {
+                            ButtonType.OTHER
+                        }
+                        sendButtonPresentedEvent(buttonType, sessionId)
+                    }
                 }
                 is CustomerRecommendationsResult.Failure -> {
                     this@ShopperInsightsV2ViewModel.error.update { "GetRecommendations failed: ${result.error}" }
