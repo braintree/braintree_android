@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.14.0 (2025-07-23)
 
 * PayPal
   * Fix an issue where multiple Chrome Custom Tabs can be opened
