@@ -25,6 +25,7 @@ class ShopperInsightsV2ViewModel : ViewModel() {
     @OptIn(ExperimentalBetaApi::class)
     var recommendations = MutableStateFlow<List<PaymentOptions>>(emptyList())
     var isInPayPalNetwork = MutableStateFlow<Boolean>(false)
+    var error = MutableStateFlow<String>("")
 
     fun initShopperInsightsClient(context: Context, authString: String) {
         shopperInsightsClient = ShopperInsightsClientV2(context, authString)
@@ -41,8 +42,7 @@ class ShopperInsightsV2ViewModel : ViewModel() {
                     this@ShopperInsightsV2ViewModel.sessionId.update { result.sessionId }
                 }
                 is CustomerSessionResult.Failure -> {
-                    // show toast
-                    //Toast.makeText(context, "CreateCustomerSession failed: ${result.error}", Toast.LENGTH_LONG).show()
+                    this@ShopperInsightsV2ViewModel.error.update { "CreateCustomerSession failed: ${result.error}" }
                 }
             }
         }
@@ -60,7 +60,7 @@ class ShopperInsightsV2ViewModel : ViewModel() {
                     this@ShopperInsightsV2ViewModel.sessionId.update { result.sessionId }
                 }
                 is CustomerSessionResult.Failure -> {
-                    //Toast.makeText(context, "UpdateCustomerSession failed: ${result.error}", Toast.LENGTH_LONG).show()
+                    this@ShopperInsightsV2ViewModel.error.update { "UpdateCustomerSession failed: ${result.error}" }
                 }
             }
         }
@@ -76,7 +76,7 @@ class ShopperInsightsV2ViewModel : ViewModel() {
                     }
                 }
                 is CustomerRecommendationsResult.Failure -> {
-                    //Toast.makeText(context, "GetRecommendations failed: ${result.error}", Toast.LENGTH_LONG).show()
+                    this@ShopperInsightsV2ViewModel.error.update { "GetRecommendations failed: ${result.error}" }
                 }
             }
         }
@@ -98,7 +98,7 @@ class ShopperInsightsV2ViewModel : ViewModel() {
     }
 }
 
-fun String.sha256(): String {
+private fun String.sha256(): String {
     return hashString(this, "SHA-256")
 }
 

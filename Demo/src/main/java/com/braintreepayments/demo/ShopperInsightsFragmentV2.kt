@@ -21,6 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.fragment.NavHostFragment
 import com.braintreepayments.api.core.ExperimentalBetaApi
@@ -159,6 +160,10 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                 ) {
                     Text(text = "Venmo")
                 }
+            }
+            val error = viewModel.error.collectAsState().value
+            if (error.isNotEmpty()) {
+                Toast.makeText(LocalContext.current, error, Toast.LENGTH_LONG).show()
             }
         }
     }
