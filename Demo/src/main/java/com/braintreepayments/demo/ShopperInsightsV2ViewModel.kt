@@ -8,10 +8,14 @@ import com.braintreepayments.api.shopperinsights.ButtonType
 import com.braintreepayments.api.shopperinsights.ExperimentType
 import com.braintreepayments.api.shopperinsights.PageType
 import com.braintreepayments.api.shopperinsights.PresentmentDetails
+import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendationsResult
+import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
+import com.braintreepayments.api.shopperinsights.v2.CustomerSessionResult
 import com.braintreepayments.api.shopperinsights.v2.PaymentOptions
 import com.braintreepayments.api.shopperinsights.v2.ShopperInsightsClientV2
 import java.security.MessageDigest
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 @OptIn(ExperimentalBetaApi::class)
 class ShopperInsightsV2ViewModel : ViewModel() {
@@ -26,10 +30,69 @@ class ShopperInsightsV2ViewModel : ViewModel() {
         shopperInsightsClient = ShopperInsightsClientV2(context, authString)
     }
 
+    fun handleCreateCustomerSession(emailText: String, countryCodeText: String, nationalNumberText: String) {
+        val customerSessionRequest = CustomerSessionRequest(
+            hashedEmail = emailText.sha256(),
+            hashedPhoneNumber = nationalNumberText.sha256()
+        )
+        shopperInsightsClient.createCustomerSession(customerSessionRequest) { result ->
+            when (result) {
+                is CustomerSessionResult.Success -> {
+                    this@ShopperInsightsV2ViewModel.sessionId.update { result.sessionId }
+                }
+                is CustomerSessionResult.Failure -> {
+                    // show toast
+                    //Toast.makeText(context, "CreateCustomerSession failed: ${result.error}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    fun handleUpdateCustomerSession(emailText: String, countryCodeText: String, nationalNumberText: String) {
+        val customerSessionRequest = CustomerSessionRequest(
+            hashedEmail = emailText.sha256(),
+            hashedPhoneNumber = nationalNumberText.sha256()
+        )
+        val sessionId = "94f0b2db-5323-4d86-add3-paypal000000"
+        shopperInsightsClient.updateCustomerSession(customerSessionRequest, sessionId) { result ->
+            when (result) {
+                is CustomerSessionResult.Success -> {
+                    this@ShopperInsightsV2ViewModel.sessionId.update { result.sessionId }
+                }
+                is CustomerSessionResult.Failure -> {
+                    //Toast.makeText(context, "UpdateCustomerSession failed: ${result.error}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    fun handleGetRecommendations(sessionId: String) {
+        shopperInsightsClient.generateCustomerRecommendations(sessionId = sessionId) { result ->
+            when (result) {
+                is CustomerRecommendationsResult.Success -> {
+                    isInPayPalNetwork.update { result.customerRecommendations.isInPayPalNetwork == true }
+                    result.customerRecommendations.paymentRecommendations?.let { recommendations ->
+                        this@ShopperInsightsV2ViewModel.recommendations.update { recommendations }
+                    }
+                }
+                is CustomerRecommendationsResult.Failure -> {
+                    //Toast.makeText(context, "GetRecommendations failed: ${result.error}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
     fun sendButtonPresentedEvent(buttonType: ButtonType, sessionId: String) {
         shopperInsightsClient.sendPresentedEvent(
             buttonType,
             PresentmentDetails(ExperimentType.CONTROL, ButtonOrder.FIRST, PageType.OTHER),
+            sessionId
+        )
+    }
+
+    fun sendSelectedEvent(buttonType: ButtonType, sessionId: String) {
+        shopperInsightsClient.sendSelectedEvent(
+            buttonType,
             sessionId
         )
     }
