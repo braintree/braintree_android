@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## Unreleased
+## unreleased
 
 * PayPal
   * Fix an issue where multiple Chrome Custom Tabs can be opened
