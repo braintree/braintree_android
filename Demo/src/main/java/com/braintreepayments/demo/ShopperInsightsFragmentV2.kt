@@ -21,6 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.fragment.NavHostFragment
 import com.braintreepayments.api.core.ExperimentalBetaApi
@@ -32,10 +33,6 @@ import com.braintreepayments.api.paypal.PayPalPaymentAuthResult
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.shopperinsights.ButtonType
-import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendationsResult
-import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
-import com.braintreepayments.api.shopperinsights.v2.CustomerSessionResult
-import com.braintreepayments.api.shopperinsights.v2.ShopperInsightsClientV2
 import com.braintreepayments.api.venmo.VenmoClient
 import com.braintreepayments.api.venmo.VenmoLauncher
 import com.braintreepayments.api.venmo.VenmoPaymentAuthRequest
@@ -44,15 +41,12 @@ import com.braintreepayments.api.venmo.VenmoPaymentMethodUsage
 import com.braintreepayments.api.venmo.VenmoPendingRequest
 import com.braintreepayments.api.venmo.VenmoRequest
 import com.braintreepayments.api.venmo.VenmoResult
-import java.security.MessageDigest
-import kotlinx.coroutines.flow.update
 
 @OptIn(ExperimentalBetaApi::class)
 class ShopperInsightsFragmentV2 : BaseFragment() {
 
     private var shopperInsightsClientSuccessfullyInstantiated by mutableStateOf(false)
     private val viewModel = ShopperInsightsV2ViewModel()
-    private lateinit var shopperInsightsClient: ShopperInsightsClientV2
     private lateinit var payPalClient: PayPalClient
     private lateinit var venmoClient: VenmoClient
 
@@ -71,7 +65,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         fetchAuthorization { authResult ->
             when (authResult) {
                 is BraintreeAuthorizationResult.Success -> {
-                    shopperInsightsClient = ShopperInsightsClientV2(requireContext(), authResult.authString)
+                    viewModel.initShopperInsightsClient(requireContext(), authResult.authString)
                     shopperInsightsClientSuccessfullyInstantiated = true
                 }
                 is BraintreeAuthorizationResult.Error -> {
@@ -149,17 +143,25 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
             val recommendations = viewModel.recommendations.collectAsState().value
             Text(if (recommendations.isNotEmpty()) "Recommendations = $recommendations" else "")
             val isInPayPalNetwork = viewModel.isInPayPalNetwork.collectAsState().value
-            Button(
-                enabled = isInPayPalNetwork && recommendations.first().paymentOption == "PAYPAL",
-                onClick = { launchPayPalVault(emailText, countryCodeText, nationalNumberText, sessionId) }
-            ) {
-                Text(text = "PayPal")
+            if (isInPayPalNetwork && recommendations.first().paymentOption == "PAYPAL") {
+                Button(
+                    enabled = true,
+                    onClick = { launchPayPalVault(emailText, countryCodeText, nationalNumberText, sessionId) }
+                ) {
+                    Text(text = "PayPal")
+                }
             }
-            Button(
-                enabled = isInPayPalNetwork && recommendations.first().paymentOption == "VENMO",
-                onClick = { launchVenmo(emailText, countryCodeText, nationalNumberText, sessionId) }
-            ) {
-                Text(text = "Venmo")
+            if (isInPayPalNetwork && recommendations.first().paymentOption == "VENMO") {
+                Button(
+                    enabled = true,
+                    onClick = { launchVenmo(emailText, countryCodeText, nationalNumberText, sessionId) }
+                ) {
+                    Text(text = "Venmo")
+                }
+            }
+            val error = viewModel.error.collectAsState().value
+            if (error.isNotEmpty()) {
+                Toast.makeText(LocalContext.current, error, Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -238,7 +240,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         nationalNumberText: String,
         sessionId: String
     ) {
-        shopperInsightsClient.sendSelectedEvent(
+        viewModel.sendSelectedEvent(
             ButtonType.PAYPAL,
             sessionId
         )
@@ -280,7 +282,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         nationalNumberText: String,
         sessionId: String
     ) {
-        shopperInsightsClient.sendSelectedEvent(
+        viewModel.sendSelectedEvent(
             ButtonType.VENMO,
             sessionId
         )
@@ -319,64 +321,14 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
     }
 
     private fun handleCreateCustomerSession(emailText: String, countryCodeText: String, nationalNumberText: String) {
-        val customerSessionRequest = CustomerSessionRequest(
-            hashedEmail = emailText.sha256(),
-            hashedPhoneNumber = nationalNumberText.sha256()
-        )
-        shopperInsightsClient.createCustomerSession(customerSessionRequest) { result ->
-            when (result) {
-                is CustomerSessionResult.Success -> {
-                    viewModel.sessionId.update { result.sessionId }
-                }
-                is CustomerSessionResult.Failure -> {
-                    Toast.makeText(context, "CreateCustomerSession failed: ${result.error}", Toast.LENGTH_LONG).show()
-                }
-            }
-        }
+        viewModel.handleCreateCustomerSession(emailText, countryCodeText, nationalNumberText)
     }
 
     private fun handleUpdateCustomerSession(emailText: String, countryCodeText: String, nationalNumberText: String) {
-        val customerSessionRequest = CustomerSessionRequest(
-            hashedEmail = emailText.sha256(),
-            hashedPhoneNumber = nationalNumberText.sha256()
-        )
-        val sessionId = "94f0b2db-5323-4d86-add3-paypal000000"
-        shopperInsightsClient.updateCustomerSession(customerSessionRequest, sessionId) { result ->
-            when (result) {
-                is CustomerSessionResult.Success -> {
-                    viewModel.sessionId.update { result.sessionId }
-                }
-                is CustomerSessionResult.Failure -> {
-                    Toast.makeText(context, "UpdateCustomerSession failed: ${result.error}", Toast.LENGTH_LONG).show()
-                }
-            }
-        }
+        viewModel.handleUpdateCustomerSession(emailText, countryCodeText, nationalNumberText)
     }
 
     private fun handleGetRecommendations(sessionId: String) {
-        shopperInsightsClient.generateCustomerRecommendations(sessionId = sessionId) { result ->
-            when (result) {
-                is CustomerRecommendationsResult.Success -> {
-                    viewModel.isInPayPalNetwork.update { result.customerRecommendations.isInPayPalNetwork == true }
-                    result.customerRecommendations.paymentRecommendations?.let { recommendations ->
-                        viewModel.recommendations.update { recommendations }
-                    }
-                }
-                is CustomerRecommendationsResult.Failure -> {
-                    Toast.makeText(context, "GetRecommendations failed: ${result.error}", Toast.LENGTH_LONG).show()
-                }
-            }
-        }
+        viewModel.handleGetRecommendations(sessionId)
     }
-}
-
-fun String.sha256(): String {
-    return hashString(this, "SHA-256")
-}
-
-private fun hashString(input: String, algorithm: String = "SHA-256"): String {
-    return MessageDigest
-        .getInstance(algorithm)
-        .digest(input.toByteArray())
-        .toString()
 }
