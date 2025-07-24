@@ -84,6 +84,11 @@ class MockkBraintreeClientBuilder {
         return this
     }
 
+    fun sendGETErrorResponse(sendGETError: Exception?):MockkBraintreeClientBuilder {
+        this.sendGETError = sendGETError
+        return this
+    }
+
     fun build(): BraintreeClient {
         val braintreeClient = mockk<BraintreeClient>(relaxed = true)
 
