@@ -79,12 +79,12 @@ class MockkBraintreeClientBuilder {
         return this
     }
 
-    fun sendGETSuccessfulResponse(sendGETSuccess: String) : MockkBraintreeClientBuilder {
+    fun sendGETSuccessfulResponse(sendGETSuccess: String): MockkBraintreeClientBuilder {
         this.sendGETSuccess = sendGETSuccess
         return this
     }
 
-    fun sendGETErrorResponse(sendGETError: Exception?):MockkBraintreeClientBuilder {
+    fun sendGETErrorResponse(sendGETError: Exception?): MockkBraintreeClientBuilder {
         this.sendGETError = sendGETError
         return this
     }

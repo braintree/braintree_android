@@ -30,7 +30,7 @@ class AmericanExpressClientUnitTest {
 
     @Test
     fun getRewardsBalance_sendsGETRequestForAmexAwardsBalance() {
-        val braintreeClient:BraintreeClient = mockk(relaxed = true)
+        val braintreeClient = mockk<BraintreeClient>(relaxed = true)
         val sut = AmericanExpressClient(braintreeClient)
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback)
 
@@ -46,13 +46,13 @@ class AmericanExpressClientUnitTest {
 
     @Test
     fun getRewardsBalance_callsListenerWithRewardsBalanceOnSuccess() {
-        val braintreeClient:BraintreeClient = MockkBraintreeClientBuilder().sendGETSuccessfulResponse(
+        val braintreeClient = MockkBraintreeClientBuilder().sendGETSuccessfulResponse(
             Fixtures.AMEX_REWARDS_BALANCE_SUCCESS).build()
 
         val sut = AmericanExpressClient(braintreeClient)
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback)
         val amexRewardsSlot = slot<AmericanExpressResult>()
-        verify {  amexRewardsCallback.onAmericanExpressResult(capture(amexRewardsSlot)) }
+        verify { amexRewardsCallback.onAmericanExpressResult(capture(amexRewardsSlot)) }
 
         val result = amexRewardsSlot.captured
         assertTrue { result is AmericanExpressResult.Success }
@@ -71,14 +71,14 @@ class AmericanExpressClientUnitTest {
 
     @Test
     fun getRewardsBalance_callsListenerWithRewardsBalanceWithErrorCode_OnIneligibleCard() {
-        val braintreeClient:BraintreeClient = MockkBraintreeClientBuilder().sendGETSuccessfulResponse(
+        val braintreeClient = MockkBraintreeClientBuilder().sendGETSuccessfulResponse(
             Fixtures.AMEX_REWARDS_BALANCE_INELIGIBLE_CARD).build()
 
         val sut = AmericanExpressClient(braintreeClient)
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback)
 
         val amexRewardsSlot = slot<AmericanExpressResult>()
-        verify {  amexRewardsCallback.onAmericanExpressResult(capture(amexRewardsSlot)) }
+        verify { amexRewardsCallback.onAmericanExpressResult(capture(amexRewardsSlot)) }
 
         val result = amexRewardsSlot.captured
         assertTrue { result is AmericanExpressResult.Success }
@@ -97,7 +97,7 @@ class AmericanExpressClientUnitTest {
 
     @Test
     fun getRewardsBalance_callsListenerWithRewardsBalanceWithErrorCode_OnInsufficientPoints() {
-        val braintreeClient:BraintreeClient = MockkBraintreeClientBuilder().sendGETSuccessfulResponse(
+        val braintreeClient = MockkBraintreeClientBuilder().sendGETSuccessfulResponse(
             Fixtures.AMEX_REWARDS_BALANCE_INSUFFICIENT_POINTS).build()
 
         val sut = AmericanExpressClient(braintreeClient)
@@ -124,7 +124,7 @@ class AmericanExpressClientUnitTest {
     @Test
     fun getRewardsBalance_callsBackFailure_OnHttpError() {
         val expectedError = Exception("error")
-        val braintreeClient:BraintreeClient = MockkBraintreeClientBuilder().sendGETErrorResponse(
+        val braintreeClient = MockkBraintreeClientBuilder().sendGETErrorResponse(
             expectedError).build()
 
         val sut = AmericanExpressClient(braintreeClient)
@@ -142,7 +142,7 @@ class AmericanExpressClientUnitTest {
 
     @Test
     fun getRewardsBalance_sendsAnalyticsEventOnSuccess() {
-        val braintreeClient:BraintreeClient = MockkBraintreeClientBuilder().sendGETSuccessfulResponse(
+        val braintreeClient = MockkBraintreeClientBuilder().sendGETSuccessfulResponse(
             Fixtures.AMEX_REWARDS_BALANCE_SUCCESS).build()
 
         val sut = AmericanExpressClient(braintreeClient)
@@ -150,36 +150,45 @@ class AmericanExpressClientUnitTest {
 
         val params = AnalyticsEventParams()
         verify { braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, params, true) }
-        verify { braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_SUCCEEDED, params, true) }
+        verify {
+            braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_SUCCEEDED, params, true)
+        }
     }
 
     @Test
     fun getRewardsBalance_sendsAnalyticsEventOnFailure() {
-        val braintreeClient:BraintreeClient = MockkBraintreeClientBuilder().sendGETErrorResponse(
+        val braintreeClient = MockkBraintreeClientBuilder().sendGETErrorResponse(
             AuthorizationException("Bad fingerprint")).build()
 
         val sut = AmericanExpressClient(braintreeClient)
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback)
 
         val params = AnalyticsEventParams()
-        val errorParams = AnalyticsEventParams(null, false, null, null, null, null, null, null, null, null, null, "Bad fingerprint")
+        val errorParams = AnalyticsEventParams(errorDescription = "Bad fingerprint")
 
         verify { braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, params, true) }
-        verify { braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED, errorParams, true) }
+        verify {
+            braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED, errorParams, true)
+        }
     }
 
     @Test
     fun getRewardsBalance_sendsAnalyticsEventOnParseError() {
         val notJson = "Big blob that is not a valid JSON object"
-        val braintreeClient:BraintreeClient = MockkBraintreeClientBuilder().sendGETSuccessfulResponse(notJson).build()
+        val braintreeClient = MockkBraintreeClientBuilder().sendGETSuccessfulResponse(notJson).build()
 
         val sut = AmericanExpressClient(braintreeClient)
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback)
 
         val params = AnalyticsEventParams()
-        val errorParams = AnalyticsEventParams(null, false, null, null, null, null, null, null, null, null, null, "Value ${notJson.split(" ")[0]} of type java.lang.String cannot be converted to JSONObject")
+        val errorParams = AnalyticsEventParams(
+            errorDescription =
+                "Value ${notJson.split(" ")[0]} of type java.lang.String cannot be converted to JSONObject"
+        )
 
         verify { braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED, params, true) }
-        verify { braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED, errorParams, true) }
+        verify {
+            braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_FAILED, errorParams, true)
+        }
     }
 }
