@@ -117,7 +117,6 @@ class LocalPaymentClient internal constructor(
             .returnUrlScheme(braintreeClient.getReturnUrlScheme())
             .launchType(LaunchType.ACTIVITY_CLEAR_TOP)
             .url(Uri.parse(localPaymentAuthRequestParams.approvalUrl))
-            .launchAsNewTask((braintreeClient.launchesBrowserSwitchAsNewTask()))
 
         try {
             browserSwitchOptions.metadata(

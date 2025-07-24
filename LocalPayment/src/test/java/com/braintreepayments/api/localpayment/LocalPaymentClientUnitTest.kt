@@ -17,11 +17,11 @@ import com.braintreepayments.api.localpayment.LocalPaymentNonce.Companion.fromJS
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import io.mockk.*
-import junit.framework.TestCase
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,7 +40,42 @@ class LocalPaymentClientUnitTest {
     private lateinit var analyticsParamRepository: AnalyticsParamRepository
     private lateinit var payPalEnabledConfig: Configuration
     private lateinit var payPalDisabledConfig: Configuration
+    private lateinit var sut: LocalPaymentClient
 
+    private fun createLocalPaymentRequest(): LocalPaymentRequest {
+        val address = PostalAddress().apply {
+            streetAddress = "836486 of 22321 Park Lake"
+            extendedAddress = "Apt 2"
+            countryCodeAlpha2 = "NL"
+            locality = "Den Haag"
+            region = "CA"
+            postalCode = "2585 GJ"
+        }
+        return LocalPaymentRequest(
+            hasUserLocationConsent = true,
+            address = address,
+            amount = "1.10",
+            bankIdentificationCode = "bank-id-code",
+            currencyCode = "EUR",
+            displayName = "My Brand!",
+            email = "jon@getbraintree.com",
+            givenName = "Jon",
+            merchantAccountId = "local-merchant-account-id",
+            paymentType = "ideal",
+            paymentTypeCountryCode = "NL",
+            phone = "639847934",
+            isShippingAddressRequired = true,
+            surname = "Doe"
+        )
+    }
+
+    private fun createLocalPaymentAuthRequestParams(
+        request: LocalPaymentRequest = createLocalPaymentRequest(),
+        approvalUrl: String = "https://sample.com/approval?token=sample-token",
+        paymentId: String = "payment-id"
+    ): LocalPaymentAuthRequestParams {
+        return LocalPaymentAuthRequestParams(request, approvalUrl, paymentId)
+    }
     @Before
     @Throws(JSONException::class)
     fun beforeEach() {
@@ -55,9 +90,14 @@ class LocalPaymentClientUnitTest {
         localPaymentApi = mockk<LocalPaymentApi>(relaxed = true)
         analyticsParamRepository = mockk<AnalyticsParamRepository>(relaxed = true)
         localPaymentAuthRequestParams = mockk<LocalPaymentAuthRequestParams>(relaxed = true)
-
+        sut = LocalPaymentClient(
+            braintreeClient,
+            dataCollector,
+            localPaymentApi,
+            analyticsParamRepository
+        )
         every { localPaymentAuthRequestParams!!.approvalUrl } returns "https://"
-        every { localPaymentAuthRequestParams!!.request } returns this.idealLocalPaymentRequest
+        every { localPaymentAuthRequestParams!!.request } returns createLocalPaymentRequest()
         every { localPaymentAuthRequestParams!!.paymentId } returns "paymentId"
         every { analyticsParamRepository!!.sessionId } returns "sample-session-id"
 
@@ -67,26 +107,14 @@ class LocalPaymentClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_resetsSessionId() {
-        val sut = LocalPaymentClient(
-            braintreeClient,
-            dataCollector,
-            localPaymentApi,
-            analyticsParamRepository
-        )
-        sut.createPaymentAuthRequest(this.idealLocalPaymentRequest, localPaymentAuthCallback)
+        sut.createPaymentAuthRequest(createLocalPaymentRequest(), localPaymentAuthCallback)
 
         verify { analyticsParamRepository.reset() }
     }
 
     @Test
     fun createPaymentAuthRequest_sendsPaymentStartedEvent() {
-        val sut = LocalPaymentClient(
-            braintreeClient,
-            dataCollector,
-            localPaymentApi,
-            analyticsParamRepository
-        )
-        sut.createPaymentAuthRequest(this.idealLocalPaymentRequest, localPaymentAuthCallback)
+        sut.createPaymentAuthRequest(createLocalPaymentRequest(), localPaymentAuthCallback)
 
         verify {
             braintreeClient.sendAnalyticsEvent(
@@ -99,15 +127,8 @@ class LocalPaymentClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_sendsPaymentFailedEvent_forNullGetPaymentType() {
-        val request = this.idealLocalPaymentRequest
+        val request = createLocalPaymentRequest()
         request.paymentType = null
-
-        val sut = LocalPaymentClient(
-            braintreeClient,
-            dataCollector,
-            localPaymentApi,
-            analyticsParamRepository
-        )
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
 
         val errorDescription =
@@ -128,11 +149,11 @@ class LocalPaymentClientUnitTest {
             .build()
         val localPaymentApi = mockk<LocalPaymentApi>(relaxed = true)
 
-        val sut = LocalPaymentClient(
+        sut = LocalPaymentClient(
             braintreeClient, dataCollector,
             localPaymentApi, analyticsParamRepository
         )
-        val request = this.idealLocalPaymentRequest
+        val request = createLocalPaymentRequest()
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
 
         verify {
@@ -153,11 +174,11 @@ class LocalPaymentClientUnitTest {
             .createPaymentMethodSuccess(localPaymentAuthRequestParams)
             .build()
 
-        val sut = LocalPaymentClient(
+        sut = LocalPaymentClient(
             braintreeClient, dataCollector,
             localPaymentApi, analyticsParamRepository
         )
-        val request = idealLocalPaymentRequest
+        val request = createLocalPaymentRequest()
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
 
         val slot = slot<LocalPaymentAuthRequest>()
@@ -178,11 +199,11 @@ class LocalPaymentClientUnitTest {
             .createPaymentMethodSuccess(localPaymentAuthRequestParams)
             .build()
 
-        val sut = LocalPaymentClient(
+        sut = LocalPaymentClient(
             braintreeClient, dataCollector,
             localPaymentApi, analyticsParamRepository
         )
-        val request = idealLocalPaymentRequest
+        val request = createLocalPaymentRequest()
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
 
         verify {
@@ -201,11 +222,11 @@ class LocalPaymentClientUnitTest {
             .configurationError(configException)
             .build()
 
-        val sut = LocalPaymentClient(
+        sut = LocalPaymentClient(
             braintreeClient, dataCollector,
             localPaymentApi, analyticsParamRepository
         )
-        val request = this.idealLocalPaymentRequest
+        val request = createLocalPaymentRequest()
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
 
         val slot = slot<LocalPaymentAuthRequest>()
@@ -227,11 +248,11 @@ class LocalPaymentClientUnitTest {
             .createPaymentMethodError(Exception("error"))
             .build()
 
-        val sut = LocalPaymentClient(
+        sut = LocalPaymentClient(
             braintreeClient, dataCollector,
             localPaymentApi, analyticsParamRepository
         )
-        val request = idealLocalPaymentRequest
+        val request = createLocalPaymentRequest()
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
 
         val errorDescription = "An error occurred creating the local payment method."
@@ -250,11 +271,11 @@ class LocalPaymentClientUnitTest {
             .configurationSuccess(payPalDisabledConfig)
             .build()
 
-        val sut = LocalPaymentClient(
+        sut = LocalPaymentClient(
             braintreeClient, dataCollector,
             localPaymentApi, analyticsParamRepository
         )
-        val request = this.idealLocalPaymentRequest
+        val request = createLocalPaymentRequest()
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
 
         val slot = slot<LocalPaymentAuthRequest>()
@@ -269,11 +290,7 @@ class LocalPaymentClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_whenAmountIsNull_returnsErrorToCallback() {
-        val sut = LocalPaymentClient(
-            braintreeClient, dataCollector,
-            localPaymentApi, analyticsParamRepository
-        )
-        val request = this.idealLocalPaymentRequest
+        val request = createLocalPaymentRequest()
         request.amount = null
 
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
@@ -293,11 +310,7 @@ class LocalPaymentClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_whenPaymentTypeIsNull_returnsErrorToCallback() {
-        val sut = LocalPaymentClient(
-            braintreeClient, dataCollector,
-            localPaymentApi, analyticsParamRepository
-        )
-        val request = this.idealLocalPaymentRequest
+        val request = createLocalPaymentRequest()
         request.paymentType = null
 
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
@@ -320,13 +333,13 @@ class LocalPaymentClientUnitTest {
         val localPaymentApi = MockLocalPaymentApiBuilder()
             .createPaymentMethodError(Exception("error"))
             .build()
-        val sut = LocalPaymentClient(
+        sut = LocalPaymentClient(
             braintreeClient, dataCollector,
             localPaymentApi, analyticsParamRepository
         )
 
         sut.createPaymentAuthRequest(
-            this.idealLocalPaymentRequest,
+            createLocalPaymentRequest(),
             localPaymentAuthCallback
         )
 
@@ -349,12 +362,12 @@ class LocalPaymentClientUnitTest {
             .createPaymentMethodSuccess(localPaymentAuthRequestParams)
             .build()
 
-        val sut = LocalPaymentClient(
+        sut = LocalPaymentClient(
             braintreeClient, dataCollector,
             localPaymentApi, analyticsParamRepository
         )
 
-        sut.createPaymentAuthRequest(this.idealLocalPaymentRequest, localPaymentAuthCallback)
+        sut.createPaymentAuthRequest(createLocalPaymentRequest(), localPaymentAuthCallback)
 
         val slot = slot<LocalPaymentAuthRequest>()
         verify { localPaymentAuthCallback.onLocalPaymentAuthRequest(capture(slot)) }
@@ -370,19 +383,19 @@ class LocalPaymentClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalEnabledConfig)
             .build()
-        val request = this.idealLocalPaymentRequest
+        val request = createLocalPaymentRequest()
         val approvalUrl = "https://sample.com/approval?token=sample-token"
-        val transaction = LocalPaymentAuthRequestParams(request, approvalUrl, "")
+        val transaction = createLocalPaymentAuthRequestParams(request, approvalUrl, "")
 
         val localPaymentApi = MockLocalPaymentApiBuilder()
             .createPaymentMethodSuccess(transaction)
             .build()
 
-        val sut = LocalPaymentClient(
+        sut = LocalPaymentClient(
             braintreeClient, dataCollector,
             localPaymentApi, analyticsParamRepository
         )
-        sut.createPaymentAuthRequest(this.idealLocalPaymentRequest, localPaymentAuthCallback)
+        sut.createPaymentAuthRequest(createLocalPaymentRequest(), localPaymentAuthCallback)
 
         verify {
             braintreeClient.sendAnalyticsEvent(
@@ -405,19 +418,19 @@ class LocalPaymentClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalEnabledConfig)
             .build()
-        val request = this.idealLocalPaymentRequest
+        val request = createLocalPaymentRequest()
         val approvalUrl = "https://sample.com/approval?token=sample-token"
-        val transaction = LocalPaymentAuthRequestParams(request, approvalUrl, "some-paypal-context-id")
+        val transaction = createLocalPaymentAuthRequestParams(request, approvalUrl, "some-paypal-context-id")
 
         val localPaymentApi = MockLocalPaymentApiBuilder()
             .createPaymentMethodSuccess(transaction)
             .build()
 
-        val sut = LocalPaymentClient(
+        sut = LocalPaymentClient(
             braintreeClient, dataCollector,
             localPaymentApi, analyticsParamRepository
         )
-        sut.createPaymentAuthRequest(this.idealLocalPaymentRequest, localPaymentAuthCallback)
+        sut.createPaymentAuthRequest(createLocalPaymentRequest(), localPaymentAuthCallback)
 
         verify {
             braintreeClient.sendAnalyticsEvent(
@@ -439,12 +452,7 @@ class LocalPaymentClientUnitTest {
     @Test
     @Throws(JSONException::class)
     fun buildBrowserSwitchOptions_returnsLocalPaymentResultWithBrowserSwitchOptions() {
-        val sut = LocalPaymentClient(
-            braintreeClient, dataCollector,
-            localPaymentApi, analyticsParamRepository
-        )
-
-        val request = this.idealLocalPaymentRequest
+        val request = createLocalPaymentRequest()
         val approvalUrl = "https://sample.com/approval?token=sample-token"
         val transaction = LocalPaymentAuthRequestParams(request, approvalUrl, "payment-id")
 
@@ -459,7 +467,7 @@ class LocalPaymentClientUnitTest {
         val browserSwitchOptions = params.browserSwitchOptions
         assertEquals(BraintreeRequestCodes.LOCAL_PAYMENT.code, browserSwitchOptions!!.getRequestCode())
         assertEquals(Uri.parse("https://sample.com/approval?token=sample-token"), browserSwitchOptions.getUrl())
-        TestCase.assertFalse(browserSwitchOptions.isLaunchAsNewTask())
+        assertFalse(browserSwitchOptions.isLaunchAsNewTask())
 
         val metadata = browserSwitchOptions.getMetadata()
         val expectedMetadata = JSONObject()
@@ -473,14 +481,10 @@ class LocalPaymentClientUnitTest {
     @Test
     fun testBrowserSwitchOptions_NewTask_RequestCode() {
         every { braintreeClient.launchesBrowserSwitchAsNewTask() } returns true
-        val sut = LocalPaymentClient(
-            braintreeClient, dataCollector,
-            localPaymentApi, analyticsParamRepository
-        )
 
-        val request = idealLocalPaymentRequest
+        val request = createLocalPaymentRequest()
         val approvalUrl = "https://sample.com/approval?token=sample-token"
-        val transaction = LocalPaymentAuthRequestParams(request, approvalUrl, "payment-id")
+        val transaction = createLocalPaymentAuthRequestParams(request, approvalUrl, "payment-id")
 
         sut.buildBrowserSwitchOptions(transaction, true, localPaymentAuthCallback)
 
@@ -491,19 +495,14 @@ class LocalPaymentClientUnitTest {
         val params = (paymentAuthRequest as LocalPaymentAuthRequest.ReadyToLaunch).requestParams
         val browserSwitchOptions = params.browserSwitchOptions
 
-        assertTrue(browserSwitchOptions!!.isLaunchAsNewTask())
+        assertFalse(browserSwitchOptions!!.isLaunchAsNewTask())
     }
 
     @Test
     fun buildBrowserSwitchOptions_sendsAnalyticsEvents() {
-        val sut = LocalPaymentClient(
-            braintreeClient, dataCollector,
-            localPaymentApi, analyticsParamRepository
-        )
-
-        val request = this.idealLocalPaymentRequest
+        val request = createLocalPaymentRequest()
         val approvalUrl = "https://sample.com/approval?token=sample-token"
-        val transaction = LocalPaymentAuthRequestParams(request, approvalUrl, "payment-id")
+        val transaction = createLocalPaymentAuthRequestParams(request, approvalUrl, "payment-id")
 
         sut.buildBrowserSwitchOptions(transaction, true, localPaymentAuthCallback)
 
@@ -544,7 +543,7 @@ class LocalPaymentClientUnitTest {
             )
         } returns "sample-correlation-id"
 
-        val sut = LocalPaymentClient(
+        sut = LocalPaymentClient(
             braintreeClient, dataCollector,
             localPaymentApi, analyticsParamRepository
         )
@@ -596,7 +595,7 @@ class LocalPaymentClientUnitTest {
             )
         } returns "sample-correlation-id"
 
-        val sut = LocalPaymentClient(
+        sut = LocalPaymentClient(
             braintreeClient, dataCollector,
             localPaymentApi, analyticsParamRepository
         )
@@ -639,7 +638,7 @@ class LocalPaymentClientUnitTest {
             .tokenizeSuccess(successNonce)
             .build()
 
-        val sut = LocalPaymentClient(
+        sut = LocalPaymentClient(
             braintreeClient, dataCollector,
             localPaymentApi, analyticsParamRepository
         )
@@ -682,7 +681,7 @@ class LocalPaymentClientUnitTest {
             )
             .build()
 
-        val sut = LocalPaymentClient(
+        sut = LocalPaymentClient(
             braintreeClient, dataCollector,
             localPaymentApi, analyticsParamRepository
         )
@@ -725,7 +724,7 @@ class LocalPaymentClientUnitTest {
         } returns "sample-correlation-id"
 
         val localPaymentAuthResult = LocalPaymentAuthResult.Success(browserSwitchResult)
-        val sut = LocalPaymentClient(
+        sut = LocalPaymentClient(
             braintreeClient, dataCollector,
             localPaymentApi, analyticsParamRepository
         )
@@ -752,7 +751,7 @@ class LocalPaymentClientUnitTest {
         every { browserSwitchResult.returnUrl } returns Uri.parse(webUrl)
 
         val localPaymentAuthResult = LocalPaymentAuthResult.Success(browserSwitchResult)
-        val sut = LocalPaymentClient(
+        sut = LocalPaymentClient(
             braintreeClient, dataCollector,
             localPaymentApi, analyticsParamRepository
         )
@@ -796,8 +795,8 @@ class LocalPaymentClientUnitTest {
             )
         } returns "client-metadata-id"
 
-        val request = this.idealLocalPaymentRequest
-        val sut = LocalPaymentClient(
+        val request = createLocalPaymentRequest()
+        sut = LocalPaymentClient(
             braintreeClient,
             dataCollector,
             localPaymentApi,
@@ -820,32 +819,4 @@ class LocalPaymentClientUnitTest {
             )
         }
     }
-
-    private val idealLocalPaymentRequest: LocalPaymentRequest
-        get() {
-            val address = PostalAddress()
-            address.streetAddress = "836486 of 22321 Park Lake"
-            address.extendedAddress = "Apt 2"
-            address.countryCodeAlpha2 = "NL"
-            address.locality = "Den Haag"
-            address.region = "CA"
-            address.postalCode = "2585 GJ"
-
-            return LocalPaymentRequest(
-                true,
-                address,
-                "1.10",
-                "bank-id-code",
-                "EUR",
-                "My Brand!",
-                "jon@getbraintree.com",
-                "Jon",
-                "local-merchant-account-id",
-                "ideal",
-                "NL",
-                "639847934",
-                true,
-                "Doe"
-            )
-        }
 }
