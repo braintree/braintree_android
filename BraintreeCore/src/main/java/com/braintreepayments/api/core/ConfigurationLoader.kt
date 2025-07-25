@@ -3,7 +3,6 @@ package com.braintreepayments.api.core
 import android.net.Uri
 import android.util.Base64
 import com.braintreepayments.api.sharedutils.HttpClient
-import com.braintreepayments.api.sharedutils.Time
 import org.json.JSONException
 
 internal class ConfigurationLoader(
