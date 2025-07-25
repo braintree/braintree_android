@@ -1,6 +1,5 @@
 package com.braintreepayments.api.visacheckout
 
-import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.Json
