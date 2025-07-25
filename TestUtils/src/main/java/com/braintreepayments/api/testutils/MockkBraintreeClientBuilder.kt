@@ -15,6 +15,9 @@ class MockkBraintreeClientBuilder {
     private var sendGraphQLPostSuccess: String? = null
     private var sendGraphQLPOSTError: Exception? = null
 
+    private var sendGETSuccess: String? = null
+    private var sendGETError: Exception? = null
+
     private var sendPOSTSuccess: String? = null
     private var sendPOSTError: Exception? = null
 
@@ -76,6 +79,16 @@ class MockkBraintreeClientBuilder {
         return this
     }
 
+    fun sendGETSuccessfulResponse(sendGETSuccess: String): MockkBraintreeClientBuilder {
+        this.sendGETSuccess = sendGETSuccess
+        return this
+    }
+
+    fun sendGETErrorResponse(sendGETError: Exception?): MockkBraintreeClientBuilder {
+        this.sendGETError = sendGETError
+        return this
+    }
+
     fun build(): BraintreeClient {
         val braintreeClient = mockk<BraintreeClient>(relaxed = true)
 
@@ -115,6 +128,13 @@ class MockkBraintreeClientBuilder {
             val callback = call.invocation.args[3] as HttpResponseCallback
             sendPOSTSuccess?.let { callback.onResult(it, null) }
                 ?: sendPOSTError?.let { callback.onResult(null, it) }
+        }
+
+        every { braintreeClient.sendGET(any<String>(), responseCallback = any<HttpResponseCallback>())
+        } answers { call ->
+            val callback = call.invocation.args[1] as HttpResponseCallback
+            sendGETSuccess?.let { callback.onResult(it, null) }
+                ?: sendGETError?.let { callback.onResult(null, it) }
         }
 
         return braintreeClient
