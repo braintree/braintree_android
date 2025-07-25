@@ -1,5 +1,5 @@
 [versions]
-gradle = "8.7.3"
+gradle = "8.6.1"
 gradleNexusStagingPlugin = "0.21.2"
 kotlinGradlePlugin = "1.8.0"
 gradleNexusPublish = "1.1.0"
