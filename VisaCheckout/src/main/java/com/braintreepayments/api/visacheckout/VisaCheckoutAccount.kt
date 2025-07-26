@@ -1,6 +1,5 @@
 package com.braintreepayments.api.visacheckout
 
-import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.IntegrationType
 import com.braintreepayments.api.core.MetadataBuilder
 import com.braintreepayments.api.core.PaymentMethod

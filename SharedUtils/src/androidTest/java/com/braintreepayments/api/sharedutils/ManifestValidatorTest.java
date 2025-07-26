@@ -1,5 +1,9 @@
 package com.braintreepayments.api.sharedutils;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+
 import android.content.pm.ActivityInfo;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -7,12 +11,6 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class ManifestValidatorTest {

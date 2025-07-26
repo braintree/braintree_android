@@ -56,7 +56,7 @@ internal class MockkVenmoApiBuilder {
             any<String>(),
             any<VenmoApiCallback>())
         } answers { call ->
-            var callback = call.invocation.args[2] as VenmoApiCallback
+            val callback = call.invocation.args[2] as VenmoApiCallback
             if (venmoPaymentContextId != null) {
                 callback.onResult(venmoPaymentContextId, null)
             } else if (createPaymentContextError != null) {
@@ -68,7 +68,7 @@ internal class MockkVenmoApiBuilder {
             any<String>(),
             any<VenmoInternalCallback>())
         } answers { call ->
-            var callback = call.invocation.args[1] as VenmoInternalCallback
+            val callback = call.invocation.args[1] as VenmoInternalCallback
             if (createNonceFromPaymentContextSuccess != null) {
                 callback.onResult(createNonceFromPaymentContextSuccess, null)
             } else if (createNonceFromPaymentContextError != null) {
@@ -80,7 +80,7 @@ internal class MockkVenmoApiBuilder {
             any<String>(),
             any<VenmoInternalCallback>())
         } answers { call ->
-            var callback = call.invocation.args[1] as VenmoInternalCallback
+            val callback = call.invocation.args[1] as VenmoInternalCallback
             if (vaultVenmoAccountNonceSuccess != null) {
                 callback.onResult(vaultVenmoAccountNonceSuccess, null)
             } else if (vaultVenmoAccountNonceError != null) {

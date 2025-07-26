@@ -5,7 +5,7 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>
+        <item name="android:windowTranslucentStatus" >true</item>
         <item name="android:windowAnimationStyle">@style/bt_no_activity_animation</item>
     </style>
 

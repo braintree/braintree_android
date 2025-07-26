@@ -8,8 +8,6 @@ import com.braintreepayments.api.paypal.PayPalPendingRequest;
 import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitPendingRequest;
 import com.braintreepayments.api.venmo.VenmoPendingRequest;
 
-import org.json.JSONException;
-
 public class PendingRequestStore {
 
     static final String PREFERENCES_KEY = "PENDING_REQUEST_SHARED_PREFERENCES";

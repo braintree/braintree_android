@@ -5,7 +5,6 @@ import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
-import com.braintreepayments.api.sharedutils.Time
 import com.braintreepayments.api.testutils.Fixtures
 import io.mockk.every
 import io.mockk.mockk
@@ -27,20 +26,26 @@ class ConfigurationLoaderUnitTest {
     private val authorization: Authorization = mockk(relaxed = true)
     private val merchantRepository: MerchantRepository = mockk(relaxed = true)
     private val analyticsClient: AnalyticsClient = mockk(relaxed = true)
-    private val time: Time = mockk(relaxed = true)
+
+    private lateinit var sut: ConfigurationLoader
 
     @Before
     fun setUp() {
         every { merchantRepository.authorization } returns authorization
+
+        sut = ConfigurationLoader(
+            httpClient = braintreeHttpClient,
+            merchantRepository = merchantRepository,
+            configurationCache = configurationCache,
+            lazyAnalyticsClient = lazy { analyticsClient }
+        )
     }
 
     @Test
     fun loadConfiguration_loadsConfigurationForTheCurrentEnvironment() {
-
         every { authorization.configUrl } returns "https://example.com/config"
         every { merchantRepository.authorization } returns authorization
 
-        val sut = ConfigurationLoader(braintreeHttpClient, merchantRepository, configurationCache)
         sut.loadConfiguration(callback)
 
         val expectedConfigUrl = "https://example.com/config?configVersion=3"
@@ -71,7 +76,6 @@ class ConfigurationLoaderUnitTest {
         every { authorization.configUrl } returns "https://example.com/config"
         every { authorization.bearer } returns "bearer"
 
-        val sut = ConfigurationLoader(braintreeHttpClient, merchantRepository, configurationCache)
         sut.loadConfiguration(callback)
 
         val expectedConfigUrl = "https://example.com/config?configVersion=3"
@@ -103,7 +107,7 @@ class ConfigurationLoaderUnitTest {
     @Test
     fun loadConfiguration_onJSONParsingError_forwardsExceptionToErrorResponseListener() {
         every { authorization.configUrl } returns "https://example.com/config"
-        val sut = ConfigurationLoader(braintreeHttpClient, merchantRepository, configurationCache)
+
         sut.loadConfiguration(callback)
 
         val callbackSlot = slot<NetworkResponseCallback>()
@@ -128,7 +132,7 @@ class ConfigurationLoaderUnitTest {
     @Test
     fun loadConfiguration_onHttpError_forwardsExceptionToErrorResponseListener() {
         every { authorization.configUrl } returns "https://example.com/config"
-        val sut = ConfigurationLoader(braintreeHttpClient, merchantRepository, configurationCache)
+
         sut.loadConfiguration(callback)
 
         val callbackSlot = slot<NetworkResponseCallback>()
@@ -158,8 +162,9 @@ class ConfigurationLoaderUnitTest {
     @Test
     fun loadConfiguration_whenInvalidToken_exception_is_returned() {
         every { merchantRepository.authorization } returns InvalidAuthorization("invalid", "token invalid")
-        val sut = ConfigurationLoader(braintreeHttpClient, merchantRepository, configurationCache)
+
         sut.loadConfiguration(callback)
+
         val errorSlot = slot<ConfigurationLoaderResult>()
         verify { callback.onResult(capture(errorSlot)) }
 
@@ -181,7 +186,6 @@ class ConfigurationLoaderUnitTest {
         every { authorization.bearer } returns "bearer"
         every { configurationCache.getConfiguration(cacheKey) } returns Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN
 
-        val sut = ConfigurationLoader(braintreeHttpClient, merchantRepository, configurationCache)
         sut.loadConfiguration(callback)
 
         verify(exactly = 0) {
@@ -204,15 +208,7 @@ class ConfigurationLoaderUnitTest {
     fun `when loadConfiguration is called and configuration is fetched from the API, analytics event is sent`() {
         every { authorization.configUrl } returns "https://example.com/config"
         every { merchantRepository.authorization } returns authorization
-        every { time.currentTime } returns 123
 
-        val sut = ConfigurationLoader(
-            httpClient = braintreeHttpClient,
-            merchantRepository = merchantRepository,
-            configurationCache = configurationCache,
-            time = time,
-            lazyAnalyticsClient = lazy { analyticsClient }
-        )
         sut.loadConfiguration(callback)
 
         val expectedConfigUrl = "https://example.com/config?configVersion=3"

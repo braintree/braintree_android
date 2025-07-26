@@ -8,7 +8,6 @@ import android.content.pm.Signature;
 import android.util.Base64;
 
 import androidx.annotation.RestrictTo;
-import androidx.annotation.VisibleForTesting;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

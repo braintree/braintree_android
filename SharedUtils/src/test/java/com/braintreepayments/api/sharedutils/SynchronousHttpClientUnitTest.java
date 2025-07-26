@@ -2,16 +2,10 @@ package com.braintreepayments.api.sharedutils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import com.braintreepayments.api.sharedutils.BaseHttpResponseParser;
-import com.braintreepayments.api.sharedutils.HttpRequest;
-import com.braintreepayments.api.sharedutils.SynchronousHttpClient;
-import com.braintreepayments.api.sharedutils.TLSSocketFactory;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +18,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocketFactory;
 
 public class SynchronousHttpClientUnitTest {
