@@ -46,7 +46,7 @@ class AmericanExpressClientUnitTest {
 
     @Test
     fun getRewardsBalance_callsListenerWithRewardsBalanceOnSuccess() {
-        val braintreeClient = MockkBraintreeClientBuilder().sendGETSuccessfulResponse(
+        val braintreeClient = MockkBraintreeClientBuilder().sendGetSuccessfulResponse(
             Fixtures.AMEX_REWARDS_BALANCE_SUCCESS).build()
 
         val sut = AmericanExpressClient(braintreeClient)
@@ -71,7 +71,7 @@ class AmericanExpressClientUnitTest {
 
     @Test
     fun getRewardsBalance_callsListenerWithRewardsBalanceWithErrorCode_OnIneligibleCard() {
-        val braintreeClient = MockkBraintreeClientBuilder().sendGETSuccessfulResponse(
+        val braintreeClient = MockkBraintreeClientBuilder().sendGetSuccessfulResponse(
             Fixtures.AMEX_REWARDS_BALANCE_INELIGIBLE_CARD).build()
 
         val sut = AmericanExpressClient(braintreeClient)
@@ -97,7 +97,7 @@ class AmericanExpressClientUnitTest {
 
     @Test
     fun getRewardsBalance_callsListenerWithRewardsBalanceWithErrorCode_OnInsufficientPoints() {
-        val braintreeClient = MockkBraintreeClientBuilder().sendGETSuccessfulResponse(
+        val braintreeClient = MockkBraintreeClientBuilder().sendGetSuccessfulResponse(
             Fixtures.AMEX_REWARDS_BALANCE_INSUFFICIENT_POINTS).build()
 
         val sut = AmericanExpressClient(braintreeClient)
@@ -124,7 +124,7 @@ class AmericanExpressClientUnitTest {
     @Test
     fun getRewardsBalance_callsBackFailure_OnHttpError() {
         val expectedError = Exception("error")
-        val braintreeClient = MockkBraintreeClientBuilder().sendGETErrorResponse(
+        val braintreeClient = MockkBraintreeClientBuilder().sendGetErrorResponse(
             expectedError).build()
 
         val sut = AmericanExpressClient(braintreeClient)
@@ -142,7 +142,7 @@ class AmericanExpressClientUnitTest {
 
     @Test
     fun getRewardsBalance_sendsAnalyticsEventOnSuccess() {
-        val braintreeClient = MockkBraintreeClientBuilder().sendGETSuccessfulResponse(
+        val braintreeClient = MockkBraintreeClientBuilder().sendGetSuccessfulResponse(
             Fixtures.AMEX_REWARDS_BALANCE_SUCCESS).build()
 
         val sut = AmericanExpressClient(braintreeClient)
@@ -157,7 +157,7 @@ class AmericanExpressClientUnitTest {
 
     @Test
     fun getRewardsBalance_sendsAnalyticsEventOnFailure() {
-        val braintreeClient = MockkBraintreeClientBuilder().sendGETErrorResponse(
+        val braintreeClient = MockkBraintreeClientBuilder().sendGetErrorResponse(
             AuthorizationException("Bad fingerprint")).build()
 
         val sut = AmericanExpressClient(braintreeClient)
@@ -175,7 +175,7 @@ class AmericanExpressClientUnitTest {
     @Test
     fun getRewardsBalance_sendsAnalyticsEventOnParseError() {
         val notJson = "Big blob that is not a valid JSON object"
-        val braintreeClient = MockkBraintreeClientBuilder().sendGETSuccessfulResponse(notJson).build()
+        val braintreeClient = MockkBraintreeClientBuilder().sendGetSuccessfulResponse(notJson).build()
 
         val sut = AmericanExpressClient(braintreeClient)
         sut.getRewardsBalance("fake-nonce", "USD", amexRewardsCallback)

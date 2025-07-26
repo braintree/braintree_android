@@ -630,7 +630,7 @@ class VenmoClientUnitTest {
         val graphQLError = BraintreeException("GraphQL error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
-            .sendGraphQLPOSTErrorResponse(graphQLError)
+            .sendGraphQLPostErrorResponse(graphQLError)
             .build()
 
         venmoApi = MockkVenmoApiBuilder()
@@ -795,7 +795,7 @@ class VenmoClientUnitTest {
         val graphQLError = BraintreeException("GraphQL error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
-            .sendGraphQLPOSTErrorResponse(graphQLError)
+            .sendGraphQLPostErrorResponse(graphQLError)
             .build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
@@ -996,7 +996,7 @@ class VenmoClientUnitTest {
     @Test
     fun tokenize_withPaymentContext_withSuccessfulVaultCall_forwardsNonceToCallback_andSendsAnalytics() {
         val braintreeClient = MockkBraintreeClientBuilder()
-            .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
+            .sendGraphQLPostSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
             .build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL
@@ -1086,7 +1086,7 @@ class VenmoClientUnitTest {
     @Test
     fun tokenize_withPaymentContext_withFailedVaultCall_forwardsErrorToCallback_andSendsAnalytics() {
         val braintreeClient = MockkBraintreeClientBuilder()
-            .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
+            .sendGraphQLPostSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
             .build()
 
         every { browserSwitchResult.returnUrl } returns SUCCESS_URL

@@ -180,11 +180,11 @@ class PayPalInternalClientUnitTest {
     ): Pair<PayPalInternalClient, BraintreeClient> {
         val braintreeClient = if (error != null) {
             MockkBraintreeClientBuilder()
-                .sendPOSTErrorResponse(error)
+                .sendPostErrorResponse(error)
                 .build()
         } else {
             MockkBraintreeClientBuilder()
-                .sendPOSTSuccessfulResponse(fixture!!)
+                .sendPostSuccessfulResponse(fixture!!)
                 .build()
         }
         every { merchantRepository.authorization } returns clientToken

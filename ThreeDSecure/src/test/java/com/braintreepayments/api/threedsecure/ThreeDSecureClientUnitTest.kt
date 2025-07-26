@@ -342,7 +342,7 @@ class ThreeDSecureClientUnitTest {
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(threeDSecureEnabledConfig)
-            .sendPOSTSuccessfulResponse(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE)
+            .sendPostSuccessfulResponse(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE)
             .build()
 
         val request = ThreeDSecureRequest().apply {
