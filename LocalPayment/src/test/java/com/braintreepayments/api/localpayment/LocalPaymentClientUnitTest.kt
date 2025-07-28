@@ -528,7 +528,7 @@ class LocalPaymentClientUnitTest {
         val postError = Exception("POST failed")
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalEnabledConfig)
-            .sendPOSTErrorResponse(postError)
+            .sendPostErrorResponse(postError)
             .build()
 
         val localPaymentApi = MockLocalPaymentApiBuilder()
