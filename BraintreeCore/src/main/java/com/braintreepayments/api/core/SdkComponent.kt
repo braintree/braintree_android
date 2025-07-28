@@ -1,6 +1,7 @@
 package com.braintreepayments.api.core
 
 import android.content.Context
+import androidx.annotation.RestrictTo
 
 /**
  * Component class that is created when the BT SDK is launched. It contains dependencies that need to be injected that
@@ -10,6 +11,7 @@ internal class SdkComponent(
     applicationContext: Context,
 ) {
     val configurationCache: ConfigurationCache = ConfigurationCache.getInstance(applicationContext)
+    val deviceInspector: DeviceInspector = DeviceInspector(applicationContext)
 
     companion object {
         private var instance: SdkComponent? = null
@@ -35,4 +37,10 @@ internal class SdkComponent(
 internal class ConfigurationCacheProvider {
     val configurationCache: ConfigurationCache
         get() = SdkComponent.getInstance().configurationCache
+}
+
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+class DeviceInspectorProvider {
+    val deviceInspector: DeviceInspector
+        get() = SdkComponent.getInstance().deviceInspector
 }

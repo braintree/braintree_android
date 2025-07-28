@@ -5,6 +5,41 @@
 * PayPal
   * Add `recurringBillingDetails`, `recurringBillingPlanType`, and `amountBreakdown` properties to `PayPalCheckoutRequest`. Enables RBA metadata to be passed for the PayPal Checkout Vault with Purchase flow
   
+## 5.14.0 (2025-07-23)
+
+* PayPal
+  * Fix an issue where multiple Chrome Custom Tabs can be opened
+  * Fix an issue where the incorrect paypalContextId was being sent in analytics events
+  * Add `paypal:tokenize:browser-presentation:started` event for when the CCT is launched
+  * Only send `paypal:tokenize:browser-login:canceled` for non app switch flows
+  * Fix an issue where non app switch flows were sending app switch events
+  * Update `url` FPTI tag to represent the approval URL prior to checkout and the success URL after checkout
+* LocalPayment
+  * Fix an issue where multiple Chrome Custom Tabs can be opened
+* BraintreeCore
+    * Bump `browser-switch` version to `3.1.0`
+
+## 5.13.0 (2025-06-24)
+
+* All Modules
+  * Prefetching the configuration on BraintreeClient init to reduce the user perceived latency
+* PayPal Messaging
+  * Bump `paypal-messages` to version `1.0.4`
+
+## 5.12.0 (2025-06-16)
+
+* PayPal
+  * Reduce configuration calls for PayPal flow
+  * Move App Switch events to the `PayPalLauncher` class
+  * Add `browser-presentation:succeeded` and `browser-presentation:failed` events for the non App Switch flow
+
+## 5.11.0 (2025-05-28)
+
+* ThreeDSecure
+  * Fix an issue where the `ThreeDSecureTokenizeCallback` would return a `Failure` and `Success` result (fixes #1321)
+* PayPal Messaging
+  * Bump `paypal-messages` to version `1.0.3`
+
 ## 5.10.0 (2025-04-29)
 
 * PayPal

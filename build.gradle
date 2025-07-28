@@ -48,13 +48,13 @@ allprojects {
     }
 }
 
-version '5.10.1-SNAPSHOT'
+version '5.14.1-SNAPSHOT'
 group 'com.braintreepayments'
 ext {
     compileSdkVersion = 35
     minSdkVersion = 23
     minSdkVersionPayPalMessaging = 23
-    versionCode = 206
+    versionCode = 210
     targetSdkVersion = 35
     versionName = version
 }
@@ -64,6 +64,10 @@ nexusPublishing {
 
     repositories {
         sonatype {
+            // Ref: https://central.sonatype.org/publish/publish-portal-ossrh-staging-api/#configuration
+            nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
+
             username = System.getenv('SONATYPE_NEXUS_USERNAME') ?: ''
             password = System.getenv('SONATYPE_NEXUS_PASSWORD') ?: ''
         }

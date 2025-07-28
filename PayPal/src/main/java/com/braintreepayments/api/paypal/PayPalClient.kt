@@ -3,16 +3,16 @@ package com.braintreepayments.api.paypal
 import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
+import androidx.core.net.toUri
 import com.braintreepayments.api.BrowserSwitchOptions
+import com.braintreepayments.api.LaunchType
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
-import com.braintreepayments.api.core.AppSwitchRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import com.braintreepayments.api.core.GetAppSwitchUseCase
 import com.braintreepayments.api.core.GetReturnLinkTypeUseCase
 import com.braintreepayments.api.core.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
 import com.braintreepayments.api.core.GetReturnLinkUseCase
@@ -33,14 +33,8 @@ class PayPalClient internal constructor(
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(merchantRepository),
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
-    private val getAppSwitchUseCase: GetAppSwitchUseCase = GetAppSwitchUseCase(AppSwitchRepository.instance),
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
 ) {
-    /**
-     * Used for linking events from the client to server side request
-     * In the PayPal flow this will be either an EC token or a Billing Agreement token
-     */
-    private var payPalContextId: String? = null
 
     /**
      * True if `tokenize()` was called with a Vault request object type
@@ -51,11 +45,6 @@ class PayPalClient internal constructor(
      * Used for sending Shopper Insights session ID provided by merchant to FPTI
      */
     private var shopperSessionId: String? = null
-
-    /**
-     * The final URL string used to open the app switch flow
-     */
-    private var appSwitchUrlString: String? = null
 
     /**
      * Initializes a new [PayPalClient] instance
@@ -107,18 +96,41 @@ class PayPalClient internal constructor(
         isVaultRequest = payPalRequest is PayPalVaultRequest
         analyticsParamRepository.didEnablePayPalAppSwitch = payPalRequest.enablePayPalAppSwitch
 
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsParams)
-
         braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
-            if (error != null) {
-                callbackCreatePaymentAuthFailure(callback, PayPalPaymentAuthRequest.Failure(error))
-            } else if (payPalConfigInvalid(configuration)) {
-                callbackCreatePaymentAuthFailure(
-                    callback,
-                    PayPalPaymentAuthRequest.Failure(createPayPalError())
-                )
-            } else {
-                sendPayPalRequest(context, payPalRequest, callback)
+            val analyticsEventParams = AnalyticsEventParams(
+                payPalContextId = null,
+                isVaultRequest = isVaultRequest,
+                shopperSessionId = shopperSessionId
+            )
+
+            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsEventParams)
+
+            when {
+                error != null -> {
+                    callbackCreatePaymentAuthFailure(
+                        callback,
+                        PayPalPaymentAuthRequest.Failure(error),
+                        analyticsEventParams
+                    )
+                }
+
+                configuration == null -> {
+                    callbackCreatePaymentAuthFailure(
+                        callback,
+                        PayPalPaymentAuthRequest.Failure(BraintreeException("No configuration or error returned")),
+                        analyticsEventParams
+                    )
+                }
+
+                !configuration.isPayPalEnabled -> {
+                    callbackCreatePaymentAuthFailure(
+                        callback,
+                        PayPalPaymentAuthRequest.Failure(BraintreeException(PAYPAL_NOT_ENABLED_MESSAGE)),
+                        analyticsEventParams
+                    )
+                }
+
+                else -> sendPayPalRequest(context, payPalRequest, configuration, callback)
             }
         }
     }
@@ -127,31 +139,34 @@ class PayPalClient internal constructor(
     private fun sendPayPalRequest(
         context: Context,
         payPalRequest: PayPalRequest,
+        configuration: Configuration,
         callback: PayPalPaymentAuthCallback
     ) {
         internalPayPalClient.sendRequest(
             context,
-            payPalRequest
+            payPalRequest,
+            configuration,
         ) { payPalResponse: PayPalPaymentAuthRequestParams?,
             error: Exception? ->
             if (payPalResponse != null) {
-                payPalContextId = payPalResponse.paypalContextId
-                val isAppSwitchFlow = getAppSwitchUseCase() && internalPayPalClient.isAppSwitchEnabled(payPalRequest) &&
-                    internalPayPalClient.isPayPalInstalled(context)
+                val payPalContextId = payPalResponse.paypalContextId
 
                 try {
                     payPalResponse.browserSwitchOptions = buildBrowserSwitchOptions(payPalResponse)
-
-                    if (isAppSwitchFlow) {
-                        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_STARTED, analyticsParams)
-                    }
-
                     callback.onPayPalPaymentAuthRequest(PayPalPaymentAuthRequest.ReadyToLaunch(payPalResponse))
                 } catch (exception: Exception) {
                     when (exception) {
                         is JSONException,
                         is BraintreeException -> {
-                            callbackCreatePaymentAuthFailure(callback, PayPalPaymentAuthRequest.Failure(exception))
+                            callbackCreatePaymentAuthFailure(
+                                callback,
+                                PayPalPaymentAuthRequest.Failure(exception),
+                                AnalyticsEventParams(
+                                    payPalContextId = payPalContextId,
+                                    isVaultRequest = isVaultRequest,
+                                    shopperSessionId = shopperSessionId
+                                )
+                            )
                         }
 
                         else -> throw exception
@@ -160,7 +175,12 @@ class PayPalClient internal constructor(
             } else {
                 callbackCreatePaymentAuthFailure(
                     callback,
-                    PayPalPaymentAuthRequest.Failure(error ?: BraintreeException("Error is null"))
+                    PayPalPaymentAuthRequest.Failure(error ?: BraintreeException("Error is null")),
+                    AnalyticsEventParams(
+                        payPalContextId = null,
+                        isVaultRequest = isVaultRequest,
+                        shopperSessionId = shopperSessionId
+                    )
                 )
             }
         }
@@ -189,7 +209,7 @@ class PayPalClient internal constructor(
         return BrowserSwitchOptions()
             .requestCode(BraintreeRequestCodes.PAYPAL.code)
             .url(Uri.parse(paymentAuthRequest.approvalUrl))
-            .launchAsNewTask(braintreeClient.launchesBrowserSwitchAsNewTask())
+            .launchType(LaunchType.ACTIVITY_CLEAR_TOP)
             .metadata(metadata)
             .apply {
                 when (val returnLinkResult = getReturnLinkUseCase()) {
@@ -234,16 +254,13 @@ class PayPalClient internal constructor(
         val switchInitiatedTime = Uri.parse(approvalUrl).getQueryParameter("switch_initiated_time")
         val isAppSwitchFlow = !switchInitiatedTime.isNullOrEmpty()
 
-        if (isAppSwitchFlow) {
-            appSwitchUrlString = approvalUrl
-        }
-
-        approvalUrl?.let {
-            val paypalContextId = Uri.parse(approvalUrl).getQueryParameter(tokenKey)
-            if (!paypalContextId.isNullOrEmpty()) {
-                payPalContextId = paypalContextId
-            }
-        }
+        val paypalContextId = approvalUrl.toUri().getQueryParameter(tokenKey)?.takeIf { it.isNotEmpty() }
+        val analyticsEventParams = AnalyticsEventParams(
+            payPalContextId = paypalContextId,
+            isVaultRequest = isVaultRequest,
+            shopperSessionId = shopperSessionId,
+            appSwitchUrl = paymentAuthResult.browserSwitchSuccess.returnUrl.toString()
+        )
 
         try {
             val urlResponseData = parseUrlResponseData(
@@ -266,18 +283,18 @@ class PayPalClient internal constructor(
                     callbackTokenizeSuccess(
                         callback,
                         PayPalResult.Success(payPalAccountNonce),
-                        isAppSwitchFlow
+                        analyticsEventParams
                     )
                 } else if (error != null) {
-                    callbackTokenizeFailure(callback, PayPalResult.Failure(error), isAppSwitchFlow)
+                    callbackTokenizeFailure(callback, PayPalResult.Failure(error), analyticsEventParams)
                 }
             }
         } catch (e: UserCanceledException) {
-            callbackBrowserSwitchCancel(callback, PayPalResult.Cancel, isAppSwitchFlow)
+            callbackBrowserSwitchCancel(callback, PayPalResult.Cancel, isAppSwitchFlow, analyticsEventParams)
         } catch (e: JSONException) {
-            callbackTokenizeFailure(callback, PayPalResult.Failure(e), isAppSwitchFlow)
+            callbackTokenizeFailure(callback, PayPalResult.Failure(e), analyticsEventParams)
         } catch (e: PayPalBrowserSwitchException) {
-            callbackTokenizeFailure(callback, PayPalResult.Failure(e), isAppSwitchFlow)
+            callbackTokenizeFailure(callback, PayPalResult.Failure(e), analyticsEventParams)
         }
     }
 
@@ -321,11 +338,12 @@ class PayPalClient internal constructor(
 
     private fun callbackCreatePaymentAuthFailure(
         callback: PayPalPaymentAuthCallback,
-        failure: PayPalPaymentAuthRequest.Failure
+        failure: PayPalPaymentAuthRequest.Failure,
+        analyticsEventParams: AnalyticsEventParams
     ) {
         braintreeClient.sendAnalyticsEvent(
-            PayPalAnalytics.TOKENIZATION_FAILED,
-            analyticsParams.copy(errorDescription = failure.error.message)
+            eventName = PayPalAnalytics.TOKENIZATION_FAILED,
+            params = analyticsEventParams.copy(errorDescription = failure.error.message)
         )
         callback.onPayPalPaymentAuthRequest(failure)
         analyticsParamRepository.reset()
@@ -334,12 +352,13 @@ class PayPalClient internal constructor(
     private fun callbackBrowserSwitchCancel(
         callback: PayPalTokenizeCallback,
         cancel: PayPalResult.Cancel,
-        isAppSwitchFlow: Boolean
+        isAppSwitchFlow: Boolean,
+        analyticsEventParams: AnalyticsEventParams,
     ) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, analyticsParams)
-
         if (isAppSwitchFlow) {
-            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_CANCELED, analyticsParams)
+            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.APP_SWITCH_CANCELED, analyticsEventParams)
+        } else {
+            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, analyticsEventParams)
         }
 
         callback.onPayPalResult(cancel)
@@ -349,23 +368,12 @@ class PayPalClient internal constructor(
     private fun callbackTokenizeFailure(
         callback: PayPalTokenizeCallback,
         failure: PayPalResult.Failure,
-        isAppSwitchFlow: Boolean
+        analyticsEventParams: AnalyticsEventParams,
     ) {
         braintreeClient.sendAnalyticsEvent(
             PayPalAnalytics.TOKENIZATION_FAILED,
-            analyticsParams.copy(errorDescription = failure.error.message)
+            analyticsEventParams.copy(errorDescription = failure.error.message)
         )
-
-        if (isAppSwitchFlow) {
-            braintreeClient.sendAnalyticsEvent(
-                PayPalAnalytics.APP_SWITCH_FAILED,
-                analyticsParams.copy(
-                    appSwitchUrl = appSwitchUrlString,
-                    errorDescription = failure.error.message
-                )
-            )
-        }
-
         callback.onPayPalResult(failure)
         analyticsParamRepository.reset()
     }
@@ -373,32 +381,11 @@ class PayPalClient internal constructor(
     private fun callbackTokenizeSuccess(
         callback: PayPalTokenizeCallback,
         success: PayPalResult.Success,
-        isAppSwitchFlow: Boolean
+        analyticsEventParams: AnalyticsEventParams,
     ) {
-        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, analyticsParams)
-
-        if (isAppSwitchFlow) {
-            braintreeClient.sendAnalyticsEvent(
-                PayPalAnalytics.APP_SWITCH_SUCCEEDED,
-                analyticsParams.copy(appSwitchUrl = appSwitchUrlString)
-            )
-        }
-
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, analyticsEventParams)
         callback.onPayPalResult(success)
         analyticsParamRepository.reset()
-    }
-
-    private val analyticsParams: AnalyticsEventParams
-        get() {
-            return AnalyticsEventParams(
-                payPalContextId = payPalContextId,
-                isVaultRequest = isVaultRequest,
-                shopperSessionId = shopperSessionId
-            )
-        }
-
-    private fun payPalConfigInvalid(configuration: Configuration?): Boolean {
-        return (configuration == null || !configuration.isPayPalEnabled)
     }
 
     companion object {
@@ -407,8 +394,5 @@ class PayPalClient internal constructor(
             "for more information."
 
         internal const val BROWSER_SWITCH_EXCEPTION_MESSAGE = "The response contained inconsistent data."
-        private fun createPayPalError(): Exception {
-            return BraintreeException(PAYPAL_NOT_ENABLED_MESSAGE)
-        }
     }
 }
