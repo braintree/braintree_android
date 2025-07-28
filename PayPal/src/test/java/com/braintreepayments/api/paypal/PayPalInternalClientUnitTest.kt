@@ -53,14 +53,14 @@ class PayPalInternalClientUnitTest {
         context = mockk(relaxed = true)
         clientToken = mockk(relaxed = true)
         tokenizationKey = mockk(relaxed = true)
-        configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
+        configuration = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
 
         dataCollector = mockk(relaxed = true)
         apiClient = mockk(relaxed = true)
         deviceInspector = mockk(relaxed = true)
         payPalInternalClientCallback = mockk(relaxed = true)
 
-        every { getReturnLinkUseCase.invoke() } returns GetReturnLinkUseCase.ReturnLinkResult.AppLink(
+        every { getReturnLinkUseCase.invoke() } returns ReturnLinkResult.AppLink(
             Uri.parse("https://example.com")
         )
     }
@@ -247,8 +247,6 @@ class PayPalInternalClientUnitTest {
 
         val (sut, braintreeClient) = createSutWithMocks()
 
-        val shippingAddressOverride = createShippingAddressOverride()
-
         val payPalRequest = createPayPalVaultRequestWithShipping()
 
         sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
@@ -296,14 +294,12 @@ class PayPalInternalClientUnitTest {
 
     @Test
     fun sendRequest_withPayPalVaultRequest_sendsAllParameters_with_deep_link() {
-       every { getReturnLinkUseCase.invoke() } returns DeepLink("com.braintreepayments.demo")
+        every { getReturnLinkUseCase.invoke() } returns DeepLink("com.braintreepayments.demo")
 
-       every { clientToken.bearer } returns "client-token-bearer"
-       every { merchantRepository.authorization } returns clientToken
-       every { merchantRepository.returnUrlScheme } returns "com.braintreepayments.demo"
+        every { clientToken.bearer } returns "client-token-bearer"
+        every { merchantRepository.authorization } returns clientToken
+        every { merchantRepository.returnUrlScheme } returns "com.braintreepayments.demo"
         val (sut, braintreeClient) = createSutWithMocks()
-
-        val shippingAddressOverride = createShippingAddressOverride()
 
         val payPalRequest = createPayPalVaultRequestWithShipping()
 
@@ -615,6 +611,7 @@ class PayPalInternalClientUnitTest {
         val actual = JSONObject(result)
         assertFalse(actual.has("line_items"))
     }
+
     @Test
     fun sendRequest_whenRiskCorrelationIdNotNull_setsClientMetadataIdToRiskCorrelationId() {
         every {
@@ -692,17 +689,17 @@ class PayPalInternalClientUnitTest {
         verify { payPalInternalClientCallback.onResult(capture(slot), null) }
 
         val expectedUrl = "https://checkout.paypal.com/one-touch-login-sandbox/index.html?" +
-                "ba_token=fake-ba-token&action=create_payment_resource&amount=1.00&" +
-                "authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%" +
-                "7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%" +
-                "3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&" +
-                "cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel&" +
-                "controller=client_api%2Fpaypal_hermes&currency_iso_code=USD&" +
-                "experience_profile%5Baddress_override%5D=false&" +
-                "experience_profile%5Bno_shipping%5D=false&" +
-                "merchant_id=dcpspy2brwdjr3qn&" +
-                "return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&" +
-                "offer_paypal_credit=true&version=1"
+            "ba_token=fake-ba-token&action=create_payment_resource&amount=1.00&" +
+            "authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%" +
+            "7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%" +
+            "3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&" +
+            "cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel&" +
+            "controller=client_api%2Fpaypal_hermes&currency_iso_code=USD&" +
+            "experience_profile%5Baddress_override%5D=false&" +
+            "experience_profile%5Bno_shipping%5D=false&" +
+            "merchant_id=dcpspy2brwdjr3qn&" +
+            "return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&" +
+            "offer_paypal_credit=true&version=1"
         assertPayPalVaultParams(slot.captured, expectedUrl)
     }
 
@@ -747,7 +744,7 @@ class PayPalInternalClientUnitTest {
 
         sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
 
-        verify { setAppSwitchUseCase.invoke(true, true) }
+        verify { setAppSwitchUseCase.invoke(merchantEnabledAppSwitch = true, appSwitchFlowFromPayPalResponse = true) }
 
         val slot = slot<PayPalPaymentAuthRequestParams>()
         verify { payPalInternalClientCallback.onResult(capture(slot), null) }
@@ -766,8 +763,8 @@ class PayPalInternalClientUnitTest {
     @Test
     fun sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess_returnsApprovalURL() {
 
-       every { merchantRepository.authorization } returns clientToken
-       every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+        every { merchantRepository.authorization } returns clientToken
+        every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
 
         val (sut, braintreeClient) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_APPROVAL_URL
@@ -805,16 +802,16 @@ class PayPalInternalClientUnitTest {
 
         val expectedUrl =
             "https://checkout.paypal.com/one-touch-login-sandbox/index.html?" +
-                    "token=fake-token&action=create_payment_resource&amount=1.00&" +
-                    "authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%" +
-                    "7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%" +
-                    "3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&" +
-                    "cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%" +
-                    "2Fv1%2Fcancel&controller=client_api%2Fpaypal_hermes&currency_iso_code=USD&" +
-                    "experience_profile%5Baddress_override%5D=false&experience_profile%5" +
-                    "Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=" +
-                    "com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&" +
-                    "offer_paypal_credit=true&version=1"
+                "token=fake-token&action=create_payment_resource&amount=1.00&" +
+                "authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%" +
+                "7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%" +
+                "3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&" +
+                "cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%" +
+                "2Fv1%2Fcancel&controller=client_api%2Fpaypal_hermes&currency_iso_code=USD&" +
+                "experience_profile%5Baddress_override%5D=false&experience_profile%5" +
+                "Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=" +
+                "com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&" +
+                "offer_paypal_credit=true&version=1"
         assertPayPalCheckoutParams(slot.captured, expectedUrl)
     }
 
@@ -862,7 +859,6 @@ class PayPalInternalClientUnitTest {
 
     @Test
     fun tokenize_tokenizesWithApiClient() {
-        val braintreeClient = MockkBraintreeClientBuilder().build()
         val payPalAccount = mockk<PayPalAccount>(relaxed = true)
         val callback = mockk<PayPalInternalTokenizeCallback>(relaxed = true)
         val apiClient = mockk<ApiClient>(relaxed = true)
@@ -879,7 +875,6 @@ class PayPalInternalClientUnitTest {
     @Test
     @Throws(JSONException::class)
     fun tokenize_onTokenizeResult_returnsAccountNonceToCallback() {
-        val braintreeClient = MockkBraintreeClientBuilder().build()
         val apiClient = MockApiClientBuilder()
             .tokenizeRESTSuccess(
                 JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE)

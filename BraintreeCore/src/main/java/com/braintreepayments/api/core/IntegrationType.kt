@@ -12,7 +12,7 @@ enum class IntegrationType(val stringValue: String) {
 
     companion object {
         internal fun fromString(stringValue: String?): IntegrationType? {
-            return values().firstOrNull { it.stringValue == stringValue }
+            return IntegrationType.entries.firstOrNull { it.stringValue == stringValue }
         }
     }
 }

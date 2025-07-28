@@ -23,8 +23,6 @@ import com.braintreepayments.api.googlepay.GooglePayRequest;
 import com.braintreepayments.api.googlepay.GooglePayResult;
 import com.braintreepayments.api.googlepay.GooglePayShippingAddressParameters;
 import com.braintreepayments.api.googlepay.GooglePayTotalPriceStatus;
-import com.google.android.gms.wallet.ShippingAddressRequirements;
-import com.google.android.gms.wallet.WalletConstants;
 
 public class GooglePayFragment extends BaseFragment {
 

@@ -7,7 +7,6 @@ import static junit.framework.Assert.assertNotNull;
 
 import android.os.Parcel;
 
-import com.braintreepayments.api.card.BinData;
 import com.braintreepayments.api.card.BinType;
 import com.braintreepayments.api.testutils.Fixtures;
 

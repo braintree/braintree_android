@@ -1,6 +1,5 @@
 package com.braintreepayments.api.visacheckout
 
-import com.braintreepayments.api.visacheckout.VisaCheckoutAnalytics
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

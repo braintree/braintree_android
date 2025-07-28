@@ -1,5 +1,14 @@
 package com.braintreepayments.demo.test;
 
+import static com.braintreepayments.AutomatorAction.click;
+import static com.braintreepayments.AutomatorAction.setText;
+import static com.braintreepayments.AutomatorAssertion.text;
+import static com.braintreepayments.DeviceAutomator.onDevice;
+import static com.braintreepayments.UiObjectMatcher.withText;
+import static com.braintreepayments.UiObjectMatcher.withTextStartingWith;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.core.StringEndsWith.endsWith;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.preference.PreferenceManager;
@@ -12,16 +21,6 @@ import com.braintreepayments.demo.test.utilities.TestHelper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static com.braintreepayments.AutomatorAction.click;
-import static com.braintreepayments.AutomatorAction.setText;
-import static com.braintreepayments.AutomatorAssertion.text;
-import static com.braintreepayments.DeviceAutomator.onDevice;
-import static com.braintreepayments.UiObjectMatcher.withContentDescription;
-import static com.braintreepayments.UiObjectMatcher.withText;
-import static com.braintreepayments.UiObjectMatcher.withTextStartingWith;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.core.StringEndsWith.endsWith;
 
 @SuppressLint("ApplySharedPref")
 @RunWith(AndroidJUnit4ClassRunner.class)

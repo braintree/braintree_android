@@ -444,11 +444,11 @@ class PayPalClientUnitTest {
             MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
 
         val payPalRequest = PayPalVaultRequest(
-            true,
-            false,
-            null,
-            null,
-            true
+            hasUserLocationConsent = true,
+            shouldOfferCredit = false,
+            recurringBillingDetails = null,
+            recurringBillingPlanType = null,
+            enablePayPalAppSwitch = true
         )
 
         val sut = testPaypalClient(
