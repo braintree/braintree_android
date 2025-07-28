@@ -129,7 +129,7 @@ class VenmoApiUnitTest {
     @Test
     fun createPaymentContext_whenGraphQLPostSuccess_includesPaymentContextID_callsBackNull() {
         val braintreeClient = MockkBraintreeClientBuilder()
-            .sendGraphQLPOSTSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
+            .sendGraphQLPostSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
             .build()
         val sut = VenmoApi(braintreeClient, apiClient, analyticsParamRepository, merchantRepository)
 
@@ -147,7 +147,7 @@ class VenmoApiUnitTest {
     @Test
     fun createPaymentContext_whenGraphQLPostSuccess_missingPaymentContextID_callsBackError() {
         val braintreeClient = MockkBraintreeClientBuilder()
-            .sendGraphQLPOSTSuccessfulResponse(
+            .sendGraphQLPostSuccessfulResponse(
                 Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_RESPONSE_WITHOUT_PAYMENT_CONTEXT_ID
             )
             .build()
@@ -173,7 +173,7 @@ class VenmoApiUnitTest {
     fun createPaymentContext_whenGraphQLPostError_forwardsErrorToCallback() {
         val error = Exception("error")
         val braintreeClient = MockkBraintreeClientBuilder()
-            .sendGraphQLPOSTErrorResponse(error)
+            .sendGraphQLPostErrorResponse(error)
             .build()
         val sut = VenmoApi(braintreeClient, apiClient, analyticsParamRepository, merchantRepository)
 
@@ -259,7 +259,7 @@ class VenmoApiUnitTest {
     fun createNonceFromPaymentContext_whenGraphQLPostSuccess_forwardsNonceToCallback() {
         val graphQLResponse = Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE
         val braintreeClient = MockkBraintreeClientBuilder()
-            .sendGraphQLPOSTSuccessfulResponse(graphQLResponse)
+            .sendGraphQLPostSuccessfulResponse(graphQLResponse)
             .build()
 
         val sut = VenmoApi(braintreeClient, apiClient, analyticsParamRepository, merchantRepository)
@@ -275,7 +275,7 @@ class VenmoApiUnitTest {
     @Test
     fun createNonceFromPaymentContext_whenGraphQLPostResponseMalformed_callsBackError() {
         val braintreeClient = MockkBraintreeClientBuilder()
-            .sendGraphQLPOSTSuccessfulResponse("not-json")
+            .sendGraphQLPostSuccessfulResponse("not-json")
             .build()
 
         val sut = VenmoApi(braintreeClient, apiClient, analyticsParamRepository, merchantRepository)
@@ -292,7 +292,7 @@ class VenmoApiUnitTest {
     fun createNonceFromPaymentContext_whenGraphQLPostError_forwardsErrorToCallback() {
         val error = Exception("error")
         val braintreeClient = MockkBraintreeClientBuilder()
-            .sendGraphQLPOSTErrorResponse(error)
+            .sendGraphQLPostErrorResponse(error)
             .build()
 
         val sut = VenmoApi(braintreeClient, apiClient, analyticsParamRepository, merchantRepository)
