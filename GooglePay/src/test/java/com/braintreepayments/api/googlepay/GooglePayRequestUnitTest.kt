@@ -133,7 +133,7 @@ class GooglePayRequestUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun `generates GooglePay request and produces correct JSON output `() {
+    fun `generates GooglePay request and produces correct JSON output`() {
         val request = GooglePayRequest("USD", "12.24", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL)
         val expected = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_REQUEST
         val shippingAllowedCountryCodes = listOf("US", "CA", "MX", "GB")
