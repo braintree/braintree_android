@@ -10,8 +10,8 @@ import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
-import com.braintreepayments.api.core.GetReturnLinkUseCase
-import com.braintreepayments.api.core.MerchantRepository
+import com.braintreepayments.api.core.GetAppSwitchUseCase
+import com.google.testing.junit.testparameterinjector.TestParameter
 import io.mockk.CapturingSlot
 import io.mockk.every
 import io.mockk.mockk
@@ -23,9 +23,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
+import org.robolectric.RobolectricTestParameterInjector
 
-@RunWith(RobolectricTestRunner::class)
+@RunWith(RobolectricTestParameterInjector::class)
 class PayPalLauncherUnitTest {
     private val browserSwitchClient: BrowserSwitchClient = mockk(relaxed = true)
     private val activity: ComponentActivity = mockk(relaxed = true)
@@ -34,32 +34,25 @@ class PayPalLauncherUnitTest {
     private val options: BrowserSwitchOptions = mockk(relaxed = true)
     private val pendingRequestString = "pending_request_string"
     private val analyticsClient: AnalyticsClient = mockk(relaxed = true)
-    private val merchantRepository = mockk<MerchantRepository>(relaxed = true)
-    private val payPalTokenResponseRepository = mockk<PayPalTokenResponseRepository>(relaxed = true)
-    private val getReturnLinkUseCase = mockk<GetReturnLinkUseCase>()
-    private val getPaymentTokenUseCase = mockk<PayPalGetPaymentTokenUseCase>()
-    private val returnUrl = "https://return.url"
-    private val deepLinkScheme = "deepLinkScheme"
+    private val getAppSwitchUseCase = mockk<GetAppSwitchUseCase>(relaxed = true)
+
     private val paymentToken = "paymentToken"
+    private val approvalUrl = "https://return.url?ba_token=$paymentToken"
 
     private lateinit var sut: PayPalLauncher
 
     @Before
     fun setup() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
+        every { paymentAuthRequestParams.paypalContextId } returns paymentToken
+        every { paymentAuthRequestParams.approvalUrl } returns approvalUrl
+        every { intent.data } returns Uri.parse(approvalUrl)
 
-        val appSwitchReturnUrl = Uri.parse(returnUrl)
-        every { getReturnLinkUseCase() } returns GetReturnLinkUseCase.ReturnLinkResult.AppLink(
-            appSwitchReturnUrl
-        )
-        every { getPaymentTokenUseCase() } returns paymentToken
         sut = PayPalLauncher(
             browserSwitchClient = browserSwitchClient,
-            merchantRepository = merchantRepository,
-            payPalTokenResponseRepository = payPalTokenResponseRepository,
-            getReturnLinkUseCase = getReturnLinkUseCase,
-            payPalGetPaymentTokenUseCase = getPaymentTokenUseCase,
-            lazyAnalyticsClient = lazy { analyticsClient })
+            getAppSwitchUseCase = getAppSwitchUseCase,
+            lazyAnalyticsClient = lazy { analyticsClient }
+        )
     }
 
     @Test
@@ -72,7 +65,7 @@ class PayPalLauncherUnitTest {
 
         assertTrue(pendingRequest is PayPalPendingRequest.Started)
         assertEquals(
-            (startedPendingRequest as BrowserSwitchStartResult.Started).pendingRequest,
+            startedPendingRequest.pendingRequest,
             (pendingRequest as PayPalPendingRequest.Started).pendingRequestString
         )
     }
@@ -118,8 +111,93 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
+    fun `launch sends APP_SWITCH_STARTED and APP_SWITCH_SUCCEEDED analytics events when app switch is enabled`(
+        @TestParameter isAppSwitch: Boolean
+    ) {
+        val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
+        every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
+        every { getAppSwitchUseCase() } returns isAppSwitch
+
+        sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        verify {
+            analyticsClient.sendEvent(
+                if (isAppSwitch) PayPalAnalytics.APP_SWITCH_STARTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                AnalyticsEventParams(
+                    payPalContextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                )
+            )
+        }
+
+        verify {
+            analyticsClient.sendEvent(
+                if (isAppSwitch) {
+                    PayPalAnalytics.APP_SWITCH_SUCCEEDED
+                } else {
+                    PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED
+                },
+                AnalyticsEventParams(
+                    payPalContextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `launch sends APP_SWITCH_FAILED analytics event when browser switch cannot be performed`(
+        @TestParameter isAppSwitch: Boolean
+    ) {
+        every { getAppSwitchUseCase() } returns isAppSwitch
+        val exception = BrowserSwitchException("browser switch error")
+        every {
+            browserSwitchClient.assertCanPerformBrowserSwitch(eq(activity), eq(options))
+        } throws exception
+
+        sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        verify {
+            analyticsClient.sendEvent(
+                if (isAppSwitch) PayPalAnalytics.APP_SWITCH_FAILED else PayPalAnalytics.BROWSER_PRESENTATION_FAILED,
+                AnalyticsEventParams(
+                    payPalContextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                    errorDescription = "AndroidManifest.xml is incorrectly configured or another app " +
+                        "defines the same browser switch url as this app. See " +
+                        "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/" +
+                        "android/v4#browser-switch-setup for the correct configuration: browser switch error",
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `launch sends APP_SWITCH_FAILED analytics event when browserSwitchOptions is null`() {
+        every { getAppSwitchUseCase() } returns true
+        every { paymentAuthRequestParams.browserSwitchOptions } returns null
+
+        sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.APP_SWITCH_FAILED,
+                AnalyticsEventParams(
+                    payPalContextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                    errorDescription = "BrowserSwitchOptions is null"
+                )
+            )
+        }
+    }
+
+    @Test
     @Throws(JSONException::class)
     fun `handleReturnToApp sends started event`() {
+        val token = "token"
+        val returnUrl = "https://return.url?token=$token"
+        every { intent.data } returns Uri.parse(returnUrl)
+
         sut.handleReturnToApp(
             PayPalPendingRequest.Started(pendingRequestString),
             intent
@@ -127,50 +205,9 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 PayPalAnalytics.HANDLE_RETURN_STARTED,
-                AnalyticsEventParams(payPalContextId = paymentToken, appSwitchUrl = returnUrl)
+                AnalyticsEventParams(payPalContextId = token, appSwitchUrl = returnUrl)
             )
         }
-    }
-
-    @Test
-    @Throws(JSONException::class)
-    fun `handleReturnToApp with deeplinkScheme sends handle started event with deeplink scheme`() {
-        every { getReturnLinkUseCase() } returns GetReturnLinkUseCase.ReturnLinkResult.DeepLink(
-            deepLinkScheme
-        )
-        sut.handleReturnToApp(
-            PayPalPendingRequest.Started(pendingRequestString),
-            intent
-        )
-        verify {
-            analyticsClient.sendEvent(
-                PayPalAnalytics.HANDLE_RETURN_STARTED,
-                AnalyticsEventParams(appSwitchUrl = deepLinkScheme, payPalContextId = paymentToken)
-            )
-        }
-    }
-
-    @Test
-    @Throws(JSONException::class)
-    fun `handleReturnToApp with ReturnLinkResult Failure sends handle started event with null appSwitchUrl`() {
-        every { getReturnLinkUseCase() } returns GetReturnLinkUseCase.ReturnLinkResult.Failure(
-            Exception("handle return start failed")
-        )
-        val slot1 = CapturingSlot<String>()
-        val slot2 = CapturingSlot<AnalyticsEventParams>()
-        every { analyticsClient.sendEvent(capture(slot1), capture(slot2)) } returns Unit
-
-        sut.handleReturnToApp(
-            PayPalPendingRequest.Started(pendingRequestString),
-            intent
-        )
-        verify {
-            analyticsClient.sendEvent(any(), any())
-        }
-
-        assertSame(PayPalAnalytics.HANDLE_RETURN_FAILED, slot1.captured)
-        assertSame(paymentToken, slot2.captured.payPalContextId)
-        assertSame(null, slot2.captured.appSwitchUrl)
     }
 
     @Test
@@ -203,8 +240,8 @@ class PayPalLauncherUnitTest {
         verify { analyticsClient.sendEvent(any(), any()) }
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_SUCCEEDED, slot1.captured)
-        assertSame(paymentToken, slot2.captured.payPalContextId)
-        assertSame(returnUrl, slot2.captured.appSwitchUrl)
+        assertEquals(paymentToken, slot2.captured.payPalContextId)
+        assertEquals(approvalUrl, slot2.captured.appSwitchUrl)
     }
 
     @Test
@@ -237,7 +274,7 @@ class PayPalLauncherUnitTest {
         }
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_FAILED, slot1.captured)
-        assertSame(paymentToken, slot2.captured.payPalContextId)
+        assertEquals(paymentToken, slot2.captured.payPalContextId)
     }
 
     @Test
@@ -260,6 +297,6 @@ class PayPalLauncherUnitTest {
         verify { analyticsClient.sendEvent(any(), any()) }
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_NO_RESULT, slot1.captured)
-        assertSame(paymentToken, slot2.captured.payPalContextId)
+        assertEquals(paymentToken, slot2.captured.payPalContextId)
     }
 }

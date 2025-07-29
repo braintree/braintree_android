@@ -1,6 +1,7 @@
 package com.braintreepayments.api.paypal
 
 import android.content.Context
+import com.braintreepayments.api.core.Configuration
 import io.mockk.every
 import io.mockk.mockk
 
@@ -32,10 +33,11 @@ class MockkPayPalInternalClientBuilder {
             payPalInternalClient.sendRequest(
                 any<Context>(),
                 any<PayPalRequest>(),
+                any<Configuration>(),
                 any<PayPalInternalClientCallback>()
             )
         } answers {
-            val callback = invocation.args[2] as PayPalInternalClientCallback
+            val callback = invocation.args[3] as PayPalInternalClientCallback
             if (successResponse != null) {
                 callback.onResult(successResponse, null)
             } else if (error != null) {

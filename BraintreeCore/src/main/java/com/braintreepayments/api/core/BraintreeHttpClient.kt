@@ -136,48 +136,6 @@ internal class BraintreeHttpClient(
         httpClient.sendRequest(request, callback)
     }
 
-    /**
-     * Makes a synchronous HTTP POST request to Braintree.
-     *
-     * @param path the path or url to request from the server via HTTP POST
-     * @param data the body of the post request
-     * @param configuration configuration for the Braintree Android SDK.
-     * @param authorization
-     * @return the HTTP response body
-     */
-    @Throws(Exception::class)
-    fun post(
-        path: String, data: String, configuration: Configuration?, authorization: Authorization?
-    ): String {
-        if (authorization is InvalidAuthorization) {
-            val message = authorization.errorMessage
-            throw BraintreeException(message)
-        }
-        val isRelativeURL = !path.startsWith("http")
-        if (configuration == null && isRelativeURL) {
-            val message =
-                "Braintree HTTP GET request without configuration cannot have a relative path."
-            throw BraintreeException(message)
-        }
-        val requestData = if (authorization is ClientToken) {
-            JSONObject(data).put(
-                AUTHORIZATION_FINGERPRINT_KEY,
-                authorization.authorizationFingerprint
-            ).toString()
-        } else {
-            data
-        }
-        val request = HttpRequest().method("POST").path(path).data(requestData)
-            .addHeader(USER_AGENT_HEADER, "braintree/android/" + BuildConfig.VERSION_NAME)
-        if (isRelativeURL && configuration != null) {
-            request.baseUrl(configuration.clientApiUrl)
-        }
-        if (authorization is TokenizationKey) {
-            request.addHeader(CLIENT_KEY_HEADER, authorization.bearer)
-        }
-        return httpClient.sendRequest(request)
-    }
-
     companion object {
         private const val AUTHORIZATION_FINGERPRINT_KEY = "authorizationFingerprint"
         private const val USER_AGENT_HEADER = "User-Agent"

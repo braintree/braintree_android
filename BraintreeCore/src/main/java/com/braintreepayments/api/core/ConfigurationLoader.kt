@@ -3,14 +3,12 @@ package com.braintreepayments.api.core
 import android.net.Uri
 import android.util.Base64
 import com.braintreepayments.api.sharedutils.HttpClient
-import com.braintreepayments.api.sharedutils.Time
 import org.json.JSONException
 
 internal class ConfigurationLoader(
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val configurationCache: ConfigurationCache = ConfigurationCacheProvider().configurationCache,
-    private val time: Time = Time(),
     /**
      * TODO: AnalyticsClient must be lazy due to the circular dependency between ConfigurationLoader and AnalyticsClient
      * This should be refactored to remove the circular dependency.
