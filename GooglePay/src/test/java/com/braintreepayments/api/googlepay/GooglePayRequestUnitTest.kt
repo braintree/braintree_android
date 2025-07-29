@@ -194,7 +194,7 @@ class GooglePayRequestUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun `produces correct JSON output, when Credit Cards are not allowed and Billing Address required `() {
+    fun `produces correct JSON output, when Credit Cards are not allowed and Billing Address required`() {
         val request = GooglePayRequest("USD", "12.24", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL)
         val expected = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_REQUEST_NO_CREDIT_CARDS
         val shippingAllowedCountryCodes = listOf("US", "CA", "MX", "GB")
