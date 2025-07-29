@@ -4,7 +4,8 @@
 
 * PayPal
   * Add `recurringBillingDetails`, `recurringBillingPlanType`, and `amountBreakdown` properties to `PayPalCheckoutRequest`. Enables RBA metadata to be passed for the PayPal Checkout Vault with Purchase flow
-  
+  * Add `userAction` property to `PayPalVaultRequest`
+
 ## 5.14.0 (2025-07-23)
 
 * PayPal

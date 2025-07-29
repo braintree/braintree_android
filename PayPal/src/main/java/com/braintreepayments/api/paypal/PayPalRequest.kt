@@ -81,6 +81,7 @@ import org.json.JSONException
  * @property lineItems The line items for this transaction. It can include up to 249 line items.
  * @property recurringBillingDetails Optional: Recurring billing product details.
  * @property recurringBillingPlanType Optional: Recurring billing plan type, or charge pattern.
+ * @property userAction The call to action for the PayPal flow.
  */
 abstract class PayPalRequest internal constructor(
     open val hasUserLocationConsent: Boolean,
@@ -101,7 +102,8 @@ abstract class PayPalRequest internal constructor(
 
     @property:ExperimentalBetaApi
     open var shopperSessionId: String? = null,
-    open var lineItems: List<PayPalLineItem> = emptyList()
+    open var lineItems: List<PayPalLineItem> = emptyList(),
+    open var userAction: PayPalPaymentUserAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT
 ) : Parcelable {
 
     @Throws(JSONException::class)
