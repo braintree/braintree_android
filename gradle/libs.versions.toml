@@ -14,9 +14,10 @@ androidxAnnotation = "1.7.0"
 androidxWork = "2.8.1"
 androidxJunit = "1.1.5"
 coroutines = "1.7.1"
-browserSwitch = "3.0.0"
+browserSwitch = "3.1.0"
 cardinal = "2.2.7-7"
 navigationSafeArgsGradlePlugin = "2.5.0"
+paypalMessages = "1.0.4"
 playServices = "19.4.0"
 junit = "4.13.2"
 testParameterInjector = "1.18"
@@ -70,6 +71,7 @@ gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 gradle-nexus-staging-plugin = { module = "io.codearte.gradle.nexus:gradle-nexus-staging-plugin", version.ref = "gradleNexusStagingPlugin" }
 browser-switch = { group = "com.braintreepayments.api", name = "browser-switch", version.ref = "browserSwitch" }
 cardinal = { group = "org.jfrog.cardinalcommerce.gradle", name = "cardinalmobilesdk", version.ref = "cardinal" }
+paypal-messages = { module = "com.paypal.messages:paypal-messages", version.ref = "paypalMessages" }
 play-services-wallet = { group = "com.google.android.gms", name = "play-services-wallet", version.ref = "playServices" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }

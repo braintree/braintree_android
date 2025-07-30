@@ -8,13 +8,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.pm.ActivityInfo;
-import android.net.Uri;
 
-import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.BraintreeClient;
 import com.braintreepayments.api.core.Configuration;
 import com.braintreepayments.api.core.ConfigurationCallback;
-import com.braintreepayments.api.core.IntegrationType;
 import com.braintreepayments.api.sharedutils.HttpResponseCallback;
 
 import org.mockito.stubbing.Answer;

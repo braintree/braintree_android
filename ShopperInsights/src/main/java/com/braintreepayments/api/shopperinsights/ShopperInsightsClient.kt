@@ -6,6 +6,7 @@ import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.DeviceInspector
+import com.braintreepayments.api.core.DeviceInspectorProvider
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.TokenizationKey
@@ -32,7 +33,7 @@ class ShopperInsightsClient internal constructor(
         EligiblePaymentsApi(braintreeClient, analyticsParamRepository)
     ),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
-    private val deviceInspector: DeviceInspector = DeviceInspector(),
+    private val deviceInspector: DeviceInspector = DeviceInspectorProvider().deviceInspector,
     private val shopperSessionId: String? = null
 ) {
 
@@ -211,7 +212,7 @@ class ShopperInsightsClient internal constructor(
      * Indicates whether the PayPal App is installed.
      */
     fun isPayPalAppInstalled(context: Context): Boolean {
-        return deviceInspector.isPayPalInstalled(context)
+        return deviceInspector.isPayPalInstalled()
     }
 
     /**

@@ -13,10 +13,13 @@ import io.mockk.mockk
 class MockkBraintreeClientBuilder {
 
     private var sendGraphQLPostSuccess: String? = null
-    private var sendGraphQLPOSTError: Exception? = null
+    private var sendGraphQLPostError: Exception? = null
 
-    private var sendPOSTSuccess: String? = null
-    private var sendPOSTError: Exception? = null
+    private var sendGetSuccess: String? = null
+    private var sendGetError: Exception? = null
+
+    private var sendPostSuccess: String? = null
+    private var sendPostError: Exception? = null
 
     private var configurationSuccess: Configuration? = null
     private var configurationException: Exception? = null
@@ -56,23 +59,33 @@ class MockkBraintreeClientBuilder {
         return this
     }
 
-    fun sendGraphQLPOSTSuccessfulResponse(sendGraphQLPostSuccess: String): MockkBraintreeClientBuilder {
+    fun sendGraphQLPostSuccessfulResponse(sendGraphQLPostSuccess: String): MockkBraintreeClientBuilder {
         this.sendGraphQLPostSuccess = sendGraphQLPostSuccess
         return this
     }
 
-    fun sendGraphQLPOSTErrorResponse(sendGraphQLPOSTError: Exception?): MockkBraintreeClientBuilder {
-        this.sendGraphQLPOSTError = sendGraphQLPOSTError
+    fun sendGraphQLPostErrorResponse(sendGraphQLPostError: Exception?): MockkBraintreeClientBuilder {
+        this.sendGraphQLPostError = sendGraphQLPostError
         return this
     }
 
-    fun sendPOSTSuccessfulResponse(sendPostSuccess: String): MockkBraintreeClientBuilder {
-        this.sendPOSTSuccess = sendPostSuccess
+    fun sendPostSuccessfulResponse(sendPostSuccess: String): MockkBraintreeClientBuilder {
+        this.sendPostSuccess = sendPostSuccess
         return this
     }
 
-    fun sendPOSTErrorResponse(sendPOSTError: Exception?): MockkBraintreeClientBuilder {
-        this.sendPOSTError = sendPOSTError
+    fun sendPostErrorResponse(sendPostError: Exception?): MockkBraintreeClientBuilder {
+        this.sendPostError = sendPostError
+        return this
+    }
+
+    fun sendGetSuccessfulResponse(sendGetSuccess: String): MockkBraintreeClientBuilder {
+        this.sendGetSuccess = sendGetSuccess
+        return this
+    }
+
+    fun sendGetErrorResponse(sendGetError: Exception?): MockkBraintreeClientBuilder {
+        this.sendGetError = sendGetError
         return this
     }
 
@@ -89,7 +102,7 @@ class MockkBraintreeClientBuilder {
         every { braintreeClient.sendGraphQLPOST(any(), any()) } answers { call ->
             val callback = call.invocation.args[1] as HttpResponseCallback
             sendGraphQLPostSuccess?.let { callback.onResult(it, null) }
-                ?: sendGraphQLPOSTError?.let { callback.onResult(null, it) }
+                ?: sendGraphQLPostError?.let { callback.onResult(null, it) }
         }
 
         every { braintreeClient.getReturnUrlScheme() } returns returnUrlScheme
@@ -100,8 +113,8 @@ class MockkBraintreeClientBuilder {
             braintreeClient.sendPOST(any<String>(), any<String>(), responseCallback = any<HttpResponseCallback>())
         } answers { call ->
             val callback = call.invocation.args[2] as HttpResponseCallback
-            sendPOSTSuccess?.let { callback.onResult(it, null) }
-                ?: sendPOSTError?.let { callback.onResult(null, it) }
+            sendPostSuccess?.let { callback.onResult(it, null) }
+                ?: sendPostError?.let { callback.onResult(null, it) }
         }
 
         every {
@@ -113,8 +126,15 @@ class MockkBraintreeClientBuilder {
             )
         } answers { call ->
             val callback = call.invocation.args[3] as HttpResponseCallback
-            sendPOSTSuccess?.let { callback.onResult(it, null) }
-                ?: sendPOSTError?.let { callback.onResult(null, it) }
+            sendPostSuccess?.let { callback.onResult(it, null) }
+                ?: sendPostError?.let { callback.onResult(null, it) }
+        }
+
+        every { braintreeClient.sendGET(any<String>(), responseCallback = any<HttpResponseCallback>())
+        } answers { call ->
+            val callback = call.invocation.args[1] as HttpResponseCallback
+            sendGetSuccess?.let { callback.onResult(it, null) }
+                ?: sendGetError?.let { callback.onResult(null, it) }
         }
 
         return braintreeClient
