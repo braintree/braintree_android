@@ -1,6 +1,16 @@
 name: Security
 # Slack: #help-product-security
 
+permissions:
+  contents: write
+  pull-requests: write
+  statuses: write
+  security-events: write
+  # required to fetch internal or private CodeQL packs
+  packages: read
+  actions: read
+  contents: read
+
 on:
   pull_request:
     branches: [ main ]
