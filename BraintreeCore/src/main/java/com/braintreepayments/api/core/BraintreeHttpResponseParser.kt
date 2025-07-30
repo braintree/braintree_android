@@ -24,7 +24,7 @@ internal class BraintreeHttpResponseParser(
         baseParser.parse(responseCode, connection)
     } catch (e: AuthorizationException) {
         val errorMessage = ErrorWithResponse(AUTH_ERROR_CODE, e.message).message
-        throw AuthorizationException(errorMessage)
+        throw AuthorizationException(errorMessage ?: "AuthorizationException with null message")
     } catch (e: UnprocessableEntityException) {
         throw ErrorWithResponse(UNPROCESSABLE_ENTITY_ERROR_CODE, e.message)
     }
