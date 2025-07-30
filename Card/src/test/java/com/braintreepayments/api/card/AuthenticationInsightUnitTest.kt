@@ -25,7 +25,7 @@ class AuthenticationInsightUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun `parses unknown regulation environment from JSON and returns unknown`() {
+    fun `parses unknown regulation environment from JSON and returns lowercase regulationEnvironment`() {
         val response = JSONObject().apply {
             put("customerAuthenticationRegulationEnvironment", "FaKeVaLuE")
         }
@@ -36,7 +36,7 @@ class AuthenticationInsightUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun `parses regulation environment key from JSON and returns its value`() {
+    fun `parses regulation environment key from JSON and returns its lowercase value`() {
         val response = JSONObject().apply {
             put("regulationEnvironment", "UNREGULATED")
         }
