@@ -1,0 +1,16 @@
+name: Security
+# Slack: #help-product-security
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ addCodeScans ]
+  workflow_dispatch:
+
+jobs:
+  code-scanning:
+    uses: braintree/security-workflows/.github/workflows/codeql-android.yml@jlesus-android
+
+  dependency-review:
+    uses: braintree/security-workflows/.github/workflows/dependency-review-gradle.yml@jlesus-android
