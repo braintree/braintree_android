@@ -24,11 +24,11 @@ class ThreeDSecureInfoUnitTest {
         assertEquals("fake-txn-id", info.dsTransactionId)
         assertEquals("07", info.eciFlag)
         assertEquals("Y", info.enrolled)
-        assertTrue { info.liabilityShiftPossible }
-        assertFalse { info.liabilityShifted }
+        assertTrue(info.liabilityShiftPossible)
+        assertFalse(info.liabilityShifted)
         assertEquals("lookup_enrolled", info.status)
         assertEquals("2.2.0", info.threeDSecureVersion)
-        assertTrue { info.wasVerified }
+        assertTrue(info.wasVerified)
         assertEquals("fake-xid", info.xid)
         assertEquals("fake-acs-transaction-id", info.acsTransactionId)
         assertEquals("fake-threedsecure-authentication-id", info.threeDSecureAuthenticationId)
