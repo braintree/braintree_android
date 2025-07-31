@@ -17,7 +17,7 @@ import kotlin.test.assertTrue
 @RunWith(RobolectricTestRunner::class)
 class GooglePayCardNonceUnitTest {
 
-    private fun `parse PostalAddress from JSON`(address: JSONObject): PostalAddress {
+    private fun getPostalAddressObjectFromJson(address: JSONObject): PostalAddress {
         val result = PostalAddress().apply {
             recipientName = Json.optString(address, "name", "")
             streetAddress = Json.optString(address, "address1", "")
@@ -33,7 +33,7 @@ class GooglePayCardNonceUnitTest {
         return result
     }
 
-    private fun `assert PostalAddress`(expected: PostalAddress, actual: PostalAddress) {
+    private fun assertPostalAddress(expected: PostalAddress, actual: PostalAddress) {
         assertEquals(expected.toString(), actual.toString())
     }
 
@@ -47,8 +47,8 @@ class GooglePayCardNonceUnitTest {
             .getJSONObject("billingAddress")
         val shipping = JSONObject(response).getJSONObject("shippingAddress")
 
-        val billingPostalAddress = `parse PostalAddress from JSON`(billing)
-        val shippingPostalAddress = `parse PostalAddress from JSON`(shipping)
+        val billingPostalAddress = getPostalAddressObjectFromJson(billing)
+        val shippingPostalAddress = getPostalAddressObjectFromJson(shipping)
 
         val googlePayCardNonce = GooglePayCardNonce.fromJSON(JSONObject(response)) as GooglePayCardNonce
 
@@ -58,8 +58,8 @@ class GooglePayCardNonceUnitTest {
         assertEquals("11", googlePayCardNonce.lastTwo)
         assertEquals("1234", googlePayCardNonce.lastFour)
         assertEquals("android-user@example.com", googlePayCardNonce.email)
-        `assert PostalAddress`(billingPostalAddress, googlePayCardNonce.billingAddress)
-        `assert PostalAddress`(shippingPostalAddress, googlePayCardNonce.shippingAddress)
+        assertPostalAddress(billingPostalAddress, googlePayCardNonce.billingAddress)
+        assertPostalAddress(shippingPostalAddress, googlePayCardNonce.shippingAddress)
         assertTrue { googlePayCardNonce.isNetworkTokenized }
         assertEquals("VISA", googlePayCardNonce.cardNetwork)
     }
@@ -75,10 +75,10 @@ class GooglePayCardNonceUnitTest {
         response = responseNoBillingAddress.toString()
 
         val billing = JSONObject()
-        val billingPostalAddress = `parse PostalAddress from JSON`(billing)
+        val billingPostalAddress = getPostalAddressObjectFromJson(billing)
         val googlePayCardNonce = GooglePayCardNonce.fromJSON(JSONObject(response)) as GooglePayCardNonce
 
-        `assert PostalAddress`(billingPostalAddress, googlePayCardNonce.billingAddress)
+        assertPostalAddress(billingPostalAddress, googlePayCardNonce.billingAddress)
     }
 
     @Test
@@ -91,10 +91,10 @@ class GooglePayCardNonceUnitTest {
         response = responseNoShippingAddress.toString()
 
         val shipping = JSONObject()
-        val shippingPostalAddress = `parse PostalAddress from JSON`(shipping)
+        val shippingPostalAddress = getPostalAddressObjectFromJson(shipping)
         val googlePayCardNonce = GooglePayCardNonce.fromJSON(JSONObject(response)) as GooglePayCardNonce
 
-        `assert PostalAddress`(shippingPostalAddress, googlePayCardNonce.shippingAddress)
+        assertPostalAddress(shippingPostalAddress, googlePayCardNonce.shippingAddress)
     }
 
     @Test
@@ -121,8 +121,8 @@ class GooglePayCardNonceUnitTest {
             .getJSONObject("billingAddress")
         val shipping = JSONObject(response).getJSONObject("shippingAddress")
 
-        val billingPostalAddress = `parse PostalAddress from JSON`(billing)
-        val shippingPostalAddress = `parse PostalAddress from JSON`(shipping)
+        val billingPostalAddress = getPostalAddressObjectFromJson(billing)
+        val shippingPostalAddress = getPostalAddressObjectFromJson(shipping)
 
         val googlePayCardNonce = GooglePayCardNonce.fromJSON(JSONObject(response)) as GooglePayCardNonce
         val parcel = Parcel.obtain().apply {
@@ -135,8 +135,8 @@ class GooglePayCardNonceUnitTest {
         assertEquals("11", googlePayCardNonce.lastTwo)
         assertEquals("1234", googlePayCardNonce.lastFour)
         assertEquals("android-user@example.com", googlePayCardNonce.email)
-        `assert PostalAddress`(billingPostalAddress, googlePayCardNonce.billingAddress)
-        `assert PostalAddress`(shippingPostalAddress, googlePayCardNonce.shippingAddress)
+        assertPostalAddress(billingPostalAddress, googlePayCardNonce.billingAddress)
+        assertPostalAddress(shippingPostalAddress, googlePayCardNonce.shippingAddress)
         assertTrue { googlePayCardNonce.isNetworkTokenized }
         assertEquals("VISA", googlePayCardNonce.cardNetwork)
 
