@@ -1,142 +1,146 @@
-package com.braintreepayments.api.googlepay;
+package com.braintreepayments.api.googlepay
 
-import android.os.Parcel;
+import android.os.Parcel
+import com.braintreepayments.api.core.PostalAddress
+import com.braintreepayments.api.sharedutils.Json
+import com.braintreepayments.api.testutils.Assertions.assertBinDataEqual
+import com.braintreepayments.api.testutils.Fixtures
+import kotlinx.parcelize.parcelableCreator
+import org.json.JSONException
+import org.json.JSONObject
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
+@RunWith(RobolectricTestRunner::class)
+class GooglePayCardNonceUnitTest {
 
-import static com.braintreepayments.api.testutils.Assertions.assertBinDataEqual;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-
-import com.braintreepayments.api.testutils.Fixtures;
-import com.braintreepayments.api.core.PostalAddress;
-import com.braintreepayments.api.sharedutils.Json;
-
-@RunWith(RobolectricTestRunner.class)
-public class GooglePayCardNonceUnitTest {
-
-    @Test
-    public void fromJson_createsGooglePayCardNonce() throws Exception {
-        String response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE;
-        JSONObject billing = new JSONObject(response).getJSONObject("paymentMethodData")
-                .getJSONObject("info")
-                .getJSONObject("billingAddress");
-        JSONObject shipping = new JSONObject(response).getJSONObject("shippingAddress");
-
-        PostalAddress billingPostalAddress = getPostalAddressObject(billing);
-        PostalAddress shippingPostalAddress = getPostalAddressObject(shipping);
-
-        GooglePayCardNonce googlePayCardNonce = (GooglePayCardNonce) GooglePayCardNonce.fromJSON(new JSONObject(response));
-
-        assertEquals("fake-google-pay-nonce", googlePayCardNonce.getString());
-        assertEquals("Visa", googlePayCardNonce.getCardType());
-        assertEquals("123456", googlePayCardNonce.getBin());
-        assertEquals("11", googlePayCardNonce.getLastTwo());
-        assertEquals("1234", googlePayCardNonce.getLastFour());
-        assertEquals("android-user@example.com", googlePayCardNonce.getEmail());
-        assertPostalAddress(billingPostalAddress, googlePayCardNonce.getBillingAddress());
-        assertPostalAddress(shippingPostalAddress, googlePayCardNonce.getShippingAddress());
-        assertTrue(googlePayCardNonce.isNetworkTokenized());
-        assertEquals("VISA", googlePayCardNonce.getCardNetwork());
+    private fun `parse PostalAddress from JSON`(address: JSONObject): PostalAddress {
+        val result = PostalAddress().apply {
+            recipientName = Json.optString(address, "name", "")
+            streetAddress = Json.optString(address, "address1", "")
+            extendedAddress = listOf(
+                Json.optString(address, "address2", ""),
+                Json.optString(address, "address3", "")
+            ).joinToString(separator = "\n").trim()
+            locality = Json.optString(address, "locality", "")
+            region = Json.optString(address, "administrativeArea", "")
+            countryCodeAlpha2 = Json.optString(address, "countryCode", "")
+            postalCode = Json.optString(address, "postalCode", "")
+        }
+        return result
     }
 
-    @Test
-    public void fromJson_withoutBillingAddress_createsGooglePayCardNonce() throws Exception {
-        String response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE;
-        JSONObject json = new JSONObject(response);
-        json.getJSONObject("paymentMethodData").getJSONObject("info").remove("billingAddress");
-        response = json.toString();
-        JSONObject billing = new JSONObject();
-
-        PostalAddress billingPostalAddress = getPostalAddressObject(billing);
-
-        GooglePayCardNonce googlePayCardNonce = (GooglePayCardNonce) GooglePayCardNonce.fromJSON(new JSONObject(response));
-
-        assertPostalAddress(billingPostalAddress, googlePayCardNonce.getBillingAddress());
+    private fun `assert PostalAddress`(expected: PostalAddress, actual: PostalAddress) {
+        assertEquals(expected.toString(), actual.toString())
     }
 
+
     @Test
-    public void fromJson_withoutShippingAddress_createsGooglePayCardNonce() throws Exception {
-        String response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE;
-        JSONObject json = new JSONObject(response);
-        json.remove("shippingAddress");
-        response = json.toString();
-        JSONObject shipping = new JSONObject();
+    @Throws(Exception::class)
+    fun `parses JSON object and creates GooglePayCardNonce`() {
+        val response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE
+        val billing  = JSONObject(response)
+            .getJSONObject("paymentMethodData")
+            .getJSONObject("info")
+            .getJSONObject("billingAddress")
+        val shipping = JSONObject(response).getJSONObject("shippingAddress")
 
-        PostalAddress shippingPostalAddress = getPostalAddressObject(shipping);
+        val billingPostalAddress = `parse PostalAddress from JSON`(billing)
+        val shippingPostalAddress = `parse PostalAddress from JSON`(shipping)
 
-        GooglePayCardNonce googlePayCardNonce = (GooglePayCardNonce) GooglePayCardNonce.fromJSON(new JSONObject(response));
+        val googlePayCardNonce = GooglePayCardNonce.fromJSON(JSONObject(response)) as GooglePayCardNonce
 
-        assertPostalAddress(shippingPostalAddress, googlePayCardNonce.getShippingAddress());
+        assertEquals("fake-google-pay-nonce", googlePayCardNonce.string)
+        assertEquals("Visa", googlePayCardNonce.cardType)
+        assertEquals("123456", googlePayCardNonce.bin)
+        assertEquals("11", googlePayCardNonce.lastTwo)
+        assertEquals("1234", googlePayCardNonce.lastFour)
+        assertEquals("android-user@example.com", googlePayCardNonce.email)
+        `assert PostalAddress`(billingPostalAddress, googlePayCardNonce.billingAddress)
+        `assert PostalAddress`(shippingPostalAddress, googlePayCardNonce.shippingAddress)
+        assertTrue { googlePayCardNonce.isNetworkTokenized }
+        assertEquals("VISA", googlePayCardNonce.cardNetwork)
     }
 
     @Test
-    public void fromJson_withoutEmail_createsGooglePayCardNonce() throws JSONException {
-        String response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE;
+    @Throws(Exception::class)
+    fun `parses JSON object without BillingAddress and creates GooglePayCardNonce`() {
+        var response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE
+        val responseNoBillingAddress = JSONObject(response).apply {
+            getJSONObject("paymentMethodData")
+                .getJSONObject("info").remove("billingAddress")
+        }
+        response = responseNoBillingAddress.toString()
 
-        JSONObject json = new JSONObject(response);
-        json.remove("email");
-        response = json.toString();
+        val billing = JSONObject()
+        val billingPostalAddress = `parse PostalAddress from JSON`(billing)
+        val googlePayCardNonce = GooglePayCardNonce.fromJSON(JSONObject(response)) as GooglePayCardNonce
 
-        GooglePayCardNonce googlePayCardNonce = (GooglePayCardNonce) GooglePayCardNonce.fromJSON(new JSONObject(response));
-
-        assertEquals("", googlePayCardNonce.getEmail());
+        `assert PostalAddress`(billingPostalAddress, googlePayCardNonce.billingAddress)
     }
 
     @Test
-    public void parcelsCorrectly() throws Exception {
-        String response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE;
-        JSONObject billing = new JSONObject(response).getJSONObject("paymentMethodData")
-                .getJSONObject("info")
-                .getJSONObject("billingAddress");
-        JSONObject shipping = new JSONObject(response).getJSONObject("shippingAddress");
+    @Throws(Exception::class)
+    fun `parses JSON object without ShippingAddress and creates GooglePayCardNonce`() {
+        var response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE
+        val responseNoShippingAddress = JSONObject(response).apply {
+            remove("shippingAddress")
+        }
+        response = responseNoShippingAddress.toString()
 
-        PostalAddress billingPostalAddress = getPostalAddressObject(billing);
-        PostalAddress shippingPostalAddress = getPostalAddressObject(shipping);
+        val shipping = JSONObject()
+        val shippingPostalAddress = `parse PostalAddress from JSON`(shipping)
+        val googlePayCardNonce = GooglePayCardNonce.fromJSON(JSONObject(response)) as GooglePayCardNonce
 
-        GooglePayCardNonce googlePayCardNonce = (GooglePayCardNonce) GooglePayCardNonce.fromJSON(new JSONObject(response));
-
-        Parcel parcel = Parcel.obtain();
-        googlePayCardNonce.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-
-        GooglePayCardNonce parceled = GooglePayCardNonce.CREATOR.createFromParcel(parcel);
-
-        assertEquals("fake-google-pay-nonce", parceled.getString());
-        assertEquals("Visa", parceled.getCardType());
-        assertEquals("11", parceled.getLastTwo());
-        assertEquals("1234", parceled.getLastFour());
-        assertEquals("android-user@example.com", parceled.getEmail());
-        assertTrue(parceled.isNetworkTokenized());
-        assertPostalAddress(billingPostalAddress, parceled.getBillingAddress());
-        assertPostalAddress(shippingPostalAddress, parceled.getShippingAddress());
-        assertEquals("VISA", parceled.getCardNetwork());
-
-        assertBinDataEqual(googlePayCardNonce.getBinData(), parceled.getBinData());
+        `assert PostalAddress`(shippingPostalAddress, googlePayCardNonce.shippingAddress)
     }
 
-    private PostalAddress getPostalAddressObject(JSONObject address) {
-        PostalAddress result = new PostalAddress();
-        result.setRecipientName(Json.optString(address, "name", ""));
-        result.setStreetAddress(Json.optString(address, "address1", ""));
-        result.setExtendedAddress(
-                String.join("\n",
-                        Json.optString(address, "address2", ""),
-                        Json.optString(address, "address3", "")
-                ).trim());
-        result.setLocality(Json.optString(address, "locality", ""));
-        result.setRegion(Json.optString(address, "administrativeArea", ""));
-        result.setCountryCodeAlpha2(Json.optString(address, "countryCode", ""));
-        result.setPostalCode(Json.optString(address, "postalCode", ""));
+    @Test
+    @Throws(JSONException::class)
+    fun `parses JSON object without email and creates GooglePayCardNonce`() {
+        var response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE
+        val responseNoEmail = JSONObject(response).apply {
+            remove("email")
+        }
+        response = responseNoEmail.toString()
 
-        return result;
+        val googlePayCardNonce = GooglePayCardNonce.fromJSON(JSONObject(response)) as GooglePayCardNonce
+
+        assertEquals("", googlePayCardNonce.email)
     }
 
-    private void assertPostalAddress(PostalAddress expected, PostalAddress actual) {
-        assertEquals(expected.toString(), actual.toString());
+    @Test
+    @Throws(Exception::class)
+    fun `parcels and returns all properties correctly`() {
+        val response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE
+        val billing  = JSONObject(response)
+            .getJSONObject("paymentMethodData")
+            .getJSONObject("info")
+            .getJSONObject("billingAddress")
+        val shipping = JSONObject(response).getJSONObject("shippingAddress")
+
+        val billingPostalAddress = `parse PostalAddress from JSON`(billing)
+        val shippingPostalAddress = `parse PostalAddress from JSON`(shipping)
+
+        val googlePayCardNonce = GooglePayCardNonce.fromJSON(JSONObject(response)) as GooglePayCardNonce
+        val parcel = Parcel.obtain().apply {
+            googlePayCardNonce.writeToParcel(this, 0)
+            setDataPosition(0)
+        }
+        val parceled = parcelableCreator<GooglePayCardNonce>().createFromParcel(parcel)
+        assertEquals("fake-google-pay-nonce", googlePayCardNonce.string)
+        assertEquals("Visa", googlePayCardNonce.cardType)
+        assertEquals("11", googlePayCardNonce.lastTwo)
+        assertEquals("1234", googlePayCardNonce.lastFour)
+        assertEquals("android-user@example.com", googlePayCardNonce.email)
+        `assert PostalAddress`(billingPostalAddress, googlePayCardNonce.billingAddress)
+        `assert PostalAddress`(shippingPostalAddress, googlePayCardNonce.shippingAddress)
+        assertTrue { googlePayCardNonce.isNetworkTokenized }
+        assertEquals("VISA", googlePayCardNonce.cardNetwork)
+
+        assertBinDataEqual(googlePayCardNonce.binData, parceled.binData)
     }
 }
