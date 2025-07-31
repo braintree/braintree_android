@@ -11,12 +11,13 @@ import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import org.json.JSONException
 import org.json.JSONObject
-import org.junit.Assert
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import io.mockk.*
+
 @RunWith(RobolectricTestRunner::class)
 class SEPADirectDebitClientUnitTest {
 
@@ -49,9 +50,9 @@ class SEPADirectDebitClientUnitTest {
             .createMandateResultSuccess(createMandateResult)
             .build()
 
-        val sut = SEPADirectDebitClient(braintreeClient!!, sepaDirectDebitApi)
+        val sut = SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi)
 
-        sut.createPaymentAuthRequest(sepaDirectDebitRequest!!, paymentAuthRequestCallback!!)
+        sut.createPaymentAuthRequest(sepaDirectDebitRequest, paymentAuthRequestCallback)
 
         verify {
             braintreeClient?.sendAnalyticsEvent(
@@ -67,7 +68,7 @@ class SEPADirectDebitClientUnitTest {
         }
 
         val paymentAuthRequest = captor.captured
-        Assert.assertTrue(paymentAuthRequest is SEPADirectDebitPaymentAuthRequest.ReadyToLaunch)
+        assertTrue(paymentAuthRequest is SEPADirectDebitPaymentAuthRequest.ReadyToLaunch)
         val params = (paymentAuthRequest as SEPADirectDebitPaymentAuthRequest.ReadyToLaunch).requestParams
 
         verify {
@@ -76,17 +77,17 @@ class SEPADirectDebitClientUnitTest {
         }
 
         val browserSwitchOptions = params.browserSwitchOptions
-        Assert.assertEquals(Uri.parse("http://www.example.com"), browserSwitchOptions.getUrl())
-        Assert.assertEquals("com.example", browserSwitchOptions.getReturnUrlScheme())
-        Assert.assertEquals(
+        assertEquals(Uri.parse("http://www.example.com"), browserSwitchOptions.getUrl())
+        assertEquals("com.example", browserSwitchOptions.getReturnUrlScheme())
+        assertEquals(
             BraintreeRequestCodes.SEPA_DEBIT.code.toLong(),
             browserSwitchOptions.getRequestCode().toLong()
         )
         val metadata = browserSwitchOptions.getMetadata()
-        Assert.assertEquals("1234", metadata!!.get("ibanLastFour"))
-        Assert.assertEquals("fake-customer-id", metadata.get("customerId"))
-        Assert.assertEquals("fake-bank-reference-token", metadata.get("bankReferenceToken"))
-        Assert.assertEquals("ONE_OFF", metadata.get("mandateType"))
+        assertEquals("1234", metadata!!.get("ibanLastFour"))
+        assertEquals("fake-customer-id", metadata.get("customerId"))
+        assertEquals("fake-bank-reference-token", metadata.get("bankReferenceToken"))
+        assertEquals("ONE_OFF", metadata.get("mandateType"))
     }
 
     @Test
@@ -108,9 +109,9 @@ class SEPADirectDebitClientUnitTest {
             .tokenizeSuccess(nonce)
             .build()
 
-        val sut = SEPADirectDebitClient(braintreeClient!!, sepaDirectDebitApi)
+        val sut = SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi)
 
-        sut.createPaymentAuthRequest(sepaDirectDebitRequest!!, paymentAuthRequestCallback!!)
+        sut.createPaymentAuthRequest(sepaDirectDebitRequest, paymentAuthRequestCallback)
 
         val captor = slot<SEPADirectDebitPaymentAuthRequest>()
         verify {
@@ -118,8 +119,8 @@ class SEPADirectDebitClientUnitTest {
         }
 
         val paymentAuthRequest = captor.captured
-        Assert.assertTrue(paymentAuthRequest is SEPADirectDebitPaymentAuthRequest.LaunchNotRequired)
-        Assert.assertEquals(
+        assertTrue(paymentAuthRequest is SEPADirectDebitPaymentAuthRequest.LaunchNotRequired)
+        assertEquals(
             (paymentAuthRequest as SEPADirectDebitPaymentAuthRequest.LaunchNotRequired).nonce,
             nonce
         )
@@ -146,9 +147,9 @@ class SEPADirectDebitClientUnitTest {
             .createMandateResultSuccess(createMandateResult)
             .build()
 
-        val sut = SEPADirectDebitClient(braintreeClient!!, sepaDirectDebitApi)
+        val sut = SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi)
 
-        sut.createPaymentAuthRequest(sepaDirectDebitRequest!!, paymentAuthRequestCallback!!)
+        sut.createPaymentAuthRequest(sepaDirectDebitRequest, paymentAuthRequestCallback)
 
         val captor = slot<SEPADirectDebitPaymentAuthRequest>()
         verify {
@@ -156,10 +157,10 @@ class SEPADirectDebitClientUnitTest {
         }
 
         val paymentAuthRequest = captor.captured
-        Assert.assertTrue(paymentAuthRequest is SEPADirectDebitPaymentAuthRequest.Failure)
+        assertTrue(paymentAuthRequest is SEPADirectDebitPaymentAuthRequest.Failure)
         val error = (paymentAuthRequest as SEPADirectDebitPaymentAuthRequest.Failure).error
-        Assert.assertTrue(error is BraintreeException)
-        Assert.assertEquals("An unexpected error occurred.", error.message)
+        assertTrue(error is BraintreeException)
+        assertEquals("An unexpected error occurred.", error.message)
 
         val createMandateFailedSlot = slot<AnalyticsEventParams>()
         val tokenizeFailedSlot = slot<AnalyticsEventParams>()
@@ -175,11 +176,11 @@ class SEPADirectDebitClientUnitTest {
                 true
             )
         }
-        Assert.assertEquals(
+        assertEquals(
             "An unexpected error occurred.",
             createMandateFailedSlot.captured.errorDescription
         )
-        Assert.assertEquals(
+        assertEquals(
             "An unexpected error occurred.",
             tokenizeFailedSlot.captured.errorDescription
         )
@@ -199,9 +200,9 @@ class SEPADirectDebitClientUnitTest {
             .createMandateResultSuccess(createMandateResult)
             .build()
 
-        val sut = SEPADirectDebitClient(braintreeClient!!, sepaDirectDebitApi)
+        val sut = SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi)
 
-        sut.createPaymentAuthRequest(sepaDirectDebitRequest!!, paymentAuthRequestCallback!!)
+        sut.createPaymentAuthRequest(sepaDirectDebitRequest, paymentAuthRequestCallback)
 
         verify {
             braintreeClient?.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_STARTED, any(), true)
@@ -223,9 +224,9 @@ class SEPADirectDebitClientUnitTest {
             .createMandateError(error)
             .build()
 
-        val sut = SEPADirectDebitClient(braintreeClient!!, sepaDirectDebitApi)
+        val sut = SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi)
 
-        sut.createPaymentAuthRequest(sepaDirectDebitRequest!!, paymentAuthRequestCallback!!)
+        sut.createPaymentAuthRequest(sepaDirectDebitRequest, paymentAuthRequestCallback)
 
         val captor = slot<SEPADirectDebitPaymentAuthRequest>()
         verify {
@@ -233,9 +234,9 @@ class SEPADirectDebitClientUnitTest {
         }
 
         val paymentAuthRequest = captor.captured
-        Assert.assertTrue(paymentAuthRequest is SEPADirectDebitPaymentAuthRequest.Failure)
+        assertTrue(paymentAuthRequest is SEPADirectDebitPaymentAuthRequest.Failure)
         val actualError = (paymentAuthRequest as SEPADirectDebitPaymentAuthRequest.Failure).error
-        Assert.assertEquals(error, actualError)
+        assertEquals(error, actualError)
 
         val createMandateFailedSlot = slot<AnalyticsEventParams>()
         val tokenizeFailedSlot = slot<AnalyticsEventParams>()
@@ -251,8 +252,8 @@ class SEPADirectDebitClientUnitTest {
                 true
             )
         }
-        Assert.assertEquals(error.message, createMandateFailedSlot.captured.errorDescription)
-        Assert.assertEquals(error.message, tokenizeFailedSlot.captured.errorDescription)
+        assertEquals(error.message, createMandateFailedSlot.captured.errorDescription)
+        assertEquals(error.message, tokenizeFailedSlot.captured.errorDescription)
     }
 
     @Test
@@ -273,10 +274,10 @@ class SEPADirectDebitClientUnitTest {
 
         braintreeClient = MockkBraintreeClientBuilder().build()
 
-        val sut = SEPADirectDebitClient(braintreeClient!!, sepaDirectDebitApi)
+        val sut = SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi)
         val sepaBrowserSwitchResult = SEPADirectDebitPaymentAuthResult.Success(browserSwitchResult)
 
-        sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback!!)
+        sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback)
 
         verify {
             sepaDirectDebitApi.tokenize(
@@ -313,10 +314,10 @@ class SEPADirectDebitClientUnitTest {
 
         braintreeClient = MockkBraintreeClientBuilder().build()
 
-        val sut = SEPADirectDebitClient(braintreeClient!!, sepaDirectDebitApi)
+        val sut = SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi)
         val sepaBrowserSwitchResult = SEPADirectDebitPaymentAuthResult.Success(browserSwitchResult)
 
-        sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback!!)
+        sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback)
 
         val captor = slot<SEPADirectDebitResult>()
         verify {
@@ -324,8 +325,8 @@ class SEPADirectDebitClientUnitTest {
         }
 
         val result = captor.captured
-        Assert.assertTrue(result is SEPADirectDebitResult.Success)
-        Assert.assertEquals(nonce, (result as SEPADirectDebitResult.Success).nonce)
+        assertTrue(result is SEPADirectDebitResult.Success)
+        assertEquals(nonce, (result as SEPADirectDebitResult.Success).nonce)
 
         verify {
             braintreeClient?.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_SUCCEEDED, any(), true)
@@ -353,10 +354,10 @@ class SEPADirectDebitClientUnitTest {
 
         braintreeClient = MockkBraintreeClientBuilder().build()
 
-        val sut = SEPADirectDebitClient(braintreeClient!!, sepaDirectDebitApi)
+        val sut = SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi)
         val sepaBrowserSwitchResult = SEPADirectDebitPaymentAuthResult.Success(browserSwitchResult)
 
-        sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback!!)
+        sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback)
 
         val captor = slot<SEPADirectDebitResult>()
         verify {
@@ -364,8 +365,8 @@ class SEPADirectDebitClientUnitTest {
         }
 
         val result = captor.captured
-        Assert.assertTrue(result is SEPADirectDebitResult.Failure)
-        Assert.assertEquals(exception, (result as SEPADirectDebitResult.Failure).error)
+        assertTrue(result is SEPADirectDebitResult.Failure)
+        assertEquals(exception, (result as SEPADirectDebitResult.Failure).error)
 
         val tokenizeFailedSlot = slot<AnalyticsEventParams>()
         verify {
@@ -382,7 +383,7 @@ class SEPADirectDebitClientUnitTest {
                 any()
             )
         }
-        Assert.assertEquals(exception.message, tokenizeFailedSlot.captured.errorDescription)
+        assertEquals(exception.message, tokenizeFailedSlot.captured.errorDescription)
     }
 
     @Test
@@ -408,10 +409,10 @@ class SEPADirectDebitClientUnitTest {
 
         braintreeClient = MockkBraintreeClientBuilder().build()
 
-        val sut = SEPADirectDebitClient(braintreeClient!!, sepaDirectDebitApi)
+        val sut = SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi)
         val sepaBrowserSwitchResult = SEPADirectDebitPaymentAuthResult.Success(browserSwitchResult)
 
-        sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback!!)
+        sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback)
 
         val captor = slot<SEPADirectDebitResult>()
         verify {
@@ -419,8 +420,8 @@ class SEPADirectDebitClientUnitTest {
         }
 
         val result = captor.captured
-        Assert.assertTrue(result is SEPADirectDebitResult.Success)
-        Assert.assertEquals(nonce, (result as SEPADirectDebitResult.Success).nonce)
+        assertTrue(result is SEPADirectDebitResult.Success)
+        assertEquals(nonce, (result as SEPADirectDebitResult.Success).nonce)
     }
 
     @Test
@@ -434,10 +435,10 @@ class SEPADirectDebitClientUnitTest {
 
         braintreeClient = MockkBraintreeClientBuilder().build()
 
-        val sut = SEPADirectDebitClient(braintreeClient!!, sepaDirectDebitApi)
+        val sut = SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi)
         val sepaBrowserSwitchResult = SEPADirectDebitPaymentAuthResult.Success(browserSwitchResult)
 
-        sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback!!)
+        sut.tokenize(sepaBrowserSwitchResult, sepaTokenizeCallback)
 
         val captor = slot<SEPADirectDebitResult>()
         verify {
@@ -445,7 +446,7 @@ class SEPADirectDebitClientUnitTest {
         }
 
         val result = captor.captured
-        Assert.assertTrue(result is SEPADirectDebitResult.Cancel)
+        assertTrue(result is SEPADirectDebitResult.Cancel)
 
         verify {
             braintreeClient?.sendAnalyticsEvent(
