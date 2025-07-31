@@ -8,9 +8,10 @@ import org.json.JSONObject
  * Representation of a user phone number.
  *
  * @property countryCode The international country code for the shopper's phone number
- * (e.g., "1" for the United States).
+ * (must be 1 to 3 digits, no symbols or spaces allowed; e.g., "1" for the United States).
+ *
  * @property nationalNumber The national segment of the shopper's phone number
- * (excluding the country code).
+ * (must be 4 to 12 digits, no symbols or spaces allowed; excludes the country code).
  */
 @Parcelize
 data class PayPalPhoneNumber(
