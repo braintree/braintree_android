@@ -141,7 +141,7 @@ class GenerateCustomerRecommendationsApiUnitTest {
         """.trimIndent()
 
         val braintreeClient = MockkBraintreeClientBuilder()
-            .sendGraphQLPOSTSuccessfulResponse(responseBody)
+            .sendGraphQLPostSuccessfulResponse(responseBody)
             .build()
 
         val generateCustomerRecommendationsApi = GenerateCustomerRecommendationsApi(
@@ -170,7 +170,7 @@ class GenerateCustomerRecommendationsApiUnitTest {
     fun `when execute is called and an error is returned, callback with Error is invoked`() {
         val error = Exception("Network error")
         val braintreeClient = MockkBraintreeClientBuilder()
-            .sendGraphQLPOSTErrorResponse(error)
+            .sendGraphQLPostErrorResponse(error)
             .build()
         val generateCustomerRecommendationsApi = GenerateCustomerRecommendationsApi(
             braintreeClient = braintreeClient,

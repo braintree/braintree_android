@@ -5,6 +5,7 @@ import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.DeviceInspector
+import com.braintreepayments.api.core.DeviceInspectorProvider
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.ButtonType
 import com.braintreepayments.api.shopperinsights.PresentmentDetails
@@ -34,7 +35,7 @@ class ShopperInsightsClientV2 internal constructor(
     private val updateCustomerSessionApi: UpdateCustomerSessionApi = UpdateCustomerSessionApi(braintreeClient),
     private val generateCustomerRecommendationsApi: GenerateCustomerRecommendationsApi =
         GenerateCustomerRecommendationsApi(braintreeClient),
-    private val deviceInspector: DeviceInspector = DeviceInspector(),
+    private val deviceInspector: DeviceInspector = DeviceInspectorProvider().deviceInspector,
     lazyAnalyticsClient: Lazy<AnalyticsClient> = AnalyticsClient.lazyInstance
 ) {
 
@@ -192,8 +193,8 @@ class ShopperInsightsClientV2 internal constructor(
     /**
      * Indicates whether the PayPal App is installed.
      */
-    fun isPayPalAppInstalled(context: Context): Boolean {
-        return deviceInspector.isPayPalInstalled(context)
+    fun isPayPalAppInstalled(): Boolean {
+        return deviceInspector.isPayPalInstalled()
     }
 
     /**

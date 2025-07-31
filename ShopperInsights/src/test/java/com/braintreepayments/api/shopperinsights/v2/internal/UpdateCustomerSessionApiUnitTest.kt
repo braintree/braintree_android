@@ -57,7 +57,7 @@ class UpdateCustomerSessionApiUnitTest {
         """.trimIndent()
 
         val braintreeClient = MockkBraintreeClientBuilder()
-            .sendGraphQLPOSTSuccessfulResponse(responseBody)
+            .sendGraphQLPostSuccessfulResponse(responseBody)
             .build()
 
         val responseParser = mockk<ShopperInsightsResponseParser> {
@@ -81,7 +81,7 @@ class UpdateCustomerSessionApiUnitTest {
         val error = Exception("Network error")
 
         val braintreeClient = MockkBraintreeClientBuilder()
-            .sendGraphQLPOSTErrorResponse(error)
+            .sendGraphQLPostErrorResponse(error)
             .build()
 
         val updateCustomerSessionApi = UpdateCustomerSessionApi(

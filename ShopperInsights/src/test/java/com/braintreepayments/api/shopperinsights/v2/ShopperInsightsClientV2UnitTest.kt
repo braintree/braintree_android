@@ -101,9 +101,9 @@ class ShopperInsightsClientV2UnitTest {
     @Test
     fun `when isPayPalAppInstalled is called, deviceInspector isPayPalInstalled is invoked`() {
         val payPalInstalled = true
-        every { deviceInspector.isPayPalInstalled(context) } returns payPalInstalled
+        every { deviceInspector.isPayPalInstalled() } returns payPalInstalled
 
-        val result = subject.isPayPalAppInstalled(context)
+        val result = subject.isPayPalAppInstalled()
 
         assertEquals(payPalInstalled, result)
     }
