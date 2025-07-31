@@ -19,29 +19,27 @@ import org.robolectric.RobolectricTestRunner
 import io.mockk.*
 @RunWith(RobolectricTestRunner::class)
 class SEPADirectDebitClientUnitTest {
-    private var braintreeClient: BraintreeClient? = null
-    private var createMandateResult: CreateMandateResult? = null
-    private var sepaDirectDebitRequest: SEPADirectDebitRequest? = null
-    private var sepaTokenizeCallback: SEPADirectDebitTokenizeCallback? = null
-    private var paymentAuthRequestCallback: SEPADirectDebitPaymentAuthRequestCallback? = null
+
+    private var braintreeClient: BraintreeClient = MockkBraintreeClientBuilder()
+        .returnUrlScheme("com.example")
+        .build()
+    private var createMandateResult: CreateMandateResult = CreateMandateResult(
+        "http://www.example.com",
+        "1234",
+        "fake-customer-id",
+        "fake-bank-reference-token",
+        SEPADirectDebitMandateType.valueOf("ONE_OFF")
+    )
+    private var sepaDirectDebitRequest: SEPADirectDebitRequest = SEPADirectDebitRequest()
+    private var sepaTokenizeCallback: SEPADirectDebitTokenizeCallback = mockk(relaxed = true)
+    private var paymentAuthRequestCallback: SEPADirectDebitPaymentAuthRequestCallback = mockk(relaxed = true)
 
     @Before
     fun beforeEach() {
         braintreeClient = MockkBraintreeClientBuilder()
             .returnUrlScheme("com.example")
             .build()
-
-        createMandateResult = CreateMandateResult(
-            "http://www.example.com",
-            "1234",
-            "fake-customer-id",
-            "fake-bank-reference-token",
-            SEPADirectDebitMandateType.valueOf("ONE_OFF")
-        )
-        sepaDirectDebitRequest = SEPADirectDebitRequest()
-
-        sepaTokenizeCallback = mockk<SEPADirectDebitTokenizeCallback>(relaxed = true)
-        paymentAuthRequestCallback = mockk<SEPADirectDebitPaymentAuthRequestCallback>(relaxed = true)
+        clearMocks(sepaTokenizeCallback, paymentAuthRequestCallback)
     }
 
     @Test
@@ -94,7 +92,6 @@ class SEPADirectDebitClientUnitTest {
     @Test
     @Throws(JSONException::class)
     fun createPaymentAuthRequest_whenMandateApproved_onTokenizeSuccess_callsBackWithNonce_andSendsAnalytics() {
-        // null approval URL indicates mandate approved
         createMandateResult = CreateMandateResult(
             "null",
             "1234",
