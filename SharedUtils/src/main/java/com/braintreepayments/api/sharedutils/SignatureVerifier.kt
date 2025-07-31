@@ -1,6 +1,5 @@
 package com.braintreepayments.api.sharedutils
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.NameNotFoundException
@@ -25,7 +24,7 @@ class SignatureVerifier(
      * @param base64EncodedSignature the base64 encoded signature to verify.
      * @return true is signature is valid or signature verification has been disabled.
      */
-    @SuppressLint("PackageManagerGetSignatures")
+    @Suppress("SwallowedException", "ReturnCount")
     fun isSignatureValid(context: Context, packageName: String, base64EncodedSignature: String): Boolean {
         val packageManager = context.packageManager
         val signatures: Array<Signature>?
