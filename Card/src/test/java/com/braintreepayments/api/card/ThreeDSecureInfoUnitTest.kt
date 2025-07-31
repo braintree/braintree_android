@@ -1,43 +1,42 @@
-package com.braintreepayments.api.card;
+package com.braintreepayments.api.card
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Test;
+import com.braintreepayments.api.testutils.Fixtures
+import com.braintreepayments.api.threedsecure.ThreeDSecureInfo
+import org.json.JSONException
+import org.json.JSONObject
+import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-
-import com.braintreepayments.api.testutils.Fixtures;
-import com.braintreepayments.api.threedsecure.ThreeDSecureInfo;
-
-public class ThreeDSecureInfoUnitTest {
+class ThreeDSecureInfoUnitTest {
 
     @Test
-    public void canCreateThreeDSecureInfoFromJson() throws JSONException {
-        JSONObject json = new JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD);
-        ThreeDSecureInfo info = ThreeDSecureInfo.fromJson(
-                json.getJSONArray("creditCards")
-                        .getJSONObject(0)
-                        .getJSONObject("threeDSecureInfo"));
-
-        assertEquals("fake-cavv", info.getCavv());
-        assertEquals("fake-txn-id", info.getDsTransactionId());
-        assertEquals("07", info.getEciFlag());
-        assertEquals("Y", info.getEnrolled());
-        assertTrue(info.getLiabilityShiftPossible());
-        assertFalse(info.getLiabilityShifted());
-        assertEquals("lookup_enrolled", info.getStatus());
-        assertEquals("2.2.0", info.getThreeDSecureVersion());
-        assertTrue(info.getWasVerified());
-        assertEquals("fake-xid", info.getXid());
-        assertEquals("fake-acs-transaction-id", info.getAcsTransactionId());
-        assertEquals("fake-threedsecure-authentication-id", info.getThreeDSecureAuthenticationId());
-        assertEquals("fake-threedsecure-server-transaction-id", info.getThreeDSecureServerTransactionId());
-        assertEquals("fake-pares-status", info.getParesStatus());
-        assertEquals("Y", info.getAuthenticationTransactionStatus());
-        assertEquals("01", info.getAuthenticationTransactionStatusReason());
-        assertEquals("N", info.getLookupTransactionStatus());
-        assertEquals("02", info.getLookupTransactionStatusReason());
+    @Throws(JSONException::class)
+    fun `successfully creates ThreeDSecure object from JSON`() {
+        val json = JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD)
+        val info = ThreeDSecureInfo.fromJson(
+            json.getJSONArray("creditCards")
+                .getJSONObject(0)
+                .getJSONObject("threeDSecureInfo")
+        )
+        assertEquals("fake-cavv", info.cavv)
+        assertEquals("fake-txn-id", info.dsTransactionId)
+        assertEquals("07", info.eciFlag)
+        assertEquals("Y", info.enrolled)
+        assertTrue { info.liabilityShiftPossible }
+        assertFalse { info.liabilityShifted }
+        assertEquals("lookup_enrolled", info.status)
+        assertEquals("2.2.0", info.threeDSecureVersion)
+        assertTrue { info.wasVerified }
+        assertEquals("fake-xid", info.xid)
+        assertEquals("fake-acs-transaction-id", info.acsTransactionId)
+        assertEquals("fake-threedsecure-authentication-id", info.threeDSecureAuthenticationId)
+        assertEquals("fake-threedsecure-server-transaction-id", info.threeDSecureServerTransactionId)
+        assertEquals("fake-pares-status", info.paresStatus)
+        assertEquals("Y", info.authenticationTransactionStatus)
+        assertEquals("01", info.authenticationTransactionStatusReason)
+        assertEquals("N", info.lookupTransactionStatus)
+        assertEquals("02", info.lookupTransactionStatusReason)
     }
 }
