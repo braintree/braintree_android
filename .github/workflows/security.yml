@@ -13,12 +13,12 @@ on:
   pull_request:
     branches: [ main ]
   push:
-    branches: [ addCodeScans ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   code-scanning:
-    uses: braintree/security-workflows/.github/workflows/codeql-android.yml@jlesus-android
+    uses: braintree/security-workflows/.github/workflows/codeql-android.yml@main
 
   dependency-review:
-    uses: braintree/security-workflows/.github/workflows/dependency-review-gradle.yml@jlesus-android
+    uses: braintree/security-workflows/.github/workflows/dependency-review-gradle.yml@main
