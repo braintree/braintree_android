@@ -18,18 +18,18 @@ import kotlin.test.assertTrue
 class GooglePayCardNonceUnitTest {
 
     private fun getPostalAddressObjectFromJson(address: JSONObject): PostalAddress {
-        val result = PostalAddress().apply {
-            recipientName = Json.optString(address, "name", "")
-            streetAddress = Json.optString(address, "address1", "")
+        val result = PostalAddress(
+            recipientName = Json.optString(address, "name", ""),
+            streetAddress = Json.optString(address, "address1", ""),
             extendedAddress = listOf(
                 Json.optString(address, "address2", ""),
                 Json.optString(address, "address3", "")
-            ).joinToString(separator = "\n").trim()
-            locality = Json.optString(address, "locality", "")
-            region = Json.optString(address, "administrativeArea", "")
-            countryCodeAlpha2 = Json.optString(address, "countryCode", "")
+            ).joinToString(separator = "\n").trim(),
+            locality = Json.optString(address, "locality", ""),
+            region = Json.optString(address, "administrativeArea", ""),
+            countryCodeAlpha2 = Json.optString(address, "countryCode", ""),
             postalCode = Json.optString(address, "postalCode", "")
-        }
+        )
         return result
     }
 
@@ -60,7 +60,7 @@ class GooglePayCardNonceUnitTest {
         assertEquals("android-user@example.com", googlePayCardNonce.email)
         assertPostalAddress(billingPostalAddress, googlePayCardNonce.billingAddress)
         assertPostalAddress(shippingPostalAddress, googlePayCardNonce.shippingAddress)
-        assertTrue { googlePayCardNonce.isNetworkTokenized }
+        assertTrue(googlePayCardNonce.isNetworkTokenized)
         assertEquals("VISA", googlePayCardNonce.cardNetwork)
     }
 
@@ -137,7 +137,7 @@ class GooglePayCardNonceUnitTest {
         assertEquals("android-user@example.com", googlePayCardNonce.email)
         assertPostalAddress(billingPostalAddress, googlePayCardNonce.billingAddress)
         assertPostalAddress(shippingPostalAddress, googlePayCardNonce.shippingAddress)
-        assertTrue { googlePayCardNonce.isNetworkTokenized }
+        assertTrue(googlePayCardNonce.isNetworkTokenized)
         assertEquals("VISA", googlePayCardNonce.cardNetwork)
 
         assertBinDataEqual(googlePayCardNonce.binData, parceled.binData)
