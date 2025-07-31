@@ -37,12 +37,11 @@ class GooglePayCardNonceUnitTest {
         assertEquals(expected.toString(), actual.toString())
     }
 
-
     @Test
     @Throws(Exception::class)
     fun `parses JSON object and creates GooglePayCardNonce`() {
         val response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE
-        val billing  = JSONObject(response)
+        val billing = JSONObject(response)
             .getJSONObject("paymentMethodData")
             .getJSONObject("info")
             .getJSONObject("billingAddress")
@@ -116,7 +115,7 @@ class GooglePayCardNonceUnitTest {
     @Throws(Exception::class)
     fun `parcels and returns all properties correctly`() {
         val response = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_CARD_RESPONSE
-        val billing  = JSONObject(response)
+        val billing = JSONObject(response)
             .getJSONObject("paymentMethodData")
             .getJSONObject("info")
             .getJSONObject("billingAddress")
