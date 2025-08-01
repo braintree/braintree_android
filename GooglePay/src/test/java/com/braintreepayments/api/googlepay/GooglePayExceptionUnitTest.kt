@@ -1,32 +1,30 @@
-package com.braintreepayments.api.googlepay;
+package com.braintreepayments.api.googlepay
 
-import android.os.Parcel;
+import android.os.Parcel
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import com.google.android.gms.common.api.Status
+import kotlinx.parcelize.parcelableCreator
+import kotlin.test.assertEquals
 
-import com.braintreepayments.api.googlepay.GooglePayException;
-import com.google.android.gms.common.api.Status;
+@RunWith(RobolectricTestRunner::class)
+class GooglePayExceptionUnitTest {
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
+        @Test
+        fun `parcels GooglePayException successfully`() {
+            val status = Status(1, "Some status message")
+            val exception = GooglePayException("Some message", status)
 
-import static junit.framework.Assert.assertEquals;
+            val parcel = Parcel.obtain().apply {
+                exception.writeToParcel(this, 0)
+                setDataPosition(0)
+            }
 
-@RunWith(RobolectricTestRunner.class)
-public class GooglePayExceptionUnitTest {
+            val actual = parcelableCreator<GooglePayException>().createFromParcel(parcel)
 
-    @Test
-    public void testGooglePayException_isSerializable() {
-        Status status = new Status(1, "Some status message");
-        GooglePayException exception = new GooglePayException("Some message", status);
-
-        Parcel parcel = Parcel.obtain();
-        exception.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-
-        GooglePayException actual = GooglePayException.CREATOR.createFromParcel(parcel);
-
-        assertEquals("Some message", actual.getMessage());
-        assertEquals("Some status message", actual.getStatus().getStatusMessage());
-        assertEquals(1, actual.getStatus().getStatusCode());
-    }
+            assertEquals("Some message", actual.message)
+            assertEquals("Some status message", actual.status?.statusMessage)
+            assertEquals(1, actual.status?.statusCode)
+        }
 }
