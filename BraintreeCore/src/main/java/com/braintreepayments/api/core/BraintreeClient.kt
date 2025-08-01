@@ -237,7 +237,7 @@ class BraintreeClient internal constructor(
     /**
      * @suppress
      */
-    fun <T> getManifestActivityInfo(klass: Class<T>?): ActivityInfo? {
+    fun <T> getManifestActivityInfo(klass: Class<T>): ActivityInfo? {
         return manifestValidator.getActivityInfo(merchantRepository.applicationContext, klass)
     }
 
