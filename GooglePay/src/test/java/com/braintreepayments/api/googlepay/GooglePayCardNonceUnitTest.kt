@@ -17,26 +17,6 @@ import kotlin.test.assertTrue
 @RunWith(RobolectricTestRunner::class)
 class GooglePayCardNonceUnitTest {
 
-    private fun getPostalAddressObjectFromJson(address: JSONObject): PostalAddress {
-        val result = PostalAddress(
-            recipientName = Json.optString(address, "name", ""),
-            streetAddress = Json.optString(address, "address1", ""),
-            extendedAddress = listOf(
-                Json.optString(address, "address2", ""),
-                Json.optString(address, "address3", "")
-            ).joinToString(separator = "\n").trim(),
-            locality = Json.optString(address, "locality", ""),
-            region = Json.optString(address, "administrativeArea", ""),
-            countryCodeAlpha2 = Json.optString(address, "countryCode", ""),
-            postalCode = Json.optString(address, "postalCode", "")
-        )
-        return result
-    }
-
-    private fun assertPostalAddress(expected: PostalAddress, actual: PostalAddress) {
-        assertEquals(expected.toString(), actual.toString())
-    }
-
     @Test
     @Throws(Exception::class)
     fun `parses JSON object and creates GooglePayCardNonce`() {
@@ -141,5 +121,25 @@ class GooglePayCardNonceUnitTest {
         assertEquals("VISA", googlePayCardNonce.cardNetwork)
 
         assertBinDataEqual(googlePayCardNonce.binData, parceled.binData)
+    }
+
+    private fun getPostalAddressObjectFromJson(address: JSONObject): PostalAddress {
+        val result = PostalAddress(
+            recipientName = Json.optString(address, "name", ""),
+            streetAddress = Json.optString(address, "address1", ""),
+            extendedAddress = listOf(
+                Json.optString(address, "address2", ""),
+                Json.optString(address, "address3", "")
+            ).joinToString(separator = "\n").trim(),
+            locality = Json.optString(address, "locality", ""),
+            region = Json.optString(address, "administrativeArea", ""),
+            countryCodeAlpha2 = Json.optString(address, "countryCode", ""),
+            postalCode = Json.optString(address, "postalCode", "")
+        )
+        return result
+    }
+
+    private fun assertPostalAddress(expected: PostalAddress, actual: PostalAddress) {
+        assertEquals(expected.toString(), actual.toString())
     }
 }
