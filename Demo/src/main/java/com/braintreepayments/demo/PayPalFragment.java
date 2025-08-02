@@ -50,6 +50,7 @@ public class PayPalFragment extends BaseFragment {
         Button billingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
         Switch contactInformationSwitch = view.findViewById(R.id.contact_info_switch);
+        Switch amountBreakdownSwitch = view.findViewById(R.id.amount_breakdown_switch);
 
         singlePaymentButton.setOnClickListener(v -> {
             launchPayPal(
@@ -57,7 +58,8 @@ public class PayPalFragment extends BaseFragment {
                 buyerEmailEditText.getText().toString(),
                 buyerPhoneCountryCodeEditText.getText().toString(),
                 buyerPhoneNationalNumberEditText.getText().toString(),
-                contactInformationSwitch.isChecked()
+                contactInformationSwitch.isChecked(),
+                amountBreakdownSwitch.isChecked()
             );
         });
         billingAgreementButton.setOnClickListener(v -> {
@@ -66,7 +68,8 @@ public class PayPalFragment extends BaseFragment {
                 buyerEmailEditText.getText().toString(),
                 buyerPhoneCountryCodeEditText.getText().toString(),
                 buyerPhoneNationalNumberEditText.getText().toString(),
-                false
+                false,
+                amountBreakdownSwitch.isChecked()
             );
         });
 
@@ -113,7 +116,8 @@ public class PayPalFragment extends BaseFragment {
         String buyerEmailAddress,
         String buyerPhoneCountryCode,
         String buyerPhoneNationalNumber,
-        Boolean isContactInformationEnabled
+        Boolean isContactInformationEnabled,
+        Boolean isAmountBreakdownEnabled
     ) {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
@@ -125,10 +129,10 @@ public class PayPalFragment extends BaseFragment {
                 if (dataCollectorResult instanceof DataCollectorResult.Success) {
                     deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
                 }
-                launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled);
+                launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled, isAmountBreakdownEnabled);
             });
         } else {
-            launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled);
+            launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled, isAmountBreakdownEnabled);
         }
     }
 
@@ -139,7 +143,8 @@ public class PayPalFragment extends BaseFragment {
         String buyerEmailAddress,
         String buyerPhoneCountryCode,
         String buyerPhoneNationalNumber,
-        Boolean isContactInformationEnabled
+        Boolean isContactInformationEnabled,
+        Boolean isAmountBreakdownEnabled
     ) {
         PayPalRequest payPalRequest;
         if (isBillingAgreement) {
@@ -158,7 +163,8 @@ public class PayPalFragment extends BaseFragment {
                 buyerPhoneCountryCode,
                 buyerPhoneNationalNumber,
                 isContactInformationEnabled,
-                    null
+                    null,
+                    isAmountBreakdownEnabled
             );
         }
         payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest,

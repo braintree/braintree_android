@@ -18,11 +18,17 @@ import org.json.JSONObject
  * @property oneTimeFeeAmount Price and currency for any one-time charges due at plan signup.
  * @property productDescription Product description to display at the checkout.
  * @property productAmount The item price for the product associated with the billing cycle at the
- * time of checkout.
+ * time of checkout. This should only be used with a PayPalVaultRequest. To pass this value to a
+ * PayPalCheckoutRequest, use the `AmountBreakdown` object instead.
  * @property productQuantity Quantity associated with the product.
  * @property shippingAmount The shipping amount for the billing cycle at the time of checkout.
- * @property taxAmount The taxes for the billing cycle at the time of checkout.
+ * This should only be used with a PayPalVaultRequest. To pass this value to a
+ * PayPalCheckoutRequest, use the `AmountBreakdown` object instead.
+ * @property taxAmount The taxes for the billing cycle at the time of checkout. This should only
+ * be used with a PayPalVaultRequest. To pass this value to a PayPalCheckoutRequest, use the
+ * `AmountBreakdown` object instead.
  */
+
 @Parcelize
 data class PayPalRecurringBillingDetails @JvmOverloads constructor(
     val billingCycles: List<PayPalBillingCycle>,
