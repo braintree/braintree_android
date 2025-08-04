@@ -1,86 +1,88 @@
-package com.braintreepayments.api.localpayment;
+package com.braintreepayments.api.localpayment
 
-import android.os.Parcel;
+import android.os.Parcel
+import com.braintreepayments.api.testutils.Fixtures
+import kotlinx.parcelize.parcelableCreator
+import org.json.JSONException
+import org.json.JSONObject
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-
-import com.braintreepayments.api.testutils.Fixtures;
-
-@RunWith(RobolectricTestRunner.class)
-public class LocalPaymentNonceUnitTest {
+@RunWith(RobolectricTestRunner::class)
+class LocalPaymentNonceUnitTest {
 
     @Test
-    public void fromJson_parsesResponse() throws JSONException {
-        LocalPaymentNonce result = LocalPaymentNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE));
+    @Throws(JSONException::class)
+    fun `fromJSON parses complete LocalPaymentNonce correctly`() {
+        val response = LocalPaymentNonce.fromJSON(JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE))
 
-        assertNotNull(result);
-        assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", result.getString());
-        assertEquals("jon@getbraintree.com", result.getEmail());
-        assertEquals("836486 of 22321 Park Lake", result.getShippingAddress().getStreetAddress());
-        assertEquals("Apt B", result.getShippingAddress().getExtendedAddress());
-        assertEquals("Den Haag", result.getShippingAddress().getLocality());
-        assertEquals("CA", result.getShippingAddress().getRegion());
-        assertEquals("2585 GJ", result.getShippingAddress().getPostalCode());
-        assertEquals("NL", result.getShippingAddress().getCountryCodeAlpha2());
-        assertEquals("Jon Doe", result.getShippingAddress().getRecipientName());
-        assertEquals("Jon", result.getGivenName());
-        assertEquals("Doe", result.getSurname());
-        assertEquals("9KQSUZTL7YZQ4", result.getPayerId());
-        assertEquals("084afbf1db15445587d30bc120a23b09", result.getClientMetadataId());
+        assertNotNull(response)
+        assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", response.string)
+        assertEquals("jon@getbraintree.com", response.email)
+        assertEquals("836486 of 22321 Park Lake", response.shippingAddress.streetAddress)
+        assertEquals("Apt B", response.shippingAddress.extendedAddress)
+        assertEquals("Den Haag", response.shippingAddress.locality)
+        assertEquals("CA", response.shippingAddress.region)
+        assertEquals("2585 GJ", response.shippingAddress.postalCode)
+        assertEquals("NL", response.shippingAddress.countryCodeAlpha2)
+        assertEquals("Jon Doe", response.shippingAddress.recipientName)
+        assertEquals("Jon", response.givenName)
+        assertEquals("Doe", response.surname)
+        assertEquals("9KQSUZTL7YZQ4", response.payerId)
+        assertEquals("084afbf1db15445587d30bc120a23b09", response.clientMetadataId)
     }
 
     @Test
-    public void parcelsCorrectly() throws JSONException {
-        LocalPaymentNonce result = LocalPaymentNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE));
-        Parcel parcel = Parcel.obtain();
-        result.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
+    @Throws(JSONException::class)
+    fun `from JSON parses LocalPaymentNonce parcels it correctly`() {
+        val response = LocalPaymentNonce.fromJSON(JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE))
 
-        LocalPaymentNonce parceled = LocalPaymentNonce.CREATOR.createFromParcel(parcel);
+        val parcel = Parcel.obtain().apply {
+            response.writeToParcel(this, 0)
+            setDataPosition(0)
+        }
 
-        assertNotNull(parceled);
-        assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", parceled.getString());
-        assertEquals("jon@getbraintree.com", parceled.getEmail());
-        assertEquals("836486 of 22321 Park Lake", parceled.getShippingAddress().getStreetAddress());
-        assertEquals("Apt B", parceled.getShippingAddress().getExtendedAddress());
-        assertEquals("Den Haag", parceled.getShippingAddress().getLocality());
-        assertEquals("CA", parceled.getShippingAddress().getRegion());
-        assertEquals("2585 GJ", parceled.getShippingAddress().getPostalCode());
-        assertEquals("NL", parceled.getShippingAddress().getCountryCodeAlpha2());
-        assertEquals("Jon Doe", parceled.getShippingAddress().getRecipientName());
-        assertEquals("Jon", parceled.getGivenName());
-        assertEquals("Doe", parceled.getSurname());
-        assertEquals("9KQSUZTL7YZQ4", parceled.getPayerId());
-        assertEquals("084afbf1db15445587d30bc120a23b09", parceled.getClientMetadataId());
+        val parceled = parcelableCreator<LocalPaymentNonce>().createFromParcel(parcel)
+        assertNotNull(parceled)
+        assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", parceled.string)
+        assertEquals("jon@getbraintree.com", parceled.email)
+        assertEquals("836486 of 22321 Park Lake", parceled.shippingAddress.streetAddress)
+        assertEquals("Apt B", parceled.shippingAddress.extendedAddress)
+        assertEquals("Den Haag", parceled.shippingAddress.locality)
+        assertEquals("CA", parceled.shippingAddress.region)
+        assertEquals("2585 GJ", parceled.shippingAddress.postalCode)
+        assertEquals("NL", parceled.shippingAddress.countryCodeAlpha2)
+        assertEquals("Jon Doe", parceled.shippingAddress.recipientName)
+        assertEquals("Jon", parceled.givenName)
+        assertEquals("Doe", parceled.surname)
+        assertEquals("9KQSUZTL7YZQ4", parceled.payerId)
+        assertEquals("084afbf1db15445587d30bc120a23b09", parceled.clientMetadataId)
     }
 
     @Test
-    public void when_fromJSON_is_called_missing_fields_default_to_an_empty_string() throws JSONException {
-        LocalPaymentNonce result = LocalPaymentNonce.fromJSON(
-            new JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_MISSING_FIELDS_RESPONSE)
-        );
+    @Throws(JSONException::class)
+    fun `fromJSON parses LocalPaymentNonce and defaults empty strings for required fields`() {
+        val response = LocalPaymentNonce.fromJSON(JSONObject(
+            Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_MISSING_FIELDS_RESPONSE)
+        )
 
-        assertNotNull(result);
-        assertEquals("141b7583-2922-1ce6-1f2e-f352b69115d6", result.getString());
-        assertNull(result.getEmail());
-        assertNull(result.getShippingAddress().getStreetAddress());
-        assertNull(result.getShippingAddress().getExtendedAddress());
-        assertNull(result.getShippingAddress().getLocality());
-        assertNull(result.getShippingAddress().getRegion());
-        assertNull(result.getShippingAddress().getPostalCode());
-        assertNull(result.getShippingAddress().getCountryCodeAlpha2());
-        assertNull(result.getShippingAddress().getRecipientName());
-        assertEquals("", result.getGivenName());
-        assertEquals("", result.getSurname());
-        assertEquals("", result.getPayerId());
-        assertEquals("c7ce54e0cde5406785b13c99086a9f4c", result.getClientMetadataId());
+        assertNotNull(response)
+        assertEquals("141b7583-2922-1ce6-1f2e-f352b69115d6", response.string)
+        assertNull(response.email)
+        assertNull(response.shippingAddress.streetAddress)
+        assertNull(response.shippingAddress.extendedAddress)
+        assertNull(response.shippingAddress.locality)
+        assertNull(response.shippingAddress.region)
+        assertNull(response.shippingAddress.postalCode)
+        assertNull(response.shippingAddress.countryCodeAlpha2)
+        assertNull(response.shippingAddress.recipientName)
+        assertEquals("", response.givenName)
+        assertEquals("", response.surname)
+        assertEquals("", response.payerId)
+        assertEquals("c7ce54e0cde5406785b13c99086a9f4c", response.clientMetadataId)
     }
 }
