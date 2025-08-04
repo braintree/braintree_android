@@ -17,7 +17,7 @@ class LocalPaymentNonceUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun `fromJSON parses complete LocalPaymentNonce correctly`() {
+    fun `fromJSON parses LocalPaymentNonce correctly`() {
         val response = LocalPaymentNonce.fromJSON(JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE))
 
         assertNotNull(response)
@@ -65,7 +65,7 @@ class LocalPaymentNonceUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun `fromJSON parses LocalPaymentNonce and defaults empty strings for required fields`() {
+    fun `fromJSON parses LocalPaymentNonce and defaults to empty strings for required fields`() {
         val response = LocalPaymentNonce.fromJSON(JSONObject(
             Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_MISSING_FIELDS_RESPONSE)
         )
