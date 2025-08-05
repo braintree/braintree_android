@@ -97,11 +97,13 @@ class VenmoClient internal constructor(
         context: Context,
         authorization: String,
         returnUrlScheme: String? = null
-    ) : this(BraintreeClient(
-        context = context,
-        authorization = authorization,
-        deepLinkFallbackUrlScheme = returnUrlScheme
-    ))
+    ) : this(
+        BraintreeClient(
+            context = context,
+            authorization = authorization,
+            deepLinkFallbackUrlScheme = returnUrlScheme
+        )
+    )
 
     /**
      * Start the Pay With Venmo flow. This will return a [VenmoPaymentAuthRequestParams] that
