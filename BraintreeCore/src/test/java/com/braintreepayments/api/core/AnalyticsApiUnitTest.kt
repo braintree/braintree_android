@@ -154,6 +154,7 @@ class AnalyticsApiUnitTest {
                                 "is_simulator": ${deviceMetadata.isSimulator},
                                 "platform": "${deviceMetadata.platform}",
                                 "api_integration_type": "${integrationType.stringValue}",
+                                "space_key": "SKDUYK",
                                 "app_name": "${deviceMetadata.appName}",
                                 "client_os": "${deviceMetadata.clientOs}",
                                 "app_id": "${deviceMetadata.appId}"
@@ -207,6 +208,7 @@ class AnalyticsApiUnitTest {
                                 "is_simulator": ${deviceMetadata.isSimulator},
                                 "api_integration_type": "${integrationType.stringValue}",
                                 "platform": "${deviceMetadata.platform}",
+                                "space_key": "SKDUYK",
                                 "authorization_fingerprint": "${authorization.bearer}",
                                 "app_name": "${deviceMetadata.appName}",
                                 "client_os": "${deviceMetadata.clientOs}",
