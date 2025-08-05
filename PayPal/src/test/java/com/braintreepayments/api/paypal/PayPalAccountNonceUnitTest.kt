@@ -1,139 +1,144 @@
-package com.braintreepayments.api.paypal;
+package com.braintreepayments.api.paypal
 
-import android.os.Parcel;
+import android.os.Parcel
+import com.braintreepayments.api.testutils.Fixtures
+import kotlinx.parcelize.parcelableCreator
+import org.json.JSONException
+import org.json.JSONObject
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-
-import com.braintreepayments.api.testutils.Fixtures;
-
-@RunWith(RobolectricTestRunner.class)
-public class PayPalAccountNonceUnitTest {
+@RunWith(RobolectricTestRunner::class)
+class PayPalAccountNonceUnitTest {
 
     @Test
-    public void fromJson_parsesResponseWithCreditFinancingOffer() throws JSONException {
-        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(
-                new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE));
+    @Throws(JSONException::class)
+    fun `from JSON parses PayPalAccountNonce with credit financing offer`() {
+        val payPalAccountNonce = PayPalAccountNonce.fromJSON(
+            JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE)
+        )
 
-        assertNotNull(payPalAccountNonce);
-        assertEquals("fake-authenticate-url", payPalAccountNonce.getAuthenticateUrl());
-        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", payPalAccountNonce.getString());
-        assertEquals("paypalaccount@example.com", payPalAccountNonce.getEmail());
-        assertEquals("123 Fake St.", payPalAccountNonce.getBillingAddress().getStreetAddress());
-        assertEquals("Apt. 3", payPalAccountNonce.getBillingAddress().getExtendedAddress());
-        assertEquals("Oakland", payPalAccountNonce.getBillingAddress().getLocality());
-        assertEquals("CA", payPalAccountNonce.getBillingAddress().getRegion());
-        assertEquals("94602", payPalAccountNonce.getBillingAddress().getPostalCode());
-        assertEquals("US", payPalAccountNonce.getBillingAddress().getCountryCodeAlpha2());
-
-        assertFalse(payPalAccountNonce.getCreditFinancing().isCardAmountImmutable());
-        assertEquals("USD",
-                payPalAccountNonce.getCreditFinancing().getMonthlyPayment().getCurrency());
-        assertEquals("13.88",
-                payPalAccountNonce.getCreditFinancing().getMonthlyPayment().getValue());
-        assertTrue(payPalAccountNonce.getCreditFinancing().getHasPayerAcceptance());
-        assertEquals(18, payPalAccountNonce.getCreditFinancing().getTerm());
-        assertEquals("USD", payPalAccountNonce.getCreditFinancing().getTotalCost().getCurrency());
-        assertEquals("250.00", payPalAccountNonce.getCreditFinancing().getTotalCost().getValue());
-        assertEquals("USD",
-                payPalAccountNonce.getCreditFinancing().getTotalInterest().getCurrency());
-        assertEquals("0.00", payPalAccountNonce.getCreditFinancing().getTotalInterest().getValue());
+        assertNotNull(payPalAccountNonce)
+        assertEquals("fake-authenticate-url", payPalAccountNonce.authenticateUrl)
+        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", payPalAccountNonce.string)
+        assertEquals("paypalaccount@example.com", payPalAccountNonce.email)
+        assertEquals("123 Fake St.", payPalAccountNonce.billingAddress.streetAddress)
+        assertEquals("Apt. 3", payPalAccountNonce.billingAddress.extendedAddress)
+        assertEquals("Oakland", payPalAccountNonce.billingAddress.locality)
+        assertEquals("CA", payPalAccountNonce.billingAddress.region)
+        assertEquals("94602", payPalAccountNonce.billingAddress.postalCode)
+        assertEquals("US", payPalAccountNonce.billingAddress.countryCodeAlpha2)
+        payPalAccountNonce.creditFinancing?.let {
+            assertFalse(it.isCardAmountImmutable)
+            assertEquals("USD", it.monthlyPayment?.currency)
+            assertEquals("13.88", it.monthlyPayment?.value)
+            assertTrue(it.hasPayerAcceptance)
+            assertEquals(18, it.term)
+            assertEquals("USD", it.totalCost?.currency)
+            assertEquals("250.00", it.totalCost?.value)
+            assertEquals("USD", it.totalInterest?.currency)
+            assertEquals("0.00", it.totalInterest?.value)
+        }
     }
 
     @Test
-    public void fromJson_parsesResponseWithoutCreditFinancingOffer() throws JSONException {
-        JSONObject response = new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE);
-        response.getJSONArray("paypalAccounts").getJSONObject(0).getJSONObject("details")
-                .remove("creditFinancingOffered");
-        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(response);
+    @Throws(JSONException::class)
+    fun `from JSON parses PayPalAccountNonce without credit financing offer`() {
+        val response = JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE)
+        response.getJSONArray("paypalAccounts").getJSONObject(0).getJSONObject("details").apply {
+            remove("creditFinancingOffered")
+        }
+        val payPalAccountNonce = PayPalAccountNonce.fromJSON(response)
+        assertNotNull(payPalAccountNonce)
+        assertEquals("fake-authenticate-url", payPalAccountNonce.authenticateUrl)
+        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", payPalAccountNonce.string)
+        assertEquals("paypalaccount@example.com", payPalAccountNonce.email)
+        assertEquals("123 Fake St.", payPalAccountNonce.billingAddress.streetAddress)
+        assertEquals("Apt. 3", payPalAccountNonce.billingAddress.extendedAddress)
+        assertEquals("Oakland", payPalAccountNonce.billingAddress.locality)
+        assertEquals("CA", payPalAccountNonce.billingAddress.region)
+        assertEquals("94602", payPalAccountNonce.billingAddress.postalCode)
+        assertEquals("US", payPalAccountNonce.billingAddress.countryCodeAlpha2)
 
-        assertNotNull(payPalAccountNonce);
-        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", payPalAccountNonce.getString());
-        assertEquals("paypalaccount@example.com", payPalAccountNonce.getEmail());
-        assertEquals("123 Fake St.", payPalAccountNonce.getBillingAddress().getStreetAddress());
-        assertEquals("Apt. 3", payPalAccountNonce.getBillingAddress().getExtendedAddress());
-        assertEquals("Oakland", payPalAccountNonce.getBillingAddress().getLocality());
-        assertEquals("CA", payPalAccountNonce.getBillingAddress().getRegion());
-        assertEquals("94602", payPalAccountNonce.getBillingAddress().getPostalCode());
-        assertEquals("US", payPalAccountNonce.getBillingAddress().getCountryCodeAlpha2());
-
-        assertNull(payPalAccountNonce.getCreditFinancing());
+        assertNull(payPalAccountNonce.creditFinancing)
     }
 
     @Test
-    public void fromJson_whenNoAddresses_returnsEmptyPostalAddress() throws JSONException {
-        JSONObject response =
-                new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE_WITHOUT_ADDRESSES);
-        PayPalAccountNonce paypalAccount = PayPalAccountNonce.fromJSON(response);
+    @Throws(JSONException::class)
+    fun `from JSON parses PayPalAccountNonce without address and returns empty shipping and billing address`() {
+        val response = JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE_WITHOUT_ADDRESSES)
+        val payPalAccountNonce = PayPalAccountNonce.fromJSON(response)
 
-        assertNotNull(paypalAccount.getShippingAddress());
-        assertNotNull(paypalAccount.getBillingAddress());
+        assertNotNull(payPalAccountNonce.shippingAddress)
+        assertNotNull(payPalAccountNonce.billingAddress)
     }
 
     @Test
-    public void parcelsCorrectly_withAllValuesPresent() throws JSONException {
-        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(
-                new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE));
-        Parcel parcel = Parcel.obtain();
-        payPalAccountNonce.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
+    @Throws(JSONException::class)
+    fun `from JSON parses PayPalAccountNonce and parcels it correctly`() {
+        val payPalAccountNonce = PayPalAccountNonce.fromJSON(
+            JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE)
+        )
+        val parcel = Parcel.obtain().apply {
+            payPalAccountNonce.writeToParcel(this, 0)
+            setDataPosition(0)
+        }
 
-        PayPalAccountNonce parceled = PayPalAccountNonce.CREATOR.createFromParcel(parcel);
+        val parceled = parcelableCreator<PayPalAccountNonce>().createFromParcel(parcel)
 
-        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", parceled.getString());
-        assertEquals("paypalaccount@example.com", parceled.getEmail());
-        assertEquals("fake-authenticate-url", parceled.getAuthenticateUrl());
-
-        assertEquals("123 Fake St.", parceled.getBillingAddress().getStreetAddress());
-        assertEquals("Apt. 3", parceled.getBillingAddress().getExtendedAddress());
-        assertEquals("Oakland", parceled.getBillingAddress().getLocality());
-        assertEquals("CA", parceled.getBillingAddress().getRegion());
-        assertEquals("94602", parceled.getBillingAddress().getPostalCode());
-        assertEquals("US", parceled.getBillingAddress().getCountryCodeAlpha2());
-
-        assertFalse(parceled.getCreditFinancing().isCardAmountImmutable());
-        assertEquals("USD", parceled.getCreditFinancing().getMonthlyPayment().getCurrency());
-        assertEquals("13.88", parceled.getCreditFinancing().getMonthlyPayment().getValue());
-        assertTrue(parceled.getCreditFinancing().getHasPayerAcceptance());
-        assertEquals(18, parceled.getCreditFinancing().getTerm());
-        assertEquals("USD", parceled.getCreditFinancing().getTotalCost().getCurrency());
-        assertEquals("250.00", parceled.getCreditFinancing().getTotalCost().getValue());
-        assertEquals("USD", parceled.getCreditFinancing().getTotalInterest().getCurrency());
-        assertEquals("0.00", parceled.getCreditFinancing().getTotalInterest().getValue());
+        assertEquals("fake-authenticate-url", parceled.authenticateUrl)
+        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", parceled.string)
+        assertEquals("paypalaccount@example.com", parceled.email)
+        assertEquals("123 Fake St.", parceled.billingAddress.streetAddress)
+        assertEquals("Apt. 3", parceled.billingAddress.extendedAddress)
+        assertEquals("Oakland", parceled.billingAddress.locality)
+        assertEquals("CA", parceled.billingAddress.region)
+        assertEquals("94602", parceled.billingAddress.postalCode)
+        assertEquals("US", parceled.billingAddress.countryCodeAlpha2)
+        parceled.creditFinancing?.let {
+            assertFalse(it.isCardAmountImmutable)
+            assertEquals("USD", it.monthlyPayment?.currency)
+            assertEquals("13.88", it.monthlyPayment?.value)
+            assertTrue(it.hasPayerAcceptance)
+            assertEquals(18, it.term)
+            assertEquals("USD", it.totalCost?.currency)
+            assertEquals("250.00", it.totalCost?.value)
+            assertEquals("USD", it.totalInterest?.currency)
+            assertEquals("0.00", it.totalInterest?.value)
+        }
     }
 
     @Test
-    public void parcelsCorrectly_ifCreditFinancingNotPresent() throws JSONException {
-        JSONObject response = new JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE);
-        response.getJSONArray("paypalAccounts").getJSONObject(0).getJSONObject("details")
-                .remove("creditFinancingOffered");
-        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJSON(response);
-        assertNull(payPalAccountNonce.getCreditFinancing());
+    @Throws(JSONException::class)
+    fun `from JSON parses PayPalAccountNonce without credit financing and parcels it correctly`() {
+        val response = JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE)
+        response.getJSONArray("paypalAccounts").getJSONObject(0).getJSONObject("details").apply {
+            remove("creditFinancingOffered")
+        }
+        val payPalAccountNonce = PayPalAccountNonce.fromJSON(response)
+        assertNull(payPalAccountNonce.creditFinancing)
 
-        Parcel parcel = Parcel.obtain();
-        payPalAccountNonce.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
+        val parcel = Parcel.obtain().apply {
+            payPalAccountNonce.writeToParcel(this, 0)
+            setDataPosition(0)
+        }
 
-        PayPalAccountNonce parceled = PayPalAccountNonce.CREATOR.createFromParcel(parcel);
+        val parceled = parcelableCreator<PayPalAccountNonce>().createFromParcel(parcel)
 
-        assertNull(parceled.getCreditFinancing());
-
-        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", parceled.getString());
-        assertEquals("paypalaccount@example.com", parceled.getEmail());
-        assertEquals("123 Fake St.", parceled.getBillingAddress().getStreetAddress());
-        assertEquals("Apt. 3", parceled.getBillingAddress().getExtendedAddress());
-        assertEquals("Oakland", parceled.getBillingAddress().getLocality());
-        assertEquals("CA", parceled.getBillingAddress().getRegion());
-        assertEquals("94602", parceled.getBillingAddress().getPostalCode());
-        assertEquals("US", parceled.getBillingAddress().getCountryCodeAlpha2());
+        assertNull(parceled.creditFinancing)
+        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", parceled.string)
+        assertEquals("paypalaccount@example.com", parceled.email)
+        assertEquals("123 Fake St.", parceled.billingAddress.streetAddress)
+        assertEquals("Apt. 3", parceled.billingAddress.extendedAddress)
+        assertEquals("Oakland", parceled.billingAddress.locality)
+        assertEquals("CA", parceled.billingAddress.region)
+        assertEquals("94602", parceled.billingAddress.postalCode)
+        assertEquals("US", parceled.billingAddress.countryCodeAlpha2)
     }
 }
