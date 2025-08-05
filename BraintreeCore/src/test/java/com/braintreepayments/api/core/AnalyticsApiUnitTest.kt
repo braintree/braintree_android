@@ -142,7 +142,7 @@ class AnalyticsApiUnitTest {
                                 "comp": "${deviceMetadata.component}",
                                 "merchant_sdk_env": "${deviceMetadata.environment}",
                                 "venmo_installed": false,
-                                 "tokenization_key": "${authorization.bearer}",
+                                "tokenization_key": "${authorization.bearer}",
                                 "mapv": "${deviceMetadata.merchantAppVersion}",
                                 "session_id": "${deviceMetadata.sessionId}",
                                 "c_sdk_ver": "${deviceMetadata.clientSDKVersion}",
