@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Venmo
+  * Fixed bug in `VenmoClient` where `deepLinkFallbackUrlScheme` was not being set correctly in deprecated constructor
+
 ## 5.14.0 (2025-07-23)
 
 * PayPal
