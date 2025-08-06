@@ -20,6 +20,7 @@ import androidx.annotation.RestrictTo
  * @property buttonOrder The order or ranking in which payment buttons appear.
  * @property pageType The page or view that a button is displayed on.
  * @property errorDescription use this to provide more detail on a failure event.
+ * @property contextType Indicates whether the request was a Billing Agreement (BA_TOKEN) or Checkout (EC_TOKEN) request.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 data class AnalyticsEventParams @JvmOverloads constructor(
@@ -35,4 +36,5 @@ data class AnalyticsEventParams @JvmOverloads constructor(
     val buttonOrder: String? = null,
     val pageType: String? = null,
     val errorDescription: String? = null,
+    val contextType: String? = null,
 )
