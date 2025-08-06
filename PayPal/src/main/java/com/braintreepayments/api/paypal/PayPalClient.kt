@@ -99,7 +99,7 @@ class PayPalClient internal constructor(
     ) {
         shopperSessionId = payPalRequest.shopperSessionId
         isVaultRequest = payPalRequest is PayPalVaultRequest
-        contextType = if (payPalRequest is PayPalVaultRequest) "BA_TOKEN" else "EC_TOKEN"
+        contextType = if (payPalRequest is PayPalVaultRequest) "BA-TOKEN" else "EC-TOKEN"
 
         analyticsParamRepository.didEnablePayPalAppSwitch = payPalRequest.enablePayPalAppSwitch
 

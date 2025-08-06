@@ -60,6 +60,7 @@ class AnalyticsClientUnitTest {
         pageType = analyticsEventParams.pageType,
         didEnablePayPalAppSwitch = true,
         didPayPalServerAttemptAppSwitch = true,
+        contextType = analyticsEventParams.contextType,
     )
 
     @Before

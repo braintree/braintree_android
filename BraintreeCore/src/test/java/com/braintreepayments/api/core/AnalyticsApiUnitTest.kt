@@ -58,7 +58,8 @@ class AnalyticsApiUnitTest {
         pageType = "page-type",
         didEnablePayPalAppSwitch = true,
         didPayPalServerAttemptAppSwitch = true,
-        errorDescription = "error-description"
+        errorDescription = "error-description",
+        contextType = "EC-TOKEN"
     )
 
     @Before
@@ -178,7 +179,8 @@ class AnalyticsApiUnitTest {
                                     "shopper_session_id": "${event.shopperSessionId}",
                                     "error_desc": "${event.errorDescription}",
                                     "event_name": "${event.name}",
-                                    "button_position": "${event.buttonOrder}"
+                                    "button_position": "${event.buttonOrder}",
+                                    "context_type": "${event.contextType}"
                                 }
                             ]
                         }
@@ -233,7 +235,8 @@ class AnalyticsApiUnitTest {
                                     "shopper_session_id": "${event.shopperSessionId}",
                                     "error_desc": "${event.errorDescription}",
                                     "event_name": "${event.name}",
-                                    "button_position": "${event.buttonOrder}"
+                                    "button_position": "${event.buttonOrder}",
+                                    "context_type": "${event.contextType}"
                                 }
                             ]
                         }
