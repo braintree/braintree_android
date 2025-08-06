@@ -1,194 +1,194 @@
-package com.braintreepayments.api.paypal;
+package com.braintreepayments.api.paypal
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNull;
+import com.braintreepayments.api.core.IntegrationType
+import com.braintreepayments.api.core.MetadataBuilder
+import org.json.JSONException
+import org.json.JSONObject
+import org.junit.Test
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.skyscreamer.jsonassert.JSONAssert
+import org.skyscreamer.jsonassert.JSONCompareMode
 
-import com.braintreepayments.api.core.IntegrationType;
-import com.braintreepayments.api.core.MetadataBuilder;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.skyscreamer.jsonassert.JSONCompareMode;
-
-public class PayPalAccountUnitTest {
-
-    private static final String PAYPAL_KEY = "paypalAccount";
+class PayPalAccountUnitTest {
+    val PAYPAL_KEY = "paypalAccount"
 
     @Test
-    public void build_correctlyBuildsAPayPalAccount() throws JSONException {
-        PayPalAccount sut = new PayPalAccount(
-            "correlation_id",
-            new JSONObject(),
-            PayPalPaymentIntent.SALE,
-            "alt_merchant_account_id",
-            "single-payment",
-                "session_id",
-                "form",
-                IntegrationType.CUSTOM
-        );
-        sut.setSource("paypal-sdk");
+    @Throws(JSONException::class)
+    fun `correctly builds a PayPal account`() {
+        val sut = PayPalAccount(
+            clientMetadataId = "correlation_id",
+            urlResponseData = JSONObject(),
+            intent = PayPalPaymentIntent.SALE,
+            merchantAccountId = "alt_merchant_account_id",
+            paymentType = "single-payment",
+            sessionId = "session_id",
+            source = "paypal-sdk",
+            integration = IntegrationType.CUSTOM
+        )
 
-        JSONObject jsonObject = sut.buildJSON();
-        JSONObject jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY);
-        JSONObject jsonMetadata = jsonObject.getJSONObject(MetadataBuilder.META_KEY);
+        val jsonObject = sut.buildJSON()
+        val jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY)
+        val jsonMetadata = jsonObject.getJSONObject(MetadataBuilder.META_KEY)
 
-        assertNull(jsonAccount.opt("details"));
-        assertEquals("correlation_id", jsonAccount.getString("correlationId"));
-        assertEquals(PayPalPaymentIntent.SALE, PayPalPaymentIntent.fromString(jsonAccount.getString("intent")));
-        assertEquals("custom", jsonMetadata.getString("integration"));
-        assertEquals("paypal-sdk", jsonMetadata.getString("source"));
-        assertEquals("alt_merchant_account_id", jsonObject.getString("merchant_account_id"));
-        assertFalse(jsonAccount.getJSONObject("options").getBoolean("validate"));
+        assertNull(jsonAccount.opt("details"))
+        assertEquals("correlation_id", jsonAccount.getString("correlationId"))
+        assertEquals(PayPalPaymentIntent.SALE, PayPalPaymentIntent.fromString(jsonAccount.getString("intent")))
+        assertEquals("custom", jsonMetadata.getString("integration"))
+        assertEquals("paypal-sdk", jsonMetadata.getString("source"))
+        assertEquals("alt_merchant_account_id", jsonObject.getString("merchant_account_id"))
+        assertFalse(jsonAccount.getJSONObject("options").getBoolean("validate"))
     }
 
     @Test
-    public void usesCorrectInfoForMetadata() throws JSONException {
-        PayPalAccount sut = new PayPalAccount(
-            "correlation_id",
-            new JSONObject(),
-            PayPalPaymentIntent.SALE,
-            "alt_merchant_account_id",
-            "single-payment",
-                "session_id",
-                "form",
-                IntegrationType.CUSTOM
-        );
-        sut.setSource("paypal-app");
+    @Throws(JSONException::class)
+    fun `builds a PayPal account and uses correct metadata`() {
+        val sut = PayPalAccount(
+            clientMetadataId = "correlation_id",
+            urlResponseData = JSONObject(),
+            intent = PayPalPaymentIntent.SALE,
+            merchantAccountId = "alt_merchant_account_id",
+            paymentType = "single-payment",
+            sessionId = "session_id",
+            source = "paypal-app",
+            integration = IntegrationType.CUSTOM
+        )
 
-        JSONObject json = sut.buildJSON();
-        JSONObject metadata = json.getJSONObject(MetadataBuilder.META_KEY);
+        val jsonObject = sut.buildJSON()
+        val jsonMetadata = jsonObject.getJSONObject(MetadataBuilder.META_KEY)
 
-        assertEquals("custom", metadata.getString("integration"));
-        assertEquals("paypal-app", metadata.getString("source"));
+        assertEquals("custom", jsonMetadata.getString("integration"))
+        assertEquals("paypal-app", jsonMetadata.getString("source"))
     }
 
     @Test
-    public void setsIntegrationMethod() throws JSONException {
-        PayPalAccount sut = new PayPalAccount(
-            "correlation_id",
-            new JSONObject(),
-            PayPalPaymentIntent.SALE,
-            "alt_merchant_account_id",
-            "single-payment",
-                "session_id",
-                "form",
-                IntegrationType.CUSTOM
-        );
-        sut.setIntegration(IntegrationType.CUSTOM);
+    @Throws(JSONException::class)
+    fun `builds a PayPal account and sets integration method`() {
+        val sut = PayPalAccount(
+            clientMetadataId = "correlation_id",
+            urlResponseData = JSONObject(),
+            intent = PayPalPaymentIntent.SALE,
+            merchantAccountId = "alt_merchant_account_id",
+            paymentType = "single-payment",
+            sessionId = "session_id",
+            source = "form"
+        )
+        sut.integration = IntegrationType.CUSTOM
 
-        JSONObject json = sut.buildJSON();
-        JSONObject metadata = json.getJSONObject(MetadataBuilder.META_KEY);
+        val jsonObject = sut.buildJSON()
+        val jsonMetadata = jsonObject.getJSONObject(MetadataBuilder.META_KEY)
 
-        assertEquals(IntegrationType.CUSTOM.getStringValue(), metadata.getString("integration"));
+        assertEquals(IntegrationType.CUSTOM.stringValue, jsonMetadata.getString("integration"))
     }
 
     @Test
-    public void buildJSON_whenPaymentTypeSinglePayment_setsOptionsValidateFalse()
-        throws JSONException {
-        PayPalAccount sut = new PayPalAccount(
-            "correlation_id",
-            new JSONObject(),
-            PayPalPaymentIntent.SALE,
-            "alt_merchant_account_id",
-            "single-payment",
-                "session_id",
-                "form",
-                IntegrationType.CUSTOM
-        );
+    @Throws(JSONException::class)
+    fun `builds a PayPal account with single payment and sets options validate as false`() {
+        val sut = PayPalAccount(
+            clientMetadataId = "correlation_id",
+            urlResponseData = JSONObject(),
+            intent = PayPalPaymentIntent.SALE,
+            merchantAccountId = "alt_merchant_account_id",
+            paymentType = "single-payment",
+            sessionId = "session_id",
+            source = "form",
+            integration = IntegrationType.CUSTOM
+        )
 
-        JSONObject json = sut.buildJSON();
-        JSONObject builtAccount = json.getJSONObject(PAYPAL_KEY);
+        val jsonObject = sut.buildJSON()
+        val jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY)
 
-        assertFalse(builtAccount.getJSONObject("options").getBoolean("validate"));
+        assertFalse(jsonAccount.getJSONObject("options").getBoolean("validate"))
     }
 
     @Test
-    public void buildJSON_whenPaymentTypeNotSinglePayment_doesNotSetOptionsValidate()
-        throws JSONException {
-        PayPalAccount sut = new PayPalAccount(
-            "correlation_id",
-            new JSONObject(),
-            PayPalPaymentIntent.SALE,
-            "alt_merchant_account_id",
-            "billing-agreement",
-                "session_id",
-                "form",
-                IntegrationType.CUSTOM
-        );
+    @Throws(JSONException::class)
+    fun `builds a PayPal account with billing agreement and does not set options validate`() {
+        val sut = PayPalAccount(
+            clientMetadataId = "correlation_id",
+            urlResponseData = JSONObject(),
+            intent = PayPalPaymentIntent.SALE,
+            merchantAccountId = "alt_merchant_account_id",
+            paymentType = "billing-agreement",
+            sessionId = "session_id",
+            source = "form",
+            integration = IntegrationType.CUSTOM
+        )
 
-        JSONObject json = sut.buildJSON();
-        JSONObject builtAccount = json.getJSONObject(PAYPAL_KEY);
+        val jsonObject = sut.buildJSON()
+        val jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY)
 
-        assertFalse(builtAccount.has("options"));
+        assertFalse(jsonAccount.has("options"))
     }
 
     @Test
-    public void doesNotIncludeEmptyObjectsWhenSerializing() throws JSONException {
-        PayPalAccount sut = new PayPalAccount(
-            null,
-            new JSONObject(),
-            null,
-            null,
-            null,
-                null,
-                null,
-                null
-        );
+    @Throws(JSONException::class)
+    fun `builds a PayPal account as an empty object and does not include it when serializing`() {
+        val sut = PayPalAccount(
+            clientMetadataId = null,
+            urlResponseData = JSONObject(),
+            intent = null,
+            merchantAccountId = null,
+            paymentType = null,
+            sessionId = null,
+            source = null,
+            integration = null
+        )
 
-        JSONObject json = sut.buildJSON();
-        JSONObject builtAccount = json.getJSONObject(PAYPAL_KEY);
+        val jsonObject = sut.buildJSON()
+        val jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY)
 
-        assertEquals(0, builtAccount.length());
+        assertEquals(0, jsonAccount.length())
     }
 
     @Test
-    public void build_addsAllUrlResponseData() throws JSONException {
-        JSONObject urlResponseData = new JSONObject()
+    @Throws(JSONException::class)
+    fun `builds a PayPal account and adds URL response data`() {
+        val urlResponseData = JSONObject()
             .put("data1", "data1")
             .put("data2", "data2")
-            .put("data3", "data3");
+            .put("data3", "data3")
 
-        PayPalAccount sut = new PayPalAccount(
-            null,
-            urlResponseData,
-            null,
-            null,
-            null,
-                null,
-                null,
-                null
-        );
+        val sut = PayPalAccount(
+            clientMetadataId = null,
+            urlResponseData = urlResponseData,
+            intent = null,
+            merchantAccountId = null,
+            paymentType = null,
+            sessionId = null,
+            source = null,
+            integration = null
+        )
 
-        JSONObject json = sut.buildJSON();
-        JSONObject paymentMethodNonceJson = json.getJSONObject(PAYPAL_KEY);
+        val jsonObject = sut.buildJSON()
+        val jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY)
 
-        JSONObject expectedPaymentMethodNonceJSON = new JSONObject()
+        val expectedPaymentMethodNonceJSON = JSONObject()
             .put("data1", "data1")
             .put("data2", "data2")
-            .put("data3", "data3");
-        JSONAssert.assertEquals(expectedPaymentMethodNonceJSON, paymentMethodNonceJson,
-            JSONCompareMode.NON_EXTENSIBLE);
+            .put("data3", "data3")
+
+        JSONAssert.assertEquals(expectedPaymentMethodNonceJSON, jsonAccount, JSONCompareMode.NON_EXTENSIBLE)
     }
 
     @Test
-    public void build_doesNotIncludeIntentIfNotSet() throws JSONException {
-        PayPalAccount sut = new PayPalAccount(
-            null,
-            new JSONObject(),
-            null,
-            null,
-            null,
-                null,
-                null,
-                null
-        );
+    @Throws(JSONException::class)
+    fun `builds a PayPal account with an empty intent and does not include it when serializing`() {
+        val sut = PayPalAccount(
+            clientMetadataId = "correlation_id",
+            urlResponseData = JSONObject(),
+            intent = null,
+            merchantAccountId = "alt_merchant_account_id",
+            paymentType = "billing-agreement",
+            sessionId = "session_id",
+            source = "form",
+            integration = IntegrationType.CUSTOM
+        )
 
-        JSONObject jsonObject = sut.buildJSON();
-        JSONObject jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY);
+        val jsonObject = sut.buildJSON()
+        val jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY)
 
-        assertFalse(jsonAccount.has("intent"));
+        assertFalse(jsonAccount.has("intent"))
     }
 }
