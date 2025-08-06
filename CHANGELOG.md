@@ -4,7 +4,7 @@
 
 * All Modules
   * Analytics updates for PayPal's analytics service (FPTI)
-    * Add `space_key` to `batch_params`
+    * Add `space_key` and `product_name` to `batch_params`
     * Add `context_type` to `event_params`
 
 ## 5.14.0 (2025-07-23)

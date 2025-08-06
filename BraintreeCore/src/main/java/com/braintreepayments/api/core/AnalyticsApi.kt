@@ -43,6 +43,7 @@ internal class AnalyticsApi(
     ): JSONObject {
         val batchParamsJSON = mapDeviceMetadataToFPTIBatchParamsJSON(metadata)
         batchParamsJSON.put(FPTI_BATCH_KEY_SPACE_KEY, "SKDUYK")
+        batchParamsJSON.put(FPTI_BATCH_KEY_PRODUCT_NAME, "BT_DCC")
 
         authorization?.let {
             if (it is ClientToken) {
@@ -163,5 +164,6 @@ internal class AnalyticsApi(
         private const val FPTI_BATCH_KEY_PLATFORM = "platform"
         private const val FPTI_BATCH_KEY_SESSION_ID = "session_id"
         private const val FPTI_BATCH_KEY_SPACE_KEY = "space_key"
+        private const val FPTI_BATCH_KEY_PRODUCT_NAME = "product_name"
     }
 }
