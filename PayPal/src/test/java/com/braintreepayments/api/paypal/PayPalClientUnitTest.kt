@@ -175,7 +175,8 @@ class PayPalClientUnitTest {
                 PayPalAnalytics.TOKENIZATION_STARTED,
                 AnalyticsEventParams(
                     isVaultRequest = true,
-                    shopperSessionId = "test-shopper-session-id"
+                    shopperSessionId = "test-shopper-session-id",
+                    contextType = "BA-TOKEN"
                 ),
                 true
             )
@@ -366,7 +367,8 @@ class PayPalClientUnitTest {
 
         val params = AnalyticsEventParams(
             isVaultRequest = false,
-            errorDescription = PayPalClient.Companion.PAYPAL_NOT_ENABLED_MESSAGE
+            errorDescription = PayPalClient.Companion.PAYPAL_NOT_ENABLED_MESSAGE,
+            contextType = "EC-TOKEN"
         )
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true) }
         verify { analyticsParamRepository.reset() }
@@ -401,7 +403,8 @@ class PayPalClientUnitTest {
 
         val params = AnalyticsEventParams(
             isVaultRequest = false,
-            errorDescription = errorMessage
+            errorDescription = errorMessage,
+            contextType = "EC-TOKEN"
         )
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true) }
     }
@@ -431,7 +434,8 @@ class PayPalClientUnitTest {
 
         val params = AnalyticsEventParams(
             isVaultRequest = true,
-            errorDescription = errorMessage
+            errorDescription = errorMessage,
+            contextType = "BA-TOKEN"
         )
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true) }
     }

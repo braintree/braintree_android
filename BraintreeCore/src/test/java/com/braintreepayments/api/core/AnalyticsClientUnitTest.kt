@@ -41,6 +41,7 @@ class AnalyticsClientUnitTest {
         buttonType = "button-type",
         buttonOrder = "button-order",
         pageType = "page-type",
+        contextType = "EC-TOKEN",
     )
 
     private val expectedAnalyticsEvent = AnalyticsEvent(
