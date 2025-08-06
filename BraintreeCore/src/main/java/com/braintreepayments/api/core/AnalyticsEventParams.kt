@@ -20,7 +20,7 @@ import androidx.annotation.RestrictTo
  * @property buttonOrder The order or ranking in which payment buttons appear.
  * @property pageType The page or view that a button is displayed on.
  * @property errorDescription use this to provide more detail on a failure event.
- * @property contextType Indicates whether the request was a Billing Agreement (BA-TOKEN) 
+ * @property contextType Indicates whether the request was a Billing Agreement (BA-TOKEN)
  * or Checkout (EC-TOKEN) request.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
