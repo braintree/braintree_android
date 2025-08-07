@@ -92,7 +92,7 @@ public class HttpRequestUnitTest {
                     .path("https://anothersite.com/path");
 
             URL expectedURL = new URL("https://anothersite.com/path");
-            assertEquals(expectedURL, sut.getURL());
+            assertEquals(expectedURL, sut.getUrl());
         }
 
         @Test
@@ -114,7 +114,7 @@ public class HttpRequestUnitTest {
                     .path("sample/path");
 
             try {
-                sut.getURL();
+                sut.getUrl();
                 fail("should throw an error");
             } catch (Exception e) {
                 assertTrue(e instanceof MalformedURLException);
@@ -128,7 +128,7 @@ public class HttpRequestUnitTest {
                     .path("sample/path");
 
             try {
-                sut.getURL();
+                sut.getUrl();
                 fail("should throw an error");
             } catch (Exception e) {
                 assertTrue(e instanceof MalformedURLException);
@@ -193,7 +193,7 @@ public class HttpRequestUnitTest {
                     .baseUrl(baseUrl)
                     .path(path);
 
-            assertEquals(expectedURL, sut.getURL());
+            assertEquals(expectedURL, sut.getUrl());
         }
     }
 }

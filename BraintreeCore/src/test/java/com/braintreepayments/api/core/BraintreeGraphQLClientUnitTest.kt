@@ -37,28 +37,6 @@ class BraintreeGraphQLClientUnitTest {
 
     @Test
     @Throws(MalformedURLException::class, URISyntaxException::class)
-    fun post_withPathAndDataAndConfigurationAndCallback_sendsHttpRequest() {
-        val httpRequestSlot = slot<HttpRequest>()
-        every {
-            httpClient.sendRequest(capture(httpRequestSlot), httpResponseCallback)
-        } returns Unit
-
-        val sut = BraintreeGraphQLClient(httpClient)
-        sut.post("sample/path", "data", configuration, authorization, httpResponseCallback)
-
-        val httpRequest = httpRequestSlot.captured
-        assertEquals(URL("https://example-graphql.com/graphql/sample/path"), httpRequest.url)
-        assertEquals("data", String(httpRequest.data, StandardCharsets.UTF_8))
-        assertEquals("POST", httpRequest.method)
-
-        val headers = httpRequest.headers
-        assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
-        assertEquals("Bearer encoded_auth_fingerprint", headers["Authorization"])
-        assertEquals("2024-08-23", headers["Braintree-Version"])
-    }
-
-    @Test
-    @Throws(MalformedURLException::class, URISyntaxException::class)
     fun post_withDataAndConfigurationAndCallback_sendsHttpRequest() {
         val httpRequestSlot = slot<HttpRequest>()
         every {
@@ -70,50 +48,13 @@ class BraintreeGraphQLClientUnitTest {
 
         val httpRequest = httpRequestSlot.captured
         assertEquals(URL("https://example-graphql.com/graphql"), httpRequest.url)
-        assertEquals("data", String(httpRequest.data, StandardCharsets.UTF_8))
+        assertEquals("data", String(httpRequest.data ?: ByteArray(0), StandardCharsets.UTF_8))
         assertEquals("POST", httpRequest.method)
 
         val headers = httpRequest.headers
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
         assertEquals("Bearer encoded_auth_fingerprint", headers["Authorization"])
         assertEquals("2024-08-23", headers["Braintree-Version"])
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun post_withPathAndDataAndConfiguration_sendsHttpRequest() {
-        val httpRequestSlot = slot<HttpRequest>()
-        every { httpClient.sendRequest(capture(httpRequestSlot)) } returns "sample response"
-
-        val sut = BraintreeGraphQLClient(httpClient)
-        val result = sut.post("sample/path", "data", configuration, authorization)
-        assertEquals("sample response", result)
-
-        val httpRequest = httpRequestSlot.captured
-        assertEquals(URL("https://example-graphql.com/graphql/sample/path"), httpRequest.url)
-        assertEquals("data", String(httpRequest.data, StandardCharsets.UTF_8))
-        assertEquals("POST", httpRequest.method)
-
-        val headers = httpRequest.headers
-        assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
-        assertEquals("Bearer encoded_auth_fingerprint", headers["Authorization"])
-        assertEquals("2024-08-23", headers["Braintree-Version"])
-    }
-
-    @Test
-    fun post_withPathAndDataAndConfigurationAndCallback_withInvalidToken_forwardsExceptionToCallback() {
-        val authorization = InvalidAuthorization("invalid", "token invalid")
-
-        val exceptionSlot = slot<BraintreeException>()
-        every {
-            httpResponseCallback.onResult(null, capture(exceptionSlot))
-        } returns Unit
-
-        val sut = BraintreeGraphQLClient(httpClient)
-        sut.post("sample/path", "data", configuration, authorization, httpResponseCallback)
-
-        val exception = exceptionSlot.captured
-        assertEquals("token invalid", exception.message)
     }
 
     @Test
@@ -130,17 +71,5 @@ class BraintreeGraphQLClientUnitTest {
 
         val exception = exceptionSlot.captured
         assertEquals("token invalid", exception.message)
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun post_withPathAndDataAndConfiguration_withInvalidToken_throwsBraintreeException() {
-        val authorization = InvalidAuthorization("invalid", "token invalid")
-        val sut = BraintreeGraphQLClient(httpClient)
-        try {
-            sut.post("sample/path", "data", configuration, authorization)
-        } catch (e: BraintreeException) {
-            assertEquals("token invalid", e.message)
-        }
     }
 }

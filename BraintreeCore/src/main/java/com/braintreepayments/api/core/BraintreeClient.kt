@@ -184,31 +184,29 @@ class BraintreeClient internal constructor(
     /**
      * @suppress
      */
-    fun sendGraphQLPOST(json: JSONObject?, responseCallback: HttpResponseCallback) {
+    fun sendGraphQLPOST(json: JSONObject, responseCallback: HttpResponseCallback) {
         getConfiguration { configuration, configError ->
             if (configuration != null) {
                 graphQLClient.post(
-                    json?.toString(),
-                    configuration,
-                    merchantRepository.authorization
+                    data = json.toString(),
+                    configuration = configuration,
+                    authorization = merchantRepository.authorization
                 ) { response, httpError ->
                     response?.let {
                         try {
-                            json?.optString(GraphQLConstants.Keys.QUERY)
-                                ?.let { query ->
-                                    val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
-                                    val finalQuery = query.replace(queryDiscardHolder, "")
-                                    val params = AnalyticsEventParams(
-                                        startTime = it.timing.startTime,
-                                        endTime = it.timing.endTime,
-                                        endpoint = finalQuery
-                                    )
-                                    sendAnalyticsEvent(
-                                        eventName = CoreAnalytics.API_REQUEST_LATENCY,
-                                        params = params,
-                                        sendImmediately = false
-                                    )
-                                }
+                            val query = json.optString(GraphQLConstants.Keys.QUERY)
+                            val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
+                            val finalQuery = query.replace(queryDiscardHolder, "")
+                            val params = AnalyticsEventParams(
+                                startTime = it.timing.startTime,
+                                endTime = it.timing.endTime,
+                                endpoint = finalQuery
+                            )
+                            sendAnalyticsEvent(
+                                eventName = CoreAnalytics.API_REQUEST_LATENCY,
+                                params = params,
+                                sendImmediately = false
+                            )
                             responseCallback.onResult(it.body, null)
                         } catch (jsonException: JSONException) {
                             responseCallback.onResult(null, jsonException)
