@@ -44,7 +44,7 @@ class PayPalLauncherUnitTest {
     @Before
     fun setup() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
-        every { paymentAuthRequestParams.paypalContextId } returns paymentToken
+        every { paymentAuthRequestParams.contextId } returns paymentToken
         every { paymentAuthRequestParams.approvalUrl } returns approvalUrl
         every { intent.data } returns Uri.parse(approvalUrl)
 
@@ -124,7 +124,7 @@ class PayPalLauncherUnitTest {
             analyticsClient.sendEvent(
                 if (isAppSwitch) PayPalAnalytics.APP_SWITCH_STARTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
                 AnalyticsEventParams(
-                    payPalContextId = paymentToken,
+                    contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                 )
             )
@@ -138,7 +138,7 @@ class PayPalLauncherUnitTest {
                     PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED
                 },
                 AnalyticsEventParams(
-                    payPalContextId = paymentToken,
+                    contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                 )
             )
@@ -161,7 +161,7 @@ class PayPalLauncherUnitTest {
             analyticsClient.sendEvent(
                 if (isAppSwitch) PayPalAnalytics.APP_SWITCH_FAILED else PayPalAnalytics.BROWSER_PRESENTATION_FAILED,
                 AnalyticsEventParams(
-                    payPalContextId = paymentToken,
+                    contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                     errorDescription = "AndroidManifest.xml is incorrectly configured or another app " +
                         "defines the same browser switch url as this app. See " +
@@ -183,7 +183,7 @@ class PayPalLauncherUnitTest {
             analyticsClient.sendEvent(
                 PayPalAnalytics.APP_SWITCH_FAILED,
                 AnalyticsEventParams(
-                    payPalContextId = paymentToken,
+                    contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                     errorDescription = "BrowserSwitchOptions is null"
                 )
@@ -205,7 +205,7 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 PayPalAnalytics.HANDLE_RETURN_STARTED,
-                AnalyticsEventParams(payPalContextId = token, appSwitchUrl = returnUrl)
+                AnalyticsEventParams(contextId = token, appSwitchUrl = returnUrl)
             )
         }
     }
@@ -240,7 +240,7 @@ class PayPalLauncherUnitTest {
         verify { analyticsClient.sendEvent(any(), any()) }
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_SUCCEEDED, slot1.captured)
-        assertEquals(paymentToken, slot2.captured.payPalContextId)
+        assertEquals(paymentToken, slot2.captured.contextId)
         assertEquals(approvalUrl, slot2.captured.appSwitchUrl)
     }
 
@@ -274,7 +274,7 @@ class PayPalLauncherUnitTest {
         }
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_FAILED, slot1.captured)
-        assertEquals(paymentToken, slot2.captured.payPalContextId)
+        assertEquals(paymentToken, slot2.captured.contextId)
     }
 
     @Test
@@ -297,6 +297,6 @@ class PayPalLauncherUnitTest {
         verify { analyticsClient.sendEvent(any(), any()) }
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_NO_RESULT, slot1.captured)
-        assertEquals(paymentToken, slot2.captured.payPalContextId)
+        assertEquals(paymentToken, slot2.captured.contextId)
     }
 }

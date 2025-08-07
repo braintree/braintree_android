@@ -130,13 +130,13 @@ internal class PayPalInternalClient(
                     appSwitchFlowFromPayPalResponse = paypalPaymentResource.isAppSwitchFlow
                 )
 
-                val paypalContextId = extractPayPalContextId(parsedRedirectUri)
+                val contextId = extractContextId(parsedRedirectUri)
                 val clientMetadataId = payPalRequest.riskCorrelationId ?: run {
                     val dataCollectorRequest = DataCollectorInternalRequest(
                         payPalRequest.hasUserLocationConsent
                     ).apply {
                         applicationGuid = dataCollector.getPayPalInstallationGUID(context)
-                        clientMetadataId = paypalContextId
+                        clientMetadataId = contextId
                     }
                     dataCollector.getClientMetadataId(context, dataCollectorRequest, configuration)
                 }
@@ -153,11 +153,11 @@ internal class PayPalInternalClient(
                     payPalRequest = payPalRequest,
                     browserSwitchOptions = null,
                     clientMetadataId = clientMetadataId,
-                    paypalContextId = paypalContextId,
+                    contextId = contextId,
                     successUrl = "$returnLink://onetouch/v1/success"
                 )
                 if (getAppSwitchUseCase()) {
-                    if (!paypalContextId.isNullOrEmpty()) {
+                    if (!contextId.isNullOrEmpty()) {
                         paymentAuthRequest.approvalUrl = createAppSwitchUri(parsedRedirectUri).toString()
                     } else {
                         callback.onResult(null, BraintreeException("Missing Token for PayPal App Switch."))
@@ -179,7 +179,7 @@ internal class PayPalInternalClient(
             .build()
     }
 
-    private fun extractPayPalContextId(redirectUri: Uri): String? {
+    private fun extractContextId(redirectUri: Uri): String? {
         return redirectUri.getQueryParameter("ba_token")
             ?: redirectUri.getQueryParameter("token")
     }
