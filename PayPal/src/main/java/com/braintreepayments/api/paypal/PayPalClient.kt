@@ -94,7 +94,6 @@ class PayPalClient internal constructor(
     ) {
         shopperSessionId = payPalRequest.shopperSessionId
         isVaultRequest = payPalRequest is PayPalVaultRequest
-
         analyticsParamRepository.didEnablePayPalAppSwitch = payPalRequest.enablePayPalAppSwitch
 
         braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
@@ -102,7 +101,7 @@ class PayPalClient internal constructor(
                 payPalContextId = null,
                 isVaultRequest = isVaultRequest,
                 shopperSessionId = shopperSessionId
-                )
+            )
 
             braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsEventParams)
 
@@ -166,7 +165,7 @@ class PayPalClient internal constructor(
                                     payPalContextId = payPalContextId,
                                     isVaultRequest = isVaultRequest,
                                     shopperSessionId = shopperSessionId
-                                    )
+                                )
                             )
                         }
 
@@ -261,7 +260,7 @@ class PayPalClient internal constructor(
             isVaultRequest = isVaultRequest,
             shopperSessionId = shopperSessionId,
             appSwitchUrl = paymentAuthResult.browserSwitchSuccess.returnUrl.toString()
-            )
+        )
 
         try {
             val urlResponseData = parseUrlResponseData(
