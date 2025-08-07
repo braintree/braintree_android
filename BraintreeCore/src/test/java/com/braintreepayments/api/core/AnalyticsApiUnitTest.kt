@@ -58,8 +58,7 @@ class AnalyticsApiUnitTest {
         pageType = "page-type",
         didEnablePayPalAppSwitch = true,
         didPayPalServerAttemptAppSwitch = true,
-        errorDescription = "error-description",
-        contextType = "EC-TOKEN"
+        errorDescription = "error-description"
     )
 
     @Before
