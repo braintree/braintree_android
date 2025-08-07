@@ -58,7 +58,6 @@ class BaseHttpResponseParser : HttpResponseParser {
             HTTP_UPGRADE_REQUIRED,
             HTTP_INTERNAL_ERROR,
             HTTP_UNAVAILABLE -> readStream(connection.errorStream, gzip)
-
             else -> readStream(connection.errorStream, gzip)
         }
     }
