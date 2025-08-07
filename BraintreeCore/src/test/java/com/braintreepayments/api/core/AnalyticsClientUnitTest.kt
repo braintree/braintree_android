@@ -41,7 +41,6 @@ class AnalyticsClientUnitTest {
         buttonType = "button-type",
         buttonOrder = "button-order",
         pageType = "page-type",
-        contextType = "EC-TOKEN",
     )
 
     private val expectedAnalyticsEvent = AnalyticsEvent(
@@ -61,7 +60,6 @@ class AnalyticsClientUnitTest {
         pageType = analyticsEventParams.pageType,
         didEnablePayPalAppSwitch = true,
         didPayPalServerAttemptAppSwitch = true,
-        contextType = analyticsEventParams.contextType,
     )
 
     @Before

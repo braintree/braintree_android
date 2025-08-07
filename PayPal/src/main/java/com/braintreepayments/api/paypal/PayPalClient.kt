@@ -47,11 +47,6 @@ class PayPalClient internal constructor(
     private var shopperSessionId: String? = null
 
     /**
-     * Used for analytics purpose to determine if the context type is `BA_TOKEN` or `EC_TOKEN`
-     */
-    private var contextType: String? = null
-
-    /**
      * Initializes a new [PayPalClient] instance
      *
      * @param context          an Android Context
@@ -99,7 +94,6 @@ class PayPalClient internal constructor(
     ) {
         shopperSessionId = payPalRequest.shopperSessionId
         isVaultRequest = payPalRequest is PayPalVaultRequest
-        contextType = if (payPalRequest is PayPalVaultRequest) "BA-TOKEN" else "EC-TOKEN"
 
         analyticsParamRepository.didEnablePayPalAppSwitch = payPalRequest.enablePayPalAppSwitch
 
@@ -107,8 +101,7 @@ class PayPalClient internal constructor(
             val analyticsEventParams = AnalyticsEventParams(
                 payPalContextId = null,
                 isVaultRequest = isVaultRequest,
-                shopperSessionId = shopperSessionId,
-                contextType = contextType,
+                shopperSessionId = shopperSessionId
                 )
 
             braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsEventParams)
@@ -172,8 +165,7 @@ class PayPalClient internal constructor(
                                 AnalyticsEventParams(
                                     payPalContextId = payPalContextId,
                                     isVaultRequest = isVaultRequest,
-                                    shopperSessionId = shopperSessionId,
-                                    contextType = contextType,
+                                    shopperSessionId = shopperSessionId
                                     )
                             )
                         }
@@ -188,8 +180,7 @@ class PayPalClient internal constructor(
                     AnalyticsEventParams(
                         payPalContextId = null,
                         isVaultRequest = isVaultRequest,
-                        shopperSessionId = shopperSessionId,
-                        contextType = contextType,
+                        shopperSessionId = shopperSessionId
                     )
                 )
             }
@@ -269,8 +260,7 @@ class PayPalClient internal constructor(
             payPalContextId = paypalContextId,
             isVaultRequest = isVaultRequest,
             shopperSessionId = shopperSessionId,
-            appSwitchUrl = paymentAuthResult.browserSwitchSuccess.returnUrl.toString(),
-            contextType = contextType,
+            appSwitchUrl = paymentAuthResult.browserSwitchSuccess.returnUrl.toString()
             )
 
         try {

@@ -87,7 +87,7 @@ internal class AnalyticsApi(
             .putOpt(FPTI_KEY_MERCHANT_ENABLED_APP_SWITCH, event.didEnablePayPalAppSwitch)
             .putOpt(FPTI_KEY_PAYPAL_ATTEMPTED_APP_SWITCH, event.didPayPalServerAttemptAppSwitch)
             .putOpt(FPTI_KEY_ERROR_DESC, event.errorDescription)
-            .putOpt(FPTI_KEY_CONTEXT_TYPE, event.contextType)
+            .putOpt(FPTI_KEY_CONTEXT_TYPE, if (event.isVaultRequest) "BA-TOKEN" else "EC-TOKEN")
     }
 
     @Throws(JSONException::class)
