@@ -23,13 +23,13 @@ internal class ConfigurationCache(
         return null
     }
 
-    fun saveConfiguration(configuration: Configuration, cacheKey: String?) {
+    fun saveConfiguration(configuration: Configuration, cacheKey: String) {
         saveConfiguration(configuration, cacheKey, System.currentTimeMillis())
     }
 
     fun saveConfiguration(
         configuration: Configuration,
-        cacheKey: String?,
+        cacheKey: String,
         currentTimeMillis: Long
     ) {
         val timestampKey = "${cacheKey}_timestamp"
