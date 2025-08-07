@@ -73,7 +73,7 @@ internal class AnalyticsApi(
             .put(FPTI_KEY_TIMESTAMP, event.timestamp)
             .put(FPTI_KEY_IS_VAULT, event.isVaultRequest)
             .put(FPTI_KEY_TENANT_NAME, "Braintree")
-            .putOpt(FPTI_KEY_PAYPAL_CONTEXT_ID, event.payPalContextId)
+            .putOpt(FPTI_KEY_CONTEXT_ID, event.contextId)
             .putOpt(FPTI_KEY_LINK_TYPE, event.linkType)
             .putOpt(FPTI_KEY_START_TIME, event.startTime)
             .putOpt(FPTI_KEY_END_TIME, event.endTime)
@@ -119,7 +119,7 @@ internal class AnalyticsApi(
     companion object {
         private const val FPTI_ANALYTICS_URL = "https://api-m.paypal.com/v1/tracking/batch/events"
 
-        private const val FPTI_KEY_PAYPAL_CONTEXT_ID = "paypal_context_id"
+        private const val FPTI_KEY_CONTEXT_ID = "context_id"
         private const val FPTI_KEY_IS_VAULT = "is_vault"
         private const val FPTI_KEY_LINK_TYPE = "link_type"
         private const val FPTI_KEY_TOKENIZATION_KEY = "tokenization_key"
