@@ -657,7 +657,7 @@ class PayPalClientUnitTest {
         assertTrue(result is PayPalResult.Cancel)
 
         val params = AnalyticsEventParams(
-            payPalContextId = null,
+            contextId = null,
             isVaultRequest = false,
             appSwitchUrl = approvalUrl
         )
@@ -707,7 +707,7 @@ class PayPalClientUnitTest {
         assertEquals(payPalAccountNonce, (result as PayPalResult.Success).nonce)
 
         val params = AnalyticsEventParams(
-            payPalContextId = "EC-HERMES-SANDBOX-EC-TOKEN",
+            contextId = "EC-HERMES-SANDBOX-EC-TOKEN",
             isVaultRequest = false,
             appSwitchUrl = approvalUrl
         )

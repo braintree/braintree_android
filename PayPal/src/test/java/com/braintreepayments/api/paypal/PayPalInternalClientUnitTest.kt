@@ -217,7 +217,7 @@ class PayPalInternalClientUnitTest {
         assertEquals(PayPalPaymentIntent.AUTHORIZE, params.intent)
         assertEquals("sample-merchant-account-id", params.merchantAccountId)
         assertEquals("https://example.com://onetouch/v1/success", params.successUrl)
-        assertEquals("fake-token", params.paypalContextId)
+        assertEquals("fake-token", params.contextId)
         assertEquals("sample-client-metadata-id", params.clientMetadataId)
         assertEquals(expectedUrl, params.approvalUrl)
     }
@@ -233,7 +233,7 @@ class PayPalInternalClientUnitTest {
         assertTrue(params.isBillingAgreement)
         assertEquals("sample-merchant-account-id", params.merchantAccountId)
         assertEquals("https://example.com://onetouch/v1/success", params.successUrl)
-        assertEquals("fake-ba-token", params.paypalContextId)
+        assertEquals("fake-ba-token", params.contextId)
         assertEquals("sample-client-metadata-id", params.clientMetadataId)
         assertEquals(expectedUrl, params.approvalUrl)
     }
@@ -752,9 +752,9 @@ class PayPalInternalClientUnitTest {
         assertTrue(payPalPaymentAuthRequestParams.isBillingAgreement)
 
         val approvalUri = Uri.parse(payPalPaymentAuthRequestParams.approvalUrl)
-        val paypalContextId = approvalUri.getQueryParameter("ba_token")
-        assertNotNull(paypalContextId)
-        assertEquals(paypalContextId, payPalPaymentAuthRequestParams.paypalContextId)
+        val contextId = approvalUri.getQueryParameter("ba_token")
+        assertNotNull(contextId)
+        assertEquals(contextId, payPalPaymentAuthRequestParams.contextId)
         assertNotNull(approvalUri.getQueryParameter("source"))
         assertNotNull(approvalUri.getQueryParameter("switch_initiated_time"))
         assertEquals(approvalUri.host, "paypal.com")
@@ -781,7 +781,7 @@ class PayPalInternalClientUnitTest {
         val expectedUrl = "https://www.example.com/some?ba_token=fake-ba-token"
         val payPalPaymentAuthRequestParams = slot.captured
         assertTrue(payPalPaymentAuthRequestParams.isBillingAgreement)
-        assertEquals("fake-ba-token", payPalPaymentAuthRequestParams.paypalContextId)
+        assertEquals("fake-ba-token", payPalPaymentAuthRequestParams.contextId)
         assertEquals(expectedUrl, payPalPaymentAuthRequestParams.approvalUrl)
     }
 
