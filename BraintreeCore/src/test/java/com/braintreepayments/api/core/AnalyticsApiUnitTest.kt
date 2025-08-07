@@ -180,7 +180,7 @@ class AnalyticsApiUnitTest {
                                     "error_desc": "${event.errorDescription}",
                                     "event_name": "${event.name}",
                                     "button_position": "${event.buttonOrder}",
-                                    "context_type": "EC-TOKEN"
+                                    "context_type": "BA-TOKEN"
                                 }
                             ]
                         }
