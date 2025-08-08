@@ -15,13 +15,15 @@ import com.braintreepayments.api.shopperinsights.v2.PaymentOptions
 import com.braintreepayments.api.shopperinsights.v2.ShopperInsightsClientV2
 import java.security.MessageDigest
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 @OptIn(ExperimentalBetaApi::class)
 class ShopperInsightsV2ViewModel : ViewModel() {
     private lateinit var shopperInsightsClient: ShopperInsightsClientV2
 
-    var sessionId = MutableStateFlow<String>("94f0b2db-5323-4d86-add3-paypal000000")
+    private val _sessionId = MutableStateFlow<String>("94f0b2db-5323-4d86-add3-paypal000000")
+    val sessionId: StateFlow<String> = _sessionId
     @OptIn(ExperimentalBetaApi::class)
     var recommendations = MutableStateFlow<List<PaymentOptions>>(emptyList())
     var isInPayPalNetwork = MutableStateFlow<Boolean>(false)
@@ -38,16 +40,12 @@ class ShopperInsightsV2ViewModel : ViewModel() {
             hashedPhoneNumber = nationalNumberText.sha256()
         )
 
-        this@ShopperInsightsV2ViewModel.sessionId.update {
-            ""
-        }
+        _sessionId.update { "" }
 
         shopperInsightsClient.createCustomerSession(customerSessionRequest) { result ->
             when (result) {
                 is CustomerSessionResult.Success -> {
-                    this@ShopperInsightsV2ViewModel.sessionId.update {
-                        result.sessionId
-                    }
+                    _sessionId.update { result.sessionId }
                 }
                 is CustomerSessionResult.Failure -> {
                     this@ShopperInsightsV2ViewModel.error.update { "CreateCustomerSession failed: ${result.error}" }
@@ -67,16 +65,12 @@ class ShopperInsightsV2ViewModel : ViewModel() {
             hashedPhoneNumber = nationalNumberText.sha256()
         )
 
-        this@ShopperInsightsV2ViewModel.sessionId.update {
-            ""
-        }
+        _sessionId.update { "" }
 
         shopperInsightsClient.updateCustomerSession(customerSessionRequest, sessionId) { result ->
             when (result) {
                 is CustomerSessionResult.Success -> {
-                    this@ShopperInsightsV2ViewModel.sessionId.update {
-                        result.sessionId
-                    }
+                    _sessionId.update { result.sessionId }
                 }
                 is CustomerSessionResult.Failure -> {
                     error.update { "UpdateCustomerSession failed: ${result.error}" }
