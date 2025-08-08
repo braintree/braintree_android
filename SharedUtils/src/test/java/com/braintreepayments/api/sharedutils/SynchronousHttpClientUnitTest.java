@@ -74,7 +74,7 @@ public class SynchronousHttpClientUnitTest {
                 .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
-        when(httpRequest.getURL()).thenReturn(url);
+        when(httpRequest.getUrl()).thenReturn(url);
 
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(url.openConnection()).thenReturn(connection);
@@ -95,7 +95,7 @@ public class SynchronousHttpClientUnitTest {
                 .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
-        when(httpRequest.getURL()).thenReturn(url);
+        when(httpRequest.getUrl()).thenReturn(url);
 
         HttpsURLConnection connection = mock(HttpsURLConnection.class);
         when(url.openConnection()).thenReturn(connection);
@@ -118,7 +118,7 @@ public class SynchronousHttpClientUnitTest {
         when(httpRequest.getReadTimeout()).thenReturn(123);
 
         URL url = mock(URL.class);
-        when(httpRequest.getURL()).thenReturn(url);
+        when(httpRequest.getUrl()).thenReturn(url);
 
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(url.openConnection()).thenReturn(connection);
@@ -141,7 +141,7 @@ public class SynchronousHttpClientUnitTest {
         when(httpRequest.getConnectTimeout()).thenReturn(456);
 
         URL url = mock(URL.class);
-        when(httpRequest.getURL()).thenReturn(url);
+        when(httpRequest.getUrl()).thenReturn(url);
 
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(url.openConnection()).thenReturn(connection);
@@ -163,7 +163,7 @@ public class SynchronousHttpClientUnitTest {
                 .addHeader("Sample-Header", "Sample Value"));
 
         URL url = mock(URL.class);
-        when(httpRequest.getURL()).thenReturn(url);
+        when(httpRequest.getUrl()).thenReturn(url);
 
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(url.openConnection()).thenReturn(connection);
@@ -184,7 +184,7 @@ public class SynchronousHttpClientUnitTest {
                 .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
-        when(httpRequest.getURL()).thenReturn(url);
+        when(httpRequest.getUrl()).thenReturn(url);
 
         HttpsURLConnection connection = mock(HttpsURLConnection.class);
         when(url.openConnection()).thenReturn(connection);
@@ -205,7 +205,7 @@ public class SynchronousHttpClientUnitTest {
                 .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
-        when(httpRequest.getURL()).thenReturn(url);
+        when(httpRequest.getUrl()).thenReturn(url);
 
         HttpsURLConnection connection = mock(HttpsURLConnection.class);
         when(url.openConnection()).thenReturn(connection);
@@ -227,7 +227,7 @@ public class SynchronousHttpClientUnitTest {
                 .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
-        when(httpRequest.getURL()).thenReturn(url);
+        when(httpRequest.getUrl()).thenReturn(url);
 
         HttpsURLConnection connection = mock(HttpsURLConnection.class);
         when(url.openConnection()).thenReturn(connection);
@@ -255,7 +255,7 @@ public class SynchronousHttpClientUnitTest {
                 .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
-        when(httpRequest.getURL()).thenReturn(url);
+        when(httpRequest.getUrl()).thenReturn(url);
 
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(url.openConnection()).thenReturn(connection);
@@ -279,7 +279,7 @@ public class SynchronousHttpClientUnitTest {
                 .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
-        when(httpRequest.getURL()).thenReturn(url);
+        when(httpRequest.getUrl()).thenReturn(url);
 
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(url.openConnection()).thenReturn(connection);
@@ -309,7 +309,7 @@ public class SynchronousHttpClientUnitTest {
                 .baseUrl("https://www.sample.com"));
 
         URL url = mock(URL.class);
-        when(httpRequest.getURL()).thenReturn(url);
+        when(httpRequest.getUrl()).thenReturn(url);
 
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(url.openConnection()).thenReturn(connection);

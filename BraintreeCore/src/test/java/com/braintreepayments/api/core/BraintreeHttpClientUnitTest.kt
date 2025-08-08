@@ -169,7 +169,7 @@ class BraintreeHttpClientUnitTest {
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, headers["User-Agent"])
         assertEquals(Fixtures.TOKENIZATION_KEY, headers["Client-Key"])
         assertEquals("POST", httpRequest.method)
-        assertEquals("{}", String(httpRequest.data, StandardCharsets.UTF_8))
+        assertEquals("{}", String(httpRequest.data ?: ByteArray(0), StandardCharsets.UTF_8))
     }
 
     @Test
@@ -203,7 +203,7 @@ class BraintreeHttpClientUnitTest {
         assertEquals("POST", httpRequest.method)
         val expectedData =
             """{"authorizationFingerprint":"${clientToken.authorizationFingerprint}"}"""
-        assertEquals(expectedData, String(httpRequest.data, StandardCharsets.UTF_8))
+        assertEquals(expectedData, String(httpRequest.data ?: ByteArray(0), StandardCharsets.UTF_8))
     }
 
     @Test
