@@ -21,11 +21,12 @@ import kotlinx.coroutines.flow.update
 class ShopperInsightsV2ViewModel : ViewModel() {
     private lateinit var shopperInsightsClient: ShopperInsightsClientV2
 
-    var sessionId = MutableStateFlow<String>("")
+    var sessionId = MutableStateFlow<String>("94f0b2db-5323-4d86-add3-paypal000000")
     @OptIn(ExperimentalBetaApi::class)
     var recommendations = MutableStateFlow<List<PaymentOptions>>(emptyList())
     var isInPayPalNetwork = MutableStateFlow<Boolean>(false)
     var error = MutableStateFlow<String>("")
+    var recommendationsCompleted = MutableStateFlow<Boolean>(false)
 
     fun initShopperInsightsClient(context: Context, authString: String) {
         shopperInsightsClient = ShopperInsightsClientV2(context, authString)
@@ -36,10 +37,17 @@ class ShopperInsightsV2ViewModel : ViewModel() {
             hashedEmail = emailText.sha256(),
             hashedPhoneNumber = nationalNumberText.sha256()
         )
+
+        this@ShopperInsightsV2ViewModel.sessionId.update {
+            ""
+        }
+
         shopperInsightsClient.createCustomerSession(customerSessionRequest) { result ->
             when (result) {
                 is CustomerSessionResult.Success -> {
-                    this@ShopperInsightsV2ViewModel.sessionId.update { result.sessionId }
+                    this@ShopperInsightsV2ViewModel.sessionId.update {
+                        result.sessionId
+                    }
                 }
                 is CustomerSessionResult.Failure -> {
                     this@ShopperInsightsV2ViewModel.error.update { "CreateCustomerSession failed: ${result.error}" }
@@ -48,19 +56,30 @@ class ShopperInsightsV2ViewModel : ViewModel() {
         }
     }
 
-    fun handleUpdateCustomerSession(emailText: String, countryCodeText: String, nationalNumberText: String) {
+    fun handleUpdateCustomerSession(
+        emailText: String,
+        countryCodeText: String,
+        nationalNumberText: String,
+        sessionId: String
+    ) {
         val customerSessionRequest = CustomerSessionRequest(
             hashedEmail = emailText.sha256(),
             hashedPhoneNumber = nationalNumberText.sha256()
         )
-        val sessionId = "94f0b2db-5323-4d86-add3-paypal000000"
+
+        this@ShopperInsightsV2ViewModel.sessionId.update {
+            ""
+        }
+
         shopperInsightsClient.updateCustomerSession(customerSessionRequest, sessionId) { result ->
             when (result) {
                 is CustomerSessionResult.Success -> {
-                    this@ShopperInsightsV2ViewModel.sessionId.update { result.sessionId }
+                    this@ShopperInsightsV2ViewModel.sessionId.update {
+                        result.sessionId
+                    }
                 }
                 is CustomerSessionResult.Failure -> {
-                    this@ShopperInsightsV2ViewModel.error.update { "UpdateCustomerSession failed: ${result.error}" }
+                    error.update { "UpdateCustomerSession failed: ${result.error}" }
                 }
             }
         }
@@ -74,6 +93,9 @@ class ShopperInsightsV2ViewModel : ViewModel() {
                     result.customerRecommendations.paymentRecommendations?.let { recommendations ->
                         this@ShopperInsightsV2ViewModel.recommendations.update { recommendations }
                     }
+
+                    recommendationsCompleted.value = true
+
                     if (isInPayPalNetwork.value == true) {
                         val paymentOption = this@ShopperInsightsV2ViewModel.recommendations.value.first().paymentOption
                         val buttonType = if (paymentOption == "PAYPAL") {
@@ -87,6 +109,8 @@ class ShopperInsightsV2ViewModel : ViewModel() {
                     }
                 }
                 is CustomerRecommendationsResult.Failure -> {
+                    recommendationsCompleted.value = true
+
                     this@ShopperInsightsV2ViewModel.error.update { "GetRecommendations failed: ${result.error}" }
                 }
             }
@@ -106,6 +130,10 @@ class ShopperInsightsV2ViewModel : ViewModel() {
             buttonType,
             sessionId
         )
+    }
+
+    fun resetRecommendationsCompleted() {
+        recommendationsCompleted.value = false
     }
 }
 
