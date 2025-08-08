@@ -82,7 +82,6 @@ class HttpRequest(
             return if (currentPath.startsWith("http")) {
                 URL(currentPath)
             } else {
-                // This will throw MalformedURLException if baseUrl is null or empty, matching original behavior
                 val baseURI = URL(baseUrl).toURI()
                 val newPath = join(baseURI.path ?: "", currentPath)
                 val newURI = baseURI.resolve(newPath).normalize()
