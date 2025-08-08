@@ -14,7 +14,7 @@ class UUIDHelper {
     val formattedUUID: String
         get() = UUID.randomUUID().toString().replace("-", "")
 
-    fun getInstallationGUID(context: Context?): String {
+    fun getInstallationGUID(context: Context): String {
         return getInstallationGUID(BraintreeSharedPreferences.getInstance(context))
     }
 
