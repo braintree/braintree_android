@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* Venmo
+  * Fixed bug in `VenmoClient` where `deepLinkFallbackUrlScheme` was not being set correctly in deprecated constructor
 * All Modules
   * Analytics updates for PayPal's analytics service (FPTI)
     * Add `space_key` and `product_name` to `batch_params`
