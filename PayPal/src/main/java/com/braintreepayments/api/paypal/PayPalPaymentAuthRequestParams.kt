@@ -9,7 +9,7 @@ data class PayPalPaymentAuthRequestParams @JvmOverloads internal constructor(
     var browserSwitchOptions: BrowserSwitchOptions?,
     var approvalUrl: String? = null,
     val clientMetadataId: String? = null,
-    val paypalContextId: String? = null,
+    val contextId: String? = null,
     val successUrl: String? = null,
 ) {
 

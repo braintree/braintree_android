@@ -41,12 +41,32 @@ class AnalyticsApiUnitTest {
         sessionId = "session-id"
     )
 
-    private val event = AnalyticsEvent(
+    private val clientTokenEvent = AnalyticsEvent(
         name = "event-name",
         timestamp = 123L,
-        payPalContextId = "paypal-context-id",
+        contextId = "context-id",
         linkType = "link-type",
         isVaultRequest = true,
+        startTime = 123,
+        endTime = 234,
+        endpoint = "endpoint",
+        experiment = "experiment",
+        appSwitchUrl = "app-switch-url",
+        shopperSessionId = "shopper-session-id",
+        buttonType = "button-type",
+        buttonOrder = "button-order",
+        pageType = "page-type",
+        didEnablePayPalAppSwitch = true,
+        didPayPalServerAttemptAppSwitch = true,
+        errorDescription = "error-description"
+    )
+
+    private val tokenizationKeyEvent = AnalyticsEvent(
+        name = "event-name",
+        timestamp = 123L,
+        contextId = "context-id",
+        linkType = "link-type",
+        isVaultRequest = false,
         startTime = 123,
         endTime = 234,
         endpoint = "endpoint",
@@ -91,7 +111,7 @@ class AnalyticsApiUnitTest {
 
         val expectedJson = getExpectedJson(clientToken)
 
-        sut.execute(listOf(event), configuration)
+        sut.execute(listOf(clientTokenEvent), configuration)
 
         verify {
             httpClient.post(
@@ -114,7 +134,7 @@ class AnalyticsApiUnitTest {
 
         val expectedJson = getExpectedJson(tokenizationKey)
 
-        sut.execute(listOf(event), configuration)
+        sut.execute(listOf(tokenizationKeyEvent), configuration)
 
         verify {
             httpClient.post(
@@ -154,6 +174,8 @@ class AnalyticsApiUnitTest {
                                 "is_simulator": ${deviceMetadata.isSimulator},
                                 "platform": "${deviceMetadata.platform}",
                                 "api_integration_type": "${integrationType.stringValue}",
+                                "space_key": "SKDUYK",
+                                "product_name": "BT_DCC",
                                 "app_name": "${deviceMetadata.appName}",
                                 "client_os": "${deviceMetadata.clientOs}",
                                 "app_id": "${deviceMetadata.appId}"
@@ -161,23 +183,24 @@ class AnalyticsApiUnitTest {
                             "event_params": [
                                 {
                                     "tenant_name": "Braintree",
-                                    "attempted_app_switch": ${event.didPayPalServerAttemptAppSwitch},
-                                    "page_type": "${event.pageType}",
-                                    "merchant_enabled_app_switch": ${event.didEnablePayPalAppSwitch},
-                                    "button_type": "${event.buttonType}",
-                                    "end_time": ${event.endTime},
-                                    "is_vault": ${event.isVaultRequest},
-                                    "paypal_context_id": "${event.payPalContextId}",
-                                    "url": "${event.appSwitchUrl}",
-                                    "link_type": "${event.linkType}",
-                                    "start_time": ${event.startTime},
-                                    "endpoint": "${event.endpoint}",
-                                    "t": ${event.timestamp},
-                                    "experiment": "${event.experiment}",
-                                    "shopper_session_id": "${event.shopperSessionId}",
-                                    "error_desc": "${event.errorDescription}",
-                                    "event_name": "${event.name}",
-                                    "button_position": "${event.buttonOrder}"
+                                    "attempted_app_switch": ${tokenizationKeyEvent.didPayPalServerAttemptAppSwitch},
+                                    "page_type": "${tokenizationKeyEvent.pageType}",
+                                    "merchant_enabled_app_switch": ${tokenizationKeyEvent.didEnablePayPalAppSwitch},
+                                    "button_type": "${tokenizationKeyEvent.buttonType}",
+                                    "end_time": ${tokenizationKeyEvent.endTime},
+                                    "is_vault": ${tokenizationKeyEvent.isVaultRequest},
+                                    "context_id": "${tokenizationKeyEvent.contextId}",
+                                    "url": "${tokenizationKeyEvent.appSwitchUrl}",
+                                    "link_type": "${tokenizationKeyEvent.linkType}",
+                                    "start_time": ${tokenizationKeyEvent.startTime},
+                                    "endpoint": "${tokenizationKeyEvent.endpoint}",
+                                    "t": ${tokenizationKeyEvent.timestamp},
+                                    "experiment": "${tokenizationKeyEvent.experiment}",
+                                    "shopper_session_id": "${tokenizationKeyEvent.shopperSessionId}",
+                                    "error_desc": "${tokenizationKeyEvent.errorDescription}",
+                                    "event_name": "${tokenizationKeyEvent.name}",
+                                    "button_position": "${tokenizationKeyEvent.buttonOrder}",
+                                    "context_type": "EC-TOKEN"
                                 }
                             ]
                         }
@@ -207,6 +230,8 @@ class AnalyticsApiUnitTest {
                                 "is_simulator": ${deviceMetadata.isSimulator},
                                 "api_integration_type": "${integrationType.stringValue}",
                                 "platform": "${deviceMetadata.platform}",
+                                "space_key": "SKDUYK",
+                                "product_name": "BT_DCC",
                                 "authorization_fingerprint": "${authorization.bearer}",
                                 "app_name": "${deviceMetadata.appName}",
                                 "client_os": "${deviceMetadata.clientOs}",
@@ -215,23 +240,24 @@ class AnalyticsApiUnitTest {
                             "event_params": [
                                 {
                                     "tenant_name": "Braintree",
-                                    "attempted_app_switch": ${event.didPayPalServerAttemptAppSwitch},
-                                    "page_type": "${event.pageType}",
-                                    "merchant_enabled_app_switch": ${event.didEnablePayPalAppSwitch},
-                                    "button_type": "${event.buttonType}",
-                                    "end_time": ${event.endTime},
-                                    "is_vault": ${event.isVaultRequest},
-                                    "paypal_context_id": "${event.payPalContextId}",
-                                    "url": "${event.appSwitchUrl}",
-                                    "link_type": "${event.linkType}",
-                                    "start_time": ${event.startTime},
-                                    "endpoint": "${event.endpoint}",
-                                    "t": ${event.timestamp},
-                                    "experiment": "${event.experiment}",
-                                    "shopper_session_id": "${event.shopperSessionId}",
-                                    "error_desc": "${event.errorDescription}",
-                                    "event_name": "${event.name}",
-                                    "button_position": "${event.buttonOrder}"
+                                    "attempted_app_switch": ${clientTokenEvent.didPayPalServerAttemptAppSwitch},
+                                    "page_type": "${clientTokenEvent.pageType}",
+                                    "merchant_enabled_app_switch": ${clientTokenEvent.didEnablePayPalAppSwitch},
+                                    "button_type": "${clientTokenEvent.buttonType}",
+                                    "end_time": ${clientTokenEvent.endTime},
+                                    "is_vault": ${clientTokenEvent.isVaultRequest},
+                                    "context_id": "${clientTokenEvent.contextId}",
+                                    "url": "${clientTokenEvent.appSwitchUrl}",
+                                    "link_type": "${clientTokenEvent.linkType}",
+                                    "start_time": ${clientTokenEvent.startTime},
+                                    "endpoint": "${clientTokenEvent.endpoint}",
+                                    "t": ${clientTokenEvent.timestamp},
+                                    "experiment": "${clientTokenEvent.experiment}",
+                                    "shopper_session_id": "${clientTokenEvent.shopperSessionId}",
+                                    "error_desc": "${clientTokenEvent.errorDescription}",
+                                    "event_name": "${clientTokenEvent.name}",
+                                    "button_position": "${clientTokenEvent.buttonOrder}",
+                                    "context_type": "BA-TOKEN"
                                 }
                             ]
                         }

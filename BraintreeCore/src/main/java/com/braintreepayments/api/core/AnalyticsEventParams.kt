@@ -7,7 +7,7 @@ import androidx.annotation.RestrictTo
  * It is a catch-all data class for any parameters any of the modules wants to send. As such, not
  * all parameters are required at each call site.
  *
- * @property payPalContextId Used for linking events from the client to server side request.
+ * @property contextId Used for linking events from the client to server side request.
  * @property isVaultRequest Indicates whether the request was a BillingAgreement(BA)/Vault request.
  * @property startTime [HttpResponseTiming] start time.
  * @property endTime [HttpResponseTiming] end time.
@@ -23,7 +23,7 @@ import androidx.annotation.RestrictTo
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 data class AnalyticsEventParams @JvmOverloads constructor(
-    val payPalContextId: String? = null,
+    val contextId: String? = null,
     val isVaultRequest: Boolean = false,
     val startTime: Long? = null,
     val endTime: Long? = null,

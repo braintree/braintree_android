@@ -42,6 +42,9 @@ internal class AnalyticsApi(
         metadata: DeviceMetadata
     ): JSONObject {
         val batchParamsJSON = mapDeviceMetadataToFPTIBatchParamsJSON(metadata)
+        batchParamsJSON.put(FPTI_BATCH_KEY_SPACE_KEY, "SKDUYK")
+        batchParamsJSON.put(FPTI_BATCH_KEY_PRODUCT_NAME, "BT_DCC")
+
         authorization?.let {
             if (it is ClientToken) {
                 batchParamsJSON.put(FPTI_KEY_AUTH_FINGERPRINT, it.bearer)
@@ -70,7 +73,7 @@ internal class AnalyticsApi(
             .put(FPTI_KEY_TIMESTAMP, event.timestamp)
             .put(FPTI_KEY_IS_VAULT, event.isVaultRequest)
             .put(FPTI_KEY_TENANT_NAME, "Braintree")
-            .putOpt(FPTI_KEY_PAYPAL_CONTEXT_ID, event.payPalContextId)
+            .putOpt(FPTI_KEY_CONTEXT_ID, event.contextId)
             .putOpt(FPTI_KEY_LINK_TYPE, event.linkType)
             .putOpt(FPTI_KEY_START_TIME, event.startTime)
             .putOpt(FPTI_KEY_END_TIME, event.endTime)
@@ -84,6 +87,7 @@ internal class AnalyticsApi(
             .putOpt(FPTI_KEY_MERCHANT_ENABLED_APP_SWITCH, event.didEnablePayPalAppSwitch)
             .putOpt(FPTI_KEY_PAYPAL_ATTEMPTED_APP_SWITCH, event.didPayPalServerAttemptAppSwitch)
             .putOpt(FPTI_KEY_ERROR_DESC, event.errorDescription)
+            .putOpt(FPTI_KEY_CONTEXT_TYPE, if (event.isVaultRequest) "BA-TOKEN" else "EC-TOKEN")
     }
 
     @Throws(JSONException::class)
@@ -116,7 +120,7 @@ internal class AnalyticsApi(
     companion object {
         private const val FPTI_ANALYTICS_URL = "https://api-m.paypal.com/v1/tracking/batch/events"
 
-        private const val FPTI_KEY_PAYPAL_CONTEXT_ID = "paypal_context_id"
+        private const val FPTI_KEY_CONTEXT_ID = "context_id"
         private const val FPTI_KEY_IS_VAULT = "is_vault"
         private const val FPTI_KEY_LINK_TYPE = "link_type"
         private const val FPTI_KEY_TOKENIZATION_KEY = "tokenization_key"
@@ -139,6 +143,7 @@ internal class AnalyticsApi(
         private const val FPTI_KEY_MERCHANT_ENABLED_APP_SWITCH = "merchant_enabled_app_switch"
         private const val FPTI_KEY_PAYPAL_ATTEMPTED_APP_SWITCH = "attempted_app_switch"
         private const val FPTI_KEY_ERROR_DESC = "error_desc"
+        private const val FPTI_KEY_CONTEXT_TYPE = "context_type"
 
         private const val FPTI_BATCH_KEY_VENMO_INSTALLED = "venmo_installed"
         private const val FPTI_BATCH_KEY_PAYPAL_INSTALLED = "paypal_installed"
@@ -158,5 +163,7 @@ internal class AnalyticsApi(
         private const val FPTI_BATCH_KEY_MERCHANT_ID = "merchant_id"
         private const val FPTI_BATCH_KEY_PLATFORM = "platform"
         private const val FPTI_BATCH_KEY_SESSION_ID = "session_id"
+        private const val FPTI_BATCH_KEY_SPACE_KEY = "space_key"
+        private const val FPTI_BATCH_KEY_PRODUCT_NAME = "product_name"
     }
 }

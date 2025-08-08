@@ -32,7 +32,7 @@ class LocalPaymentClient internal constructor(
      * Used for linking events from the client to server side request
      * In the Local Payment flow this will be a Payment Token/Order ID
      */
-    private var payPalContextId: String? = null
+    private var contextId: String? = null
 
     /**
      * Initializes a new [LocalPaymentClient] instance
@@ -84,9 +84,9 @@ class LocalPaymentClient internal constructor(
                         request
                     ) { localPaymentResult: LocalPaymentAuthRequestParams?, createPaymentMethodError: Exception? ->
                         if (localPaymentResult != null) {
-                            val paypalContextId = localPaymentResult.paymentId
-                            if (paypalContextId.isNotEmpty()) {
-                                payPalContextId = paypalContextId
+                            val paymentId = localPaymentResult.paymentId
+                            if (paymentId.isNotEmpty()) {
+                                contextId = paymentId
                             }
                             buildBrowserSwitchOptions(
                                 localPaymentResult,
@@ -215,7 +215,7 @@ class LocalPaymentClient internal constructor(
 
     private fun sendAnalyticsEvent(eventName: String, errorDescription: String? = null) {
         val eventParameters = AnalyticsEventParams(
-            payPalContextId = payPalContextId,
+            contextId = contextId,
             errorDescription = errorDescription
         )
         braintreeClient.sendAnalyticsEvent(eventName, eventParameters)

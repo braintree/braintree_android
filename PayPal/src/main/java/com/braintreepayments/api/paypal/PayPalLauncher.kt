@@ -47,9 +47,9 @@ class PayPalLauncher internal constructor(
         paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch
     ): PayPalPendingRequest {
         val isAppSwitch = getAppSwitchUseCase()
-        val paypalContextId = paymentAuthRequest.requestParams.paypalContextId
+        val contextId = paymentAuthRequest.requestParams.contextId
         val analyticsEventParams = AnalyticsEventParams(
-            payPalContextId = paypalContextId,
+            contextId = contextId,
             appSwitchUrl = paymentAuthRequest.requestParams.approvalUrl
         )
 
@@ -125,9 +125,9 @@ class PayPalLauncher internal constructor(
         pendingRequest: PayPalPendingRequest.Started,
         intent: Intent
     ): PayPalPaymentAuthResult {
-        val payPalContextId = intent.data?.getQueryParameter("ba_token") ?: intent.data?.getQueryParameter("token")
+        val contextId = intent.data?.getQueryParameter("ba_token") ?: intent.data?.getQueryParameter("token")
         val analyticsEventParams = AnalyticsEventParams(
-            payPalContextId = payPalContextId,
+            contextId = contextId,
             appSwitchUrl = intent.data?.toString()
         )
 

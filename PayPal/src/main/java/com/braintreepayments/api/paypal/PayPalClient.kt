@@ -98,7 +98,7 @@ class PayPalClient internal constructor(
 
         braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
             val analyticsEventParams = AnalyticsEventParams(
-                payPalContextId = null,
+                contextId = null,
                 isVaultRequest = isVaultRequest,
                 shopperSessionId = shopperSessionId
             )
@@ -149,7 +149,7 @@ class PayPalClient internal constructor(
         ) { payPalResponse: PayPalPaymentAuthRequestParams?,
             error: Exception? ->
             if (payPalResponse != null) {
-                val payPalContextId = payPalResponse.paypalContextId
+                val contextId = payPalResponse.contextId
 
                 try {
                     payPalResponse.browserSwitchOptions = buildBrowserSwitchOptions(payPalResponse)
@@ -162,7 +162,7 @@ class PayPalClient internal constructor(
                                 callback,
                                 PayPalPaymentAuthRequest.Failure(exception),
                                 AnalyticsEventParams(
-                                    payPalContextId = payPalContextId,
+                                    contextId = contextId,
                                     isVaultRequest = isVaultRequest,
                                     shopperSessionId = shopperSessionId
                                 )
@@ -177,7 +177,7 @@ class PayPalClient internal constructor(
                     callback,
                     PayPalPaymentAuthRequest.Failure(error ?: BraintreeException("Error is null")),
                     AnalyticsEventParams(
-                        payPalContextId = null,
+                        contextId = null,
                         isVaultRequest = isVaultRequest,
                         shopperSessionId = shopperSessionId
                     )
@@ -254,9 +254,9 @@ class PayPalClient internal constructor(
         val switchInitiatedTime = Uri.parse(approvalUrl).getQueryParameter("switch_initiated_time")
         val isAppSwitchFlow = !switchInitiatedTime.isNullOrEmpty()
 
-        val paypalContextId = approvalUrl.toUri().getQueryParameter(tokenKey)?.takeIf { it.isNotEmpty() }
+        val contextId = approvalUrl.toUri().getQueryParameter(tokenKey)?.takeIf { it.isNotEmpty() }
         val analyticsEventParams = AnalyticsEventParams(
-            payPalContextId = paypalContextId,
+            contextId = contextId,
             isVaultRequest = isVaultRequest,
             shopperSessionId = shopperSessionId,
             appSwitchUrl = paymentAuthResult.browserSwitchSuccess.returnUrl.toString()

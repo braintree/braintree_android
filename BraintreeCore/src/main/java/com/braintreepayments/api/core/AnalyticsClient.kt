@@ -22,7 +22,7 @@ class AnalyticsClient internal constructor(
         val event = AnalyticsEvent(
             name = eventName,
             timestamp = time.currentTime,
-            payPalContextId = analyticsEventParams.payPalContextId,
+            contextId = analyticsEventParams.contextId,
             linkType = analyticsParamRepository.linkType?.stringValue,
             isVaultRequest = analyticsEventParams.isVaultRequest,
             startTime = analyticsEventParams.startTime,
