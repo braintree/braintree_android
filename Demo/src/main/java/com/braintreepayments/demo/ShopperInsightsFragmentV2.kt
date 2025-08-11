@@ -358,8 +358,8 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         emailText: String,
         countryCodeText: String,
         nationalNumberText: String,
-        sessionId: String)
-    {
+        sessionId: String
+    ) {
         viewModel.handleUpdateCustomerSession(emailText, countryCodeText, nationalNumberText, sessionId)
     }
 
