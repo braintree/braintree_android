@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.braintreepayments.demo"
-        minSdkVersion 23
+        minSdkVersion 24 // cardinal v3 requires it
         targetSdkVersion rootProject.targetSdkVersion
         versionCode rootProject.versionCode
         versionName rootProject.versionName
