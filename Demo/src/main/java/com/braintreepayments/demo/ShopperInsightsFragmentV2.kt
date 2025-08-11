@@ -346,11 +346,20 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         }
     }
 
-    private fun handleCreateCustomerSession(emailText: String, countryCodeText: String, nationalNumberText: String) {
+    private fun handleCreateCustomerSession(
+        emailText: String,
+        countryCodeText: String,
+        nationalNumberText: String
+    ) {
         viewModel.handleCreateCustomerSession(emailText, countryCodeText, nationalNumberText)
     }
 
-    private fun handleUpdateCustomerSession(emailText: String, countryCodeText: String, nationalNumberText: String, sessionId: String) {
+    private fun handleUpdateCustomerSession(
+        emailText: String,
+        countryCodeText: String,
+        nationalNumberText: String,
+        sessionId: String)
+    {
         viewModel.handleUpdateCustomerSession(emailText, countryCodeText, nationalNumberText, sessionId)
     }
 
