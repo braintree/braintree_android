@@ -95,7 +95,6 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
             var emailText by rememberSaveable { mutableStateOf("PR1_merchantname@personal.example.com") }
             var countryCodeText by rememberSaveable { mutableStateOf("1") }
             var nationalNumberText by rememberSaveable { mutableStateOf("4082321001") }
-            var lastButtonClicked by rememberSaveable { mutableStateOf("") }
 
             TextField(
                 value = emailText,
@@ -134,7 +133,6 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
             Button(
                 enabled = shopperInsightsClientSuccessfullyInstantiated,
                 onClick = {
-                    lastButtonClicked = "create"
                     viewModel.resetRecommendationsCompleted()
                     handleCreateCustomerSession(emailText, countryCodeText, nationalNumberText)
                 }
@@ -144,7 +142,6 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
             Button(
                 enabled = shopperInsightsClientSuccessfullyInstantiated,
                 onClick = {
-                    lastButtonClicked = "update"
                     viewModel.resetRecommendationsCompleted()
                     handleUpdateCustomerSession(emailText, countryCodeText, nationalNumberText, currentSessionId)
                 }
@@ -154,7 +151,6 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
             Button(
                 enabled = shopperInsightsClientSuccessfullyInstantiated,
                 onClick = {
-                    lastButtonClicked = "getRecommendations"
                     handleGetRecommendations(viewModel.sessionId.value)
                 }
             ) {

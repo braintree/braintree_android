@@ -48,7 +48,9 @@ class ShopperInsightsV2ViewModel : ViewModel() {
                     _sessionId.update { result.sessionId }
                 }
                 is CustomerSessionResult.Failure -> {
-                    this@ShopperInsightsV2ViewModel.error.update { "CreateCustomerSession failed: ${result.error}" }
+                    this@ShopperInsightsV2ViewModel.error.update {
+                        "CreateCustomerSession failed: ${result.error}"
+                    }
                 }
             }
         }
