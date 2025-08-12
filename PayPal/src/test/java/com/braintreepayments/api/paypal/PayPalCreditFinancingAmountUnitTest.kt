@@ -1,76 +1,73 @@
-package com.braintreepayments.api.paypal;
+package com.braintreepayments.api.paypal
 
-import android.os.Parcel;
+import android.os.Parcel
+import kotlinx.parcelize.parcelableCreator
+import org.json.JSONException
+import org.json.JSONObject
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.robolectric.RobolectricTestRunner
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-
-import com.braintreepayments.api.paypal.PayPalCreditFinancingAmount;
-
-@RunWith(RobolectricTestRunner.class)
-public class PayPalCreditFinancingAmountUnitTest {
+@RunWith(RobolectricTestRunner::class)
+class PayPalCreditFinancingAmountUnitTest {
 
     @Test
-    public void fromJson_returnsEmptyObjectWhenNull() {
-        PayPalCreditFinancingAmount creditFinancingAmount =
-                PayPalCreditFinancingAmount.fromJson(null);
-        assertNotNull(creditFinancingAmount);
-        assertNull(creditFinancingAmount.getCurrency());
-        assertNull(creditFinancingAmount.getValue());
+    fun `from JSON returns empty object if null`() {
+        val creditFinancingAmount = PayPalCreditFinancingAmount.fromJson(null)
+
+        assertNotNull(creditFinancingAmount)
+        assertNull(creditFinancingAmount.currency)
+        assertNull(creditFinancingAmount.value)
     }
 
     @Test
-    public void canCreateCreditFinancingAmount_fromStandardJson() throws JSONException {
-        String json = "{\"currency\": \"USD\", \"value\": \"123.45\"}";
-        PayPalCreditFinancingAmount creditFinancingAmount =
-                PayPalCreditFinancingAmount.fromJson(new JSONObject(json));
+    @Throws(JSONException::class)
+    fun `creates CreditFinancingAmount from standard JSON`() {
+        val json = "{\"currency\": \"USD\", \"value\": \"123.45\"}"
+        val creditFinancingAmount = PayPalCreditFinancingAmount.fromJson(JSONObject(json))
 
-        assertEquals("USD", creditFinancingAmount.getCurrency());
-        assertEquals("123.45", creditFinancingAmount.getValue());
+        assertEquals("USD", creditFinancingAmount.currency)
+        assertEquals("123.45", creditFinancingAmount.value)
     }
 
     @Test
-    public void canCreateCreditFinancingAmount_fromJsonMissingCurrency() throws JSONException {
-        String json = "{\"value\": \"123.45\"}";
-        PayPalCreditFinancingAmount creditFinancingAmount =
-                PayPalCreditFinancingAmount.fromJson(new JSONObject(json));
+    @Throws(JSONException::class)
+    fun `creates CreditFinancingAmount from JSON with missing currency`() {
+        val json = "{\"value\": \"123.45\"}"
+        val creditFinancingAmount = PayPalCreditFinancingAmount.fromJson(JSONObject(json))
 
-        assertNull(creditFinancingAmount.getCurrency());
-        assertEquals("123.45", creditFinancingAmount.getValue());
+        assertNull(creditFinancingAmount.currency)
+        assertEquals("123.45", creditFinancingAmount.value)
     }
 
     @Test
-    public void canCreateCreditFinancingAmount_fromJsonMissingValue() throws JSONException {
-        String json = "{\"currency\": \"USD\"}";
-        PayPalCreditFinancingAmount creditFinancingAmount =
-                PayPalCreditFinancingAmount.fromJson(new JSONObject(json));
+    @Throws(JSONException::class)
+    fun `creates CreditFinancingAmount from JSON with missing value`() {
+        val json = "{\"currency\": \"USD\"}"
+        val creditFinancingAmount = PayPalCreditFinancingAmount.fromJson(JSONObject(json))
 
-        assertNull(creditFinancingAmount.getValue());
-        assertEquals("USD", creditFinancingAmount.getCurrency());
+        assertNull(creditFinancingAmount.value)
+        assertEquals("USD", creditFinancingAmount.currency)
     }
 
     @Test
-    public void writeToParcel_serializesCorrectly() throws JSONException {
-        String json = "{\"currency\": \"USD\", \"value\": \"123.45\"}";
-        PayPalCreditFinancingAmount preSerialized =
-                PayPalCreditFinancingAmount.fromJson(new JSONObject(json));
+    @Throws(JSONException::class)
+    fun `write to Parcel serializes correctly`() {
+        val json = "{\"currency\": \"USD\", \"value\": \"123.45\"}"
+        val preSerialized = PayPalCreditFinancingAmount.fromJson(JSONObject(json))
 
-        Parcel parcel = Parcel.obtain();
-        preSerialized.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
+        val parcel = Parcel.obtain().apply {
+            preSerialized.writeToParcel(this, 0)
+            setDataPosition(0)
+        }
 
-        PayPalCreditFinancingAmount creditFinancingAmount =
-                PayPalCreditFinancingAmount.CREATOR.createFromParcel(parcel);
+        val creditFinancingAmount = parcelableCreator<PayPalCreditFinancingAmount>().createFromParcel(parcel)
 
-        assertNotNull(creditFinancingAmount);
-        assertEquals("USD", creditFinancingAmount.getCurrency());
-        assertEquals("123.45", creditFinancingAmount.getValue());
+        assertNotNull(creditFinancingAmount)
+        assertEquals("USD", creditFinancingAmount.currency)
+        assertEquals("123.45", creditFinancingAmount.value)
     }
 }
