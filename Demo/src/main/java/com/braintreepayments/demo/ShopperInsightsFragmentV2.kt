@@ -95,6 +95,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
             var emailText by rememberSaveable { mutableStateOf("PR1_merchantname@personal.example.com") }
             var countryCodeText by rememberSaveable { mutableStateOf("1") }
             var nationalNumberText by rememberSaveable { mutableStateOf("4082321001") }
+
             TextField(
                 value = emailText,
                 onValueChange = { newValue -> emailText = newValue },
@@ -120,45 +121,70 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                 )
             }
 
+            val currentSessionId = viewModel.sessionId.collectAsState().value
+            TextField(
+                value = currentSessionId,
+                onValueChange = {},
+                label = { Text("Session ID") },
+                enabled = true,
+                modifier = Modifier.padding(4.dp)
+            )
+
             Button(
                 enabled = shopperInsightsClientSuccessfullyInstantiated,
-                onClick = { handleCreateCustomerSession(emailText, countryCodeText, nationalNumberText) }
+                onClick = {
+                    viewModel.resetRecommendationsCompleted()
+                    handleCreateCustomerSession(emailText, countryCodeText, nationalNumberText)
+                }
             ) {
                 Text(text = "Create customer session")
             }
             Button(
                 enabled = shopperInsightsClientSuccessfullyInstantiated,
-                onClick = { handleUpdateCustomerSession(emailText, countryCodeText, nationalNumberText) }
+                onClick = {
+                    viewModel.resetRecommendationsCompleted()
+                    handleUpdateCustomerSession(emailText, countryCodeText, nationalNumberText, currentSessionId)
+                }
             ) {
                 Text(text = "Update customer session")
             }
             Button(
                 enabled = shopperInsightsClientSuccessfullyInstantiated,
-                onClick = { handleGetRecommendations(viewModel.sessionId.value) }
+                onClick = {
+                    handleGetRecommendations(viewModel.sessionId.value)
+                }
             ) {
                 Text(text = "Get recommendations")
             }
             val sessionId = viewModel.sessionId.collectAsState().value
-            Text(if (sessionId.isNotEmpty()) "Session Id = $sessionId" else "")
             val recommendations = viewModel.recommendations.collectAsState().value
-            Text(if (recommendations.isNotEmpty()) "Recommendations = $recommendations" else "")
-            val isInPayPalNetwork = viewModel.isInPayPalNetwork.collectAsState().value
-            if (isInPayPalNetwork && recommendations.first().paymentOption == "PAYPAL") {
-                Button(
-                    enabled = true,
-                    onClick = { launchPayPalVault(emailText, countryCodeText, nationalNumberText, sessionId) }
-                ) {
-                    Text(text = "PayPal")
+
+            val recommendationsCompleted = viewModel.recommendationsCompleted.collectAsState().value
+            if (recommendationsCompleted) {
+                Text(if (recommendations.isNotEmpty()) "Recommendations = $recommendations" else "")
+                val isInPayPalNetwork = viewModel.isInPayPalNetwork.collectAsState().value
+                if (isInPayPalNetwork && recommendations.first().paymentOption == "PAYPAL") {
+                    Button(
+                        enabled = true,
+                        onClick = { launchPayPalVault(emailText, countryCodeText, nationalNumberText, sessionId) }
+                    ) {
+                        Text(text = "PayPal")
+                    }
+                }
+                if (isInPayPalNetwork && recommendations.first().paymentOption == "VENMO") {
+                    Button(
+                        enabled = true,
+                        onClick = { launchVenmo(emailText, countryCodeText, nationalNumberText, sessionId) }
+                    ) {
+                        Text(text = "Venmo")
+                    }
+                }
+
+                if (!isInPayPalNetwork) {
+                    Text("In PayPal Network = $isInPayPalNetwork")
                 }
             }
-            if (isInPayPalNetwork && recommendations.first().paymentOption == "VENMO") {
-                Button(
-                    enabled = true,
-                    onClick = { launchVenmo(emailText, countryCodeText, nationalNumberText, sessionId) }
-                ) {
-                    Text(text = "Venmo")
-                }
-            }
+
             val error = viewModel.error.collectAsState().value
             if (error.isNotEmpty()) {
                 Toast.makeText(LocalContext.current, error, Toast.LENGTH_LONG).show()
@@ -320,12 +346,21 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         }
     }
 
-    private fun handleCreateCustomerSession(emailText: String, countryCodeText: String, nationalNumberText: String) {
+    private fun handleCreateCustomerSession(
+        emailText: String,
+        countryCodeText: String,
+        nationalNumberText: String
+    ) {
         viewModel.handleCreateCustomerSession(emailText, countryCodeText, nationalNumberText)
     }
 
-    private fun handleUpdateCustomerSession(emailText: String, countryCodeText: String, nationalNumberText: String) {
-        viewModel.handleUpdateCustomerSession(emailText, countryCodeText, nationalNumberText)
+    private fun handleUpdateCustomerSession(
+        emailText: String,
+        countryCodeText: String,
+        nationalNumberText: String,
+        sessionId: String
+    ) {
+        viewModel.handleUpdateCustomerSession(emailText, countryCodeText, nationalNumberText, sessionId)
     }
 
     private fun handleGetRecommendations(sessionId: String) {
