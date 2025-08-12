@@ -35,13 +35,12 @@ internal class CardinalClient {
                     CardinalConfigurationParameters(),
                     object : ThreeDotOhCardinalInitializeCallback {
                         override fun onSuccess(sdkTransactionID: String?) {
-                            TODO("Not yet implemented")
+                            callback.onResult(sdkTransactionID, null)
                         }
 
                         override fun onError(error: Error<Int>?) {
-                            TODO("Not yet implemented")
+                            callback.onResult(null, BraintreeException(error?.errorDescription))
                         }
-
                     }
                 )
         } catch (e: RuntimeException) {
