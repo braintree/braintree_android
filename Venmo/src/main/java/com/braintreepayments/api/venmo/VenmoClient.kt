@@ -44,7 +44,7 @@ class VenmoClient internal constructor(
      * Used for linking events from the client to server side request
      * In the Venmo flow this will be a Payment Context ID
      */
-    private var payPalContextId: String? = null
+    private var contextId: String? = null
 
     /**
      * True if `tokenize()` was called with a Vault request object type
@@ -163,7 +163,7 @@ class VenmoClient internal constructor(
             ) { paymentContextId: String?, exception: Exception? ->
                 if (exception == null) {
                     if (!paymentContextId.isNullOrEmpty()) {
-                        payPalContextId = paymentContextId
+                        contextId = paymentContextId
                     }
                     try {
                         createPaymentAuthRequest(
@@ -415,7 +415,7 @@ class VenmoClient internal constructor(
     private val analyticsParams: AnalyticsEventParams
         get() {
             val eventParameters = AnalyticsEventParams(
-                payPalContextId = payPalContextId,
+                contextId = contextId,
                 isVaultRequest = isVaultRequest,
                 appSwitchUrl = venmoRepository.venmoUrl.toString(),
             )
