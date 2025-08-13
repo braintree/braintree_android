@@ -34,7 +34,7 @@ class PayPalCreditFinancingUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun `successfully creates PayPalCreditFinancing from standart JSON`() {
+    fun `successfully creates PayPalCreditFinancing from standard JSON`() {
         val payPalAccountResponse = Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE
         val creditFinancingJsonObject = JSONObject(payPalAccountResponse).getJSONArray("paypalAccounts")
             .getJSONObject(0).getJSONObject("details")
