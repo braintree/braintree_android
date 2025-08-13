@@ -1,103 +1,104 @@
-package com.braintreepayments.api.paypal;
+package com.braintreepayments.api.paypal
 
-import android.os.Parcel;
+import android.os.Parcel
+import com.braintreepayments.api.testutils.Fixtures
+import kotlinx.parcelize.parcelableCreator
+import org.json.JSONException
+import org.json.JSONObject
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-
-import com.braintreepayments.api.testutils.Fixtures;
-
-@RunWith(RobolectricTestRunner.class)
-public class PayPalCreditFinancingUnitTest {
+@RunWith(RobolectricTestRunner::class)
+class PayPalCreditFinancingUnitTest {
 
     @Test
-    public void fromJson_returnsNullWhenEmpty() throws JSONException {
-        PayPalCreditFinancing payPalCreditFinancing = PayPalCreditFinancing.fromJson(null);
-        assertNotNull(payPalCreditFinancing);
-        assertFalse(payPalCreditFinancing.isCardAmountImmutable());
-        assertEquals(0, payPalCreditFinancing.getTerm());
-        assertFalse(payPalCreditFinancing.getHasPayerAcceptance());
-        assertNull(payPalCreditFinancing.getMonthlyPayment());
-        assertNull(payPalCreditFinancing.getTotalCost());
-        assertNull(payPalCreditFinancing.getTotalInterest());
+    @Throws(JSONException::class)
+    fun `creates PayPalCreditFinancing from JSON and returns null when empty`() {
+        val payPalCreditFinancing = PayPalCreditFinancing.fromJson(null)
+
+        assertNotNull(payPalCreditFinancing)
+        assertFalse(payPalCreditFinancing.isCardAmountImmutable)
+        assertEquals(0, payPalCreditFinancing.term)
+        assertFalse(payPalCreditFinancing.hasPayerAcceptance)
+        assertNull(payPalCreditFinancing.monthlyPayment)
+        assertNull(payPalCreditFinancing.totalCost)
+        assertNull(payPalCreditFinancing.totalInterest)
     }
 
     @Test
-    public void canCreateCreditFinancing_fromStandardJson() throws JSONException {
-        String paypalAccountResponse = Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE;
-        JSONObject creditFinancingJsonObject =
-                new JSONObject(paypalAccountResponse).getJSONArray("paypalAccounts")
-                        .getJSONObject(0).getJSONObject("details")
-                        .getJSONObject("creditFinancingOffered");
+    @Throws(JSONException::class)
+    fun `successfully creates PayPalCreditFinancing from standart JSON`() {
+        val payPalAccountResponse = Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE
+        val creditFinancingJsonObject = JSONObject(payPalAccountResponse).getJSONArray("paypalAccounts")
+            .getJSONObject(0).getJSONObject("details")
+            .getJSONObject("creditFinancingOffered")
 
-        PayPalCreditFinancing payPalCreditFinancing =
-                PayPalCreditFinancing.fromJson(creditFinancingJsonObject);
+        val payPalCreditFinancing = PayPalCreditFinancing.fromJson(creditFinancingJsonObject)
 
-        assertFalse(payPalCreditFinancing.isCardAmountImmutable());
-        assertEquals(18, payPalCreditFinancing.getTerm());
-        assertTrue(payPalCreditFinancing.getHasPayerAcceptance());
-        assertEquals("USD", payPalCreditFinancing.getMonthlyPayment().getCurrency());
-        assertEquals("USD", payPalCreditFinancing.getTotalCost().getCurrency());
-        assertEquals("USD", payPalCreditFinancing.getTotalInterest().getCurrency());
-        assertEquals("13.88", payPalCreditFinancing.getMonthlyPayment().getValue());
-        assertEquals("250.00", payPalCreditFinancing.getTotalCost().getValue());
-        assertEquals("0.00", payPalCreditFinancing.getTotalInterest().getValue());
+        assertFalse(payPalCreditFinancing.isCardAmountImmutable)
+        assertEquals(18, payPalCreditFinancing.term)
+        assertTrue(payPalCreditFinancing.hasPayerAcceptance)
+        assertEquals("USD", payPalCreditFinancing.monthlyPayment?.currency)
+        assertEquals("USD", payPalCreditFinancing.totalCost?.currency)
+        assertEquals("USD", payPalCreditFinancing.totalInterest?.currency)
+        assertEquals("13.88", payPalCreditFinancing.monthlyPayment?.value)
+        assertEquals("250.00", payPalCreditFinancing.totalCost?.value)
+        assertEquals("0.00", payPalCreditFinancing.totalInterest?.value)
     }
 
     @Test
-    public void canCreateCreditFinancing_fromJsonWithoutCreditFinancingData() throws JSONException {
-        String paypalAccountResponse = Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE_WITHOUT_CREDIT_FINANCING_DATA;
-        JSONObject creditFinancingJsonObject = new JSONObject(paypalAccountResponse).getJSONArray("paypalAccounts")
-            .getJSONObject(0).getJSONObject("details").getJSONObject("creditFinancingOffered");
+    @Throws(JSONException::class)
+    fun `creates PayPalCreditFinancing from JSON without credit financing data`() {
+        val payPalAccountResponse = Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE_WITHOUT_CREDIT_FINANCING_DATA
+        val creditFinancingJsonObject = JSONObject(payPalAccountResponse).getJSONArray("paypalAccounts")
+            .getJSONObject(0).getJSONObject("details")
+            .getJSONObject("creditFinancingOffered")
 
-        PayPalCreditFinancing payPalCreditFinancing = PayPalCreditFinancing.fromJson(creditFinancingJsonObject);
+        val payPalCreditFinancing = PayPalCreditFinancing.fromJson(creditFinancingJsonObject)
 
-        assertFalse(payPalCreditFinancing.isCardAmountImmutable());
-        assertEquals(18, payPalCreditFinancing.getTerm());
-        assertFalse(payPalCreditFinancing.getHasPayerAcceptance());
-        assertNull(payPalCreditFinancing.getMonthlyPayment().getCurrency());
-        assertNull(payPalCreditFinancing.getTotalCost().getCurrency());
-        assertNull(payPalCreditFinancing.getTotalInterest().getCurrency());
-        assertNull(payPalCreditFinancing.getMonthlyPayment().getValue());
-        assertNull(payPalCreditFinancing.getTotalCost().getValue());
-        assertNull(payPalCreditFinancing.getTotalInterest().getValue());
+        assertFalse(payPalCreditFinancing.isCardAmountImmutable)
+        assertEquals(18, payPalCreditFinancing.term)
+        assertFalse(payPalCreditFinancing.hasPayerAcceptance)
+        assertNull(payPalCreditFinancing.monthlyPayment?.currency)
+        assertNull(payPalCreditFinancing.totalCost?.currency)
+        assertNull(payPalCreditFinancing.totalInterest?.currency)
+        assertNull(payPalCreditFinancing.monthlyPayment?.value)
+        assertNull(payPalCreditFinancing.totalCost?.value)
+        assertNull(payPalCreditFinancing.totalInterest?.value)
     }
 
     @Test
-    public void writeToParcel_serializesCorrectly() throws JSONException {
-        String paypalAccountResponse = Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE;
-        JSONObject creditFinancingJsonObject =
-                new JSONObject(paypalAccountResponse).getJSONArray("paypalAccounts")
-                        .getJSONObject(0).getJSONObject("details")
-                        .getJSONObject("creditFinancingOffered");
+    @Throws(JSONException::class)
+    fun `writes to Parcel and serializes correctly`() {
+        val payPalAccountResponse = Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE
+        val creditFinancingJsonObject = JSONObject(payPalAccountResponse).getJSONArray("paypalAccounts")
+            .getJSONObject(0).getJSONObject("details")
+            .getJSONObject("creditFinancingOffered")
 
-        PayPalCreditFinancing preSerialized =
-                PayPalCreditFinancing.fromJson(creditFinancingJsonObject);
-        Parcel parcel = Parcel.obtain();
-        preSerialized.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
+        val preSerialized = PayPalCreditFinancing.fromJson(creditFinancingJsonObject)
+        val parcel = Parcel.obtain().apply {
+            preSerialized.writeToParcel(this, 0)
+            setDataPosition(0)
+        }
 
-        PayPalCreditFinancing payPalCreditFinancing =
-                PayPalCreditFinancing.CREATOR.createFromParcel(parcel);
+        val payPalCreditFinancing = parcelableCreator<PayPalCreditFinancing>().createFromParcel(parcel)
 
-        assertNotNull(payPalCreditFinancing);
-        assertFalse(payPalCreditFinancing.isCardAmountImmutable());
-        assertEquals(18, payPalCreditFinancing.getTerm());
-        assertTrue(payPalCreditFinancing.getHasPayerAcceptance());
-        assertEquals("USD", payPalCreditFinancing.getMonthlyPayment().getCurrency());
-        assertEquals("USD", payPalCreditFinancing.getTotalCost().getCurrency());
-        assertEquals("USD", payPalCreditFinancing.getTotalInterest().getCurrency());
-        assertEquals("13.88", payPalCreditFinancing.getMonthlyPayment().getValue());
-        assertEquals("250.00", payPalCreditFinancing.getTotalCost().getValue());
-        assertEquals("0.00", payPalCreditFinancing.getTotalInterest().getValue());
+        assertNotNull(payPalCreditFinancing)
+        assertFalse(payPalCreditFinancing.isCardAmountImmutable)
+        assertEquals(18, payPalCreditFinancing.term)
+        assertTrue(payPalCreditFinancing.hasPayerAcceptance)
+        assertEquals("USD", payPalCreditFinancing.monthlyPayment?.currency)
+        assertEquals("USD", payPalCreditFinancing.totalCost?.currency)
+        assertEquals("USD", payPalCreditFinancing.totalInterest?.currency)
+        assertEquals("13.88", payPalCreditFinancing.monthlyPayment?.value)
+        assertEquals("250.00", payPalCreditFinancing.totalCost?.value)
+        assertEquals("0.00", payPalCreditFinancing.totalInterest?.value)
     }
 }
