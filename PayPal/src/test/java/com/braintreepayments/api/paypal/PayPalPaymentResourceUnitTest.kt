@@ -1,12 +1,12 @@
 package com.braintreepayments.api.paypal
 
 import org.json.JSONObject
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestParameterInjector
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestParameterInjector::class)
 class PayPalPaymentResourceUnitTest {
