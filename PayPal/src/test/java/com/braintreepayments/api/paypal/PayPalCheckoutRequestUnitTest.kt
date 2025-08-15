@@ -300,7 +300,7 @@ class PayPalCheckoutRequestUnitTest {
             appLink = null
         )
 
-        assertTrue(requestBody.contains("\"phone_number\":{\"country_code\":\"1\",\"national_number\":\"1231231234\"}"))
+        assertTrue(requestBody.contains("\"payer_phone\":{\"country_code\":\"1\",\"national_number\":\"1231231234\"}"))
     }
 
     @Test
