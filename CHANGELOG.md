@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+  * Fix an issue where `PayPalRequest` was sending `phone_number` instead of `payer_phone`
+
 ## 5.15.0 (2025-08-13)
 
 * Venmo
