@@ -12,18 +12,18 @@ class PayPalLineItemUnitTest {
     @Test
     fun `toJson sets keys and values`() {
         val item = PayPalLineItem(
+            description = "A new item",
+            imageUrl = "http://example.com/image.jpg",
             kind = PayPalLineItemKind.DEBIT,
             name = "An Item",
+            productCode = "abc-123",
             quantity = "1",
-            unitAmount = "2"
+            unitAmount = "2",
+            unitTaxAmount = "1.50",
+            upcCode = "upc-code",
+            upcType = PayPalLineItemUpcType.UPC_TYPE_2,
+            url = "http://example.com"
         )
-        item.description = "A new item"
-        item.imageUrl = "http://example.com/image.jpg"
-        item.productCode = "abc-123"
-        item.unitTaxAmount = "1.50"
-        item.upcType = PayPalLineItemUpcType.UPC_TYPE_2
-        item.upcCode = "upc-code"
-        item.url = "http://example.com"
 
         val json: JSONObject = item.toJson()
 
