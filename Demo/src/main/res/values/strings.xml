@@ -90,7 +90,6 @@
     <string name="paypal_display_name_summary">Name to be displayed in the PayPal flow</string>
     <string name="paypal_landing_page_type_billing">Billing</string>
     <string name="paypal_landing_page_type_login">Login</string>
-    <string name="paypal_offer_pay_later">Offer Pay Later</string>
     <string name="venmo">Venmo</string>
     <string name="vault_venmo">Vault Venmo</string>
     <string name="vault_venmo_summary">Vault Venmo payment methods on creation. Requires a customer id to be set.</string>
@@ -109,6 +108,7 @@
     <string name="paypal_address_override_summary">Sends a shipping address as an override option to PayPal for any PayPal request</string>
     <string name="paypal_rba_metadata">RBA Metadata flow</string>
     <string name="paypal_rba_metadata_summary">Sets the recurring billing data on the PayPal Vault Request</string>
+    <string name="paypal_offer_pay_later">Offer Pay Later</string>
 
     <!-- VenmoActivity -->
     <string name="bt_descriptor_pay_with_venmo">Venmo</string>
