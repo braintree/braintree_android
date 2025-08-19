@@ -160,11 +160,7 @@ internal class PayPalInternalClient(
                         val flowType = if (payPalRequest.isBillingAgreement()) VAULT_FLOW_TYPE else ECS_FLOW_TYPE
                         val merchantId = configuration.merchantId
 
-                        paymentAuthRequest.approvalUrl = createAppSwitchUri(
-                            parsedRedirectUri,
-                            flowType,
-                            merchantId
-                        ).toString()
+                        paymentAuthRequest.approvalUrl = createAppSwitchUri(parsedRedirectUri, flowType, merchantId).toString()
                     } else {
                         callback.onResult(null, BraintreeException("Missing Token for PayPal App Switch."))
                     }

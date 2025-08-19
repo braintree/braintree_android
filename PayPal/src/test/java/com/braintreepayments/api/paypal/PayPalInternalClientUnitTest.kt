@@ -962,7 +962,7 @@ class PayPalInternalClientUnitTest {
 
         val slot = slot<PayPalPaymentAuthRequestParams>()
         verify { payPalInternalClientCallback.onResult(capture(slot), null) }
-        
+
         val approvalUri = Uri.parse(slot.captured.approvalUrl)
         assertEquals("braintree_sdk", approvalUri.getQueryParameter("source"))
         assertEquals("va", approvalUri.getQueryParameter("flow_type"))
@@ -989,7 +989,7 @@ class PayPalInternalClientUnitTest {
 
         val slot = slot<PayPalPaymentAuthRequestParams>()
         verify { payPalInternalClientCallback.onResult(capture(slot), null) }
-        
+
         val approvalUri = Uri.parse(slot.captured.approvalUrl)
         assertEquals("braintree_sdk", approvalUri.getQueryParameter("source"))
         assertEquals("ecs", approvalUri.getQueryParameter("flow_type"))
