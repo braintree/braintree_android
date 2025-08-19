@@ -46,41 +46,51 @@ class PayPalVaultRequestUnitTest {
     @Suppress("LongMethod")
     fun `creates PayPalVaultRequest and sets values correctly`() {
         val postalAddress = PostalAddress()
-        val request = PayPalVaultRequest(true).apply {
-            shopperSessionId = "shopper-insights-id"
-            localeCode = "US"
-            billingAgreementDescription = "Billing Agreement Description"
-            isShippingAddressRequired = true
-            shippingAddressOverride = postalAddress
-            displayName = "Display Name"
-            riskCorrelationId = "123-correlation"
-            landingPageType = PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN
-            shouldOfferCredit = true
-        }
         val billingInterval = PayPalBillingInterval.MONTH
         val pricingModel = PayPalPricingModel.FIXED
-        val billingPricing = PayPalBillingPricing(pricingModel, "1.00").apply {
+        val billingPricing = PayPalBillingPricing(
+            pricingModel = pricingModel,
+            amount = "1.00",
             reloadThresholdAmount = "6.00"
-        }
-        val billingCycle = PayPalBillingCycle(true, 2, billingInterval, 1)
-            .apply {
-                sequence = 1
-                startDate = "2024-04-06T00:00:00Z"
-                pricing = billingPricing
-            }
-        val billingDetails = PayPalRecurringBillingDetails(listOf(billingCycle), "11.00", "USD")
-            .apply {
-                oneTimeFeeAmount = "2.00"
-                productName = "A Product"
-                productDescription = "A Description"
-                productQuantity = 1
-                shippingAmount = "5.00"
-                taxAmount = "3.00"
-            }
-        request.apply {
-            recurringBillingDetails = billingDetails
+        )
+        val billingCycle = PayPalBillingCycle(
+            isTrial = true,
+            numberOfExecutions = 2,
+            interval = billingInterval,
+            intervalCount = 1,
+            sequence = 1,
+            startDate = "2024-04-06T00:00:00Z",
+            pricing = billingPricing
+        )
+
+        val billingDetails = PayPalRecurringBillingDetails(
+            billingCycles = listOf(billingCycle),
+            totalAmount = "11.00",
+            currencyISOCode = "USD",
+            oneTimeFeeAmount = "2.00",
+            productName = "A Product",
+            productDescription = "A Description",
+            productQuantity = 1,
+            shippingAmount = "5.00",
+            taxAmount = "3.00"
+        )
+
+        val request = PayPalVaultRequest(
+            hasUserLocationConsent = true,
+            localeCode = "US",
+            billingAgreementDescription = "Billing Agreement Description",
+            isShippingAddressRequired = true,
+            shippingAddressOverride = postalAddress,
+            displayName = "Display Name",
+            riskCorrelationId = "123-correlation",
+            landingPageType = PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN,
+            shouldOfferCredit = true,
+            recurringBillingDetails = billingDetails,
             recurringBillingPlanType = PayPalRecurringBillingPlanType.RECURRING
+        ).apply {
+            shopperSessionId = "shopper-insights-id"
         }
+
         assertEquals("shopper-insights-id", request.shopperSessionId)
         assertEquals("US", request.localeCode)
         assertEquals("Billing Agreement Description", request.billingAgreementDescription)
@@ -116,50 +126,54 @@ class PayPalVaultRequestUnitTest {
     @Test
     @Suppress("LongMethod")
     fun `creates PayPalVaultRequest and parcels it correctly`() {
-        val postalAddress = PostalAddress().apply {
+        val postalAddress = PostalAddress(
             recipientName = "Postal Address"
-        }
-        val request = PayPalVaultRequest(true).apply {
-            localeCode = "en-US"
-            billingAgreementDescription = "Billing Agreement Description"
-            isShippingAddressRequired = true
-            isShippingAddressEditable = true
-            shouldOfferCredit = true
-            shippingAddressOverride = postalAddress
-            displayName = "Display Name"
-            riskCorrelationId = "123-correlation"
-            landingPageType = PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN
-            merchantAccountId = "merchant_account_id"
-            userPhoneNumber = PayPalPhoneNumber("1", "1231231234")
-        }
-
+        )
         val billingInterval = PayPalBillingInterval.MONTH
         val pricingModel = PayPalPricingModel.FIXED
-        val billingPricing = PayPalBillingPricing(pricingModel, "1.00").apply {
+        val billingPricing = PayPalBillingPricing(
+            pricingModel = pricingModel,
+            amount = "1.00",
             reloadThresholdAmount = "6.00"
-        }
+        )
 
-        val billingCycle = PayPalBillingCycle(true, 2, billingInterval, 1)
-            .apply {
-                sequence = 1
-                startDate = "2024-04-06T00:00:00Z"
-                pricing = billingPricing
-            }
+        val billingCycle = PayPalBillingCycle(
+            isTrial = true,
+            numberOfExecutions = 2,
+            interval = billingInterval,
+            intervalCount = 1,
+            sequence = 1,
+            startDate = "2024-04-06T00:00:00Z",
+            pricing = billingPricing
+        )
 
-        val billingDetails = PayPalRecurringBillingDetails(listOf(billingCycle), "11.00", "USD")
-            .apply {
-                oneTimeFeeAmount = "2.00"
-                productName = "A Product"
-                productDescription = "A Description"
-                productQuantity = 1
-                shippingAmount = "5.00"
-                taxAmount = "3.00"
-            }
-
-        request.apply {
-            recurringBillingDetails = billingDetails
+        val billingDetails = PayPalRecurringBillingDetails(
+            billingCycles = listOf(billingCycle),
+            totalAmount = "11.00",
+            currencyISOCode = "USD",
+            oneTimeFeeAmount = "2.00",
+            productName = "A Product",
+            productDescription = "A Description",
+            productQuantity = 1,
+            shippingAmount = "5.00",
+            taxAmount = "3.00"
+        )
+        val request = PayPalVaultRequest(
+            hasUserLocationConsent = true,
+            localeCode = "en-US",
+            billingAgreementDescription = "Billing Agreement Description",
+            isShippingAddressRequired = true,
+            isShippingAddressEditable = true,
+            shouldOfferCredit = true,
+            shippingAddressOverride = postalAddress,
+            displayName = "Display Name",
+            riskCorrelationId = "123-correlation",
+            landingPageType = PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN,
+            merchantAccountId = "merchant_account_id",
+            userPhoneNumber = PayPalPhoneNumber("1", "1231231234"),
+            recurringBillingDetails = billingDetails,
             recurringBillingPlanType = PayPalRecurringBillingPlanType.RECURRING
-        }
+        )
 
         val lineItems = ArrayList<PayPalLineItem>()
         lineItems.add(PayPalLineItem(PayPalLineItemKind.DEBIT, "An Item", "1", "1"))
@@ -213,9 +227,10 @@ class PayPalVaultRequestUnitTest {
     @Throws(JSONException::class)
     fun `creates PayPaLVaultRequest and sets UserAuthenticationEmail when not null`() {
         val payerEmail = "payer_email@example.com"
-        val request = PayPalVaultRequest(true).apply {
+        val request = PayPalVaultRequest(
+            hasUserLocationConsent = true,
             userAuthenticationEmail = payerEmail
-        }
+        )
         val requestBody = request.createRequestBody(
             configuration = mockk<Configuration>(relaxed = true),
             authorization = mockk<Authorization>(relaxed = true),
@@ -232,10 +247,12 @@ class PayPalVaultRequestUnitTest {
     fun `creates PayPaLVaultRequest and sets UserAuthenticationEmail and EnablePayPalSwitch when not null`() {
         val versionSDK = Build.VERSION.SDK_INT.toString()
         val payerEmail = "payer_email@example.com"
-        val request = PayPalVaultRequest(true).apply {
-            enablePayPalAppSwitch = true
+        val request = PayPalVaultRequest(
+            hasUserLocationConsent = true,
+            enablePayPalAppSwitch = true,
             userAuthenticationEmail = payerEmail
-        }
+        )
+
         val requestBody = request.createRequestBody(
             configuration = mockk<Configuration>(relaxed = true),
             authorization = mockk<Authorization>(relaxed = true),
@@ -254,7 +271,9 @@ class PayPalVaultRequestUnitTest {
     @Test
     @Throws(JSONException::class)
     fun `creates PayPaLVaultRequest and sets ShopperInsightsSessionId correctly`() {
-        val request = PayPalVaultRequest(true).apply {
+        val request = PayPalVaultRequest(
+            hasUserLocationConsent = true
+        ).apply {
             shopperSessionId = "shopper-insights-id"
         }
         val requestBody = request.createRequestBody(
@@ -270,50 +289,56 @@ class PayPalVaultRequestUnitTest {
 
     @Test
     fun `creates PayPalVaultRequest and formats JSON correctly`() {
-        val postalAddress = PostalAddress().apply {
+        val postalAddress = PostalAddress(
             recipientName = "Postal Address"
-        }
-        val request = PayPalVaultRequest(true).apply {
-            localeCode = "en-US"
-            billingAgreementDescription = "Billing Agreement Description"
-            isShippingAddressRequired = true
-            isShippingAddressEditable = true
-            shouldOfferCredit = true
-            userAuthenticationEmail = "email"
-            shippingAddressOverride = postalAddress
-            displayName = "Display Name"
-            riskCorrelationId = "123-correlation"
-            landingPageType = PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN
-            merchantAccountId = "merchant_account_id"
-        }
+        )
 
         val billingInterval = PayPalBillingInterval.MONTH
         val pricingModel = PayPalPricingModel.VARIABLE
-        val billingPricing = PayPalBillingPricing(pricingModel, "1.00").apply {
+        val billingPricing = PayPalBillingPricing(
+            pricingModel = pricingModel,
+            amount = "1.00",
             reloadThresholdAmount = "6.00"
-        }
+        )
 
-        val billingCycle = PayPalBillingCycle(true, 2, billingInterval, 1)
-            .apply {
-                sequence = 1
-                startDate = "2024-04-06T00:00:00Z"
-                pricing = billingPricing
-            }
+        val billingCycle = PayPalBillingCycle(
+            isTrial = true,
+            numberOfExecutions = 2,
+            interval = billingInterval,
+            intervalCount = 1,
+            sequence = 1,
+            startDate = "2024-04-06T00:00:00Z",
+            pricing = billingPricing
+        )
 
-        val billingDetails = PayPalRecurringBillingDetails(listOf(billingCycle), "11.00", "USD")
-            .apply {
-                oneTimeFeeAmount = "2.00"
-                productName = "A Product"
-                productDescription = "A Description"
-                productQuantity = 1
-                shippingAmount = "5.00"
-                taxAmount = "3.00"
-            }
+        val billingDetails = PayPalRecurringBillingDetails(
+            billingCycles = listOf(billingCycle),
+            totalAmount = "11.00",
+            currencyISOCode = "USD",
+            oneTimeFeeAmount = "2.00",
+            productName = "A Product",
+            productDescription = "A Description",
+            productQuantity = 1,
+            shippingAmount = "5.00",
+            taxAmount = "3.00"
+        )
 
-        request.apply {
-            recurringBillingDetails = billingDetails
+        val request = PayPalVaultRequest(
+            hasUserLocationConsent = true,
+            localeCode = "en-US",
+            billingAgreementDescription = "Billing Agreement Description",
+            isShippingAddressRequired = true,
+            isShippingAddressEditable = true,
+            shouldOfferCredit = true,
+            userAuthenticationEmail = "email",
+            shippingAddressOverride = postalAddress,
+            displayName = "Display Name",
+            riskCorrelationId = "123-correlation",
+            landingPageType = PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN,
+            merchantAccountId = "merchant_account_id",
+            recurringBillingDetails = billingDetails,
             recurringBillingPlanType = PayPalRecurringBillingPlanType.RECURRING
-        }
+        )
 
         val requestBody = request.createRequestBody(
             configuration = mockk<Configuration>(relaxed = true),
@@ -330,10 +355,11 @@ class PayPalVaultRequestUnitTest {
     fun `creates RequestBody and sets appSwitchParameters correctly regardless of UserAuthenticationEmail value`(
         @TestParameter(value = ["", "some@email.com"]) payerEmail: String
     ) {
-        val request = PayPalVaultRequest(true).apply {
-            enablePayPalAppSwitch = true
+        val request = PayPalVaultRequest(
+            hasUserLocationConsent = true,
+            enablePayPalAppSwitch = true,
             userAuthenticationEmail = payerEmail
-        }
+        )
 
         val appLink = "universal_url"
 
@@ -356,9 +382,10 @@ class PayPalVaultRequestUnitTest {
     @Throws(JSONException::class)
     fun `creates PayPaLVaultRequest and sets UserPhoneNumber when not null`() {
         val payerPhoneNumber = PayPalPhoneNumber("1", "1231231234")
-        val request = PayPalVaultRequest(true).apply {
+        val request = PayPalVaultRequest(
+            hasUserLocationConsent = true,
             userPhoneNumber = payerPhoneNumber
-        }
+        )
         val requestBody = request.createRequestBody(
             configuration = mockk<Configuration>(relaxed = true),
             authorization = mockk<Authorization>(relaxed = true),
