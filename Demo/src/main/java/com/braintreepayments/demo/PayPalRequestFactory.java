@@ -126,9 +126,11 @@ public class PayPalRequestFactory {
         String buyerPhoneCountryCode,
         String buyerPhoneNationalNumber,
         Boolean isContactInformationEnabled,
+        Boolean offerPayLater,
         String shopperInsightsSessionId
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
+        request.setShouldOfferPayLater(offerPayLater);
 
         if (buyerEmailAddress != null && !buyerEmailAddress.isEmpty()) {
             request.setUserAuthenticationEmail(buyerEmailAddress);
