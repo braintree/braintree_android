@@ -157,10 +157,11 @@ internal class PayPalInternalClient(
                 )
                 if (getAppSwitchUseCase()) {
                     if (!contextId.isNullOrEmpty()) {
-                        val flowType = if (payPalRequest.isBillingAgreement()) VAULT_FLOW_TYPE else ECS_FLOW_TYPE
-                        val merchantId = configuration.merchantId
-
-                        paymentAuthRequest.approvalUrl = createAppSwitchUri(parsedRedirectUri, flowType, merchantId).toString()
+                        paymentAuthRequest.approvalUrl = createAppSwitchUri(
+                            uri = parsedRedirectUri,
+                            merchantId = configuration.merchantId,
+                            flowType = if (payPalRequest.isBillingAgreement()) VAULT_FLOW_TYPE else SINGLE_PAYMENT_FLOW_TYPE
+                        ).toString()
                     } else {
                         callback.onResult(null, BraintreeException("Missing Token for PayPal App Switch."))
                     }
@@ -174,7 +175,18 @@ internal class PayPalInternalClient(
         }
     }
 
-    private fun createAppSwitchUri(uri: Uri, flowType: String, merchantId: String): Uri {
+    /**
+     * Builds an app switch [Uri] with required observability parameters.
+     *
+     * Adds `merchant` (integration’s merchant ID) and `flow_type` (e.g. "va" or "ecs")
+     * so that downstream systems can attribute sessions and distinguish checkout flows.
+     * These parameters support observability for BT SDK app switch integrations.
+     *
+     * @param uri The base [Uri] to build upon.
+     * @param flowType The checkout flow type.
+     * @param merchantId The merchant ID for the integration.
+     */
+    private fun createAppSwitchUri(uri: Uri, merchantId: String, flowType: String): Uri {
         return uri.buildUpon()
             .appendQueryParameter("source", "braintree_sdk")
             .appendQueryParameter("switch_initiated_time", System.currentTimeMillis().toString())
@@ -194,6 +206,6 @@ internal class PayPalInternalClient(
         private const val CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource"
         private const val SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement"
         private const val VAULT_FLOW_TYPE = "va"
-        private const val ECS_FLOW_TYPE = "ecs"
+        private const val SINGLE_PAYMENT_FLOW_TYPE = "ecs"
     }
 }
