@@ -4,6 +4,7 @@
 
 * PayPal
   * Fix an issue where `PayPalRequest` was sending `phone_number` instead of `payer_phone`
+  * Add `merchant` and `flow_type` as query parameters to the app switch URL.
 
 ## 5.15.0 (2025-08-13)
 
@@ -24,7 +25,6 @@
   * Only send `paypal:tokenize:browser-login:canceled` for non app switch flows
   * Fix an issue where non app switch flows were sending app switch events
   * Update `url` FPTI tag to represent the approval URL prior to checkout and the success URL after checkout
-  * Added `merchant` and `flow_type` as query parameters to the app switch URL.
 * LocalPayment
   * Fix an issue where multiple Chrome Custom Tabs can be opened
 * BraintreeCore

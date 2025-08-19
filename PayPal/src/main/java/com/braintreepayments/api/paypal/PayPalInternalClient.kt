@@ -160,7 +160,7 @@ internal class PayPalInternalClient(
                         paymentAuthRequest.approvalUrl = createAppSwitchUri(
                             uri = parsedRedirectUri,
                             merchantId = configuration.merchantId,
-                            flowType = if (payPalRequest.isBillingAgreement()) VAULT_FLOW_TYPE else SINGLE_PAYMENT_FLOW_TYPE
+                            flowType = if (payPalRequest.isBillingAgreement()) "va" else "ecs"
                         ).toString()
                     } else {
                         callback.onResult(null, BraintreeException("Missing Token for PayPal App Switch."))
@@ -205,7 +205,5 @@ internal class PayPalInternalClient(
     companion object {
         private const val CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource"
         private const val SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement"
-        private const val VAULT_FLOW_TYPE = "va"
-        private const val SINGLE_PAYMENT_FLOW_TYPE = "ecs"
     }
 }
