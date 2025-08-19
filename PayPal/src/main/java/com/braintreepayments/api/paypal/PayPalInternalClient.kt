@@ -38,8 +38,7 @@ internal class PayPalInternalClient(
         callback: PayPalInternalClientCallback
     ) {
         try {
-            val isBillingAgreement = payPalRequest is PayPalVaultRequest
-            val endpoint = if (isBillingAgreement) {
+            val endpoint = if (payPalRequest.isBillingAgreement()) {
                 SETUP_BILLING_AGREEMENT_ENDPOINT
             } else {
                 CREATE_SINGLE_PAYMENT_ENDPOINT
@@ -158,7 +157,14 @@ internal class PayPalInternalClient(
                 )
                 if (getAppSwitchUseCase()) {
                     if (!contextId.isNullOrEmpty()) {
-                        paymentAuthRequest.approvalUrl = createAppSwitchUri(parsedRedirectUri).toString()
+                        val flowType = if (payPalRequest.isBillingAgreement()) VAULT_FLOW_TYPE else ECS_FLOW_TYPE
+                        val merchantId = configuration.merchantId
+
+                        paymentAuthRequest.approvalUrl = createAppSwitchUri(
+                            parsedRedirectUri,
+                            flowType,
+                            merchantId
+                        ).toString()
                     } else {
                         callback.onResult(null, BraintreeException("Missing Token for PayPal App Switch."))
                     }
@@ -172,10 +178,12 @@ internal class PayPalInternalClient(
         }
     }
 
-    private fun createAppSwitchUri(uri: Uri): Uri {
+    private fun createAppSwitchUri(uri: Uri, flowType: String, merchantId: String): Uri {
         return uri.buildUpon()
             .appendQueryParameter("source", "braintree_sdk")
             .appendQueryParameter("switch_initiated_time", System.currentTimeMillis().toString())
+            .appendQueryParameter("merchant", merchantId)
+            .appendQueryParameter("flow_type", flowType)
             .build()
     }
 
@@ -184,8 +192,12 @@ internal class PayPalInternalClient(
             ?: redirectUri.getQueryParameter("token")
     }
 
+    private fun PayPalRequest.isBillingAgreement(): Boolean = this is PayPalVaultRequest
+
     companion object {
         private const val CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource"
         private const val SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement"
+        private const val VAULT_FLOW_TYPE = "va"
+        private const val ECS_FLOW_TYPE = "ecs"
     }
 }
