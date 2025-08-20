@@ -943,4 +943,58 @@ class PayPalInternalClientUnitTest {
 
         assertTrue(slot.captured.hasUserLocationConsent)
     }
+
+    @Test
+    fun sendRequest_withPayPalVaultRequestAndAppSwitchEnabled_addsAppSwitchParameters() {
+        every { merchantRepository.authorization } returns clientToken
+        every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+        every { getAppSwitchUseCase.invoke() } returns true
+        every { deviceInspector.isPayPalInstalled() } returns true
+
+        val (sut, _) = createSutWithMocks(
+            fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_PAYPAL_REDIRECT_URL
+        )
+
+        val payPalRequest = PayPalVaultRequest(true)
+        payPalRequest.enablePayPalAppSwitch = true
+
+        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
+
+        val slot = slot<PayPalPaymentAuthRequestParams>()
+        verify { payPalInternalClientCallback.onResult(capture(slot), null) }
+
+        val approvalUri = Uri.parse(slot.captured.approvalUrl)
+        assertEquals("braintree_sdk", approvalUri.getQueryParameter("source"))
+        assertEquals("va", approvalUri.getQueryParameter("flow_type"))
+        assertEquals(configuration.merchantId, approvalUri.getQueryParameter("merchant"))
+        assertNotNull(approvalUri.getQueryParameter("switch_initiated_time"))
+        assertTrue(approvalUri.getQueryParameter("switch_initiated_time")!!.toLong() > 0)
+    }
+
+    @Test
+    fun sendRequest_withPayPalCheckoutRequestAndAppSwitchEnabled_addsAppSwitchParameters() {
+        every { merchantRepository.authorization } returns clientToken
+        every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+        every { getAppSwitchUseCase.invoke() } returns true
+        every { deviceInspector.isPayPalInstalled() } returns true
+
+        val (sut, _) = createSutWithMocks(
+            fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM
+        )
+
+        val payPalRequest = PayPalCheckoutRequest("1.00", true)
+        payPalRequest.enablePayPalAppSwitch = true
+
+        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
+
+        val slot = slot<PayPalPaymentAuthRequestParams>()
+        verify { payPalInternalClientCallback.onResult(capture(slot), null) }
+
+        val approvalUri = Uri.parse(slot.captured.approvalUrl)
+        assertEquals("braintree_sdk", approvalUri.getQueryParameter("source"))
+        assertEquals("ecs", approvalUri.getQueryParameter("flow_type"))
+        assertEquals(configuration.merchantId, approvalUri.getQueryParameter("merchant"))
+        assertNotNull(approvalUri.getQueryParameter("switch_initiated_time"))
+        assertTrue(approvalUri.getQueryParameter("switch_initiated_time")!!.toLong() > 0)
+    }
 }

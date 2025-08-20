@@ -108,6 +108,7 @@
     <string name="paypal_address_override_summary">Sends a shipping address as an override option to PayPal for any PayPal request</string>
     <string name="paypal_rba_metadata">RBA Metadata flow</string>
     <string name="paypal_rba_metadata_summary">Sets the recurring billing data on the PayPal Vault Request</string>
+    <string name="paypal_offer_pay_later">Offer Pay Later</string>
 
     <!-- VenmoActivity -->
     <string name="bt_descriptor_pay_with_venmo">Venmo</string>
