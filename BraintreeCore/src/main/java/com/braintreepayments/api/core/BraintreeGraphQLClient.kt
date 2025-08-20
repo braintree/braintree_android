@@ -5,10 +5,12 @@ import com.braintreepayments.api.sharedutils.HttpRequest
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.sharedutils.TLSSocketFactory
 import java.util.Locale
-import javax.net.ssl.SSLException
 
 internal class BraintreeGraphQLClient(
-    private val httpClient: HttpClient = createDefaultHttpClient()
+    private val httpClient: HttpClient = HttpClient(
+        socketFactory = TLSSocketFactory(),
+        httpResponseParser = BraintreeGraphQLResponseParser()
+    )
 ) {
 
     fun post(
@@ -28,18 +30,11 @@ internal class BraintreeGraphQLClient(
             .data(data)
             .baseUrl(configuration.graphQLUrl)
             .addHeader("User-Agent", "braintree/android/" + BuildConfig.VERSION_NAME)
-            .addHeader("Authorization",
-                String.format(Locale.US, "Bearer %s", authorization.bearer))
+            .addHeader(
+                "Authorization",
+                String.format(Locale.US, "Bearer %s", authorization.bearer)
+            )
             .addHeader("Braintree-Version", GraphQLConstants.Headers.API_VERSION)
         httpClient.sendRequest(request, callback)
-    }
-
-    companion object {
-
-        @Throws(SSLException::class)
-        private fun createDefaultHttpClient(): HttpClient {
-            val socketFactory = TLSSocketFactory(TLSCertificatePinning.createCertificateInputStream())
-            return HttpClient(socketFactory, BraintreeGraphQLResponseParser())
-        }
     }
 }

@@ -16,7 +16,9 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLException
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.TrustManager
 import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
 class TLSSocketFactoryUnitTest {
 
@@ -27,13 +29,18 @@ class TLSSocketFactoryUnitTest {
     private val sslContext: SSLContext = mockk(relaxed = true)
 
     private val internalSocketFactory: SSLSocketFactory = mockk(relaxed = true)
-    val expectedSocket = mockk<SSLSocket>(relaxed = true)
+    private val expectedSocket = mockk<SSLSocket>(relaxed = true)
+    private val trustManagers: Array<TrustManager> = arrayOf(mockk<X509TrustManager>(relaxed = true))
 
     private lateinit var subject: TLSSocketFactory
 
-    private fun initializeSubject() {
+    private fun initializeSubject(
+        trustManagers: Array<TrustManager>? = this.trustManagers
+    ) {
         every { sslContext.socketFactory } returns internalSocketFactory
         every { expectedSocket.supportedProtocols } returns arrayOf("TLSv1.2", "TLSv1.3", "TLSv1.1")
+
+        every { trustManagerFactory.trustManagers } returns trustManagers
 
         subject = TLSSocketFactory(
             certificateStream = inputStream,
@@ -80,7 +87,7 @@ class TLSSocketFactoryUnitTest {
     fun `on init, sslContext is initialized`() {
         initializeSubject()
 
-        verify { sslContext.init(null, trustManagerFactory.trustManagers, null) }
+        verify { sslContext.init(null, trustManagers, null) }
     }
 
     @Test(expected = SSLException::class)
@@ -226,6 +233,66 @@ class TLSSocketFactoryUnitTest {
 
         verifyCorrectTLSProtocols()
         assertEquals(expectedSocket, result)
+    }
+
+    @Test
+    fun `on init, trustManager is set to first X509TrustManager from trustManagerFactory`() {
+        val x509TrustManager = mockk<X509TrustManager>(relaxed = true)
+        val otherTrustManager = mockk<javax.net.ssl.TrustManager>(relaxed = true)
+
+        initializeSubject(trustManagers = arrayOf(otherTrustManager, x509TrustManager))
+
+        assertEquals(x509TrustManager, subject.trustManager)
+    }
+
+    @Test
+    fun `on init, trustManager ignores non-X509TrustManager instances`() {
+        val x509TrustManager = mockk<X509TrustManager>(relaxed = true)
+        val otherTrustManager1 = mockk<TrustManager>(relaxed = true)
+        val otherTrustManager2 = mockk<TrustManager>(relaxed = true)
+
+        initializeSubject(
+            trustManagers = arrayOf(
+                otherTrustManager1,
+                otherTrustManager2,
+                x509TrustManager
+            )
+        )
+
+        assertEquals(x509TrustManager, subject.trustManager)
+    }
+
+    @Test(expected = SSLException::class)
+    fun `on init, when no X509TrustManager is found, throws SSLException`() {
+        val otherTrustManager1 = mockk<TrustManager>(relaxed = true)
+        val otherTrustManager2 = mockk<TrustManager>(relaxed = true)
+
+        initializeSubject(trustManagers = arrayOf(otherTrustManager1, otherTrustManager2))
+    }
+
+    @Test(expected = SSLException::class)
+    fun `on init, when trustManagers array is empty, throws SSLException`() {
+        initializeSubject(trustManagers = emptyArray())
+    }
+
+    @Test(expected = SSLException::class)
+    fun `on init, when trustManagers is null, throws SSLException`() {
+        initializeSubject(trustManagers = null)
+    }
+
+    @Test
+    fun `on init, trustManager uses first X509TrustManager when multiple exist`() {
+        val firstX509TrustManager = mockk<X509TrustManager>(relaxed = true)
+        val secondX509TrustManager = mockk<X509TrustManager>(relaxed = true)
+
+        initializeSubject(
+            trustManagers = arrayOf(
+                firstX509TrustManager,
+                secondX509TrustManager
+            )
+        )
+
+        assertEquals(firstX509TrustManager, subject.trustManager)
     }
 
     private fun verifyCorrectTLSProtocols() {

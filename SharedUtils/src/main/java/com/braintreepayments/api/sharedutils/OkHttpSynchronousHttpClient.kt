@@ -1,6 +1,5 @@
 package com.braintreepayments.api.sharedutils
 
-import okhttp3.CertificatePinner
 import okhttp3.Headers
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
@@ -15,15 +14,16 @@ import java.util.concurrent.TimeUnit
  * This client is intended for internal use and provides synchronous HTTP operations
  * with certificate pinning support. It wraps OkHttp and exposes a blocking request method.
  *
- * @property certificatePinner OkHttp CertificatePinner for SSL pinning
+ * @property socketFactory TLSSocketFactory used for SSL connections
  * @property okHttpClient OkHttpClient instance
  */
 internal class OkHttpSynchronousHttpClient(
-    private val certificatePinner: CertificatePinner = CertificatePinner.Builder().build(),
+    private val socketFactory: TLSSocketFactory = TLSSocketFactory(),
     private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(THIRTY, TimeUnit.SECONDS)
         .readTimeout(THIRTY, TimeUnit.SECONDS)
-        .certificatePinner(certificatePinner)
+        .sslSocketFactory(socketFactory, socketFactory.trustManager)
+        .addInterceptor(GzipRequestInterceptor())
         .build(),
 ) {
 
