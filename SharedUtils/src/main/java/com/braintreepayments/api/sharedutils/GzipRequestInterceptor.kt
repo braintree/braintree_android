@@ -17,7 +17,7 @@ import okio.buffer
  * The interceptor handles case-insensitive matching for the gzip encoding
  * (e.g., "gzip", "GZIP", "Gzip" are all supported).
  */
-class GzipRequestInterceptor : Interceptor {
+internal class GzipRequestInterceptor : Interceptor {
 
     /**
      * Intercepts HTTP responses and decompresses gzip-encoded content.
