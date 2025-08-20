@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Google Pay
+    * Add `softwareInfo` details to the `merchantInfo` field in the `loadPaymentData` request.
+
 ## 5.15.0 (2025-08-13)
 
 * Venmo
