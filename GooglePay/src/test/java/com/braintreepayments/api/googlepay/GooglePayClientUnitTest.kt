@@ -667,6 +667,50 @@ class GooglePayClientUnitTest {
     }
 
     @Test
+    fun createPaymentAuthRequest_withMerchantInfo_sendSoftwareInfo() {
+        val configuration = Configuration.fromJson(TestConfigurationBuilder()
+            .googlePay(
+                TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
+                    .environment("sandbox")
+                    .googleAuthorizationFingerprint("google-auth-fingerprint")
+                    .paypalClientId("paypal-client-id-for-google-payment")
+                    .supportedNetworks(arrayOf("visa", "mastercard", "amex", "discover"))
+                    .enabled(true)
+            )
+            .withAnalytics()
+            .build())
+
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
+            .activityInfo(activityInfo)
+            .build()
+
+        every { merchantRepository.authorization } returns Authorization.fromString("sandbox_tokenization_string")
+
+        val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
+
+        val sut = GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        )
+        sut.createPaymentAuthRequest(baseRequest, intentDataCallback)
+
+        val captor = slot<GooglePayPaymentAuthRequest>()
+        verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }
+
+        val request = captor.captured
+        assertTrue(request is GooglePayPaymentAuthRequest.ReadyToLaunch)
+        val intent = request.requestParams
+
+        val paymentDataRequestJson = JSONObject(intent.paymentDataRequest.toJson())
+        assert(paymentDataRequestJson
+            .getJSONObject("merchantInfo")
+            .has("softwareInfo"))
+    }
+
+    @Test
     fun createPaymentAuthRequest_whenGooglePayCanProcessPayPal_tokenizationPropertiesIncludePayPal() {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(

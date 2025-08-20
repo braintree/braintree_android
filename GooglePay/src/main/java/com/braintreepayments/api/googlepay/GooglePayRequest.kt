@@ -184,8 +184,13 @@ class GooglePayRequest @JvmOverloads constructor(
             }
         }
 
-        val merchantInfo = JSONObject()
-        merchantInfo.putOpt("merchantName", googleMerchantName)
+        val merchantInfo = JSONObject().apply {
+            put("softwareInfo", JSONObject()
+                .put("id", "android/braintree-sdk")
+                .put("version", BuildConfig.VERSION_NAME))
+
+            putOpt("merchantName", googleMerchantName)
+        }
 
         val json = JSONObject()
 
