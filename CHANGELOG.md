@@ -5,6 +5,7 @@
 * PayPal
   * Fix an issue where `PayPalRequest` was sending `phone_number` instead of `payer_phone`
   * Add `merchant` and `flow_type` as query parameters to the app switch URL.
+  * Add `paymentId` to `PayPalAccountNonce`
 * GooglePay
     * Add `softwareInfo` details to the `merchantInfo` field in the `loadPaymentData` request.
 
