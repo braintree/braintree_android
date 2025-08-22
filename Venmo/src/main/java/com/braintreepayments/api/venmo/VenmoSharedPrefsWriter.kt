@@ -4,7 +4,7 @@ import android.content.Context
 import com.braintreepayments.api.sharedutils.BraintreeSharedPreferences
 
 internal class VenmoSharedPrefsWriter {
-    fun persistVenmoVaultOption(context: Context?, shouldVault: Boolean) {
+    fun persistVenmoVaultOption(context: Context, shouldVault: Boolean) {
         persistVenmoVaultOption(BraintreeSharedPreferences.getInstance(context), shouldVault)
     }
 
@@ -15,7 +15,7 @@ internal class VenmoSharedPrefsWriter {
         braintreeSharedPreferences.putBoolean(VAULT_VENMO_KEY, shouldVault)
     }
 
-    fun getVenmoVaultOption(context: Context?): Boolean {
+    fun getVenmoVaultOption(context: Context): Boolean {
         return getVenmoVaultOption(BraintreeSharedPreferences.getInstance(context))
     }
 

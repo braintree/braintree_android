@@ -35,8 +35,4 @@ public class SharedPreferencesHelper {
                 .putStringAndLong(cacheKey, configuration.toJson(), timestampKey,
                         System.currentTimeMillis());
     }
-
-    public static void clearConfigurationCacheOverride(Context context) {
-        BraintreeSharedPreferences.getInstance(context).clearSharedPreferences();
-    }
 }

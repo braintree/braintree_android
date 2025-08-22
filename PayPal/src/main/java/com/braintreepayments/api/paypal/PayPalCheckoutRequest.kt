@@ -155,7 +155,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
             if (it.isNotEmpty()) parameters.put(PAYER_EMAIL_KEY, it)
         }
 
-        userPhoneNumber?.let { parameters.put(PHONE_NUMBER_KEY, it.toJson()) }
+        userPhoneNumber?.let { parameters.put(PAYER_PHONE_KEY, it.toJson()) }
         contactInformation?.let { info ->
             info.recipientEmail?.let { parameters.put(RECIPIENT_EMAIL_KEY, it) }
             info.recipentPhoneNumber?.let {

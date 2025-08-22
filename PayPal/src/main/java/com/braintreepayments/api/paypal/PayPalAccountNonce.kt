@@ -27,6 +27,7 @@ import org.json.JSONObject
  * @property authenticateUrl The URL used to authenticate the customer during two-factor
  * authentication flows. This property will only be present if two-factor authentication is
  * required.
+ * @property paymentId The payment ID associated with this transaction.
  */
 @Parcelize
 data class PayPalAccountNonce internal constructor(
@@ -42,6 +43,7 @@ data class PayPalAccountNonce internal constructor(
     val payerId: String,
     val creditFinancing: PayPalCreditFinancing?,
     val authenticateUrl: String?,
+    val paymentId: String?
 ) : PaymentMethodNonce(
     string = string,
     isDefault = isDefault,
@@ -69,6 +71,7 @@ data class PayPalAccountNonce internal constructor(
         private const val PHONE_KEY = "phone"
         private const val PAYER_ID_KEY = "payerId"
         private const val CLIENT_METADATA_ID_KEY = "correlationId"
+        private const val PAYMENT_TOKEN_KEY = "paymentToken"
 
         @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         @Throws(JSONException::class)
@@ -101,6 +104,7 @@ data class PayPalAccountNonce internal constructor(
             val details = json.getJSONObject(DETAILS_KEY)
             var email = Json.optString(details, EMAIL_KEY, null)
             val clientMetadataId = Json.optString(details, CLIENT_METADATA_ID_KEY, null)
+            val paymentId = Json.optString(details, PAYMENT_TOKEN_KEY, null)
 
             var payPalCreditFinancing: PayPalCreditFinancing? = null
             var shippingAddress: PostalAddress
@@ -137,7 +141,7 @@ data class PayPalAccountNonce internal constructor(
                 shippingAddress = PostalAddress()
             }
 
-            // shipping address should be overriden when 'PAYMENT_METHOD_DATA_KEY' is present at the top-level;
+            // shipping address should be overridden when 'PAYMENT_METHOD_DATA_KEY' is present at the top-level;
             // this occurs when parsing a GooglePay PayPal Account Nonce
             if (getShippingAddressFromTopLevel) {
                 val shippingAddressJson = json.optJSONObject(SHIPPING_ADDRESS_KEY)
@@ -158,7 +162,8 @@ data class PayPalAccountNonce internal constructor(
                 email = email,
                 payerId = payerId,
                 creditFinancing = payPalCreditFinancing,
-                authenticateUrl = authenticateUrl
+                authenticateUrl = authenticateUrl,
+                paymentId = paymentId
             )
         }
     }

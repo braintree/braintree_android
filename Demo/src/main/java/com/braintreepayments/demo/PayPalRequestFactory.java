@@ -164,9 +164,11 @@ public class PayPalRequestFactory {
         String buyerPhoneNationalNumber,
         Boolean isContactInformationEnabled,
         String shopperInsightsSessionId,
+        Boolean offerPayLater,
         Boolean isAmountBreakdownEnabled
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
+        request.setShouldOfferPayLater(offerPayLater);
 
         if (isAmountBreakdownEnabled) {
             request = new PayPalCheckoutRequest("10.99", true);
