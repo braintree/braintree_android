@@ -51,7 +51,7 @@ class DeviceInspector(
      * @param context A context to access the installed packages.
      * @return boolean depending on if the Venmo app is installed, and has a valid signature.
      */
-    fun isVenmoAppSwitchAvailable(context: Context?): Boolean {
+    fun isVenmoAppSwitchAvailable(context: Context): Boolean {
         val isVenmoIntentAvailable = appHelper.isIntentAvailable(context, venmoIntent)
         val isVenmoSignatureValid = signatureVerifier.isSignatureValid(
             context, VENMO_APP_PACKAGE, VENMO_BASE_64_ENCODED_SIGNATURE
@@ -63,7 +63,7 @@ class DeviceInspector(
         return appHelper.isAppInstalled(context, PAYPAL_APP_PACKAGE)
     }
 
-    fun isVenmoInstalled(context: Context?): Boolean {
+    fun isVenmoInstalled(context: Context): Boolean {
         return appHelper.isAppInstalled(context, VENMO_APP_PACKAGE)
     }
 
