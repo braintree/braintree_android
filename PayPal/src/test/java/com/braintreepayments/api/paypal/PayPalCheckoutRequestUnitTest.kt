@@ -358,4 +358,71 @@ class PayPalCheckoutRequestUnitTest {
 
         assertFalse(requestBody.contains("contact_preference"))
     }
+
+    @Test
+    fun `creates requestBody and does not set amountBreakdown values when null`() {
+        val request = PayPalCheckoutRequest("1.00", false)
+
+        val amountBreakdown =
+            AmountBreakdown(
+                itemTotal = "10.00",
+                taxTotal = null,
+                shippingTotal = null,
+                handlingTotal = null,
+                insuranceTotal = null,
+                shippingDiscount = null,
+                discountTotal = null
+            )
+
+        request.amountBreakdown = amountBreakdown
+
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<Authorization>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+
+        assertTrue(requestBody.contains("\"item_total\":\"10.00\""))
+        assertFalse(requestBody.contains("insurance"))
+        assertFalse(requestBody.contains("discount"))
+        assertFalse(requestBody.contains("handling"))
+        assertFalse(requestBody.contains("shipping_discount"))
+        assertFalse(requestBody.contains("tax_total"))
+    }
+
+    @Test
+    fun `creates requestBody and sets call amountBreakdown values`() {
+        val request = PayPalCheckoutRequest("1.00", false)
+
+        val breakdownWithAllFields =
+            AmountBreakdown(
+                itemTotal = "20.00",
+                taxTotal = "1.75",
+                shippingTotal = "3.00",
+                handlingTotal = "0.50",
+                insuranceTotal = "1.00",
+                shippingDiscount = "0.25",
+                discountTotal = "2.00"
+            )
+
+        request.amountBreakdown = breakdownWithAllFields
+
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<Authorization>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+
+        assertTrue(requestBody.contains("\"item_total\":\"20.00\""))
+        assertTrue(requestBody.contains("\"insurance\":\"1.00\""))
+        assertTrue(requestBody.contains("\"discount\":\"2.00\""))
+        assertTrue(requestBody.contains("\"handling\":\"0.50\""))
+        assertTrue(requestBody.contains("\"shipping_discount\":\"0.25\""))
+        assertTrue(requestBody.contains("\"shipping\":\"3.00\""))
+        assertTrue(requestBody.contains("\"tax_total\":\"1.75\""))
+    }
 }
