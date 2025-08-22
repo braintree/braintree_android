@@ -23,7 +23,6 @@ internal class OkHttpSynchronousHttpClient(
         .connectTimeout(THIRTY, TimeUnit.SECONDS)
         .readTimeout(THIRTY, TimeUnit.SECONDS)
         .sslSocketFactory(socketFactory, socketFactory.trustManager)
-        .addInterceptor(GzipRequestInterceptor())
         .build(),
 ) {
 
