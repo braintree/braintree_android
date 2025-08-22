@@ -1,6 +1,6 @@
 package com.braintreepayments.api.sharedutils
 
-import java.net.URL
+import androidx.annotation.RestrictTo
 
 /**
  * NOTE THIS CLASS WILL BE RENAMED TO `HttpRequest` TO REPLACE THE EXISTING [HttpRequest] CLASS.
@@ -13,8 +13,9 @@ import java.net.URL
  * @property method The HTTP method to use for the request (GET, POST, etc.).
  * @property headers A map of header key-value pairs to include in the request.
  */
-internal data class OkHttpRequest(
-    val url: URL,
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+data class OkHttpRequest(
+    val url: String,
     val method: Method,
     val headers: Map<String, String> = emptyMap(),
 )

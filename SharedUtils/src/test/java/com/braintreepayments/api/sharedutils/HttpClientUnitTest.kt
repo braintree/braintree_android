@@ -1,174 +1,168 @@
 package com.braintreepayments.api.sharedutils
 
-import org.junit.Assert
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class HttpClientUnitTest {
-    private lateinit var syncHttpClient: SynchronousHttpClient
-    private lateinit var httpRequest: HttpRequest
-    private lateinit var threadScheduler: MockThreadScheduler
 
+    private lateinit var mockOkHttpClient: OkHttpSynchronousHttpClient
+    private lateinit var mockScheduler: Scheduler
+    private lateinit var mockCallback: NetworkResponseCallback
     private lateinit var sut: HttpClient
 
     @Before
-    fun beforeEach() {
-        syncHttpClient = Mockito.mock(SynchronousHttpClient::class.java)
-        threadScheduler = Mockito.spy(MockThreadScheduler())
-        httpRequest = HttpRequest().path("https://example.com")
-
-        sut = HttpClient(syncHttpClient, threadScheduler)
+    fun setUp() {
+        mockOkHttpClient = mockk<OkHttpSynchronousHttpClient>()
+        mockScheduler = mockk<Scheduler>()
+        mockCallback = mockk<NetworkResponseCallback>()
+        sut = HttpClient(mockOkHttpClient, mockScheduler)
     }
 
     @Test
-    @Throws(Exception::class)
-    fun sendRequest_sendsRequestOnBackgroundThread() {
-        val callback = Mockito.mock(NetworkResponseCallback::class.java)
-        sut.sendRequest(httpRequest, callback, HttpClient.RetryStrategy.NO_RETRY)
+    fun `when sendRequest is called, request is executed on background thread`() {
+        val request = mockk<OkHttpRequest>()
+        val backgroundSlot = slot<Runnable>()
 
-        Mockito.verifyNoInteractions(syncHttpClient)
-        threadScheduler.flushBackgroundThread()
+        every { mockScheduler.runOnBackground(capture(backgroundSlot)) } just Runs
 
-        Mockito.verify(syncHttpClient)?.request(httpRequest)
+        sut.sendRequest(request, mockCallback)
+
+        verify { mockScheduler.runOnBackground(any()) }
+        verify(exactly = 0) { mockOkHttpClient.executeRequest(any()) }
     }
 
     @Test
-    @Throws(Exception::class)
-    fun sendRequest_whenBaseHttpClientThrowsException_notifiesErrorViaCallbackOnMainThread() {
-        val exception = Exception("error")
-        Mockito.`when`(syncHttpClient.request(httpRequest)).thenThrow(exception)
+    fun `when sendRequest is called with successful response, callback is called on main thread`() {
+        val request = mockk<OkHttpRequest>()
+        val mockResponse = mockk<HttpResponse>()
+        val backgroundSlot = slot<Runnable>()
+        val mainSlot = slot<Runnable>()
 
-        val callback = Mockito.mock(NetworkResponseCallback::class.java)
-        sut.sendRequest(httpRequest, callback, HttpClient.RetryStrategy.NO_RETRY)
+        every { mockOkHttpClient.executeRequest(request) } returns mockResponse
+        every { mockScheduler.runOnBackground(capture(backgroundSlot)) } just Runs
+        every { mockScheduler.runOnMain(capture(mainSlot)) } just Runs
+        every { mockCallback.onResult(any(), any()) } just Runs
 
-        threadScheduler.flushBackgroundThread()
-        Mockito.verify(callback, Mockito.never()).onResult(null, exception)
+        sut.sendRequest(request, mockCallback)
 
-        threadScheduler.flushMainThread()
-        Mockito.verify(callback).onResult(null, exception)
+        verify { mockScheduler.runOnBackground(any()) }
+        backgroundSlot.captured.run()
+
+        verify { mockScheduler.runOnMain(any()) }
+        mainSlot.captured.run()
+
+        verify { mockCallback.onResult(mockResponse, null) }
     }
 
     @Test
-    @Throws(Exception::class)
-    fun sendRequest_onBaseHttpClientRequestSuccess_notifiesSuccessViaCallbackOnMainThread() {
-        val response = HttpResponse("response body", HttpResponseTiming(123, 456))
+    fun `when sendRequest is called with exception, callback is called with error on main thread`() {
+        val request = mockk<OkHttpRequest>()
+        val exception = RuntimeException("Network error")
+        val backgroundSlot = slot<Runnable>()
+        val mainSlot = slot<Runnable>()
 
-        Mockito.`when`(syncHttpClient.request(httpRequest)).thenReturn(response)
+        every { mockOkHttpClient.executeRequest(request) } throws exception
+        every { mockScheduler.runOnBackground(capture(backgroundSlot)) } just Runs
+        every { mockScheduler.runOnMain(capture(mainSlot)) } just Runs
+        every { mockCallback.onResult(any(), any()) } just Runs
 
-        val callback = Mockito.mock(NetworkResponseCallback::class.java)
-        sut.sendRequest(httpRequest, callback, HttpClient.RetryStrategy.NO_RETRY)
+        sut.sendRequest(request, mockCallback)
 
-        threadScheduler.flushBackgroundThread()
-        Mockito.verify(callback, Mockito.never()).onResult(response, null)
+        verify { mockScheduler.runOnBackground(any()) }
+        backgroundSlot.captured.run()
 
-        threadScheduler.flushMainThread()
-        Mockito.verify(callback).onResult(response, null)
+        verify { mockScheduler.runOnMain(any()) }
+        mainSlot.captured.run()
+
+        verify { mockCallback.onResult(null, exception) }
     }
 
     @Test
-    @Throws(Exception::class)
-    fun sendRequest_whenCallbackIsNull_doesNotNotifySuccess() {
-        val response = HttpResponse("response body", HttpResponseTiming(123, 456))
+    fun `when sendRequest is called with null callback, no crash occurs`() {
+        val request = mockk<OkHttpRequest>()
+        val mockResponse = mockk<HttpResponse>()
+        val backgroundSlot = slot<Runnable>()
 
-        Mockito.`when`(syncHttpClient.request(httpRequest)).thenReturn(response)
-        sut.sendRequest(httpRequest, null, HttpClient.RetryStrategy.NO_RETRY)
+        every { mockOkHttpClient.executeRequest(request) } returns mockResponse
+        every { mockScheduler.runOnBackground(capture(backgroundSlot)) } just Runs
 
-        threadScheduler.flushBackgroundThread()
-        Mockito.verify(threadScheduler, Mockito.never())?.runOnMain(
-            ArgumentMatchers.any(Runnable::class.java)
-        )
+        sut.sendRequest(request, null)
+
+        verify { mockScheduler.runOnBackground(any()) }
+        backgroundSlot.captured.run()
+
+        verify(exactly = 0) { mockScheduler.runOnMain(any()) }
     }
 
     @Test
-    @Throws(Exception::class)
-    fun sendRequest_whenCallbackIsNull_doesNotNotifyError() {
-        val exception = Exception("error")
-        Mockito.`when`(syncHttpClient.request(httpRequest)).thenThrow(exception)
+    fun `when sendRequest is called with null callback and exception, no crash occurs`() {
+        val request = mockk<OkHttpRequest>()
+        val exception = RuntimeException("Network error")
+        val backgroundSlot = slot<Runnable>()
 
-        sut.sendRequest(httpRequest, null, HttpClient.RetryStrategy.NO_RETRY)
+        every { mockOkHttpClient.executeRequest(request) } throws exception
+        every { mockScheduler.runOnBackground(capture(backgroundSlot)) } just Runs
 
-        threadScheduler.flushBackgroundThread()
-        Mockito.verify(threadScheduler, Mockito.never())?.runOnMain(
-            ArgumentMatchers.any(
-                Runnable::class.java
-            )
-        )
+        sut.sendRequest(request, null)
+
+        verify { mockScheduler.runOnBackground(any()) }
+        backgroundSlot.captured.run()
+
+        verify(exactly = 0) { mockScheduler.runOnMain(any()) }
     }
 
     @Test
-    @Throws(Exception::class)
-    fun sendRequest_whenRetryMax3TimesEnabled_retriesRequest3Times() {
-        val exception = Exception("error")
-        Mockito.`when`(syncHttpClient.request(httpRequest)).thenThrow(exception)
-
-        val callback = Mockito.mock(NetworkResponseCallback::class.java)
-        sut.sendRequest(httpRequest, callback, HttpClient.RetryStrategy.RETRY_MAX_3_TIMES)
-
-        threadScheduler.flushBackgroundThread()
-        Mockito.verify(syncHttpClient, Mockito.times(3))?.request(httpRequest)
+    fun `when HttpClient constructor is called without parameters, default instances are created`() {
+        val sut = HttpClient()
+        assertNotNull(sut)
     }
 
     @Test
-    @Throws(Exception::class)
-    fun sendRequest_whenRetryMax3TimesEnabled_notifiesMaxRetriesLimitExceededOnForegroundThread() {
-        val exception = Exception("error")
-        Mockito.`when`(syncHttpClient.request(httpRequest)).thenThrow(exception)
+    fun `when successful response, notifyErrorOnMainThread is not called`() {
+        val request = mockk<OkHttpRequest>()
+        val mockResponse = mockk<HttpResponse>()
+        val backgroundSlot = slot<Runnable>()
+        val mainSlot = slot<Runnable>()
 
-        val callback = Mockito.mock(NetworkResponseCallback::class.java)
-        sut.sendRequest(httpRequest, callback, HttpClient.RetryStrategy.RETRY_MAX_3_TIMES)
+        every { mockOkHttpClient.executeRequest(request) } returns mockResponse
+        every { mockScheduler.runOnBackground(capture(backgroundSlot)) } just Runs
+        every { mockScheduler.runOnMain(capture(mainSlot)) } just Runs
+        every { mockCallback.onResult(any(), any()) } just Runs
 
-        threadScheduler.flushBackgroundThread()
-        Mockito.verify(callback, Mockito.never()).onResult(
-            ArgumentMatchers.isNull(),
-            ArgumentMatchers.any(Exception::class.java)
-        )
+        sut.sendRequest(request, mockCallback)
+        backgroundSlot.captured.run()
+        mainSlot.captured.run()
 
-        threadScheduler.flushMainThread()
-
-        val captor = ArgumentCaptor.forClass(Exception::class.java)
-        Mockito.verify(callback).onResult(ArgumentMatchers.isNull(), captor.capture())
-
-        val httpClientException = captor.value as HttpClientException
-        val expectedMessage = "Retry limit has been exceeded. Try again later."
-        Assert.assertEquals(expectedMessage, httpClientException.message)
+        verify(exactly = 1) { mockScheduler.runOnMain(any()) }
+        verify { mockCallback.onResult(mockResponse, null) }
     }
 
     @Test
-    @Throws(Exception::class)
-    fun sendRequest_whenRetryMax3TimesEnabled_futureRequestsAreAllowed() {
-        val response = HttpResponse("response body", HttpResponseTiming(123, 456))
+    fun `when IOException occurs, callback receives error`() {
+        val request = mockk<OkHttpRequest>()
+        val ioException = java.io.IOException("Network timeout")
+        val backgroundSlot = slot<Runnable>()
+        val mainSlot = slot<Runnable>()
 
-        val exception = Exception("error")
-        Mockito.`when`(syncHttpClient.request(httpRequest)).thenThrow(exception)
+        every { mockOkHttpClient.executeRequest(request) } throws ioException
+        every { mockScheduler.runOnBackground(capture(backgroundSlot)) } just Runs
+        every { mockScheduler.runOnMain(capture(mainSlot)) } just Runs
+        every { mockCallback.onResult(any(), any()) } just Runs
 
-        val callback = Mockito.mock(NetworkResponseCallback::class.java)
-        sut.sendRequest(httpRequest, callback, HttpClient.RetryStrategy.RETRY_MAX_3_TIMES)
+        sut.sendRequest(request, mockCallback)
+        backgroundSlot.captured.run()
+        mainSlot.captured.run()
 
-        threadScheduler.flushBackgroundThread()
-
-        Mockito.reset(syncHttpClient)
-        Mockito.`when`(syncHttpClient.request(httpRequest))
-            .thenThrow(exception)
-            .thenReturn(response)
-        sut.sendRequest(httpRequest, callback, HttpClient.RetryStrategy.RETRY_MAX_3_TIMES)
-
-        threadScheduler.flushBackgroundThread()
-        threadScheduler.flushMainThread()
-
-        Mockito.verify(callback).onResult(response, null)
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun sendRequestSynchronous_sendsHttpRequest() {
-        val response = HttpResponse("response body", HttpResponseTiming(123, 456))
-
-        Mockito.`when`(syncHttpClient.request(httpRequest)).thenReturn(response)
-
-        val result = sut.sendRequest(httpRequest)
-        Assert.assertEquals("response body", result)
+        verify { mockCallback.onResult(null, ioException) }
     }
 }

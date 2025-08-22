@@ -2,7 +2,6 @@ package com.braintreepayments.api.core
 
 import android.net.Uri
 import android.util.Base64
-import com.braintreepayments.api.sharedutils.HttpClient
 import org.json.JSONException
 
 internal class ConfigurationLoader(
@@ -41,7 +40,9 @@ internal class ConfigurationLoader(
             callback.onResult(ConfigurationLoaderResult.Success(it))
         } ?: run {
             httpClient.get(
-                configUrl, null, authorization, HttpClient.RetryStrategy.RETRY_MAX_3_TIMES
+                path = configUrl,
+                configuration = null,
+                authorization = authorization,
             ) { response, httpError ->
                 val responseBody = response?.body
                 val timing = response?.timing

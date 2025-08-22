@@ -17,7 +17,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException
-import java.net.URL
 
 class OkHttpSynchronousHttpClientTest {
 
@@ -50,7 +49,7 @@ class OkHttpSynchronousHttpClientTest {
 
     @Test
     fun `when request is GET and response is successful, executeRequest returns HttpResponse`() {
-        val url = URL("https://example.com")
+        val url = "https://example.com"
         val okHttpRequest = OkHttpRequest(url, Method.Get)
         every { okHttpClient.newCall(any()) } returns call
         every { call.execute() } returns response
@@ -65,7 +64,7 @@ class OkHttpSynchronousHttpClientTest {
 
     @Test
     fun `when request is POST and response is successful, executeRequest returns HttpResponse`() {
-        val url = URL("https://example.com")
+        val url = "https://example.com"
         val okHttpRequest = OkHttpRequest(url, Method.Post("{\"key\":\"value\"}"))
         every { okHttpClient.newCall(any()) } returns call
         every { call.execute() } returns response
@@ -79,7 +78,7 @@ class OkHttpSynchronousHttpClientTest {
 
     @Test(expected = IOException::class)
     fun `when response is unsuccessful, executeRequest throws IOException`() {
-        val url = URL("https://example.com")
+        val url = "https://example.com"
         val okHttpRequest = OkHttpRequest(url, Method.Get)
         every { okHttpClient.newCall(any()) } returns call
         every { call.execute() } returns response
@@ -90,7 +89,7 @@ class OkHttpSynchronousHttpClientTest {
 
     @Test
     fun `when headers are provided, executeRequest sets headers on OkHttp Request`() {
-        val url = URL("https://example.com")
+        val url = "https://example.com"
         val headers = mapOf("Authorization" to "Bearer token", "Custom" to "Value")
         val okHttpRequest = OkHttpRequest(url, Method.Get, headers)
         every { okHttpClient.newCall(any()) } returns call
