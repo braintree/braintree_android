@@ -1,44 +1,43 @@
-package com.braintreepayments.api.sepadirectdebit;
+package com.braintreepayments.api.sepadirectdebit
 
-import static junit.framework.TestCase.assertEquals;
+import android.os.Parcel
+import com.braintreepayments.api.testutils.Fixtures
+import kotlinx.parcelize.parcelableCreator
+import org.json.JSONException
+import org.json.JSONObject
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.junit.Assert.assertEquals
 
-import android.os.Parcel;
-
-import com.braintreepayments.api.testutils.Fixtures;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-
-@RunWith(RobolectricTestRunner.class)
-public class SEPADirectDebitNonceUnitTest {
+@RunWith(RobolectricTestRunner::class)
+class SEPADirectDebitNonceUnitTest {
 
     @Test
-    public void fromJson_parsesResponse() throws JSONException {
-        SEPADirectDebitNonce sut = SEPADirectDebitNonce.fromJSON(
-                new JSONObject(Fixtures.SEPA_DEBIT_TOKENIZE_RESPONSE));
+    @Throws(JSONException::class)
+    fun `from JSON parses response correctly`() {
+        val sut = SEPADirectDebitNonce.fromJSON(JSONObject(Fixtures.SEPA_DEBIT_TOKENIZE_RESPONSE))
 
-        assertEquals("1194c322-9763-08b7-4777-0b9b5e5cc3e4", sut.getString());
-        assertEquals("1234", sut.getIbanLastFour());
-        assertEquals("a-customer-id", sut.getCustomerId());
-        assertEquals(SEPADirectDebitMandateType.ONE_OFF, sut.getMandateType());
+        assertEquals("1194c322-9763-08b7-4777-0b9b5e5cc3e4", sut.string)
+        assertEquals("1234", sut.ibanLastFour)
+        assertEquals("a-customer-id", sut.customerId)
+        assertEquals(SEPADirectDebitMandateType.ONE_OFF, sut.mandateType)
     }
 
     @Test
-    public void parcelsCorrectly() throws JSONException {
-        SEPADirectDebitNonce sut = SEPADirectDebitNonce.fromJSON(
-                new JSONObject(Fixtures.SEPA_DEBIT_TOKENIZE_RESPONSE));
-        Parcel parcel = Parcel.obtain();
-        sut.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
+    @Throws(JSONException::class)
+    fun `from JSON parses response and parcels it correctly`() {
+        val sut = SEPADirectDebitNonce.fromJSON(JSONObject(Fixtures.SEPA_DEBIT_TOKENIZE_RESPONSE))
+        val parcel = Parcel.obtain().apply {
+            sut.writeToParcel(this, 0)
+            setDataPosition(0)
+        }
 
-        SEPADirectDebitNonce parceled = SEPADirectDebitNonce.CREATOR.createFromParcel(parcel);
+        val parceled = parcelableCreator<SEPADirectDebitNonce>().createFromParcel(parcel)
 
-        assertEquals("1194c322-9763-08b7-4777-0b9b5e5cc3e4", parceled.getString());
-        assertEquals("1234", parceled.getIbanLastFour());
-        assertEquals("a-customer-id", parceled.getCustomerId());
-        assertEquals(SEPADirectDebitMandateType.ONE_OFF, parceled.getMandateType());
+        assertEquals("1194c322-9763-08b7-4777-0b9b5e5cc3e4", parceled.string)
+        assertEquals("1234", parceled.ibanLastFour)
+        assertEquals("a-customer-id", parceled.customerId)
+        assertEquals(SEPADirectDebitMandateType.ONE_OFF, parceled.mandateType)
     }
 }
