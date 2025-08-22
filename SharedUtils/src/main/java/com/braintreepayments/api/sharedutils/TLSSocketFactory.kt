@@ -13,6 +13,7 @@ import javax.net.ssl.SSLException
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
 /**
  * `TLSSocketFactory` is a custom implementation of [SSLSocketFactory] that enforces the use of specific TLS protocols
@@ -21,7 +22,7 @@ import javax.net.ssl.TrustManagerFactory
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 @Suppress("TooGenericExceptionCaught", "SwallowedException")
 class TLSSocketFactory(
-    certificateStream: InputStream,
+    certificateStream: InputStream = TLSCertificatePinning.createCertificateInputStream(),
     keyStore: KeyStore = KeyStore.getInstance(KeyStore.getDefaultType()),
     certificateFactory: CertificateFactory = CertificateFactory.getInstance("X.509"),
     trustManagerFactory: TrustManagerFactory = TrustManagerFactory.getInstance(
@@ -29,6 +30,8 @@ class TLSSocketFactory(
     ),
     sslContext: SSLContext = SSLContext.getInstance("TLS")
 ) : SSLSocketFactory() {
+
+    val trustManager: X509TrustManager
 
     private val internalSSLSocketFactory: SSLSocketFactory
 
@@ -44,6 +47,12 @@ class TLSSocketFactory(
             }
 
             trustManagerFactory.init(keyStore)
+
+            trustManager = trustManagerFactory.trustManagers
+                .filterIsInstance<X509TrustManager>()
+                .firstOrNull()
+                ?: throw SSLException("No X509TrustManager found")
+
             sslContext.init(null, trustManagerFactory.trustManagers, null)
             internalSSLSocketFactory = sslContext.socketFactory
         } catch (e: Exception) {

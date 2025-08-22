@@ -33,7 +33,10 @@ class OkHttpSynchronousHttpClientTest {
     fun setUp() {
         okHttpClient = mockk(relaxed = true)
         certificatePinner = mockk(relaxed = true)
-        sut = OkHttpSynchronousHttpClient(certificatePinner, okHttpClient)
+
+        sut = OkHttpSynchronousHttpClient(
+            okHttpClient = okHttpClient
+        )
 
         call = mockk(relaxed = true)
         response = mockk(relaxed = true)
