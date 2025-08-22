@@ -1,5 +1,7 @@
 package com.braintreepayments.api.sharedutils
 
+import androidx.annotation.RestrictTo
+
 /**
  * Represents an HTTP method for network requests.
  *
@@ -7,7 +9,8 @@ package com.braintreepayments.api.sharedutils
  *
  * @property stringValue The string representation of the HTTP method (e.g., "GET", "POST").
  */
-internal sealed class Method(val stringValue: String) {
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+sealed class Method(val stringValue: String) {
     /**
      * Represents the HTTP GET method.
      */
