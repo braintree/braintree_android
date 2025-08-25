@@ -1,139 +1,128 @@
-package com.braintreepayments.api.visacheckout;
+package com.braintreepayments.api.visacheckout
 
-import static com.braintreepayments.api.testutils.Assertions.assertBinDataEqual;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
+import android.os.Parcel
+import com.braintreepayments.api.card.BinType
+import com.braintreepayments.api.testutils.Fixtures
+import kotlinx.parcelize.parcelableCreator
+import org.json.JSONException
+import org.json.JSONObject
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import com.braintreepayments.api.testutils.Assertions.assertBinDataEqual
 
-import android.os.Parcel;
-
-import com.braintreepayments.api.card.BinType;
-import com.braintreepayments.api.testutils.Fixtures;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-
-@RunWith(RobolectricTestRunner.class)
-public class VisaCheckoutNonceUnitTest {
+@RunWith(RobolectricTestRunner::class)
+class VisaCheckoutNonceUnitTest {
 
     @Test
-    public void fromJson_createsVisaCheckoutNonce() throws JSONException {
-        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJSON(new JSONObject(
-                Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE));
+    @Throws(JSONException::class)
+    fun `creates VisaCheckoutNonce from JSON successfully`() {
+        val visaCheckoutNonce = VisaCheckoutNonce.fromJSON(
+            JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE)
+        )
 
-        assertEquals("11", visaCheckoutNonce.getLastTwo());
-        assertEquals("Visa", visaCheckoutNonce.getCardType());
-        assertEquals("123456-12345-12345-a-adfa", visaCheckoutNonce.getString());
-        assertFalse(visaCheckoutNonce.isDefault());
-        assertEquals("callId", visaCheckoutNonce.getCallId());
+        assertEquals("11", visaCheckoutNonce.lastTwo)
+        assertEquals("Visa", visaCheckoutNonce.cardType)
+        assertEquals("123456-12345-12345-a-adfa", visaCheckoutNonce.string)
+        assertFalse(visaCheckoutNonce.isDefault)
+        assertEquals("callId", visaCheckoutNonce.callId)
 
-        assertNotNull(visaCheckoutNonce.getBillingAddress());
-        assertEquals("billingFirstName", visaCheckoutNonce.getBillingAddress().getFirstName());
-        assertEquals("billingLastName", visaCheckoutNonce.getBillingAddress().getLastName());
-        assertEquals("billingStreetAddress",
-                visaCheckoutNonce.getBillingAddress().getStreetAddress());
-        assertEquals("billingExtendedAddress",
-                visaCheckoutNonce.getBillingAddress().getExtendedAddress());
-        assertEquals("billingLocality", visaCheckoutNonce.getBillingAddress().getLocality());
-        assertEquals("billingRegion", visaCheckoutNonce.getBillingAddress().getRegion());
-        assertEquals("billingPostalCode", visaCheckoutNonce.getBillingAddress().getPostalCode());
-        assertEquals("billingCountryCode", visaCheckoutNonce.getBillingAddress().getCountryCode());
+        assertNotNull(visaCheckoutNonce.billingAddress)
+        assertEquals("billingFirstName", visaCheckoutNonce.billingAddress.firstName)
+        assertEquals("billingLastName", visaCheckoutNonce.billingAddress.lastName)
+        assertEquals("billingStreetAddress", visaCheckoutNonce.billingAddress.streetAddress)
+        assertEquals("billingExtendedAddress", visaCheckoutNonce.billingAddress.extendedAddress)
+        assertEquals("billingLocality", visaCheckoutNonce.billingAddress.locality)
+        assertEquals("billingRegion", visaCheckoutNonce.billingAddress.region)
+        assertEquals("billingPostalCode", visaCheckoutNonce.billingAddress.postalCode)
+        assertEquals("billingCountryCode", visaCheckoutNonce.billingAddress.countryCode)
 
-        assertNotNull(visaCheckoutNonce.getShippingAddress());
-        assertEquals("shippingFirstName", visaCheckoutNonce.getShippingAddress().getFirstName());
-        assertEquals("shippingLastName", visaCheckoutNonce.getShippingAddress().getLastName());
-        assertEquals("shippingStreetAddress",
-                visaCheckoutNonce.getShippingAddress().getStreetAddress());
-        assertEquals("shippingExtendedAddress",
-                visaCheckoutNonce.getShippingAddress().getExtendedAddress());
-        assertEquals("shippingLocality", visaCheckoutNonce.getShippingAddress().getLocality());
-        assertEquals("shippingRegion", visaCheckoutNonce.getShippingAddress().getRegion());
-        assertEquals("shippingPostalCode", visaCheckoutNonce.getShippingAddress().getPostalCode());
-        assertEquals("shippingCountryCode",
-                visaCheckoutNonce.getShippingAddress().getCountryCode());
+        assertNotNull(visaCheckoutNonce.shippingAddress)
+        assertEquals("shippingFirstName", visaCheckoutNonce.shippingAddress.firstName)
+        assertEquals("shippingLastName", visaCheckoutNonce.shippingAddress.lastName)
+        assertEquals("shippingStreetAddress", visaCheckoutNonce.shippingAddress.streetAddress)
+        assertEquals("shippingExtendedAddress", visaCheckoutNonce.shippingAddress.extendedAddress)
+        assertEquals("shippingLocality", visaCheckoutNonce.shippingAddress.locality)
+        assertEquals("shippingRegion", visaCheckoutNonce.shippingAddress.region)
+        assertEquals("shippingPostalCode", visaCheckoutNonce.shippingAddress.postalCode)
+        assertEquals("shippingCountryCode", visaCheckoutNonce.shippingAddress.countryCode)
 
-        assertNotNull(visaCheckoutNonce.getUserData());
-        assertEquals("userFirstName", visaCheckoutNonce.getUserData().getUserFirstName());
-        assertEquals("userLastName", visaCheckoutNonce.getUserData().getUserLastName());
-        assertEquals("userFullName", visaCheckoutNonce.getUserData().getUserFullName());
-        assertEquals("userUserName", visaCheckoutNonce.getUserData().getUsername());
-        assertEquals("userEmail", visaCheckoutNonce.getUserData().getUserEmail());
+        assertNotNull(visaCheckoutNonce.userData)
+        assertEquals("userFirstName", visaCheckoutNonce.userData.userFirstName)
+        assertEquals("userLastName", visaCheckoutNonce.userData.userLastName)
+        assertEquals("userFullName", visaCheckoutNonce.userData.userFullName)
+        assertEquals("userUserName", visaCheckoutNonce.userData.username)
+        assertEquals("userEmail", visaCheckoutNonce.userData.userEmail)
 
-        assertNotNull(visaCheckoutNonce.getBinData());
-        assertEquals(BinType.Unknown, visaCheckoutNonce.getBinData().getPrepaid());
-        assertEquals(BinType.Yes, visaCheckoutNonce.getBinData().getHealthcare());
-        assertEquals(BinType.No, visaCheckoutNonce.getBinData().getDebit());
-        assertEquals(BinType.Unknown, visaCheckoutNonce.getBinData().getDurbinRegulated());
-        assertEquals(BinType.Unknown, visaCheckoutNonce.getBinData().getCommercial());
-        assertEquals(BinType.Unknown, visaCheckoutNonce.getBinData().getPayroll());
-        assertEquals(BinType.Unknown.name(), visaCheckoutNonce.getBinData().getIssuingBank());
-        assertEquals("Something", visaCheckoutNonce.getBinData().getCountryOfIssuance());
-        assertEquals("123", visaCheckoutNonce.getBinData().getProductId());
+        assertNotNull(visaCheckoutNonce.binData)
+        assertEquals(BinType.Unknown, visaCheckoutNonce.binData.prepaid)
+        assertEquals(BinType.Yes, visaCheckoutNonce.binData.healthcare)
+        assertEquals(BinType.No, visaCheckoutNonce.binData.debit)
+        assertEquals(BinType.Unknown, visaCheckoutNonce.binData.durbinRegulated)
+        assertEquals(BinType.Unknown, visaCheckoutNonce.binData.commercial)
+        assertEquals(BinType.Unknown, visaCheckoutNonce.binData.payroll)
+        assertEquals(BinType.Unknown.name, visaCheckoutNonce.binData.issuingBank)
+        assertEquals("Something", visaCheckoutNonce.binData.countryOfIssuance)
+        assertEquals("123", visaCheckoutNonce.binData.productId)
     }
 
     @Test
-    public void fromJson_whenNoCallId_createsVisaCheckoutNonceWithEmptyCallId()
-            throws JSONException {
-        JSONObject visaCheckoutResponseJson =
-                new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE);
+    @Throws(JSONException::class)
+    fun `creates VisaCheckoutNonce with empty callId from JSON when no callId is present`() {
+        val visaCheckoutResponseJson = JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE)
 
-        JSONArray visaCheckoutCardsJson =
-                visaCheckoutResponseJson.getJSONArray("visaCheckoutCards");
-        JSONObject visaCheckoutNonceJson = visaCheckoutCardsJson.getJSONObject(0);
-        visaCheckoutNonceJson.remove("callId");
+        val visaCheckoutCardsJson = visaCheckoutResponseJson.getJSONArray("visaCheckoutCards")
+        val visaCheckoutNonceJson = visaCheckoutCardsJson.getJSONObject(0).apply {
+            remove("callId")
+        }
+        visaCheckoutCardsJson.put(0, visaCheckoutNonceJson)
+        visaCheckoutResponseJson.put("visaCheckoutCards", visaCheckoutCardsJson)
 
-        visaCheckoutCardsJson.put(0, visaCheckoutNonceJson);
-        visaCheckoutResponseJson.put("visaCheckoutCards", visaCheckoutCardsJson);
+        val visaCheckoutNonce = VisaCheckoutNonce.fromJSON(visaCheckoutResponseJson)
 
-        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJSON(visaCheckoutResponseJson);
-
-        assertEquals("", visaCheckoutNonce.getCallId());
+        assertEquals("", visaCheckoutNonce.callId)
     }
 
     @Test
-    public void parcelsCorrectly() throws JSONException {
-        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJSON(
-                new JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE));
+    @Throws(JSONException::class)
+    fun `creates VisaCheckoutNonce from JSOn and parcels it correctly`() {
+        val visaCheckoutNonce = VisaCheckoutNonce.fromJSON(
+            JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE)
+        )
 
-        Parcel parcel = Parcel.obtain();
-        visaCheckoutNonce.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        VisaCheckoutNonce actual = VisaCheckoutNonce.CREATOR.createFromParcel(parcel);
+        val parcel = Parcel.obtain().apply {
+            visaCheckoutNonce.writeToParcel(this, 0)
+            setDataPosition(0)
+        }
 
-        assertEquals(visaCheckoutNonce.getString(), actual.getString());
-        assertEquals(visaCheckoutNonce.isDefault(), actual.isDefault());
-        assertEquals(visaCheckoutNonce.getLastTwo(), actual.getLastTwo());
-        assertEquals(visaCheckoutNonce.getCardType(), actual.getCardType());
-        assertBinDataEqual(visaCheckoutNonce.getBinData(), actual.getBinData());
-        assertVisaCheckoutAddress(visaCheckoutNonce.getBillingAddress(),
-                actual.getBillingAddress());
-        assertVisaCheckoutAddress(visaCheckoutNonce.getShippingAddress(),
-                actual.getShippingAddress());
-        assertEquals(visaCheckoutNonce.getCallId(), actual.getCallId());
-        assertEquals(visaCheckoutNonce.getUserData().getUserFirstName(),
-                actual.getUserData().getUserFirstName());
-        assertEquals(visaCheckoutNonce.getUserData().getUserLastName(),
-                actual.getUserData().getUserLastName());
-        assertEquals(visaCheckoutNonce.getUserData().getUserFullName(),
-                actual.getUserData().getUserFullName());
-        assertEquals(visaCheckoutNonce.getUserData().getUserEmail(),
-                actual.getUserData().getUserEmail());
+        val actual = parcelableCreator<VisaCheckoutNonce>().createFromParcel(parcel)
+
+        assertEquals(visaCheckoutNonce.string, actual.string)
+        assertEquals(visaCheckoutNonce.isDefault, actual.isDefault)
+        assertEquals(visaCheckoutNonce.lastTwo, actual.lastTwo)
+        assertEquals(visaCheckoutNonce.cardType, actual.cardType)
+        assertBinDataEqual(visaCheckoutNonce.binData, actual.binData)
+        assertVisaCheckoutAddress(visaCheckoutNonce.billingAddress, actual.billingAddress)
+        assertVisaCheckoutAddress(visaCheckoutNonce.shippingAddress, actual.shippingAddress)
+        assertEquals(visaCheckoutNonce.callId, actual.callId)
+        assertEquals(visaCheckoutNonce.userData.userFirstName, actual.userData.userFirstName)
+        assertEquals(visaCheckoutNonce.userData.userLastName, actual.userData.userLastName)
+        assertEquals(visaCheckoutNonce.userData.userFullName, actual.userData.userFullName)
+        assertEquals(visaCheckoutNonce.userData.userEmail, actual.userData.userEmail)
     }
 
-    private void assertVisaCheckoutAddress(VisaCheckoutAddress expected,
-                                           VisaCheckoutAddress actual) {
-        assertEquals(expected.getFirstName(), actual.getFirstName());
-        assertEquals(expected.getLastName(), actual.getLastName());
-        assertEquals(expected.getStreetAddress(), actual.getStreetAddress());
-        assertEquals(expected.getExtendedAddress(), actual.getExtendedAddress());
-        assertEquals(expected.getLocality(), actual.getLocality());
-        assertEquals(expected.getRegion(), actual.getRegion());
-        assertEquals(expected.getPostalCode(), actual.getPostalCode());
-        assertEquals(expected.getCountryCode(), actual.getCountryCode());
-        assertEquals(expected.getPhoneNumber(), actual.getPhoneNumber());
+    fun assertVisaCheckoutAddress(expected: VisaCheckoutAddress, actual:VisaCheckoutAddress) {
+        assertEquals(expected.firstName, actual.firstName)
+        assertEquals(expected.lastName, actual.lastName)
+        assertEquals(expected.streetAddress, actual.streetAddress)
+        assertEquals(expected.extendedAddress, actual.extendedAddress)
+        assertEquals(expected.locality, actual.locality)
+        assertEquals(expected.region, actual.region)
+        assertEquals(expected.postalCode, actual.postalCode)
+        assertEquals(expected.countryCode, actual.countryCode)
+        assertEquals(expected.phoneNumber, actual.phoneNumber)
     }
 }
