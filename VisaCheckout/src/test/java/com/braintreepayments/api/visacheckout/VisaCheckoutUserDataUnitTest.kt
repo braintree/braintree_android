@@ -1,68 +1,66 @@
-package com.braintreepayments.api.visacheckout;
+package com.braintreepayments.api.visacheckout
 
-import android.os.Parcel;
+import android.os.Parcel
+import kotlinx.parcelize.parcelableCreator
+import org.json.JSONObject
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.junit.Assert.assertEquals
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-
-import static junit.framework.Assert.assertEquals;
-
-import com.braintreepayments.api.visacheckout.VisaCheckoutUserData;
-
-@RunWith(RobolectricTestRunner.class)
-public class VisaCheckoutUserDataUnitTest {
-
-    private JSONObject sampleUserData;
+@RunWith(RobolectricTestRunner::class)
+class VisaCheckoutUserDataUnitTest {
+    private lateinit var sampleUserData: JSONObject
 
     @Before
-    public void setup() throws JSONException {
-       sampleUserData = new JSONObject()
-               .put("userFirstName", "userFirstName")
-               .put("userLastName", "userLastName")
-               .put("userFullName", "userFullName")
-               .put("userName", "userName")
-               .put("userEmail", "userEmail");
+    @Throws
+    fun setup() {
+        sampleUserData = JSONObject()
+            .put("userFirstName", "userFirstName")
+            .put("userLastName", "userLastName")
+            .put("userFullName", "userFullName")
+            .put("userName", "userName")
+            .put("userEmail", "userEmail")
     }
 
     @Test
-    public void fromJson_whenValid_returnsPopulatedObject() {
-        VisaCheckoutUserData visaCheckoutUserData = VisaCheckoutUserData.fromJson(sampleUserData);
+    fun `creates VisaCheckoutUserData from valid JSON and returns a populated object`() {
+        val visaCheckoutUserData = VisaCheckoutUserData.fromJson(sampleUserData)
 
-        assertEquals("userFirstName", visaCheckoutUserData.getUserFirstName());
-        assertEquals("userLastName", visaCheckoutUserData.getUserLastName());
-        assertEquals("userFullName", visaCheckoutUserData.getUserFullName());
-        assertEquals("userName", visaCheckoutUserData.getUsername());
-        assertEquals("userEmail", visaCheckoutUserData.getUserEmail());
+        assertEquals("userFirstName", visaCheckoutUserData.userFirstName)
+        assertEquals("userLastName", visaCheckoutUserData.userLastName)
+        assertEquals("userFullName", visaCheckoutUserData.userFullName)
+        assertEquals("userName", visaCheckoutUserData.username)
+        assertEquals("userEmail", visaCheckoutUserData.userEmail)
     }
 
     @Test
-    public void fromJson_whenNull_returnsEmptyObject() {
-        VisaCheckoutUserData visaCheckoutUserData = VisaCheckoutUserData.fromJson(null);
+    fun `creates VisaCheckoutUserData from null JSON and returns an empty object`() {
+        val visaCheckoutUserData = VisaCheckoutUserData.fromJson(null)
 
-        assertEquals("", visaCheckoutUserData.getUserFirstName());
-        assertEquals("", visaCheckoutUserData.getUserLastName());
-        assertEquals("", visaCheckoutUserData.getUserFullName());
-        assertEquals("", visaCheckoutUserData.getUsername());
-        assertEquals("", visaCheckoutUserData.getUserEmail());
+        assertEquals("", visaCheckoutUserData.userFirstName)
+        assertEquals("", visaCheckoutUserData.userLastName)
+        assertEquals("", visaCheckoutUserData.userFullName)
+        assertEquals("", visaCheckoutUserData.username)
+        assertEquals("", visaCheckoutUserData.userEmail)
     }
 
     @Test
-    public void parcelsCorrectly() {
-        VisaCheckoutUserData visaCheckoutUserData = VisaCheckoutUserData.fromJson(sampleUserData);
+    fun `creates VisaCheckoutUserData from JSON and parcels it correctly`() {
+        val visaCheckoutUserData = VisaCheckoutUserData.fromJson(sampleUserData)
 
-        Parcel parcel = Parcel.obtain();
-        visaCheckoutUserData.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        VisaCheckoutUserData actual = VisaCheckoutUserData.CREATOR.createFromParcel(parcel);
+        val parcel = Parcel.obtain().apply {
+            visaCheckoutUserData.writeToParcel(this, 0)
+            setDataPosition(0)
+        }
 
-        assertEquals(visaCheckoutUserData.getUserFirstName(), actual.getUserFirstName());
-        assertEquals(visaCheckoutUserData.getUserLastName(), actual.getUserLastName());
-        assertEquals(visaCheckoutUserData.getUserFullName(), actual.getUserFullName());
-        assertEquals(visaCheckoutUserData.getUsername(), actual.getUsername());
-        assertEquals(visaCheckoutUserData.getUserEmail(), actual.getUserEmail());
+        val actual = parcelableCreator<VisaCheckoutUserData>().createFromParcel(parcel)
+
+        assertEquals( visaCheckoutUserData.userFirstName, actual.userFirstName)
+        assertEquals( visaCheckoutUserData.userLastName, actual.userLastName)
+        assertEquals(visaCheckoutUserData.userFullName, actual.userFullName)
+        assertEquals(visaCheckoutUserData.username, actual.username)
+        assertEquals( visaCheckoutUserData.userEmail, actual.userEmail)
     }
 }
