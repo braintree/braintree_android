@@ -20,7 +20,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.util.UUID
 
 @RunWith(RobolectricTestRunner::class)
 class BraintreeHttpClientUnitTest {
@@ -57,7 +56,7 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when get is called with ClientToken, authorization fingerprint is appended to URL`() {
+    fun `when get is called with ClientToken, authorization fingerprint is appended to URL and header`() {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
@@ -71,6 +70,7 @@ class BraintreeHttpClientUnitTest {
         val expectedUrl =
             "https://api.braintreegateway.com/v1/payment_methods?authorizationFingerprint=${clientToken.bearer}"
         assertEquals(expectedUrl, request.url)
+        assertEquals("Bearer ${clientToken.bearer}", request.headers["Authorization"])
         assertNull(request.headers["Client-Key"])
     }
 
@@ -115,17 +115,17 @@ class BraintreeHttpClientUnitTest {
 
     @Test
     fun `when get is called with authorization bearer, Authorization header is added`() {
-        val token = UUID.randomUUID().toString()
-        val authorization = mockk<Authorization>()
-        every { authorization.bearer } returns token
+        val clientToken = Authorization.fromString(
+            FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
+        ) as ClientToken
         val requestSlot = slot<OkHttpRequest>()
         every { httpClient.sendRequest(capture(requestSlot), callback) } just runs
 
         val sut = BraintreeHttpClient(httpClient)
-        sut.get("v1/payment_methods", configuration, authorization, callback)
+        sut.get("v1/payment_methods", configuration, clientToken, callback)
 
         val request = requestSlot.captured
-        assertEquals("Bearer $token", request.headers["Authorization"])
+        assertEquals("Bearer ${clientToken.bearer}", request.headers["Authorization"])
     }
 
     // POST method tests
@@ -163,6 +163,7 @@ class BraintreeHttpClientUnitTest {
         val postMethod = request.method as Method.Post
         assertTrue(postMethod.body.contains("authorizationFingerprint"))
         assertTrue(postMethod.body.contains(clientToken.authorizationFingerprint))
+        assertEquals("Bearer ${clientToken.bearer}", request.headers["Authorization"])
         assertNull(request.headers["Client-Key"])
     }
 
@@ -300,6 +301,7 @@ class BraintreeHttpClientUnitTest {
 
         val request = requestSlot.captured
         assertNull(request.headers["Authorization"])
+        assertNull(request.headers["Client-Key"])
     }
 
     @Test

@@ -121,11 +121,9 @@ internal class BraintreeHttpClient(
         val headers = mutableMapOf(
             USER_AGENT_HEADER to "braintree/android/" + BuildConfig.VERSION_NAME
         )
-        if (authorization is TokenizationKey) {
-            headers["Client-Key"] = authorization.bearer
-        }
-        authorization?.bearer?.let { token ->
-            headers["Authorization"] = "Bearer $token"
+        when (authorization) {
+            is TokenizationKey -> headers["Client-Key"] = authorization.bearer
+            is ClientToken -> headers["Authorization"] = "Bearer ${authorization.bearer}"
         }
         headers.putAll(additionalHeaders)
         return headers
