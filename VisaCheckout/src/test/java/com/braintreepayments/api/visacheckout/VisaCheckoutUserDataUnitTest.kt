@@ -11,18 +11,12 @@ import org.junit.Assert.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
 class VisaCheckoutUserDataUnitTest {
-    private lateinit var sampleUserData: JSONObject
-
-    @Before
-    @Throws
-    fun setup() {
-        sampleUserData = JSONObject()
-            .put("userFirstName", "userFirstName")
-            .put("userLastName", "userLastName")
-            .put("userFullName", "userFullName")
-            .put("userName", "userName")
-            .put("userEmail", "userEmail")
-    }
+    private val sampleUserData = JSONObject()
+        .put("userFirstName", "userFirstName")
+        .put("userLastName", "userLastName")
+        .put("userFullName", "userFullName")
+        .put("userName", "userName")
+        .put("userEmail", "userEmail")
 
     @Test
     fun `creates VisaCheckoutUserData from valid JSON and returns a populated object`() {
