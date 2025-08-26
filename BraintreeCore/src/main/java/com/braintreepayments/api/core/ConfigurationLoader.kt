@@ -1,6 +1,7 @@
 package com.braintreepayments.api.core
 
 import android.net.Uri
+import android.util.Base64
 import com.braintreepayments.api.sharedutils.HttpClient
 import org.json.JSONException
 
@@ -35,9 +36,7 @@ internal class ConfigurationLoader(
             .appendQueryParameter("configVersion", "3")
             .build()
             .toString()
-
-        var cachedConfig: Configuration? = null
-        merchantId?.let { cachedConfig = getCachedConfiguration(it) }
+        val cachedConfig = getCachedConfiguration(authorization, configUrl)
 
         cachedConfig?.let {
             callback.onResult(ConfigurationLoaderResult.Success(it))
@@ -50,7 +49,7 @@ internal class ConfigurationLoader(
                 if (responseBody != null) {
                     try {
                         val configuration = Configuration.fromJson(responseBody)
-                        saveConfigurationToCache(configuration)
+                        saveConfigurationToCache(configuration, authorization, configUrl)
                         callback.onResult(ConfigurationLoaderResult.Success(configuration, timing))
 
                         analyticsClient.sendEvent(
@@ -79,17 +78,19 @@ internal class ConfigurationLoader(
 
     private fun saveConfigurationToCache(
         configuration: Configuration,
+        authorization: Authorization,
+        configUrl: String
     ) {
-        configuration.apply {
-            this@ConfigurationLoader.merchantId = merchantId
-            configurationCache.saveConfiguration(this, merchantId)
-        }
+        val cacheKey = createCacheKey(authorization, configUrl)
+        configurationCache.saveConfiguration(configuration, cacheKey)
     }
 
     private fun getCachedConfiguration(
-        merchantId: String
+        authorization: Authorization,
+        configUrl: String
     ): Configuration? {
-        val cachedConfigResponse = configurationCache.getConfiguration(merchantId) ?: return null
+        val cacheKey = createCacheKey(authorization, configUrl)
+        val cachedConfigResponse = configurationCache.getConfiguration(cacheKey) ?: return null
         return try {
             Configuration.fromJson(cachedConfigResponse)
         } catch (e: JSONException) {
@@ -98,6 +99,9 @@ internal class ConfigurationLoader(
     }
 
     companion object {
+        private fun createCacheKey(authorization: Authorization, configUrl: String): String {
+            return Base64.encodeToString("$configUrl${authorization.bearer}".toByteArray(), 0)
+        }
         /**
          * Singleton instance of the ConfigurationLoader.
          */

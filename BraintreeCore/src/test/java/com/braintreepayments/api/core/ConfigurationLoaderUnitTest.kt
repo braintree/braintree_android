@@ -29,8 +29,6 @@ class ConfigurationLoaderUnitTest {
 
     private lateinit var sut: ConfigurationLoader
 
-    private val TEST_MERCHANT_ID = "integration_merchant_id"
-
     @Before
     fun setUp() {
         every { merchantRepository.authorization } returns authorization
@@ -76,6 +74,7 @@ class ConfigurationLoaderUnitTest {
     @Test
     fun loadConfiguration_savesFetchedConfigurationToCache() {
         every { authorization.configUrl } returns "https://example.com/config"
+        every { authorization.bearer } returns "bearer"
 
         sut.loadConfiguration(callback)
 
@@ -101,8 +100,7 @@ class ConfigurationLoaderUnitTest {
         )
 
         verify {
-            configurationCache.saveConfiguration(ofType(Configuration::class), TEST_MERCHANT_ID)
-        }
+            configurationCache.saveConfiguration(ofType(Configuration::class), cacheKey) }
     }
 
     @Test
@@ -179,11 +177,14 @@ class ConfigurationLoaderUnitTest {
 
     @Test
     fun loadConfiguration_whenCachedConfigurationAvailable_loadsConfigurationFromCache() {
-        val cacheKey = TEST_MERCHANT_ID
+        val cacheKey = Base64.encodeToString(
+            "https://example.com/config?configVersion=3bearer".toByteArray(),
+            0
+        )
         every { authorization.configUrl } returns "https://example.com/config"
+        every { authorization.bearer } returns "bearer"
         every { configurationCache.getConfiguration(cacheKey) } returns Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN
 
-        sut.merchantId = TEST_MERCHANT_ID
         sut.loadConfiguration(callback)
 
         verify(exactly = 0) {

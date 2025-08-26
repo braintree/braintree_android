@@ -10,7 +10,6 @@
     * Add `softwareInfo` details to the `merchantInfo` field in the `loadPaymentData` request.
 * BraintreeCore
   * Change configuration cache time to 1 day
-  * Change configuration cache key to `merchantId`
 
 ## 5.15.0 (2025-08-13)
 
