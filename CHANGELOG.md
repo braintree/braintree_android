@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.16.0 (2025-08-26)
 
 * PayPal
   * Fix an issue where `PayPalRequest` was sending `phone_number` instead of `payer_phone`
