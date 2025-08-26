@@ -18,7 +18,6 @@ internal class ConfigurationLoader(
     },
 ) {
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
-    internal var merchantId: String? = null
 
     fun loadConfiguration(callback: ConfigurationLoaderCallback) {
         val authorization = merchantRepository.authorization
@@ -102,6 +101,7 @@ internal class ConfigurationLoader(
         private fun createCacheKey(authorization: Authorization, configUrl: String): String {
             return Base64.encodeToString("$configUrl${authorization.bearer}".toByteArray(), 0)
         }
+
         /**
          * Singleton instance of the ConfigurationLoader.
          */

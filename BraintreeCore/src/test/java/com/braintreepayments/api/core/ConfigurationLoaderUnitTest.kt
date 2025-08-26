@@ -100,7 +100,8 @@ class ConfigurationLoaderUnitTest {
         )
 
         verify {
-            configurationCache.saveConfiguration(ofType(Configuration::class), cacheKey) }
+            configurationCache.saveConfiguration(ofType(Configuration::class), cacheKey)
+        }
     }
 
     @Test
