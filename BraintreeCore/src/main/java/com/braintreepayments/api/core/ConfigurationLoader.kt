@@ -1,7 +1,6 @@
 package com.braintreepayments.api.core
 
 import android.net.Uri
-import android.util.Base64
 import com.braintreepayments.api.sharedutils.HttpClient
 import org.json.JSONException
 
@@ -37,9 +36,8 @@ internal class ConfigurationLoader(
             .build()
             .toString()
 
-        var cachedConfig:Configuration? = null
+        var cachedConfig: Configuration? = null
         merchantId?.let { cachedConfig = getCachedConfiguration(it) }
-
 
         cachedConfig?.let {
             callback.onResult(ConfigurationLoaderResult.Success(it))
@@ -86,7 +84,6 @@ internal class ConfigurationLoader(
             this@ConfigurationLoader.merchantId = merchantId
             configurationCache.saveConfiguration(this, merchantId)
         }
-
     }
 
     private fun getCachedConfiguration(
