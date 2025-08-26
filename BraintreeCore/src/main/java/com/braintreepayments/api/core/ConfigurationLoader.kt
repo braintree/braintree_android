@@ -18,6 +18,7 @@ internal class ConfigurationLoader(
     },
 ) {
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
+    internal var merchantId: String? = null
 
     fun loadConfiguration(callback: ConfigurationLoaderCallback) {
         val authorization = merchantRepository.authorization
@@ -35,7 +36,10 @@ internal class ConfigurationLoader(
             .appendQueryParameter("configVersion", "3")
             .build()
             .toString()
-        val cachedConfig = getCachedConfiguration(authorization, configUrl)
+
+        var cachedConfig:Configuration? = null
+        merchantId?.let { cachedConfig = getCachedConfiguration(it) }
+
 
         cachedConfig?.let {
             callback.onResult(ConfigurationLoaderResult.Success(it))
@@ -48,7 +52,7 @@ internal class ConfigurationLoader(
                 if (responseBody != null) {
                     try {
                         val configuration = Configuration.fromJson(responseBody)
-                        saveConfigurationToCache(configuration, authorization, configUrl)
+                        saveConfigurationToCache(configuration)
                         callback.onResult(ConfigurationLoaderResult.Success(configuration, timing))
 
                         analyticsClient.sendEvent(
@@ -77,19 +81,18 @@ internal class ConfigurationLoader(
 
     private fun saveConfigurationToCache(
         configuration: Configuration,
-        authorization: Authorization,
-        configUrl: String
     ) {
-        val cacheKey = createCacheKey(authorization, configUrl)
-        configurationCache.saveConfiguration(configuration, cacheKey)
+        configuration.apply {
+            this@ConfigurationLoader.merchantId = merchantId
+            configurationCache.saveConfiguration(this, merchantId)
+        }
+
     }
 
     private fun getCachedConfiguration(
-        authorization: Authorization,
-        configUrl: String
+        merchantId: String
     ): Configuration? {
-        val cacheKey = createCacheKey(authorization, configUrl)
-        val cachedConfigResponse = configurationCache.getConfiguration(cacheKey) ?: return null
+        val cachedConfigResponse = configurationCache.getConfiguration(merchantId) ?: return null
         return try {
             Configuration.fromJson(cachedConfigResponse)
         } catch (e: JSONException) {
@@ -98,10 +101,6 @@ internal class ConfigurationLoader(
     }
 
     companion object {
-        private fun createCacheKey(authorization: Authorization, configUrl: String): String {
-            return Base64.encodeToString("$configUrl${authorization.bearer}".toByteArray(), 0)
-        }
-
         /**
          * Singleton instance of the ConfigurationLoader.
          */

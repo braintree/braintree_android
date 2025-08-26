@@ -57,6 +57,6 @@ class ConfigurationCacheUnitTest {
         val sut = ConfigurationCache(braintreeSharedPreferences)
         sut.saveConfiguration(configuration, "cacheKey", 0)
 
-        assertNull(sut.getConfiguration("cacheKey", TimeUnit.MINUTES.toMillis(20)))
+        assertNull(sut.getConfiguration("cacheKey", TimeUnit.DAYS.toMillis(2)))
     }
 }

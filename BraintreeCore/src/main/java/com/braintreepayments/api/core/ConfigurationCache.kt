@@ -42,7 +42,7 @@ internal class ConfigurationCache(
     }
 
     companion object {
-        private val TIME_TO_LIVE = TimeUnit.MINUTES.toMillis(5)
+        private val TIME_TO_LIVE = TimeUnit.DAYS.toMillis(1)
 
         @Volatile
         private var INSTANCE: ConfigurationCache? = null
