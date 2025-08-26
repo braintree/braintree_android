@@ -34,6 +34,7 @@ class PayPalAccountNonceUnitTest {
         assertEquals("CA", payPalAccountNonce.billingAddress.region)
         assertEquals("94602", payPalAccountNonce.billingAddress.postalCode)
         assertEquals("US", payPalAccountNonce.billingAddress.countryCodeAlpha2)
+        assertEquals("fake-order-id", payPalAccountNonce.paymentId)
         payPalAccountNonce.creditFinancing?.let {
             assertFalse(it.isCardAmountImmutable)
             assertEquals("USD", it.monthlyPayment?.currency)

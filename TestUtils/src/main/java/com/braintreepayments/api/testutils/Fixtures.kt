@@ -1753,6 +1753,7 @@ object Fixtures {
               "securityQuestions": [],
               "details": {
                 "email": "paypalaccount@example.com",
+                "paymentToken": "fake-order-id",
                 "payerInfo": {
                   "accountAddress": {
                     "street1": "123 Fake St.",
