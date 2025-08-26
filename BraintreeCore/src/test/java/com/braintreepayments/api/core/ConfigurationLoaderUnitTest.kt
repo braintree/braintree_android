@@ -1,7 +1,6 @@
 package com.braintreepayments.api.core
 
 import android.util.Base64
-import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
@@ -55,7 +54,6 @@ class ConfigurationLoaderUnitTest {
                 expectedConfigUrl,
                 null,
                 authorization,
-                HttpClient.RetryStrategy.RETRY_MAX_3_TIMES,
                 capture(callbackSlot)
             )
         }
@@ -85,7 +83,6 @@ class ConfigurationLoaderUnitTest {
                 expectedConfigUrl,
                 null,
                 authorization,
-                HttpClient.RetryStrategy.RETRY_MAX_3_TIMES,
                 capture(callbackSlot)
             )
         }
@@ -116,7 +113,6 @@ class ConfigurationLoaderUnitTest {
                 ofType(String::class),
                 null,
                 authorization,
-                HttpClient.RetryStrategy.RETRY_MAX_3_TIMES,
                 capture(callbackSlot)
             )
         }
@@ -142,7 +138,6 @@ class ConfigurationLoaderUnitTest {
                 ofType(String::class),
                 null,
                 authorization,
-                HttpClient.RetryStrategy.RETRY_MAX_3_TIMES,
                 capture(callbackSlot)
             )
         }
@@ -193,7 +188,6 @@ class ConfigurationLoaderUnitTest {
                 ofType(String::class),
                 null,
                 authorization,
-                any(),
                 ofType(NetworkResponseCallback::class)
             )
         }
@@ -218,7 +212,6 @@ class ConfigurationLoaderUnitTest {
                 expectedConfigUrl,
                 null,
                 authorization,
-                HttpClient.RetryStrategy.RETRY_MAX_3_TIMES,
                 capture(callbackSlot)
             )
         }
