@@ -1,146 +1,148 @@
-package com.braintreepayments.api.card;
+package com.braintreepayments.api.card
 
-import static com.braintreepayments.api.testutils.Assertions.assertBinDataEqual;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
+import android.os.Parcel
+import com.braintreepayments.api.testutils.Assertions.assertBinDataEqual
+import com.braintreepayments.api.testutils.Fixtures
+import kotlinx.parcelize.parcelableCreator
+import org.json.JSONException
+import org.json.JSONObject
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
-import android.os.Parcel;
-
-import com.braintreepayments.api.testutils.Fixtures;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-
-@RunWith(RobolectricTestRunner.class)
-public class CardNonceUnitTest {
+@RunWith(RobolectricTestRunner::class)
+class CardNonceUnitTest {
 
     @Test
-    public void fromJSON_withPlainJSONCardNonce_parsesCardNonce() throws JSONException {
-        CardNonce cardNonce = CardNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHOD_CARD));
+    @Throws(JSONException::class)
+    fun `created cardNonce from JSON with plain card nonce and parses it correctly`() {
+        val cardNonce = CardNonce.fromJSON(JSONObject(Fixtures.PAYMENT_METHOD_CARD))
 
-        assertEquals("123456-12345-12345-a-adfa", cardNonce.getString());
-        assertEquals("Visa", cardNonce.getCardType());
-        assertEquals("11", cardNonce.getLastTwo());
-        assertEquals("1111", cardNonce.getLastFour());
-        assertTrue(cardNonce.isDefault());
+        assertEquals("123456-12345-12345-a-adfa", cardNonce.string)
+        assertEquals("Visa", cardNonce.cardType)
+        assertEquals("11", cardNonce.lastTwo)
+        assertEquals("1111", cardNonce.lastFour)
+        assertTrue(cardNonce.isDefault)
     }
 
     @Test
-    public void fromJSON_withRESTfulTokenizationResponse_parsesCardNonce() throws JSONException {
-        CardNonce cardNonce = CardNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD));
+    @Throws(JSONException::class)
+    fun `creates cardNonce from RESTful tokenization response and parses it correctly`() {
+        val cardNonce = CardNonce.fromJSON(JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD))
 
-        assertEquals("Visa", cardNonce.getCardType());
-        assertEquals("123456-12345-12345-a-adfa", cardNonce.getString());
-        assertEquals("11", cardNonce.getLastTwo());
-        assertEquals("1111", cardNonce.getLastFour());
-        assertNotNull(cardNonce.getBinData());
-        assertEquals(BinType.Unknown, cardNonce.getBinData().getPrepaid());
-        assertEquals(BinType.Yes, cardNonce.getBinData().getHealthcare());
-        assertEquals(BinType.No, cardNonce.getBinData().getDebit());
-        assertEquals(BinType.Unknown, cardNonce.getBinData().getDurbinRegulated());
-        assertEquals(BinType.Unknown, cardNonce.getBinData().getCommercial());
-        assertEquals(BinType.Unknown, cardNonce.getBinData().getPayroll());
-        assertEquals(BinType.Unknown.name(), cardNonce.getBinData().getIssuingBank());
-        assertEquals("Something", cardNonce.getBinData().getCountryOfIssuance());
-        assertEquals("123", cardNonce.getBinData().getProductId());
-        assertEquals("unregulated",
-                cardNonce.getAuthenticationInsight().getRegulationEnvironment());
-        assertEquals("01", cardNonce.getExpirationMonth());
-        assertEquals("2020", cardNonce.getExpirationYear());
-        assertEquals("Joe Smith", cardNonce.getCardholderName());
+        assertEquals("123456-12345-12345-a-adfa", cardNonce.string)
+        assertEquals("Visa", cardNonce.cardType)
+        assertEquals("11", cardNonce.lastTwo)
+        assertEquals("1111", cardNonce.lastFour)
+        assertNotNull(cardNonce.binData)
+        assertEquals(BinType.Unknown, cardNonce.binData.prepaid)
+        assertEquals(BinType.Yes, cardNonce.binData.healthcare)
+        assertEquals(BinType.No, cardNonce.binData.debit)
+        assertEquals(BinType.Unknown, cardNonce.binData.durbinRegulated)
+        assertEquals(BinType.Unknown, cardNonce.binData.commercial)
+        assertEquals(BinType.Unknown, cardNonce.binData.payroll)
+        assertEquals(BinType.Unknown.name, cardNonce.binData.issuingBank)
+        assertEquals("Something", cardNonce.binData.countryOfIssuance)
+        assertEquals("123", cardNonce.binData.productId)
+        assertEquals("unregulated", cardNonce.authenticationInsight?.regulationEnvironment)
+        assertEquals("01", cardNonce.expirationMonth)
+        assertEquals("2020", cardNonce.expirationYear)
+        assertEquals("Joe Smith", cardNonce.cardholderName)
     }
 
     @Test
-    public void fromJSON_withGraphQLTokenizationResponse_parsesCardNonce() throws JSONException {
-        CardNonce cardNonce = CardNonce.fromJSON(new JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD));
+    @Throws(JSONException::class)
+    fun `creates cardNonce from GraphQL tokenization response and parses it correctly`() {
+        val cardNonce = CardNonce.fromJSON(JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD))
 
-        assertEquals("Visa", cardNonce.getCardType());
-        assertEquals("3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1", cardNonce.getString());
-        assertEquals("11", cardNonce.getLastTwo());
-        assertEquals("1111", cardNonce.getLastFour());
-        assertNotNull(cardNonce.getBinData());
-        assertEquals(BinType.Yes, cardNonce.getBinData().getPrepaid());
-        assertEquals(BinType.Yes, cardNonce.getBinData().getHealthcare());
-        assertEquals(BinType.No, cardNonce.getBinData().getDebit());
-        assertEquals(BinType.Yes, cardNonce.getBinData().getDurbinRegulated());
-        assertEquals(BinType.No, cardNonce.getBinData().getCommercial());
-        assertEquals(BinType.Yes, cardNonce.getBinData().getPayroll());
-        assertEquals("Bank of America", cardNonce.getBinData().getIssuingBank());
-        assertEquals("USA", cardNonce.getBinData().getCountryOfIssuance());
-        assertEquals("123", cardNonce.getBinData().getProductId());
-        assertEquals("unregulated",
-                cardNonce.getAuthenticationInsight().getRegulationEnvironment());
-        assertEquals("01", cardNonce.getExpirationMonth());
-        assertEquals("2020", cardNonce.getExpirationYear());
-        assertEquals("Joe Smith", cardNonce.getCardholderName());
+        assertEquals("3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1", cardNonce.string)
+        assertEquals("Visa", cardNonce.cardType)
+        assertEquals("11", cardNonce.lastTwo)
+        assertEquals("1111", cardNonce.lastFour)
+        assertNotNull(cardNonce.binData)
+        assertEquals(BinType.Yes, cardNonce.binData.prepaid)
+        assertEquals(BinType.Yes, cardNonce.binData.healthcare)
+        assertEquals(BinType.No, cardNonce.binData.debit)
+        assertEquals(BinType.Yes, cardNonce.binData.durbinRegulated)
+        assertEquals(BinType.No, cardNonce.binData.commercial)
+        assertEquals(BinType.Yes, cardNonce.binData.payroll)
+        assertEquals("Bank of America", cardNonce.binData.issuingBank)
+        assertEquals("USA", cardNonce.binData.countryOfIssuance)
+        assertEquals("123", cardNonce.binData.productId)
+        assertEquals("unregulated", cardNonce.authenticationInsight?.regulationEnvironment)
+        assertEquals("01", cardNonce.expirationMonth)
+        assertEquals("2020", cardNonce.expirationYear)
+        assertEquals("Joe Smith", cardNonce.cardholderName)
     }
 
     @Test
-    public void fromJSON_withGraphQLTokenizationResponse_parsesCardNonceWithDefaultValues() throws JSONException {
-        CardNonce cardNonce = CardNonce.fromJSON(new JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD_MISSING_VALUES));
+    @Throws(JSONException::class)
+    fun `creates cardNonce from GraphQL tokenization response with missing values and parses it correctly`() {
+        val cardNonce = CardNonce.fromJSON(JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD_MISSING_VALUES))
 
-        assertEquals("", cardNonce.getLastFour());
-        assertEquals("", cardNonce.getLastTwo());
-        assertEquals("Unknown", cardNonce.getCardType());
-        assertEquals("", cardNonce.getBin());
-        assertNotNull(cardNonce.getBinData());
-        assertEquals("3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1", cardNonce.getString());
-        assertFalse(cardNonce.isDefault());
-        assertNull(cardNonce.getAuthenticationInsight());
-        assertEquals("", cardNonce.getExpirationMonth());
-        assertEquals("", cardNonce.getExpirationYear());
-        assertEquals("", cardNonce.getCardholderName());
+        assertEquals("3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1", cardNonce.string)
+        assertEquals("Unknown", cardNonce.cardType)
+        assertEquals("", cardNonce.lastTwo)
+        assertEquals("", cardNonce.lastFour)
+        assertEquals("", cardNonce.bin)
+        assertNotNull(cardNonce.binData)
+        assertFalse(cardNonce.isDefault)
+        assertNull(cardNonce.authenticationInsight)
+        assertEquals("", cardNonce.expirationMonth)
+        assertEquals("", cardNonce.expirationYear)
+        assertEquals("", cardNonce.cardholderName)
     }
 
     @Test
-    public void fromJSON_withGraphQLTokenizationResponse_parsesUnknownCardResponses() throws JSONException {
-        CardNonce cardNonce = CardNonce.fromJSON(new JSONObject(Fixtures.GRAPHQL_RESPONSE_UNKNOWN_CREDIT_CARD));
+    @Throws(JSONException::class)
+    fun `creates cardNonce from GraphQL tokenization response with unknown card and parses it correctly`() {
+        val cardNonce = CardNonce.fromJSON(JSONObject(Fixtures.GRAPHQL_RESPONSE_UNKNOWN_CREDIT_CARD))
 
-        assertEquals("Unknown", cardNonce.getCardType());
-        assertEquals("tokencc_3bbd22_fpjshh_bqbvh5_mkf3nf_smz", cardNonce.getString());
-        assertEquals("", cardNonce.getLastTwo());
-        assertEquals("", cardNonce.getLastFour());
-        assertEquals("", cardNonce.getExpirationMonth());
-        assertEquals("", cardNonce.getExpirationYear());
-        assertEquals("", cardNonce.getCardholderName());
-        assertNotNull(cardNonce.getBinData());
-        assertEquals(BinType.Unknown, cardNonce.getBinData().getPrepaid());
-        assertEquals(BinType.Unknown, cardNonce.getBinData().getHealthcare());
-        assertEquals(BinType.Unknown, cardNonce.getBinData().getDebit());
-        assertEquals(BinType.Unknown, cardNonce.getBinData().getDurbinRegulated());
-        assertEquals(BinType.Unknown, cardNonce.getBinData().getCommercial());
-        assertEquals(BinType.Unknown, cardNonce.getBinData().getPayroll());
-        assertEquals(BinType.Unknown.name(), cardNonce.getBinData().getIssuingBank());
-        assertEquals(BinType.Unknown.name(), cardNonce.getBinData().getCountryOfIssuance());
-        assertEquals(BinType.Unknown.name(), cardNonce.getBinData().getProductId());
+        assertEquals("tokencc_3bbd22_fpjshh_bqbvh5_mkf3nf_smz", cardNonce.string)
+        assertEquals("Unknown", cardNonce.cardType)
+        assertEquals("", cardNonce.lastTwo)
+        assertEquals("", cardNonce.lastFour)
+        assertEquals("", cardNonce.expirationMonth)
+        assertEquals("", cardNonce.expirationYear)
+        assertEquals("", cardNonce.cardholderName)
+        assertNotNull(cardNonce.binData)
+        assertEquals(BinType.Unknown, cardNonce.binData.prepaid)
+        assertEquals(BinType.Unknown, cardNonce.binData.healthcare)
+        assertEquals(BinType.Unknown, cardNonce.binData.debit)
+        assertEquals(BinType.Unknown, cardNonce.binData.durbinRegulated)
+        assertEquals(BinType.Unknown, cardNonce.binData.commercial)
+        assertEquals(BinType.Unknown, cardNonce.binData.payroll)
+        assertEquals(BinType.Unknown.name, cardNonce.binData.issuingBank)
+        assertEquals(BinType.Unknown.name, cardNonce.binData.countryOfIssuance)
+        assertEquals(BinType.Unknown.name, cardNonce.binData.productId)
     }
 
     @Test
-    public void parcelsCorrectly() throws JSONException {
-        CardNonce cardNonce = CardNonce.fromJSON(new JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD));
+    @Throws(JSONException::class)
+    fun `created cardNonce from JSON with Visa credit card and parcels it correctly`() {
+        val cardNonce = CardNonce.fromJSON(JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD))
 
-        Parcel parcel = Parcel.obtain();
-        cardNonce.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
+        val parcel = Parcel.obtain().apply {
+            cardNonce.writeToParcel(this, 0)
+            setDataPosition(0)
+        }
 
-        CardNonce parceled = CardNonce.CREATOR.createFromParcel(parcel);
-
-        assertEquals("Visa", parceled.getCardType());
-        assertEquals("123456-12345-12345-a-adfa", parceled.getString());
-        assertEquals("11", parceled.getLastTwo());
-        assertEquals("1111", parceled.getLastFour());
-        assertEquals("01", parceled.getExpirationMonth());
-        assertEquals("2020", parceled.getExpirationYear());
-        assertEquals("Joe Smith", parceled.getCardholderName());
-        assertFalse(parceled.isDefault());
-        assertBinDataEqual(cardNonce.getBinData(), parceled.getBinData());
-        assertEquals(cardNonce.getAuthenticationInsight().getRegulationEnvironment(),
-                parceled.getAuthenticationInsight().getRegulationEnvironment());
+        val parceled = parcelableCreator<CardNonce>().createFromParcel(parcel)
+        assertEquals("123456-12345-12345-a-adfa", parceled.string)
+        assertEquals("Visa", parceled.cardType)
+        assertEquals("11", parceled.lastTwo)
+        assertEquals("1111", parceled.lastFour)
+        assertEquals("01", parceled.expirationMonth)
+        assertEquals("2020", parceled.expirationYear)
+        assertEquals("Joe Smith", parceled.cardholderName)
+        assertFalse(parceled.isDefault)
+        assertBinDataEqual(cardNonce.binData, parceled.binData)
+        assertEquals(cardNonce.authenticationInsight?.regulationEnvironment,
+            parceled.authenticationInsight?.regulationEnvironment)
     }
 }
