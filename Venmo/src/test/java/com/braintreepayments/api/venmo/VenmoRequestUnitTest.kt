@@ -40,7 +40,7 @@ class VenmoRequestUnitTest {
 
         assertEquals(VenmoPaymentMethodUsage.MULTI_USE, result.paymentMethodUsage)
         assertEquals("venmo-user", result.displayName)
-        assertTrue { result.shouldVault }
+        assertTrue(result.shouldVault)
         assertEquals("profile-id", result.profileId)
         assertTrue(result.collectCustomerBillingAddress)
         assertTrue(result.collectCustomerShippingAddress)
