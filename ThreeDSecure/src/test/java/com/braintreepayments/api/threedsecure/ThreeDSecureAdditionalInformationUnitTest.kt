@@ -226,11 +226,15 @@ class ThreeDSecureAdditionalInformationUnitTest {
         val jsonParams = additionalInformation.toJson()
 
         assertTrue { jsonParams.isNull("shipping_given_name") }
-        assertTrue { jsonParams.isNull("billingAddress") }
-        assertTrue { jsonParams.isNull("firstName") }
-        assertTrue { jsonParams.isNull("lastName") }
-        assertTrue { jsonParams.isNull("shippingMethod") }
-        assertTrue { jsonParams.isNull("mobilePhoneNumber") }
+        assertTrue { jsonParams.isNull("shipping_surname") }
+        assertTrue { jsonParams.isNull("shipping_phone") }
+        assertTrue { jsonParams.isNull("shipping_line1") }
+        assertTrue { jsonParams.isNull("shipping_line2") }
+        assertTrue { jsonParams.isNull("shipping_line3") }
+        assertTrue { jsonParams.isNull("shipping_city") }
+        assertTrue { jsonParams.isNull("shipping_state") }
+        assertTrue { jsonParams.isNull("shipping_postal_code") }
+        assertTrue { jsonParams.isNull("shipping_country_code") }
         assertTrue { jsonParams.isNull("shipping_method_indicator") }
         assertTrue { jsonParams.isNull("product_code") }
         assertTrue { jsonParams.isNull("delivery_timeframe") }
