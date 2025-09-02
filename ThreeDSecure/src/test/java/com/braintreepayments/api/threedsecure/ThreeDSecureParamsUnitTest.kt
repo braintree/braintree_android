@@ -1,86 +1,86 @@
-package com.braintreepayments.api.threedsecure;
+package com.braintreepayments.api.threedsecure
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import android.os.Parcel
+import com.braintreepayments.api.testutils.Fixtures
+import org.json.JSONException
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertNull
+import junit.framework.TestCase.assertTrue
+import kotlinx.parcelize.parcelableCreator
 
-import android.os.Parcel;
-
-import com.braintreepayments.api.testutils.Fixtures;
-
-import org.json.JSONException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-
-@RunWith(RobolectricTestRunner.class)
-public class ThreeDSecureParamsUnitTest {
+@RunWith(RobolectricTestRunner::class)
+class ThreeDSecureParamsUnitTest {
 
     @Test
-    public void fromJson_parsesCorrectly_v1() throws JSONException {
-        ThreeDSecureParams authResponse = ThreeDSecureParams.fromJson(
-                Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE);
+    @Throws(JSONException::class)
+    fun `creates ThreeDSecure_V1 from JSON and parses it correctly`() {
+        val authResponse = ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE)
 
-        assertEquals("11", authResponse.getThreeDSecureNonce().getLastTwo());
-        assertTrue(authResponse.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShifted());
-        assertTrue(
-                authResponse.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShiftPossible());
-        assertNull(authResponse.getErrorMessage());
+        assertEquals("11", authResponse.threeDSecureNonce?.lastTwo)
+        assertTrue(authResponse.threeDSecureNonce?.threeDSecureInfo!!.liabilityShifted)
+        assertTrue(authResponse.threeDSecureNonce?.threeDSecureInfo!!.liabilityShiftPossible)
+        assertNull(authResponse.errorMessage)
     }
 
     @Test
-    public void fromJson_parsesCorrectly_v2() throws JSONException {
-        ThreeDSecureParams authResponse = ThreeDSecureParams.fromJson(
-                Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE);
+    @Throws(JSONException::class)
+    fun `creates ThreeDSecure_V2 from JSON and parses it correctly`() {
+        val authResponse = ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE)
 
-        assertEquals("91", authResponse.getThreeDSecureNonce().getLastTwo());
-        assertTrue(authResponse.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShifted());
-        assertTrue(
-                authResponse.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShiftPossible());
-        assertNull(authResponse.getErrorMessage());
+        assertEquals("91", authResponse.threeDSecureNonce?.lastTwo)
+        assertTrue(authResponse.threeDSecureNonce?.threeDSecureInfo!!.liabilityShifted)
+        assertTrue(authResponse.threeDSecureNonce?.threeDSecureInfo!!.liabilityShiftPossible)
+        assertNull(authResponse.errorMessage)
     }
 
     @Test
-    public void fromJson_whenAuthenticationErrorOccurs_parsesCorrectly_v1() throws JSONException {
-        ThreeDSecureParams authResponse = ThreeDSecureParams.fromJson(
-                Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE_WITH_ERROR);
+    @Throws(JSONException::class)
+    fun `creates ThreeDSecure_V1 with AuthenticationError and parses it correctly`() {
+        val authResponse = ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE_WITH_ERROR)
 
-        assertNull(authResponse.getThreeDSecureNonce());
-        assertEquals("Failed to authenticate, please try a different form of payment.",
-                authResponse.getErrorMessage());
-    }
-
-    @Test
-    public void fromJson_whenAuthenticationErrorOccurs_parsesCorrectly_v2() throws JSONException {
-        ThreeDSecureParams authResponse = ThreeDSecureParams.fromJson(
-                Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE_WITH_ERROR);
-
-        assertNull(authResponse.getThreeDSecureNonce());
-        assertEquals("Failed to authenticate, please try a different form of payment.",
-                authResponse.getErrorMessage());
-    }
-
-    @Test
-    public void isParcelable() throws JSONException {
-        ThreeDSecureParams authResponse = ThreeDSecureParams.fromJson(
-                Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE);
-        Parcel parcel = Parcel.obtain();
-        authResponse.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-
-        ThreeDSecureParams parceled = ThreeDSecureParams.CREATOR.createFromParcel(parcel);
-
-        assertEquals(authResponse.getThreeDSecureNonce().getLastTwo(),
-                parceled.getThreeDSecureNonce().getLastTwo());
-        assertEquals(authResponse.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShifted(),
-                parceled.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShifted());
+        assertNull(authResponse.threeDSecureNonce)
         assertEquals(
-                authResponse.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShiftPossible(),
-                parceled.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShiftPossible());
-        assertEquals(authResponse.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShifted(),
-                parceled.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShifted());
+            "Failed to authenticate, please try a different form of payment.",
+            authResponse.errorMessage
+        )
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun `creates ThreeDSecure_V2 with AuthenticationError and parses it correctly`() {
+        val authResponse = ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE_WITH_ERROR)
+
+        assertNull(authResponse.threeDSecureNonce)
         assertEquals(
-                authResponse.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShiftPossible(),
-                parceled.getThreeDSecureNonce().getThreeDSecureInfo().getLiabilityShiftPossible());
+            "Failed to authenticate, please try a different form of payment.",
+            authResponse.errorMessage
+        )
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun `creates ThreeDSecure_V1 from JSON and parcels it correctly`() {
+        val authResponse =
+            ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE)
+
+        val parcel = Parcel.obtain().apply {
+            authResponse.writeToParcel(this, 0)
+            setDataPosition(0)
+        }
+
+        val parceled = parcelableCreator<ThreeDSecureParams>().createFromParcel(parcel)
+
+        assertEquals(authResponse.threeDSecureNonce?.lastTwo, parceled.threeDSecureNonce?.lastTwo)
+        assertEquals(
+            authResponse.threeDSecureNonce?.threeDSecureInfo!!.liabilityShifted,
+            parceled.threeDSecureNonce?.threeDSecureInfo!!.liabilityShifted
+        )
+        assertEquals(
+            authResponse.threeDSecureNonce?.threeDSecureInfo!!.liabilityShiftPossible,
+            parceled.threeDSecureNonce?.threeDSecureInfo!!.liabilityShiftPossible
+        )
     }
 }
