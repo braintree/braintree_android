@@ -20,8 +20,8 @@ class ThreeDSecureParamsUnitTest {
         val authResponse = ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE)
 
         assertEquals("11", authResponse.threeDSecureNonce?.lastTwo)
-        assertTrue(authResponse.threeDSecureNonce?.threeDSecureInfo!!.liabilityShifted)
-        assertTrue(authResponse.threeDSecureNonce?.threeDSecureInfo!!.liabilityShiftPossible)
+        assertTrue(authResponse.threeDSecureNonce?.threeDSecureInfo?.liabilityShifted == true)
+        assertTrue(authResponse.threeDSecureNonce?.threeDSecureInfo?.liabilityShiftPossible == true)
         assertNull(authResponse.errorMessage)
     }
 
@@ -31,8 +31,8 @@ class ThreeDSecureParamsUnitTest {
         val authResponse = ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE)
 
         assertEquals("91", authResponse.threeDSecureNonce?.lastTwo)
-        assertTrue(authResponse.threeDSecureNonce?.threeDSecureInfo!!.liabilityShifted)
-        assertTrue(authResponse.threeDSecureNonce?.threeDSecureInfo!!.liabilityShiftPossible)
+        assertTrue(authResponse.threeDSecureNonce?.threeDSecureInfo?.liabilityShifted == true)
+        assertTrue(authResponse.threeDSecureNonce?.threeDSecureInfo?.liabilityShiftPossible == true)
         assertNull(authResponse.errorMessage)
     }
 
@@ -75,12 +75,12 @@ class ThreeDSecureParamsUnitTest {
 
         assertEquals(authResponse.threeDSecureNonce?.lastTwo, parceled.threeDSecureNonce?.lastTwo)
         assertEquals(
-            authResponse.threeDSecureNonce?.threeDSecureInfo!!.liabilityShifted,
-            parceled.threeDSecureNonce?.threeDSecureInfo!!.liabilityShifted
+            authResponse.threeDSecureNonce?.threeDSecureInfo?.liabilityShifted,
+            parceled.threeDSecureNonce?.threeDSecureInfo?.liabilityShifted
         )
         assertEquals(
-            authResponse.threeDSecureNonce?.threeDSecureInfo!!.liabilityShiftPossible,
-            parceled.threeDSecureNonce?.threeDSecureInfo!!.liabilityShiftPossible
+            authResponse.threeDSecureNonce?.threeDSecureInfo?.liabilityShiftPossible,
+            parceled.threeDSecureNonce?.threeDSecureInfo?.liabilityShiftPossible
         )
     }
 }
