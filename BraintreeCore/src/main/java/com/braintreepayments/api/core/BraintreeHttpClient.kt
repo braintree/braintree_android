@@ -37,7 +37,7 @@ internal class BraintreeHttpClient(
                 urlWithBase
             }
         } catch (e: BraintreeException) {
-            callback.onResult(null, e)
+            callback.onResult(NetworkResponseCallback.Result.Failure(e))
             return
         }
 
@@ -70,7 +70,7 @@ internal class BraintreeHttpClient(
                     .put(AUTHORIZATION_FINGERPRINT_KEY, authorization.authorizationFingerprint)
                     .toString()
             } catch (e: JSONException) {
-                callback?.onResult(null, e)
+                callback?.onResult(NetworkResponseCallback.Result.Failure(e))
                 return
             }
         } else {
@@ -80,7 +80,7 @@ internal class BraintreeHttpClient(
         val url = try {
             assembleUrl(path, configuration)
         } catch (e: BraintreeException) {
-            callback?.onResult(null, e)
+            callback?.onResult(NetworkResponseCallback.Result.Failure(e))
             return
         }
 
@@ -98,7 +98,7 @@ internal class BraintreeHttpClient(
         callback: NetworkResponseCallback?
     ): Boolean {
         if (authorization is InvalidAuthorization) {
-            callback?.onResult(null, BraintreeException(authorization.errorMessage))
+            callback?.onResult(NetworkResponseCallback.Result.Failure(BraintreeException(authorization.errorMessage)))
             return false
         }
         return true
