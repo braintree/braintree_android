@@ -2,6 +2,7 @@ package com.braintreepayments.api.core
 
 import android.net.Uri
 import android.util.Base64
+import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import org.json.JSONException
 
 internal class ConfigurationLoader(
@@ -43,32 +44,34 @@ internal class ConfigurationLoader(
                 path = configUrl,
                 configuration = null,
                 authorization = authorization,
-            ) { response, httpError ->
-                val responseBody = response?.body
-                val timing = response?.timing
-                if (responseBody != null) {
-                    try {
-                        val configuration = Configuration.fromJson(responseBody)
-                        saveConfigurationToCache(configuration, authorization, configUrl)
-                        callback.onResult(ConfigurationLoaderResult.Success(configuration, timing))
+            ) { result ->
+                when (result) {
+                    is NetworkResponseCallback.Result.Success -> {
+                        val responseBody = result.response.body
+                        val timing = result.response.timing
+                        try {
+                            val configuration = Configuration.fromJson(responseBody ?: "")
+                            saveConfigurationToCache(configuration, authorization, configUrl)
+                            callback.onResult(ConfigurationLoaderResult.Success(configuration, timing))
 
-                        analyticsClient.sendEvent(
-                            eventName = CoreAnalytics.API_REQUEST_LATENCY,
-                            analyticsEventParams = AnalyticsEventParams(
-                                startTime = timing?.startTime,
-                                endTime = timing?.endTime,
-                                endpoint = "/v1/configuration"
-                            ),
-                            sendImmediately = false
-                        )
-                    } catch (jsonException: JSONException) {
-                        callback.onResult(ConfigurationLoaderResult.Failure(jsonException))
+                            analyticsClient.sendEvent(
+                                eventName = CoreAnalytics.API_REQUEST_LATENCY,
+                                analyticsEventParams = AnalyticsEventParams(
+                                    startTime = timing.startTime,
+                                    endTime = timing.endTime,
+                                    endpoint = "/v1/configuration"
+                                ),
+                                sendImmediately = false
+                            )
+                        } catch (jsonException: JSONException) {
+                            callback.onResult(ConfigurationLoaderResult.Failure(jsonException))
+                        }
                     }
-                } else {
-                    httpError?.let { error ->
+
+                    is NetworkResponseCallback.Result.Failure -> {
                         val errorMessageFormat = "Request for configuration has failed: %s"
-                        val errorMessage = String.format(errorMessageFormat, error.message)
-                        val configurationException = ConfigurationException(errorMessage, error)
+                        val errorMessage = String.format(errorMessageFormat, result.error.message)
+                        val configurationException = ConfigurationException(errorMessage, result.error)
                         callback.onResult(ConfigurationLoaderResult.Failure(configurationException))
                     }
                 }

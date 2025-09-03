@@ -60,7 +60,9 @@ class ConfigurationLoaderUnitTest {
 
         val httpResponseCallback = callbackSlot.captured
         httpResponseCallback.onResult(
-            HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0)), null
+            NetworkResponseCallback.Result.Success(
+                HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0))
+            )
         )
 
         val successSlot = slot<ConfigurationLoaderResult>()
@@ -89,7 +91,9 @@ class ConfigurationLoaderUnitTest {
 
         val httpResponseCallback = callbackSlot.captured
         httpResponseCallback.onResult(
-            HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0)), null
+            NetworkResponseCallback.Result.Success(
+                HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0))
+            )
         )
         val cacheKey = Base64.encodeToString(
             "https://example.com/config?configVersion=3bearer".toByteArray(),
@@ -117,7 +121,9 @@ class ConfigurationLoaderUnitTest {
             )
         }
         val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(HttpResponse("not json", HttpResponseTiming(0, 0)), null)
+        httpResponseCallback.onResult(
+            NetworkResponseCallback.Result.Success(HttpResponse("not json", HttpResponseTiming(0, 0)))
+        )
 
         val errorSlot = slot<ConfigurationLoaderResult>()
         verify { callback.onResult(capture(errorSlot)) }
@@ -144,7 +150,7 @@ class ConfigurationLoaderUnitTest {
 
         val httpResponseCallback = callbackSlot.captured
         val httpError = Exception("http error")
-        httpResponseCallback.onResult(null, httpError)
+        httpResponseCallback.onResult(NetworkResponseCallback.Result.Failure(httpError))
         val errorSlot = slot<ConfigurationLoaderResult>()
         verify { callback.onResult(capture(errorSlot)) }
 
@@ -218,7 +224,9 @@ class ConfigurationLoaderUnitTest {
 
         val httpResponseCallback = callbackSlot.captured
         httpResponseCallback.onResult(
-            HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 10)), null
+            NetworkResponseCallback.Result.Success(
+                HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 10))
+            )
         )
 
         verify {

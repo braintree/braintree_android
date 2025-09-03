@@ -51,7 +51,7 @@ class HttpClientUnitTest {
         every { mockOkHttpClient.executeRequest(request) } returns mockResponse
         every { mockScheduler.runOnBackground(capture(backgroundSlot)) } just Runs
         every { mockScheduler.runOnMain(capture(mainSlot)) } just Runs
-        every { mockCallback.onResult(any(), any()) } just Runs
+        every { mockCallback.onResult(any()) } just Runs
 
         sut.sendRequest(request, mockCallback)
 
@@ -61,7 +61,7 @@ class HttpClientUnitTest {
         verify { mockScheduler.runOnMain(any()) }
         mainSlot.captured.run()
 
-        verify { mockCallback.onResult(mockResponse, null) }
+        verify { mockCallback.onResult(NetworkResponseCallback.Result.Success(mockResponse)) }
     }
 
     @Test
@@ -74,7 +74,7 @@ class HttpClientUnitTest {
         every { mockOkHttpClient.executeRequest(request) } throws exception
         every { mockScheduler.runOnBackground(capture(backgroundSlot)) } just Runs
         every { mockScheduler.runOnMain(capture(mainSlot)) } just Runs
-        every { mockCallback.onResult(any(), any()) } just Runs
+        every { mockCallback.onResult(any()) } just Runs
 
         sut.sendRequest(request, mockCallback)
 
@@ -84,7 +84,7 @@ class HttpClientUnitTest {
         verify { mockScheduler.runOnMain(any()) }
         mainSlot.captured.run()
 
-        verify { mockCallback.onResult(null, exception) }
+        verify { mockCallback.onResult(NetworkResponseCallback.Result.Failure(exception)) }
     }
 
     @Test
@@ -137,14 +137,14 @@ class HttpClientUnitTest {
         every { mockOkHttpClient.executeRequest(request) } returns mockResponse
         every { mockScheduler.runOnBackground(capture(backgroundSlot)) } just Runs
         every { mockScheduler.runOnMain(capture(mainSlot)) } just Runs
-        every { mockCallback.onResult(any(), any()) } just Runs
+        every { mockCallback.onResult(any()) } just Runs
 
         sut.sendRequest(request, mockCallback)
         backgroundSlot.captured.run()
         mainSlot.captured.run()
 
         verify(exactly = 1) { mockScheduler.runOnMain(any()) }
-        verify { mockCallback.onResult(mockResponse, null) }
+        verify { mockCallback.onResult(NetworkResponseCallback.Result.Success(mockResponse)) }
     }
 
     @Test
@@ -157,12 +157,12 @@ class HttpClientUnitTest {
         every { mockOkHttpClient.executeRequest(request) } throws ioException
         every { mockScheduler.runOnBackground(capture(backgroundSlot)) } just Runs
         every { mockScheduler.runOnMain(capture(mainSlot)) } just Runs
-        every { mockCallback.onResult(any(), any()) } just Runs
+        every { mockCallback.onResult(any()) } just Runs
 
         sut.sendRequest(request, mockCallback)
         backgroundSlot.captured.run()
         mainSlot.captured.run()
 
-        verify { mockCallback.onResult(null, ioException) }
+        verify { mockCallback.onResult(NetworkResponseCallback.Result.Failure(ioException)) }
     }
 }

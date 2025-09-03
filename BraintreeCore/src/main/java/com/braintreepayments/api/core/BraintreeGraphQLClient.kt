@@ -18,7 +18,7 @@ internal class BraintreeGraphQLClient(
     ) {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
-            callback.onResult(null, BraintreeException(message))
+            callback.onResult(NetworkResponseCallback.Result.Failure(BraintreeException(message)))
             return
         }
 

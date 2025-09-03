@@ -3,8 +3,6 @@ package com.braintreepayments.api.sharedutils
 import androidx.annotation.RestrictTo
 
 /**
- * NOTE THIS CLASS WILL BE RENAMED TO `HttpRequest` TO REPLACE THE EXISTING [HttpRequest] CLASS.
- *
  * Represents an HTTP request to be executed.
  *
  * This data class encapsulates the request URL, HTTP method, and headers.

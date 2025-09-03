@@ -90,27 +90,38 @@ class BraintreeHttpClientUnitTest {
     @Test
     fun `when get is called with null configuration and relative path, BraintreeException is thrown`() {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
-        val errorSlot = slot<BraintreeException>()
-        every { callback.onResult(null, capture(errorSlot)) } just runs
+        every {
+            callback.onResult(
+                match { it is NetworkResponseCallback.Result.Failure && it.error is BraintreeException }
+            )
+        } just runs
 
         val sut = BraintreeHttpClient(httpClient)
         sut.get("v1/payment_methods", null, tokenizationKey, callback)
 
-        verify { callback.onResult(null, any<BraintreeException>()) }
-        assertTrue(errorSlot.captured.message!!.contains("relative path"))
+        verify {
+            callback.onResult(match {
+                it is NetworkResponseCallback.Result.Failure &&
+                    it.error is BraintreeException &&
+                    it.error.message!!.contains("relative path")
+            })
+        }
     }
 
     @Test
     fun `when get is called with InvalidAuthorization, callback is called with error`() {
         val invalidAuth = InvalidAuthorization("invalid_token", "Invalid token")
-        val errorSlot = slot<BraintreeException>()
-        every { callback.onResult(null, capture(errorSlot)) } just runs
 
         val sut = BraintreeHttpClient(httpClient)
         sut.get("v1/payment_methods", configuration, invalidAuth, callback)
 
-        verify { callback.onResult(null, any<BraintreeException>()) }
-        assertEquals("Invalid token", errorSlot.captured.message)
+        verify {
+            callback.onResult(match {
+                it is NetworkResponseCallback.Result.Failure &&
+                    it.error is BraintreeException &&
+                    it.error.message == "Invalid token"
+            })
+        }
     }
 
     @Test
@@ -205,27 +216,33 @@ class BraintreeHttpClientUnitTest {
     @Test
     fun `when post is called with null configuration and relative path, BraintreeException is thrown`() {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
-        val errorSlot = slot<BraintreeException>()
-        every { callback.onResult(null, capture(errorSlot)) } just runs
 
         val sut = BraintreeHttpClient(httpClient)
         sut.post("v1/payment_methods", "{}", null, tokenizationKey, callback = callback)
 
-        verify { callback.onResult(null, any<BraintreeException>()) }
-        assertTrue(errorSlot.captured.message!!.contains("relative path"))
+        verify {
+            callback.onResult(match {
+                it is NetworkResponseCallback.Result.Failure &&
+                    it.error is BraintreeException &&
+                    it.error.message!!.contains("relative path")
+            })
+        }
     }
 
     @Test
     fun `when post is called with InvalidAuthorization, callback is called with error`() {
         val invalidAuth = InvalidAuthorization("invalid_token", "Invalid token")
-        val errorSlot = slot<BraintreeException>()
-        every { callback.onResult(null, capture(errorSlot)) } just runs
 
         val sut = BraintreeHttpClient(httpClient)
         sut.post("v1/payment_methods", "{}", configuration, invalidAuth, callback = callback)
 
-        verify { callback.onResult(null, any<BraintreeException>()) }
-        assertEquals("Invalid token", errorSlot.captured.message)
+        verify {
+            callback.onResult(match {
+                it is NetworkResponseCallback.Result.Failure &&
+                    it.error is BraintreeException &&
+                    it.error.message == "Invalid token"
+            })
+        }
     }
 
     @Test
@@ -233,13 +250,16 @@ class BraintreeHttpClientUnitTest {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
-        val errorSlot = slot<JSONException>()
-        every { callback.onResult(null, capture(errorSlot)) } just runs
 
         val sut = BraintreeHttpClient(httpClient)
         sut.post("v1/payment_methods", "invalid json", configuration, clientToken, callback = callback)
 
-        verify { callback.onResult(null, any<JSONException>()) }
+        verify {
+            callback.onResult(match {
+                it is NetworkResponseCallback.Result.Failure &&
+                    it.error is JSONException
+            })
+        }
     }
 
     @Test
