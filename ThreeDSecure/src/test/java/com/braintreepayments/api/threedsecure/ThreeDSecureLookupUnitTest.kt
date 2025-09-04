@@ -1,121 +1,120 @@
-package com.braintreepayments.api.threedsecure;
+package com.braintreepayments.api.threedsecure
 
-import android.os.Parcel;
+import android.os.Parcel
+import com.braintreepayments.api.testutils.Fixtures
+import com.braintreepayments.api.threedsecure.ThreeDSecureLookup.Companion.fromJson
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
+import junit.framework.TestCase.assertNull
+import junit.framework.TestCase.assertFalse
+import kotlinx.parcelize.parcelableCreator
+import org.json.JSONException
+import org.json.JSONObject
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
+@RunWith(RobolectricTestRunner::class)
+class ThreeDSecureLookupUnitTest {
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-
-import com.braintreepayments.api.testutils.Fixtures;
-
-@RunWith(RobolectricTestRunner.class)
-public class ThreeDSecureLookupUnitTest {
-
-    private ThreeDSecureLookup lookupWithoutVersion;
-    private ThreeDSecureLookup lookupWithVersion1;
-    private ThreeDSecureLookup lookupWithVersion2;
-    private ThreeDSecureLookup lookupWithoutAcsURL;
+    private lateinit var lookupWithoutVersion: ThreeDSecureLookup
+    private lateinit var lookupWithVersion1: ThreeDSecureLookup
+    private lateinit var lookupWithVersion2: ThreeDSecureLookup
+    private lateinit var lookupWithoutAcsURL: ThreeDSecureLookup
 
     @Before
-    public void setUp() throws JSONException {
-        JSONObject lookupWithoutVersionJSON =
-                new JSONObject(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE).getJSONObject("lookup");
-        lookupWithoutVersion = ThreeDSecureLookup.fromJson(
-                lookupWithoutVersionJSON.toString()); // Lookup doesn't contain a 3DS version number
+    @Throws(JSONException::class)
+    fun setUp() {
+        val lookupWithoutVersionJSON = JSONObject(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE)
+                                        .getJSONObject("lookup")
+        lookupWithoutVersion = fromJson(lookupWithoutVersionJSON.toString())
 
-        JSONObject lookupVersionOneJSON =
-                new JSONObject(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE).getJSONObject("lookup");
-        lookupWithVersion1 = ThreeDSecureLookup.fromJson(lookupVersionOneJSON.toString());
+        val lookupVersionOneJSON = JSONObject(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE)
+                                    .getJSONObject("lookup")
+        lookupWithVersion1 = fromJson(lookupVersionOneJSON.toString())
 
-        JSONObject lookupVersionTwoJSON =
-                new JSONObject(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE).getJSONObject("lookup");
-        lookupWithVersion2 = ThreeDSecureLookup.fromJson(lookupVersionTwoJSON.toString());
+        val lookupVersionTwoJSON = JSONObject(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE)
+                                    .getJSONObject("lookup")
+        lookupWithVersion2 = fromJson(lookupVersionTwoJSON.toString())
 
-        JSONObject lookupWithoutAcsURLJSON =
-                new JSONObject(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL).getJSONObject(
-                        "lookup");
-        lookupWithoutAcsURL = ThreeDSecureLookup.fromJson(lookupWithoutAcsURLJSON.toString());
+        val lookupWithoutAcsURLJSON = JSONObject(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL)
+                                        .getJSONObject("lookup")
+        lookupWithoutAcsURL = fromJson(lookupWithoutAcsURLJSON.toString())
     }
 
     @Test
-    public void fromJson_parsesCorrectly() {
-        assertEquals("https://acs-url/", lookupWithoutVersion.getAcsUrl());
-        assertEquals("merchant-descriptor", lookupWithoutVersion.getMd());
-        assertEquals("https://term-url/", lookupWithoutVersion.getTermUrl());
-        assertEquals("sample-pareq", lookupWithoutVersion.getPareq());
-        assertEquals("2.1.0", lookupWithoutVersion.getThreeDSecureVersion());
-        assertEquals("sample-transaction-id", lookupWithoutVersion.getTransactionId());
-        assertTrue(lookupWithoutVersion.requiresUserAuthentication());
+    fun `parses lookupWithoutVersionJSON created from JSON correctly`() {
+        assertEquals("https://acs-url/", lookupWithoutVersion.acsUrl)
+        assertEquals("merchant-descriptor", lookupWithoutVersion.md)
+        assertEquals("https://term-url/", lookupWithoutVersion.termUrl)
+        assertEquals("sample-pareq", lookupWithoutVersion.pareq)
+        assertEquals("2.1.0", lookupWithoutVersion.threeDSecureVersion)
+        assertEquals("sample-transaction-id", lookupWithoutVersion.transactionId)
+        assertTrue(lookupWithoutVersion.requiresUserAuthentication())
     }
 
     @Test
-    public void fromJson_whenLookupVersion1_parsesCorrectly() {
-        assertEquals("https://acs-url/", lookupWithVersion1.getAcsUrl());
-        assertEquals("merchant-descriptor", lookupWithVersion1.getMd());
-        assertEquals("https://term-url/", lookupWithVersion1.getTermUrl());
-        assertEquals("pareq", lookupWithVersion1.getPareq());
-        assertEquals("1.0.2", lookupWithVersion1.getThreeDSecureVersion());
-        assertEquals("some-transaction-id", lookupWithVersion1.getTransactionId());
+    fun `parses lookupWithVersion1 created from JSON correctly`() {
+        assertEquals("https://acs-url/", lookupWithVersion1.acsUrl)
+        assertEquals("merchant-descriptor", lookupWithVersion1.md)
+        assertEquals("https://term-url/", lookupWithVersion1.termUrl)
+        assertEquals("pareq", lookupWithVersion1.pareq)
+        assertEquals("1.0.2", lookupWithVersion1.threeDSecureVersion)
+        assertEquals("some-transaction-id", lookupWithVersion1.transactionId)
     }
 
     @Test
-    public void fromJson_whenLookupVersion2_parsesCorrectly() {
-        assertEquals("https://acs-url/", lookupWithVersion2.getAcsUrl());
-        assertEquals("merchant-descriptor", lookupWithVersion2.getMd());
-        assertEquals("https://term-url/", lookupWithVersion2.getTermUrl());
-        assertEquals("pareq", lookupWithVersion2.getPareq());
-        assertEquals("2.1.0", lookupWithVersion2.getThreeDSecureVersion());
-        assertEquals("some-transaction-id", lookupWithVersion2.getTransactionId());
+    fun `parses lookupWithVersion2 created from JSON correctly`() {
+        assertEquals("https://acs-url/", lookupWithVersion2.acsUrl)
+        assertEquals("merchant-descriptor", lookupWithVersion2.md)
+        assertEquals("https://term-url/", lookupWithVersion2.termUrl)
+        assertEquals("pareq", lookupWithVersion2.pareq)
+        assertEquals("2.1.0", lookupWithVersion2.threeDSecureVersion)
+        assertEquals("some-transaction-id", lookupWithVersion2.transactionId)
     }
 
     @Test
-    public void fromJson_whenNoAcsURL_parsesCorrectly() {
-        assertNull(lookupWithoutAcsURL.getAcsUrl());
-        assertEquals("merchant-descriptor", lookupWithoutAcsURL.getMd());
-        assertEquals("https://term-url/", lookupWithoutAcsURL.getTermUrl());
-        assertEquals("pareq", lookupWithoutAcsURL.getPareq());
-        assertFalse(lookupWithoutAcsURL.requiresUserAuthentication());
+    fun `parses lookupWithoutAcsURL created from JSON correctly`() {
+        assertNull(lookupWithoutAcsURL.acsUrl)
+        assertEquals("merchant-descriptor", lookupWithoutAcsURL.md)
+        assertEquals("https://term-url/", lookupWithoutAcsURL.termUrl)
+        assertEquals("pareq", lookupWithoutAcsURL.pareq)
+        assertFalse(lookupWithoutAcsURL.requiresUserAuthentication())
     }
 
     @Test
-    public void fromJson_whenPareqNull_parsesCorrectly() throws JSONException {
-        JSONObject lookupV2NullPareq =
-                new JSONObject(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE_NULL_PAREQ).getJSONObject(
-                        "lookup");
-        ThreeDSecureLookup sut = ThreeDSecureLookup.fromJson(lookupV2NullPareq.toString());
-        assertEquals("", sut.getPareq());
+    @Throws(JSONException::class)
+    fun `creates ThreeDSecureLookup from JSON with pareq being null and parses it correctly`() {
+        val lookupV2NullPareq = JSONObject(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE_NULL_PAREQ)
+                                .getJSONObject("lookup")
+        val sut = fromJson(lookupV2NullPareq.toString())
+        assertEquals("", sut.pareq)
     }
 
     @Test
-    public void fromJson_whenPareqMissing_parsesCorrectly() throws JSONException {
-        JSONObject lookupV2MissingPareq = new JSONObject(
-                Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE_MISSING_PAREQ).getJSONObject("lookup");
-        ThreeDSecureLookup sut = ThreeDSecureLookup.fromJson(lookupV2MissingPareq.toString());
-        assertEquals("", sut.getPareq());
+    @Throws(JSONException::class)
+    fun `creates ThreeDSecureLookup from JSON with pareq missing and parses it correctly`() {
+        val lookupV2MissingPareq = JSONObject(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE_MISSING_PAREQ)
+                                    .getJSONObject("lookup")
+        val sut = fromJson(lookupV2MissingPareq.toString())
+        assertEquals("", sut.pareq)
     }
 
     @Test
-    public void isParcelable() {
-        Parcel parcel = Parcel.obtain();
-        lookupWithVersion1.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
+    fun `parcels and unparcels ThreeDSecureLookup object correctly`() {
+        val parcel = Parcel.obtain().apply {
+            lookupWithVersion1.writeToParcel(this, 0)
+            setDataPosition(0)
+        }
 
-        ThreeDSecureLookup parceled = ThreeDSecureLookup.CREATOR.createFromParcel(parcel);
+        val parceled = parcelableCreator<ThreeDSecureLookup>().createFromParcel(parcel)
 
-        assertEquals(lookupWithVersion1.getAcsUrl(), parceled.getAcsUrl());
-        assertEquals(lookupWithVersion1.getMd(), parceled.getMd());
-        assertEquals(lookupWithVersion1.getTermUrl(), parceled.getTermUrl());
-        assertEquals(lookupWithVersion1.getPareq(), parceled.getPareq());
-        assertEquals(lookupWithVersion1.getThreeDSecureVersion(),
-                parceled.getThreeDSecureVersion());
-        assertEquals(lookupWithVersion1.getTransactionId(), parceled.getTransactionId());
+        assertEquals(lookupWithVersion1.acsUrl, parceled.acsUrl)
+        assertEquals(lookupWithVersion1.md, parceled.md)
+        assertEquals(lookupWithVersion1.termUrl, parceled.termUrl)
+        assertEquals(lookupWithVersion1.pareq, parceled.pareq)
+        assertEquals(lookupWithVersion1.threeDSecureVersion, parceled.threeDSecureVersion)
+        assertEquals(lookupWithVersion1.transactionId, parceled.transactionId)
     }
 }
