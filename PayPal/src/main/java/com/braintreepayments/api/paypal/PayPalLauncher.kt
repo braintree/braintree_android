@@ -1,6 +1,7 @@
 package com.braintreepayments.api.paypal
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
@@ -72,12 +73,16 @@ class PayPalLauncher internal constructor(
             return sendLaunchFailureEventAndReturn(error, isAppSwitch, analyticsEventParams)
         }
 
+        val fallbackToBrowser = when {
+            !isAppSwitch -> false
+            else -> shouldFallbackToBrowser(activity, paymentAuthRequest, analyticsEventParams)
+        }
+
         return when (val request = browserSwitchClient.start(activity, options)) {
             is BrowserSwitchStartResult.Failure -> {
-                val errorEvent = if (isAppSwitch) {
-                    PayPalAnalytics.APP_SWITCH_FAILED
-                } else {
-                    PayPalAnalytics.BROWSER_PRESENTATION_FAILED
+                val errorEvent = when {
+                    fallbackToBrowser || !isAppSwitch -> PayPalAnalytics.BROWSER_PRESENTATION_FAILED
+                    else -> PayPalAnalytics.APP_SWITCH_FAILED
                 }
                 analyticsClient.sendEvent(
                     eventName = errorEvent,
@@ -87,10 +92,9 @@ class PayPalLauncher internal constructor(
             }
 
             is BrowserSwitchStartResult.Started -> {
-                val event = if (isAppSwitch) {
-                    PayPalAnalytics.APP_SWITCH_SUCCEEDED
-                } else {
-                    PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED
+                val event = when {
+                    fallbackToBrowser || !isAppSwitch -> PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED
+                    else -> PayPalAnalytics.APP_SWITCH_SUCCEEDED
                 }
                 analyticsClient.sendEvent(
                     eventName = event,
@@ -158,6 +162,39 @@ class PayPalLauncher internal constructor(
         }
     }
 
+    private fun shouldFallbackToBrowser(
+        activity: ComponentActivity,
+        paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch,
+        analyticsEventParams: AnalyticsEventParams
+    ): Boolean {
+        val uri = paymentAuthRequest.requestParams.browserSwitchOptions?.url
+            ?: return false
+
+        val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+            addCategory(Intent.CATEGORY_BROWSABLE)
+        }
+
+        val resolvedActivity = activity.packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
+        val wouldOpenInPayPalApp = resolvedActivity?.activityInfo?.packageName == PAYPAL_APP_PACKAGE
+
+        return if (!wouldOpenInPayPalApp) {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.APP_SWITCH_FAILED
+            )
+            analyticsClient.sendEvent(
+                PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                analyticsEventParams
+            )
+            true
+        } else {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.APP_SWITCH_RESOLVED_TO_PAYPAL,
+                analyticsEventParams
+            )
+            false
+        }
+    }
+
     private fun sendLaunchFailureEventAndReturn(
         error: Exception,
         isAppSwitch: Boolean,
@@ -184,6 +221,9 @@ class PayPalLauncher internal constructor(
     }
 
     companion object {
+
+        private const val PAYPAL_APP_PACKAGE = "com.paypal.android.p2pmobile"
+
         private fun createBrowserSwitchError(exception: BrowserSwitchException): Exception {
             return BraintreeException(
                 "AndroidManifest.xml is incorrectly configured or another app defines the same " +

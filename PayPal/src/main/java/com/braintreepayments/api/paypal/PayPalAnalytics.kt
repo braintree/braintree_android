@@ -23,4 +23,7 @@ internal object PayPalAnalytics {
     const val APP_SWITCH_SUCCEEDED = "paypal:tokenize:app-switch:succeeded"
     const val APP_SWITCH_FAILED = "paypal:tokenize:app-switch:failed"
     const val APP_SWITCH_CANCELED = "paypal:tokenize:app-switch:canceled"
+
+    // App resolution events
+    const val APP_SWITCH_RESOLVED_TO_PAYPAL = "paypal:tokenize:app-switch:resolved-to-paypal"
 }
