@@ -35,7 +35,7 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
      * @suppress
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun getPayPalInstallationGUID(context: Context?): String {
+    fun getPayPalInstallationGUID(context: Context): String {
         return uuidHelper.getInstallationGUID(context)
     }
 
@@ -45,7 +45,7 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
     @MainThread
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun getClientMetadataId(
-        context: Context?,
+        context: Context,
         configuration: Configuration?,
         hasUserLocationConsent: Boolean
     ): String {

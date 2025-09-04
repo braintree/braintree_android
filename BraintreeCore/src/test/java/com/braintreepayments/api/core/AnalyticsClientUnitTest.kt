@@ -30,7 +30,7 @@ class AnalyticsClientUnitTest {
     private lateinit var sut: AnalyticsClient
 
     private val analyticsEventParams = AnalyticsEventParams(
-        payPalContextId = "sample-paypal-context-id",
+        contextId = "sample-paypal-context-id",
         isVaultRequest = true,
         startTime = 789,
         endTime = 987,
@@ -46,7 +46,7 @@ class AnalyticsClientUnitTest {
     private val expectedAnalyticsEvent = AnalyticsEvent(
         name = eventName,
         timestamp = timestamp,
-        payPalContextId = analyticsEventParams.payPalContextId,
+        contextId = analyticsEventParams.contextId,
         linkType = linkType.stringValue,
         isVaultRequest = analyticsEventParams.isVaultRequest,
         startTime = analyticsEventParams.startTime,

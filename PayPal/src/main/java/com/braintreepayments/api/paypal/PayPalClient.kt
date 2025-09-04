@@ -98,7 +98,7 @@ class PayPalClient internal constructor(
 
         braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
             val analyticsEventParams = AnalyticsEventParams(
-                payPalContextId = null,
+                contextId = null,
                 isVaultRequest = isVaultRequest,
                 shopperSessionId = shopperSessionId
             )
@@ -149,7 +149,7 @@ class PayPalClient internal constructor(
         ) { payPalResponse: PayPalPaymentAuthRequestParams?,
             error: Exception? ->
             if (payPalResponse != null) {
-                val payPalContextId = payPalResponse.paypalContextId
+                val contextId = payPalResponse.contextId
 
                 try {
                     payPalResponse.browserSwitchOptions = buildBrowserSwitchOptions(payPalResponse)
@@ -162,7 +162,7 @@ class PayPalClient internal constructor(
                                 callback,
                                 PayPalPaymentAuthRequest.Failure(exception),
                                 AnalyticsEventParams(
-                                    payPalContextId = payPalContextId,
+                                    contextId = contextId,
                                     isVaultRequest = isVaultRequest,
                                     shopperSessionId = shopperSessionId
                                 )
@@ -177,7 +177,7 @@ class PayPalClient internal constructor(
                     callback,
                     PayPalPaymentAuthRequest.Failure(error ?: BraintreeException("Error is null")),
                     AnalyticsEventParams(
-                        payPalContextId = null,
+                        contextId = null,
                         isVaultRequest = isVaultRequest,
                         shopperSessionId = shopperSessionId
                     )
@@ -251,12 +251,12 @@ class PayPalClient internal constructor(
         val paymentType = Json.optString(metadata, "payment-type", "unknown")
         val isBillingAgreement = paymentType.equals("billing-agreement", ignoreCase = true)
         val tokenKey = if (isBillingAgreement) "ba_token" else "token"
-        val switchInitiatedTime = Uri.parse(approvalUrl).getQueryParameter("switch_initiated_time")
+        val switchInitiatedTime = approvalUrl?.toUri()?.getQueryParameter("switch_initiated_time")
         val isAppSwitchFlow = !switchInitiatedTime.isNullOrEmpty()
 
-        val paypalContextId = approvalUrl.toUri().getQueryParameter(tokenKey)?.takeIf { it.isNotEmpty() }
+        val contextId = approvalUrl?.toUri()?.getQueryParameter(tokenKey)?.takeIf { it.isNotEmpty() }
         val analyticsEventParams = AnalyticsEventParams(
-            payPalContextId = paypalContextId,
+            contextId = contextId,
             isVaultRequest = isVaultRequest,
             shopperSessionId = shopperSessionId,
             appSwitchUrl = paymentAuthResult.browserSwitchSuccess.returnUrl.toString()
@@ -305,16 +305,16 @@ class PayPalClient internal constructor(
     )
     private fun parseUrlResponseData(
         uri: Uri,
-        successUrl: String,
+        successUrl: String?,
         approvalUrl: String?,
         tokenKey: String
     ): JSONObject {
         val status = uri.lastPathSegment
-        if (Uri.parse(successUrl).lastPathSegment != status) {
+        if (successUrl?.toUri()?.lastPathSegment != status) {
             throw UserCanceledException("User canceled PayPal.")
         }
 
-        val requestXoToken = Uri.parse(approvalUrl).getQueryParameter(tokenKey)
+        val requestXoToken = approvalUrl?.toUri()?.getQueryParameter(tokenKey)
         val responseXoToken = uri.getQueryParameter(tokenKey)
         if (TextUtils.equals(requestXoToken, responseXoToken)) {
             val client = JSONObject().apply {

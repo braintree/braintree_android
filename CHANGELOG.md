@@ -8,6 +8,25 @@
     * Add `updateCustomerSession` public method to `ShopperInsightsClientV2`
     * Add `generateCustomerRecommendations` method to `ShopperInsightsClientV2`
 
+## 5.16.0 (2025-08-26)
+
+* PayPal
+  * Fix an issue where `PayPalRequest` was sending `phone_number` instead of `payer_phone`
+  * Add `merchant` and `flow_type` as query parameters to the app switch URL.
+  * Add `paymentId` to `PayPalAccountNonce`
+* GooglePay
+    * Add `softwareInfo` details to the `merchantInfo` field in the `loadPaymentData` request.
+
+## 5.15.0 (2025-08-13)
+
+* Venmo
+  * Fixed bug in `VenmoClient` where `deepLinkFallbackUrlScheme` was not being set correctly in deprecated constructor
+* All Modules
+  * Analytics updates for PayPal's analytics service (FPTI)
+    * Add `space_key` and `product_name` to `batch_params`
+    * Rename `paypal_context_id` to `context_id`
+    * Add `context_type` to `event_params`
+
 ## 5.14.0 (2025-07-23)
 
 * PayPal
