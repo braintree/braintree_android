@@ -26,10 +26,8 @@ class ThreeDSecureActivityUnitTest {
     @Test
     fun `onCreate with extras invokes cardinal with lookup data`() {
         val threeDSecureParams = ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE)
-
         val extras = Bundle()
         extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureParams)
-
         val intent = Intent()
         intent.putExtras(extras)
 
@@ -51,10 +49,8 @@ class ThreeDSecureActivityUnitTest {
     @Test
     fun `onCreate with extras and cardinal error finishes with error`() {
         val threeDSecureParams = ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE)
-
         val extras = Bundle()
         extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureParams)
-
         val intent = Intent()
         intent.putExtras(extras)
 
@@ -70,7 +66,6 @@ class ThreeDSecureActivityUnitTest {
 
         val slot = slot<Intent>()
         verify { sut.setResult(RESULT_COULD_NOT_START_CARDINAL, capture(slot)) }
-
         val intentForResult = slot.captured
         assertEquals("fake cardinal error", intentForResult.getStringExtra(ThreeDSecureActivity.EXTRA_ERROR_MESSAGE))
     }
@@ -91,7 +86,6 @@ class ThreeDSecureActivityUnitTest {
 
         val slot = slot<Intent>()
         verify { sut.setResult(RESULT_COULD_NOT_START_CARDINAL, capture(slot)) }
-
         val intentForResult = slot.captured
         assertEquals(
             "Unable to launch 3DS authentication.",
@@ -102,7 +96,6 @@ class ThreeDSecureActivityUnitTest {
     @Test
     fun `handleValidated returns validation results`() {
         val threeDSecureParams = ThreeDSecureParams.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE)
-
         val extras = Bundle()
         extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT, threeDSecureParams)
         val intent = Intent()
