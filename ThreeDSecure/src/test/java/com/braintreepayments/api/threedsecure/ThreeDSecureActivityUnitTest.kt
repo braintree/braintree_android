@@ -84,14 +84,19 @@ class ThreeDSecureActivityUnitTest {
         val cardinalClient = mockk<CardinalClient>(relaxed = true)
         sut.launchCardinalAuthChallenge(cardinalClient)
 
-        verify(exactly = 0) { cardinalClient.continueLookup(any<ThreeDSecureParams>(), any<CardinalChallengeObserver>()) }
+        verify(exactly = 0) {
+            cardinalClient.continueLookup(any<ThreeDSecureParams>(), any<CardinalChallengeObserver>())
+        }
         verify { sut.finish() }
 
         val slot = slot<Intent>()
         verify { sut.setResult(RESULT_COULD_NOT_START_CARDINAL, capture(slot)) }
 
         val intentForResult = slot.captured
-        assertEquals("Unable to launch 3DS authentication.", intentForResult.getStringExtra(ThreeDSecureActivity.EXTRA_ERROR_MESSAGE))
+        assertEquals(
+            "Unable to launch 3DS authentication.",
+            intentForResult.getStringExtra(ThreeDSecureActivity.EXTRA_ERROR_MESSAGE)
+        )
     }
 
     @Test
@@ -116,9 +121,13 @@ class ThreeDSecureActivityUnitTest {
         verify { cardinalClient.cleanup() }
 
         val intentForResult = slot.captured
-        val activityResult = intentForResult.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE) as ValidateResponse
+        val activityResult =
+            intentForResult.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE) as ValidateResponse
         assertEquals("jwt", intentForResult.getStringExtra(ThreeDSecureActivity.EXTRA_JWT))
-        assertEquals(threeDSecureParams, intentForResult.getParcelableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT))
+        assertEquals(
+            threeDSecureParams,
+            intentForResult.getParcelableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_RESULT)
+        )
         assertNotNull(activityResult)
         assertEquals("SUCCESS", activityResult.actionCode.string)
     }
