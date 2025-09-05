@@ -38,8 +38,8 @@
             android:id="@+id/action_mainFragment_to_payPalMessagingFragment"
             app:destination="@id/payPalMessagingFragment" />
         <action
-            android:id="@+id/action_mainFragment_to_shoppingInsightsFragment"
-            app:destination="@id/shopperInsightsFragment" />
+            android:id="@+id/action_mainFragment_to_shopperInsightsFragmentV2"
+            app:destination="@id/shopperInsightsFragmentV2" />
     </fragment>
     <fragment
         android:id="@+id/cardFragment"
@@ -203,6 +203,21 @@
         android:id="@+id/shopperInsightsFragment"
         android:name="com.braintreepayments.demo.ShopperInsightsFragment"
         tools:layout="@layout/fragment_shopping_insights" >
+        <argument
+            android:name="authString"
+            android:defaultValue=""
+            app:argType="string" />
+        <action
+            android:id="@+id/action_shopperInsightsFragment_to_displayNonceFragment"
+            app:destination="@id/displayNonceFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/shopperInsightsFragmentV2"
+        android:name="com.braintreepayments.demo.ShopperInsightsFragmentV2"
+        >
         <argument
             android:name="authString"
             android:defaultValue=""

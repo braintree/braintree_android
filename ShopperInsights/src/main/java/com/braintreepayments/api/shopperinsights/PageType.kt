@@ -55,11 +55,17 @@ enum class PageType(internal val stringValue: String) {
     MINI_CART("mini_cart"),
 
     /**
+     * The payment method selection page
+     */
+    PAYMENT_METHOD_SELECTION("payment_method_selection"),
+
+    /**
+     * The payment method addition page
+     */
+    PAYMENT_METHOD_ADDITION("payment_method_addition"),
+
+    /**
      * Some other page
      */
-    OTHER("other");
-
-    internal fun getStringRepresentation(): String {
-        return stringValue
-    }
+    OTHER("other")
 }

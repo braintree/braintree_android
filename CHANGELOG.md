@@ -1,5 +1,13 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* ShopperInsights (BETA)
+    * Add `PageType.PAYMENT_METHOD_SELECTION` and `PageType.PAYMENT_METHOD_ADDITION`
+    * Add `createCustomerSession` public method to `ShopperInsightsClientV2`
+    * Add `updateCustomerSession` public method to `ShopperInsightsClientV2`
+    * Add `generateCustomerRecommendations` method to `ShopperInsightsClientV2`
+
 ## 5.16.0 (2025-08-26)
 
 * PayPal
@@ -52,7 +60,7 @@
 * ThreeDSecure
   * Fix an issue where the `ThreeDSecureTokenizeCallback` would return a `Failure` and `Success` result (fixes #1321)
 * PayPal Messaging
-  * Bump `paypal-messages` to version `1.0.3`
+    * Bump `paypal-messages` to version `1.0.3`
 
 ## 5.10.0 (2025-04-29)
 
