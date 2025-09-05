@@ -1,56 +1,55 @@
-package com.braintreepayments.api.threedsecure;
+package com.braintreepayments.api.threedsecure
 
-import android.os.Parcel;
+import android.os.Parcel
+import junit.framework.TestCase.assertEquals
+import kotlinx.parcelize.parcelableCreator
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-import com.braintreepayments.api.threedsecure.ThreeDSecureV2ButtonCustomization;
-import com.cardinalcommerce.shared.userinterfaces.ButtonCustomization;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-
-import static org.junit.Assert.assertEquals;
-
-@RunWith(RobolectricTestRunner.class)
-public class ThreeDSecureV2ButtonCustomizationUnitTest {
+@RunWith(RobolectricTestRunner::class)
+class ThreeDSecureV2ButtonCustomizationUnitTest {
 
     @Test
-    public void setsAllCardinalClassProperties() {
-        ThreeDSecureV2ButtonCustomization sut = new ThreeDSecureV2ButtonCustomization();
-        sut.setBackgroundColor("#00FF00");
-        sut.setCornerRadius(5);
-        sut.setTextColor("#ff0000");
-        sut.setTextFontSize(11);
-        sut.setTextFontName("Times New Roman");
+    fun `sets all cardinalClass properties correctly`() {
+        val sut = ThreeDSecureV2ButtonCustomization(
+            backgroundColor = "#00FF00",
+            cornerRadius = 5,
+            textColor = "#ff0000",
+            textFontSize = 11,
+            textFontName = "Times New Roman"
+        )
 
-        ButtonCustomization cardinalButtonCustomization = sut.getCardinalButtonCustomization();
-        assertEquals("#00FF00", cardinalButtonCustomization.getBackgroundColor());
-        assertEquals(5, cardinalButtonCustomization.getCornerRadius());
-        assertEquals("#ff0000", cardinalButtonCustomization.getTextColor());
-        assertEquals(11, cardinalButtonCustomization.getTextFontSize());
-        assertEquals("Times New Roman", cardinalButtonCustomization.getTextFontName());
+        val cardinalButtonCustomization = sut.cardinalButtonCustomization
+
+        assertEquals("#00FF00", cardinalButtonCustomization.backgroundColor)
+        assertEquals(5, cardinalButtonCustomization.cornerRadius)
+        assertEquals("#ff0000", cardinalButtonCustomization.textColor)
+        assertEquals(11, cardinalButtonCustomization.textFontSize)
+        assertEquals("Times New Roman", cardinalButtonCustomization.textFontName)
     }
 
     @Test
-    public void writeToParcel() {
-        ThreeDSecureV2ButtonCustomization customization = new ThreeDSecureV2ButtonCustomization();
-        customization.setBackgroundColor("#FFFFFF");
-        customization.setCornerRadius(5);
-        customization.setTextColor("#121212");
-        customization.setTextFontName("Helvetica");
-        customization.setTextFontSize(15);
+    fun `creates ThreeDSecureV2ButtonCustomization and parcels it correctly`() {
+        val customization = ThreeDSecureV2ButtonCustomization(
+            backgroundColor = "#FFFFFF",
+            cornerRadius = 5,
+            textColor = "#121212",
+            textFontName = "Helvetica",
+            textFontSize = 15
+        )
 
-        Parcel parcel = Parcel.obtain();
-        customization.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
+        val parcel = Parcel.obtain().apply {
+            customization.writeToParcel(this, 0)
+            setDataPosition(0)
+        }
 
-        ThreeDSecureV2ButtonCustomization actual =
-                ThreeDSecureV2ButtonCustomization.CREATOR.createFromParcel(parcel);
-
-        assertEquals("#FFFFFF", actual.getBackgroundColor());
-        assertEquals(5, actual.getCornerRadius());
-        assertEquals("#121212", actual.getTextColor());
-        assertEquals("Helvetica", actual.getTextFontName());
-        assertEquals(15, actual.getTextFontSize());
+        val actual = parcelableCreator<ThreeDSecureV2ButtonCustomization>()
+                        .createFromParcel(parcel)
+        assertEquals("#FFFFFF", actual.backgroundColor)
+        assertEquals(5, actual.cornerRadius)
+        assertEquals("#121212", actual.textColor)
+        assertEquals("Helvetica", actual.textFontName)
+        assertEquals(15, actual.textFontSize)
     }
 }
