@@ -60,7 +60,7 @@
 * ThreeDSecure
   * Fix an issue where the `ThreeDSecureTokenizeCallback` would return a `Failure` and `Success` result (fixes #1321)
 * PayPal Messaging
-    * Bump `paypal-messages` to version `1.0.3`
+  * Bump `paypal-messages` to version `1.0.3`
 
 ## 5.10.0 (2025-04-29)
 
