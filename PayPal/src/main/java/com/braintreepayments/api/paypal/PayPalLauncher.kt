@@ -1,7 +1,6 @@
 package com.braintreepayments.api.paypal
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
@@ -12,6 +11,8 @@ import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AppSwitchRepository
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.GetAppSwitchUseCase
+import com.braintreepayments.api.core.MerchantRepository
+import com.braintreepayments.api.core.ShouldFallbackToBrowserUseCase
 
 /**
  * Responsible for launching PayPal user authentication in a web browser
@@ -19,14 +20,16 @@ import com.braintreepayments.api.core.GetAppSwitchUseCase
 class PayPalLauncher internal constructor(
     private val browserSwitchClient: BrowserSwitchClient,
     private val getAppSwitchUseCase: GetAppSwitchUseCase = GetAppSwitchUseCase(AppSwitchRepository.instance),
-    lazyAnalyticsClient: Lazy<AnalyticsClient>
+    lazyAnalyticsClient: Lazy<AnalyticsClient>,
+    private val shouldFallbackToBrowserUseCase: ShouldFallbackToBrowserUseCase = ShouldFallbackToBrowserUseCase(MerchantRepository.instance)
 ) {
     /**
      * Used to launch the PayPal flow in a web browser and deliver results to your Activity
      */
     constructor() : this(
         browserSwitchClient = BrowserSwitchClient(),
-        lazyAnalyticsClient = AnalyticsClient.lazyInstance
+        lazyAnalyticsClient = AnalyticsClient.lazyInstance,
+        shouldFallbackToBrowserUseCase = ShouldFallbackToBrowserUseCase(MerchantRepository.instance)
     )
 
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
@@ -75,14 +78,40 @@ class PayPalLauncher internal constructor(
 
         val fallbackToBrowser = when {
             !isAppSwitch -> false
-            else -> shouldFallbackToBrowser(activity, paymentAuthRequest, analyticsEventParams)
+            else -> {
+                val uri = paymentAuthRequest.requestParams.browserSwitchOptions?.url
+                val result = shouldFallbackToBrowserUseCase(uri)
+
+                when (result) {
+                    ShouldFallbackToBrowserUseCase.Result.FALLBACK -> {
+                        analyticsClient.sendEvent(PayPalAnalytics.APP_SWITCH_FAILED,
+                            analyticsEventParams
+                        )
+                        analyticsClient.sendEvent(
+                            PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                            analyticsEventParams
+                        )
+                        true
+                    }
+                    ShouldFallbackToBrowserUseCase.Result.APP_SWITCH -> {
+                        analyticsClient.sendEvent(
+                            PayPalAnalytics.APP_SWITCH_RESOLVED_TO_PAYPAL,
+                            analyticsEventParams
+                        )
+                        false
+                    }
+                }
+            }
         }
+
+        val isBrowserPresentation = fallbackToBrowser || !isAppSwitch
 
         return when (val request = browserSwitchClient.start(activity, options)) {
             is BrowserSwitchStartResult.Failure -> {
-                val errorEvent = when {
-                    fallbackToBrowser || !isAppSwitch -> PayPalAnalytics.BROWSER_PRESENTATION_FAILED
-                    else -> PayPalAnalytics.APP_SWITCH_FAILED
+                val errorEvent = if (isBrowserPresentation) {
+                    PayPalAnalytics.BROWSER_PRESENTATION_FAILED
+                } else {
+                    PayPalAnalytics.APP_SWITCH_FAILED
                 }
                 analyticsClient.sendEvent(
                     eventName = errorEvent,
@@ -92,9 +121,10 @@ class PayPalLauncher internal constructor(
             }
 
             is BrowserSwitchStartResult.Started -> {
-                val event = when {
-                    fallbackToBrowser || !isAppSwitch -> PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED
-                    else -> PayPalAnalytics.APP_SWITCH_SUCCEEDED
+                val event = if (isBrowserPresentation) {
+                    PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED
+                } else {
+                    PayPalAnalytics.APP_SWITCH_SUCCEEDED
                 }
                 analyticsClient.sendEvent(
                     eventName = event,
@@ -162,39 +192,6 @@ class PayPalLauncher internal constructor(
         }
     }
 
-    private fun shouldFallbackToBrowser(
-        activity: ComponentActivity,
-        paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch,
-        analyticsEventParams: AnalyticsEventParams
-    ): Boolean {
-        val uri = paymentAuthRequest.requestParams.browserSwitchOptions?.url
-            ?: return false
-
-        val intent = Intent(Intent.ACTION_VIEW, uri).apply {
-            addCategory(Intent.CATEGORY_BROWSABLE)
-        }
-
-        val resolvedActivity = activity.packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
-        val wouldOpenInPayPalApp = resolvedActivity?.activityInfo?.packageName == PAYPAL_APP_PACKAGE
-
-        return if (!wouldOpenInPayPalApp) {
-            analyticsClient.sendEvent(
-                PayPalAnalytics.APP_SWITCH_FAILED
-            )
-            analyticsClient.sendEvent(
-                PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
-                analyticsEventParams
-            )
-            true
-        } else {
-            analyticsClient.sendEvent(
-                PayPalAnalytics.APP_SWITCH_RESOLVED_TO_PAYPAL,
-                analyticsEventParams
-            )
-            false
-        }
-    }
-
     private fun sendLaunchFailureEventAndReturn(
         error: Exception,
         isAppSwitch: Boolean,
@@ -221,9 +218,6 @@ class PayPalLauncher internal constructor(
     }
 
     companion object {
-
-        private const val PAYPAL_APP_PACKAGE = "com.paypal.android.p2pmobile"
-
         private fun createBrowserSwitchError(exception: BrowserSwitchException): Exception {
             return BraintreeException(
                 "AndroidManifest.xml is incorrectly configured or another app defines the same " +
