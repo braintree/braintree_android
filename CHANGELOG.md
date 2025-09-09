@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal Messaging
+  * Bump paypal-messages to version 1.1.11
+
 ## 5.17.0 (2025-09-09)
 
 * ShopperInsights (BETA)
