@@ -76,10 +76,15 @@ class PayPalLauncher internal constructor(
             return sendLaunchFailureEventAndReturn(error, isAppSwitch, analyticsEventParams)
         }
 
-        val fallbackToBrowser = when {
-            !isAppSwitch -> false
+        val uri = paymentAuthRequest.requestParams.browserSwitchOptions?.url
+        if (uri == null) {
+            val error = BraintreeException("BrowserSwitchOptions URL is null")
+            return sendLaunchFailureEventAndReturn(error, isAppSwitch, analyticsEventParams)
+        }
+
+        val opensInBrowser = when {
+            !isAppSwitch -> true
             else -> {
-                val uri = paymentAuthRequest.requestParams.browserSwitchOptions?.url
                 val result = shouldFallbackToBrowserUseCase(uri)
 
                 when (result) {
@@ -104,11 +109,9 @@ class PayPalLauncher internal constructor(
             }
         }
 
-        val isBrowserPresentation = fallbackToBrowser || !isAppSwitch
-
         return when (val request = browserSwitchClient.start(activity, options)) {
             is BrowserSwitchStartResult.Failure -> {
-                val errorEvent = if (isBrowserPresentation) {
+                val errorEvent = if (opensInBrowser) {
                     PayPalAnalytics.BROWSER_PRESENTATION_FAILED
                 } else {
                     PayPalAnalytics.APP_SWITCH_FAILED
@@ -121,7 +124,7 @@ class PayPalLauncher internal constructor(
             }
 
             is BrowserSwitchStartResult.Started -> {
-                val event = if (isBrowserPresentation) {
+                val event = if (opensInBrowser) {
                     PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED
                 } else {
                     PayPalAnalytics.APP_SWITCH_SUCCEEDED

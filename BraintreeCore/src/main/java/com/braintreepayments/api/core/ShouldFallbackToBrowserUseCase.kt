@@ -19,13 +19,9 @@ class ShouldFallbackToBrowserUseCase(
     }
 
     operator fun invoke(
-        uri: Uri?,
+        uri: Uri,
         appPackage: String = PAYPAL_APP_PACKAGE
     ): Result {
-        if (uri == null) {
-            return Result.APP_SWITCH
-        }
-
         val context = merchantRepository.applicationContext
         val intent = Intent(Intent.ACTION_VIEW, uri).apply {
             addCategory(Intent.CATEGORY_BROWSABLE)
@@ -35,12 +31,12 @@ class ShouldFallbackToBrowserUseCase(
             intent,
             PackageManager.MATCH_DEFAULT_ONLY
         )
-        val wouldOpenInTargetApp = resolvedActivity?.activityInfo?.packageName == appPackage
+        val opensInTargetApp = resolvedActivity?.activityInfo?.packageName == appPackage
 
-        return if (!wouldOpenInTargetApp) {
-            Result.FALLBACK
-        } else {
+        return if (opensInTargetApp) {
             Result.APP_SWITCH
+        } else {
+            Result.FALLBACK
         }
     }
 }
