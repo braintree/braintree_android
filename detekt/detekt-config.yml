@@ -111,7 +111,7 @@ complexity:
   LongMethod:
     active: true
     threshold: 60
-    ignoreAnnotated: []
+    ignoreAnnotated: [Composable]
   LongParameterList:
     active: true
     functionThreshold: 10

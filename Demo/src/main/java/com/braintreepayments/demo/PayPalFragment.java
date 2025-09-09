@@ -49,8 +49,9 @@ public class PayPalFragment extends BaseFragment {
         TextInputEditText buyerPhoneNationalNumberEditText = view.findViewById(R.id.buyer_phone_national_number_edit_text);
         Button billingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
-        Switch contactInformationSwitch = view.findViewById(R.id.contact_info_switch);
         Switch offerPayLater = view.findViewById(R.id.offer_pay_later_switch);
+        Switch contactInformationSwitch = view.findViewById(R.id.contact_info_switch);
+        Switch amountBreakdownSwitch = view.findViewById(R.id.amount_breakdown_switch);
 
         singlePaymentButton.setOnClickListener(v -> {
             launchPayPal(
@@ -59,7 +60,8 @@ public class PayPalFragment extends BaseFragment {
                 buyerPhoneCountryCodeEditText.getText().toString(),
                 buyerPhoneNationalNumberEditText.getText().toString(),
                 contactInformationSwitch.isChecked(),
-                offerPayLater.isChecked()
+                offerPayLater.isChecked(),
+                amountBreakdownSwitch.isChecked()
             );
         });
         billingAgreementButton.setOnClickListener(v -> {
@@ -69,7 +71,8 @@ public class PayPalFragment extends BaseFragment {
                 buyerPhoneCountryCodeEditText.getText().toString(),
                 buyerPhoneNationalNumberEditText.getText().toString(),
                 false,
-                offerPayLater.isChecked()
+                offerPayLater.isChecked(),
+                amountBreakdownSwitch.isChecked()
             );
         });
 
@@ -117,7 +120,8 @@ public class PayPalFragment extends BaseFragment {
         String buyerPhoneCountryCode,
         String buyerPhoneNationalNumber,
         Boolean isContactInformationEnabled,
-        Boolean offerPayLater
+        Boolean offerPayLater,
+        Boolean isAmountBreakdownEnabled
     ) {
         FragmentActivity activity = getActivity();
         activity.setProgressBarIndeterminateVisibility(true);
@@ -129,10 +133,10 @@ public class PayPalFragment extends BaseFragment {
                 if (dataCollectorResult instanceof DataCollectorResult.Success) {
                     deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
                 }
-                launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled, offerPayLater);
+                launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled, offerPayLater, isAmountBreakdownEnabled);
             });
         } else {
-            launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled, offerPayLater);
+            launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled, offerPayLater, isAmountBreakdownEnabled);
         }
     }
 
@@ -143,8 +147,9 @@ public class PayPalFragment extends BaseFragment {
         String buyerEmailAddress,
         String buyerPhoneCountryCode,
         String buyerPhoneNationalNumber,
-        Boolean isContactInformationEnabled,
-        Boolean offerPayLater
+        boolean isContactInformationEnabled,
+        boolean offerPayLater,
+        boolean isAmountBreakdownEnabled
     ) {
         PayPalRequest payPalRequest;
         if (isBillingAgreement) {
@@ -163,8 +168,9 @@ public class PayPalFragment extends BaseFragment {
                 buyerPhoneCountryCode,
                 buyerPhoneNationalNumber,
                 isContactInformationEnabled,
-                offerPayLater,
-                    null
+                    null,
+                    offerPayLater,
+                    isAmountBreakdownEnabled
             );
         }
         payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest,
