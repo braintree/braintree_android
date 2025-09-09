@@ -58,6 +58,7 @@ dependencies {
     testImplementation libs.robolectric
     testImplementation libs.mockk
     testImplementation libs.mockito.core
+    testImplementation libs.kotlin.test
     testImplementation libs.json.assert
     testImplementation libs.test.parameter.injector
 }
