@@ -116,7 +116,7 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun `launch sends APP_SWITCH_STARTED and APP_SWITCH_SUCCEEDED analytics events when app switch is enabled`(
+    fun `launch sends APP_SWITCH_ATTEMPTED, APP_SWITCH_STARTED and APP_SWITCH_SUCCEEDED analytics events when app switch is enabled`(
         @TestParameter isAppSwitch: Boolean
     ) {
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
@@ -127,7 +127,7 @@ class PayPalLauncherUnitTest {
 
         verify {
             analyticsClient.sendEvent(
-                if (isAppSwitch) PayPalAnalytics.APP_SWITCH_STARTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                if (isAppSwitch) PayPalAnalytics.APP_SWITCH_ATTEMPTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -138,7 +138,7 @@ class PayPalLauncherUnitTest {
         if (isAppSwitch) {
             verify {
                 analyticsClient.sendEvent(
-                    PayPalAnalytics.APP_SWITCH_RESOLVED_TO_PAYPAL,
+                    PayPalAnalytics.APP_SWITCH_STARTED,
                     AnalyticsEventParams(
                         contextId = paymentToken,
                         appSwitchUrl = approvalUrl,
@@ -163,7 +163,7 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun `launch sends APP_SWITCH_FAILED and BROWSER_PRESENTATION_SUCCEEDED when PayPal app cannot be opened`() {
+    fun `launch sends APP_SWITCH_ATTEMPTED, APP_SWITCH_FAILED and BROWSER_PRESENTATION_SUCCEEDED when PayPal app cannot be opened`() {
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
         every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
         every { getAppSwitchUseCase() } returns true
@@ -173,7 +173,7 @@ class PayPalLauncherUnitTest {
 
         verify {
             analyticsClient.sendEvent(
-                PayPalAnalytics.APP_SWITCH_STARTED,
+                PayPalAnalytics.APP_SWITCH_ATTEMPTED,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -213,7 +213,7 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun `launch sends APP_SWITCH_FAILED analytics event when browser switch cannot be performed`(
+    fun `launch sends APP_SWITCH_ATTEMPTED, APP_SWITCH_FAILED analytics event when browser switch cannot be performed`(
         @TestParameter isAppSwitch: Boolean
     ) {
         every { getAppSwitchUseCase() } returns isAppSwitch
@@ -223,6 +223,16 @@ class PayPalLauncherUnitTest {
         } throws exception
 
         sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        verify {
+            analyticsClient.sendEvent(
+                if (isAppSwitch) PayPalAnalytics.APP_SWITCH_ATTEMPTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                AnalyticsEventParams(
+                    contextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                )
+            )
+        }
 
         verify {
             analyticsClient.sendEvent(
@@ -240,11 +250,21 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun `launch sends APP_SWITCH_FAILED analytics event when browserSwitchOptions is null`() {
+    fun `launch sends APP_SWITCH_ATTEMPTED ,APP_SWITCH_FAILED analytics event when browserSwitchOptions is null`() {
         every { getAppSwitchUseCase() } returns true
         every { paymentAuthRequestParams.browserSwitchOptions } returns null
 
         sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.APP_SWITCH_ATTEMPTED,
+                AnalyticsEventParams(
+                    contextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                )
+            )
+        }
 
         verify {
             analyticsClient.sendEvent(
@@ -259,7 +279,7 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun `launch sends APP_SWITCH_FAILED analytics event when browserSwitchOptions URL is null`() {
+    fun `launch sends APP_SWITCH_ATTEMPTED, APP_SWITCH_FAILED analytics event when browserSwitchOptions URL is null`() {
         every { getAppSwitchUseCase() } returns true
         every { options.url } returns null
         
@@ -270,6 +290,16 @@ class PayPalLauncherUnitTest {
             "BrowserSwitchOptions URL is null",
             (pendingRequest as PayPalPendingRequest.Failure).error.message
         )
+        
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.APP_SWITCH_ATTEMPTED,
+                AnalyticsEventParams(
+                    contextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                )
+            )
+        }
         
         verify {
             analyticsClient.sendEvent(
@@ -284,7 +314,7 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun `launch sends BROWSER_PRESENTATION_FAILED analytics event when browserSwitchOptions URL is null and app switch is disabled`() {
+    fun `launch sends BROWSER_PRESENTATION_STARTED ,BROWSER_PRESENTATION_FAILED analytics event when browserSwitchOptions URL is null and app switch is disabled`() {
         every { getAppSwitchUseCase() } returns false
         every { options.url } returns null
         
@@ -295,6 +325,16 @@ class PayPalLauncherUnitTest {
             "BrowserSwitchOptions URL is null",
             (pendingRequest as PayPalPendingRequest.Failure).error.message
         )
+        
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                AnalyticsEventParams(
+                    contextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                )
+            )
+        }
         
         verify {
             analyticsClient.sendEvent(
