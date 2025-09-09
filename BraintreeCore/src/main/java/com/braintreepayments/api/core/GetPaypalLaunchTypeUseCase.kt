@@ -6,7 +6,7 @@ import android.net.Uri
 import androidx.annotation.RestrictTo
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class ShouldFallbackToBrowserUseCase(
+class GetPaypalLaunchTypeUseCase(
     private val merchantRepository: MerchantRepository
 ) {
 
@@ -15,7 +15,7 @@ class ShouldFallbackToBrowserUseCase(
     }
 
     enum class Result {
-        FALLBACK, APP_SWITCH
+        BROWSER, APP
     }
 
     operator fun invoke(
@@ -34,9 +34,9 @@ class ShouldFallbackToBrowserUseCase(
         val opensInTargetApp = resolvedActivity?.activityInfo?.packageName == appPackage
 
         return if (opensInTargetApp) {
-            Result.APP_SWITCH
+            Result.APP
         } else {
-            Result.FALLBACK
+            Result.BROWSER
         }
     }
 }

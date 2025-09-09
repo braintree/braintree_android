@@ -1,6 +1,7 @@
 package com.braintreepayments.api.paypal
 
 import android.content.Intent
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
@@ -12,7 +13,7 @@ import com.braintreepayments.api.core.AppSwitchRepository
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.GetAppSwitchUseCase
 import com.braintreepayments.api.core.MerchantRepository
-import com.braintreepayments.api.core.ShouldFallbackToBrowserUseCase
+import com.braintreepayments.api.core.GetPaypalLaunchTypeUseCase
 
 /**
  * Responsible for launching PayPal user authentication in a web browser
@@ -21,7 +22,9 @@ class PayPalLauncher internal constructor(
     private val browserSwitchClient: BrowserSwitchClient,
     private val getAppSwitchUseCase: GetAppSwitchUseCase = GetAppSwitchUseCase(AppSwitchRepository.instance),
     lazyAnalyticsClient: Lazy<AnalyticsClient>,
-    private val shouldFallbackToBrowserUseCase: ShouldFallbackToBrowserUseCase = ShouldFallbackToBrowserUseCase(MerchantRepository.instance)
+    private val getPaypalLaunchTypeUseCase: GetPaypalLaunchTypeUseCase = GetPaypalLaunchTypeUseCase(
+        MerchantRepository.instance
+    )
 ) {
     /**
      * Used to launch the PayPal flow in a web browser and deliver results to your Activity
@@ -29,7 +32,7 @@ class PayPalLauncher internal constructor(
     constructor() : this(
         browserSwitchClient = BrowserSwitchClient(),
         lazyAnalyticsClient = AnalyticsClient.lazyInstance,
-        shouldFallbackToBrowserUseCase = ShouldFallbackToBrowserUseCase(MerchantRepository.instance)
+        getPaypalLaunchTypeUseCase = GetPaypalLaunchTypeUseCase(MerchantRepository.instance)
     )
 
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
@@ -82,31 +85,10 @@ class PayPalLauncher internal constructor(
             return sendLaunchFailureEventAndReturn(error, isAppSwitch, analyticsEventParams)
         }
 
-        val opensInBrowser = when {
-            !isAppSwitch -> true
-            else -> {
-                val result = shouldFallbackToBrowserUseCase(uri)
-
-                when (result) {
-                    ShouldFallbackToBrowserUseCase.Result.FALLBACK -> {
-                        analyticsClient.sendEvent(PayPalAnalytics.APP_SWITCH_FAILED,
-                            analyticsEventParams
-                        )
-                        analyticsClient.sendEvent(
-                            PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
-                            analyticsEventParams
-                        )
-                        true
-                    }
-                    ShouldFallbackToBrowserUseCase.Result.APP_SWITCH -> {
-                        analyticsClient.sendEvent(
-                            PayPalAnalytics.APP_SWITCH_STARTED,
-                            analyticsEventParams
-                        )
-                        false
-                    }
-                }
-            }
+        var opensInBrowser = true
+        if (isAppSwitch) {
+            val launchType = determinePayPalLaunchType(uri, analyticsEventParams)
+            opensInBrowser = launchType == GetPaypalLaunchTypeUseCase.Result.BROWSER
         }
 
         return when (val request = browserSwitchClient.start(activity, options)) {
@@ -193,6 +175,27 @@ class PayPalLauncher internal constructor(
                 PayPalPaymentAuthResult.NoResult
             }
         }
+    }
+
+    private fun determinePayPalLaunchType(
+        uri: Uri,
+        analyticsEventParams: AnalyticsEventParams
+    ): GetPaypalLaunchTypeUseCase.Result {
+        val result = getPaypalLaunchTypeUseCase(uri)
+        when (result) {
+            GetPaypalLaunchTypeUseCase.Result.BROWSER -> {
+                analyticsClient.sendEvent(PayPalAnalytics.APP_SWITCH_FAILED, analyticsEventParams)
+                analyticsClient.sendEvent(
+                    PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                    analyticsEventParams
+                )
+            }
+
+            GetPaypalLaunchTypeUseCase.Result.APP -> {
+                analyticsClient.sendEvent(PayPalAnalytics.APP_SWITCH_STARTED, analyticsEventParams)
+            }
+        }
+        return result
     }
 
     private fun sendLaunchFailureEventAndReturn(
