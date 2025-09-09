@@ -19,11 +19,9 @@ internal object PayPalAnalytics {
     const val HANDLE_RETURN_NO_RESULT = "paypal:tokenize:handle-return:no-result"
 
     // App Switch events
+    const val APP_SWITCH_ATTEMPTED = "paypal:tokenize:app-switch:attempted"
     const val APP_SWITCH_STARTED = "paypal:tokenize:app-switch:started"
     const val APP_SWITCH_SUCCEEDED = "paypal:tokenize:app-switch:succeeded"
     const val APP_SWITCH_FAILED = "paypal:tokenize:app-switch:failed"
     const val APP_SWITCH_CANCELED = "paypal:tokenize:app-switch:canceled"
-
-    // App resolution events
-    const val APP_SWITCH_RESOLVED_TO_PAYPAL = "paypal:tokenize:app-switch:resolved-to-paypal"
 }
