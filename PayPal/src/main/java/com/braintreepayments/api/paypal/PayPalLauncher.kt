@@ -58,7 +58,7 @@ class PayPalLauncher internal constructor(
         )
 
         if (isAppSwitch) {
-            analyticsClient.sendEvent(PayPalAnalytics.APP_SWITCH_STARTED, analyticsEventParams)
+            analyticsClient.sendEvent(PayPalAnalytics.APP_SWITCH_ATTEMPTED, analyticsEventParams)
         } else {
             analyticsClient.sendEvent(PayPalAnalytics.BROWSER_PRESENTATION_STARTED, analyticsEventParams)
         }
@@ -100,7 +100,7 @@ class PayPalLauncher internal constructor(
                     }
                     ShouldFallbackToBrowserUseCase.Result.APP_SWITCH -> {
                         analyticsClient.sendEvent(
-                            PayPalAnalytics.APP_SWITCH_RESOLVED_TO_PAYPAL,
+                            PayPalAnalytics.APP_SWITCH_STARTED,
                             analyticsEventParams
                         )
                         false
