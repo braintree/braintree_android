@@ -10,10 +10,6 @@ class GetPaypalLaunchTypeUseCase(
     private val merchantRepository: MerchantRepository
 ) {
 
-    companion object {
-        private const val PAYPAL_APP_PACKAGE = "com.paypal.android.p2pmobile"
-    }
-
     enum class Result {
         BROWSER, APP
     }
@@ -38,5 +34,9 @@ class GetPaypalLaunchTypeUseCase(
         } else {
             Result.BROWSER
         }
+    }
+
+    companion object {
+        private const val PAYPAL_APP_PACKAGE = "com.paypal.android.p2pmobile"
     }
 }

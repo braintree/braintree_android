@@ -87,8 +87,7 @@ class PayPalLauncher internal constructor(
 
         var opensInBrowser = true
         if (isAppSwitch) {
-            val launchType = determinePayPalLaunchType(uri, analyticsEventParams)
-            opensInBrowser = launchType == GetPaypalLaunchTypeUseCase.Result.BROWSER
+            opensInBrowser = determinePayPalLaunchType(uri, analyticsEventParams) == GetPaypalLaunchTypeUseCase.Result.BROWSER
         }
 
         return when (val request = browserSwitchClient.start(activity, options)) {
