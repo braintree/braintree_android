@@ -27,8 +27,8 @@ class ThreeDSecureNonceUnitTest {
         assertEquals("11", sut.lastTwo)
         assertEquals("1111", sut.lastFour)
         assertNotNull(sut.threeDSecureInfo)
-        assertFalse { sut.threeDSecureInfo.liabilityShifted }
-        assertTrue { sut.threeDSecureInfo.liabilityShiftPossible }
+        assertFalse(sut.threeDSecureInfo.liabilityShifted)
+        assertTrue(sut.threeDSecureInfo.liabilityShiftPossible)
         assertNotNull(sut.binData)
         assertEquals(BinType.Unknown, sut.binData.prepaid)
         assertEquals(BinType.Yes, sut.binData.healthcare)
@@ -54,8 +54,8 @@ class ThreeDSecureNonceUnitTest {
         assertEquals("11", sut.lastTwo)
         assertEquals("1111", sut.lastFour)
         assertNotNull(sut.threeDSecureInfo)
-        assertFalse { sut.threeDSecureInfo.liabilityShifted }
-        assertFalse { sut.threeDSecureInfo.liabilityShiftPossible }
+        assertFalse(sut.threeDSecureInfo.liabilityShifted)
+        assertFalse(sut.threeDSecureInfo.liabilityShiftPossible)
         assertNotNull(sut.binData)
         assertEquals(BinType.Yes, sut.binData.prepaid)
         assertEquals(BinType.Yes, sut.binData.healthcare)
