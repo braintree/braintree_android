@@ -84,5 +84,4 @@ class GetPaypalLaunchTypeUseCaseUnitTest {
 
         assertEquals(GetPaypalLaunchTypeUseCase.Result.BROWSER, result)
     }
-
 }
