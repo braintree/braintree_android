@@ -25,6 +25,7 @@ class AnalyticsParamRepository(
      */
     var didPayPalServerAttemptAppSwitch: Boolean? = null
 
+    var merchantPassedUserAction: String? = null
     private lateinit var _sessionId: String
 
     /**
@@ -50,6 +51,7 @@ class AnalyticsParamRepository(
         linkType = null
         didEnablePayPalAppSwitch = null
         didPayPalServerAttemptAppSwitch = null
+        merchantPassedUserAction = null
     }
 
     companion object {

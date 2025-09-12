@@ -96,6 +96,10 @@ class PayPalClient internal constructor(
         isVaultRequest = payPalRequest is PayPalVaultRequest
         analyticsParamRepository.didEnablePayPalAppSwitch = payPalRequest.enablePayPalAppSwitch
 
+        if (payPalRequest is PayPalCheckoutRequest) {
+            analyticsParamRepository.merchantPassedUserAction = userActionString(payPalRequest)
+        }
+
         braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
             val analyticsEventParams = AnalyticsEventParams(
                 contextId = null,
@@ -388,11 +392,21 @@ class PayPalClient internal constructor(
         analyticsParamRepository.reset()
     }
 
+    private fun userActionString(payPalRequest: PayPalCheckoutRequest): String = when (payPalRequest.userAction) {
+        PayPalPaymentUserAction.USER_ACTION_DEFAULT -> CONTINUE
+        PayPalPaymentUserAction.USER_ACTION_COMMIT -> PAY
+        null -> NONE
+    }
+
     companion object {
         internal const val PAYPAL_NOT_ENABLED_MESSAGE = "PayPal is not enabled. " +
             "See https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v5 " +
             "for more information."
 
         internal const val BROWSER_SWITCH_EXCEPTION_MESSAGE = "The response contained inconsistent data."
+        internal const val CONTINUE = "continue"
+        internal const val PAY = "pay"
+        internal const val NONE = "none"
+
     }
 }
