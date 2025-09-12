@@ -11,6 +11,7 @@ import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.GetAppSwitchUseCase
+import com.braintreepayments.api.core.GetPaypalLaunchTypeUseCase
 import com.google.testing.junit.testparameterinjector.TestParameter
 import io.mockk.CapturingSlot
 import io.mockk.every
@@ -35,6 +36,7 @@ class PayPalLauncherUnitTest {
     private val pendingRequestString = "pending_request_string"
     private val analyticsClient: AnalyticsClient = mockk(relaxed = true)
     private val getAppSwitchUseCase = mockk<GetAppSwitchUseCase>(relaxed = true)
+    private val getPaypalLaunchTypeUseCase = mockk<GetPaypalLaunchTypeUseCase>(relaxed = true)
 
     private val paymentToken = "paymentToken"
     private val approvalUrl = "https://return.url?ba_token=$paymentToken"
@@ -47,11 +49,14 @@ class PayPalLauncherUnitTest {
         every { paymentAuthRequestParams.contextId } returns paymentToken
         every { paymentAuthRequestParams.approvalUrl } returns approvalUrl
         every { intent.data } returns Uri.parse(approvalUrl)
+        every { options.url } returns Uri.parse(approvalUrl)
+        every { getPaypalLaunchTypeUseCase(any(), any()) } returns GetPaypalLaunchTypeUseCase.Result.APP
 
         sut = PayPalLauncher(
             browserSwitchClient = browserSwitchClient,
             getAppSwitchUseCase = getAppSwitchUseCase,
-            lazyAnalyticsClient = lazy { analyticsClient }
+            lazyAnalyticsClient = lazy { analyticsClient },
+            getPaypalLaunchTypeUseCase = getPaypalLaunchTypeUseCase
         )
     }
 
@@ -111,7 +116,7 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun `launch sends APP_SWITCH_STARTED and APP_SWITCH_SUCCEEDED analytics events when app switch is enabled`(
+    fun `launch sends APP_SWITCH_ATTEMPTED, APP_SWITCH_STARTED and APP_SWITCH_SUCCEEDED analytics events`(
         @TestParameter isAppSwitch: Boolean
     ) {
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
@@ -122,12 +127,24 @@ class PayPalLauncherUnitTest {
 
         verify {
             analyticsClient.sendEvent(
-                if (isAppSwitch) PayPalAnalytics.APP_SWITCH_STARTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                if (isAppSwitch) PayPalAnalytics.APP_SWITCH_ATTEMPTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                 )
             )
+        }
+
+        if (isAppSwitch) {
+            verify {
+                analyticsClient.sendEvent(
+                    PayPalAnalytics.APP_SWITCH_STARTED,
+                    AnalyticsEventParams(
+                        contextId = paymentToken,
+                        appSwitchUrl = approvalUrl,
+                    )
+                )
+            }
         }
 
         verify {
@@ -146,7 +163,57 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun `launch sends APP_SWITCH_FAILED analytics event when browser switch cannot be performed`(
+    fun `launch sends APP_SWITCH_ATTEMPTED, APP_SWITCH_FAILED and BROWSER_PRESENTATION_SUCCEEDED`() {
+        val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
+        every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
+        every { getAppSwitchUseCase() } returns true
+        every { getPaypalLaunchTypeUseCase(any(), any()) } returns GetPaypalLaunchTypeUseCase.Result.BROWSER
+
+        sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.APP_SWITCH_ATTEMPTED,
+                AnalyticsEventParams(
+                    contextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                )
+            )
+        }
+
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.APP_SWITCH_FAILED,
+                AnalyticsEventParams(
+                    contextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                )
+            )
+        }
+
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                AnalyticsEventParams(
+                    contextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                )
+            )
+        }
+
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED,
+                AnalyticsEventParams(
+                    contextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `launch sends APP_SWITCH_ATTEMPTED, APP_SWITCH_FAILED analytics event when browser switch cannot be performed`(
         @TestParameter isAppSwitch: Boolean
     ) {
         every { getAppSwitchUseCase() } returns isAppSwitch
@@ -156,6 +223,16 @@ class PayPalLauncherUnitTest {
         } throws exception
 
         sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        verify {
+            analyticsClient.sendEvent(
+                if (isAppSwitch) PayPalAnalytics.APP_SWITCH_ATTEMPTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                AnalyticsEventParams(
+                    contextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                )
+            )
+        }
 
         verify {
             analyticsClient.sendEvent(
@@ -173,11 +250,21 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun `launch sends APP_SWITCH_FAILED analytics event when browserSwitchOptions is null`() {
+    fun `launch sends APP_SWITCH_ATTEMPTED ,APP_SWITCH_FAILED analytics event when browserSwitchOptions is null`() {
         every { getAppSwitchUseCase() } returns true
         every { paymentAuthRequestParams.browserSwitchOptions } returns null
 
         sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.APP_SWITCH_ATTEMPTED,
+                AnalyticsEventParams(
+                    contextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                )
+            )
+        }
 
         verify {
             analyticsClient.sendEvent(
@@ -186,6 +273,76 @@ class PayPalLauncherUnitTest {
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
                     errorDescription = "BrowserSwitchOptions is null"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `launch sends APP_SWITCH_ATTEMPTED, APP_SWITCH_FAILED analytics event when browserSwitchOptions URL is null`() {
+        every { getAppSwitchUseCase() } returns true
+        every { options.url } returns null
+
+        val pendingRequest = sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        assertTrue(pendingRequest is PayPalPendingRequest.Failure)
+        assertEquals(
+            "BrowserSwitchOptions URL is null",
+            (pendingRequest as PayPalPendingRequest.Failure).error.message
+        )
+
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.APP_SWITCH_ATTEMPTED,
+                AnalyticsEventParams(
+                    contextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                )
+            )
+        }
+
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.APP_SWITCH_FAILED,
+                AnalyticsEventParams(
+                    contextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                    errorDescription = "BrowserSwitchOptions URL is null"
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `launch sends BROWSER_PRESENTATION_STARTED, BROWSER_PRESENTATION_FAILED when URL null`() {
+        every { getAppSwitchUseCase() } returns false
+        every { options.url } returns null
+
+        val pendingRequest = sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        assertTrue(pendingRequest is PayPalPendingRequest.Failure)
+        assertEquals(
+            "BrowserSwitchOptions URL is null",
+            (pendingRequest as PayPalPendingRequest.Failure).error.message
+        )
+
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                AnalyticsEventParams(
+                    contextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                )
+            )
+        }
+
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.BROWSER_PRESENTATION_FAILED,
+                AnalyticsEventParams(
+                    contextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                    errorDescription = "BrowserSwitchOptions URL is null"
                 )
             )
         }
