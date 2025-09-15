@@ -16,7 +16,7 @@ class GetPaypalLaunchTypeUseCase(
 
     operator fun invoke(
         uri: Uri,
-        appPackage: String = PAYPAL_APP_PACKAGE
+        appPackage: String = DeviceInspector.PAYPAL_APP_PACKAGE
     ): Result {
         val context = merchantRepository.applicationContext
         val intent = Intent(Intent.ACTION_VIEW, uri).apply {
@@ -34,9 +34,5 @@ class GetPaypalLaunchTypeUseCase(
         } else {
             Result.BROWSER
         }
-    }
-
-    companion object {
-        private const val PAYPAL_APP_PACKAGE = "com.paypal.android.p2pmobile"
     }
 }

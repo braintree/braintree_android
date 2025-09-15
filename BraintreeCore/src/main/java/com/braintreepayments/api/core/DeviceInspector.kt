@@ -124,7 +124,7 @@ class DeviceInspector(
         get() = getDropInVersion()
 
     companion object {
-        private const val PAYPAL_APP_PACKAGE = "com.paypal.android.p2pmobile"
+        const val PAYPAL_APP_PACKAGE = "com.paypal.android.p2pmobile"
         private const val VENMO_APP_PACKAGE = "com.venmo"
         private const val VENMO_APP_SWITCH_ACTIVITY = "controller.SetupMerchantActivity"
 
