@@ -45,8 +45,8 @@ class PayPalLauncherUnitTest {
 
     @Before
     fun setup() {
-        mockkStatic(PayPalUrlHandler::class)
-        every { PayPalUrlHandler.canPayPalHandleUrl(any()) } returns false
+        mockkStatic(PayPalAppSwitchResolver::class)
+        every { PayPalAppSwitchResolver.canPayPalResolveUrl(any()) } returns false
 
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         every { paymentAuthRequestParams.contextId } returns paymentToken
@@ -124,7 +124,7 @@ class PayPalLauncherUnitTest {
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
         every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
         every { getAppSwitchUseCase() } returns isAppSwitch
-        every { PayPalUrlHandler.canPayPalHandleUrl() } returns isAppSwitch
+        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns isAppSwitch
 
         sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
 
@@ -158,7 +158,7 @@ class PayPalLauncherUnitTest {
         @TestParameter isAppSwitch: Boolean
     ) {
         every { getAppSwitchUseCase() } returns isAppSwitch
-        every { PayPalUrlHandler.canPayPalHandleUrl() } returns isAppSwitch
+        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns isAppSwitch
         val exception = BrowserSwitchException("browser switch error")
         every {
             browserSwitchClient.assertCanPerformBrowserSwitch(eq(activity), eq(options))
@@ -194,7 +194,7 @@ class PayPalLauncherUnitTest {
     @Test
     fun `launch sends APP_SWITCH_FAILED analytics event when browserSwitchOptions is null`() {
         every { getAppSwitchUseCase() } returns true
-        every { PayPalUrlHandler.canPayPalHandleUrl() } returns true
+        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns true
         every { paymentAuthRequestParams.browserSwitchOptions } returns null
 
         sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
@@ -226,7 +226,7 @@ class PayPalLauncherUnitTest {
         @TestParameter isAppSwitch: Boolean
     ) {
         every { getAppSwitchUseCase() } returns isAppSwitch
-        every { PayPalUrlHandler.canPayPalHandleUrl() } returns isAppSwitch
+        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns isAppSwitch
         every { options.url } returns null
 
         val pendingRequest = sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
@@ -348,7 +348,7 @@ class PayPalLauncherUnitTest {
     @Test
     fun `launch sets didSdkAttemptAppSwitch to true when app switch conditions are met`() {
         every { getAppSwitchUseCase() } returns true
-        every { PayPalUrlHandler.canPayPalHandleUrl() } returns true
+        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns true
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
         every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
 
@@ -369,7 +369,7 @@ class PayPalLauncherUnitTest {
     @Test
     fun `launch sets didSdkAttemptAppSwitch to false when PayPal cannot handle URL`() {
         every { getAppSwitchUseCase() } returns true
-        every { PayPalUrlHandler.canPayPalHandleUrl() } returns false
+        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns false
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
         every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
 
@@ -390,7 +390,7 @@ class PayPalLauncherUnitTest {
     @Test
     fun `launch sets didSdkAttemptAppSwitch to false when getAppSwitchUseCase returns false`() {
         every { getAppSwitchUseCase() } returns false
-        every { PayPalUrlHandler.canPayPalHandleUrl() } returns true
+        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns true
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
         every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
 

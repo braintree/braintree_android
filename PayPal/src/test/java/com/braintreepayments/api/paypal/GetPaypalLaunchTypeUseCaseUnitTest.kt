@@ -28,7 +28,7 @@ class GetPaypalLaunchTypeUseCaseUnitTest {
     private val paypalPackageName = DeviceInspector.PAYPAL_APP_PACKAGE
     private val chromePackageName = "com.android.chrome"
 
-    lateinit var subject: GetPaypalLaunchTypeUseCase
+    private lateinit var subject: GetPaypalLaunchTypeUseCase
 
     @Before
     fun setUp() {

@@ -16,6 +16,7 @@ import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.SetAppSwitchUseCase
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
+import com.braintreepayments.api.paypal.PayPalAppSwitchResolver.canPayPalResolveUrl
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -46,8 +47,7 @@ internal class PayPalInternalClient(
             val url = "/v1/$endpoint"
 
             if (payPalRequest.enablePayPalAppSwitch) {
-                payPalRequest.enablePayPalAppSwitch = deviceInspector.isPayPalInstalled() &&
-                    PayPalUrlHandler.canPayPalHandleUrl()
+                payPalRequest.enablePayPalAppSwitch = deviceInspector.isPayPalInstalled() && canPayPalResolveUrl()
             }
 
             val returnLinkResult = getReturnLinkUseCase()

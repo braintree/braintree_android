@@ -52,8 +52,8 @@ class PayPalInternalClientUnitTest {
     fun beforeEach() {
         context = mockk(relaxed = true)
 
-        mockkStatic(PayPalUrlHandler::class)
-        every { PayPalUrlHandler.canPayPalHandleUrl(any()) } returns false
+        mockkStatic(PayPalAppSwitchResolver::class)
+        every { PayPalAppSwitchResolver.canPayPalResolveUrl(any()) } returns false
 
         clientToken = mockk(relaxed = true)
         tokenizationKey = mockk(relaxed = true)
@@ -737,7 +737,7 @@ class PayPalInternalClientUnitTest {
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { getAppSwitchUseCase.invoke() } returns true
         every { deviceInspector.isPayPalInstalled() } returns true
-        every { PayPalUrlHandler.canPayPalHandleUrl() } returns true
+        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns true
 
         val (sut, braintreeClient) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_PAYPAL_REDIRECT_URL
@@ -960,7 +960,7 @@ class PayPalInternalClientUnitTest {
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { getAppSwitchUseCase.invoke() } returns true
         every { deviceInspector.isPayPalInstalled() } returns true
-        every { PayPalUrlHandler.canPayPalHandleUrl() } returns true
+        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns true
 
         val (sut, _) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_PAYPAL_REDIRECT_URL
@@ -988,7 +988,7 @@ class PayPalInternalClientUnitTest {
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { getAppSwitchUseCase.invoke() } returns true
         every { deviceInspector.isPayPalInstalled() } returns true
-        every { PayPalUrlHandler.canPayPalHandleUrl() } returns true
+        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns true
 
         val (sut, _) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM
@@ -1015,7 +1015,7 @@ class PayPalInternalClientUnitTest {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { deviceInspector.isPayPalInstalled() } returns false
-        every { PayPalUrlHandler.canPayPalHandleUrl() } returns false
+        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns false
 
         val (sut, braintreeClient) = createSutWithMocks()
 
@@ -1037,7 +1037,7 @@ class PayPalInternalClientUnitTest {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { deviceInspector.isPayPalInstalled() } returns true
-        every { PayPalUrlHandler.canPayPalHandleUrl() } returns false
+        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns false
 
         val (sut, braintreeClient) = createSutWithMocks()
 
@@ -1059,7 +1059,7 @@ class PayPalInternalClientUnitTest {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { deviceInspector.isPayPalInstalled() } returns true
-        every { PayPalUrlHandler.canPayPalHandleUrl() } returns true
+        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns true
 
         val (sut, braintreeClient) = createSutWithMocks()
 
@@ -1089,7 +1089,7 @@ class PayPalInternalClientUnitTest {
         sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
 
         verify(exactly = 0) { deviceInspector.isPayPalInstalled() }
-        verify(exactly = 0) { PayPalUrlHandler.canPayPalHandleUrl() }
+        verify(exactly = 0) { PayPalAppSwitchResolver.canPayPalResolveUrl() }
         verify {
             setAppSwitchUseCase.invoke(
                 merchantEnabledAppSwitch = false,
@@ -1103,7 +1103,7 @@ class PayPalInternalClientUnitTest {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { deviceInspector.isPayPalInstalled() } returns true
-        every { PayPalUrlHandler.canPayPalHandleUrl() } returns true
+        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns true
 
         val (sut, braintreeClient) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_PAYPAL_REDIRECT_URL
@@ -1128,7 +1128,7 @@ class PayPalInternalClientUnitTest {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { deviceInspector.isPayPalInstalled() } returns true
-        every { PayPalUrlHandler.canPayPalHandleUrl() } returns true
+        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns true
 
         val (sut, braintreeClient) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_BA_TOKEN_PARAM
