@@ -802,4 +802,56 @@ class PayPalClientUnitTest {
         getReturnLinkUseCase,
         analyticsParamRepository
     )
+
+    @Test
+    fun createPaymentAuthRequest_whenUserActionIsDefault_setsMerchantPassedUserActionToContinue() {
+        val payPalCheckoutRequest = PayPalCheckoutRequest("1.00", true).apply {
+            userAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT
+        }
+
+        val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
+        val braintreeClient = MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
+
+        val sut = testPaypalClient(braintreeClient, payPalInternalClient)
+        sut.createPaymentAuthRequest(activity, payPalCheckoutRequest, paymentAuthCallback)
+
+        verify {
+            analyticsParamRepository.merchantPassedUserAction = "continue"
+        }
+    }
+
+    @Test
+    fun createPaymentAuthRequest_whenUserActionIsCommit_setsMerchantPassedUserActionToPay() {
+        val payPalCheckoutRequest = PayPalCheckoutRequest("1.00", true).apply {
+            userAction = PayPalPaymentUserAction.USER_ACTION_COMMIT
+        }
+
+        val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
+        val braintreeClient = MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
+
+        val sut = testPaypalClient(braintreeClient, payPalInternalClient)
+        sut.createPaymentAuthRequest(activity, payPalCheckoutRequest, paymentAuthCallback)
+
+        verify {
+            analyticsParamRepository.merchantPassedUserAction = "pay"
+        }
+    }
+
+    @Test
+    fun createPaymentAuthRequest_whenUserActionIsNull_setsMerchantPassedUserActionToNone() {
+        val payPalCheckoutRequest = PayPalCheckoutRequest("1.00", true).apply {
+            userAction = null
+        }
+
+        val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
+        val braintreeClient = MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
+
+        val sut = testPaypalClient(braintreeClient, payPalInternalClient)
+        sut.createPaymentAuthRequest(activity, payPalCheckoutRequest, paymentAuthCallback)
+
+        verify {
+            analyticsParamRepository.merchantPassedUserAction = "none"
+        }
+    }
+
 }

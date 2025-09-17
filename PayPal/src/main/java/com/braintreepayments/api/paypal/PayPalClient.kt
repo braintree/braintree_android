@@ -392,11 +392,12 @@ class PayPalClient internal constructor(
         analyticsParamRepository.reset()
     }
 
-    private fun userActionString(payPalRequest: PayPalCheckoutRequest): String = when (payPalRequest.userAction) {
-        PayPalPaymentUserAction.USER_ACTION_DEFAULT -> CONTINUE
-        PayPalPaymentUserAction.USER_ACTION_COMMIT -> PAY
-        null -> NONE
-    }
+    private fun userActionString(payPalRequest: PayPalCheckoutRequest): String =
+        when (payPalRequest.userAction) {
+            PayPalPaymentUserAction.USER_ACTION_DEFAULT -> CONTINUE
+            PayPalPaymentUserAction.USER_ACTION_COMMIT -> PAY
+            else -> NONE
+        }
 
     companion object {
         internal const val PAYPAL_NOT_ENABLED_MESSAGE = "PayPal is not enabled. " +
