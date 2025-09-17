@@ -12,7 +12,6 @@ import com.braintreepayments.api.core.MerchantRepository
  *
  * Detects if a user unchecks the "Open supported links" checkbox in the Android OS settings for the PayPal app.
  * If this setting is unchecked, this use case will return [Result.APP], otherwise [Result.BROWSER] will be returned.
- *
  */
 internal class GetPaypalLaunchTypeUseCase(
     private val merchantRepository: MerchantRepository
