@@ -21,7 +21,9 @@ internal class GetPaypalLaunchTypeUseCase(
      * Represents the possible launch types for PayPal payment flows.
      */
     enum class Result {
-        /** The payment flow will be launched in a web browser */
+        /** 
+         * The payment flow will be launched in a web browser
+         */
         BROWSER,
 
         /** The payment flow will be launched in the PayPal app */
