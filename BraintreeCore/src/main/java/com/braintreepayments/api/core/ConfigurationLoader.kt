@@ -40,40 +40,55 @@ internal class ConfigurationLoader(
         cachedConfig?.let {
             callback.onResult(ConfigurationLoaderResult.Success(it))
         } ?: run {
-            httpClient.get(
-                path = configUrl,
-                configuration = null,
-                authorization = authorization,
-            ) { result ->
-                when (result) {
-                    is NetworkResponseCallback.Result.Success -> {
-                        val responseBody = result.response.body
-                        val timing = result.response.timing
-                        try {
-                            val configuration = Configuration.fromJson(responseBody ?: "")
-                            saveConfigurationToCache(configuration, authorization, configUrl)
-                            callback.onResult(ConfigurationLoaderResult.Success(configuration, timing))
+            executeConfigurationApi(configUrl, authorization, callback)
+        }
+    }
 
-                            analyticsClient.sendEvent(
-                                eventName = CoreAnalytics.API_REQUEST_LATENCY,
-                                analyticsEventParams = AnalyticsEventParams(
-                                    startTime = timing.startTime,
-                                    endTime = timing.endTime,
-                                    endpoint = "/v1/configuration"
-                                ),
-                                sendImmediately = false
+    private fun executeConfigurationApi(
+        configUrl: String,
+        authorization: Authorization,
+        callback: ConfigurationLoaderCallback
+    ) {
+        httpClient.get(
+            path = configUrl,
+            configuration = null,
+            authorization = authorization,
+        ) { result ->
+            when (result) {
+                is NetworkResponseCallback.Result.Success -> {
+                    val responseBody = result.response.body ?: run {
+                        callback.onResult(
+                            ConfigurationLoaderResult.Failure(
+                                ConfigurationException("Configuration responseBody is null")
                             )
-                        } catch (jsonException: JSONException) {
-                            callback.onResult(ConfigurationLoaderResult.Failure(jsonException))
-                        }
+                        )
+                        return@get
                     }
+                    val timing = result.response.timing
+                    try {
+                        val configuration = Configuration.fromJson(responseBody)
+                        saveConfigurationToCache(configuration, authorization, configUrl)
+                        callback.onResult(ConfigurationLoaderResult.Success(configuration, timing))
 
-                    is NetworkResponseCallback.Result.Failure -> {
-                        val errorMessageFormat = "Request for configuration has failed: %s"
-                        val errorMessage = String.format(errorMessageFormat, result.error.message)
-                        val configurationException = ConfigurationException(errorMessage, result.error)
-                        callback.onResult(ConfigurationLoaderResult.Failure(configurationException))
+                        analyticsClient.sendEvent(
+                            eventName = CoreAnalytics.API_REQUEST_LATENCY,
+                            analyticsEventParams = AnalyticsEventParams(
+                                startTime = timing.startTime,
+                                endTime = timing.endTime,
+                                endpoint = "/v1/configuration"
+                            ),
+                            sendImmediately = false
+                        )
+                    } catch (jsonException: JSONException) {
+                        callback.onResult(ConfigurationLoaderResult.Failure(jsonException))
                     }
+                }
+
+                is NetworkResponseCallback.Result.Failure -> {
+                    val errorMessageFormat = "Request for configuration has failed: %s"
+                    val errorMessage = String.format(errorMessageFormat, result.error.message)
+                    val configurationException = ConfigurationException(errorMessage, result.error)
+                    callback.onResult(ConfigurationLoaderResult.Failure(configurationException))
                 }
             }
         }

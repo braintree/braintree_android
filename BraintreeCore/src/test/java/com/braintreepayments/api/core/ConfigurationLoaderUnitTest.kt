@@ -246,4 +246,33 @@ class ConfigurationLoaderUnitTest {
 
         assertTrue { successSlot.captured is ConfigurationLoaderResult.Success }
     }
+
+    @Test
+    fun loadConfiguration_onNullResponseBody_forwardsConfigurationExceptionToErrorResponseListener() {
+        every { authorization.configUrl } returns "https://example.com/config"
+
+        sut.loadConfiguration(callback)
+
+        val callbackSlot = slot<NetworkResponseCallback>()
+        verify {
+            braintreeHttpClient.get(
+                path = ofType(String::class),
+                configuration = null,
+                authorization = authorization,
+                callback = capture(callbackSlot)
+            )
+        }
+
+        val httpResponseCallback = callbackSlot.captured
+        httpResponseCallback.onResult(
+            NetworkResponseCallback.Result.Success(HttpResponse(null, HttpResponseTiming(0, 0)))
+        )
+
+        val errorSlot = slot<ConfigurationLoaderResult>()
+        verify { callback.onResult(capture(errorSlot)) }
+
+        val failure = errorSlot.captured as ConfigurationLoaderResult.Failure
+        assertTrue { failure.error is ConfigurationException }
+        assertEquals("Configuration responseBody is null", failure.error.message)
+    }
 }
