@@ -39,7 +39,12 @@ class BraintreeGraphQLClientUnitTest {
         val config = mockk<Configuration>(relaxed = true)
         every { config.graphQLUrl } returns "https://graphql.example.com"
         sut.post("{}", config, invalidAuth, callback)
-        verify { callback.onResult(null, match { it is BraintreeException && it.message == "bad auth" }) }
+        verify {
+            callback.onResult(match {
+                it is NetworkResponseCallback.Result.Failure &&
+                    it.error is BraintreeException && it.error.message == "bad auth"
+            })
+        }
         confirmVerified(callback)
     }
 

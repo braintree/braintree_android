@@ -22,7 +22,7 @@ class HttpClient internal constructor(
             try {
                 val httpResponse = okHttpSynchronousHttpClient.executeRequest(request)
                 callback?.let {
-                    scheduler.runOnMain { callback.onResult(httpResponse, null) }
+                    scheduler.runOnMain { callback.onResult(NetworkResponseCallback.Result.Success(httpResponse)) }
                 }
             } catch (e: Exception) {
                 notifyErrorOnMainThread(callback, e)
@@ -32,7 +32,7 @@ class HttpClient internal constructor(
 
     private fun notifyErrorOnMainThread(callback: NetworkResponseCallback?, e: Exception) {
         if (callback != null) {
-            scheduler.runOnMain { callback.onResult(null, e) }
+            scheduler.runOnMain { callback.onResult(NetworkResponseCallback.Result.Failure(e)) }
         }
     }
 }
