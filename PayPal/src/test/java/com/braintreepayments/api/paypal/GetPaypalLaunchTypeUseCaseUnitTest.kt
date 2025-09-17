@@ -1,10 +1,12 @@
-package com.braintreepayments.api.core
+package com.braintreepayments.api.paypal
 
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.net.Uri
+import com.braintreepayments.api.core.DeviceInspector
+import com.braintreepayments.api.core.MerchantRepository
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Before
@@ -23,7 +25,8 @@ class GetPaypalLaunchTypeUseCaseUnitTest {
     private val activityInfo = ActivityInfo()
 
     private val paypalUri = Uri.parse("https://paypal.com/checkout")
-    private val paypalPackageName = "com.paypal.android.p2pmobile"
+    private val paypalPackageName = DeviceInspector.PAYPAL_APP_PACKAGE
+    private val chromePackageName = "com.android.chrome"
 
     lateinit var subject: GetPaypalLaunchTypeUseCase
 
@@ -37,7 +40,7 @@ class GetPaypalLaunchTypeUseCaseUnitTest {
     }
 
     @Test
-    fun `when invoke is called and intent would open in target app, APP_SWITCH is returned`() {
+    fun `when invoke is called and intent resolves with target app, APP is returned`() {
         activityInfo.packageName = paypalPackageName
         every {
             packageManager.resolveActivity(any(), PackageManager.MATCH_DEFAULT_ONLY)
@@ -49,8 +52,8 @@ class GetPaypalLaunchTypeUseCaseUnitTest {
     }
 
     @Test
-    fun `when invoke is called and intent would not open in target app, FALLBACK is returned`() {
-        activityInfo.packageName = "com.android.chrome"
+    fun `when invoke is called and intent does not resolve with target app, BROWSER is returned`() {
+        activityInfo.packageName = chromePackageName
 
         every {
             packageManager.resolveActivity(any(), PackageManager.MATCH_DEFAULT_ONLY)
@@ -62,7 +65,7 @@ class GetPaypalLaunchTypeUseCaseUnitTest {
     }
 
     @Test
-    fun `when invoke is called and no activity resolves the intent, FALLBACK is returned`() {
+    fun `when invoke is called and no activity resolves the intent, BROWSER is returned`() {
         every {
             packageManager.resolveActivity(any(), PackageManager.MATCH_DEFAULT_ONLY)
         } returns null
@@ -73,7 +76,7 @@ class GetPaypalLaunchTypeUseCaseUnitTest {
     }
 
     @Test
-    fun `when invoke is called and activity info is null, FALLBACK is returned`() {
+    fun `when invoke is called and activity info is null, BROWSER is returned`() {
         resolveInfo.activityInfo = null
 
         every {
