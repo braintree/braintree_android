@@ -26,7 +26,9 @@ internal class GetPaypalLaunchTypeUseCase(
          */
         BROWSER,
 
-        /** The payment flow will be launched in the PayPal app */
+        /** 
+         * The payment flow will be launched in the PayPal app 
+         */
         APP
     }
 
