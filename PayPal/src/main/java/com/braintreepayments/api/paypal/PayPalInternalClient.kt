@@ -46,7 +46,8 @@ internal class PayPalInternalClient(
             val url = "/v1/$endpoint"
 
             if (payPalRequest.enablePayPalAppSwitch) {
-                payPalRequest.enablePayPalAppSwitch = deviceInspector.isPayPalInstalled()
+                payPalRequest.enablePayPalAppSwitch = deviceInspector.isPayPalInstalled() &&
+                    PayPalUrlHandler.canPayPalHandleUrl()
             }
 
             val returnLinkResult = getReturnLinkUseCase()
