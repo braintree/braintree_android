@@ -29,8 +29,8 @@ internal class GetPaypalLaunchTypeUseCase(
         APP
     }
 
-    /** Detects if users disable the "Open supported links" setting in the Paypal app.
-     *
+    /** 
+     * Detects if users disable the "Open supported links" setting in the Paypal app.
      * @param uri The app-switch URI to be launched
      * @return [Result.APP] if the PayPal app can handle the URI, [Result.BROWSER] otherwise.
      */
