@@ -708,7 +708,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_sets_analyticsParamRepository_sets_didPayPalServerAttemptAppSwitch_to_false() {
+    fun sendRequest_whenServerReturnsNonAppSwitchFlow_setsDidPayPalServerAttemptAppSwitchToFalse() {
         every {
             dataCollector.getClientMetadataId(
                 eq(context),
@@ -1099,7 +1099,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun `sendRequest sets didPayPalServerAttemptAppSwitch when server returns app switch flow`() {
+    fun sendRequest_whenServerReturnsAppSwitchFlow_setsDidPayPalServerAttemptAppSwitchToTrue() {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { deviceInspector.isPayPalInstalled() } returns true
@@ -1119,6 +1119,32 @@ class PayPalInternalClientUnitTest {
             setAppSwitchUseCase.invoke(
                 merchantEnabledAppSwitch = true,
                 appSwitchFlowFromPayPalResponse = true
+            )
+        }
+    }
+
+    @Test
+    fun sendRequest_whenMerchantEnablesAppSwitchButServerReturnsAppSwitchFalse_setsBothCorrectly() {
+        every { merchantRepository.authorization } returns clientToken
+        every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+        every { deviceInspector.isPayPalInstalled() } returns true
+        every { PayPalUrlHandler.canPayPalHandleUrl() } returns true
+
+        val (sut, braintreeClient) = createSutWithMocks(
+            fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_BA_TOKEN_PARAM
+        )
+
+        val payPalRequest = PayPalCheckoutRequest("1.00", true)
+        payPalRequest.enablePayPalAppSwitch = true
+
+        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
+
+        verify { analyticsParamRepository.didPayPalServerAttemptAppSwitch = false }
+
+        verify {
+            setAppSwitchUseCase.invoke(
+                merchantEnabledAppSwitch = true,
+                appSwitchFlowFromPayPalResponse = false
             )
         }
     }

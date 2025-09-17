@@ -35,8 +35,8 @@ class GetPaypalLaunchTypeUseCase(
      * by the PayPal app or should open in a browser.
      *
      * This method checks if the PayPal app can resolve the app-switch URI using Android's package manager.
-     * Even if the PayPal app declares support for the app-switch URI's path pattern, Android may still route it to the browser
-     * if the user has disabled "Open supported links" in PayPal app settings.
+     * Even if the PayPal app declares support for the app-switch URI's path pattern, Android may still route it
+     * to the browser if the user has disabled "Open supported links" in PayPal app settings.
      *
      * This method detects users disabling the aforementioned setting
      * and enables those flows to be opened in a browser.

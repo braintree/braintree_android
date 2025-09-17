@@ -222,9 +222,11 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun `launch sends APP_SWITCH_FAILED analytics event when browserSwitchOptions URL is null`() {
-        every { getAppSwitchUseCase() } returns true
-        every { PayPalUrlHandler.canPayPalHandleUrl() } returns true
+    fun `launch sends STARTED and FAILED analytics events when browserSwitchOptions URL is null`(
+        @TestParameter isAppSwitch: Boolean
+    ) {
+        every { getAppSwitchUseCase() } returns isAppSwitch
+        every { PayPalUrlHandler.canPayPalHandleUrl() } returns isAppSwitch
         every { options.url } returns null
 
         val pendingRequest = sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
@@ -237,7 +239,7 @@ class PayPalLauncherUnitTest {
 
         verify {
             analyticsClient.sendEvent(
-                PayPalAnalytics.APP_SWITCH_STARTED,
+                if (isAppSwitch) PayPalAnalytics.APP_SWITCH_STARTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
@@ -247,43 +249,7 @@ class PayPalLauncherUnitTest {
 
         verify {
             analyticsClient.sendEvent(
-                PayPalAnalytics.APP_SWITCH_FAILED,
-                AnalyticsEventParams(
-                    contextId = paymentToken,
-                    appSwitchUrl = approvalUrl,
-                    errorDescription = "BrowserSwitchOptions URL is null"
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `launch sends BROWSER_PRESENTATION_STARTED, BROWSER_PRESENTATION_FAILED when URL null`() {
-        every { getAppSwitchUseCase() } returns false
-        every { PayPalUrlHandler.canPayPalHandleUrl() } returns false
-        every { options.url } returns null
-
-        val pendingRequest = sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
-
-        assertTrue(pendingRequest is PayPalPendingRequest.Failure)
-        assertEquals(
-            "BrowserSwitchOptions URL is null",
-            (pendingRequest as PayPalPendingRequest.Failure).error.message
-        )
-
-        verify {
-            analyticsClient.sendEvent(
-                PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
-                AnalyticsEventParams(
-                    contextId = paymentToken,
-                    appSwitchUrl = approvalUrl,
-                )
-            )
-        }
-
-        verify {
-            analyticsClient.sendEvent(
-                PayPalAnalytics.BROWSER_PRESENTATION_FAILED,
+                if (isAppSwitch) PayPalAnalytics.APP_SWITCH_FAILED else PayPalAnalytics.BROWSER_PRESENTATION_FAILED,
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
