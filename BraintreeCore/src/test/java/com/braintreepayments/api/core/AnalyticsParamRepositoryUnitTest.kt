@@ -23,6 +23,7 @@ class AnalyticsParamRepositoryUnitTest {
         every { uuidHelper.formattedUUID } returnsMany listOf(uuid, newUuid)
 
         sut.didPayPalServerAttemptAppSwitch = true
+        sut.didSdkAttemptAppSwitch = true
         sut.didEnablePayPalAppSwitch = true
     }
 
@@ -42,11 +43,13 @@ class AnalyticsParamRepositoryUnitTest {
         assertEquals(uuid, sut.sessionId)
         assertEquals(true, sut.didPayPalServerAttemptAppSwitch)
         assertEquals(true, sut.didEnablePayPalAppSwitch)
+        assertEquals(true, sut.didSdkAttemptAppSwitch)
 
         sut.reset()
 
         assertEquals(newUuid, sut.sessionId)
         assertNull(sut.didPayPalServerAttemptAppSwitch)
         assertNull(sut.didEnablePayPalAppSwitch)
+        assertNull(sut.didSdkAttemptAppSwitch)
     }
 }
