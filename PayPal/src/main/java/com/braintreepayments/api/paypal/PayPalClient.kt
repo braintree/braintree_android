@@ -96,9 +96,7 @@ class PayPalClient internal constructor(
         isVaultRequest = payPalRequest is PayPalVaultRequest
         analyticsParamRepository.didEnablePayPalAppSwitch = payPalRequest.enablePayPalAppSwitch
 
-        if (payPalRequest is PayPalCheckoutRequest) {
-            analyticsParamRepository.merchantPassedUserAction = userActionString(payPalRequest)
-        }
+        analyticsParamRepository.merchantPassedUserAction = userActionString(payPalRequest)
 
         braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
             val analyticsEventParams = AnalyticsEventParams(
@@ -392,11 +390,11 @@ class PayPalClient internal constructor(
         analyticsParamRepository.reset()
     }
 
-    private fun userActionString(payPalRequest: PayPalCheckoutRequest): String =
+    private fun userActionString(payPalRequest: PayPalRequest): String =
         when (payPalRequest.userAction) {
             PayPalPaymentUserAction.USER_ACTION_DEFAULT -> CONTINUE
             PayPalPaymentUserAction.USER_ACTION_COMMIT -> PAY
-            else -> NONE
+            null -> NONE
         }
 
     companion object {

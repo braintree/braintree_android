@@ -147,7 +147,6 @@ internal class AnalyticsApi(
         private const val FPTI_KEY_CONTEXT_TYPE = "context_type"
         private const val FPTI_KEY_MERCHANT_PASSED_USER_ACTION = "merchant_passed_user_action"
 
-
         private const val FPTI_BATCH_KEY_VENMO_INSTALLED = "venmo_installed"
         private const val FPTI_BATCH_KEY_PAYPAL_INSTALLED = "paypal_installed"
         private const val FPTI_BATCH_KEY_APP_ID = "app_id"

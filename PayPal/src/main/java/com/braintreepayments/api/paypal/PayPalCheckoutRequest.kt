@@ -78,7 +78,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     val amount: String,
     override val hasUserLocationConsent: Boolean,
     var intent: PayPalPaymentIntent = PayPalPaymentIntent.AUTHORIZE,
-    var userAction: PayPalPaymentUserAction? = null,
+    override var userAction: PayPalPaymentUserAction? = null,
     var currencyCode: String? = null,
     var shouldRequestBillingAgreement: Boolean = false,
     var shouldOfferPayLater: Boolean = false,

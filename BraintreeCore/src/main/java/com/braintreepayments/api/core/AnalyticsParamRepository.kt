@@ -28,7 +28,6 @@ class AnalyticsParamRepository(
     /**
      * User Action passed by the Merchant to differentiate if it's explicit or default
      */
-
     var merchantPassedUserAction: String? = null
 
     private lateinit var _sessionId: String
