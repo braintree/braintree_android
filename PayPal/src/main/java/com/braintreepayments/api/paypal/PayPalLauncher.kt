@@ -68,16 +68,16 @@ class PayPalLauncher internal constructor(
 
         val options = paymentAuthRequest.requestParams.browserSwitchOptions
             ?: return buildLaunchFailureAndReturn(
-                "BrowserSwitchOptions is null",
-                isAppSwitch,
-                analyticsEventParams
+                errorMessage = "BrowserSwitchOptions is null",
+                isAppSwitch = isAppSwitch,
+                analyticsEventParams = analyticsEventParams
             )
 
         options.url
             ?: return buildLaunchFailureAndReturn(
-                "BrowserSwitchOptions URL is null",
-                isAppSwitch,
-                analyticsEventParams
+                errorMessage = "BrowserSwitchOptions URL is null",
+                isAppSwitch = isAppSwitch,
+                analyticsEventParams = analyticsEventParams
             )
 
         return when (val request = browserSwitchClient.start(activity, options)) {
@@ -166,7 +166,7 @@ class PayPalLauncher internal constructor(
         }
     }
 
-private fun sendLaunchFailureEventAndReturn(
+    private fun sendLaunchFailureEventAndReturn(
         error: Exception,
         isAppSwitch: Boolean,
         analyticsEventParams: AnalyticsEventParams

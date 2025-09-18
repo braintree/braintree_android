@@ -28,7 +28,6 @@ class AnalyticsParamRepository(
     /**
      * Whether or not the SDK attempted to perform an app switch.
      */
-
     var didSdkAttemptAppSwitch: Boolean? = null
 
     private lateinit var _sessionId: String
