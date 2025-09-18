@@ -16,7 +16,6 @@ import com.google.testing.junit.testparameterinjector.TestParameter
 import io.mockk.CapturingSlot
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkStatic
 import io.mockk.verify
 import org.json.JSONException
 import org.junit.Assert.assertEquals
@@ -37,6 +36,7 @@ class PayPalLauncherUnitTest {
     private val pendingRequestString = "pending_request_string"
     private val analyticsClient: AnalyticsClient = mockk(relaxed = true)
     private val getAppSwitchUseCase = mockk<GetAppSwitchUseCase>(relaxed = true)
+    private val resolvePayPalUseCase = mockk<ResolvePayPalUseCase>(relaxed = true)
     private val analyticsParamRepository = mockk<AnalyticsParamRepository>(relaxed = true)
     private val paymentToken = "paymentToken"
     private val approvalUrl = "https://return.url?ba_token=$paymentToken"
@@ -45,8 +45,7 @@ class PayPalLauncherUnitTest {
 
     @Before
     fun setup() {
-        mockkStatic(PayPalAppSwitchResolver::class)
-        every { PayPalAppSwitchResolver.canPayPalResolveUrl(any()) } returns false
+        every { resolvePayPalUseCase() } returns false
 
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         every { paymentAuthRequestParams.contextId } returns paymentToken
@@ -57,6 +56,7 @@ class PayPalLauncherUnitTest {
         sut = PayPalLauncher(
             browserSwitchClient = browserSwitchClient,
             getAppSwitchUseCase = getAppSwitchUseCase,
+            resolvePayPalUseCase = resolvePayPalUseCase,
             lazyAnalyticsClient = lazy { analyticsClient },
             analyticsParamRepository = analyticsParamRepository
         )
@@ -124,7 +124,7 @@ class PayPalLauncherUnitTest {
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
         every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
         every { getAppSwitchUseCase() } returns isAppSwitch
-        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns isAppSwitch
+        every { resolvePayPalUseCase() } returns isAppSwitch
 
         sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
 
@@ -158,7 +158,7 @@ class PayPalLauncherUnitTest {
         @TestParameter isAppSwitch: Boolean
     ) {
         every { getAppSwitchUseCase() } returns isAppSwitch
-        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns isAppSwitch
+        every { resolvePayPalUseCase() } returns isAppSwitch
         val exception = BrowserSwitchException("browser switch error")
         every {
             browserSwitchClient.assertCanPerformBrowserSwitch(eq(activity), eq(options))
@@ -194,7 +194,7 @@ class PayPalLauncherUnitTest {
     @Test
     fun `launch sends APP_SWITCH_FAILED analytics event when browserSwitchOptions is null`() {
         every { getAppSwitchUseCase() } returns true
-        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns true
+        every { resolvePayPalUseCase() } returns true
         every { paymentAuthRequestParams.browserSwitchOptions } returns null
 
         sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
@@ -226,7 +226,7 @@ class PayPalLauncherUnitTest {
         @TestParameter isAppSwitch: Boolean
     ) {
         every { getAppSwitchUseCase() } returns isAppSwitch
-        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns isAppSwitch
+        every { resolvePayPalUseCase() } returns isAppSwitch
         every { options.url } returns null
 
         val pendingRequest = sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
@@ -348,7 +348,7 @@ class PayPalLauncherUnitTest {
     @Test
     fun `launch sets didSdkAttemptAppSwitch to true when app switch conditions are met`() {
         every { getAppSwitchUseCase() } returns true
-        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns true
+        every { resolvePayPalUseCase() } returns true
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
         every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
 
@@ -369,7 +369,7 @@ class PayPalLauncherUnitTest {
     @Test
     fun `launch sets didSdkAttemptAppSwitch to false when PayPal cannot handle URL`() {
         every { getAppSwitchUseCase() } returns true
-        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns false
+        every { resolvePayPalUseCase() } returns false
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
         every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
 
@@ -390,7 +390,7 @@ class PayPalLauncherUnitTest {
     @Test
     fun `launch sets didSdkAttemptAppSwitch to false when getAppSwitchUseCase returns false`() {
         every { getAppSwitchUseCase() } returns false
-        every { PayPalAppSwitchResolver.canPayPalResolveUrl() } returns true
+        every { resolvePayPalUseCase() } returns true
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
         every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
 

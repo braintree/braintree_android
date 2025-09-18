@@ -13,10 +13,11 @@ import org.junit.Before
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.Test
-import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-class GetPaypalLaunchTypeUseCaseUnitTest {
+class ResolvePayPalUseCaseUnitTest {
 
     private val merchantRepository: MerchantRepository = mockk(relaxed = true)
     private val context: Context = mockk(relaxed = true)
@@ -28,7 +29,7 @@ class GetPaypalLaunchTypeUseCaseUnitTest {
     private val paypalPackageName = DeviceInspector.PAYPAL_APP_PACKAGE
     private val chromePackageName = "com.android.chrome"
 
-    private lateinit var subject: GetPaypalLaunchTypeUseCase
+    private lateinit var subject: ResolvePayPalUseCase
 
     @Before
     fun setUp() {
@@ -36,11 +37,11 @@ class GetPaypalLaunchTypeUseCaseUnitTest {
         every { merchantRepository.applicationContext } returns context
         resolveInfo.activityInfo = activityInfo
 
-        subject = GetPaypalLaunchTypeUseCase(merchantRepository)
+        subject = ResolvePayPalUseCase(merchantRepository)
     }
 
     @Test
-    fun `when invoke is called and intent resolves with target app, APP is returned`() {
+    fun `when invoke is called and intent resolves with target app, returns true`() {
         activityInfo.packageName = paypalPackageName
         every {
             packageManager.resolveActivity(any(), PackageManager.MATCH_DEFAULT_ONLY)
@@ -48,11 +49,11 @@ class GetPaypalLaunchTypeUseCaseUnitTest {
 
         val result = subject(paypalUri)
 
-        assertEquals(GetPaypalLaunchTypeUseCase.Result.APP, result)
+        assertTrue(result)
     }
 
     @Test
-    fun `when invoke is called and intent does not resolve with target app, BROWSER is returned`() {
+    fun `when invoke is called and intent does not resolve with target app, returns false`() {
         activityInfo.packageName = chromePackageName
 
         every {
@@ -61,22 +62,22 @@ class GetPaypalLaunchTypeUseCaseUnitTest {
 
         val result = subject(paypalUri)
 
-        assertEquals(GetPaypalLaunchTypeUseCase.Result.BROWSER, result)
+        assertFalse(result)
     }
 
     @Test
-    fun `when invoke is called and no activity resolves the intent, BROWSER is returned`() {
+    fun `when invoke is called and no activity resolves the intent, returns false`() {
         every {
             packageManager.resolveActivity(any(), PackageManager.MATCH_DEFAULT_ONLY)
         } returns null
 
         val result = subject(paypalUri)
 
-        assertEquals(GetPaypalLaunchTypeUseCase.Result.BROWSER, result)
+        assertFalse(result)
     }
 
     @Test
-    fun `when invoke is called and activity info is null, BROWSER is returned`() {
+    fun `when invoke is called and activity info is null, returns false`() {
         resolveInfo.activityInfo = null
 
         every {
@@ -85,6 +86,6 @@ class GetPaypalLaunchTypeUseCaseUnitTest {
 
         val result = subject(paypalUri)
 
-        assertEquals(GetPaypalLaunchTypeUseCase.Result.BROWSER, result)
+        assertFalse(result)
     }
 }

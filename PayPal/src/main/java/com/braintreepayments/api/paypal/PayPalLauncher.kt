@@ -12,7 +12,7 @@ import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.AppSwitchRepository
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.GetAppSwitchUseCase
-import com.braintreepayments.api.paypal.PayPalAppSwitchResolver.canPayPalResolveUrl
+import com.braintreepayments.api.core.MerchantRepository
 
 /**
  * Responsible for launching PayPal user authentication in a web browser
@@ -20,6 +20,8 @@ import com.braintreepayments.api.paypal.PayPalAppSwitchResolver.canPayPalResolve
 class PayPalLauncher internal constructor(
     private val browserSwitchClient: BrowserSwitchClient,
     private val getAppSwitchUseCase: GetAppSwitchUseCase = GetAppSwitchUseCase(AppSwitchRepository.instance),
+    private val resolvePayPalUseCase: ResolvePayPalUseCase =
+        ResolvePayPalUseCase(MerchantRepository.instance),
     lazyAnalyticsClient: Lazy<AnalyticsClient>,
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
 ) {
@@ -194,7 +196,7 @@ private fun sendLaunchFailureEventAndReturn(
     }
 
     private fun processAppSwitchAttempt(analyticsEventParams: AnalyticsEventParams): Boolean {
-        val attemptAppSwitch = getAppSwitchUseCase() && canPayPalResolveUrl()
+        val attemptAppSwitch = getAppSwitchUseCase() && resolvePayPalUseCase()
         analyticsParamRepository.didSdkAttemptAppSwitch = attemptAppSwitch
 
         if (attemptAppSwitch) {
