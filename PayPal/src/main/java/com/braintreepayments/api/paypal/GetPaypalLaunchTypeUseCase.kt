@@ -21,18 +21,18 @@ internal class GetPaypalLaunchTypeUseCase(
      * Represents the possible launch types for PayPal payment flows.
      */
     enum class Result {
-        /** 
+        /**
          * The payment flow will be launched in a web browser
          */
         BROWSER,
 
-        /** 
-         * The payment flow will be launched in the PayPal app 
+        /**
+         * The payment flow will be launched in the PayPal app
          */
         APP
     }
 
-    /** 
+    /**
      * Detects if users disable the "Open supported links" setting in the Paypal app.
      * @param uri The app-switch URI to be launched
      * @return [Result.APP] if the PayPal app can handle the URI, [Result.BROWSER] otherwise.
