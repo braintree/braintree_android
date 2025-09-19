@@ -184,7 +184,7 @@ public class SEPADirectDebitApiUnitTest {
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(mockBraintreeClient).sendPOST(
-                eq("v1/sepa_debit"),
+                eq("/v1/sepa_debit"),
                 captor.capture(),
                 any(),
                 any(HttpResponseCallback.class)
