@@ -4,6 +4,8 @@
 
 * PayPal
   * Fix an issue where `PayPalRequest` was sending `phone_number` instead of `payer_phone`
+* BraintreeCore
+    * Add OkHttp version 4.12.0
 
 ## 5.15.0 (2025-08-13)
 
