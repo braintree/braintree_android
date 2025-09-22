@@ -2,10 +2,25 @@
 
 ## unreleased
 
-* PayPal
-  * Fix an issue where `PayPalRequest` was sending `phone_number` instead of `payer_phone`
 * BraintreeCore
     * Add OkHttp version 4.12.0
+
+## 5.17.0 (2025-09-09)
+
+* ShopperInsights (BETA)
+    * Add `PageType.PAYMENT_METHOD_SELECTION` and `PageType.PAYMENT_METHOD_ADDITION`
+    * Add `createCustomerSession` public method to `ShopperInsightsClientV2`
+    * Add `updateCustomerSession` public method to `ShopperInsightsClientV2`
+    * Add `generateCustomerRecommendations` method to `ShopperInsightsClientV2`
+
+## 5.16.0 (2025-08-26)
+
+* PayPal
+  * Fix an issue where `PayPalRequest` was sending `phone_number` instead of `payer_phone`
+  * Add `merchant` and `flow_type` as query parameters to the app switch URL.
+  * Add `paymentId` to `PayPalAccountNonce`
+* GooglePay
+    * Add `softwareInfo` details to the `merchantInfo` field in the `loadPaymentData` request.
 
 ## 5.15.0 (2025-08-13)
 

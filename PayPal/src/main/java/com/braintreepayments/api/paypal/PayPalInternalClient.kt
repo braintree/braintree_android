@@ -38,8 +38,7 @@ internal class PayPalInternalClient(
         callback: PayPalInternalClientCallback
     ) {
         try {
-            val isBillingAgreement = payPalRequest is PayPalVaultRequest
-            val endpoint = if (isBillingAgreement) {
+            val endpoint = if (payPalRequest.isBillingAgreement()) {
                 SETUP_BILLING_AGREEMENT_ENDPOINT
             } else {
                 CREATE_SINGLE_PAYMENT_ENDPOINT
@@ -158,7 +157,9 @@ internal class PayPalInternalClient(
                 )
                 if (getAppSwitchUseCase()) {
                     if (!contextId.isNullOrEmpty()) {
-                        paymentAuthRequest.approvalUrl = createAppSwitchUri(parsedRedirectUri).toString()
+                        val flowType = if (payPalRequest.isBillingAgreement()) "va" else "ecs"
+                        val uri = createAppSwitchUri(parsedRedirectUri, configuration.merchantId, flowType)
+                        paymentAuthRequest.approvalUrl = uri.toString()
                     } else {
                         callback.onResult(null, BraintreeException("Missing Token for PayPal App Switch."))
                     }
@@ -172,10 +173,23 @@ internal class PayPalInternalClient(
         }
     }
 
-    private fun createAppSwitchUri(uri: Uri): Uri {
+    /**
+     * Builds an app switch [Uri] with required observability parameters.
+     *
+     * Adds `merchant` (integration’s merchant ID) and `flow_type` (e.g. "va" or "ecs")
+     * so that downstream systems can attribute sessions and distinguish checkout flows.
+     * These parameters support observability for BT SDK app switch integrations.
+     *
+     * @param uri The base [Uri] to build upon.
+     * @param flowType The checkout flow type.
+     * @param merchantId The merchant ID for the integration.
+     */
+    private fun createAppSwitchUri(uri: Uri, merchantId: String, flowType: String): Uri {
         return uri.buildUpon()
             .appendQueryParameter("source", "braintree_sdk")
             .appendQueryParameter("switch_initiated_time", System.currentTimeMillis().toString())
+            .appendQueryParameter("merchant", merchantId)
+            .appendQueryParameter("flow_type", flowType)
             .build()
     }
 
@@ -183,6 +197,8 @@ internal class PayPalInternalClient(
         return redirectUri.getQueryParameter("ba_token")
             ?: redirectUri.getQueryParameter("token")
     }
+
+    private fun PayPalRequest.isBillingAgreement(): Boolean = this is PayPalVaultRequest
 
     companion object {
         private const val CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource"

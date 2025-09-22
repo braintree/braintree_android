@@ -48,9 +48,5 @@ enum class ButtonOrder(internal val stringValue: String) {
     /**
      * Greater than Eighth place
      */
-    OTHER("other");
-
-    internal fun getStringRepresentation(): String {
-        return stringValue
-    }
+    OTHER("other")
 }
