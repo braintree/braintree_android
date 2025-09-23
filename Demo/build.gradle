@@ -56,18 +56,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility versions.javaSourceCompatibility
-        targetCompatibility versions.javaTargetCompatibility
-    }
-
-    kotlinOptions {
-        jvmTarget = versions.javaTargetCompatibility.toString()
-    }
-
-    kotlin {
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of(versions.javaTargetCompatibility.toString()))
-        }
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     namespace 'com.braintreepayments.demo'
