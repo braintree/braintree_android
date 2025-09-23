@@ -4,6 +4,12 @@
 
 * PayPal
   * Add `recurringBillingDetails`, `recurringBillingPlanType`, and `amountBreakdown` properties to `PayPalCheckoutRequest`. Enables RBA metadata to be passed for the PayPal Checkout Vault with Purchase flow
+  * Add `ResolvePayPalUseCase` that checks if the PayPal app will resolve the app-switch URL before enabling or attempting app switch.
+  * App switch will be enabled only if `ResolvePayPalUseCase` returns true in addition to the existing checks in `PayPalInternalClient`.
+  * App launch will be attempted only if `ResolvePayPalUseCase` returns true in addition to the existing checks in `PayPalLauncher`.
+* BraintreeCore
+* Add FPTI tag `paypal_app_switch_url_received`for when the SDK has received an app switch URL from the Paypal APIs.
+* Only send existing FPTI tag `attempted_app_switch` after verifying the Paypal app can resolve the URL.
 
 ## 5.17.0 (2025-09-09)
 

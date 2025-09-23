@@ -26,7 +26,8 @@ class AnalyticsParamRepository(
     var didPayPalServerAttemptAppSwitch: Boolean? = null
 
     /**
-     * Whether or not the SDK attempted to perform an app switch.
+     * Whether or not the SDK attempted to perform an app switch based on whether the PayPal app
+     * resolved the app-switch URI.
      */
     var didSdkAttemptAppSwitch: Boolean? = null
 
