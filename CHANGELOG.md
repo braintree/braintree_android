@@ -5,6 +5,9 @@
 * PayPal
   * Add `recurringBillingDetails`, `recurringBillingPlanType`, and `amountBreakdown` properties to `PayPalCheckoutRequest`. Enables RBA metadata to be passed for the PayPal Checkout Vault with Purchase flow
   * Add `userAction` property to `PayPalVaultRequest`
+  * Add `FPTI_KEY_MERCHANT_PASSED_USER_ACTION` to `AnalyticsApi`. Its value can be `continue`, `pay_now`, `setup_now`, or `none`.
+  * Add `merchantPassedUserAction` to `AnalyticsParamRepository`.
+  * Change `userAction` from having a definite initial value to being nullable.
 
 ## unreleased
 

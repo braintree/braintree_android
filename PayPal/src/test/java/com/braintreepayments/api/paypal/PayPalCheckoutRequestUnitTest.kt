@@ -381,7 +381,6 @@ class PayPalCheckoutRequestUnitTest {
         assertFalse(experienceProfile.has("user_action"))
     }
 
-
     @Test
     @Throws(JSONException::class)
     fun `creates requestBody and does not set userAction when it is USER_ACTION_DEFAULT`() {
@@ -424,9 +423,11 @@ class PayPalCheckoutRequestUnitTest {
 
         val experienceProfile = jsonObject.getJSONObject("experience_profile")
         assertTrue(experienceProfile.has("user_action"))
+        assertEquals(
+            PayPalPaymentUserAction.USER_ACTION_COMMIT.stringValue,
+            experienceProfile.getString("user_action")
+        )
     }
-
-
 
     @Test
     fun `creates requestBody and does not set amountBreakdown values when null`() {

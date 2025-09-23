@@ -398,4 +398,54 @@ class PayPalVaultRequestUnitTest {
 
         assertTrue(requestBody.contains("\"payer_phone\":{\"country_code\":\"1\",\"national_number\":\"1231231234\"}"))
     }
+
+    @Test
+    @Throws(JSONException::class)
+    fun `creates requestBody and sets user_action when it is USER_ACTION_SETUP_NOW`() {
+        val request = PayPalVaultRequest(
+            hasUserLocationConsent = true,
+            userAction = PayPalPaymentUserAction.USER_ACTION_SETUP_NOW
+        )
+
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<Authorization>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+
+        val jsonObject = JSONObject(requestBody)
+        assertTrue(jsonObject.has("experience_profile"))
+
+        val experienceProfile = jsonObject.getJSONObject("experience_profile")
+        assertTrue(experienceProfile.has("user_action"))
+        assertEquals(
+            PayPalPaymentUserAction.USER_ACTION_SETUP_NOW.stringValue,
+            experienceProfile.getString("user_action")
+        )
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun `creates requestBody and does not set userAction when it is null`() {
+        val request = PayPalVaultRequest(
+            hasUserLocationConsent = true,
+            userAction = null
+        )
+
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<Authorization>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+
+        val jsonObject = JSONObject(requestBody)
+        assertTrue(jsonObject.has("experience_profile"))
+
+        val experienceProfile = jsonObject.getJSONObject("experience_profile")
+        assertFalse(experienceProfile.has("user_action"))
+    }
 }

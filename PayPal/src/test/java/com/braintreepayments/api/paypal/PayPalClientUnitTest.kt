@@ -821,7 +821,7 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenUserActionIsCommit_setsMerchantPassedUserActionToPay() {
+    fun createPaymentAuthRequest_whenUserActionIsCommit_setsMerchantPassedUserActionToPayNow() {
         val payPalCheckoutRequest = PayPalCheckoutRequest("1.00", true).apply {
             userAction = PayPalPaymentUserAction.USER_ACTION_COMMIT
         }
@@ -833,7 +833,24 @@ class PayPalClientUnitTest {
         sut.createPaymentAuthRequest(activity, payPalCheckoutRequest, paymentAuthCallback)
 
         verify {
-            analyticsParamRepository.merchantPassedUserAction = "pay"
+            analyticsParamRepository.merchantPassedUserAction = "pay_now"
+        }
+    }
+
+    @Test
+    fun createPaymentAuthRequest_whenUserActionIsSetupNow_setsMerchantPassedUserActionToSetupNow() {
+        val payPalCheckoutRequest = PayPalCheckoutRequest("1.00", true).apply {
+            userAction = PayPalPaymentUserAction.USER_ACTION_SETUP_NOW
+        }
+
+        val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
+        val braintreeClient = MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig).build()
+
+        val sut = testPaypalClient(braintreeClient, payPalInternalClient)
+        sut.createPaymentAuthRequest(activity, payPalCheckoutRequest, paymentAuthCallback)
+
+        verify {
+            analyticsParamRepository.merchantPassedUserAction = "setup_now"
         }
     }
 
@@ -853,5 +870,4 @@ class PayPalClientUnitTest {
             analyticsParamRepository.merchantPassedUserAction = "none"
         }
     }
-
 }

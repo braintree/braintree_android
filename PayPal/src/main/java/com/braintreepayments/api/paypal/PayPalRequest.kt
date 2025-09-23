@@ -99,13 +99,11 @@ abstract class PayPalRequest internal constructor(
     open var userPhoneNumber: PayPalPhoneNumber? = null,
     open var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
     open var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
-    open var userAction: PayPalPaymentUserAction? = null,
-
 
     @property:ExperimentalBetaApi
     open var shopperSessionId: String? = null,
     open var lineItems: List<PayPalLineItem> = emptyList(),
-    open var userAction: PayPalPaymentUserAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT
+    open var userAction: PayPalPaymentUserAction? = null,
 ) : Parcelable {
 
     @Throws(JSONException::class)

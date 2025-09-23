@@ -46,7 +46,7 @@ class PayPalVaultRequest
     override var userAuthenticationEmail: String? = null,
     override var userPhoneNumber: PayPalPhoneNumber? = null,
     override var lineItems: List<PayPalLineItem> = emptyList(),
-    override var userAction: PayPalPaymentUserAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT
+    override var userAction: PayPalPaymentUserAction? = null
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -118,8 +118,10 @@ class PayPalVaultRequest
             experienceProfile.put(LOCALE_CODE_KEY, localeCode)
         }
 
-        if (userAction != PayPalPaymentUserAction.USER_ACTION_DEFAULT) {
-            experienceProfile.put(USER_ACTION_KEY, userAction.stringValue)
+        userAction?.let {
+            if (it != PayPalPaymentUserAction.USER_ACTION_DEFAULT) {
+                experienceProfile.put(USER_ACTION_KEY, it.stringValue)
+            }
         }
 
         if (shippingAddressOverride != null) {

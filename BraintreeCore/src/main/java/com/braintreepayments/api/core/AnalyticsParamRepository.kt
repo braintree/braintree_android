@@ -26,7 +26,7 @@ class AnalyticsParamRepository(
     var didPayPalServerAttemptAppSwitch: Boolean? = null
 
     /**
-     * User Action passed by the Merchant to differentiate if it's explicit or default
+     * User Action passed by the Merchant
      */
     var merchantPassedUserAction: String? = null
 

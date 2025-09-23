@@ -203,12 +203,10 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
             experienceProfile.put(LOCALE_CODE_KEY, localeCode)
         }
 
-        if (userAction == null) {
-            userAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT
-        }
-
-        if (userAction != PayPalPaymentUserAction.USER_ACTION_DEFAULT) {
-            experienceProfile.put(USER_ACTION_KEY, userAction?.stringValue)
+        userAction?.let {
+            if (it != PayPalPaymentUserAction.USER_ACTION_DEFAULT) {
+                experienceProfile.put(USER_ACTION_KEY, it.stringValue)
+            }
         }
 
         shippingAddressOverride?.let {
