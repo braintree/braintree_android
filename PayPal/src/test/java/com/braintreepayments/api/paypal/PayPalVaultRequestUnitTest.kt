@@ -86,7 +86,8 @@ class PayPalVaultRequestUnitTest {
             landingPageType = PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN,
             shouldOfferCredit = true,
             recurringBillingDetails = billingDetails,
-            recurringBillingPlanType = PayPalRecurringBillingPlanType.RECURRING
+            recurringBillingPlanType = PayPalRecurringBillingPlanType.RECURRING,
+            userAction = PayPalPaymentUserAction.USER_ACTION_SETUP_NOW
         ).apply {
             shopperSessionId = "shopper-insights-id"
         }
@@ -101,6 +102,7 @@ class PayPalVaultRequestUnitTest {
         assertEquals(PayPalLandingPageType.LANDING_PAGE_TYPE_LOGIN, request.landingPageType)
         assertTrue(request.shouldOfferCredit)
         assertTrue(request.hasUserLocationConsent)
+        assertEquals(PayPalPaymentUserAction.USER_ACTION_SETUP_NOW, request.userAction)
         assertEquals(PayPalRecurringBillingPlanType.RECURRING, request.recurringBillingPlanType)
         assertEquals("USD", request.recurringBillingDetails?.currencyISOCode)
         assertEquals("2.00", request.recurringBillingDetails?.oneTimeFeeAmount)

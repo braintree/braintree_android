@@ -4,6 +4,7 @@
 
 * PayPal
   * Add `recurringBillingDetails`, `recurringBillingPlanType`, and `amountBreakdown` properties to `PayPalCheckoutRequest`. Enables RBA metadata to be passed for the PayPal Checkout Vault with Purchase flow
+  * Add `userAction` property to `PayPalVaultRequest`
 
 ## 5.17.0 (2025-09-09)
 
@@ -19,6 +20,7 @@
   * Fix an issue where `PayPalRequest` was sending `phone_number` instead of `payer_phone`
   * Add `merchant` and `flow_type` as query parameters to the app switch URL.
   * Add `paymentId` to `PayPalAccountNonce`
+
 * GooglePay
     * Add `softwareInfo` details to the `merchantInfo` field in the `loadPaymentData` request.
 
