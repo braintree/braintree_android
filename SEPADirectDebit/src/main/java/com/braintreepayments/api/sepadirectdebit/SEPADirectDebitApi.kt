@@ -15,7 +15,7 @@ internal class SEPADirectDebitApi(private val braintreeClient: BraintreeClient) 
         try {
             val jsonObject =
                 buildCreateMandateRequest(sepaDirectDebitRequest, returnUrlScheme)
-            val url = "v1/sepa_debit"
+            val url = "/v1/sepa_debit"
             braintreeClient.sendPOST(
                 url,
                 jsonObject.toString()
@@ -46,7 +46,7 @@ internal class SEPADirectDebitApi(private val braintreeClient: BraintreeClient) 
         try {
             val jsonObject =
                 buildTokenizeRequest(ibanLastFour, customerId, bankReferenceToken, mandateType)
-            val url = "v1/payment_methods/sepa_debit_accounts"
+            val url = "/v1/payment_methods/sepa_debit_accounts"
             braintreeClient.sendPOST(
                 url,
                 jsonObject.toString()

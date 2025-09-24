@@ -7,6 +7,7 @@ import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
+import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -127,16 +128,20 @@ class BraintreeClient internal constructor(
     fun sendGET(url: String, responseCallback: HttpResponseCallback) {
         getConfiguration { configuration, configError ->
             if (configuration != null) {
-                httpClient.get(url, configuration, merchantRepository.authorization) { response, httpError ->
-                    response?.let {
-                        try {
-                            sendAnalyticsTimingEvent(url, response.timing)
-                            responseCallback.onResult(it.body, null)
-                        } catch (jsonException: JSONException) {
-                            responseCallback.onResult(null, jsonException)
+                httpClient.get(url, configuration, merchantRepository.authorization) { result ->
+                    when (result) {
+                        is NetworkResponseCallback.Result.Success -> {
+                            try {
+                                sendAnalyticsTimingEvent(url, result.response.timing)
+                                responseCallback.onResult(result.response.body, null)
+                            } catch (jsonException: JSONException) {
+                                responseCallback.onResult(null, jsonException)
+                            }
                         }
-                    } ?: httpError?.let { error ->
-                        responseCallback.onResult(null, error)
+
+                        is NetworkResponseCallback.Result.Failure -> {
+                            responseCallback.onResult(null, result.error)
+                        }
                     }
                 }
             } else {
@@ -163,16 +168,20 @@ class BraintreeClient internal constructor(
                     configuration = configuration,
                     authorization = merchantRepository.authorization,
                     additionalHeaders = additionalHeaders
-                ) { response, httpError ->
-                    response?.let {
-                        try {
-                            sendAnalyticsTimingEvent(url, it.timing)
-                            responseCallback.onResult(it.body, null)
-                        } catch (jsonException: JSONException) {
-                            responseCallback.onResult(null, jsonException)
+                ) { result ->
+                    when (result) {
+                        is NetworkResponseCallback.Result.Success -> {
+                            try {
+                                sendAnalyticsTimingEvent(url, result.response.timing)
+                                responseCallback.onResult(result.response.body, null)
+                            } catch (jsonException: JSONException) {
+                                responseCallback.onResult(null, jsonException)
+                            }
                         }
-                    } ?: httpError?.let { error ->
-                        responseCallback.onResult(null, error)
+
+                        is NetworkResponseCallback.Result.Failure -> {
+                            responseCallback.onResult(null, result.error)
+                        }
                     }
                 }
             } else {
@@ -191,28 +200,32 @@ class BraintreeClient internal constructor(
                     data = json.toString(),
                     configuration = configuration,
                     authorization = merchantRepository.authorization
-                ) { response, httpError ->
-                    response?.let {
-                        try {
-                            val query = json.optString(GraphQLConstants.Keys.QUERY)
-                            val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
-                            val finalQuery = query.replace(queryDiscardHolder, "")
-                            val params = AnalyticsEventParams(
-                                startTime = it.timing.startTime,
-                                endTime = it.timing.endTime,
-                                endpoint = finalQuery
-                            )
-                            sendAnalyticsEvent(
-                                eventName = CoreAnalytics.API_REQUEST_LATENCY,
-                                params = params,
-                                sendImmediately = false
-                            )
-                            responseCallback.onResult(it.body, null)
-                        } catch (jsonException: JSONException) {
-                            responseCallback.onResult(null, jsonException)
+                ) { result ->
+                    when (result) {
+                        is NetworkResponseCallback.Result.Success -> {
+                            try {
+                                val query = json.optString(GraphQLConstants.Keys.QUERY)
+                                val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
+                                val finalQuery = query.replace(queryDiscardHolder, "")
+                                val params = AnalyticsEventParams(
+                                    startTime = result.response.timing.startTime,
+                                    endTime = result.response.timing.endTime,
+                                    endpoint = finalQuery
+                                )
+                                sendAnalyticsEvent(
+                                    eventName = CoreAnalytics.API_REQUEST_LATENCY,
+                                    params = params,
+                                    sendImmediately = false
+                                )
+                                responseCallback.onResult(result.response.body, null)
+                            } catch (jsonException: JSONException) {
+                                responseCallback.onResult(null, jsonException)
+                            }
                         }
-                    } ?: httpError?.let { error ->
-                        responseCallback.onResult(null, error)
+
+                        is NetworkResponseCallback.Result.Failure -> {
+                            responseCallback.onResult(null, result.error)
+                        }
                     }
                 }
             } else {

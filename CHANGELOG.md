@@ -6,6 +6,11 @@
   * Add `recurringBillingDetails`, `recurringBillingPlanType`, and `amountBreakdown` properties to `PayPalCheckoutRequest`. Enables RBA metadata to be passed for the PayPal Checkout Vault with Purchase flow
   * Add `userAction` property to `PayPalVaultRequest`
 
+## unreleased
+
+* BraintreeCore
+    * Add OkHttp version 4.12.0
+
 ## 5.17.0 (2025-09-09)
 
 * ShopperInsights (BETA)
