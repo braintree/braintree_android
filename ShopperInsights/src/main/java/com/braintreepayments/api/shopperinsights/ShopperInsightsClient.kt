@@ -25,6 +25,7 @@ import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.GET_RE
  * Note: **This feature is in beta. It's public API may change in future releases.**
  */
 @ExperimentalBetaApi
+@Deprecated("Use ShopperInsightsClientV2 instead")
 class ShopperInsightsClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
@@ -181,11 +182,11 @@ class ShopperInsightsClient internal constructor(
         presentmentDetails: PresentmentDetails
     ) {
         val params = AnalyticsEventParams(
-            experiment = presentmentDetails.type?.formattedExperiment(),
+            experiment = presentmentDetails.type.formattedExperiment(),
             shopperSessionId = shopperSessionId,
-            buttonType = buttonType.getStringRepresentation(),
-            buttonOrder = presentmentDetails.buttonOrder.getStringRepresentation(),
-            pageType = presentmentDetails.pageType.getStringRepresentation()
+            buttonType = buttonType.stringValue,
+            buttonOrder = presentmentDetails.buttonOrder.stringValue,
+            pageType = presentmentDetails.pageType.stringValue
         )
 
         braintreeClient.sendAnalyticsEvent(BUTTON_PRESENTED, params)
@@ -201,7 +202,7 @@ class ShopperInsightsClient internal constructor(
     ) {
         val params = AnalyticsEventParams(
             shopperSessionId = shopperSessionId,
-            buttonType = buttonType.getStringRepresentation(),
+            buttonType = buttonType.stringValue,
         )
 
         braintreeClient.sendAnalyticsEvent(BUTTON_SELECTED, params)

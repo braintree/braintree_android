@@ -79,6 +79,8 @@ import org.json.JSONException
  * @property shopperSessionId the shopper session ID returned from your shopper insights server SDK
  * integration
  * @property lineItems The line items for this transaction. It can include up to 249 line items.
+ * @property recurringBillingDetails Optional: Recurring billing product details.
+ * @property recurringBillingPlanType Optional: Recurring billing plan type, or charge pattern.
  * @property userAction The call to action for the PayPal flow.
  */
 abstract class PayPalRequest internal constructor(
@@ -95,6 +97,8 @@ abstract class PayPalRequest internal constructor(
     open var enablePayPalAppSwitch: Boolean = false,
     open var userAuthenticationEmail: String? = null,
     open var userPhoneNumber: PayPalPhoneNumber? = null,
+    open var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
+    open var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
 
     @property:ExperimentalBetaApi
     open var shopperSessionId: String? = null,
@@ -149,5 +153,6 @@ abstract class PayPalRequest internal constructor(
         internal const val RECIPIENT_PHONE_NUMBER_KEY: String = "international_phone"
         internal const val CONTACT_PREFERENCE_KEY: String = "contact_preference"
         internal const val SHOPPER_SESSION_ID_KEY: String = "shopper_session_id"
+        internal const val AMOUNT_BREAKDOWN_KEY: String = "amount_breakdown"
     }
 }

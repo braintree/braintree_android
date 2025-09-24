@@ -1,6 +1,19 @@
 # Braintree Android SDK Release Notes
-
+  
 ## unreleased
+
+* PayPal
+  * Add `recurringBillingDetails`, `recurringBillingPlanType`, and `amountBreakdown` properties to `PayPalCheckoutRequest`. Enables RBA metadata to be passed for the PayPal Checkout Vault with Purchase flow
+
+## 5.17.0 (2025-09-09)
+
+* ShopperInsights (BETA)
+    * Add `PageType.PAYMENT_METHOD_SELECTION` and `PageType.PAYMENT_METHOD_ADDITION`
+    * Add `createCustomerSession` public method to `ShopperInsightsClientV2`
+    * Add `updateCustomerSession` public method to `ShopperInsightsClientV2`
+    * Add `generateCustomerRecommendations` method to `ShopperInsightsClientV2`
+
+## 5.16.0 (2025-08-26)
 
 * PayPal
   * Fix an issue where `PayPalRequest` was sending `phone_number` instead of `payer_phone`

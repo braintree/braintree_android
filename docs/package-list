@@ -19,6 +19,8 @@ module:SEPADirectDebit
 com.braintreepayments.api.sepadirectdebit
 module:ShopperInsights
 com.braintreepayments.api.shopperinsights
+com.braintreepayments.api.shopperinsights.v2
+com.braintreepayments.api.shopperinsights.v2.internal
 module:ThreeDSecure
 com.braintreepayments.api.threedsecure
 module:Venmo
