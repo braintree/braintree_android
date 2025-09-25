@@ -12,6 +12,11 @@
   * Add FPTI tag `paypal_app_switch_url_received`for when the SDK has received an app switch URL from the Paypal APIs.
   * Existing FPTI tag `attempted_app_switch` will be sent after verifying the Paypal app can resolve the URL.
 
+## unreleased
+
+* BraintreeCore
+    * Add OkHttp version 4.12.0
+
 ## 5.17.0 (2025-09-09)
 
 * ShopperInsights (BETA)

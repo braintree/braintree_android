@@ -1,4 +1,4 @@
-package com.braintreepayments.api.core
+package com.braintreepayments.api.sharedutils
 
 import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets

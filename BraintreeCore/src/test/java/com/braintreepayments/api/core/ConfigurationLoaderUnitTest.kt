@@ -1,7 +1,6 @@
 package com.braintreepayments.api.core
 
 import android.util.Base64
-import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
@@ -55,14 +54,15 @@ class ConfigurationLoaderUnitTest {
                 expectedConfigUrl,
                 null,
                 authorization,
-                HttpClient.RetryStrategy.RETRY_MAX_3_TIMES,
                 capture(callbackSlot)
             )
         }
 
         val httpResponseCallback = callbackSlot.captured
         httpResponseCallback.onResult(
-            HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0)), null
+            NetworkResponseCallback.Result.Success(
+                HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0))
+            )
         )
 
         val successSlot = slot<ConfigurationLoaderResult>()
@@ -85,14 +85,15 @@ class ConfigurationLoaderUnitTest {
                 expectedConfigUrl,
                 null,
                 authorization,
-                HttpClient.RetryStrategy.RETRY_MAX_3_TIMES,
                 capture(callbackSlot)
             )
         }
 
         val httpResponseCallback = callbackSlot.captured
         httpResponseCallback.onResult(
-            HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0)), null
+            NetworkResponseCallback.Result.Success(
+                HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0))
+            )
         )
         val cacheKey = Base64.encodeToString(
             "https://example.com/config?configVersion=3bearer".toByteArray(),
@@ -116,12 +117,13 @@ class ConfigurationLoaderUnitTest {
                 ofType(String::class),
                 null,
                 authorization,
-                HttpClient.RetryStrategy.RETRY_MAX_3_TIMES,
                 capture(callbackSlot)
             )
         }
         val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(HttpResponse("not json", HttpResponseTiming(0, 0)), null)
+        httpResponseCallback.onResult(
+            NetworkResponseCallback.Result.Success(HttpResponse("not json", HttpResponseTiming(0, 0)))
+        )
 
         val errorSlot = slot<ConfigurationLoaderResult>()
         verify { callback.onResult(capture(errorSlot)) }
@@ -142,14 +144,13 @@ class ConfigurationLoaderUnitTest {
                 ofType(String::class),
                 null,
                 authorization,
-                HttpClient.RetryStrategy.RETRY_MAX_3_TIMES,
                 capture(callbackSlot)
             )
         }
 
         val httpResponseCallback = callbackSlot.captured
         val httpError = Exception("http error")
-        httpResponseCallback.onResult(null, httpError)
+        httpResponseCallback.onResult(NetworkResponseCallback.Result.Failure(httpError))
         val errorSlot = slot<ConfigurationLoaderResult>()
         verify { callback.onResult(capture(errorSlot)) }
 
@@ -193,7 +194,6 @@ class ConfigurationLoaderUnitTest {
                 ofType(String::class),
                 null,
                 authorization,
-                any(),
                 ofType(NetworkResponseCallback::class)
             )
         }
@@ -218,14 +218,15 @@ class ConfigurationLoaderUnitTest {
                 expectedConfigUrl,
                 null,
                 authorization,
-                HttpClient.RetryStrategy.RETRY_MAX_3_TIMES,
                 capture(callbackSlot)
             )
         }
 
         val httpResponseCallback = callbackSlot.captured
         httpResponseCallback.onResult(
-            HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 10)), null
+            NetworkResponseCallback.Result.Success(
+                HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 10))
+            )
         )
 
         verify {
@@ -244,5 +245,34 @@ class ConfigurationLoaderUnitTest {
         verify { callback.onResult(capture(successSlot)) }
 
         assertTrue { successSlot.captured is ConfigurationLoaderResult.Success }
+    }
+
+    @Test
+    fun loadConfiguration_onNullResponseBody_forwardsConfigurationExceptionToErrorResponseListener() {
+        every { authorization.configUrl } returns "https://example.com/config"
+
+        sut.loadConfiguration(callback)
+
+        val callbackSlot = slot<NetworkResponseCallback>()
+        verify {
+            braintreeHttpClient.get(
+                path = ofType(String::class),
+                configuration = null,
+                authorization = authorization,
+                callback = capture(callbackSlot)
+            )
+        }
+
+        val httpResponseCallback = callbackSlot.captured
+        httpResponseCallback.onResult(
+            NetworkResponseCallback.Result.Success(HttpResponse(null, HttpResponseTiming(0, 0)))
+        )
+
+        val errorSlot = slot<ConfigurationLoaderResult>()
+        verify { callback.onResult(capture(errorSlot)) }
+
+        val failure = errorSlot.captured as ConfigurationLoaderResult.Failure
+        assertTrue { failure.error is ConfigurationException }
+        assertEquals("Configuration responseBody is null", failure.error.message)
     }
 }

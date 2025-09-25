@@ -8,6 +8,12 @@ import androidx.annotation.RestrictTo
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 fun interface NetworkResponseCallback {
+
+    sealed class Result {
+        data class Success(val response: HttpResponse) : Result()
+        data class Failure(val error: Exception) : Result()
+    }
+
     @MainThread
-    fun onResult(response: HttpResponse?, httpError: Exception?)
+    fun onResult(result: Result)
 }

@@ -1,94 +1,59 @@
 package com.braintreepayments.api.core
 
-import android.net.Uri
+import androidx.core.net.toUri
 import com.braintreepayments.api.sharedutils.HttpClient
-import com.braintreepayments.api.sharedutils.HttpClient.RetryStrategy
-import com.braintreepayments.api.sharedutils.HttpRequest
+import com.braintreepayments.api.sharedutils.Method
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
-import com.braintreepayments.api.sharedutils.TLSSocketFactory
+import com.braintreepayments.api.sharedutils.OkHttpRequest
 import org.json.JSONException
 import org.json.JSONObject
-import javax.net.ssl.SSLException
 
 /**
  * Network request class that handles Braintree request specifics and threading.
  */
 internal class BraintreeHttpClient(
-    private val httpClient: HttpClient = createDefaultHttpClient()
+    private val httpClient: HttpClient = HttpClient()
 ) {
 
     /**
      * Make a HTTP GET request to Braintree using the base url, path and authorization provided.
      * If the path is a full url, it will be used instead of the previously provided url.
-     * @param path The path or url to request from the server via GET
-     * @param configuration configuration for the Braintree Android SDK.
-     * @param authorization
-     * @param callback [NetworkResponseCallback]
      */
-    operator fun get(
+    fun get(
         path: String,
         configuration: Configuration?,
         authorization: Authorization?,
-        callback: NetworkResponseCallback
-    ) = get(path, configuration, authorization, RetryStrategy.NO_RETRY, callback)
-
-    /**
-     * Make a HTTP GET request to Braintree using the base url, path and authorization provided.
-     * If the path is a full url, it will be used instead of the previously provided url.
-     * @param path The path or url to request from the server via GET
-     * @param configuration configuration for the Braintree Android SDK.
-     * @param authorization
-     * @param retryStrategy retry strategy
-     * @param callback [NetworkResponseCallback]
-     */
-    operator fun get(
-        path: String,
-        configuration: Configuration?,
-        authorization: Authorization?,
-        retryStrategy: RetryStrategy,
         callback: NetworkResponseCallback
     ) {
-        if (authorization is InvalidAuthorization) {
-            val message = authorization.errorMessage
-            callback.onResult(null, BraintreeException(message))
+        if (!validateAuthorization(authorization, callback)) return
+
+        val url = try {
+            val urlWithBase = assembleUrl(path, configuration)
+            if (authorization is ClientToken) {
+                urlWithBase.toUri().buildUpon()
+                    .appendQueryParameter(AUTHORIZATION_FINGERPRINT_KEY, authorization.bearer)
+                    .toString()
+            } else {
+                urlWithBase
+            }
+        } catch (e: BraintreeException) {
+            callback.onResult(NetworkResponseCallback.Result.Failure(e))
             return
         }
-        val isRelativeURL = !path.startsWith("http")
-        if (configuration == null && isRelativeURL) {
-            val message =
-                "Braintree HTTP GET request without configuration cannot have a relative path."
-            val relativeURLNotAllowedError = BraintreeException(message)
-            callback.onResult(null, relativeURLNotAllowedError)
-            return
-        }
-        val targetPath = if (authorization is ClientToken) {
-            Uri.parse(path).buildUpon()
-                .appendQueryParameter(AUTHORIZATION_FINGERPRINT_KEY, authorization.bearer)
-                .toString()
-        } else {
-            path
-        }
-        val request = HttpRequest().method("GET").path(targetPath)
-            .addHeader(USER_AGENT_HEADER, "braintree/android/" + BuildConfig.VERSION_NAME)
-        if (isRelativeURL && configuration != null) {
-            request.baseUrl(configuration.clientApiUrl)
-        }
-        if (authorization is TokenizationKey) {
-            request.addHeader(CLIENT_KEY_HEADER, authorization.bearer)
-        }
-        httpClient.sendRequest(request, callback, retryStrategy)
+
+        val request = OkHttpRequest(
+            method = Method.Get,
+            url = url,
+            headers = assembleHeaders(authorization)
+        )
+
+        httpClient.sendRequest(request, callback)
     }
 
     /**
      * Make a HTTP POST request to Braintree.
      * If the path is a full url, it will be used instead of the previously provided url.
-     * @param path The path or url to request from the server via HTTP POST
-     * @param data The body of the POST request
-     * @param configuration configuration for the Braintree Android SDK.
-     * @param authorization
-     * @param callback [NetworkResponseCallback]
      */
-    @Suppress("CyclomaticComplexMethod")
     fun post(
         path: String,
         data: String,
@@ -97,54 +62,75 @@ internal class BraintreeHttpClient(
         additionalHeaders: Map<String, String> = emptyMap(),
         callback: NetworkResponseCallback?
     ) {
-        if (authorization is InvalidAuthorization) {
-            val message = authorization.errorMessage
-            callback?.onResult(null, BraintreeException(message))
-            return
-        }
-        val isRelativeURL = !path.startsWith("http")
-        if (configuration == null && isRelativeURL) {
-            val message =
-                "Braintree HTTP GET request without configuration cannot have a relative path."
-            val relativeURLNotAllowedError = BraintreeException(message)
-            callback?.onResult(null, relativeURLNotAllowedError)
-            return
-        }
-        val requestData = if (authorization is ClientToken) {
+        if (!validateAuthorization(authorization, callback)) return
+
+        val requestBody = if (authorization is ClientToken) {
             try {
-                JSONObject(data).put(
-                    AUTHORIZATION_FINGERPRINT_KEY,
-                    authorization.authorizationFingerprint
-                ).toString()
+                JSONObject(data)
+                    .put(AUTHORIZATION_FINGERPRINT_KEY, authorization.authorizationFingerprint)
+                    .toString()
             } catch (e: JSONException) {
-                callback?.onResult(null, e)
+                callback?.onResult(NetworkResponseCallback.Result.Failure(e))
                 return
             }
         } else {
             data
         }
-        val request = HttpRequest().method("POST").path(path).data(requestData)
-            .addHeader(USER_AGENT_HEADER, "braintree/android/" + BuildConfig.VERSION_NAME)
-        if (isRelativeURL && configuration != null) {
-            request.baseUrl(configuration.clientApiUrl)
+
+        val url = try {
+            assembleUrl(path, configuration)
+        } catch (e: BraintreeException) {
+            callback?.onResult(NetworkResponseCallback.Result.Failure(e))
+            return
         }
-        if (authorization is TokenizationKey) {
-            request.addHeader(CLIENT_KEY_HEADER, authorization.bearer)
-        }
-        authorization?.bearer?.let { token -> request.addHeader("Authorization", "Bearer $token") }
-        additionalHeaders.forEach { (name, value) -> request.addHeader(name, value) }
+
+        val request = OkHttpRequest(
+            method = Method.Post(requestBody),
+            url = url,
+            headers = assembleHeaders(authorization, additionalHeaders)
+        )
+
         httpClient.sendRequest(request, callback)
+    }
+
+    private fun validateAuthorization(
+        authorization: Authorization?,
+        callback: NetworkResponseCallback?
+    ): Boolean {
+        if (authorization is InvalidAuthorization) {
+            callback?.onResult(NetworkResponseCallback.Result.Failure(BraintreeException(authorization.errorMessage)))
+            return false
+        }
+        return true
+    }
+
+    @Throws(BraintreeException::class)
+    private fun assembleUrl(path: String, configuration: Configuration?): String {
+        return if (path.startsWith("http")) {
+            path
+        } else {
+            configuration?.clientApiUrl?.plus(path)
+                ?: throw BraintreeException("Braintree HTTP request without configuration cannot have a relative path.")
+        }
+    }
+
+    private fun assembleHeaders(
+        authorization: Authorization?,
+        additionalHeaders: Map<String, String> = emptyMap()
+    ): Map<String, String> {
+        val headers = mutableMapOf(
+            USER_AGENT_HEADER to "braintree/android/" + BuildConfig.VERSION_NAME
+        )
+        when (authorization) {
+            is TokenizationKey -> headers["Client-Key"] = authorization.bearer
+            is ClientToken -> headers["Authorization"] = "Bearer ${authorization.bearer}"
+        }
+        headers.putAll(additionalHeaders)
+        return headers
     }
 
     companion object {
         private const val AUTHORIZATION_FINGERPRINT_KEY = "authorizationFingerprint"
         private const val USER_AGENT_HEADER = "User-Agent"
-        private const val CLIENT_KEY_HEADER = "Client-Key"
-
-        @Throws(SSLException::class)
-        private fun createDefaultHttpClient(): HttpClient {
-            val socketFactory = TLSSocketFactory(TLSCertificatePinning.createCertificateInputStream())
-            return HttpClient(socketFactory, BraintreeHttpResponseParser())
-        }
     }
 }

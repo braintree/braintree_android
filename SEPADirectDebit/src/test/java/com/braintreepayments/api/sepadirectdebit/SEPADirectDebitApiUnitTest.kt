@@ -189,7 +189,7 @@ class SEPADirectDebitApiUnitTest {
 
         val slotString = slot<String>()
         verify { braintreeClient.sendPOST(
-            eq("v1/sepa_debit"),
+            eq("/v1/sepa_debit"),
             capture(slotString),
             any(),
             any(HttpResponseCallback::class)
