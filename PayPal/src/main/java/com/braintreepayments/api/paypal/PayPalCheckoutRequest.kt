@@ -66,13 +66,19 @@ import org.json.JSONObject
  *
  * @property contactPreference Preference for the contact information section within the payment flow. Defaults to
  * [PayPalContactPreference.NO_CONTACT_INFORMATION] if not set.
+ *
+ * @property recurringBillingDetails Recurring billing product details.
+ *
+ * @property recurringBillingPlanType Recurring billing plan type, or charge pattern.
+ *
+ * @property amountBreakdown Breakdown of items associated to the total cost
  */
 @Parcelize
 class PayPalCheckoutRequest @JvmOverloads constructor(
     val amount: String,
     override val hasUserLocationConsent: Boolean,
     var intent: PayPalPaymentIntent = PayPalPaymentIntent.AUTHORIZE,
-    var userAction: PayPalPaymentUserAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT,
+    override var userAction: PayPalPaymentUserAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT,
     var currencyCode: String? = null,
     var shouldRequestBillingAgreement: Boolean = false,
     var shouldOfferPayLater: Boolean = false,
@@ -92,6 +98,9 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     override var userAuthenticationEmail: String? = null,
     override var userPhoneNumber: PayPalPhoneNumber? = null,
     override var lineItems: List<PayPalLineItem> = emptyList(),
+    override var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
+    override var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
+    var amountBreakdown: AmountBreakdown? = null,
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -230,6 +239,14 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
         }
 
         parameters.put(EXPERIENCE_PROFILE_KEY, experienceProfile)
+
+        if (amountBreakdown != null) {
+            parameters.put(AMOUNT_BREAKDOWN_KEY, amountBreakdown?.toJson())
+        }
+
+        recurringBillingPlanType?.let { parameters.put(PLAN_TYPE_KEY, it) }
+        recurringBillingDetails?.let { parameters.put(PLAN_METADATA_KEY, it.toJson()); }
+
         return parameters.toString()
     }
 }
