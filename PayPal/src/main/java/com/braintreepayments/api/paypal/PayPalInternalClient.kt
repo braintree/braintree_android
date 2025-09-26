@@ -28,6 +28,7 @@ internal class PayPalInternalClient(
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
     private val setAppSwitchUseCase: SetAppSwitchUseCase = SetAppSwitchUseCase(AppSwitchRepository.instance),
     private val getAppSwitchUseCase: GetAppSwitchUseCase = GetAppSwitchUseCase(AppSwitchRepository.instance),
+    private val resolvePayPalUseCase: ResolvePayPalUseCase = ResolvePayPalUseCase(merchantRepository),
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
 ) {
 
@@ -46,7 +47,8 @@ internal class PayPalInternalClient(
             val url = "/v1/$endpoint"
 
             if (payPalRequest.enablePayPalAppSwitch) {
-                payPalRequest.enablePayPalAppSwitch = deviceInspector.isPayPalInstalled()
+                payPalRequest.enablePayPalAppSwitch =
+                    deviceInspector.isPayPalInstalled() && resolvePayPalUseCase()
             }
 
             val returnLinkResult = getReturnLinkUseCase()

@@ -58,6 +58,7 @@ class AnalyticsApiUnitTest {
         pageType = "page-type",
         didEnablePayPalAppSwitch = true,
         didPayPalServerAttemptAppSwitch = true,
+        didSdkAttemptAppSwitch = true,
         errorDescription = "error-description"
     )
 
@@ -78,6 +79,7 @@ class AnalyticsApiUnitTest {
         pageType = "page-type",
         didEnablePayPalAppSwitch = true,
         didPayPalServerAttemptAppSwitch = true,
+        didSdkAttemptAppSwitch = true,
         errorDescription = "error-description"
     )
 
@@ -183,7 +185,7 @@ class AnalyticsApiUnitTest {
                             "event_params": [
                                 {
                                     "tenant_name": "Braintree",
-                                    "attempted_app_switch": ${tokenizationKeyEvent.didPayPalServerAttemptAppSwitch},
+                                    "attempted_app_switch": ${tokenizationKeyEvent.didSdkAttemptAppSwitch},
                                     "page_type": "${tokenizationKeyEvent.pageType}",
                                     "merchant_enabled_app_switch": ${tokenizationKeyEvent.didEnablePayPalAppSwitch},
                                     "button_type": "${tokenizationKeyEvent.buttonType}",
@@ -200,7 +202,8 @@ class AnalyticsApiUnitTest {
                                     "error_desc": "${tokenizationKeyEvent.errorDescription}",
                                     "event_name": "${tokenizationKeyEvent.name}",
                                     "button_position": "${tokenizationKeyEvent.buttonOrder}",
-                                    "context_type": "EC-TOKEN"
+                                    "context_type": "EC-TOKEN",
+                                    "paypal_app_switch_url_received": ${tokenizationKeyEvent.didPayPalServerAttemptAppSwitch}
                                 }
                             ]
                         }
@@ -240,7 +243,7 @@ class AnalyticsApiUnitTest {
                             "event_params": [
                                 {
                                     "tenant_name": "Braintree",
-                                    "attempted_app_switch": ${clientTokenEvent.didPayPalServerAttemptAppSwitch},
+                                    "attempted_app_switch": ${clientTokenEvent.didSdkAttemptAppSwitch},
                                     "page_type": "${clientTokenEvent.pageType}",
                                     "merchant_enabled_app_switch": ${clientTokenEvent.didEnablePayPalAppSwitch},
                                     "button_type": "${clientTokenEvent.buttonType}",
@@ -257,7 +260,8 @@ class AnalyticsApiUnitTest {
                                     "error_desc": "${clientTokenEvent.errorDescription}",
                                     "event_name": "${clientTokenEvent.name}",
                                     "button_position": "${clientTokenEvent.buttonOrder}",
-                                    "context_type": "BA-TOKEN"
+                                    "context_type": "BA-TOKEN",
+                                    "paypal_app_switch_url_received": ${clientTokenEvent.didPayPalServerAttemptAppSwitch}
                                 }
                             ]
                         }

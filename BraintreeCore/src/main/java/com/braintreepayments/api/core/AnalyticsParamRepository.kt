@@ -21,9 +21,15 @@ class AnalyticsParamRepository(
     var didEnablePayPalAppSwitch: Boolean? = null
 
     /**
-     * App switch attempted based on the server side response
+     * Whether or not app-switch URL was received from the PayPal server response
      */
     var didPayPalServerAttemptAppSwitch: Boolean? = null
+
+    /**
+     * Whether or not the SDK attempted to perform an app switch based on whether the PayPal app
+     * resolved the app-switch URI.
+     */
+    var didSdkAttemptAppSwitch: Boolean? = null
 
     private lateinit var _sessionId: String
 
@@ -50,6 +56,7 @@ class AnalyticsParamRepository(
         linkType = null
         didEnablePayPalAppSwitch = null
         didPayPalServerAttemptAppSwitch = null
+        didSdkAttemptAppSwitch = null
     }
 
     companion object {

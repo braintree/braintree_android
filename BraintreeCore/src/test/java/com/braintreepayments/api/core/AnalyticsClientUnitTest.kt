@@ -60,6 +60,7 @@ class AnalyticsClientUnitTest {
         pageType = analyticsEventParams.pageType,
         didEnablePayPalAppSwitch = true,
         didPayPalServerAttemptAppSwitch = true,
+        didSdkAttemptAppSwitch = true,
     )
 
     @Before
@@ -69,6 +70,7 @@ class AnalyticsClientUnitTest {
         every { analyticsParamRepository.linkType } returns linkType
         every { analyticsParamRepository.didEnablePayPalAppSwitch } returns true
         every { analyticsParamRepository.didPayPalServerAttemptAppSwitch } returns true
+        every { analyticsParamRepository.didSdkAttemptAppSwitch } returns true
 
         configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)

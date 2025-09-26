@@ -8,9 +8,11 @@ import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.AppSwitchRepository
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.GetAppSwitchUseCase
+import com.braintreepayments.api.core.MerchantRepository
 
 /**
  * Responsible for launching PayPal user authentication in a web browser
@@ -18,7 +20,10 @@ import com.braintreepayments.api.core.GetAppSwitchUseCase
 class PayPalLauncher internal constructor(
     private val browserSwitchClient: BrowserSwitchClient,
     private val getAppSwitchUseCase: GetAppSwitchUseCase = GetAppSwitchUseCase(AppSwitchRepository.instance),
-    lazyAnalyticsClient: Lazy<AnalyticsClient>
+    private val resolvePayPalUseCase: ResolvePayPalUseCase =
+        ResolvePayPalUseCase(MerchantRepository.instance),
+    lazyAnalyticsClient: Lazy<AnalyticsClient>,
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
 ) {
     /**
      * Used to launch the PayPal flow in a web browser and deliver results to your Activity
@@ -46,18 +51,13 @@ class PayPalLauncher internal constructor(
         activity: ComponentActivity,
         paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch
     ): PayPalPendingRequest {
-        val isAppSwitch = getAppSwitchUseCase()
         val contextId = paymentAuthRequest.requestParams.contextId
         val analyticsEventParams = AnalyticsEventParams(
             contextId = contextId,
             appSwitchUrl = paymentAuthRequest.requestParams.approvalUrl
         )
 
-        if (isAppSwitch) {
-            analyticsClient.sendEvent(PayPalAnalytics.APP_SWITCH_STARTED, analyticsEventParams)
-        } else {
-            analyticsClient.sendEvent(PayPalAnalytics.BROWSER_PRESENTATION_STARTED, analyticsEventParams)
-        }
+        val isAppSwitch = processAppSwitchAttempt(analyticsEventParams)
 
         try {
             assertCanPerformBrowserSwitch(activity, paymentAuthRequest.requestParams)
@@ -67,10 +67,18 @@ class PayPalLauncher internal constructor(
         }
 
         val options = paymentAuthRequest.requestParams.browserSwitchOptions
-        if (options == null) {
-            val error = BraintreeException("BrowserSwitchOptions is null")
-            return sendLaunchFailureEventAndReturn(error, isAppSwitch, analyticsEventParams)
-        }
+            ?: return buildLaunchFailureAndReturn(
+                errorMessage = "BrowserSwitchOptions is null",
+                isAppSwitch = isAppSwitch,
+                analyticsEventParams = analyticsEventParams
+            )
+
+        options.url
+            ?: return buildLaunchFailureAndReturn(
+                errorMessage = "BrowserSwitchOptions URL is null",
+                isAppSwitch = isAppSwitch,
+                analyticsEventParams = analyticsEventParams
+            )
 
         return when (val request = browserSwitchClient.start(activity, options)) {
             is BrowserSwitchStartResult.Failure -> {
@@ -173,6 +181,31 @@ class PayPalLauncher internal constructor(
             analyticsEventParams = analyticsEventParams.copy(errorDescription = error.message)
         )
         return PayPalPendingRequest.Failure(error)
+    }
+
+    private fun buildLaunchFailureAndReturn(
+        errorMessage: String,
+        isAppSwitch: Boolean,
+        analyticsEventParams: AnalyticsEventParams
+    ): PayPalPendingRequest.Failure {
+        return sendLaunchFailureEventAndReturn(
+            BraintreeException(errorMessage),
+            isAppSwitch,
+            analyticsEventParams
+        )
+    }
+
+    private fun processAppSwitchAttempt(analyticsEventParams: AnalyticsEventParams): Boolean {
+        val attemptAppSwitch = getAppSwitchUseCase() && resolvePayPalUseCase()
+        analyticsParamRepository.didSdkAttemptAppSwitch = attemptAppSwitch
+
+        if (attemptAppSwitch) {
+            analyticsClient.sendEvent(PayPalAnalytics.APP_SWITCH_STARTED, analyticsEventParams)
+        } else {
+            analyticsClient.sendEvent(PayPalAnalytics.BROWSER_PRESENTATION_STARTED, analyticsEventParams)
+        }
+
+        return attemptAppSwitch
     }
 
     @Throws(BrowserSwitchException::class)

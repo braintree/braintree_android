@@ -45,12 +45,16 @@ class PayPalInternalClientUnitTest {
     private val getReturnLinkUseCase: GetReturnLinkUseCase = mockk(relaxed = true)
     private val setAppSwitchUseCase: SetAppSwitchUseCase = mockk(relaxed = true)
     private val getAppSwitchUseCase: GetAppSwitchUseCase = mockk(relaxed = true)
+    private val resolvePayPalUseCase: ResolvePayPalUseCase = mockk(relaxed = true)
     private val analyticsParamRepository: AnalyticsParamRepository = mockk(relaxed = true)
 
     @Before
     @Throws(JSONException::class)
     fun beforeEach() {
         context = mockk(relaxed = true)
+
+        every { resolvePayPalUseCase() } returns false
+
         clientToken = mockk(relaxed = true)
         tokenizationKey = mockk(relaxed = true)
         configuration = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
@@ -198,6 +202,7 @@ class PayPalInternalClientUnitTest {
             getReturnLinkUseCase,
             setAppSwitchUseCase,
             getAppSwitchUseCase,
+            resolvePayPalUseCase,
             analyticsParamRepository
         )
         return Pair(sut, braintreeClient)
@@ -704,7 +709,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_sets_analyticsParamRepository_sets_didPayPalServerAttemptAppSwitch_to_false() {
+    fun sendRequest_whenServerReturnsNonAppSwitchFlow_setsDidPayPalServerAttemptAppSwitchToFalse() {
         every {
             dataCollector.getClientMetadataId(
                 eq(context),
@@ -733,6 +738,7 @@ class PayPalInternalClientUnitTest {
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { getAppSwitchUseCase.invoke() } returns true
         every { deviceInspector.isPayPalInstalled() } returns true
+        every { resolvePayPalUseCase() } returns true
 
         val (sut, braintreeClient) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_PAYPAL_REDIRECT_URL
@@ -744,7 +750,12 @@ class PayPalInternalClientUnitTest {
 
         sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
 
-        verify { setAppSwitchUseCase.invoke(merchantEnabledAppSwitch = true, appSwitchFlowFromPayPalResponse = true) }
+        verify {
+            setAppSwitchUseCase.invoke(
+                merchantEnabledAppSwitch = true,
+                appSwitchFlowFromPayPalResponse = true
+            )
+        }
 
         val slot = slot<PayPalPaymentAuthRequestParams>()
         verify { payPalInternalClientCallback.onResult(capture(slot), null) }
@@ -950,6 +961,7 @@ class PayPalInternalClientUnitTest {
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { getAppSwitchUseCase.invoke() } returns true
         every { deviceInspector.isPayPalInstalled() } returns true
+        every { resolvePayPalUseCase() } returns true
 
         val (sut, _) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_PAYPAL_REDIRECT_URL
@@ -977,6 +989,7 @@ class PayPalInternalClientUnitTest {
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { getAppSwitchUseCase.invoke() } returns true
         every { deviceInspector.isPayPalInstalled() } returns true
+        every { resolvePayPalUseCase() } returns true
 
         val (sut, _) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM
@@ -996,5 +1009,144 @@ class PayPalInternalClientUnitTest {
         assertEquals(configuration.merchantId, approvalUri.getQueryParameter("merchant"))
         assertNotNull(approvalUri.getQueryParameter("switch_initiated_time"))
         assertTrue(approvalUri.getQueryParameter("switch_initiated_time")!!.toLong() > 0)
+    }
+
+    @Test
+    fun sendRequest_whenPayPalAppNotInstalled_disablesAppSwitch() {
+        every { merchantRepository.authorization } returns clientToken
+        every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+        every { deviceInspector.isPayPalInstalled() } returns false
+        every { resolvePayPalUseCase() } returns false
+
+        val (sut, braintreeClient) = createSutWithMocks()
+
+        val payPalRequest = PayPalCheckoutRequest("1.00", true)
+        payPalRequest.enablePayPalAppSwitch = true
+
+        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
+
+        verify {
+            setAppSwitchUseCase.invoke(
+                merchantEnabledAppSwitch = false,
+                appSwitchFlowFromPayPalResponse = false
+            )
+        }
+    }
+
+    @Test
+    fun sendRequest_whenPayPalAppCannotHandleURL_disablesAppSwitch() {
+        every { merchantRepository.authorization } returns clientToken
+        every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+        every { deviceInspector.isPayPalInstalled() } returns true
+        every { resolvePayPalUseCase() } returns false
+
+        val (sut, braintreeClient) = createSutWithMocks()
+
+        val payPalRequest = PayPalCheckoutRequest("1.00", true)
+        payPalRequest.enablePayPalAppSwitch = true
+
+        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
+
+        verify {
+            setAppSwitchUseCase.invoke(
+                merchantEnabledAppSwitch = false,
+                appSwitchFlowFromPayPalResponse = false
+            )
+        }
+    }
+
+    @Test
+    fun sendRequest_whenPayPalInstalledAndCanHandleURL_enablesAppSwitch() {
+        every { merchantRepository.authorization } returns clientToken
+        every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+        every { deviceInspector.isPayPalInstalled() } returns true
+        every { resolvePayPalUseCase() } returns true
+
+        val (sut, braintreeClient) = createSutWithMocks()
+
+        val payPalRequest = PayPalCheckoutRequest("1.00", true)
+        payPalRequest.enablePayPalAppSwitch = true
+
+        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
+
+        verify {
+            setAppSwitchUseCase.invoke(
+                merchantEnabledAppSwitch = true,
+                appSwitchFlowFromPayPalResponse = false
+            )
+        }
+    }
+
+    @Test
+    fun sendRequest_whenEnablePayPalAppSwitchFalse_doesNotCheckPayPalInstallation() {
+        every { merchantRepository.authorization } returns clientToken
+        every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+
+        val (sut, braintreeClient) = createSutWithMocks()
+
+        val payPalRequest = PayPalCheckoutRequest("1.00", true)
+        payPalRequest.enablePayPalAppSwitch = false
+
+        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
+
+        verify(exactly = 0) { deviceInspector.isPayPalInstalled() }
+        verify(exactly = 0) { resolvePayPalUseCase() }
+        verify {
+            setAppSwitchUseCase.invoke(
+                merchantEnabledAppSwitch = false,
+                appSwitchFlowFromPayPalResponse = false
+            )
+        }
+    }
+
+    @Test
+    fun sendRequest_whenServerReturnsAppSwitchFlow_setsDidPayPalServerAttemptAppSwitchToTrue() {
+        every { merchantRepository.authorization } returns clientToken
+        every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+        every { deviceInspector.isPayPalInstalled() } returns true
+        every { resolvePayPalUseCase() } returns true
+
+        val (sut, braintreeClient) = createSutWithMocks(
+            fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_PAYPAL_REDIRECT_URL
+        )
+
+        val payPalRequest = PayPalCheckoutRequest("1.00", true)
+        payPalRequest.enablePayPalAppSwitch = true
+
+        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
+
+        verify { analyticsParamRepository.didPayPalServerAttemptAppSwitch = true }
+        verify {
+            setAppSwitchUseCase.invoke(
+                merchantEnabledAppSwitch = true,
+                appSwitchFlowFromPayPalResponse = true
+            )
+        }
+    }
+
+    @Test
+    fun sendRequest_whenMerchantEnablesAppSwitchButServerReturnsAppSwitchFalse_setsBothCorrectly() {
+        every { merchantRepository.authorization } returns clientToken
+        every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+        every { deviceInspector.isPayPalInstalled() } returns true
+        every { resolvePayPalUseCase() } returns true
+
+        val (sut, braintreeClient) = createSutWithMocks(
+            fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_BA_TOKEN_PARAM
+        )
+
+        val payPalRequest = PayPalCheckoutRequest("1.00", true)
+        payPalRequest.enablePayPalAppSwitch = true
+
+        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
+
+        verify { analyticsParamRepository.didPayPalServerAttemptAppSwitch = false }
+
+        verify {
+            setAppSwitchUseCase.invoke(
+                merchantEnabledAppSwitch = true,
+                appSwitchFlowFromPayPalResponse = false
+            )
+        }
     }
 }
