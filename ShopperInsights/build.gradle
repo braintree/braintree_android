@@ -30,12 +30,12 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = versions.javaTargetCompatibility.toString()
     }
 
     kotlin {
         jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of("11"))
+            languageVersion.set(JavaLanguageVersion.of(versions.javaTargetCompatibility.toString()))
         }
     }
 }
