@@ -9,9 +9,9 @@
   * App switch will be enabled only if `ResolvePayPalUseCase` returns true in addition to the existing checks in `PayPalInternalClient`.
   * App launch will be attempted only if `ResolvePayPalUseCase` returns true in addition to the existing checks in `PayPalLauncher`.
 * BraintreeCore
+  * Add OkHttp version 4.12.0
   * Add FPTI tag `paypal_app_switch_url_received`for when the SDK has received an app switch URL from the Paypal APIs.
   * Existing FPTI tag `attempted_app_switch` will be sent after verifying the Paypal app can resolve the URL.
-  * Add OkHttp version 4.12.0
 * PayPal Messaging
   * bump version to 1.1.13
 
