@@ -2,10 +2,8 @@ package com.braintreepayments.api.core
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.braintreepayments.api.core.Authorization.Companion.fromString
-import com.braintreepayments.api.sharedutils.AuthorizationException
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.testutils.Fixtures
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
