@@ -157,9 +157,9 @@ class ShopperInsightsClientUnitTest {
             callback.onResult(
                 withArg { result ->
                     assertTrue(result is ShopperInsightsResult.Failure)
-                    assertTrue {
+                    assertTrue(
                         (result as ShopperInsightsResult.Failure).error is BraintreeException
-                    }
+                    )
                     assertEquals(
                         "Required fields missing from API response body",
                         (result as ShopperInsightsResult.Failure).error.message
@@ -183,9 +183,9 @@ class ShopperInsightsClientUnitTest {
             callback.onResult(
                 withArg { result ->
                     assertTrue(result is ShopperInsightsResult.Failure)
-                    assertTrue {
+                    assertTrue(
                         (result as ShopperInsightsResult.Failure).error is BraintreeException
-                    }
+                    )
                     assertEquals(
                         "Required fields missing from API response body",
                         (result as ShopperInsightsResult.Failure).error.message
@@ -427,9 +427,9 @@ class ShopperInsightsClientUnitTest {
         val request = ShopperInsightsRequest("some-email", null)
         sut.getRecommendedPaymentMethods(request) { result ->
             assertTrue(result is ShopperInsightsResult.Failure)
-            assertTrue {
+            assertTrue(
                 (result as ShopperInsightsResult.Failure).error is BraintreeException
-            }
+            )
             assertEquals(
                 "Invalid authorization. This feature can only be used with a client token.",
                 (result as ShopperInsightsResult.Failure).error.message

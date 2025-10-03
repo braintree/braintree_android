@@ -55,7 +55,7 @@ class AmericanExpressClientUnitTest {
         verify { amexRewardsCallback.onAmericanExpressResult(capture(amexRewardsSlot)) }
 
         val result = amexRewardsSlot.captured
-        assertTrue { result is AmericanExpressResult.Success }
+        assertTrue(result is AmericanExpressResult.Success)
 
         val rewardsBalance = (result as AmericanExpressResult.Success).rewardsBalance
         assertNotNull(rewardsBalance)
@@ -81,7 +81,7 @@ class AmericanExpressClientUnitTest {
         verify { amexRewardsCallback.onAmericanExpressResult(capture(amexRewardsSlot)) }
 
         val result = amexRewardsSlot.captured
-        assertTrue { result is AmericanExpressResult.Success }
+        assertTrue(result is AmericanExpressResult.Success)
 
         val rewardsBalance = (result as AmericanExpressResult.Success).rewardsBalance
         assertNotNull(rewardsBalance)
@@ -107,7 +107,7 @@ class AmericanExpressClientUnitTest {
         verify { amexRewardsCallback.onAmericanExpressResult(capture(amexRewardsSlot)) }
 
         val result = amexRewardsSlot.captured
-        assertTrue { result is AmericanExpressResult.Success }
+        assertTrue(result is AmericanExpressResult.Success)
 
         val rewardsBalance = (result as AmericanExpressResult.Success).rewardsBalance
         assertNotNull(rewardsBalance)
@@ -134,7 +134,7 @@ class AmericanExpressClientUnitTest {
         verify { amexRewardsCallback.onAmericanExpressResult(capture(amexRewardsSlot)) }
 
         val result = amexRewardsSlot.captured
-        assertTrue { result is AmericanExpressResult.Failure }
+        assertTrue(result is AmericanExpressResult.Failure)
 
         val actualError = (result as AmericanExpressResult.Failure).error
         assertEquals(expectedError, actualError)
