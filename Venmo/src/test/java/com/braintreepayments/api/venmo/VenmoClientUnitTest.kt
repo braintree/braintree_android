@@ -195,7 +195,7 @@ class VenmoClientUnitTest {
                 true
             )
         }
-        assertFalse { analyticsSlot.captured.isVaultRequest }
+        assertFalse(analyticsSlot.captured.isVaultRequest)
         assertEquals(expectedAnalyticsParams.appSwitchUrl, analyticsSlot.captured.appSwitchUrl)
         assertEquals(errorDesc, analyticsSlot.captured.errorDescription)
         verify { analyticsParamRepository.reset() }
@@ -311,7 +311,7 @@ class VenmoClientUnitTest {
                 true
             )
         }
-        assertFalse { analyticsSlot.captured.isVaultRequest }
+        assertFalse(analyticsSlot.captured.isVaultRequest)
         assertEquals(expectedAnalyticsParams.appSwitchUrl, analyticsSlot.captured.appSwitchUrl)
         assertEquals("Configuration fetching error", analyticsSlot.captured.errorDescription)
     }
@@ -343,7 +343,7 @@ class VenmoClientUnitTest {
 
         val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
-        assertTrue(authRequestSlot.captured is VenmoPaymentAuthRequest.Failure)
+        assertTrue { authRequestSlot.captured is VenmoPaymentAuthRequest.Failure }
         assertEquals(
             "Venmo is not enabled",
             (authRequestSlot.captured as VenmoPaymentAuthRequest.Failure).error.message
@@ -357,7 +357,7 @@ class VenmoClientUnitTest {
                 true
             )
         }
-        assertFalse { analyticsSlot.captured.isVaultRequest }
+        assertFalse(analyticsSlot.captured.isVaultRequest)
         assertEquals(expectedAnalyticsParams.appSwitchUrl, analyticsSlot.captured.appSwitchUrl)
         assertEquals("Venmo is not enabled", analyticsSlot.captured.errorDescription)
     }
@@ -478,7 +478,7 @@ class VenmoClientUnitTest {
 
         val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
-        assertTrue(authRequestSlot.captured is VenmoPaymentAuthRequest.Failure)
+        assertTrue { authRequestSlot.captured is VenmoPaymentAuthRequest.Failure }
         assertEquals(exception, (authRequestSlot.captured as VenmoPaymentAuthRequest.Failure).error)
     }
 
@@ -657,7 +657,7 @@ class VenmoClientUnitTest {
 
         val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
-        assertTrue(authRequestSlot.captured is VenmoPaymentAuthRequest.Failure)
+        assertTrue { authRequestSlot.captured is VenmoPaymentAuthRequest.Failure }
         assertEquals(graphQLError, (authRequestSlot.captured as VenmoPaymentAuthRequest.Failure).error)
 
         val analyticsSlot = slot<AnalyticsEventParams>()
@@ -668,7 +668,7 @@ class VenmoClientUnitTest {
                 true
             )
         }
-        assertFalse { analyticsSlot.captured.isVaultRequest }
+        assertFalse(analyticsSlot.captured.isVaultRequest)
         assertEquals(expectedAnalyticsParams.appSwitchUrl, analyticsSlot.captured.appSwitchUrl)
         assertEquals(graphQLError.message, analyticsSlot.captured.errorDescription)
     }
@@ -735,7 +735,7 @@ class VenmoClientUnitTest {
 
         val resultSlot = slot<VenmoResult>()
         verify { venmoTokenizeCallback.onVenmoResult(capture(resultSlot)) }
-        assertTrue(resultSlot.captured is VenmoResult.Cancel)
+        assertTrue { resultSlot.captured is VenmoResult.Cancel }
         verify {
             braintreeClient.sendAnalyticsEvent(
                 VenmoAnalytics.APP_SWITCH_CANCELED,
@@ -775,7 +775,7 @@ class VenmoClientUnitTest {
 
         val resultSlot = slot<VenmoResult>()
         verify { venmoTokenizeCallback.onVenmoResult(capture(resultSlot)) }
-        assertTrue(resultSlot.captured is VenmoResult.Success)
+        assertTrue { resultSlot.captured is VenmoResult.Success }
         val nonce = (resultSlot.captured as VenmoResult.Success).nonce
         assertEquals("fake-venmo-nonce", nonce.string)
         assertEquals("venmojoe", nonce.username)
@@ -820,7 +820,7 @@ class VenmoClientUnitTest {
 
         val resultSlot = slot<VenmoResult>()
         verify { venmoTokenizeCallback.onVenmoResult(capture(resultSlot)) }
-        assertTrue(resultSlot.captured is VenmoResult.Failure)
+        assertTrue { resultSlot.captured is VenmoResult.Failure }
         assertEquals(graphQLError, (resultSlot.captured as VenmoResult.Failure).error)
 
         val analyticsSlot = slot<AnalyticsEventParams>()
@@ -981,7 +981,7 @@ class VenmoClientUnitTest {
 
         val resultSlot = slot<VenmoResult>()
         verify { venmoTokenizeCallback.onVenmoResult(capture(resultSlot)) }
-        assertTrue(resultSlot.captured is VenmoResult.Success)
+        assertTrue { resultSlot.captured is VenmoResult.Success }
         val nonce = (resultSlot.captured as VenmoResult.Success).nonce
         assertEquals(venmoAccountNonce, nonce)
         verify {
@@ -1027,7 +1027,7 @@ class VenmoClientUnitTest {
 
         val resultSlot = slot<VenmoResult>()
         verify { venmoTokenizeCallback.onVenmoResult(capture(resultSlot)) }
-        assertTrue(resultSlot.captured is VenmoResult.Success)
+        assertTrue { resultSlot.captured is VenmoResult.Success }
         val nonce = (resultSlot.captured as VenmoResult.Success).nonce
         assertEquals(venmoAccountNonce, nonce)
         verify {
@@ -1068,7 +1068,7 @@ class VenmoClientUnitTest {
 
         val resultSlot = slot<VenmoResult>()
         verify { venmoTokenizeCallback.onVenmoResult(capture(resultSlot)) }
-        assertTrue(resultSlot.captured is VenmoResult.Failure)
+        assertTrue { resultSlot.captured is VenmoResult.Failure }
         assertEquals(error, (resultSlot.captured as VenmoResult.Failure).error)
 
         val analyticsSlot = slot<AnalyticsEventParams>()
@@ -1118,7 +1118,7 @@ class VenmoClientUnitTest {
 
         val resultSlot = slot<VenmoResult>()
         verify { venmoTokenizeCallback.onVenmoResult(capture(resultSlot)) }
-        assertTrue(resultSlot.captured is VenmoResult.Failure)
+        assertTrue { resultSlot.captured is VenmoResult.Failure }
         assertEquals(error, (resultSlot.captured as VenmoResult.Failure).error)
 
         val analyticsSlot = slot<AnalyticsEventParams>()
