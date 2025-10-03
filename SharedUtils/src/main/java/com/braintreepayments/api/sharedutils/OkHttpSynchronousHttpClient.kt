@@ -42,10 +42,11 @@ internal class OkHttpSynchronousHttpClient(
         val request = okHttpRequest.toRequest()
 
         okHttpClient.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) throw IOException("Unexpected code $response")
+            val responseBody = response.body?.string()
+            if (!response.isSuccessful) throw IOException("Unexpected code $response with body $responseBody")
             val endTime = System.currentTimeMillis()
             return HttpResponse(
-                body = response.body?.string(),
+                body = responseBody,
                 timing = HttpResponseTiming(startTime, endTime)
             )
         }
