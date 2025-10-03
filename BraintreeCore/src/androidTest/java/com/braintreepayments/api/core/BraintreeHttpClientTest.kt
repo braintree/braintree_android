@@ -3,6 +3,7 @@ package com.braintreepayments.api.core
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.braintreepayments.api.core.Authorization.Companion.fromString
 import com.braintreepayments.api.sharedutils.AuthorizationException
+import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.testutils.Fixtures
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -28,9 +29,10 @@ class BraintreeHttpClientTest {
         val braintreeHttpClient = BraintreeHttpClient()
 
         val path = "https://api.sandbox.braintreegateway.com/"
-        braintreeHttpClient.get(path, null, authorization) { _, httpError ->
+        braintreeHttpClient.get(path, null, authorization) { result ->
             // Make sure exception is due to authorization not SSL handshake
-            assertTrue(httpError is AuthorizationException)
+            assertTrue(result is NetworkResponseCallback.Result.Failure)
+            assertTrue((result as NetworkResponseCallback.Result.Failure).error.message?.contains("code=403") == true)
             countDownLatch.countDown()
         }
 
@@ -44,9 +46,9 @@ class BraintreeHttpClientTest {
         val braintreeHttpClient = BraintreeHttpClient()
 
         val path = "https://gateway.qa.braintreepayments.com/"
-        braintreeHttpClient.get(path, null, authorization) { _, httpError ->
+        braintreeHttpClient.get(path, null, authorization) { result ->
             // Make sure http request to qa works to verify certificate pinning strategy
-            assertNull(httpError)
+            assertTrue(result is NetworkResponseCallback.Result.Success)
             countDownLatch.countDown()
         }
 
@@ -60,9 +62,9 @@ class BraintreeHttpClientTest {
         val braintreeHttpClient = BraintreeHttpClient()
 
         val path = "https://api.braintreegateway.com/"
-        braintreeHttpClient.get(path, null, authorization) { _, httpError ->
+        braintreeHttpClient.get(path, null, authorization) { result ->
             // Make sure exception is due to authorization not SSL handshake
-            assertTrue(httpError is AuthorizationException)
+            assertTrue((result as NetworkResponseCallback.Result.Failure).error.message?.contains("code=403") == true)
             countDownLatch.countDown()
         }
 
