@@ -68,7 +68,7 @@ class ConfigurationLoaderUnitTest {
         val successSlot = slot<ConfigurationLoaderResult>()
         verify { callback.onResult(capture(successSlot)) }
 
-        assertTrue { successSlot.captured is ConfigurationLoaderResult.Success }
+        assertTrue(successSlot.captured is ConfigurationLoaderResult.Success)
     }
 
     @Test
@@ -128,7 +128,7 @@ class ConfigurationLoaderUnitTest {
         val errorSlot = slot<ConfigurationLoaderResult>()
         verify { callback.onResult(capture(errorSlot)) }
 
-        assertTrue { (errorSlot.captured as ConfigurationLoaderResult.Failure).error is JSONException }
+        assertTrue((errorSlot.captured as ConfigurationLoaderResult.Failure).error is JSONException)
     }
 
     @Test
@@ -201,7 +201,7 @@ class ConfigurationLoaderUnitTest {
         val successSlot = slot<ConfigurationLoaderResult>()
         verify { callback.onResult(capture(successSlot)) }
 
-        assertTrue { successSlot.captured is ConfigurationLoaderResult.Success }
+        assertTrue(successSlot.captured is ConfigurationLoaderResult.Success)
     }
 
     @Test
@@ -244,7 +244,7 @@ class ConfigurationLoaderUnitTest {
         val successSlot = slot<ConfigurationLoaderResult>()
         verify { callback.onResult(capture(successSlot)) }
 
-        assertTrue { successSlot.captured is ConfigurationLoaderResult.Success }
+        assertTrue(successSlot.captured is ConfigurationLoaderResult.Success)
     }
 
     @Test
@@ -272,7 +272,7 @@ class ConfigurationLoaderUnitTest {
         verify { callback.onResult(capture(errorSlot)) }
 
         val failure = errorSlot.captured as ConfigurationLoaderResult.Failure
-        assertTrue { failure.error is ConfigurationException }
+        assertTrue(failure.error is ConfigurationException)
         assertEquals("Configuration responseBody is null", failure.error.message)
     }
 }

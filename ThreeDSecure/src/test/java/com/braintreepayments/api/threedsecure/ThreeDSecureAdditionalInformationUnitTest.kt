@@ -225,54 +225,54 @@ class ThreeDSecureAdditionalInformationUnitTest {
 
         val jsonParams = additionalInformation.toJson()
 
-        assertTrue { jsonParams.isNull("shipping_given_name") }
-        assertTrue { jsonParams.isNull("shipping_surname") }
-        assertTrue { jsonParams.isNull("shipping_phone") }
-        assertTrue { jsonParams.isNull("shipping_line1") }
-        assertTrue { jsonParams.isNull("shipping_line2") }
-        assertTrue { jsonParams.isNull("shipping_line3") }
-        assertTrue { jsonParams.isNull("shipping_city") }
-        assertTrue { jsonParams.isNull("shipping_state") }
-        assertTrue { jsonParams.isNull("shipping_postal_code") }
-        assertTrue { jsonParams.isNull("shipping_country_code") }
-        assertTrue { jsonParams.isNull("shipping_method_indicator") }
-        assertTrue { jsonParams.isNull("product_code") }
-        assertTrue { jsonParams.isNull("delivery_timeframe") }
-        assertTrue { jsonParams.isNull("delivery_email") }
-        assertTrue { jsonParams.isNull("reorder_indicator") }
-        assertTrue { jsonParams.isNull("preorder_indicator") }
-        assertTrue { jsonParams.isNull("preorder_date") }
-        assertTrue { jsonParams.isNull("gift_card_amount") }
-        assertTrue { jsonParams.isNull("gift_card_currency_code") }
-        assertTrue { jsonParams.isNull("gift_card_count") }
-        assertTrue { jsonParams.isNull("account_age_indicator") }
-        assertTrue { jsonParams.isNull("account_create_date") }
-        assertTrue { jsonParams.isNull("account_change_indicator") }
-        assertTrue { jsonParams.isNull("account_change_date") }
-        assertTrue { jsonParams.isNull("account_pwd_change_indicator") }
-        assertTrue { jsonParams.isNull("account_pwd_change_date") }
-        assertTrue { jsonParams.isNull("shipping_address_usage_indicator") }
-        assertTrue { jsonParams.isNull("shipping_address_usage_date") }
-        assertTrue { jsonParams.isNull("transaction_count_day") }
-        assertTrue { jsonParams.isNull("transaction_count_year") }
-        assertTrue { jsonParams.isNull("add_card_attempts") }
-        assertTrue { jsonParams.isNull("account_purchases") }
-        assertTrue { jsonParams.isNull("fraud_activity") }
-        assertTrue { jsonParams.isNull("shipping_name_indicator") }
-        assertTrue { jsonParams.isNull("payment_account_indicator") }
-        assertTrue { jsonParams.isNull("payment_account_age") }
-        assertTrue { jsonParams.isNull("address_match") }
-        assertTrue { jsonParams.isNull("account_id") }
-        assertTrue { jsonParams.isNull("ip_address") }
-        assertTrue { jsonParams.isNull("order_description") }
-        assertTrue { jsonParams.isNull("tax_amount") }
-        assertTrue { jsonParams.isNull("user_agent") }
-        assertTrue { jsonParams.isNull("authentication_indicator") }
-        assertTrue { jsonParams.isNull("installment") }
-        assertTrue { jsonParams.isNull("purchase_date") }
-        assertTrue { jsonParams.isNull("recurring_end") }
-        assertTrue { jsonParams.isNull("recurring_frequency") }
-        assertTrue { jsonParams.isNull("sdk_max_timeout") }
-        assertTrue { jsonParams.isNull("work_phone_number") }
+        assertTrue(jsonParams.isNull("shipping_given_name"))
+        assertTrue(jsonParams.isNull("shipping_surname"))
+        assertTrue(jsonParams.isNull("shipping_phone"))
+        assertTrue(jsonParams.isNull("shipping_line1"))
+        assertTrue(jsonParams.isNull("shipping_line2"))
+        assertTrue(jsonParams.isNull("shipping_line3"))
+        assertTrue(jsonParams.isNull("shipping_city"))
+        assertTrue(jsonParams.isNull("shipping_state"))
+        assertTrue(jsonParams.isNull("shipping_postal_code"))
+        assertTrue(jsonParams.isNull("shipping_country_code"))
+        assertTrue(jsonParams.isNull("shipping_method_indicator"))
+        assertTrue(jsonParams.isNull("product_code"))
+        assertTrue(jsonParams.isNull("delivery_timeframe"))
+        assertTrue(jsonParams.isNull("delivery_email"))
+        assertTrue(jsonParams.isNull("reorder_indicator"))
+        assertTrue(jsonParams.isNull("preorder_indicator"))
+        assertTrue(jsonParams.isNull("preorder_date"))
+        assertTrue(jsonParams.isNull("gift_card_amount"))
+        assertTrue(jsonParams.isNull("gift_card_currency_code"))
+        assertTrue(jsonParams.isNull("gift_card_count"))
+        assertTrue(jsonParams.isNull("account_age_indicator"))
+        assertTrue(jsonParams.isNull("account_create_date"))
+        assertTrue(jsonParams.isNull("account_change_indicator"))
+        assertTrue(jsonParams.isNull("account_change_date"))
+        assertTrue(jsonParams.isNull("account_pwd_change_indicator"))
+        assertTrue(jsonParams.isNull("account_pwd_change_date"))
+        assertTrue(jsonParams.isNull("shipping_address_usage_indicator"))
+        assertTrue(jsonParams.isNull("shipping_address_usage_date"))
+        assertTrue(jsonParams.isNull("transaction_count_day"))
+        assertTrue(jsonParams.isNull("transaction_count_year"))
+        assertTrue(jsonParams.isNull("add_card_attempts"))
+        assertTrue(jsonParams.isNull("account_purchases"))
+        assertTrue(jsonParams.isNull("fraud_activity"))
+        assertTrue(jsonParams.isNull("shipping_name_indicator"))
+        assertTrue(jsonParams.isNull("payment_account_indicator"))
+        assertTrue(jsonParams.isNull("payment_account_age"))
+        assertTrue(jsonParams.isNull("address_match"))
+        assertTrue(jsonParams.isNull("account_id"))
+        assertTrue(jsonParams.isNull("ip_address"))
+        assertTrue(jsonParams.isNull("order_description"))
+        assertTrue(jsonParams.isNull("tax_amount"))
+        assertTrue(jsonParams.isNull("user_agent"))
+        assertTrue(jsonParams.isNull("authentication_indicator"))
+        assertTrue(jsonParams.isNull("installment"))
+        assertTrue(jsonParams.isNull("purchase_date"))
+        assertTrue(jsonParams.isNull("recurring_end"))
+        assertTrue(jsonParams.isNull("recurring_frequency"))
+        assertTrue(jsonParams.isNull("sdk_max_timeout"))
+        assertTrue(jsonParams.isNull("work_phone_number"))
     }
 }
