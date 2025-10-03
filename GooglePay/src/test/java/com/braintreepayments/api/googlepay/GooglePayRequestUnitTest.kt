@@ -34,12 +34,12 @@ class GooglePayRequestUnitTest {
         request.setEnvironment("production")
         request.googleMerchantName = "google-merchant-name"
 
-        assertTrue { request.allowPrepaidCards }
+        assertTrue(request.allowPrepaidCards)
         assertEquals(GooglePayBillingAddressFormat.FULL, request.billingAddressFormat)
-        assertTrue { request.isBillingAddressRequired }
-        assertTrue { request.isEmailRequired }
-        assertTrue { request.isPhoneNumberRequired }
-        assertTrue { request.isShippingAddressRequired }
+        assertTrue(request.isBillingAddressRequired)
+        assertTrue(request.isEmailRequired)
+        assertTrue(request.isPhoneNumberRequired)
+        assertTrue(request.isShippingAddressRequired)
         assertEquals(shippingAddressRequirements, request.shippingAddressParameters)
         assertEquals("USD", request.currencyCode)
         assertEquals("1.00", request.totalPrice)
@@ -53,13 +53,13 @@ class GooglePayRequestUnitTest {
     fun `sets default values via constructor`() {
         val request = GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL)
 
-        assertFalse { request.allowPrepaidCards }
+        assertFalse(request.allowPrepaidCards)
         assertEquals(GooglePayBillingAddressFormat.MIN, request.billingAddressFormat)
-        assertFalse { request.isBillingAddressRequired }
-        assertFalse { request.isEmailRequired }
-        assertFalse { request.isPhoneNumberRequired }
-        assertFalse { request.isShippingAddressRequired }
-        assertTrue { request.allowCreditCards }
+        assertFalse(request.isBillingAddressRequired)
+        assertFalse(request.isEmailRequired)
+        assertFalse(request.isPhoneNumberRequired)
+        assertFalse(request.isShippingAddressRequired)
+        assertTrue(request.allowCreditCards)
         assertNull(request.getEnvironment())
         assertNull(request.googleMerchantName)
     }
@@ -91,13 +91,13 @@ class GooglePayRequestUnitTest {
         assertEquals("1.00", parceled.totalPrice)
         assertEquals(GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL, parceled.totalPriceStatus)
         assertEquals("test", parceled.totalPriceLabel)
-        assertTrue { parceled.isEmailRequired }
-        assertTrue { parceled.isPhoneNumberRequired }
-        assertTrue { parceled.isShippingAddressRequired }
-        assertTrue { parceled.isBillingAddressRequired }
+        assertTrue(parceled.isEmailRequired)
+        assertTrue(parceled.isPhoneNumberRequired)
+        assertTrue(parceled.isShippingAddressRequired)
+        assertTrue(parceled.isBillingAddressRequired)
         assertEquals(GooglePayBillingAddressFormat.FULL, parceled.billingAddressFormat)
         assertTrue { parceled.shippingAddressParameters?.allowedCountryCodes?.contains("US") == true }
-        assertTrue { parceled.allowPrepaidCards }
+        assertTrue(parceled.allowPrepaidCards)
         assertEquals("PRODUCTION", parceled.getEnvironment())
     }
 
@@ -119,13 +119,13 @@ class GooglePayRequestUnitTest {
         assertEquals("USD", parceled.currencyCode)
         assertEquals("1.00", parceled.totalPrice)
         assertEquals(GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL, parceled.totalPriceStatus)
-        assertFalse { parceled.isEmailRequired }
-        assertFalse { parceled.isPhoneNumberRequired }
-        assertFalse { parceled.isShippingAddressRequired }
-        assertFalse { parceled.isBillingAddressRequired }
+        assertFalse(parceled.isEmailRequired)
+        assertFalse(parceled.isPhoneNumberRequired)
+        assertFalse(parceled.isShippingAddressRequired)
+        assertFalse(parceled.isBillingAddressRequired)
         assertEquals(GooglePayBillingAddressFormat.FULL, parceled.billingAddressFormat)
         assertTrue { parceled.shippingAddressParameters?.allowedCountryCodes?.contains("US") == true }
-        assertFalse { parceled.allowPrepaidCards }
+        assertFalse(parceled.allowPrepaidCards)
         assertNull(parceled.getEnvironment())
         assertNull(parceled.googleMerchantName)
         assertNull(parceled.totalPriceLabel)
