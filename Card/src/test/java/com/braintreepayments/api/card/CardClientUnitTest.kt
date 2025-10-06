@@ -3,6 +3,7 @@ package com.braintreepayments.api.card
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.ApiClient
+import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkApiClientBuilder
@@ -13,6 +14,7 @@ import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.verify
 import io.mockk.verifyOrder
+import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -265,5 +267,58 @@ class CardClientUnitTest {
             errorDescription = errorDescription
         )
         verify { braintreeClient.sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_FAILED, errorParams, true) }
+    }
+
+    @Test
+    fun tokenize_whenResponseHasErrorsArray_callsListenerWithErrorOnFailure() {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(graphQLEnabledConfig)
+            .build()
+
+        val responseWithErrors = JSONObject().apply {
+            put("errors", JSONArray().apply {
+                put(JSONObject().apply {
+                    put("message", "Invalid card number")
+                })
+            })
+        }
+
+        apiClient = MockkApiClientBuilder()
+            .tokenizeGraphQLSuccess(responseWithErrors)
+            .build()
+
+        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository)
+        sut.tokenize(card, cardTokenizeCallback)
+
+        val captor = slot<CardResult>()
+        verify { cardTokenizeCallback.onCardResult(capture(captor)) }
+
+        val result = captor.captured
+        assertTrue(result is CardResult.Failure)
+        assertTrue(result.error is BraintreeException)
+    }
+
+    @Test
+    fun tokenize_whenResponseHasEmptyErrorsArray_proceedsWithNormalProcessing() {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(graphQLEnabledConfig)
+            .build()
+
+        val responseWithEmptyErrors = JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD).apply {
+            put("errors", JSONArray()) // Empty errors array
+        }
+
+        apiClient = MockkApiClientBuilder()
+            .tokenizeGraphQLSuccess(responseWithEmptyErrors)
+            .build()
+
+        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository)
+        sut.tokenize(card, cardTokenizeCallback)
+
+        val captor = slot<CardResult>()
+        verify { cardTokenizeCallback.onCardResult(capture(captor)) }
+
+        val result = captor.captured
+        assertTrue(result is CardResult.Success)
     }
 }

@@ -1,4 +1,9 @@
 # Braintree Android SDK Release Notes
+
+## unreleased
+
+* Card
+  * Fix an issue where a tokenize card errors are masked with a JSON parsing error
   
 ## 5.18.0 (2025-10-01)
 

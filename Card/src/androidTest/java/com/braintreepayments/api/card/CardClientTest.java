@@ -13,8 +13,6 @@ import androidx.test.core.app.ApplicationProvider;
 
 import com.braintreepayments.api.core.Authorization;
 import com.braintreepayments.api.core.Configuration;
-import com.braintreepayments.api.core.ErrorWithResponse;
-import com.braintreepayments.api.sharedutils.AuthorizationException;
 import com.braintreepayments.api.testutils.ExpirationDateHelper;
 import com.braintreepayments.api.testutils.Fixtures;
 import com.braintreepayments.api.testutils.SharedPreferencesHelper;
@@ -140,14 +138,14 @@ public class CardClientTest {
         sut.tokenize(card, cardResult -> {
             assertTrue(cardResult instanceof CardResult.Failure);
             Exception error = ((CardResult.Failure) cardResult).getError();
-            assertTrue(error instanceof AuthorizationException);
 
             if (requestProtocol.equals(GRAPHQL)) {
-                assertEquals("You are unauthorized to perform input validation with the provided authentication credentials.",
-                        error.getMessage());
+                assertTrue(error.getMessage().contains("You are unauthorized to perform input validation with the " +
+                    "provided authentication credentials."));
             } else {
-                assertEquals("Tokenization key authorization not allowed for this endpoint. Please use an " +
-                        "authentication method with upgraded permissions", error.getMessage());
+                assertTrue(error.getMessage().contains("code=403"));
+                assertTrue(error.getMessage().contains("Tokenization key authorization not allowed for this endpoint." +
+                    " Please use an authentication method with upgraded permissions"));
             }
 
             countDownLatch.countDown();
@@ -230,9 +228,7 @@ public class CardClientTest {
         sut.tokenize(card, (cardResult) -> {
             assertTrue(cardResult instanceof CardResult.Failure);
             Exception error = ((CardResult.Failure) cardResult).getError();
-            assertEquals("Country code (alpha3) is not an accepted country",
-                    ((ErrorWithResponse) error).errorFor("creditCard").errorFor("billingAddress")
-                            .getFieldErrors().get(0).getMessage());
+            assertTrue(error.getMessage().contains("Country code (alpha3) is not an accepted country"));
             countDownLatch.countDown();
         });
 
