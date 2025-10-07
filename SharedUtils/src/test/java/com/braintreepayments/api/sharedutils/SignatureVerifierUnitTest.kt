@@ -36,8 +36,12 @@ class SignatureVerifierUnitTest {
         val signatures = arrayOf(signature)
         packageInfo.signatures = signatures
 
-        every { certificateHelper.getEncodedCertificate("example-signature".toByteArray()) } returns "example-signature".toByteArray()
-        every { packageManager.getPackageInfo(eq("com.example"), eq(PackageManager.GET_SIGNATURES)) } returns packageInfo
+        every {
+            certificateHelper.getEncodedCertificate("example-signature".toByteArray())
+        } returns "example-signature".toByteArray()
+        every {
+            packageManager.getPackageInfo(eq("com.example"), eq(PackageManager.GET_SIGNATURES))
+        } returns packageInfo
         every { context.packageManager } returns packageManager
 
         sut = SignatureVerifier(certificateHelper)
@@ -62,8 +66,12 @@ class SignatureVerifierUnitTest {
             createMockSignature("example-signature2")
         )
         packageInfo.signatures = signatures
-        every { certificateHelper.getEncodedCertificate("example-signature1".toByteArray()) } returns "example-signature1".toByteArray()
-        every { certificateHelper.getEncodedCertificate("example-signature2".toByteArray()) } returns "example-signature2".toByteArray()
+        every {
+            certificateHelper.getEncodedCertificate("example-signature1".toByteArray())
+        } returns "example-signature1".toByteArray()
+        every {
+            certificateHelper.getEncodedCertificate("example-signature2".toByteArray())
+        } returns "example-signature2".toByteArray()
 
         val base64EncodedSignature = base64EncodedSHA256("example-signature1")
         assertFalse(sut.isSignatureValid(context, "com.example", base64EncodedSignature))
