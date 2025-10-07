@@ -17,13 +17,13 @@ class AppHelperUnitTest {
     private lateinit var packageManager: PackageManager
 
     @Before
-    fun beforeEach() {
+    fun before() {
         context = mockk(relaxed = true)
         packageManager = mockk(relaxed = true)
     }
 
     @Test
-    fun isAppInstalled_whenAppInfoExistsForPackageName_returnsTrue() {
+    fun `isAppInstalled when app info exists for package name returns true`() {
         every { context.packageManager } returns packageManager
         every { packageManager.getApplicationInfo("package.name", 0) } returns mockk<ApplicationInfo>()
 
@@ -32,7 +32,7 @@ class AppHelperUnitTest {
     }
 
     @Test
-    fun isAppInstalled_whenAppInfoNotFoundForPackageName_returnsFalse() {
+    fun `isAppInstalled when app info not found for package name returns false`() {
         every { context.packageManager } returns packageManager
         every { packageManager.getApplicationInfo("package.name", 0) } throws NameNotFoundException()
 
