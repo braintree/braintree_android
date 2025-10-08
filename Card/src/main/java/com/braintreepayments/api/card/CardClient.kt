@@ -108,6 +108,12 @@ class CardClient internal constructor(
         callback: CardTokenizeCallback
     ) {
         if (tokenizationResponse != null) {
+            if (tokenizationResponse.has("errors") &&
+                tokenizationResponse.getJSONArray(GraphQLConstants.Keys.ERRORS).length() > 0
+            ) {
+                callbackFailure(callback, CardResult.Failure(BraintreeException(tokenizationResponse.toString())))
+                return
+            }
             try {
                 val cardNonce = fromJSON(tokenizationResponse)
                 callbackSuccess(callback, CardResult.Success(cardNonce))

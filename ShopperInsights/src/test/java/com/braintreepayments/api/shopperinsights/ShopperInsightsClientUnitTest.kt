@@ -136,7 +136,7 @@ class ShopperInsightsClientUnitTest {
         verify {
             callback.onResult(
                 withArg { result ->
-                    assertTrue { result is ShopperInsightsResult.Failure }
+                    assertTrue(result is ShopperInsightsResult.Failure)
                     assertEquals((result as ShopperInsightsResult.Failure).error, expectedError)
                 }
             )
@@ -156,10 +156,10 @@ class ShopperInsightsClientUnitTest {
         verify {
             callback.onResult(
                 withArg { result ->
-                    assertTrue { result is ShopperInsightsResult.Failure }
-                    assertTrue {
+                    assertTrue(result is ShopperInsightsResult.Failure)
+                    assertTrue(
                         (result as ShopperInsightsResult.Failure).error is BraintreeException
-                    }
+                    )
                     assertEquals(
                         "Required fields missing from API response body",
                         (result as ShopperInsightsResult.Failure).error.message
@@ -182,10 +182,10 @@ class ShopperInsightsClientUnitTest {
         verify {
             callback.onResult(
                 withArg { result ->
-                    assertTrue { result is ShopperInsightsResult.Failure }
-                    assertTrue {
+                    assertTrue(result is ShopperInsightsResult.Failure)
+                    assertTrue(
                         (result as ShopperInsightsResult.Failure).error is BraintreeException
-                    }
+                    )
                     assertEquals(
                         "Required fields missing from API response body",
                         (result as ShopperInsightsResult.Failure).error.message
@@ -219,7 +219,7 @@ class ShopperInsightsClientUnitTest {
         verify {
             callback.onResult(
                 withArg { result ->
-                    assertTrue { result is ShopperInsightsResult.Success }
+                    assertTrue(result is ShopperInsightsResult.Success)
                     val success = result as ShopperInsightsResult.Success
                     assertEquals(true, success.response.isPayPalRecommended)
                     assertEquals(true, success.response.isVenmoRecommended)
@@ -251,7 +251,7 @@ class ShopperInsightsClientUnitTest {
         verify {
             callback.onResult(
                 withArg { result ->
-                    assertTrue { result is ShopperInsightsResult.Success }
+                    assertTrue(result is ShopperInsightsResult.Success)
                     val success = result as ShopperInsightsResult.Success
                     assertEquals(false, success.response.isPayPalRecommended)
                 }
@@ -282,7 +282,7 @@ class ShopperInsightsClientUnitTest {
         verify {
             callback.onResult(
                 withArg { result ->
-                    assertTrue { result is ShopperInsightsResult.Success }
+                    assertTrue(result is ShopperInsightsResult.Success)
                     val success = result as ShopperInsightsResult.Success
                     assertEquals(false, success.response.isPayPalRecommended)
                 }
@@ -313,7 +313,7 @@ class ShopperInsightsClientUnitTest {
         verify {
             callback.onResult(
                 withArg { result ->
-                    assertTrue { result is ShopperInsightsResult.Success }
+                    assertTrue(result is ShopperInsightsResult.Success)
                     val success = result as ShopperInsightsResult.Success
                     assertTrue(success.response.isEligibleInPayPalNetwork)
                 }
@@ -344,7 +344,7 @@ class ShopperInsightsClientUnitTest {
         verify {
             callback.onResult(
                 withArg { result ->
-                    assertTrue { result is ShopperInsightsResult.Success }
+                    assertTrue(result is ShopperInsightsResult.Success)
                     val success = result as ShopperInsightsResult.Success
                     assertTrue(success.response.isEligibleInPayPalNetwork)
                 }
@@ -380,7 +380,7 @@ class ShopperInsightsClientUnitTest {
         verify {
             callback.onResult(
                 withArg { result ->
-                    assertTrue { result is ShopperInsightsResult.Success }
+                    assertTrue(result is ShopperInsightsResult.Success)
                     val success = result as ShopperInsightsResult.Success
                     assertFalse(success.response.isEligibleInPayPalNetwork)
                 }
@@ -426,10 +426,10 @@ class ShopperInsightsClientUnitTest {
 
         val request = ShopperInsightsRequest("some-email", null)
         sut.getRecommendedPaymentMethods(request) { result ->
-            assertTrue { result is ShopperInsightsResult.Failure }
-            assertTrue {
+            assertTrue(result is ShopperInsightsResult.Failure)
+            assertTrue(
                 (result as ShopperInsightsResult.Failure).error is BraintreeException
-            }
+            )
             assertEquals(
                 "Invalid authorization. This feature can only be used with a client token.",
                 (result as ShopperInsightsResult.Failure).error.message
@@ -523,25 +523,25 @@ class ShopperInsightsClientUnitTest {
     @Test
     fun `test isPayPalAppInstalled returns true when deviceInspector returns true`() {
         every { deviceInspector.isPayPalInstalled() } returns true
-        assertTrue { sut.isPayPalAppInstalled(context) }
+        assertTrue(sut.isPayPalAppInstalled(context))
     }
 
     @Test
     fun `test isVenmoAppInstalled returns true when deviceInspector returns true`() {
         every { deviceInspector.isVenmoInstalled(context) } returns true
-        assertTrue { sut.isVenmoAppInstalled(context) }
+        assertTrue(sut.isVenmoAppInstalled(context))
     }
 
     @Test
     fun `test isPayPalAppInstalled returns false when deviceInspector returns false`() {
         every { deviceInspector.isPayPalInstalled() } returns false
-        assertFalse { sut.isPayPalAppInstalled(context) }
+        assertFalse(sut.isPayPalAppInstalled(context))
     }
 
     @Test
     fun `test isVenmoAppInstalled returns false when deviceInspector returns false`() {
         every { deviceInspector.isVenmoInstalled(context) } returns false
-        assertFalse { sut.isVenmoAppInstalled(context) }
+        assertFalse(sut.isVenmoAppInstalled(context))
     }
 
     private fun executeTestForFindEligiblePaymentsApi(

@@ -53,7 +53,7 @@ class GetReturnLinkUseCaseUnitTest {
 
         val result = subject()
 
-        assertTrue { result is GetReturnLinkUseCase.ReturnLinkResult.Failure }
+        assertTrue(result is GetReturnLinkUseCase.ReturnLinkResult.Failure)
         assertEquals(
             "Deep Link fallback return url is null",
             (result as GetReturnLinkUseCase.ReturnLinkResult.Failure).exception.message
@@ -67,7 +67,7 @@ class GetReturnLinkUseCaseUnitTest {
 
         val result = subject()
 
-        assertTrue { result is GetReturnLinkUseCase.ReturnLinkResult.Failure }
+        assertTrue(result is GetReturnLinkUseCase.ReturnLinkResult.Failure)
         assertEquals(
             "App Link Return Uri is null",
             (result as GetReturnLinkUseCase.ReturnLinkResult.Failure).exception.message
