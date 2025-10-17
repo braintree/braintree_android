@@ -6,13 +6,12 @@ import com.braintreepayments.api.testutils.Fixtures
 import kotlinx.parcelize.parcelableCreator
 import org.json.JSONException
 import org.json.JSONObject
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
-import com.braintreepayments.api.testutils.Assertions.assertBinDataEqual
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class VisaCheckoutNonceUnitTest {
@@ -104,7 +103,7 @@ class VisaCheckoutNonceUnitTest {
         assertEquals(visaCheckoutNonce.isDefault, actual.isDefault)
         assertEquals(visaCheckoutNonce.lastTwo, actual.lastTwo)
         assertEquals(visaCheckoutNonce.cardType, actual.cardType)
-        assertBinDataEqual(visaCheckoutNonce.binData, actual.binData)
+        assertEquals(visaCheckoutNonce.binData, actual.binData)
         assertVisaCheckoutAddress(visaCheckoutNonce.billingAddress, actual.billingAddress)
         assertVisaCheckoutAddress(visaCheckoutNonce.shippingAddress, actual.shippingAddress)
         assertEquals(visaCheckoutNonce.callId, actual.callId)

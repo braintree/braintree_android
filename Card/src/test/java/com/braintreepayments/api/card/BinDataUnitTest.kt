@@ -1,7 +1,6 @@
 package com.braintreepayments.api.card
 
 import android.os.Parcel
-import com.braintreepayments.api.testutils.Assertions.assertBinDataEqual
 import com.braintreepayments.api.testutils.Fixtures
 import kotlinx.parcelize.parcelableCreator
 import org.json.JSONException
@@ -73,6 +72,6 @@ class BinDataUnitTest {
         }
         val parceled = parcelableCreator<BinData>().createFromParcel(parcel)
 
-        assertBinDataEqual(binData, parceled)
+        assertEquals(binData, parceled)
     }
 }

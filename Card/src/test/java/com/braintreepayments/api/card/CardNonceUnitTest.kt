@@ -1,7 +1,6 @@
 package com.braintreepayments.api.card
 
 import android.os.Parcel
-import com.braintreepayments.api.testutils.Assertions.assertBinDataEqual
 import com.braintreepayments.api.testutils.Fixtures
 import kotlinx.parcelize.parcelableCreator
 import org.json.JSONException
@@ -141,7 +140,7 @@ class CardNonceUnitTest {
         assertEquals("2020", parceled.expirationYear)
         assertEquals("Joe Smith", parceled.cardholderName)
         assertFalse(parceled.isDefault)
-        assertBinDataEqual(cardNonce.binData, parceled.binData)
+        assertEquals(cardNonce.binData, parceled.binData)
         assertEquals(cardNonce.authenticationInsight?.regulationEnvironment,
             parceled.authenticationInsight?.regulationEnvironment)
     }
