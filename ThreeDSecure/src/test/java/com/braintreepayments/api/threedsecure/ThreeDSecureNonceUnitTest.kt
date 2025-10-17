@@ -2,7 +2,6 @@ package com.braintreepayments.api.threedsecure
 
 import android.os.Parcel
 import com.braintreepayments.api.card.BinType
-import com.braintreepayments.api.testutils.Assertions.assertBinDataEqual
 import com.braintreepayments.api.testutils.Fixtures
 import kotlinx.parcelize.parcelableCreator
 import org.json.JSONObject
@@ -134,7 +133,7 @@ class ThreeDSecureNonceUnitTest {
         assertEquals("2020", parceled.expirationYear)
         assertEquals("Joe Smith", parceled.cardholderName)
         assertFalse(parceled.isDefault)
-        assertBinDataEqual(sut.binData, parceled.binData)
+        assertEquals(sut.binData, parceled.binData)
         assertEquals(sut.authenticationInsight?.regulationEnvironment,
             parceled.authenticationInsight?.regulationEnvironment)
         assertEquals(sut.threeDSecureInfo.liabilityShifted, parceled.threeDSecureInfo.liabilityShifted)

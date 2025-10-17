@@ -3,7 +3,6 @@ package com.braintreepayments.api.googlepay
 import android.os.Parcel
 import com.braintreepayments.api.core.PostalAddress
 import com.braintreepayments.api.sharedutils.Json
-import com.braintreepayments.api.testutils.Assertions.assertBinDataEqual
 import com.braintreepayments.api.testutils.Fixtures
 import kotlinx.parcelize.parcelableCreator
 import org.json.JSONException
@@ -120,7 +119,7 @@ class GooglePayCardNonceUnitTest {
         assertTrue(googlePayCardNonce.isNetworkTokenized)
         assertEquals("VISA", googlePayCardNonce.cardNetwork)
 
-        assertBinDataEqual(googlePayCardNonce.binData, parceled.binData)
+        assertEquals(googlePayCardNonce.binData, parceled.binData)
     }
 
     private fun getPostalAddressObjectFromJson(address: JSONObject): PostalAddress {
