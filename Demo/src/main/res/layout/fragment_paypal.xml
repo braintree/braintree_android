@@ -94,7 +94,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/button_paypal_billing_agreement"
+        android:background="@drawable/button_paypal_pay_later"
         android:textColor="@color/white"
         android:text="@string/paypal_pay_later" />
 

@@ -83,8 +83,8 @@ public class PayPalFragment extends BaseFragment {
                     buyerEmailEditText.getText().toString(),
                     buyerPhoneCountryCodeEditText.getText().toString(),
                     buyerPhoneNationalNumberEditText.getText().toString(),
+                    contactInformationSwitch.isChecked(),
                     true,
-                    offerPayLater.isChecked(),
                     amountBreakdownSwitch.isChecked()
             );
         });
