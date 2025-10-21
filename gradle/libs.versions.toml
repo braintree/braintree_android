@@ -1,9 +1,10 @@
 [versions]
-gradle = "8.6.1"
-kotlinGradlePlugin = "1.8.0"
+gradle = "8.11.1"
+gradleNexusStagingPlugin = "0.21.2"
+kotlinGradlePlugin = "1.9.20"
 gradleNexusPublish = "1.1.0"
-kotlin = "1.9.10"
-ksp = "1.9.10-1.0.13"
+kotlin = "1.9.20"
+ksp = "1.9.20-1.0.14"
 coreKtx = "1.12.0"
 androidxLifecycle = "2.6.2"
 androidxRoom = "2.6.1"
@@ -13,10 +14,10 @@ androidxAnnotation = "1.7.0"
 androidxWork = "2.8.1"
 androidxJunit = "1.1.5"
 coroutines = "1.7.1"
-browserSwitch = "3.1.0"
+browserSwitch = "3.2.1-SNAPSHOT"
 cardinal = "2.2.7-7"
 navigationSafeArgsGradlePlugin = "2.5.0"
-paypalMessages = "1.1.13"
+paypalMessages = "1.0.4"
 playServices = "19.4.0"
 junit = "4.13.2"
 testParameterInjector = "1.18"
@@ -68,6 +69,7 @@ kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", vers
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
+gradle-nexus-staging-plugin = { module = "io.codearte.gradle.nexus:gradle-nexus-staging-plugin", version.ref = "gradleNexusStagingPlugin" }
 browser-switch = { group = "com.braintreepayments.api", name = "browser-switch", version.ref = "browserSwitch" }
 cardinal = { group = "org.jfrog.cardinalcommerce.gradle", name = "cardinalmobilesdk", version.ref = "cardinal" }
 paypal-messages = { module = "com.paypal.messages:paypal-messages", version.ref = "paypalMessages" }

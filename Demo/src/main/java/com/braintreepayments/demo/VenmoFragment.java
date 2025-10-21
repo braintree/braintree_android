@@ -35,6 +35,12 @@ public class VenmoFragment extends BaseFragment {
     private VenmoClient venmoClient;
     private VenmoLauncher venmoLauncher;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        venmoLauncher = new VenmoLauncher(this);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -54,7 +60,6 @@ public class VenmoFragment extends BaseFragment {
                 venmoClient = new VenmoClient(requireContext(), super.getAuthStringArg());
             }
         }
-        venmoLauncher = new VenmoLauncher();
 
         return view;
     }
@@ -71,6 +76,7 @@ public class VenmoFragment extends BaseFragment {
                 handleError(new Exception("User did not complete payment flow"));
             }
             clearPendingRequest();
+            requireActivity().getIntent().setData(null);
         }
     }
 

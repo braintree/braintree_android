@@ -1,5 +1,6 @@
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
         google()
         maven {
@@ -42,6 +43,7 @@ ext["signing.secretKeyRingFile"] = System.getenv('SIGNING_KEY_FILE') ?: ''
 
 allprojects {
     repositories {
+        mavenLocal()
         mavenCentral()
         google()
     }
@@ -50,7 +52,7 @@ allprojects {
 version '5.18.1-SNAPSHOT'
 group 'com.braintreepayments'
 ext {
-    compileSdkVersion = 35
+    compileSdkVersion = 36
     minSdkVersion = 23
     minSdkVersionPayPalMessaging = 23
     versionCode = 214
@@ -114,6 +116,7 @@ detekt {
 
 subprojects {
     repositories {
+        mavenLocal()
         maven {
             url "https://cardinalcommerceprod.jfrog.io/artifactory/android"
             credentials {

@@ -52,12 +52,16 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
+        kotlinCompilerExtensionVersion = "1.5.4"
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        freeCompilerArgs += ["-Xskip-metadata-version-check"]
     }
 
     namespace 'com.braintreepayments.demo'
@@ -81,7 +85,7 @@ dependencies {
     implementation project(':ThreeDSecure')
     implementation project(':Venmo')
     implementation project(':VisaCheckout')
-
+    implementation libs.browser.switch
     implementation libs.gson
     implementation libs.eventbus
     implementation libs.androidx.appcompat

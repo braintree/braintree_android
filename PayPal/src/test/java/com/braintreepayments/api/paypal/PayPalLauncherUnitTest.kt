@@ -3,6 +3,7 @@ package com.braintreepayments.api.paypal
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultCaller
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
@@ -429,5 +430,18 @@ class PayPalLauncherUnitTest {
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_NO_RESULT, slot1.captured)
         assertEquals(paymentToken, slot2.captured.contextId)
+    }
+
+    @Test
+    fun `constructor with ActivityResultCaller creates browserSwitchClient with provided caller`() {
+        val activityResultCaller: ActivityResultCaller = mockk(relaxed = true)
+        val mockBrowserSwitchClient: BrowserSwitchClient = mockk(relaxed = true)
+
+        io.mockk.mockkConstructor(BrowserSwitchClient::class)
+        every { constructedWith<BrowserSwitchClient>(eq(activityResultCaller)) } returns mockBrowserSwitchClient
+
+        val launcher = PayPalLauncher(activityResultCaller)
+
+        verify(exactly = 1) { constructedWith<BrowserSwitchClient>(eq(activityResultCaller)) }
     }
 }

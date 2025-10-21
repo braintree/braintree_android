@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.braintreepayments.api.core.PostalAddress;
@@ -20,14 +21,20 @@ import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitPendingRequest;
 import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitRequest;
 import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitResult;
 import com.braintreepayments.api.core.UserCanceledException;
+import com.braintreepayments.api.venmo.VenmoLauncher;
 
 import java.util.UUID;
 
 public class SEPADirectDebitFragment extends BaseFragment {
 
     private SEPADirectDebitClient sepaDirectDebitClient;
-    private final SEPADirectDebitLauncher sepaDirectDebitLauncher = new SEPADirectDebitLauncher();
+    private SEPADirectDebitLauncher sepaDirectDebitLauncher;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        sepaDirectDebitLauncher = new SEPADirectDebitLauncher(this);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,6 +64,7 @@ public class SEPADirectDebitFragment extends BaseFragment {
                 handleError(new Exception("User did not complete payment flow"));
             }
             clearPendingRequest();
+            requireActivity().getIntent().setData(null);
         }
     }
 

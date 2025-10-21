@@ -27,6 +27,7 @@ import com.braintreepayments.api.paypal.PayPalPaymentAuthResult;
 import com.braintreepayments.api.paypal.PayPalPendingRequest;
 import com.braintreepayments.api.paypal.PayPalRequest;
 import com.braintreepayments.api.paypal.PayPalResult;
+import com.braintreepayments.api.venmo.VenmoLauncher;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class PayPalFragment extends BaseFragment {
@@ -38,6 +39,12 @@ public class PayPalFragment extends BaseFragment {
     private PayPalLauncher payPalLauncher;
 
     private DataCollector dataCollector;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        payPalLauncher = new PayPalLauncher(this);
+    }
 
     @Nullable
     @Override
@@ -82,7 +89,6 @@ public class PayPalFragment extends BaseFragment {
             Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"),
             "com.braintreepayments.demo.braintree"
         );
-        payPalLauncher = new PayPalLauncher();
 
         amount = RandomDollarAmount.getNext();
         return view;
@@ -100,6 +106,7 @@ public class PayPalFragment extends BaseFragment {
                 handleError(new Exception("User did not complete payment flow"));
             }
             clearPendingRequest();
+            requireActivity().getIntent().setData(null);
         }
     }
 

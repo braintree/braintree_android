@@ -2,6 +2,7 @@ package com.braintreepayments.api.localpayment
 
 import android.content.Intent
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultCaller
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
@@ -96,5 +97,18 @@ class LocalPaymentLauncherUnitTest {
         val paymentAuthResult = sut.handleReturnToApp(pendingRequest, intent)
 
         assertTrue(paymentAuthResult is LocalPaymentAuthResult.NoResult)
+    }
+
+    @Test
+    fun `constructor with ActivityResultCaller creates browserSwitchClient with provided caller`() {
+        val activityResultCaller: ActivityResultCaller = mockk(relaxed = true)
+        val mockBrowserSwitchClient: BrowserSwitchClient = mockk(relaxed = true)
+
+        io.mockk.mockkConstructor(BrowserSwitchClient::class)
+        every { constructedWith<BrowserSwitchClient>(eq(activityResultCaller)) } returns mockBrowserSwitchClient
+
+        val launcher = LocalPaymentLauncher(activityResultCaller)
+
+        io.mockk.verify(exactly = 1) { constructedWith<BrowserSwitchClient>(eq(activityResultCaller)) }
     }
 }

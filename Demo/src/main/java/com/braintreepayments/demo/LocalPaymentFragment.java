@@ -26,8 +26,14 @@ import com.braintreepayments.api.localpayment.LocalPaymentResult;
 public class LocalPaymentFragment extends BaseFragment {
 
     private LocalPaymentClient localPaymentClient;
-    private final LocalPaymentLauncher localPaymentLauncher = new LocalPaymentLauncher();
+    private LocalPaymentLauncher localPaymentLauncher;
 
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        localPaymentLauncher = new LocalPaymentLauncher(this);
+    }
 
     @Nullable
     @Override
@@ -57,6 +63,7 @@ public class LocalPaymentFragment extends BaseFragment {
                 handleError(new BraintreeException("User did not complete local payment flow"));
             }
             clearPendingRequest();
+            requireActivity().getIntent().setData(null);
         }
     }
 

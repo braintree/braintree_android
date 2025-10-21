@@ -3,6 +3,7 @@ package com.braintreepayments.api.venmo
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultCaller
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
@@ -269,4 +270,21 @@ class VenmoLauncherUnitTest {
             "https://play.google.com/store/apps/details?id=com.venmo"
         )
     }
+
+    @Test
+    fun `constructor with ActivityResultCaller creates browserSwitchClient with provided caller`() {
+        val activityResultCaller: ActivityResultCaller = mockk(relaxed = true)
+        val mockBrowserSwitchClient: BrowserSwitchClient = mockk(relaxed = true)
+        val venmoRepo: VenmoRepository = mockk(relaxed = true)
+        val analyticsClientMock: AnalyticsClient = mockk(relaxed = true)
+
+        io.mockk.mockkConstructor(BrowserSwitchClient::class)
+        every { anyConstructed<BrowserSwitchClient>().start(any(), any()) } returns BrowserSwitchStartResult.Started("test")
+        every { constructedWith<BrowserSwitchClient>(eq(activityResultCaller)) } returns mockBrowserSwitchClient
+
+        val launcher = VenmoLauncher(activityResultCaller)
+
+        verify(exactly = 1) { constructedWith<BrowserSwitchClient>(eq(activityResultCaller)) }
+    }
 }
+

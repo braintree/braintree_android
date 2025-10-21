@@ -2,6 +2,7 @@ package com.braintreepayments.api.sepadirectdebit
 
 import android.content.Intent
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultCaller
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchStartResult
@@ -14,6 +15,13 @@ class SEPADirectDebitLauncher internal constructor(private val browserSwitchClie
      * Used to launch the SEPA mandate in a web browser and deliver results to your Activity
      */
     constructor() : this(BrowserSwitchClient())
+
+    /**
+     * @param caller Optional ActivityResultCaller parameter. If provided, it will be passed to BrowserSwitchClient
+     */
+    constructor(caller: ActivityResultCaller? = null) : this(
+        browserSwitchClient = if (caller != null) BrowserSwitchClient(caller) else BrowserSwitchClient()
+    )
 
     /**
      * Launches the SEPA mandate by switching to a web browser for user authentication
