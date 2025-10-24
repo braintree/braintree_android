@@ -4,6 +4,8 @@
 
 * Card
   * Fix an issue where a tokenize card errors are masked with a JSON parsing error
+* PayPal
+    * Add `shouldOfferCredit`property to `PayPalCheckoutRequest`. Enables merchants to offer PayPal Credit in Checkout requests.
   
 ## 5.18.0 (2025-10-01)
 
@@ -13,7 +15,6 @@
   * Add `ResolvePayPalUseCase` that checks if the PayPal app will resolve the app-switch URL before enabling or attempting app switch.
   * App switch will be enabled only if `ResolvePayPalUseCase` returns true in addition to the existing checks in `PayPalInternalClient`.
   * App launch will be attempted only if `ResolvePayPalUseCase` returns true in addition to the existing checks in `PayPalLauncher`.
-  * Add `shouldOfferCredit`property to `PayPalCheckoutRequest`. Enables merchants to offer PayPal Credit in Checkout requests. 
 * BraintreeCore
   * Add OkHttp version 4.12.0
   * Add FPTI tag `paypal_app_switch_url_received`for when the SDK has received an app switch URL from the Paypal APIs.

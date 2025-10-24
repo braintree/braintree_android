@@ -79,7 +79,6 @@ import org.json.JSONObject
 class PayPalCheckoutRequest @JvmOverloads constructor(
     val amount: String,
     override val hasUserLocationConsent: Boolean,
-    var shouldOfferCredit: Boolean = false,
     var intent: PayPalPaymentIntent = PayPalPaymentIntent.AUTHORIZE,
     override var userAction: PayPalPaymentUserAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT,
     var currencyCode: String? = null,
@@ -104,6 +103,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     override var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
     override var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
     var amountBreakdown: AmountBreakdown? = null,
+    var shouldOfferCredit: Boolean = false,
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
