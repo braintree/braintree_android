@@ -81,6 +81,7 @@
     <string name="paypal_phone_country_code">Buyer Phone Country Code</string>
     <string name="paypal_phone_national_number">Buyer Phone National Number</string>
     <string name="paypal_single_payment">Single Payment</string>
+    <string name="paypal_credit">PayPal Credit</string>
     <string name="paypal_billing_agreement">Billing Agreement</string>
     <string name="paypal_intent_type">Intent Type</string>
     <string name="paypal_landing_page_type">Landing Page Type</string>

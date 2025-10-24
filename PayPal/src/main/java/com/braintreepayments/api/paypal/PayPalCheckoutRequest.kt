@@ -72,11 +72,14 @@ import org.json.JSONObject
  * @property recurringBillingPlanType Recurring billing plan type, or charge pattern.
  *
  * @property amountBreakdown Breakdown of items associated to the total cost
+ *
+ * @property shouldOfferCredit Offers PayPal Credit if the customer qualifies. Defaults to false.
  */
 @Parcelize
 class PayPalCheckoutRequest @JvmOverloads constructor(
     val amount: String,
     override val hasUserLocationConsent: Boolean,
+    var shouldOfferCredit: Boolean = false,
     var intent: PayPalPaymentIntent = PayPalPaymentIntent.AUTHORIZE,
     override var userAction: PayPalPaymentUserAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT,
     var currencyCode: String? = null,
@@ -131,6 +134,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
             .put(RETURN_URL_KEY, successUrl)
             .put(CANCEL_URL_KEY, cancelUrl)
             .put(OFFER_PAY_LATER_KEY, shouldOfferPayLater)
+            .put(OFFER_CREDIT_KEY, shouldOfferCredit)
 
         shippingCallbackUrl?.let {
             if (it.toString().isNotEmpty()) parameters.put(SHIPPING_CALLBACK_URL_KEY, it)
