@@ -425,4 +425,19 @@ class PayPalCheckoutRequestUnitTest {
         assertTrue(requestBody.contains("\"shipping\":\"3.00\""))
         assertTrue(requestBody.contains("\"tax_total\":\"1.75\""))
     }
+
+    @Test
+    fun `create requestBody and sets call shouldOfferCredit true`() {
+        val request = PayPalCheckoutRequest("1.00", hasUserLocationConsent = false, shouldOfferCredit = true)
+
+        val requestBody = request.createRequestBody(
+            configuration = mockk<Configuration>(relaxed = true),
+            authorization = mockk<Authorization>(relaxed = true),
+            successUrl = "success_url",
+            cancelUrl = "cancel_url",
+            appLink = null
+        )
+
+        assertTrue(requestBody.contains("\"offer_paypal_credit\":true"))
+    }
 }
