@@ -103,7 +103,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     override var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
     override var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
     var amountBreakdown: AmountBreakdown? = null,
-    var shouldOfferCredit: Boolean = false,
+    override var shouldOfferCredit: Boolean = false,
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
