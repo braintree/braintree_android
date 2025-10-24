@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="10dp"
+    android:padding="@dimen/margin_16"
+    android:background="@color/off_white"
     tools:context=".DisplayNonceFragment">
 
     <ScrollView
-        android:layout_width="match_parent"
+        android:id="@+id/scroll_view"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="16dp"
-        android:layout_weight="1">
+        android:layout_marginBottom="@dimen/margin_16"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/create_transaction"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -22,29 +27,71 @@
                 android:id="@+id/nonce"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_16"
+                android:padding="@dimen/margin_12"
+                android:background="@color/white"
                 android:textIsSelectable="true"
-                tools:text="Nonce" />
+                android:textSize="@dimen/text_size_body"
+                android:textColor="@color/slate"
+                android:fontFamily="monospace"
+                android:elevation="@dimen/card_elevation"
+                tools:text="Nonce: tok_abc123xyz" />
 
             <TextView
                 android:id="@+id/nonce_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_16"
+                android:padding="@dimen/margin_12"
+                android:background="@color/white"
                 android:textIsSelectable="true"
-                tools:text="Nonce Details" />
+                android:textSize="@dimen/text_size_body"
+                android:textColor="@color/slate"
+                android:lineSpacingExtra="4dp"
+                android:elevation="@dimen/card_elevation"
+                tools:text="Nonce Details:\nType: PayPal\nEmail: user@example.com" />
+
+            <TextView
+                android:id="@+id/is_pay_later_selected"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_16"
+                android:padding="@dimen/margin_12"
+                android:background="@color/white"
+                android:textIsSelectable="true"
+                android:textSize="@dimen/text_size_body"
+                android:textColor="@color/slate"
+                android:elevation="@dimen/card_elevation"
+                tools:text="Is Pay Later Selected: true" />
 
             <TextView
                 android:id="@+id/device_data"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="@dimen/margin_12"
+                android:background="@color/white"
                 android:textIsSelectable="true"
-                tools:text="Device Data" />
+                android:textSize="@dimen/text_size_body"
+                android:textColor="@color/slate"
+                android:fontFamily="monospace"
+                android:elevation="@dimen/card_elevation"
+                tools:text="Device Data: {correlation_id: xyz}" />
         </LinearLayout>
     </ScrollView>
 
     <Button
         android:id="@+id/create_transaction"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/create_transaction" />
+        android:paddingTop="@dimen/margin_16"
+        android:paddingBottom="@dimen/margin_16"
+        android:background="@drawable/button_paypal_single_payment"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_title"
+        android:textStyle="bold"
+        android:text="@string/create_transaction"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
