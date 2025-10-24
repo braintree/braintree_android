@@ -56,13 +56,6 @@
         android:text="Add Contact Information" />
 
     <Switch
-        android:id="@+id/offer_pay_later_switch"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/margin_40"
-        android:visibility="gone"
-        android:text="@string/paypal_offer_pay_later" />
-
-    <Switch
         android:id="@+id/amount_breakdown_switch"
         android:layout_width="match_parent"
         android:layout_height="@dimen/margin_40"

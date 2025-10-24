@@ -51,7 +51,6 @@ public class PayPalFragment extends BaseFragment {
         Button billingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
         Button singlePaymentPayLaterButton = view.findViewById(R.id.paypal_single_payment_pay_later_button);
-        Switch offerPayLater = view.findViewById(R.id.offer_pay_later_switch);
         Switch contactInformationSwitch = view.findViewById(R.id.contact_info_switch);
         Switch amountBreakdownSwitch = view.findViewById(R.id.amount_breakdown_switch);
 
@@ -62,10 +61,10 @@ public class PayPalFragment extends BaseFragment {
                 buyerPhoneCountryCodeEditText.getText().toString(),
                 buyerPhoneNationalNumberEditText.getText().toString(),
                 contactInformationSwitch.isChecked(),
-                offerPayLater.isChecked(),
+                false,
                 amountBreakdownSwitch.isChecked()
             );
-            isPayLaterEnabled = offerPayLater.isChecked();
+            isPayLaterEnabled = false;
         });
         billingAgreementButton.setOnClickListener(v -> {
             launchPayPal(
@@ -77,7 +76,7 @@ public class PayPalFragment extends BaseFragment {
                 false,
                 amountBreakdownSwitch.isChecked()
             );
-            isPayLaterEnabled = offerPayLater.isChecked();
+            isPayLaterEnabled = false;
         });
 
         singlePaymentPayLaterButton.setOnClickListener(v -> {
