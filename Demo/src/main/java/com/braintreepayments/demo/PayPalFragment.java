@@ -36,7 +36,7 @@ public class PayPalFragment extends BaseFragment {
 
     private PayPalClient payPalClient;
     private PayPalLauncher payPalLauncher;
-    private Boolean isPayLaterEnabled = false;
+    private Boolean isPayLaterSelected = false;
 
     private DataCollector dataCollector;
 
@@ -64,7 +64,7 @@ public class PayPalFragment extends BaseFragment {
                 false,
                 amountBreakdownSwitch.isChecked()
             );
-            isPayLaterEnabled = false;
+            isPayLaterSelected = false;
         });
         billingAgreementButton.setOnClickListener(v -> {
             launchPayPal(
@@ -76,7 +76,7 @@ public class PayPalFragment extends BaseFragment {
                 false,
                 amountBreakdownSwitch.isChecked()
             );
-            isPayLaterEnabled = false;
+            isPayLaterSelected = false;
         });
 
         singlePaymentPayLaterButton.setOnClickListener(v -> {
@@ -89,7 +89,7 @@ public class PayPalFragment extends BaseFragment {
                     true,
                     amountBreakdownSwitch.isChecked()
             );
-            isPayLaterEnabled = true;
+            isPayLaterSelected = true;
         });
 
         payPalClient = new PayPalClient(
@@ -223,7 +223,7 @@ public class PayPalFragment extends BaseFragment {
                 PayPalFragmentDirections.actionPayPalFragmentToDisplayNonceFragment(paymentMethodNonce);
             action.setTransactionAmount(amount);
             action.setDeviceData(deviceData);
-            action.setIsPayLaterSelected(isPayLaterEnabled);
+            action.setIsPayLaterSelected(isPayLaterSelected);
 
             NavHostFragment.findNavController(this).navigate(action);
         }
