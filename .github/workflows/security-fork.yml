@@ -1,0 +1,33 @@
+name: Security Scan (PRs from forks)
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Run CodeQL (no upload)
+        uses: braintree/security-workflows/.github/workflows/codeql-android.yml@main
+        with:
+          upload-results: false  # disable upload in fork
+
+      - name: Run Dependency Review (no write)
+        uses: braintree/security-workflows/.github/workflows/dependency-review-gradle.yml@main
+        with:
+          report-only: true
+
+      - name: Upload SARIF as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-sarif
+          path: ./sarif/
