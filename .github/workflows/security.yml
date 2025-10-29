@@ -21,4 +21,4 @@ jobs:
     uses: braintree/security-workflows/.github/workflows/codeql-android.yml@main
 
   dependency-review:
-    uses: braintree/security-workflows/.github/workflows/dependency-review-gradle.yml@main
+    uses: braintree/security-workflows/.github/workflows/dependency-review-gradle.yml@no-commit-status
