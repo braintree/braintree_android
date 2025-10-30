@@ -165,10 +165,12 @@ public class PayPalRequestFactory {
         Boolean isContactInformationEnabled,
         String shopperInsightsSessionId,
         Boolean offerPayLater,
+        Boolean offerCredit,
         Boolean isAmountBreakdownEnabled
     ) {
         PayPalCheckoutRequest request = new PayPalCheckoutRequest(amount, true);
         request.setShouldOfferPayLater(offerPayLater);
+        request.setShouldOfferCredit(offerCredit);
 
         if (isAmountBreakdownEnabled) {
             request = new PayPalCheckoutRequest("10.99", true);
