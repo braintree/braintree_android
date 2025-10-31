@@ -103,7 +103,8 @@ abstract class PayPalRequest internal constructor(
     @property:ExperimentalBetaApi
     open var shopperSessionId: String? = null,
     open var lineItems: List<PayPalLineItem> = emptyList(),
-    open var userAction: PayPalPaymentUserAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT
+    open var userAction: PayPalPaymentUserAction = PayPalPaymentUserAction.USER_ACTION_DEFAULT,
+    open var shouldOfferCredit: Boolean = false
 ) : Parcelable {
 
     @Throws(JSONException::class)

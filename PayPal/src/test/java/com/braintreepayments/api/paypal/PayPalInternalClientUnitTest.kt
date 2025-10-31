@@ -111,6 +111,7 @@ class PayPalInternalClientUnitTest {
         request.isShippingAddressRequired = true
         request.isShippingAddressEditable = true
         request.shouldOfferPayLater = true
+        request.shouldOfferCredit = true
         request.lineItems = listOf(item)
         request.shippingAddressOverride = shippingAddressOverride
         return request
@@ -141,6 +142,7 @@ class PayPalInternalClientUnitTest {
                 "return_url": "https://example.com://onetouch/v1/success",
                 "cancel_url": "https://example.com://onetouch/v1/cancel",
                 "offer_pay_later": true,
+                "offer_paypal_credit": true,
                 "request_billing_agreement": true,
                 "billing_agreement_details": {
                     "description": "Billing Agreement Description"

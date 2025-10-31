@@ -51,6 +51,8 @@ public class PayPalFragment extends BaseFragment {
         Button billingAgreementButton = view.findViewById(R.id.paypal_billing_agreement_button);
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
         Button singlePaymentPayLaterButton = view.findViewById(R.id.paypal_single_payment_pay_later_button);
+        Button paymentWithCreditButton = view.findViewById(R.id.paypal_pay_with_credit_button);
+        Switch offerPayLater = view.findViewById(R.id.offer_pay_later_switch);
         Switch contactInformationSwitch = view.findViewById(R.id.contact_info_switch);
         Switch amountBreakdownSwitch = view.findViewById(R.id.amount_breakdown_switch);
 
@@ -62,6 +64,19 @@ public class PayPalFragment extends BaseFragment {
                 buyerPhoneNationalNumberEditText.getText().toString(),
                 contactInformationSwitch.isChecked(),
                 false,
+                false,
+                amountBreakdownSwitch.isChecked()
+            );
+        });
+        paymentWithCreditButton.setOnClickListener(v -> {
+            launchPayPal(
+                false,
+                buyerEmailEditText.getText().toString(),
+                buyerPhoneCountryCodeEditText.getText().toString(),
+                buyerPhoneNationalNumberEditText.getText().toString(),
+                contactInformationSwitch.isChecked(),
+                false,
+                true,
                 amountBreakdownSwitch.isChecked()
             );
             isPayLaterSelected = false;
@@ -87,6 +102,7 @@ public class PayPalFragment extends BaseFragment {
                     buyerPhoneNationalNumberEditText.getText().toString(),
                     contactInformationSwitch.isChecked(),
                     true,
+                    false,
                     amountBreakdownSwitch.isChecked()
             );
             isPayLaterSelected = true;
@@ -137,6 +153,7 @@ public class PayPalFragment extends BaseFragment {
         String buyerPhoneNationalNumber,
         Boolean isContactInformationEnabled,
         Boolean offerPayLater,
+        Boolean offerCredit,
         Boolean isAmountBreakdownEnabled
     ) {
         FragmentActivity activity = getActivity();
@@ -149,10 +166,10 @@ public class PayPalFragment extends BaseFragment {
                 if (dataCollectorResult instanceof DataCollectorResult.Success) {
                     deviceData = ((DataCollectorResult.Success) dataCollectorResult).getDeviceData();
                 }
-                launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled, offerPayLater, isAmountBreakdownEnabled);
+                launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled, offerPayLater, offerCredit, isAmountBreakdownEnabled);
             });
         } else {
-            launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled, offerPayLater, isAmountBreakdownEnabled);
+            launchPayPal(activity, isBillingAgreement, amount, buyerEmailAddress, buyerPhoneCountryCode, buyerPhoneNationalNumber, isContactInformationEnabled, offerPayLater, offerCredit, isAmountBreakdownEnabled);
         }
     }
 
@@ -165,6 +182,7 @@ public class PayPalFragment extends BaseFragment {
         String buyerPhoneNationalNumber,
         boolean isContactInformationEnabled,
         boolean offerPayLater,
+        boolean offerCredit,
         boolean isAmountBreakdownEnabled
     ) {
         PayPalRequest payPalRequest;
@@ -186,6 +204,7 @@ public class PayPalFragment extends BaseFragment {
                 isContactInformationEnabled,
                     null,
                     offerPayLater,
+                    offerCredit,
                     isAmountBreakdownEnabled
             );
         }

@@ -72,6 +72,8 @@ import org.json.JSONObject
  * @property recurringBillingPlanType Recurring billing plan type, or charge pattern.
  *
  * @property amountBreakdown Breakdown of items associated to the total cost
+ *
+ * @property shouldOfferCredit Offers PayPal Credit if the customer qualifies. Defaults to false.
  */
 @Parcelize
 class PayPalCheckoutRequest @JvmOverloads constructor(
@@ -101,6 +103,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
     override var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
     override var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
     var amountBreakdown: AmountBreakdown? = null,
+    override var shouldOfferCredit: Boolean = false,
 ) : PayPalRequest(
     hasUserLocationConsent = hasUserLocationConsent,
     localeCode = localeCode,
@@ -131,6 +134,7 @@ class PayPalCheckoutRequest @JvmOverloads constructor(
             .put(RETURN_URL_KEY, successUrl)
             .put(CANCEL_URL_KEY, cancelUrl)
             .put(OFFER_PAY_LATER_KEY, shouldOfferPayLater)
+            .put(OFFER_CREDIT_KEY, shouldOfferCredit)
 
         shippingCallbackUrl?.let {
             if (it.toString().isNotEmpty()) parameters.put(SHIPPING_CALLBACK_URL_KEY, it)

@@ -30,7 +30,7 @@ import org.json.JSONObject
 class PayPalVaultRequest
 @JvmOverloads constructor(
     override val hasUserLocationConsent: Boolean,
-    var shouldOfferCredit: Boolean = false,
+    override var shouldOfferCredit: Boolean = false,
     override var recurringBillingDetails: PayPalRecurringBillingDetails? = null,
     override var recurringBillingPlanType: PayPalRecurringBillingPlanType? = null,
     override var enablePayPalAppSwitch: Boolean = false,
