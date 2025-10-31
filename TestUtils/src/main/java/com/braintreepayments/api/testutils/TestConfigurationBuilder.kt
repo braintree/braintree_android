@@ -14,20 +14,8 @@ open class TestConfigurationBuilder : JSONBuilder {
         merchantId("integration_merchant_id")
     }
 
-    constructor(json: JSONObject) : super(json)
-
-    fun assetsUrl(assetsUrl: String) = apply {
-        put(assetsUrl)
-    }
-
     fun clientApiUrl(clientApiUrl: String) = apply {
         put(clientApiUrl)
-    }
-
-    fun challenges(vararg challenges: String) = apply {
-        val challengesJson = JSONArray()
-        challenges.forEach { challengesJson.put(it) }
-        put(challengesJson)
     }
 
     fun environment(environment: String) = apply {
@@ -89,41 +77,9 @@ open class TestConfigurationBuilder : JSONBuilder {
         }
     }
 
-    fun payWithVenmo(venmoConfigurationBuilder: TestVenmoConfigurationBuilder) = apply {
-        try {
-            put(JSONObject(venmoConfigurationBuilder.build()))
-        } catch (ignored: JSONException) {
-        }
-    }
-
     fun visaCheckout(visaCheckoutConfigurationBuilder: TestVisaCheckoutConfigurationBuilder) = apply {
         try {
             put(JSONObject(visaCheckoutConfigurationBuilder.build()))
-        } catch (ignored: JSONException) {
-        }
-    }
-
-    fun braintreeApi(braintreeApiConfigurationBuilder: TestBraintreeApiConfigurationBuilder) = apply {
-        try {
-            put(JSONObject(braintreeApiConfigurationBuilder.build()))
-        } catch (ignored: JSONException) {
-        }
-    }
-
-    fun graphQL() = apply {
-        try {
-            val graphQLJson = JSONObject().apply {
-                put("url", "http://10.0.2.2:8080/graphql")
-                put("features", JSONArray().put(Features.TOKENIZE_CREDIT_CARDS))
-            }
-            put(graphQLJson)
-        } catch (ignored: JSONException) {
-        }
-    }
-
-    fun graphQL(graphQLConfigurationBuilder: TestGraphQLConfigurationBuilder) = apply {
-        try {
-            put(JSONObject(graphQLConfigurationBuilder.build()))
         } catch (ignored: JSONException) {
         }
     }
@@ -136,61 +92,11 @@ open class TestConfigurationBuilder : JSONBuilder {
         }
     }
 
-    fun payWithVenmo(): TestVenmoConfigurationBuilder {
-        return try {
-            TestVenmoConfigurationBuilder(jsonBody.getJSONObject("payWithVenmo"))
-        } catch (ignored: JSONException) {
-            TestVenmoConfigurationBuilder()
-        }
-    }
-
-    fun googlePay(): TestGooglePayConfigurationBuilder {
-        return try {
-            TestGooglePayConfigurationBuilder(jsonBody.getJSONObject("androidPay"))
-        } catch (ignored: JSONException) {
-            TestGooglePayConfigurationBuilder()
-        }
-    }
-
     fun paypal(): TestPayPalConfigurationBuilder {
         return try {
             TestPayPalConfigurationBuilder(jsonBody.getJSONObject("paypal"))
         } catch (ignored: JSONException) {
             TestPayPalConfigurationBuilder(true)
-        }
-    }
-
-    fun visaCheckout(): TestVisaCheckoutConfigurationBuilder {
-        return try {
-            TestVisaCheckoutConfigurationBuilder(jsonBody.getJSONObject("visaCheckout"))
-        } catch (ignored: JSONException) {
-            TestVisaCheckoutConfigurationBuilder()
-        }
-    }
-
-    fun graphQLConfigurationBuilder(): TestGraphQLConfigurationBuilder {
-        return try {
-            TestGraphQLConfigurationBuilder(jsonBody.getJSONObject("graphQL"))
-        } catch (ignored: JSONException) {
-            TestGraphQLConfigurationBuilder()
-        }
-    }
-
-    class TestVenmoConfigurationBuilder : JSONBuilder {
-
-        constructor() : super()
-        constructor(json: JSONObject) : super(json)
-
-        fun accessToken(accessToken: String) = apply {
-            put(accessToken)
-        }
-
-        fun merchantId(merchantId: String) = apply {
-            put(merchantId)
-        }
-
-        fun environment(environment: String) = apply {
-            put(environment)
         }
     }
 
@@ -293,38 +199,7 @@ open class TestConfigurationBuilder : JSONBuilder {
         }
     }
 
-    class TestBraintreeApiConfigurationBuilder : JSONBuilder {
-
-        constructor() : super()
-        constructor(json: JSONObject) : super(json)
-
-        fun accessToken(accessToken: String) = apply {
-            put(accessToken)
-        }
-
-        fun url(url: String) = apply {
-            put(url)
-        }
-    }
-
-    class TestGraphQLConfigurationBuilder : JSONBuilder {
-
-        constructor() : super()
-        constructor(json: JSONObject) : super(json)
-
-        fun url(url: String) = apply {
-            put(url)
-        }
-
-        fun features(vararg features: String) = apply {
-            val jsonFeatures = JSONArray()
-            features.forEach { jsonFeatures.put(it) }
-            put(jsonFeatures)
-        }
-    }
-
     companion object {
-        @JvmStatic
         fun <T> basicConfig(): T {
             return TestConfigurationBuilder().buildConfiguration()
         }
