@@ -4,13 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="10dp"
+    android:padding="@dimen/margin_10"
     tools:context=".PayPalFragment">
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
         android:hint="@string/paypal_buyer_email_address">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -38,7 +37,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="@dimen/margin_20"
         android:hint="@string/paypal_phone_national_number">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -56,12 +55,6 @@
         android:text="Add Contact Information" />
 
     <Switch
-        android:id="@+id/offer_pay_later_switch"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/margin_40"
-        android:text="@string/paypal_offer_pay_later" />
-
-    <Switch
         android:id="@+id/amount_breakdown_switch"
         android:layout_width="match_parent"
         android:layout_height="@dimen/margin_40"
@@ -71,6 +64,8 @@
         android:id="@+id/paypal_single_payment_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_10"
+        android:layout_marginBottom="@dimen/margin_10"
         android:text="@string/paypal_single_payment" />
 
     <Button
@@ -83,6 +78,16 @@
         android:id="@+id/paypal_billing_agreement_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_10"
+        android:layout_marginBottom="@dimen/margin_10"
         android:text="@string/paypal_billing_agreement" />
+
+    <Button
+        android:id="@+id/paypal_single_payment_pay_later_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_10"
+        android:layout_marginBottom="@dimen/margin_10"
+        android:text="@string/paypal_single_time_pay_later" />
 
 </LinearLayout>

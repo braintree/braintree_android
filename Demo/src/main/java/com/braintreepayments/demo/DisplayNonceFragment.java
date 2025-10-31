@@ -25,7 +25,7 @@ public class DisplayNonceFragment extends Fragment {
     private TextView nonceString;
     private TextView nonceDetails;
     private TextView deviceData;
-
+    private TextView isPayLaterSelectedText;
     private Button createTransactionButton;
 
     public DisplayNonceFragment() { }
@@ -42,22 +42,22 @@ public class DisplayNonceFragment extends Fragment {
         nonceDetails = view.findViewById(R.id.nonce_details);
         deviceData = view.findViewById(R.id.device_data);
         createTransactionButton = view.findViewById(R.id.create_transaction);
-
+        isPayLaterSelectedText = view.findViewById(R.id.is_pay_later_selected);
         createTransactionButton.setOnClickListener(this::createTransaction);
 
         DisplayNonceFragmentArgs args = DisplayNonceFragmentArgs.fromBundle(getArguments());
-        displayNonce(args.getPaymentMethodNonce(), args.getDeviceData(), args.getTransactionAmount());
+        displayNonce(args.getPaymentMethodNonce(), args.getDeviceData(), args.getTransactionAmount(), args.getIsPayLaterSelected());
         return view;
     }
 
-    private void displayNonce(PaymentMethodNonce paymentMethodNonce, String deviceData, String amount) {
+    private void displayNonce(PaymentMethodNonce paymentMethodNonce, String deviceData, String amount, Boolean isPayLaterSelected) {
         this.amount = amount;
         nonce = paymentMethodNonce;
         nonceString.setText(getString(R.string.nonce_placeholder, nonce.getString()));
 
         String details = PaymentMethodNonceFormatter.convertToString(nonce);
         nonceDetails.setText(details);
-
+        isPayLaterSelectedText.setText(getString(R.string.is_pay_later_enabled_placeholder, String.valueOf(isPayLaterSelected)));
         this.deviceData.setText(getString(R.string.device_data_placeholder, deviceData));
     }
 
