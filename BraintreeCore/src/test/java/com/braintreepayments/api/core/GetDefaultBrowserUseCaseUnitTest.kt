@@ -38,7 +38,12 @@ class GetDefaultBrowserUseCaseUnitTest {
         resolveInfo.activityInfo = activityInfo
 
         val intentSlot = slot<Intent>()
-        every { packageManager.resolveActivity(capture(intentSlot), PackageManager.MATCH_DEFAULT_ONLY) } returns resolveInfo
+        every {
+            packageManager.resolveActivity(
+                capture(intentSlot),
+                PackageManager.MATCH_DEFAULT_ONLY
+            )
+        } returns resolveInfo
 
         val result = subject(packageManager)
 
