@@ -52,7 +52,6 @@ public class PayPalFragment extends BaseFragment {
         Button singlePaymentButton = view.findViewById(R.id.paypal_single_payment_button);
         Button singlePaymentPayLaterButton = view.findViewById(R.id.paypal_single_payment_pay_later_button);
         Button paymentWithCreditButton = view.findViewById(R.id.paypal_pay_with_credit_button);
-        Switch offerPayLater = view.findViewById(R.id.offer_pay_later_switch);
         Switch contactInformationSwitch = view.findViewById(R.id.contact_info_switch);
         Switch amountBreakdownSwitch = view.findViewById(R.id.amount_breakdown_switch);
 
@@ -68,6 +67,7 @@ public class PayPalFragment extends BaseFragment {
                 amountBreakdownSwitch.isChecked()
             );
         });
+
         paymentWithCreditButton.setOnClickListener(v -> {
             launchPayPal(
                 false,
@@ -81,15 +81,17 @@ public class PayPalFragment extends BaseFragment {
             );
             isPayLaterSelected = false;
         });
+
         billingAgreementButton.setOnClickListener(v -> {
             launchPayPal(
-                true,
-                buyerEmailEditText.getText().toString(),
-                buyerPhoneCountryCodeEditText.getText().toString(),
-                buyerPhoneNationalNumberEditText.getText().toString(),
-                false,
-                false,
-                amountBreakdownSwitch.isChecked()
+                    true,
+                    buyerEmailEditText.getText().toString(),
+                    buyerPhoneCountryCodeEditText.getText().toString(),
+                    buyerPhoneNationalNumberEditText.getText().toString(),
+                    contactInformationSwitch.isChecked(),
+                    false,
+                    false,
+                    amountBreakdownSwitch.isChecked()
             );
             isPayLaterSelected = false;
         });
