@@ -1,24 +1,44 @@
-name: Security
-# Slack: #help-product-security
+  name: Security
+  # Slack: #help-product-security
 
-permissions:
-  contents: write         # Needed by both CodeQL and dependency review
-  pull-requests: write    # Needed by dependency review
-  statuses: write         # Needed by dependency review (to post checks)
-  security-events: write  # Needed by CodeQL to upload SARIF
-  packages: read          # Needed by CodeQL for private/internal packs
-  actions: read           # Needed by CodeQL to access internal actions
+  on:
+    pull_request:
+      branches: [ main ]
+    push:
+      branches: [ main ]
+    workflow_dispatch:
 
-on:
-  pull_request:
-    branches: [ main ]
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+  jobs:
+    check-fork:
+      runs-on: ubuntu-latest
+      outputs:
+        is-fork: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork }}
+      steps:
+        - run: echo "Checking if PR is from fork"
 
-jobs:
-  code-scanning:
-    uses: braintree/security-workflows/.github/workflows/codeql-android.yml@main
+    code-scanning:
+      needs: check-fork
+      permissions:
+        # Conditional permissions based on whether it's a fork or not
+        contents: ${{ needs.check-fork.outputs.is-fork == 'true' && 'read' || 'write' }}
+        security-events: write  # Needed by CodeQL to upload SARIF
+        packages: read          # Needed by CodeQL for private/internal packs
+        actions: read           # Needed by CodeQL to access internal actions
+      uses: braintree/security-workflows/.github/workflows/codeql-android.yml@main
+      with:
+        # Pass information about whether this is a fork
+        is-fork: ${{ needs.check-fork.outputs.is-fork }}
 
-  dependency-review:
-    uses: braintree/security-workflows/.github/workflows/dependency-review-gradle.yml@main
+    dependency-review:
+      needs: check-fork
+      permissions:
+        # Conditional permissions based on whether it's a fork or not
+        contents: ${{ needs.check-fork.outputs.is-fork == 'true' && 'read' || 'write' }}
+        pull-requests: write    # Needed by dependency review
+        statuses: write         # Needed by dependency review (to post checks)
+      uses: braintree/security-workflows/.github/workflows/dependency-review-gradle.yml@main
+      with:
+        # Pass information about whether this is a fork
+        is-fork: ${{ needs.check-fork.outputs.is-fork }}
+        # Skip dependency submission for forks
+        dependency-submission: ${{ needs.check-fork.outputs.is-fork != 'true' }}
