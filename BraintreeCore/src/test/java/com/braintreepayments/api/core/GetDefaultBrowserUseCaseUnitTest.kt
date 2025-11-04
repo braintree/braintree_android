@@ -24,14 +24,14 @@ class GetDefaultBrowserUseCaseUnitTest {
     private val applicationContext: Context = mockk(relaxed = true)
     private val appLinkReturnUri = Uri.parse("https://example.com")
 
-    internal lateinit var subject: GetDefaultBrowserUseCase
+    internal lateinit var sut: GetDefaultBrowserUseCase
 
     @Before
     fun setUp() {
         every { merchantRepository.appLinkReturnUri } returns appLinkReturnUri
         every { merchantRepository.applicationContext } returns applicationContext
         every { applicationContext.packageManager } returns packageManager
-        subject = GetDefaultBrowserUseCase(merchantRepository)
+        sut = GetDefaultBrowserUseCase(merchantRepository)
     }
 
     @Test
@@ -49,7 +49,7 @@ class GetDefaultBrowserUseCaseUnitTest {
             )
         } returns resolveInfo
 
-        val result = subject()
+        val result = sut()
 
         assertEquals("com.android.chrome", result)
         assertEquals(Intent.ACTION_VIEW, intentSlot.captured.action)
@@ -61,7 +61,7 @@ class GetDefaultBrowserUseCaseUnitTest {
     fun `when invoke is called and no default browser is found, returns null`() {
         every { packageManager.resolveActivity(any(), PackageManager.MATCH_DEFAULT_ONLY) } returns null
 
-        val result = subject()
+        val result = sut()
 
         assertNull(result)
     }
@@ -72,7 +72,7 @@ class GetDefaultBrowserUseCaseUnitTest {
         resolveInfo.activityInfo = null
         every { packageManager.resolveActivity(any(), PackageManager.MATCH_DEFAULT_ONLY) } returns resolveInfo
 
-        val result = subject()
+        val result = sut()
 
         assertNull(result)
     }
@@ -93,7 +93,7 @@ class GetDefaultBrowserUseCaseUnitTest {
             resolveInfo.activityInfo = activityInfo
             every { packageManager.resolveActivity(any(), PackageManager.MATCH_DEFAULT_ONLY) } returns resolveInfo
 
-            val result = subject()
+            val result = sut()
 
             assertEquals(packageName, result)
         }
