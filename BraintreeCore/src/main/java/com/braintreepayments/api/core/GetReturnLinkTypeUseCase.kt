@@ -1,7 +1,5 @@
 package com.braintreepayments.api.core
 
-import android.content.Intent
-import android.content.pm.PackageManager
 import androidx.annotation.RestrictTo
 
 /**
@@ -13,19 +11,14 @@ import androidx.annotation.RestrictTo
  * [ReturnLinkTypeResult.APP_LINK] will be returned.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class GetReturnLinkTypeUseCase(private val merchantRepository: MerchantRepository) {
+class GetReturnLinkTypeUseCase(private val getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase) {
 
     enum class ReturnLinkTypeResult {
         APP_LINK, DEEP_LINK
     }
 
     operator fun invoke(): ReturnLinkTypeResult {
-        val context = merchantRepository.applicationContext
-        val intent = Intent(Intent.ACTION_VIEW, merchantRepository.appLinkReturnUri).apply {
-            addCategory(Intent.CATEGORY_BROWSABLE)
-        }
-        val resolvedActivity = context.packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
-        return if (resolvedActivity?.activityInfo?.packageName == context.packageName) {
+        return if (getAppLinksCompatibleBrowserUseCase()) {
             ReturnLinkTypeResult.APP_LINK
         } else {
             ReturnLinkTypeResult.DEEP_LINK
