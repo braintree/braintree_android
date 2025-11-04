@@ -1,5 +1,6 @@
 package com.braintreepayments.api.core
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -20,6 +21,7 @@ class GetDefaultBrowserUseCaseUnitTest {
 
     private val merchantRepository: MerchantRepository = mockk(relaxed = true)
     private val packageManager: PackageManager = mockk(relaxed = true)
+    private val applicationContext: Context = mockk(relaxed = true)
     private val appLinkReturnUri = Uri.parse("https://example.com")
 
     lateinit var subject: GetDefaultBrowserUseCase
@@ -27,6 +29,8 @@ class GetDefaultBrowserUseCaseUnitTest {
     @Before
     fun setUp() {
         every { merchantRepository.appLinkReturnUri } returns appLinkReturnUri
+        every { merchantRepository.applicationContext } returns applicationContext
+        every { applicationContext.packageManager } returns packageManager
         subject = GetDefaultBrowserUseCase(merchantRepository)
     }
 
@@ -45,7 +49,7 @@ class GetDefaultBrowserUseCaseUnitTest {
             )
         } returns resolveInfo
 
-        val result = subject(packageManager)
+        val result = subject()
 
         assertEquals("com.android.chrome", result)
         assertEquals(Intent.ACTION_VIEW, intentSlot.captured.action)
@@ -57,7 +61,7 @@ class GetDefaultBrowserUseCaseUnitTest {
     fun `when invoke is called and no default browser is found, returns null`() {
         every { packageManager.resolveActivity(any(), PackageManager.MATCH_DEFAULT_ONLY) } returns null
 
-        val result = subject(packageManager)
+        val result = subject()
 
         assertNull(result)
     }
@@ -68,7 +72,7 @@ class GetDefaultBrowserUseCaseUnitTest {
         resolveInfo.activityInfo = null
         every { packageManager.resolveActivity(any(), PackageManager.MATCH_DEFAULT_ONLY) } returns resolveInfo
 
-        val result = subject(packageManager)
+        val result = subject()
 
         assertNull(result)
     }
@@ -89,7 +93,7 @@ class GetDefaultBrowserUseCaseUnitTest {
             resolveInfo.activityInfo = activityInfo
             every { packageManager.resolveActivity(any(), PackageManager.MATCH_DEFAULT_ONLY) } returns resolveInfo
 
-            val result = subject(packageManager)
+            val result = subject()
 
             assertEquals(packageName, result)
         }

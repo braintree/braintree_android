@@ -10,11 +10,15 @@ import android.content.pm.ResolveInfo
  */
 class GetDefaultBrowserUseCase(private val merchantRepository: MerchantRepository) {
 
-    operator fun invoke(packageManager: PackageManager): String? {
+    operator fun invoke(): String? {
+        val context = merchantRepository.applicationContext
         val browserIntent = Intent(Intent.ACTION_VIEW, merchantRepository.appLinkReturnUri).apply {
             addCategory(Intent.CATEGORY_BROWSABLE)
         }
-        val resolveInfo: ResolveInfo? = packageManager.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY)
+        val resolveInfo: ResolveInfo? = context.packageManager.resolveActivity(
+            browserIntent, PackageManager
+                .MATCH_DEFAULT_ONLY
+        )
 
         if (resolveInfo != null && resolveInfo.activityInfo != null) {
             return resolveInfo.activityInfo.packageName

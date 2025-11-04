@@ -1,14 +1,11 @@
 package com.braintreepayments.api.core
 
-import android.content.pm.PackageManager
-
 class AppLinkCompatibleBrowserUseCase(
     private val getDefaultBrowserUseCase: GetDefaultBrowserUseCase,
-    private val packageManager: PackageManager
 ) {
 
     operator fun invoke(): Boolean {
-        getDefaultBrowserUseCase(packageManager)?.let {
+        getDefaultBrowserUseCase()?.let {
             return appLinkCompatibleBrowsers.contains(it)
         }
         return false
