@@ -14,7 +14,7 @@ class AppLinkCompatibleBrowserUseCaseUnitTest {
 
     private val getDefaultBrowserUseCase: GetDefaultBrowserUseCase = mockk(relaxed = true)
 
-    lateinit var subject: AppLinkCompatibleBrowserUseCase
+    internal lateinit var subject: AppLinkCompatibleBrowserUseCase
 
     @Before
     fun setUp() {
