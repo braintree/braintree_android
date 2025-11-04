@@ -1,6 +1,6 @@
 package com.braintreepayments.api.core
 
-class AppLinkCompatibleBrowserUseCase(
+internal class AppLinkCompatibleBrowserUseCase(
     private val getDefaultBrowserUseCase: GetDefaultBrowserUseCase,
 ) {
 

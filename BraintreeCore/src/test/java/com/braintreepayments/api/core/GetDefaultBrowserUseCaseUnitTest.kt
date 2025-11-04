@@ -24,7 +24,7 @@ class GetDefaultBrowserUseCaseUnitTest {
     private val applicationContext: Context = mockk(relaxed = true)
     private val appLinkReturnUri = Uri.parse("https://example.com")
 
-    lateinit var subject: GetDefaultBrowserUseCase
+    internal lateinit var subject: GetDefaultBrowserUseCase
 
     @Before
     fun setUp() {
