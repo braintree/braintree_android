@@ -9,15 +9,15 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
-class AppLinkCompatibleBrowserUseCaseUnitTest {
+class GetAppLinksCompatibleBrowserUseCaseUnitTest {
 
     private val getDefaultBrowserUseCase: GetDefaultBrowserUseCase = mockk(relaxed = true)
 
-    internal lateinit var sut: AppLinkCompatibleBrowserUseCase
+    internal lateinit var sut: GetAppLinksCompatibleBrowserUseCase
 
     @Before
     fun setUp() {
-        sut = AppLinkCompatibleBrowserUseCase(getDefaultBrowserUseCase)
+        sut = GetAppLinksCompatibleBrowserUseCase(getDefaultBrowserUseCase)
     }
 
     @Test
