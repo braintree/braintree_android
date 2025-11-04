@@ -1,6 +1,13 @@
 package com.braintreepayments.api.core
 
-internal class GetAppLinksCompatibleBrowserUseCase(
+import androidx.annotation.RestrictTo
+
+/**
+ * Checks whether the default browser of the device is compatible with app links feature based on a static list of
+ * pre-tested browsers for app links compatibility.
+ */
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+class GetAppLinksCompatibleBrowserUseCase(
     private val getDefaultBrowserUseCase: GetDefaultBrowserUseCase,
 ) {
 
@@ -12,16 +19,6 @@ internal class GetAppLinksCompatibleBrowserUseCase(
     }
 
     companion object {
-        private val appLinkIncompatibleBrowsers = listOf(
-            "com.mi.globalbrowser",
-            "com.UCMobile.intl",
-            "com.duckduckgo.mobile.android",
-            "com.opera.browser",
-            "com.opera.gx",
-            "com.opera.mini.native",
-            "com.yandex.browser"
-        )
-
         private val appLinkCompatibleBrowsers = listOf(
             "com.android.chrome",
             "com.brave.browser",
