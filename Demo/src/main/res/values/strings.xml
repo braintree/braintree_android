@@ -6,6 +6,7 @@
     <string name="reset">Reset</string>
     <string name="settings">Settings</string>
     <string name="nonce_placeholder">Nonce: %s</string>
+    <string name="is_pay_later_enabled_placeholder">Is Pay Later Selected: %s</string>
     <string name="device_data_placeholder">Device Data: %s</string>
     <string name="google_pay">Google Pay</string>
     <string name="paypal_button">PayPal</string>
@@ -83,6 +84,7 @@
     <string name="paypal_single_payment">Single Payment</string>
     <string name="paypal_single_payment_with_credit">Single Payment With Credit</string>
     <string name="paypal_billing_agreement">Billing Agreement</string>
+    <string name="paypal_single_time_pay_later">Single Payment Pay Later</string>
     <string name="paypal_intent_type">Intent Type</string>
     <string name="paypal_landing_page_type">Landing Page Type</string>
     <string name="paypal_intent_authorize">Authorize</string>

@@ -75,6 +75,10 @@
             android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
+        <argument
+            android:name="isPayLaterSelected"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_displayNonceFragment_to_createTransactionFragment"
             app:destination="@id/createTransactionFragment"
