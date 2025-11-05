@@ -44,8 +44,10 @@ class MockkLocalPaymentApiBuilder {
         } answers {
             val callback = arg<LocalPaymentInternalAuthRequestCallback>(1)
             when {
-                createPaymentMethodSuccess != null -> callback.onLocalPaymentInternalAuthResult(createPaymentMethodSuccess, null)
-                createPaymentMethodError != null -> callback.onLocalPaymentInternalAuthResult(null, createPaymentMethodError)
+                createPaymentMethodSuccess != null ->
+                    callback.onLocalPaymentInternalAuthResult(createPaymentMethodSuccess, null)
+                createPaymentMethodError != null ->
+                    callback.onLocalPaymentInternalAuthResult(null, createPaymentMethodError)
             }
         }
 

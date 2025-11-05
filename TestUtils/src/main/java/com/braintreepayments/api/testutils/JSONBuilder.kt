@@ -3,11 +3,10 @@ package com.braintreepayments.api.testutils
 import org.json.JSONException
 import org.json.JSONObject
 
-abstract class JSONBuilder protected constructor(json: JSONObject) {
+@Suppress("MagicNumber")
+abstract class JSONBuilder protected constructor(json: JSONObject = JSONObject()) {
 
     protected var jsonBody: JSONObject = json
-
-    constructor() : this(JSONObject())
 
     fun build(): String = jsonBody.toString()
 

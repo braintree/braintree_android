@@ -1,11 +1,11 @@
 package com.braintreepayments.api.testutils
 
 import com.braintreepayments.api.core.Configuration
-import com.braintreepayments.api.core.GraphQLConstants.Features
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
+@Suppress("TooManyFunctions")
 open class TestConfigurationBuilder : JSONBuilder {
 
     constructor() : super() {
