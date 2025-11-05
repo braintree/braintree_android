@@ -170,7 +170,7 @@ class LocalPaymentClientUnitTest {
             .configurationSuccess(payPalEnabledConfig)
             .build()
 
-        val localPaymentApi = MockLocalPaymentApiBuilder()
+        val localPaymentApi = MockkLocalPaymentApiBuilder()
             .createPaymentMethodSuccess(localPaymentAuthRequestParams)
             .build()
 
@@ -195,7 +195,7 @@ class LocalPaymentClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalEnabledConfig)
             .build()
-        val localPaymentApi = MockLocalPaymentApiBuilder()
+        val localPaymentApi = MockkLocalPaymentApiBuilder()
             .createPaymentMethodSuccess(localPaymentAuthRequestParams)
             .build()
 
@@ -244,7 +244,7 @@ class LocalPaymentClientUnitTest {
             .configurationSuccess(payPalEnabledConfig)
             .build()
 
-        val localPaymentApi = MockLocalPaymentApiBuilder()
+        val localPaymentApi = MockkLocalPaymentApiBuilder()
             .createPaymentMethodError(Exception("error"))
             .build()
 
@@ -330,7 +330,7 @@ class LocalPaymentClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_whenCreatePaymentMethodError_returnsErrorToCallback() {
-        val localPaymentApi = MockLocalPaymentApiBuilder()
+        val localPaymentApi = MockkLocalPaymentApiBuilder()
             .createPaymentMethodError(Exception("error"))
             .build()
         sut = LocalPaymentClient(
@@ -358,7 +358,7 @@ class LocalPaymentClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_whenCreatePaymentMethodSuccess_returnsLocalPaymentResultToCallback() {
-        val localPaymentApi = MockLocalPaymentApiBuilder()
+        val localPaymentApi = MockkLocalPaymentApiBuilder()
             .createPaymentMethodSuccess(localPaymentAuthRequestParams)
             .build()
 
@@ -387,7 +387,7 @@ class LocalPaymentClientUnitTest {
         val approvalUrl = "https://sample.com/approval?token=sample-token"
         val transaction = createLocalPaymentAuthRequestParams(request, approvalUrl, "")
 
-        val localPaymentApi = MockLocalPaymentApiBuilder()
+        val localPaymentApi = MockkLocalPaymentApiBuilder()
             .createPaymentMethodSuccess(transaction)
             .build()
 
@@ -422,7 +422,7 @@ class LocalPaymentClientUnitTest {
         val approvalUrl = "https://sample.com/approval?token=sample-token"
         val transaction = createLocalPaymentAuthRequestParams(request, approvalUrl, "some-paypal-context-id")
 
-        val localPaymentApi = MockLocalPaymentApiBuilder()
+        val localPaymentApi = MockkLocalPaymentApiBuilder()
             .createPaymentMethodSuccess(transaction)
             .build()
 
@@ -531,7 +531,7 @@ class LocalPaymentClientUnitTest {
             .sendPostErrorResponse(postError)
             .build()
 
-        val localPaymentApi = MockLocalPaymentApiBuilder()
+        val localPaymentApi = MockkLocalPaymentApiBuilder()
             .tokenizeError(postError)
             .build()
 
@@ -634,7 +634,7 @@ class LocalPaymentClientUnitTest {
         val successNonce = fromJSON(
             JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE)
         )
-        val localPaymentApi = MockLocalPaymentApiBuilder()
+        val localPaymentApi = MockkLocalPaymentApiBuilder()
             .tokenizeSuccess(successNonce)
             .build()
 
@@ -673,7 +673,7 @@ class LocalPaymentClientUnitTest {
             )
         } returns "client-metadata-id"
 
-        val localPaymentApi = MockLocalPaymentApiBuilder()
+        val localPaymentApi = MockkLocalPaymentApiBuilder()
             .tokenizeSuccess(
                 fromJSON(
                     JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE)

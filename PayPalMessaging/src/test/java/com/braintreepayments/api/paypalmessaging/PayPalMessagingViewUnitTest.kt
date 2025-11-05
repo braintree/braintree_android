@@ -6,7 +6,6 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
 import com.braintreepayments.api.testutils.Fixtures
-import com.braintreepayments.api.testutils.MockBraintreeClientBuilder
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import com.paypal.messages.config.message.PayPalMessageConfig
 import io.mockk.verify
@@ -35,7 +34,7 @@ class PayPalMessagingViewUnitTest {
     @Test
     fun `test start with configuration error calls onPayPalMessagingFailure delegate with error`() {
         val configError = Exception("Configuration error.")
-        val braintreeClient = MockBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(configError)
             .build()
 

@@ -10,7 +10,7 @@ import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import com.braintreepayments.api.paypal.PayPalAccountNonce.Companion.fromJSON
 import com.braintreepayments.api.testutils.Fixtures
-import com.braintreepayments.api.testutils.MockApiClientBuilder
+import com.braintreepayments.api.testutils.MockkApiClientBuilder
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import io.mockk.*
 import org.json.JSONException
@@ -888,7 +888,7 @@ class PayPalInternalClientUnitTest {
     @Test
     @Throws(JSONException::class)
     fun tokenize_onTokenizeResult_returnsAccountNonceToCallback() {
-        val apiClient = MockApiClientBuilder()
+        val apiClient = MockkApiClientBuilder()
             .tokenizeRESTSuccess(
                 JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE)
             )
@@ -915,7 +915,7 @@ class PayPalInternalClientUnitTest {
     @Test
     fun tokenize_onTokenizeError_returnsErrorToCallback() {
         val error = Exception("error")
-        val apiClient = MockApiClientBuilder()
+        val apiClient = MockkApiClientBuilder()
             .tokenizeRESTError(error)
             .build()
         val payPalAccount = mockk<PayPalAccount>(relaxed = true)
