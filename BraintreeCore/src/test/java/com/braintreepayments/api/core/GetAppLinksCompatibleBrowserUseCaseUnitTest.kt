@@ -30,6 +30,24 @@ class GetAppLinksCompatibleBrowserUseCaseUnitTest {
     }
 
     @Test
+    fun `when invoke is called with Chrome canary as default browser, returns true`() {
+        every { getDefaultBrowserUseCase() } returns "com.android.chrome.canary"
+
+        val result = sut()
+
+        assertEquals(true, result)
+    }
+
+    @Test
+    fun `when invoke is called with incomplete appId of Chrome as default browser, returns false`() {
+        every { getDefaultBrowserUseCase() } returns "com.android"
+
+        val result = sut()
+
+        assertEquals(false, result)
+    }
+
+    @Test
     fun `when invoke is called with Brave as default browser, returns true`() {
         every { getDefaultBrowserUseCase() } returns "com.brave.browser"
 

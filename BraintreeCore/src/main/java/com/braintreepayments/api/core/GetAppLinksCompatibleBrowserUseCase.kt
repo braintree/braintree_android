@@ -12,8 +12,8 @@ class GetAppLinksCompatibleBrowserUseCase(
 ) {
 
     operator fun invoke(): Boolean {
-        getDefaultBrowserUseCase()?.let {
-            return appLinkCompatibleBrowsers.contains(it)
+        getDefaultBrowserUseCase()?.let { defaultBrowser ->
+            return appLinkCompatibleBrowsers.any { defaultBrowser.contains(it) }
         }
         return false
     }
