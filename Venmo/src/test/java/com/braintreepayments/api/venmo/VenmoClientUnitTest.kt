@@ -12,6 +12,8 @@ import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.GetAppLinksCompatibleBrowserUseCase
+import com.braintreepayments.api.core.GetDefaultBrowserUseCase
 import com.braintreepayments.api.core.GetReturnLinkTypeUseCase
 import com.braintreepayments.api.core.GetReturnLinkUseCase
 import com.braintreepayments.api.core.IntegrationType
@@ -54,6 +56,10 @@ class VenmoClientUnitTest {
     private val merchantRepository = mockk<MerchantRepository>(relaxed = true)
     private val venmoRepository = mockk<VenmoRepository>(relaxed = true)
     private val getReturnLinkUseCase = mockk<GetReturnLinkUseCase>(relaxed = true)
+
+    private val getDefaultBrowserUseCase: GetDefaultBrowserUseCase = GetDefaultBrowserUseCase(merchantRepository)
+    private val getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase =
+        GetAppLinksCompatibleBrowserUseCase(getDefaultBrowserUseCase)
 
     private val venmoEnabledConfiguration: Configuration =
         Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO)
@@ -116,6 +122,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -138,6 +146,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -177,6 +187,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -234,6 +246,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -292,6 +306,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -336,6 +352,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -388,6 +406,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -426,6 +446,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -471,6 +493,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -508,6 +532,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -543,6 +569,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -583,6 +611,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -617,6 +647,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -650,6 +682,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -690,6 +724,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -728,6 +764,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -768,6 +806,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -813,6 +853,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -863,6 +905,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -887,6 +931,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -919,6 +965,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -943,6 +991,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -974,6 +1024,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -1020,6 +1072,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -1061,6 +1115,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -1111,6 +1167,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultBrowserUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )

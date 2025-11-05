@@ -12,6 +12,8 @@ import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
 import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.core.GetAppLinksCompatibleBrowserUseCase
+import com.braintreepayments.api.core.GetDefaultBrowserUseCase
 import com.braintreepayments.api.core.GetReturnLinkTypeUseCase
 import com.braintreepayments.api.core.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
 import com.braintreepayments.api.core.GetReturnLinkUseCase
@@ -47,6 +49,8 @@ class PayPalClientUnitTest {
     private val paymentAuthCallback: PayPalPaymentAuthCallback = mockk(relaxed = true)
 
     private val merchantRepository: MerchantRepository = mockk(relaxed = true)
+    private val getDefaultBrowserUseCase: GetDefaultBrowserUseCase = mockk(relaxed = true)
+    private val getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase = mockk(relaxed = true)
     private val getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase =
         mockk<GetReturnLinkTypeUseCase>(relaxed = true)
     private val getReturnLinkUseCase: GetReturnLinkUseCase = mockk(relaxed = true)
@@ -798,6 +802,8 @@ class PayPalClientUnitTest {
         braintreeClient,
         payPalInternalClient,
         merchantRepository,
+        getDefaultBrowserUseCase,
+        getAppLinksCompatibleBrowserUseCase,
         getReturnLinkTypeUseCase,
         getReturnLinkUseCase,
         analyticsParamRepository
