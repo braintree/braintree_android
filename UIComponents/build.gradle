@@ -1,0 +1,64 @@
+plugins {
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.android
+    alias libs.plugins.dokka
+}
+
+android {
+    namespace 'com.braintreepayments.api.uicomponents'
+    compileSdk rootProject.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'proguard.pro'
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+            all {
+                jvmArgs '-noverify'
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility versions.javaSourceCompatibility
+        targetCompatibility versions.javaTargetCompatibility
+    }
+
+    kotlinOptions {
+        jvmTarget = versions.javaTargetCompatibility.toString()
+    }
+
+    kotlin {
+        jvmToolchain {
+            languageVersion.set(JavaLanguageVersion.of(versions.javaTargetCompatibility.toString()))
+        }
+    }
+}
+
+dependencies {
+    api project(':BraintreeCore')
+
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    testImplementation libs.androidx.junit
+    testImplementation project(':TestUtils')
+}
+
+// region signing and publishing
+
+project.ext.name = "ui-components"
+project.ext.pom_name = "ui-components"
+project.ext.group_id = "com.braintreepayments.api"
+project.ext.version = rootProject.version
+project.ext.pom_desc = "UI Components for Braintree Android."
+
+apply from: rootProject.file("gradle/gradle-publish.gradle")
+
+// endregion
