@@ -9,11 +9,10 @@ android {
     compileSdk rootProject.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion rootProject.minSdkVersion
+        minSdk rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles 'proguard.pro'
     }
 
     testOptions {
@@ -45,9 +44,7 @@ dependencies {
     api project(':BraintreeCore')
 
     implementation libs.androidx.core.ktx
-    implementation libs.androidx.appcompat
-    implementation libs.material
-    testImplementation libs.androidx.junit
+    testImplementation libs.kotlin.test
     testImplementation project(':TestUtils')
 }
 

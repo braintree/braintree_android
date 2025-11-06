@@ -23,5 +23,7 @@ com.braintreepayments.api.shopperinsights.v2
 com.braintreepayments.api.shopperinsights.v2.internal
 module:ThreeDSecure
 com.braintreepayments.api.threedsecure
+module:UIComponents
+com.braintreepayments.api.uicomponents
 module:Venmo
 com.braintreepayments.api.venmo
