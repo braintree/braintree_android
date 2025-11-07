@@ -1,23 +1,22 @@
-package com.braintreepayments.api.core
+package com.braintreepayments.api.core.usecase
 
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.net.Uri
 import androidx.annotation.RestrictTo
 
 /**
- * Use case that returns the default browser that should be used for navigating from App Switch or browser back into the
- * merchant app.
+ * Use to get the package name of the default application that can handle the passed in URI.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class GetDefaultBrowserUseCase(private val merchantRepository: MerchantRepository) {
+class GetDefaultAppUseCase {
 
-    operator fun invoke(): String? {
-        val context = merchantRepository.applicationContext
-        val browserIntent = Intent(Intent.ACTION_VIEW, merchantRepository.appLinkReturnUri).apply {
+    operator fun invoke(packageManager: PackageManager, uri: Uri?): String? {
+        val browserIntent = Intent(Intent.ACTION_VIEW, uri).apply {
             addCategory(Intent.CATEGORY_BROWSABLE)
         }
-        val resolveInfo: ResolveInfo? = context.packageManager.resolveActivity(
+        val resolveInfo: ResolveInfo? = packageManager.resolveActivity(
             browserIntent, PackageManager
                 .MATCH_DEFAULT_ONLY
         )

@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.net.Uri
+import com.braintreepayments.api.core.usecase.GetDefaultBrowserUseCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot

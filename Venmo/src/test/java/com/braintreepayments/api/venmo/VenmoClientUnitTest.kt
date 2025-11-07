@@ -12,10 +12,10 @@ import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
-import com.braintreepayments.api.core.GetAppLinksCompatibleBrowserUseCase
-import com.braintreepayments.api.core.GetDefaultBrowserUseCase
-import com.braintreepayments.api.core.GetReturnLinkTypeUseCase
-import com.braintreepayments.api.core.GetReturnLinkUseCase
+import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
+import com.braintreepayments.api.core.usecase.GetDefaultBrowserUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.core.IntegrationType
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository

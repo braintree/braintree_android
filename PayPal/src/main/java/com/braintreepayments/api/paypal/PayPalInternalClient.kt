@@ -10,8 +10,8 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.DeviceInspector
 import com.braintreepayments.api.core.DeviceInspectorProvider
-import com.braintreepayments.api.core.GetAppSwitchUseCase
-import com.braintreepayments.api.core.GetReturnLinkUseCase
+import com.braintreepayments.api.core.usecase.GetAppSwitchUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.SetAppSwitchUseCase
 import com.braintreepayments.api.datacollector.DataCollector
@@ -51,7 +51,7 @@ internal class PayPalInternalClient(
                     deviceInspector.isPayPalInstalled() && resolvePayPalUseCase()
             }
 
-            val returnLinkResult = getReturnLinkUseCase()
+            val returnLinkResult = getReturnLinkUseCase(merchantRepository.appLinkReturnUri)
             val navigationLink: String = when (returnLinkResult) {
                 is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
                 is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> returnLinkResult.deepLinkFallbackUrlScheme
@@ -142,7 +142,7 @@ internal class PayPalInternalClient(
                     dataCollector.getClientMetadataId(context, dataCollectorRequest, configuration)
                 }
 
-                val returnLink: String = when (val returnLinkResult = getReturnLinkUseCase()) {
+                val returnLink: String = when (val returnLinkResult = getReturnLinkUseCase(parsedRedirectUri)) {
                     is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
                     is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> returnLinkResult.deepLinkFallbackUrlScheme
                     is GetReturnLinkUseCase.ReturnLinkResult.Failure -> {

@@ -1,5 +1,6 @@
-package com.braintreepayments.api.core
+package com.braintreepayments.api.core.usecase
 
+import android.net.Uri
 import androidx.annotation.RestrictTo
 
 /**
@@ -11,8 +12,8 @@ class GetAppLinksCompatibleBrowserUseCase(
     private val getDefaultBrowserUseCase: GetDefaultBrowserUseCase,
 ) {
 
-    operator fun invoke(): Boolean {
-        getDefaultBrowserUseCase()?.let { defaultBrowser ->
+    operator fun invoke(uri: Uri?): Boolean {
+        getDefaultBrowserUseCase(uri)?.let { defaultBrowser ->
             return appLinkCompatibleBrowsers.any { defaultBrowser.contains(it) }
         }
         return false

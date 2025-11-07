@@ -1,5 +1,7 @@
 package com.braintreepayments.api.core
 
+import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Before

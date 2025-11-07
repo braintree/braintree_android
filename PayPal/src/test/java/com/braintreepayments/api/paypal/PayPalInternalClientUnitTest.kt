@@ -4,8 +4,10 @@ import android.content.Context
 import android.net.Uri
 import com.braintreepayments.api.core.*
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
-import com.braintreepayments.api.core.GetReturnLinkUseCase.ReturnLinkResult
-import com.braintreepayments.api.core.GetReturnLinkUseCase.ReturnLinkResult.DeepLink
+import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase.ReturnLinkResult
+import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase.ReturnLinkResult.DeepLink
+import com.braintreepayments.api.core.usecase.GetAppSwitchUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import com.braintreepayments.api.paypal.PayPalAccountNonce.Companion.fromJSON

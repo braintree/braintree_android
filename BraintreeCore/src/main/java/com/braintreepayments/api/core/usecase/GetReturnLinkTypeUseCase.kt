@@ -1,5 +1,6 @@
-package com.braintreepayments.api.core
+package com.braintreepayments.api.core.usecase
 
+import android.net.Uri
 import androidx.annotation.RestrictTo
 
 /**
@@ -11,14 +12,17 @@ import androidx.annotation.RestrictTo
  * [ReturnLinkTypeResult.APP_LINK] will be returned.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class GetReturnLinkTypeUseCase(private val getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase) {
+class GetReturnLinkTypeUseCase(
+    private val checkDefaultAppHandlerUseCase: CheckDefaultAppHandlerUseCase,
+    private val getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase
+) {
 
     enum class ReturnLinkTypeResult {
         APP_LINK, DEEP_LINK
     }
 
-    operator fun invoke(): ReturnLinkTypeResult {
-        return if (getAppLinksCompatibleBrowserUseCase()) {
+    operator fun invoke(uri: Uri?): ReturnLinkTypeResult {
+        return if (checkDefaultAppHandlerUseCase() && getAppLinksCompatibleBrowserUseCase(uri)) {
             ReturnLinkTypeResult.APP_LINK
         } else {
             ReturnLinkTypeResult.DEEP_LINK
