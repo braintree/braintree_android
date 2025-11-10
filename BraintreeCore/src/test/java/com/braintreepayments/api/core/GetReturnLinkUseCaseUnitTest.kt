@@ -1,8 +1,8 @@
 package com.braintreepayments.api.core
 
 import android.net.Uri
-import com.braintreepayments.api.core.usecase.CheckReturnUriDefaultAppHandlerUseCase
 import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
+import com.braintreepayments.api.core.usecase.GetDefaultAppUseCase
 import com.braintreepayments.api.core.usecase.GetDefaultBrowserUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
@@ -21,7 +21,7 @@ class GetReturnLinkUseCaseUnitTest {
     private val merchantRepository: MerchantRepository = mockk(relaxed = true)
     private val getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = mockk(relaxed = true)
     private val getDefaultBrowserUseCase: GetDefaultBrowserUseCase = mockk(relaxed = true)
-    private val checkReturnUriDefaultAppHandlerUseCase: CheckReturnUriDefaultAppHandlerUseCase = mockk(relaxed = true)
+    private val getDefaultAppUseCase: GetDefaultAppUseCase = mockk(relaxed = true)
     private val getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase = mockk(relaxed = true)
     private val appLinkReturnUri = Uri.parse("https://example.com")
     private val deepLinkFallbackUrlScheme = "com.braintreepayments.demo"
@@ -36,8 +36,8 @@ class GetReturnLinkUseCaseUnitTest {
         sut = GetReturnLinkUseCase(
             merchantRepository,
             getDefaultBrowserUseCase,
-            checkReturnUriDefaultAppHandlerUseCase,
             getAppLinksCompatibleBrowserUseCase,
+            getDefaultAppUseCase,
             getReturnLinkTypeUseCase
         )
     }

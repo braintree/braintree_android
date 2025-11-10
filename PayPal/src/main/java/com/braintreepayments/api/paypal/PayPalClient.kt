@@ -21,7 +21,7 @@ import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.UserCanceledException
-import com.braintreepayments.api.core.usecase.CheckReturnUriDefaultAppHandlerUseCase
+import com.braintreepayments.api.core.usecase.GetDefaultAppUseCase
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
@@ -38,10 +38,11 @@ class PayPalClient internal constructor(
         GetDefaultBrowserUseCase(merchantRepository.applicationContext.packageManager),
     getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase =
         GetAppLinksCompatibleBrowserUseCase(getDefaultBrowserUseCase),
-    checkReturnUriDefaultAppHandlerUseCase: CheckReturnUriDefaultAppHandlerUseCase =
-        CheckReturnUriDefaultAppHandlerUseCase(merchantRepository),
+    getDefaultAppUseCase: GetDefaultAppUseCase = GetDefaultAppUseCase(merchantRepository.applicationContext.packageManager),
     getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(
-        checkReturnUriDefaultAppHandlerUseCase, getAppLinksCompatibleBrowserUseCase
+        merchantRepository,
+        getDefaultAppUseCase,
+        getAppLinksCompatibleBrowserUseCase
     ),
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance

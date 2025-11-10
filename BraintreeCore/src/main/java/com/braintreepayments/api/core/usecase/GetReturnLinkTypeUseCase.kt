@@ -3,6 +3,7 @@ package com.braintreepayments.api.core.usecase
 import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.core.net.toUri
+import com.braintreepayments.api.core.MerchantRepository
 
 /**
  * Use case that returns a return link type that will be used for navigating from App Switch or browser back into the
@@ -14,7 +15,8 @@ import androidx.core.net.toUri
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class GetReturnLinkTypeUseCase(
-    private val checkReturnUriDefaultAppHandlerUseCase: CheckReturnUriDefaultAppHandlerUseCase,
+    private val merchantRepository: MerchantRepository,
+    private val getDefaultAppUseCase: GetDefaultAppUseCase,
     private val getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase
 ) {
 
@@ -27,10 +29,13 @@ class GetReturnLinkTypeUseCase(
      * opens, not the merchant passed return url
      */
     operator fun invoke(uri: Uri? = "https://example.com".toUri()): ReturnLinkTypeResult {
-        return if (checkReturnUriDefaultAppHandlerUseCase() && getAppLinksCompatibleBrowserUseCase(uri)) {
+        return if (checkReturnUriDefaultAppHandler() && getAppLinksCompatibleBrowserUseCase(uri)) {
             ReturnLinkTypeResult.APP_LINK
         } else {
             ReturnLinkTypeResult.DEEP_LINK
         }
     }
+
+    private fun checkReturnUriDefaultAppHandler(): Boolean =
+        merchantRepository.applicationContext.packageName == getDefaultAppUseCase(merchantRepository.appLinkReturnUri)
 }

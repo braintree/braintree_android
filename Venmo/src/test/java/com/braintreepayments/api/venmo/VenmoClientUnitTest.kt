@@ -20,7 +20,6 @@ import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.core.IntegrationType
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
-import com.braintreepayments.api.core.usecase.CheckReturnUriDefaultAppHandlerUseCase
 import com.braintreepayments.api.core.usecase.GetDefaultAppUseCase
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
