@@ -12,12 +12,12 @@ class GetAppLinksCompatibleBrowserUseCase(
     private val getDefaultBrowserUseCase: GetDefaultBrowserUseCase,
 ) {
 
-    operator fun invoke(uri: Uri?): Boolean {
-        getDefaultBrowserUseCase(uri)?.let { defaultBrowser ->
-            return appLinkCompatibleBrowsers.any { defaultBrowser.contains(it) }
-        }
-        return false
-    }
+    /**
+     * [browserUri] - [internal - remove before publish] The url to be sent here is the checkout url that the browser
+     * opens, not the merchant passed return url.
+     */
+    operator fun invoke(browserUri: Uri?): Boolean =
+        appLinkCompatibleBrowsers.any { getDefaultBrowserUseCase(browserUri)?.contains(it) == true }
 
     companion object {
         private val appLinkCompatibleBrowsers = listOf(

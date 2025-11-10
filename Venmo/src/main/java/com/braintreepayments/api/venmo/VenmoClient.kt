@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Base64
+import androidx.core.net.toUri
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.AnalyticsEventParams
@@ -19,7 +20,7 @@ import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.MetadataBuilder
-import com.braintreepayments.api.core.usecase.CheckDefaultAppHandlerUseCase
+import com.braintreepayments.api.core.usecase.CheckReturnUriDefaultAppHandlerUseCase
 import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
 import com.braintreepayments.api.core.usecase.GetDefaultBrowserUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
@@ -43,9 +44,9 @@ class VenmoClient internal constructor(
     getDefaultBrowserUseCase: GetDefaultBrowserUseCase = GetDefaultBrowserUseCase(merchantRepository.applicationContext.packageManager),
     getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase =
         GetAppLinksCompatibleBrowserUseCase(getDefaultBrowserUseCase),
-    checkDefaultAppHandlerUseCase: CheckDefaultAppHandlerUseCase = CheckDefaultAppHandlerUseCase(merchantRepository),
+    checkReturnUriDefaultAppHandlerUseCase: CheckReturnUriDefaultAppHandlerUseCase = CheckReturnUriDefaultAppHandlerUseCase(merchantRepository),
     getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(
-        checkDefaultAppHandlerUseCase,
+        checkReturnUriDefaultAppHandlerUseCase,
         getAppLinksCompatibleBrowserUseCase
     ),
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository)
@@ -62,7 +63,7 @@ class VenmoClient internal constructor(
     private var isVaultRequest = false
 
     init {
-        analyticsParamRepository.linkType = when (getReturnLinkTypeUseCase(merchantRepository.appLinkReturnUri)) {
+        analyticsParamRepository.linkType = when (getReturnLinkTypeUseCase()) {
             ReturnLinkTypeResult.APP_LINK -> LinkType.APP_LINK
             ReturnLinkTypeResult.DEEP_LINK -> LinkType.DEEP_LINK
         }
@@ -222,7 +223,9 @@ class VenmoClient internal constructor(
 
         val applicationName = context.packageManager.getApplicationLabel(context.applicationInfo).toString()
 
-        val returnLinkResult = getReturnLinkUseCase(merchantRepository.appLinkReturnUri)
+        val venmoBaseUri = "https://venmo.com/go/checkout".toUri()
+
+        val returnLinkResult = getReturnLinkUseCase(venmoBaseUri)
         val merchantBaseUrl: String = when (returnLinkResult) {
             is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
             is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> {
@@ -236,7 +239,7 @@ class VenmoClient internal constructor(
         val cancelUri = "$merchantBaseUrl/cancel"
         val errorUri = "$merchantBaseUrl/error"
 
-        val venmoBaseURL = Uri.parse("https://venmo.com/go/checkout")
+        val venmoBaseURL = venmoBaseUri
             .buildUpon()
             .appendQueryParameter("x-success", successUri)
             .appendQueryParameter("x-error", errorUri)

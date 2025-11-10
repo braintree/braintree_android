@@ -51,7 +51,7 @@ internal class PayPalInternalClient(
                     deviceInspector.isPayPalInstalled() && resolvePayPalUseCase()
             }
 
-            val returnLinkResult = getReturnLinkUseCase(merchantRepository.appLinkReturnUri)
+            val returnLinkResult = getReturnLinkUseCase()
             val navigationLink: String = when (returnLinkResult) {
                 is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
                 is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> returnLinkResult.deepLinkFallbackUrlScheme
