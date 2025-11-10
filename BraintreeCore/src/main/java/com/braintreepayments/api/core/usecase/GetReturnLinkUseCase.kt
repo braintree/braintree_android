@@ -20,9 +20,8 @@ class GetReturnLinkUseCase(
     getDefaultBrowserUseCase: GetDefaultBrowserUseCase = GetDefaultBrowserUseCase(
         merchantRepository.applicationContext.packageManager
     ),
-    checkReturnUriDefaultAppHandlerUseCase: CheckReturnUriDefaultAppHandlerUseCase = CheckReturnUriDefaultAppHandlerUseCase(
-        merchantRepository
-    ),
+    checkReturnUriDefaultAppHandlerUseCase: CheckReturnUriDefaultAppHandlerUseCase =
+        CheckReturnUriDefaultAppHandlerUseCase(merchantRepository),
     getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase =
         GetAppLinksCompatibleBrowserUseCase(getDefaultBrowserUseCase),
     private val getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(

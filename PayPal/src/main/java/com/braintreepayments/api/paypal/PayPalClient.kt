@@ -38,9 +38,8 @@ class PayPalClient internal constructor(
         GetDefaultBrowserUseCase(merchantRepository.applicationContext.packageManager),
     getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase =
         GetAppLinksCompatibleBrowserUseCase(getDefaultBrowserUseCase),
-    checkReturnUriDefaultAppHandlerUseCase: CheckReturnUriDefaultAppHandlerUseCase = CheckReturnUriDefaultAppHandlerUseCase(
-        merchantRepository
-    ),
+    checkReturnUriDefaultAppHandlerUseCase: CheckReturnUriDefaultAppHandlerUseCase =
+        CheckReturnUriDefaultAppHandlerUseCase(merchantRepository),
     getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(
         checkReturnUriDefaultAppHandlerUseCase, getAppLinksCompatibleBrowserUseCase
     ),

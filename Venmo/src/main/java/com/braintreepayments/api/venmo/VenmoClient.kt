@@ -41,10 +41,12 @@ class VenmoClient internal constructor(
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val venmoRepository: VenmoRepository = VenmoRepository.instance,
-    getDefaultBrowserUseCase: GetDefaultBrowserUseCase = GetDefaultBrowserUseCase(merchantRepository.applicationContext.packageManager),
+    getDefaultBrowserUseCase: GetDefaultBrowserUseCase =
+        GetDefaultBrowserUseCase(merchantRepository.applicationContext.packageManager),
     getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase =
         GetAppLinksCompatibleBrowserUseCase(getDefaultBrowserUseCase),
-    checkReturnUriDefaultAppHandlerUseCase: CheckReturnUriDefaultAppHandlerUseCase = CheckReturnUriDefaultAppHandlerUseCase(merchantRepository),
+    checkReturnUriDefaultAppHandlerUseCase: CheckReturnUriDefaultAppHandlerUseCase =
+        CheckReturnUriDefaultAppHandlerUseCase(merchantRepository),
     getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(
         checkReturnUriDefaultAppHandlerUseCase,
         getAppLinksCompatibleBrowserUseCase
