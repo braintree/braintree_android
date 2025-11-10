@@ -9,12 +9,9 @@ import androidx.annotation.RestrictTo
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class GetDefaultBrowserUseCase(
-    private val packageManager: PackageManager,
-    private val getDefaultAppUseCase: GetDefaultAppUseCase = GetDefaultAppUseCase()
+    packageManager: PackageManager,
+    private val getDefaultAppUseCase: GetDefaultAppUseCase = GetDefaultAppUseCase(packageManager)
 ) {
 
-    operator fun invoke(uri: Uri?): String? = getDefaultAppUseCase(
-        packageManager,
-        uri
-    )
+    operator fun invoke(uri: Uri?): String? = getDefaultAppUseCase(uri)
 }

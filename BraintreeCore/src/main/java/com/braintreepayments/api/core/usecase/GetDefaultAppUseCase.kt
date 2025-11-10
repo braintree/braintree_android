@@ -10,9 +10,9 @@ import androidx.annotation.RestrictTo
  * Use to get the package name of the default application that can handle the passed in URI.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class GetDefaultAppUseCase {
+class GetDefaultAppUseCase(private val packageManager: PackageManager) {
 
-    operator fun invoke(packageManager: PackageManager, uri: Uri?): String? {
+    operator fun invoke(uri: Uri?): String? {
         val browserIntent = Intent(Intent.ACTION_VIEW, uri).apply {
             addCategory(Intent.CATEGORY_BROWSABLE)
         }

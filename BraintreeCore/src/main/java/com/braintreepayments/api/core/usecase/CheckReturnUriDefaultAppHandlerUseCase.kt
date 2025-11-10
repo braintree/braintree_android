@@ -7,11 +7,11 @@ import com.braintreepayments.api.core.MerchantRepository
  */
 class CheckReturnUriDefaultAppHandlerUseCase(
     private val merchantRepository: MerchantRepository,
-    private val getDefaultAppUseCase: GetDefaultAppUseCase = GetDefaultAppUseCase()
+    private val getDefaultAppUseCase: GetDefaultAppUseCase =
+        GetDefaultAppUseCase(merchantRepository.applicationContext.packageManager)
 ) {
 
     operator fun invoke(): Boolean = merchantRepository.applicationContext.packageName == getDefaultAppUseCase(
-        merchantRepository.applicationContext.packageManager,
         merchantRepository.appLinkReturnUri
     )
 }
