@@ -9,7 +9,7 @@ import androidx.annotation.RestrictTo
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class GetAppLinksCompatibleBrowserUseCase(
-    private val getDefaultBrowserUseCase: GetDefaultBrowserUseCase,
+    private val getDefaultAppUseCase: GetDefaultAppUseCase,
 ) {
 
     /**
@@ -17,7 +17,7 @@ class GetAppLinksCompatibleBrowserUseCase(
      * opens, not the merchant passed return url.
      */
     operator fun invoke(browserUri: Uri?): Boolean =
-        appLinkCompatibleBrowsers.any { getDefaultBrowserUseCase(browserUri)?.contains(it) == true }
+        appLinkCompatibleBrowsers.any { getDefaultAppUseCase(browserUri)?.contains(it) == true }
 
     companion object {
         private val appLinkCompatibleBrowsers = listOf(

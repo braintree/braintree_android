@@ -14,7 +14,6 @@ import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
-import com.braintreepayments.api.core.usecase.GetDefaultBrowserUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
 import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
@@ -34,11 +33,9 @@ class PayPalClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient = PayPalInternalClient(braintreeClient),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
-    getDefaultBrowserUseCase: GetDefaultBrowserUseCase =
-        GetDefaultBrowserUseCase(merchantRepository.applicationContext.packageManager),
-    getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase =
-        GetAppLinksCompatibleBrowserUseCase(getDefaultBrowserUseCase),
     getDefaultAppUseCase: GetDefaultAppUseCase = GetDefaultAppUseCase(merchantRepository.applicationContext.packageManager),
+    getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase =
+        GetAppLinksCompatibleBrowserUseCase(getDefaultAppUseCase),
     getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(
         merchantRepository,
         getDefaultAppUseCase,

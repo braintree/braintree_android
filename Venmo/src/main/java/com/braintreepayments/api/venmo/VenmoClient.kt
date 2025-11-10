@@ -22,7 +22,6 @@ import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.MetadataBuilder
 import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
 import com.braintreepayments.api.core.usecase.GetDefaultAppUseCase
-import com.braintreepayments.api.core.usecase.GetDefaultBrowserUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
 import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
@@ -41,11 +40,9 @@ class VenmoClient internal constructor(
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val venmoRepository: VenmoRepository = VenmoRepository.instance,
-    getDefaultBrowserUseCase: GetDefaultBrowserUseCase =
-        GetDefaultBrowserUseCase(merchantRepository.applicationContext.packageManager),
-    getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase =
-        GetAppLinksCompatibleBrowserUseCase(getDefaultBrowserUseCase),
     getDefaultAppUseCase: GetDefaultAppUseCase = GetDefaultAppUseCase(merchantRepository.applicationContext.packageManager),
+    getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase =
+        GetAppLinksCompatibleBrowserUseCase(getDefaultAppUseCase),
     getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(
         merchantRepository,
         getDefaultAppUseCase,

@@ -13,7 +13,6 @@ import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
-import com.braintreepayments.api.core.usecase.GetDefaultBrowserUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
 import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
