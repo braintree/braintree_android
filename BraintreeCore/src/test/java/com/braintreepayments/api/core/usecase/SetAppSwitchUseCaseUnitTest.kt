@@ -1,9 +1,12 @@
-package com.braintreepayments.api.core
+package com.braintreepayments.api.core.usecase
 
+import com.braintreepayments.api.core.AppSwitchRepository
+import com.braintreepayments.api.core.DeviceInspector
+import com.braintreepayments.api.core.SetAppSwitchUseCase
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import io.mockk.confirmVerified
 import org.junit.Before
 import org.junit.Test
 

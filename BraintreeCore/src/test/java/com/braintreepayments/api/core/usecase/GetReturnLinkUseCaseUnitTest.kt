@@ -1,10 +1,7 @@
-package com.braintreepayments.api.core
+package com.braintreepayments.api.core.usecase
 
 import android.net.Uri
-import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
-import com.braintreepayments.api.core.usecase.GetDefaultAppUseCase
-import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
-import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
+import com.braintreepayments.api.core.MerchantRepository
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Before
