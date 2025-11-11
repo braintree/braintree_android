@@ -19,19 +19,21 @@ class GetReturnLinkTypeUseCaseUnitTest {
     private val merchantRepository = mockk<MerchantRepository>()
     private val getDefaultAppUseCase = mockk<GetDefaultAppUseCase>()
     private val packageName = "some.package"
+    private val appLinkReturnUri = "merchant.app".toUri()
+    private val someUri = "example.com".toUri()
 
     @Before
     fun setUp() {
         val applicationContext = mockk<Context>()
         every { merchantRepository.applicationContext } returns applicationContext
+        every { merchantRepository.appLinkReturnUri } returns appLinkReturnUri
         every { applicationContext.packageName } returns packageName
         sut = GetReturnLinkTypeUseCase(merchantRepository, getDefaultAppUseCase, getAppLinksCompatibleBrowserUseCase)
     }
 
     @Test
-    fun `when invoke is called and we are able to handle returnUri in app and we have a app link compatible browser,APP_LINK is returned`() {
-        val someUri = "example.com".toUri()
-        every { getDefaultAppUseCase(any()) } returns packageName
+    fun `when invoke is called and merchant app is able to handle return uri by default and we have an app link compatible browser, APP_LINK is returned`() {
+        every { getDefaultAppUseCase(appLinkReturnUri) } returns packageName
         every { getAppLinksCompatibleBrowserUseCase.invoke(someUri) } returns true
 
         val result = sut.invoke(someUri)
@@ -40,28 +42,33 @@ class GetReturnLinkTypeUseCaseUnitTest {
     }
 
     @Test
-    fun `when invoke is called and app link compatible browser is not available, DEEP_LINK is returned`() {
-        every { getAppLinksCompatibleBrowserUseCase(any()) } returns false
+    fun `when invoke is called and merchant app is able to handle return uri by default and app link compatible browser is not available, DEEP_LINK is returned`() {
+        every { getDefaultAppUseCase(appLinkReturnUri) } returns packageName
+        every { getAppLinksCompatibleBrowserUseCase(someUri) } returns false
 
-        val result = sut()
-
-        assertEquals(GetReturnLinkTypeUseCase.ReturnLinkTypeResult.DEEP_LINK, result)
-    }
-
-    @Test
-    fun `when invoke is called and we are unable to handle return uri, DEEP_LINK is returned`() {
-        every { getAppLinksCompatibleBrowserUseCase(any()) } returns true
-
-        val result = sut()
+        val result = sut(someUri)
 
         assertEquals(GetReturnLinkTypeUseCase.ReturnLinkTypeResult.DEEP_LINK, result)
     }
 
     @Test
-    fun `when invoke is called and we have a app link compatible browser, APP_LINK is returned`() {
-        every { getAppLinksCompatibleBrowserUseCase(any()) } returns true
+    fun `when invoke is called and merchant app is unable to handle return uri by default, DEEP_LINK is returned`() {
 
-        val result = sut()
+        every { getDefaultAppUseCase(appLinkReturnUri) } returns "some.other.package"
+        every { getAppLinksCompatibleBrowserUseCase(someUri) } returns true
+
+        val result = sut(someUri)
+
+        assertEquals(GetReturnLinkTypeUseCase.ReturnLinkTypeResult.DEEP_LINK, result)
+    }
+
+    @Test
+    fun `when invoke is called and merchant app is unable to handle return uri by default and app link compatible browser is not available, DEEP_LINK is returned`() {
+        val someUri = "example.com".toUri()
+        every { getDefaultAppUseCase(appLinkReturnUri) } returns "some.other.package"
+        every { getAppLinksCompatibleBrowserUseCase(someUri) } returns false
+
+        val result = sut(someUri)
 
         assertEquals(GetReturnLinkTypeUseCase.ReturnLinkTypeResult.DEEP_LINK, result)
     }

@@ -17,7 +17,8 @@ import com.braintreepayments.api.core.MerchantRepository
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class GetReturnLinkUseCase(
     private val merchantRepository: MerchantRepository,
-    getDefaultAppUseCase: GetDefaultAppUseCase = GetDefaultAppUseCase(merchantRepository.applicationContext.packageManager),
+    getDefaultAppUseCase: GetDefaultAppUseCase =
+        GetDefaultAppUseCase(merchantRepository.applicationContext.packageManager),
     getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase =
         GetAppLinksCompatibleBrowserUseCase(getDefaultAppUseCase),
     private val getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(
