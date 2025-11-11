@@ -66,7 +66,7 @@ class PayPalInternalClientUnitTest {
         deviceInspector = mockk(relaxed = true)
         payPalInternalClientCallback = mockk(relaxed = true)
 
-        every { getReturnLinkUseCase.invoke() } returns ReturnLinkResult.AppLink(
+        every { getReturnLinkUseCase.invoke(any()) } returns ReturnLinkResult.AppLink(
             Uri.parse("https://example.com")
         )
     }
