@@ -1,6 +1,7 @@
 package com.braintreepayments.api.paypal
 
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.LaunchType
@@ -227,6 +228,7 @@ class PayPalClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_setsAppLinkReturnUrl() {
+        every { getReturnLinkUseCase.invoke(any()) } returns AppLink("www.example.com".toUri())
         val payPalVaultRequest = PayPalVaultRequest(true)
         payPalVaultRequest.merchantAccountId = "sample-merchant-account-id"
 
@@ -267,7 +269,7 @@ class PayPalClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_setsDeepLinkReturnUrlScheme() {
-        every { getReturnLinkUseCase.invoke() } returns DeepLink("com.braintreepayments.demo")
+        every { getReturnLinkUseCase.invoke(any()) } returns DeepLink("com.braintreepayments.demo")
         val payPalVaultRequest = PayPalVaultRequest(true)
         payPalVaultRequest.merchantAccountId = "sample-merchant-account-id"
 
@@ -307,7 +309,7 @@ class PayPalClientUnitTest {
     @Test
     fun createPaymentAuthRequest_returnsAnErrorWhen_getReturnLinkUseCase_returnsAFailure() {
         val exception = BraintreeException()
-        every { getReturnLinkUseCase.invoke() } returns ReturnLinkResult.Failure(exception)
+        every { getReturnLinkUseCase.invoke(any()) } returns ReturnLinkResult.Failure(exception)
 
         val payPalVaultRequest = PayPalVaultRequest(true)
         payPalVaultRequest.merchantAccountId = "sample-merchant-account-id"

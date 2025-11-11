@@ -11,6 +11,7 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@Suppress("MaxLineLength")
 @RunWith(RobolectricTestRunner::class)
 class GetReturnLinkTypeUseCaseUnitTest {
 
