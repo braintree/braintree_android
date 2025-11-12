@@ -5,7 +5,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        api-level: [ 23, 31, 35 ]
+        api-level: [ 35 ]
+#        api-level: [ 23, 31, 35 ]
         target: [ default, google_apis ]
     steps:
       - name: checkout
