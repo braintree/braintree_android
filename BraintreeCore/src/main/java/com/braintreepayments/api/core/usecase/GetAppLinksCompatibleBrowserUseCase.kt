@@ -2,6 +2,7 @@ package com.braintreepayments.api.core.usecase
 
 import android.net.Uri
 import androidx.annotation.RestrictTo
+import com.braintreepayments.api.core.CheckoutUri
 
 /**
  * Checks whether the default browser of the device is compatible with app links feature based on a static list of
@@ -12,11 +13,7 @@ class GetAppLinksCompatibleBrowserUseCase(
     private val getDefaultAppUseCase: GetDefaultAppUseCase,
 ) {
 
-    /**
-     * [browserUri] - [internal - remove before publish] The url to be sent here is the checkout url that the browser
-     * opens, not the merchant passed return url.
-     */
-    operator fun invoke(browserUri: Uri?): Boolean =
+    operator fun invoke(@CheckoutUri browserUri: Uri?): Boolean =
         appLinkCompatibleBrowsers.any { getDefaultAppUseCase(browserUri)?.contains(it) == true }
 
     companion object {

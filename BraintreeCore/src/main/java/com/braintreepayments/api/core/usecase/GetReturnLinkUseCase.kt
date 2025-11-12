@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.core.net.toUri
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.CheckoutUri
 import com.braintreepayments.api.core.MerchantRepository
 
 /**
@@ -36,11 +37,7 @@ class GetReturnLinkUseCase(
         data class Failure(val exception: Exception) : ReturnLinkResult()
     }
 
-    /**
-     * [uri] - [internal - remove before publish] The url to be sent here is the checkout url that the browser
-     * opens, not the merchant passed return url
-     */
-    operator fun invoke(uri: Uri? = "https://example.com".toUri()): ReturnLinkResult {
+    operator fun invoke(@CheckoutUri uri: Uri? = "https://example.com".toUri()): ReturnLinkResult {
         return when (getReturnLinkTypeUseCase(uri)) {
             GetReturnLinkTypeUseCase.ReturnLinkTypeResult.APP_LINK -> {
                 merchantRepository.appLinkReturnUri?.let { ReturnLinkResult.AppLink(it) }

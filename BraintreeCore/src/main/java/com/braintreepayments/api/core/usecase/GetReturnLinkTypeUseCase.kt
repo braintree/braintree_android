@@ -3,6 +3,7 @@ package com.braintreepayments.api.core.usecase
 import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.core.net.toUri
+import com.braintreepayments.api.core.CheckoutUri
 import com.braintreepayments.api.core.MerchantRepository
 
 /**
@@ -23,11 +24,7 @@ class GetReturnLinkTypeUseCase(
         APP_LINK, DEEP_LINK
     }
 
-    /**
-     * [uri] - [internal - remove before publish] The url to be sent here is the checkout url that the browser
-     * opens, not the merchant passed return url
-     */
-    operator fun invoke(uri: Uri? = "https://example.com".toUri()): ReturnLinkTypeResult {
+    operator fun invoke(@CheckoutUri uri: Uri? = "https://example.com".toUri()): ReturnLinkTypeResult {
         return if (checkReturnUriDefaultAppHandler() && getAppLinksCompatibleBrowserUseCase(uri)) {
             ReturnLinkTypeResult.APP_LINK
         } else {
