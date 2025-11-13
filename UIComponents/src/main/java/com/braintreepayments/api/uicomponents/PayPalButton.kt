@@ -24,6 +24,7 @@ class PayPalButton @JvmOverloads constructor(
     private val logoOffset = (1.5f * resources.displayMetrics.density).toInt()
     private val desiredWidth = (300 * resources.displayMetrics.density).toInt()
     private val desiredHeight = (45 * resources.displayMetrics.density).toInt()
+    private val minDesiredWidth = (75 * resources.displayMetrics.density).toInt()
 
     init {
         val cornerRadiusPx = 4 * resources.displayMetrics.density
@@ -32,6 +33,7 @@ class PayPalButton @JvmOverloads constructor(
             cornerRadius = cornerRadiusPx
             setColor(colorValue.toColorInt())
         }
+        minWidth = minDesiredWidth
         background = bg
     }
 
