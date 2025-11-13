@@ -90,4 +90,11 @@
         android:layout_marginBottom="@dimen/margin_10"
         android:text="@string/paypal_single_time_pay_later" />
 
+    <com.braintreepayments.api.uicomponents.PayPalButton
+        android:id="@+id/paypal_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_10"
+        android:layout_marginBottom="@dimen/margin_10" />
+
 </LinearLayout>
