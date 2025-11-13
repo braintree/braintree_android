@@ -72,7 +72,7 @@ public class CardTest extends TestHelper {
     }
 
     @Test(timeout = 60000)
-    public void amexRewardsBalance_whenCardHasInsufficientPoints() throws InterruptedException {
+    public void amexRewardsBalance_whenCardHasInsufficientPoints() {
         Context context = ApplicationProvider.getApplicationContext();
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
@@ -80,13 +80,9 @@ public class CardTest extends TestHelper {
                 .commit();
 
         onDevice(withText("Card Number")).perform(setText("371544868764018"));
-        Thread.sleep(500L);
         onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
-        Thread.sleep(500L);
         onDevice(withText("CID")).perform(setText("1234"));
-        Thread.sleep(500L);
         onDevice(withText("Postal Code")).perform(setText("12345"));
-
         onDevice(withText("Purchase")).perform(click());
 
         onDevice(withTextStartingWith("Amex Rewards Balance:")).check(text(containsString("errorCode: INQ2003")));
