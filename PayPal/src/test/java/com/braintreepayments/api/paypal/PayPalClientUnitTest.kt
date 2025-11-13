@@ -1,6 +1,7 @@
 package com.braintreepayments.api.paypal
 
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.LaunchType
@@ -12,14 +13,16 @@ import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import com.braintreepayments.api.core.GetReturnLinkTypeUseCase
-import com.braintreepayments.api.core.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
-import com.braintreepayments.api.core.GetReturnLinkUseCase
-import com.braintreepayments.api.core.GetReturnLinkUseCase.ReturnLinkResult
-import com.braintreepayments.api.core.GetReturnLinkUseCase.ReturnLinkResult.AppLink
-import com.braintreepayments.api.core.GetReturnLinkUseCase.ReturnLinkResult.DeepLink
+import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
+import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase.ReturnLinkResult
+import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase.ReturnLinkResult.AppLink
+import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase.ReturnLinkResult.DeepLink
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
+import com.braintreepayments.api.core.usecase.GetDefaultAppUseCase
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import io.mockk.every
@@ -47,6 +50,8 @@ class PayPalClientUnitTest {
     private val paymentAuthCallback: PayPalPaymentAuthCallback = mockk(relaxed = true)
 
     private val merchantRepository: MerchantRepository = mockk(relaxed = true)
+    private val getDefaultAppUseCase: GetDefaultAppUseCase = mockk(relaxed = true)
+    private val getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase = mockk(relaxed = true)
     private val getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase =
         mockk<GetReturnLinkTypeUseCase>(relaxed = true)
     private val getReturnLinkUseCase: GetReturnLinkUseCase = mockk(relaxed = true)
@@ -223,6 +228,7 @@ class PayPalClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_setsAppLinkReturnUrl() {
+        every { getReturnLinkUseCase.invoke(any()) } returns AppLink("www.example.com".toUri())
         val payPalVaultRequest = PayPalVaultRequest(true)
         payPalVaultRequest.merchantAccountId = "sample-merchant-account-id"
 
@@ -263,7 +269,7 @@ class PayPalClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_setsDeepLinkReturnUrlScheme() {
-        every { getReturnLinkUseCase.invoke() } returns DeepLink("com.braintreepayments.demo")
+        every { getReturnLinkUseCase.invoke(any()) } returns DeepLink("com.braintreepayments.demo")
         val payPalVaultRequest = PayPalVaultRequest(true)
         payPalVaultRequest.merchantAccountId = "sample-merchant-account-id"
 
@@ -303,7 +309,7 @@ class PayPalClientUnitTest {
     @Test
     fun createPaymentAuthRequest_returnsAnErrorWhen_getReturnLinkUseCase_returnsAFailure() {
         val exception = BraintreeException()
-        every { getReturnLinkUseCase.invoke() } returns ReturnLinkResult.Failure(exception)
+        every { getReturnLinkUseCase.invoke(any()) } returns ReturnLinkResult.Failure(exception)
 
         val payPalVaultRequest = PayPalVaultRequest(true)
         payPalVaultRequest.merchantAccountId = "sample-merchant-account-id"
@@ -798,6 +804,8 @@ class PayPalClientUnitTest {
         braintreeClient,
         payPalInternalClient,
         merchantRepository,
+        getDefaultAppUseCase,
+        getAppLinksCompatibleBrowserUseCase,
         getReturnLinkTypeUseCase,
         getReturnLinkUseCase,
         analyticsParamRepository

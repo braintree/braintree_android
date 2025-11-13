@@ -11,7 +11,7 @@ import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.AppSwitchRepository
 import com.braintreepayments.api.core.BraintreeException
-import com.braintreepayments.api.core.GetAppSwitchUseCase
+import com.braintreepayments.api.core.usecase.GetAppSwitchUseCase
 import com.braintreepayments.api.core.MerchantRepository
 
 /**

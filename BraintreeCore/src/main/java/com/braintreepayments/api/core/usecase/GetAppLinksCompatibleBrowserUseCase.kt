@@ -1,6 +1,8 @@
-package com.braintreepayments.api.core
+package com.braintreepayments.api.core.usecase
 
+import android.net.Uri
 import androidx.annotation.RestrictTo
+import com.braintreepayments.api.core.CheckoutUri
 
 /**
  * Checks whether the default browser of the device is compatible with app links feature based on a static list of
@@ -8,15 +10,11 @@ import androidx.annotation.RestrictTo
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class GetAppLinksCompatibleBrowserUseCase(
-    private val getDefaultBrowserUseCase: GetDefaultBrowserUseCase,
+    private val getDefaultAppUseCase: GetDefaultAppUseCase,
 ) {
 
-    operator fun invoke(): Boolean {
-        getDefaultBrowserUseCase()?.let { defaultBrowser ->
-            return appLinkCompatibleBrowsers.any { defaultBrowser.contains(it) }
-        }
-        return false
-    }
+    operator fun invoke(@CheckoutUri browserUri: Uri?): Boolean =
+        appLinkCompatibleBrowsers.any { getDefaultAppUseCase(browserUri)?.contains(it) == true }
 
     companion object {
         private val appLinkCompatibleBrowsers = listOf(
