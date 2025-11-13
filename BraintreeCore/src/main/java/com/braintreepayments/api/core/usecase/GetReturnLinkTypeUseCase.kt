@@ -24,7 +24,7 @@ class GetReturnLinkTypeUseCase(
         APP_LINK, DEEP_LINK
     }
 
-    operator fun invoke(@CheckoutUri uri: Uri? = "https://example.com".toUri()): ReturnLinkTypeResult {
+    operator fun invoke(@CheckoutUri uri: Uri? = "https://www.paypal.com/checkout".toUri()): ReturnLinkTypeResult {
         return if (checkReturnUriDefaultAppHandler() && getAppLinksCompatibleBrowserUseCase(uri)) {
             ReturnLinkTypeResult.APP_LINK
         } else {
