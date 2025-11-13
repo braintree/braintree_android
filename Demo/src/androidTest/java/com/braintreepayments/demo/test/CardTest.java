@@ -1,6 +1,5 @@
 package com.braintreepayments.demo.test;
 
-import static com.braintreepayments.AutomatorAction.clearTextField;
 import static com.braintreepayments.AutomatorAction.click;
 import static com.braintreepayments.AutomatorAction.setText;
 import static com.braintreepayments.AutomatorAssertion.text;
