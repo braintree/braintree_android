@@ -17,7 +17,7 @@ on:
 
 jobs:
   code-scanning:
-    uses: braintree/security-workflows/.github/workflows/codeql-android.yml@main
+    uses: braintree/security-workflows/.github/workflows/codeql-android.yml@workflowPermissions
 
   dependency-review:
-    uses: braintree/security-workflows/.github/workflows/dependency-review-gradle.yml@main
+    uses: braintree/security-workflows/.github/workflows/dependency-review-gradle.yml@workflowPermissions
