@@ -19,4 +19,11 @@
         android:src="@drawable/logo_venmo"
         />
 
+    <com.braintreepayments.api.uicomponents.VenmoButton
+        android:id="@+id/paypal_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_10"
+        android:layout_marginBottom="@dimen/margin_10" />
+
 </LinearLayout>
