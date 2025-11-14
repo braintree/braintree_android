@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
+import kotlin.text.toInt
 import kotlin.times
 
 class PayPalButton @JvmOverloads constructor(
@@ -16,9 +17,9 @@ class PayPalButton @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : AppCompatButton(context, attrs, defStyleAttr) {
 
-    private var logo: Drawable? =
-        ContextCompat.getDrawable(context, R.drawable.paypal_logo_black)
-    private var colorValue: String = "#60CDFF"
+    private var logo: Drawable?
+    private var colorValue: String
+    private var borderColorValue: String
 
     // The logo is supposed to be visually not absolutely centered
     private val logoOffset = (1.5f * resources.displayMetrics.density).toInt()
@@ -27,11 +28,43 @@ class PayPalButton @JvmOverloads constructor(
     private val minDesiredWidth = (75 * resources.displayMetrics.density).toInt()
 
     init {
+        context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.PayPalButton,
+            0, 0
+        ).apply {
+            try {
+                val colorAttr = getString(R.styleable.PayPalButton_buttonColor)
+                when (colorAttr) {
+                    "white" -> {
+                        colorValue = "#FFFFFF"
+                        borderColorValue = "#555555"
+                        logo = ContextCompat.getDrawable(context, R.drawable.paypal_logo_black)
+                    }
+                    "black" -> {
+                        colorValue = "#000000"
+                        borderColorValue = colorValue
+                        logo = ContextCompat.getDrawable(context, R.drawable.paypal_logo_white)
+                    }
+                    else -> {
+                        colorValue = "#60CDFF"
+                        borderColorValue = colorValue
+                        logo = ContextCompat.getDrawable(context, R.drawable.paypal_logo_black)
+                    }
+                }
+            } finally {
+                recycle()
+            }
+        }
+
         val cornerRadiusPx = 4 * resources.displayMetrics.density
+        val strokeWidthPx = (1 * resources.displayMetrics.density).toInt()
+
         val bg = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
             cornerRadius = cornerRadiusPx
             setColor(colorValue.toColorInt())
+            setStroke(strokeWidthPx, borderColorValue.toColorInt())
         }
         minWidth = minDesiredWidth
         background = bg
