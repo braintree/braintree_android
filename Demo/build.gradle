@@ -79,6 +79,7 @@ dependencies {
     implementation project(':ShopperInsights')
     implementation project(':SEPADirectDebit')
     implementation project(':ThreeDSecure')
+    implementation project(':UIComponents')
     implementation project(':Venmo')
     implementation project(':VisaCheckout')
 

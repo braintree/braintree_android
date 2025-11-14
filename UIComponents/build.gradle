@@ -44,6 +44,8 @@ dependencies {
     api project(':BraintreeCore')
 
     implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+
     testImplementation libs.kotlin.test
     testImplementation project(':TestUtils')
 }
