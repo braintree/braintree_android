@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="@dimen/margin_10"
     tools:context=".PayPalFragment">
@@ -90,13 +89,5 @@
         android:layout_marginTop="@dimen/margin_10"
         android:layout_marginBottom="@dimen/margin_10"
         android:text="@string/paypal_single_time_pay_later" />
-
-    <com.braintreepayments.api.uicomponents.PayPalButton
-        android:id="@+id/paypal_button"
-        custom:buttonColor="black"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_10"
-        android:layout_marginBottom="@dimen/margin_10" />
 
 </LinearLayout>

@@ -6,6 +6,8 @@
   * Fix an issue where a tokenize card errors are masked with a JSON parsing error
 * PayPal
     * Add `shouldOfferCredit`property to `PayPalCheckoutRequest`. Enables merchants to offer PayPal Credit for Checkout requests.
+* UIComponents
+  * Add `PayPalButton` class to generate a PayPal-branded button for launching PayPal Checkout flow
   
 ## 5.18.0 (2025-10-01)
 
