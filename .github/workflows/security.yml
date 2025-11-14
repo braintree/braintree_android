@@ -2,7 +2,7 @@ name: Security
 # Slack: #help-product-security
 
 permissions:
-  contents: read         # Needed by both CodeQL and dependency review
+  contents: write         # Needed by both CodeQL and dependency review
   pull-requests: write    # Needed by dependency review
   statuses: write         # Needed by dependency review (to post checks)
   security-events: write  # Needed by CodeQL to upload SARIF
