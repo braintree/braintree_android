@@ -11,6 +11,7 @@ import androidx.core.graphics.toColorInt
 import kotlin.text.toInt
 import kotlin.times
 
+@Suppress("MagicNumber")
 class PayPalButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
