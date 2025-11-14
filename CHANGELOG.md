@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* All Modules
+  * Fallback to deep link when the user's default browser does not support app links.
 * Card
   * Fix an issue where a tokenize card errors are masked with a JSON parsing error
 * PayPal

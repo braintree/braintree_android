@@ -1,6 +1,7 @@
 package com.braintreepayments.api.venmo
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Base64
 import androidx.test.core.app.ApplicationProvider
@@ -12,11 +13,13 @@ import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
-import com.braintreepayments.api.core.GetReturnLinkTypeUseCase
-import com.braintreepayments.api.core.GetReturnLinkUseCase
+import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.core.IntegrationType
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
+import com.braintreepayments.api.core.usecase.GetDefaultAppUseCase
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import io.mockk.every
@@ -54,6 +57,11 @@ class VenmoClientUnitTest {
     private val merchantRepository = mockk<MerchantRepository>(relaxed = true)
     private val venmoRepository = mockk<VenmoRepository>(relaxed = true)
     private val getReturnLinkUseCase = mockk<GetReturnLinkUseCase>(relaxed = true)
+
+    private val packageManager = mockk<PackageManager>(relaxed = true)
+    private val getDefaultAppUseCase: GetDefaultAppUseCase = GetDefaultAppUseCase(packageManager)
+    private val getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase =
+        GetAppLinksCompatibleBrowserUseCase(getDefaultAppUseCase)
 
     private val venmoEnabledConfiguration: Configuration =
         Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO)
@@ -97,8 +105,8 @@ class VenmoClientUnitTest {
         every { merchantRepository.integrationType } returns IntegrationType.CUSTOM
         every { merchantRepository.applicationContext } returns context
         every { venmoRepository.venmoUrl } returns appSwitchUrl
-        every { getReturnLinkUseCase.invoke() } returns GetReturnLinkUseCase.ReturnLinkResult.AppLink(appSwitchUrl)
-        every { getReturnLinkTypeUseCase.invoke() } returns GetReturnLinkTypeUseCase.ReturnLinkTypeResult.APP_LINK
+        every { getReturnLinkUseCase.invoke(any()) } returns GetReturnLinkUseCase.ReturnLinkResult.AppLink(appSwitchUrl)
+        every { getReturnLinkTypeUseCase.invoke(any()) } returns GetReturnLinkTypeUseCase.ReturnLinkTypeResult.APP_LINK
     }
 
     @Test
@@ -116,6 +124,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -138,6 +148,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -177,6 +189,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -214,7 +228,7 @@ class VenmoClientUnitTest {
             .build()
 
         every { merchantRepository.authorization } returns clientToken
-        every { getReturnLinkUseCase.invoke() } returns GetReturnLinkUseCase.ReturnLinkResult.DeepLink("com.example")
+        every { getReturnLinkUseCase(any()) } returns GetReturnLinkUseCase.ReturnLinkResult.DeepLink("com.example")
 
         venmoApi = MockkVenmoApiBuilder()
             .createPaymentContextSuccess("venmo-payment-context-id")
@@ -234,6 +248,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -292,6 +308,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -336,6 +354,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -388,6 +408,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -397,7 +419,7 @@ class VenmoClientUnitTest {
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
         val paymentAuthRequest = authRequestSlot.captured
         assertTrue(paymentAuthRequest is VenmoPaymentAuthRequest.ReadyToLaunch)
-        val params = (paymentAuthRequest as VenmoPaymentAuthRequest.ReadyToLaunch).requestParams
+        val params = paymentAuthRequest.requestParams
         val url = params.browserSwitchOptions.url
         assertEquals("merchant-id", url!!.getQueryParameter("braintree_merchant_id"))
     }
@@ -426,6 +448,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -435,7 +459,7 @@ class VenmoClientUnitTest {
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
         val paymentAuthRequest = authRequestSlot.captured
         assertTrue(paymentAuthRequest is VenmoPaymentAuthRequest.ReadyToLaunch)
-        val params = (paymentAuthRequest as VenmoPaymentAuthRequest.ReadyToLaunch).requestParams
+        val params = paymentAuthRequest.requestParams
         val url = params.browserSwitchOptions.url
         assertEquals("https://example.com/success", url!!.getQueryParameter("x-success"))
         assertEquals("https://example.com/error", url.getQueryParameter("x-error"))
@@ -450,7 +474,7 @@ class VenmoClientUnitTest {
             .build()
 
         every { merchantRepository.authorization } returns clientToken
-        every { getReturnLinkUseCase.invoke() } returns
+        every { getReturnLinkUseCase.invoke(any()) } returns
                 GetReturnLinkUseCase.ReturnLinkResult.Failure(exception)
 
         venmoApi = MockkVenmoApiBuilder()
@@ -471,6 +495,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -508,6 +534,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -543,6 +571,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -583,6 +613,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -617,6 +649,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -650,6 +684,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -690,6 +726,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -728,6 +766,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -768,6 +808,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -813,6 +855,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -863,6 +907,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -887,6 +933,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -919,6 +967,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -943,6 +993,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -974,6 +1026,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -1020,6 +1074,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -1061,6 +1117,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )
@@ -1111,6 +1169,8 @@ class VenmoClientUnitTest {
             analyticsParamRepository,
             merchantRepository,
             venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
             getReturnLinkUseCase
         )

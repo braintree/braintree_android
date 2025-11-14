@@ -307,7 +307,7 @@ formatting:
   MaximumLineLength:
     active: true
     maxLineLength: 120
-    ignoreBackTickedIdentifier: false
+    ignoreBackTickedIdentifier: true
   ModifierOrdering:
     active: true
     autoCorrect: true
