@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.BrowserSwitchException;
 import com.braintreepayments.api.core.UserCanceledException;
 import com.braintreepayments.api.venmo.VenmoAccountNonce;
 import com.braintreepayments.api.venmo.VenmoClient;
@@ -35,6 +36,22 @@ public class VenmoFragment extends BaseFragment {
     private VenmoClient venmoClient;
     private VenmoLauncher venmoLauncher;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        VenmoPendingRequest.Started venmoPendingRequest = PendingRequestStore.getInstance().getVenmoPendingRequest(getContext());
+        if (venmoPendingRequest != null) {
+            String pendingRequest = venmoPendingRequest.getPendingRequestString();
+            venmoLauncher = new VenmoLauncher(this);
+            try {
+                venmoLauncher.restorePendingRequest(pendingRequest);
+            } catch (BrowserSwitchException e) {
+                PendingRequestStore.getInstance().clearVenmoPendingRequest(getContext());
+            }
+        } else {
+            venmoLauncher = new VenmoLauncher(this);
+        }
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -54,7 +71,6 @@ public class VenmoFragment extends BaseFragment {
                 venmoClient = new VenmoClient(requireContext(), super.getAuthStringArg());
             }
         }
-        venmoLauncher = new VenmoLauncher();
 
         return view;
     }
@@ -71,6 +87,7 @@ public class VenmoFragment extends BaseFragment {
                 handleError(new Exception("User did not complete payment flow"));
             }
             clearPendingRequest();
+            requireActivity().getIntent().setData(null);
         }
     }
 

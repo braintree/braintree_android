@@ -3,6 +3,7 @@ package com.braintreepayments.api.venmo
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultCaller
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
@@ -19,12 +20,20 @@ class VenmoLauncher internal constructor(
     private val venmoRepository: VenmoRepository,
     lazyAnalyticsClient: Lazy<AnalyticsClient>,
 ) {
-
-    constructor() : this(
-        browserSwitchClient = BrowserSwitchClient(),
+    /**
+     * Used to launch the Venmo flow in a web browser and deliver results to your Activity
+     * @param caller Optional ActivityResultCaller parameter. If provided, it will be passed to BrowserSwitchClient
+     */
+    constructor(caller: ActivityResultCaller? = null) : this(
+        browserSwitchClient = if (caller != null) BrowserSwitchClient(caller) else BrowserSwitchClient(),
         venmoRepository = VenmoRepository.instance,
         lazyAnalyticsClient = AnalyticsClient.lazyInstance
     )
+
+    @Throws(BrowserSwitchException::class)
+    fun restorePendingRequest(pendingRequestString: String) {
+        browserSwitchClient.restorePendingRequest(pendingRequestString)
+    }
 
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
 

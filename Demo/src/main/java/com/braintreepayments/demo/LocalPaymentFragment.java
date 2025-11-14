@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.BrowserSwitchException;
 import com.braintreepayments.api.core.BraintreeException;
 import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.core.UserCanceledException;
@@ -26,7 +27,24 @@ import com.braintreepayments.api.localpayment.LocalPaymentResult;
 public class LocalPaymentFragment extends BaseFragment {
 
     private LocalPaymentClient localPaymentClient;
-    private final LocalPaymentLauncher localPaymentLauncher = new LocalPaymentLauncher();
+    private LocalPaymentLauncher localPaymentLauncher;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        LocalPaymentPendingRequest.Started localPaymentPendingRequest = PendingRequestStore.getInstance().getLocalPaymentPendingRequest(getContext());
+        if (localPaymentPendingRequest != null) {
+            String pendingRequest = localPaymentPendingRequest.getPendingRequestString();
+            localPaymentLauncher = new LocalPaymentLauncher(this);
+            try {
+                localPaymentLauncher.restorePendingRequest(pendingRequest);
+            } catch (BrowserSwitchException e) {
+                PendingRequestStore.getInstance().clearLocalPaymentPendingRequest(getContext());
+            }
+        } else {
+            localPaymentLauncher = new LocalPaymentLauncher(this);
+        }
+    }
 
 
     @Nullable
@@ -57,6 +75,7 @@ public class LocalPaymentFragment extends BaseFragment {
                 handleError(new BraintreeException("User did not complete local payment flow"));
             }
             clearPendingRequest();
+            requireActivity().getIntent().setData(null);
         }
     }
 

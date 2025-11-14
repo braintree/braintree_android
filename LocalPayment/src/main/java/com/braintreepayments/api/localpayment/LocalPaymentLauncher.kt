@@ -2,7 +2,9 @@ package com.braintreepayments.api.localpayment
 
 import android.content.Intent
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultCaller
 import com.braintreepayments.api.BrowserSwitchClient
+import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.BraintreeException
@@ -13,8 +15,16 @@ import com.braintreepayments.api.core.BraintreeException
 class LocalPaymentLauncher internal constructor(private val browserSwitchClient: BrowserSwitchClient) {
     /**
      * Used to launch the local payment flow in a web browser and deliver results to your Activity
+     * @param caller Optional ActivityResultCaller parameter. If provided, it will be passed to BrowserSwitchClient
      */
-    constructor() : this(BrowserSwitchClient())
+    constructor(caller: ActivityResultCaller? = null) : this(
+        browserSwitchClient = if (caller != null) BrowserSwitchClient(caller) else BrowserSwitchClient()
+    )
+
+    @Throws(BrowserSwitchException::class)
+    fun restorePendingRequest(pendingRequestString: String) {
+        browserSwitchClient.restorePendingRequest(pendingRequestString)
+    }
 
     /**
      * Launches the local payment flow by switching to a web browser for user authentication.
