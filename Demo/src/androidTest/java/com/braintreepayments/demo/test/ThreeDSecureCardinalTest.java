@@ -70,7 +70,7 @@ public class ThreeDSecureCardinalTest extends TestHelper {
 
         onDevice(withText("Purchase")).perform(click());
 
-        onDevice(withText("Close")).perform(click());
+        onDevice(withResourceId("com.braintreepayments.demo:id/toolbarButton")).perform(click());
 
         onDevice(withTextContaining("User canceled 3DS")).waitForExists(30000);
     }
@@ -118,6 +118,6 @@ public class ThreeDSecureCardinalTest extends TestHelper {
         onDevice().typeText("1234");
 
         onDevice().pressEnter();
-        onDevice(withText("Submit")).perform(click());
+        onDevice(withResourceId("com.braintreepayments.demo:id/submitAuthenticationButton")).perform(click());
     }
 }
