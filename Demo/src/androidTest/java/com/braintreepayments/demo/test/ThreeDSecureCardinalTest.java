@@ -1,5 +1,7 @@
 package com.braintreepayments.demo.test;
 
+import android.widget.TextView;
+
 import static com.braintreepayments.AutomatorAction.click;
 import static com.braintreepayments.AutomatorAction.setText;
 import static com.braintreepayments.AutomatorAssertion.text;
@@ -113,8 +115,8 @@ public class ThreeDSecureCardinalTest extends TestHelper {
 
     private void enterPassword() {
         String codeEditTextResId = "com.braintreepayments.demo:id/codeEditTextField";
-        onDevice(withResourceId(codeEditTextResId)).waitForExists();
-        onDevice(withResourceId(codeEditTextResId)).perform(click());
+        onDevice(withResourceId(codeEditTextResId, TextView.class)).waitForExists();
+        onDevice(withResourceId(codeEditTextResId, TextView.class)).perform(click());
         onDevice().typeText("1234");
 
         onDevice().pressEnter();
