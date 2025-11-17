@@ -15,6 +15,7 @@ import static org.hamcrest.core.StringEndsWith.endsWith;
 
 import androidx.preference.PreferenceManager;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.accessibility.AccessibilityChecks;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
@@ -29,6 +30,7 @@ public class ThreeDSecureCardinalTest extends TestHelper {
     @Before
     public void setup() {
         super.setup();
+        AccessibilityChecks.enable();
         launchApp();
         onDevice(withText("Credit or Debit Cards")).waitForEnabled().perform(click());
 
