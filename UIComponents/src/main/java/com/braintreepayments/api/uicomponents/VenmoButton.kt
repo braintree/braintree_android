@@ -9,6 +9,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 
+@Suppress("MagicNumber")
 class VenmoButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -18,7 +19,6 @@ class VenmoButton @JvmOverloads constructor(
     private var logo: Drawable?
     private var colorValue: String
     private var borderColorValue: String
-
 
     private val desiredWidth = (300 * resources.displayMetrics.density).toInt()
     private val desiredHeight = (45 * resources.displayMetrics.density).toInt()
