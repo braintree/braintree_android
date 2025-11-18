@@ -8,10 +8,7 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
-import kotlin.text.toInt
-import kotlin.times
 
-@Suppress("MagicNumber")
 class PayPalButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -23,10 +20,10 @@ class PayPalButton @JvmOverloads constructor(
     private var borderColorValue: String
 
     // The logo is supposed to be visually not absolutely centered
-    private val logoOffset = (1.5f * resources.displayMetrics.density).toInt()
-    private val desiredWidth = (300 * resources.displayMetrics.density).toInt()
-    private val desiredHeight = (45 * resources.displayMetrics.density).toInt()
-    private val minDesiredWidth = (75 * resources.displayMetrics.density).toInt()
+    private val logoOffset = resources.getDimension(R.dimen.pp_logo_offset).toInt()
+    private val desiredWidth = resources.getDimension(R.dimen.pay_button_width).toInt()
+    private val desiredHeight = resources.getDimension(R.dimen.pay_button_height).toInt()
+    private val minDesiredWidth = resources.getDimension(R.dimen.pay_button_min_width).toInt()
 
     init {
         context.theme.obtainStyledAttributes(
@@ -58,8 +55,8 @@ class PayPalButton @JvmOverloads constructor(
             }
         }
 
-        val cornerRadiusPx = 4 * resources.displayMetrics.density
-        val strokeWidthPx = (1 * resources.displayMetrics.density).toInt()
+        val cornerRadiusPx = resources.getDimension(R.dimen.pay_button_corner_radius)
+        val strokeWidthPx = resources.getDimension(R.dimen.pay_button_border).toInt()
 
         val bg = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
