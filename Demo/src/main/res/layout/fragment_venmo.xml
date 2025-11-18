@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="10dp"
@@ -18,12 +19,5 @@
         android:padding="10dp"
         android:src="@drawable/logo_venmo"
         />
-
-    <com.braintreepayments.api.uicomponents.VenmoButton
-        android:id="@+id/paypal_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_10"
-        android:layout_marginBottom="@dimen/margin_10" />
 
 </LinearLayout>
