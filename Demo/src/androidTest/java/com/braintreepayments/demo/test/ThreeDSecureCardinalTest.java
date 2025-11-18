@@ -10,6 +10,9 @@ import static com.braintreepayments.UiObjectMatcher.withTextContaining;
 import static com.braintreepayments.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
+import static org.junit.Assume.assumeTrue;
+
+import android.os.Build;
 
 import androidx.preference.PreferenceManager;
 import androidx.test.core.app.ApplicationProvider;
@@ -26,6 +29,11 @@ public class ThreeDSecureCardinalTest extends TestHelper {
 
     @Before
     public void setup() {
+        assumeTrue(
+            "Cardinal SDK not yet compatible with Android 15",
+            Build.VERSION.SDK_INT < 35
+        );
+
         super.setup();
         launchApp();
         onDevice(withText("Credit or Debit Cards")).waitForEnabled().perform(click());
