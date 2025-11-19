@@ -9,6 +9,9 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 
+/**
+    * A customizable PayPal branded button to initiate the PayPal flow
+ */
 class PayPalButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
