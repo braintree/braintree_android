@@ -4,6 +4,7 @@
 
 * All Modules
   * Fallback to deep link when the user's default browser does not support app links.
+    * Known limitation: Flow doesn't work on UC and Opera GX browsers. See #1473.
 * Card
   * Fix an issue where a tokenize card errors are masked with a JSON parsing error
 * PayPal
