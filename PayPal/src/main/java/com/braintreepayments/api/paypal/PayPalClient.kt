@@ -215,6 +215,7 @@ class PayPalClient internal constructor(
                 when (val returnLinkResult = getReturnLinkUseCase()) {
                     is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> {
                         appLinkUri(returnLinkResult.appLinkReturnUri)
+                        successAppLinkUri(paymentAuthRequest.successUrl?.toUri())
                     }
 
                     is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> {

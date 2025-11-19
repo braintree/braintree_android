@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Base64
+import androidx.core.net.toUri
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.AnalyticsEventParams
@@ -250,7 +251,10 @@ class VenmoClient internal constructor(
             .url(venmoBaseURL)
             .apply {
                 when (returnLinkResult) {
-                    is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> appLinkUri(returnLinkResult.appLinkReturnUri)
+                    is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> {
+                        appLinkUri(returnLinkResult.appLinkReturnUri)
+                        successAppLinkUri(successUri.toUri())
+                    }
                     is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> {
                         returnUrlScheme(returnLinkResult.deepLinkFallbackUrlScheme)
                     }
