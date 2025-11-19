@@ -6,7 +6,7 @@ import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
 import com.braintreepayments.api.core.UUIDHelper
 import com.braintreepayments.api.testutils.Fixtures
-import com.braintreepayments.api.testutils.MockBraintreeClientBuilder
+import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -43,8 +43,8 @@ class DataCollectorUnitTest {
     private val dataCollectorRequest: DataCollectorRequest =
         DataCollectorRequest(false, riskCorrelationId)
     private val braintreeClient: BraintreeClient =
-        MockBraintreeClientBuilder()
-            .configuration(fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN))
+        MockkBraintreeClientBuilder()
+            .configurationSuccess(fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN))
             .build()
 
     @Before
@@ -127,7 +127,7 @@ class DataCollectorUnitTest {
     @Test
     fun collectDeviceData_forwardsConfigurationFetchErrors() {
         val configError = Exception("configuration error")
-        val braintreeClient = MockBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(configError)
             .build()
 
@@ -144,8 +144,8 @@ class DataCollectorUnitTest {
 
     @Test
     fun collectDeviceData_configuresMagnesWithDefaultRequest() {
-        val braintreeClient = MockBraintreeClientBuilder()
-            .configuration(configuration)
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
             .build()
 
         val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
@@ -167,8 +167,8 @@ class DataCollectorUnitTest {
 
     @Test
     fun collectDeviceData_with_request_configuresMagnesWithDefaultRequest() {
-        val braintreeClient = MockBraintreeClientBuilder()
-            .configuration(configuration)
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
             .build()
 
         val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
@@ -191,8 +191,8 @@ class DataCollectorUnitTest {
 
     @Test
     fun collectDeviceData_configuresMagnesWithClientId() {
-        val braintreeClient = MockBraintreeClientBuilder()
-            .configuration(configuration)
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
             .build()
 
         val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
@@ -216,8 +216,8 @@ class DataCollectorUnitTest {
     @Test
     @Throws(Exception::class)
     fun collectDeviceData_getsDeviceDataJSONWithCorrelationIdFromPayPal() {
-        val braintreeClient = MockBraintreeClientBuilder()
-            .configuration(configuration)
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
             .build()
 
         val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
@@ -235,8 +235,8 @@ class DataCollectorUnitTest {
 
     @Test
     fun collectDeviceData_without_DataCollectorRequest_sets_hasUserLocationConsent_to_false() {
-        val braintreeClient = MockBraintreeClientBuilder()
-            .configuration(configuration)
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
             .build()
 
         val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
@@ -258,8 +258,8 @@ class DataCollectorUnitTest {
 
     @Test
     fun collectDeviceData_with_DataCollectorRequest_sets_correct_values_for_getClientMetadataId() {
-        val braintreeClient = MockBraintreeClientBuilder()
-            .configuration(configuration)
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
             .build()
 
         val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)

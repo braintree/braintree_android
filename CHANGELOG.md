@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.19.0 (2025-11-18)
 
 * All Modules
   * Fallback to deep link when the user's default browser does not support app links.
