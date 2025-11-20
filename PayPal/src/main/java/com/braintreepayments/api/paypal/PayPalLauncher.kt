@@ -87,7 +87,7 @@ class PayPalLauncher internal constructor(
                 analyticsEventParams = analyticsEventParams
             )
 
-        return when (val request = browserSwitchClient.start(activity, options)) {
+        return when (val request = browserSwitchClient.start(activity, options, isAppSwitch)) {
             is BrowserSwitchStartResult.Failure -> {
                 val errorEvent = if (isAppSwitch) {
                     PayPalAnalytics.APP_SWITCH_FAILED

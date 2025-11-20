@@ -62,7 +62,8 @@ class VenmoLauncher internal constructor(
         }
         val request = browserSwitchClient.start(
             activity,
-            paymentAuthRequest.requestParams.browserSwitchOptions
+            paymentAuthRequest.requestParams.browserSwitchOptions,
+            true
         )
         return when (request) {
             is BrowserSwitchStartResult.Failure -> {
