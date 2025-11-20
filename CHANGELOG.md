@@ -1,5 +1,12 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* All Modules
+    * Fallback to using deep links when the user's default browser does not support app links.
+        * Known limitation: Flow doesn't work on UC and Opera GX browsers for both app links and deep links. See #1473 
+          for testing note.
+
 ## 5.19.0 (2025-11-18)
 
 * Card
