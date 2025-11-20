@@ -81,7 +81,6 @@ class MainFragment : BaseFragment() {
                                 Spacer(modifier = Modifier.height(4.dp))
                             }
                         }
-
                     }
                 }
             }
