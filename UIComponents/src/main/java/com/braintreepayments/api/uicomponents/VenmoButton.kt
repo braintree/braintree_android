@@ -9,7 +9,9 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 
-@Suppress("MagicNumber")
+/**
+ * A customizable Venmo branded button to initiate the Venmo flow
+ */
 class VenmoButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -20,9 +22,9 @@ class VenmoButton @JvmOverloads constructor(
     private var colorValue: String
     private var borderColorValue: String
 
-    private val desiredWidth = (300 * resources.displayMetrics.density).toInt()
-    private val desiredHeight = (45 * resources.displayMetrics.density).toInt()
-    private val minDesiredWidth = (75 * resources.displayMetrics.density).toInt()
+    private val desiredWidth = resources.getDimension(R.dimen.pay_button_width).toInt()
+    private val desiredHeight = resources.getDimension(R.dimen.pay_button_height).toInt()
+    private val minDesiredWidth = resources.getDimension(R.dimen.pay_button_min_width).toInt()
 
     init {
         context.theme.obtainStyledAttributes(
@@ -54,8 +56,8 @@ class VenmoButton @JvmOverloads constructor(
             }
         }
 
-        val cornerRadiusPx = 4 * resources.displayMetrics.density
-        val strokeWidthPx = (1 * resources.displayMetrics.density).toInt()
+        val cornerRadiusPx = resources.getDimension(R.dimen.pay_button_corner_radius)
+        val strokeWidthPx = resources.getDimension(R.dimen.pay_button_border).toInt()
 
         val bg = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
