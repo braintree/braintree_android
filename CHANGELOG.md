@@ -8,6 +8,7 @@
     * Add `shouldOfferCredit`property to `PayPalCheckoutRequest`. Enables merchants to offer PayPal Credit for Checkout requests.
 * UIComponents
   * Add `PayPalButton` class to generate a PayPal-branded button for launching PayPal flow
+  * Add `VenmoButton` class to generate a Venmo-branded button for launching Venmo flow
   
 ## 5.18.0 (2025-10-01)
 
