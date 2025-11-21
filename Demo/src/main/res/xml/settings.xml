@@ -131,7 +131,7 @@
             android:key="paypal_app_switch"
             android:title="PayPal App Switch"
             android:summary="Enable PayPal App Switch"
-            android:defaultValue="false" />
+            android:defaultValue="true" />
 
         <ListPreference
             android:key="paypal_landing_page_type"
