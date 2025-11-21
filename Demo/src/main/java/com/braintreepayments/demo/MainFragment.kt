@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -35,47 +36,52 @@ class MainFragment : BaseFragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
+                LazyColumn {
+                    item {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
 
-                    Card(
-                        modifier = Modifier.padding(12.dp),
-                    ) {
-                        Text(
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(top = 8.dp),
-                            text = "PayPal",
-                            style = MaterialTheme.typography.headlineSmall
-                        )
+                            Card(
+                                modifier = Modifier.padding(12.dp),
+                            ) {
+                                Text(
+                                    modifier = Modifier
+                                        .align(Alignment.CenterHorizontally)
+                                        .padding(top = 8.dp),
+                                    text = "PayPal",
+                                    style = MaterialTheme.typography.headlineSmall
+                                )
 
-                        PaymentModuleButton(R.string.paypal_button) { launchPayPal() }
-                        PaymentModuleButton(R.string.shopper_insights_button) { launchShopperInsights() }
-                        PaymentModuleButton(R.string.shopper_insights_v2_button) { launchShopperInsightsV2() }
-                        PaymentModuleButton(R.string.paypal_messaging_button) { launchPayPalMessaging() }
-                        Spacer(modifier = Modifier.height(4.dp))
-                    }
+                                PaymentModuleButton(R.string.paypal_button) { launchPayPal() }
+                                PaymentModuleButton(R.string.shopper_insights_button) { launchShopperInsights() }
+                                PaymentModuleButton(R.string.shopper_insights_v2_button) { launchShopperInsightsV2() }
+                                PaymentModuleButton(R.string.paypal_messaging_button) { launchPayPalMessaging() }
+                                Spacer(modifier = Modifier.height(4.dp))
+                            }
 
-                    Card(
-                        modifier = Modifier.padding(12.dp),
-                    ) {
-                        Text(
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(top = 8.dp),
-                            text = "Other",
-                            style = MaterialTheme.typography.headlineSmall
-                        )
+                            Card(
+                                modifier = Modifier.padding(12.dp),
+                            ) {
+                                Text(
+                                    modifier = Modifier
+                                        .align(Alignment.CenterHorizontally)
+                                        .padding(top = 8.dp),
+                                    text = "Other",
+                                    style = MaterialTheme.typography.headlineSmall
+                                )
 
-                        PaymentModuleButton(R.string.venmo) { launchVenmo() }
-                        PaymentModuleButton(R.string.cards) { launchCards() }
-                        PaymentModuleButton(R.string.google_pay) { launchGooglePay() }
-                        PaymentModuleButton(R.string.visa_checkout_button) { launchVisaCheckout() }
-                        PaymentModuleButton(R.string.local_payment_button) { launchLocalPayment() }
-                        PaymentModuleButton(R.string.sepa_direct_debit_button) { launchSEPADirectDebit() }
-                        Spacer(modifier = Modifier.height(4.dp))
+                                PaymentModuleButton(R.string.payment_buttons_button) { launchPaymentButtons() }
+                                PaymentModuleButton(R.string.venmo) { launchVenmo() }
+                                PaymentModuleButton(R.string.cards) { launchCards() }
+                                PaymentModuleButton(R.string.google_pay) { launchGooglePay() }
+                                PaymentModuleButton(R.string.visa_checkout_button) { launchVisaCheckout() }
+                                PaymentModuleButton(R.string.local_payment_button) { launchLocalPayment() }
+                                PaymentModuleButton(R.string.sepa_direct_debit_button) { launchSEPADirectDebit() }
+                                Spacer(modifier = Modifier.height(4.dp))
+                            }
+                        }
                     }
                 }
             }
@@ -206,6 +212,15 @@ class MainFragment : BaseFragment() {
         fetchAuthorizationAndHandleError { authString ->
             val action = MainFragmentDirections.actionMainFragmentToShopperInsightsFragmentV2()
                 .setAuthString(authString)
+            findNavController().navigate(action)
+        }
+    }
+
+    private fun launchPaymentButtons() {
+        fetchAuthorizationAndHandleError { authString ->
+            val action = MainFragmentDirections.actionMainFragmentToPaymentButtonsFragment()
+            //action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(requireContext()))
+            action.setAuthString(authString)
             findNavController().navigate(action)
         }
     }
