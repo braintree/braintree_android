@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="buttonColor" format="string" />
+
     <declare-styleable name="PayPalButton">
-        <attr name="buttonColor" format="string" />
+        <attr name="buttonColor" />
+    </declare-styleable>
+    <declare-styleable name="VenmoButton">
+        <attr name="buttonColor" />
     </declare-styleable>
 </resources>
