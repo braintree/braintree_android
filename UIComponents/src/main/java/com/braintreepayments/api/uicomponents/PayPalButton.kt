@@ -17,7 +17,6 @@ class PayPalButton @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : AppCompatButton(context, attrs, defStyleAttr) {
 
-
     private var currentStyle: PayPalButtonStyle = PayPalButtonStyle.BLUE
     private val gradientDrawable = GradientDrawable()
     private var logo: Drawable? = null

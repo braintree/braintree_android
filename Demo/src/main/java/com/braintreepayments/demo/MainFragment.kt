@@ -219,7 +219,6 @@ class MainFragment : BaseFragment() {
     private fun launchPaymentButtons() {
         fetchAuthorizationAndHandleError { authString ->
             val action = MainFragmentDirections.actionMainFragmentToPaymentButtonsFragment()
-            //action.setShouldCollectDeviceData(Settings.shouldCollectDeviceData(requireContext()))
             action.setAuthString(authString)
             findNavController().navigate(action)
         }
