@@ -30,7 +30,7 @@ public class PaymentButtonsFragment extends BaseFragment {
                 new MaterialButtonToggleGroup.OnButtonCheckedListener() {
                     @Override
                     public void onButtonChecked(MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
-                        if (!isChecked) return; // ignore uncheck events
+                        if (!isChecked) return;
                         switch (checkedId) {
                             case R.id.button_pp_blue:
                                 payPalButton.setButtonColor("blue");
@@ -45,6 +45,7 @@ public class PaymentButtonsFragment extends BaseFragment {
                     }
                 }
         );
+
         return view;
     }
 
