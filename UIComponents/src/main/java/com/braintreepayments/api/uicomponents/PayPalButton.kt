@@ -54,6 +54,11 @@ class PayPalButton @JvmOverloads constructor(
         invalidate()
     }
 
+    /**
+     * Sets the color style of the PayPal button.
+     *
+     * @property color A string representing the button color. Valid values are "white", "black", and "blue".
+     */
     fun setButtonColor(color: String) {
         val style = PayPalButtonStyle.fromString(color)
         if (style == currentStyle) return

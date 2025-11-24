@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:theme="@style/PaymentButtonsTheme"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="10dp"
     tools:context=".PaymentButtonsFragment">
@@ -15,37 +15,54 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <com.google.android.material.button.MaterialButtonToggleGroup
-            android:id="@+id/pp_button_toggle_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_pp_blue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/blue_button_color_option" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_pp_black"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/black_button_color_option" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_pp_white"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/white_button_color_option" />
-
-        </com.google.android.material.button.MaterialButtonToggleGroup>
-
-        <com.braintreepayments.api.uicomponents.PayPalButton
-            android:id="@+id/pp_payment_button"
-            custom:buttonColor="blue"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:padding="15dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/pp_button_toggle_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button_pp_blue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/blue_button_color_option" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button_pp_black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/black_button_color_option" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button_pp_white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/white_button_color_option" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+            </LinearLayout>
+
+            <com.braintreepayments.api.uicomponents.PayPalButton
+                android:id="@+id/pp_payment_button"
+                custom:buttonColor="blue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+        </LinearLayout>
 
     </FrameLayout>
 
@@ -55,12 +72,15 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <!-- <com.braintreepayments.api.uicomponents.VenmoButton
-            android:id="@+id/venmo_payment_button"
-            custom:buttonColor="blue"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" /> -->
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical">
+
+
+
+        </LinearLayout>
 
     </FrameLayout>
 
