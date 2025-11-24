@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="paymentButtonColor" format="enum">
-        <enum name="primary" value="0" />
+        <enum name="blue" value="0" />
         <enum name="black" value="1" />
         <enum name="white" value="2" />
     </attr>

@@ -17,7 +17,7 @@ class PayPalButton @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : AppCompatButton(context, attrs, defStyleAttr) {
 
-    private var currentStyle: PayPalButtonColor = PayPalButtonColor.PRIMARY
+    private var currentStyle: PayPalButtonColor = PayPalButtonColor.BLUE
     private val gradientDrawable = GradientDrawable()
     private var logo: Drawable? = null
 
@@ -71,7 +71,7 @@ class PayPalButton @JvmOverloads constructor(
     /**
      * Sets the color of the PayPal button
      *
-     * @property color Value representing the button color. Valid values are PRIMARY, BLACK, and WHITE
+     * @property color Value representing the button color. Valid values are BLUE, BLACK, and WHITE
      */
     fun setButtonColor(color: PayPalButtonColor) {
         val style = color
