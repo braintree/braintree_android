@@ -25,31 +25,36 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:padding="15dp"
+                android:paddingBottom="15dp"
                 android:orientation="horizontal">
 
                 <com.google.android.material.button.MaterialButtonToggleGroup
                     android:id="@+id/pp_button_toggle_group"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    custom:checkedButton="@id/button_pp_blue"
+                    custom:singleSelection="true">
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/button_pp_blue"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/blue_button_color_option" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/button_pp_black"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/black_button_color_option" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/button_pp_white"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="@string/white_button_color_option" />
 
                 </com.google.android.material.button.MaterialButtonToggleGroup>
@@ -57,7 +62,7 @@
 
             <com.braintreepayments.api.uicomponents.PayPalButton
                 android:id="@+id/pp_payment_button"
-                custom:buttonColor="blue"
+                custom:buttonColor="primary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center" />

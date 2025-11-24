@@ -17,7 +17,7 @@ class PayPalButton @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : AppCompatButton(context, attrs, defStyleAttr) {
 
-    private var currentStyle: PayPalButtonStyle = PayPalButtonStyle.BLUE
+    private var currentStyle: PayPalButtonColor = PayPalButtonColor.PRIMARY
     private val gradientDrawable = GradientDrawable()
     private var logo: Drawable? = null
 
@@ -29,7 +29,7 @@ class PayPalButton @JvmOverloads constructor(
     init {
         context.theme.obtainStyledAttributes(attrs, R.styleable.PayPalButton, 0, 0).apply {
             try {
-                currentStyle = PayPalButtonStyle.fromString(getString(R.styleable.PayPalButton_buttonColor))
+                currentStyle = PayPalButtonColor.fromId(getInt(R.styleable.PayPalButton_paymentButtonColor, 0))
             } finally {
                 recycle()
             }
@@ -69,12 +69,12 @@ class PayPalButton @JvmOverloads constructor(
     }
 
     /**
-     * Sets the color style of the PayPal button
+     * Sets the color of the PayPal button
      *
-     * @property color A string representing the button color. Valid values are "white", "black", and "blue"
+     * @property color Value representing the button color. Valid values are PRIMARY, BLACK, and WHITE
      */
-    fun setButtonColor(color: String) {
-        val style = PayPalButtonStyle.fromString(color)
+    fun setButtonColor(color: PayPalButtonColor) {
+        val style = color
         if (style == currentStyle) return
         currentStyle = style
         applyStyle()

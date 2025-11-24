@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.braintreepayments.api.uicomponents.PayPalButton;
+import com.braintreepayments.api.uicomponents.PayPalButtonColor;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 
 
@@ -33,13 +34,13 @@ public class PaymentButtonsFragment extends BaseFragment {
                         if (!isChecked) return;
                         switch (checkedId) {
                             case R.id.button_pp_blue:
-                                payPalButton.setButtonColor("blue");
+                                payPalButton.setButtonColor(PayPalButtonColor.PRIMARY);
                                 break;
                             case R.id.button_pp_black:
-                                payPalButton.setButtonColor("black");
+                                payPalButton.setButtonColor(PayPalButtonColor.BLACK);
                                 break;
                             case R.id.button_pp_white:
-                                payPalButton.setButtonColor("white");
+                                payPalButton.setButtonColor(PayPalButtonColor.WHITE);
                                 break;
                         }
                     }
