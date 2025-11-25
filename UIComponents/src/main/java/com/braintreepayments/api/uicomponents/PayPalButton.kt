@@ -7,7 +7,6 @@ import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.toColorInt
 
 /**
     * A customizable PayPal branded button to initiate the PayPal flow
@@ -18,57 +17,40 @@ class PayPalButton @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : AppCompatButton(context, attrs, defStyleAttr) {
 
-    private var logo: Drawable?
-    private var colorValue: String
-    private var borderColorValue: String
+    private var currentStyle: PayPalButtonColor = PayPalButtonColor.BLUE
+    private val gradientDrawable = GradientDrawable()
+    private var logo: Drawable? = null
 
-    // The logo is supposed to be visually not absolutely centered
     private val logoOffset = resources.getDimension(R.dimen.pp_logo_offset).toInt()
     private val desiredWidth = resources.getDimension(R.dimen.pay_button_width).toInt()
     private val desiredHeight = resources.getDimension(R.dimen.pay_button_height).toInt()
     private val minDesiredWidth = resources.getDimension(R.dimen.pay_button_min_width).toInt()
 
     init {
-        context.theme.obtainStyledAttributes(
-            attrs,
-            R.styleable.PayPalButton,
-            0, 0
-        ).apply {
+        context.theme.obtainStyledAttributes(attrs, R.styleable.PayPalButton, 0, 0).apply {
             try {
-                val colorAttr = getString(R.styleable.PayPalButton_buttonColor)
-                when (colorAttr) {
-                    "white" -> {
-                        colorValue = "#FFFFFF"
-                        borderColorValue = "#555555"
-                        logo = ContextCompat.getDrawable(context, R.drawable.paypal_logo_black)
-                    }
-                    "black" -> {
-                        colorValue = "#000000"
-                        borderColorValue = colorValue
-                        logo = ContextCompat.getDrawable(context, R.drawable.paypal_logo_white)
-                    }
-                    else -> {
-                        colorValue = "#60CDFF"
-                        borderColorValue = colorValue
-                        logo = ContextCompat.getDrawable(context, R.drawable.paypal_logo_black)
-                    }
-                }
+                currentStyle = PayPalButtonColor.fromId(getInt(R.styleable.PayPalButton_paymentButtonColor, 0))
             } finally {
                 recycle()
             }
         }
+        setupBackground()
+        applyStyle()
+    }
 
-        val cornerRadiusPx = resources.getDimension(R.dimen.pay_button_corner_radius)
-        val strokeWidthPx = resources.getDimension(R.dimen.pay_button_border).toInt()
-
-        val bg = GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = cornerRadiusPx
-            setColor(colorValue.toColorInt())
-            setStroke(strokeWidthPx, borderColorValue.toColorInt())
-        }
+    private fun setupBackground() {
+        gradientDrawable.shape = GradientDrawable.RECTANGLE
+        gradientDrawable.cornerRadius = resources.getDimension(R.dimen.pay_button_corner_radius)
+        background = gradientDrawable
         minWidth = minDesiredWidth
-        background = bg
+    }
+
+    private fun applyStyle() {
+        gradientDrawable.setColor(currentStyle.fill)
+        val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
+        gradientDrawable.setStroke(strokeWidth, currentStyle.border)
+        logo = ContextCompat.getDrawable(context, currentStyle.logoId)
+        invalidate()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -77,13 +59,24 @@ class PayPalButton @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        logo?.let { d ->
-            val w = d.intrinsicWidth
-            val h = d.intrinsicHeight
-            val left = (width - w) / 2
-            val top = (height - h) / 2 + logoOffset
-            d.setBounds(left, top, left + w, top + h)
-            d.draw(canvas)
-        }
+        val d = logo ?: return
+        val w = d.intrinsicWidth
+        val h = d.intrinsicHeight
+        val left = (width - w) / 2
+        val top = (height - h) / 2 + logoOffset
+        d.setBounds(left, top, left + w, top + h)
+        d.draw(canvas)
+    }
+
+    /**
+     * Sets the color of the PayPal button
+     *
+     * @property color Value representing the button color. Valid values are BLUE, BLACK, and WHITE
+     */
+    fun setButtonColor(color: PayPalButtonColor) {
+        val style = color
+        if (style == currentStyle) return
+        currentStyle = style
+        applyStyle()
     }
 }

@@ -33,7 +33,7 @@ class VenmoButton @JvmOverloads constructor(
             0, 0
         ).apply {
             try {
-                val colorAttr = getString(R.styleable.VenmoButton_buttonColor)
+                val colorAttr = getString(R.styleable.VenmoButton_paymentButtonColor)
                 when (colorAttr) {
                     "white" -> {
                         colorValue = "#FFFFFF"
