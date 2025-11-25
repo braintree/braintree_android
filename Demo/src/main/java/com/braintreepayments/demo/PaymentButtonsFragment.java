@@ -12,7 +12,6 @@ import com.braintreepayments.api.uicomponents.PayPalButton;
 import com.braintreepayments.api.uicomponents.PayPalButtonColor;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 
-
 public class PaymentButtonsFragment extends BaseFragment {
 
     private PayPalButton payPalButton;
