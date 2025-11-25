@@ -11,8 +11,11 @@ import androidx.core.content.ContextCompat
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalPaymentAuthCallback
 import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
+import com.braintreepayments.api.paypal.PayPalPaymentAuthResult
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalRequest
+import com.braintreepayments.api.paypal.PayPalResult
+import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 
 /**
  * A customizable PayPal branded button that handles the complete PayPal payment flow.
@@ -21,9 +24,6 @@ class PayPalButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
-    authorization: String,
-    appLinkReturnUrl: Uri,
-    deepLinkFallbackUrlScheme: String?
 ) : AppCompatButton(context, attrs, defStyleAttr) {
 
     private var currentStyle: PayPalButtonColor = PayPalButtonColor.BLUE
@@ -51,7 +51,7 @@ class PayPalButton @JvmOverloads constructor(
         }
         setupBackground()
         applyStyle()
-        payPalClient = PayPalClient(context, authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
+       // payPalClient = PayPalClient(context, authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
 
     }
 
@@ -109,14 +109,21 @@ class PayPalButton @JvmOverloads constructor(
         this.payPalPaymentAuthCallback = callback
     }
 
-    override fun setOnClickListener(l: OnClickListener?) {
-        super.setOnClickListener(l)
+    fun setPayPalClient(payPalClient: PayPalClient) {
+        this.payPalClient = payPalClient
+    }
 
+    override fun performClick(): Boolean {
+        super.performClick()
         payPalPaymentAuthCallback?.let {
             payPalClient?.createPaymentAuthRequest(
                 context, payPalRequest!!, it)
         }
+        return true
+    }
 
+    fun tokenize(paymentAuthResult: PayPalPaymentAuthResult.Success, payPalResult: PayPalTokenizeCallback) {
+        payPalClient?.tokenize(paymentAuthResult, payPalResult)
     }
 
 }
