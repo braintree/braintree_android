@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="buttonColor" format="string" />
+    <attr name="paymentButtonColor" format="enum">
+        <enum name="blue" value="0" />
+        <enum name="black" value="1" />
+        <enum name="white" value="2" />
+    </attr>
 
     <declare-styleable name="PayPalButton">
-        <attr name="buttonColor" />
+        <attr name="paymentButtonColor" />
     </declare-styleable>
     <declare-styleable name="VenmoButton">
-        <attr name="buttonColor" />
+        <attr name="paymentButtonColor" />
     </declare-styleable>
 </resources>
