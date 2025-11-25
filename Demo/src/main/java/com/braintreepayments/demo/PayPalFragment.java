@@ -211,19 +211,21 @@ public class PayPalFragment extends BaseFragment {
             );
         }
         payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest,
-                (paymentAuthRequest) -> {
-                    if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.Failure) {
-                        handleError(((PayPalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
-                    } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch){
-                        PayPalPendingRequest request = payPalLauncher.launch(requireActivity(),
-                                ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
-                        if (request instanceof PayPalPendingRequest.Started) {
-                            storePendingRequest((PayPalPendingRequest.Started) request);
-                        } else if (request instanceof PayPalPendingRequest.Failure) {
-                            handleError(((PayPalPendingRequest.Failure) request).getError());
-                        }
-                    }
-                });
+                this::doOnlambda);
+    }
+
+    private void doOnlambda(PayPalPaymentAuthRequest paymentAuthRequest) {
+        if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.Failure) {
+            handleError(((PayPalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
+        } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch){
+            PayPalPendingRequest request = payPalLauncher.launch(requireActivity(),
+                    ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
+            if (request instanceof PayPalPendingRequest.Started) {
+                storePendingRequest((PayPalPendingRequest.Started) request);
+            } else if (request instanceof PayPalPendingRequest.Failure) {
+                handleError(((PayPalPendingRequest.Failure) request).getError());
+            }
+        }
     }
 
     private void completePayPalFlow(PayPalPaymentAuthResult.Success paymentAuthResult) {

@@ -4,18 +4,26 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
+import com.braintreepayments.api.paypal.PayPalClient
+import com.braintreepayments.api.paypal.PayPalPaymentAuthCallback
+import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
+import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalRequest
 
 /**
-    * A customizable PayPal branded button to initiate the PayPal flow
+ * A customizable PayPal branded button that handles the complete PayPal payment flow.
  */
 class PayPalButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
+    authorization: String,
+    appLinkReturnUrl: Uri,
+    deepLinkFallbackUrlScheme: String?
 ) : AppCompatButton(context, attrs, defStyleAttr) {
 
     private var currentStyle: PayPalButtonColor = PayPalButtonColor.BLUE
@@ -29,6 +37,9 @@ class PayPalButton @JvmOverloads constructor(
 
     private var payPalRequest: PayPalRequest? = null
     private var launchCallback: PayPalButtonLaunchCallback? = null
+    private var payPalClient: PayPalClient? = null
+    private var payPalPaymentAuthCallback: PayPalPaymentAuthCallback? = null
+    //private lateinit var payPalPaymentAuthCallback: PayPalPaymentAuthCallback
 
     init {
         context.theme.obtainStyledAttributes(attrs, R.styleable.PayPalButton, 0, 0).apply {
@@ -40,6 +51,8 @@ class PayPalButton @JvmOverloads constructor(
         }
         setupBackground()
         applyStyle()
+        payPalClient = PayPalClient(context, authorization, appLinkReturnUrl, deepLinkFallbackUrlScheme)
+
     }
 
     private fun setupBackground() {
@@ -84,11 +97,26 @@ class PayPalButton @JvmOverloads constructor(
         applyStyle()
     }
 
-    fun setPayPalRequest(request: PayPalRequest) {
+    fun updatePayPalRequest(request: PayPalRequest) {
         this.payPalRequest = request
     }
 
     fun setLaunchCallback(callback: PayPalButtonLaunchCallback) {
         this.launchCallback = callback
     }
+
+    fun setPayPalPaymentAuthCallback(callback: PayPalPaymentAuthCallback) {
+        this.payPalPaymentAuthCallback = callback
+    }
+
+    override fun setOnClickListener(l: OnClickListener?) {
+        super.setOnClickListener(l)
+
+        payPalPaymentAuthCallback?.let {
+            payPalClient?.createPaymentAuthRequest(
+                context, payPalRequest!!, it)
+        }
+
+    }
+
 }
