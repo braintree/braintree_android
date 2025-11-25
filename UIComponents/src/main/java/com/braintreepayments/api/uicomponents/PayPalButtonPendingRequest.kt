@@ -13,10 +13,10 @@ sealed class PayPalButtonPendingRequest {
      * @property pendingRequest - This String should be stored and passed to
      * [PayPalButton.handleReturnToApp].
      */
-    data class Launched(val pendingRequest: String) : PayPalButtonPendingRequest()
+    class Launched(val pendingRequest: String) : PayPalButtonPendingRequest()
 
     /**
      * An error occurred launching the PayPal browser flow. See [error] for details.
      */
-    data class Failure(val error: Exception) : PayPalButtonPendingRequest()
+    class Failure(val error: Exception) : PayPalButtonPendingRequest()
 }
