@@ -7,6 +7,7 @@ import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
+import com.braintreepayments.api.paypal.PayPalRequest
 
 /**
     * A customizable PayPal branded button to initiate the PayPal flow
@@ -25,6 +26,9 @@ class PayPalButton @JvmOverloads constructor(
     private val desiredWidth = resources.getDimension(R.dimen.pay_button_width).toInt()
     private val desiredHeight = resources.getDimension(R.dimen.pay_button_height).toInt()
     private val minDesiredWidth = resources.getDimension(R.dimen.pay_button_min_width).toInt()
+
+    private var payPalRequest: PayPalRequest? = null
+    private var launchCallback: PayPalButtonLaunchCallback? = null
 
     init {
         context.theme.obtainStyledAttributes(attrs, R.styleable.PayPalButton, 0, 0).apply {
@@ -78,5 +82,13 @@ class PayPalButton @JvmOverloads constructor(
         if (style == currentStyle) return
         currentStyle = style
         applyStyle()
+    }
+
+    fun setPayPalRequest(request: PayPalRequest) {
+        this.payPalRequest = request
+    }
+
+    fun setLaunchCallback(callback: PayPalButtonLaunchCallback) {
+        this.launchCallback = callback
     }
 }
