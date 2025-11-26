@@ -22,6 +22,8 @@ import com.braintreepayments.api.paypal.PayPalResult;
 import com.braintreepayments.api.uicomponents.PayPalButton;
 import com.braintreepayments.api.uicomponents.PayPalButtonColor;
 import com.braintreepayments.api.uicomponents.PayPalButtonView;
+import com.braintreepayments.api.uicomponents.VenmoButton;
+import com.braintreepayments.api.uicomponents.VenmoButtonColor;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 
 public class PaymentButtonsFragment extends BaseFragment {
@@ -30,6 +32,9 @@ public class PaymentButtonsFragment extends BaseFragment {
     private PayPalButton payPalButton;
     private PayPalLauncher payPalLauncher;
     private MaterialButtonToggleGroup toggleGroup;
+    private MaterialButtonToggleGroup payPalToggleGroup;
+    private VenmoButton venmoButton;
+    private MaterialButtonToggleGroup venmoToggleGroup;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -38,9 +43,10 @@ public class PaymentButtonsFragment extends BaseFragment {
         payPalButtonView = view.findViewById(R.id.pp_payment_button);
         toggleGroup = view.findViewById(R.id.pp_button_toggle_group);
 
-        toggleGroup.setSingleSelection(true);
+        payPalButton = view.findViewById(R.id.pp_payment_button);
+        payPalToggleGroup = view.findViewById(R.id.pp_button_toggle_group);
 
-        toggleGroup.addOnButtonCheckedListener(
+        payPalToggleGroup.addOnButtonCheckedListener(
                 new MaterialButtonToggleGroup.OnButtonCheckedListener() {
                     @Override
                     public void onButtonChecked(MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
@@ -109,6 +115,28 @@ public class PaymentButtonsFragment extends BaseFragment {
             payPalButtonView.setOnClickListener(v -> {
                 payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest, payPalPaymentAuthCallback);
             });
+        venmoButton = view.findViewById(R.id.venmo_payment_button);
+        venmoToggleGroup = view.findViewById(R.id.venmo_button_toggle_group);
+
+        venmoToggleGroup.addOnButtonCheckedListener(
+                new MaterialButtonToggleGroup.OnButtonCheckedListener() {
+                    @Override
+                    public void onButtonChecked(MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
+                        if (!isChecked) return;
+                        switch (checkedId) {
+                            case R.id.button_venmo_blue:
+                                venmoButton.setButtonColor(VenmoButtonColor.BLUE);
+                                break;
+                            case R.id.button_venmo_black:
+                                venmoButton.setButtonColor(VenmoButtonColor.BLACK);
+                                break;
+                            case R.id.button_venmo_white:
+                                venmoButton.setButtonColor(VenmoButtonColor.WHITE);
+                                break;
+                        }
+                    }
+                }
+        );
 
         return view;
     }

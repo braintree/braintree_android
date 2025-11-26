@@ -8,5 +8,7 @@
     <color name="off_white">#FFFAF8F5</color>
     <color name="white">#FFFFFFFF</color>
     <color name="green">#008C20</color>
+    <color name="toggle_checked_border">#8A8A8A</color>
+    <color name="toggle_unchecked_border">#4B4B4B</color>
 
 </resources>
