@@ -7,7 +7,6 @@ import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.toColorInt
 
 /**
  * A customizable Venmo branded button to initiate the Venmo flow
@@ -18,55 +17,39 @@ class VenmoButton @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : AppCompatButton(context, attrs, defStyleAttr) {
 
-    private var logo: Drawable?
-    private var colorValue: String
-    private var borderColorValue: String
+    private var currentStyle: VenmoButtonColor = VenmoButtonColor.BLUE
+    private val gradientDrawable = GradientDrawable()
+    private var logo: Drawable? = null
 
     private val desiredWidth = resources.getDimension(R.dimen.pay_button_width).toInt()
     private val desiredHeight = resources.getDimension(R.dimen.pay_button_height).toInt()
     private val minDesiredWidth = resources.getDimension(R.dimen.pay_button_min_width).toInt()
 
     init {
-        context.theme.obtainStyledAttributes(
-            attrs,
-            R.styleable.VenmoButton,
-            0, 0
-        ).apply {
+        context.theme.obtainStyledAttributes(attrs, R.styleable.VenmoButton, 0, 0).apply {
             try {
-                val colorAttr = getString(R.styleable.VenmoButton_paymentButtonColor)
-                when (colorAttr) {
-                    "white" -> {
-                        colorValue = "#FFFFFF"
-                        borderColorValue = "#555555"
-                        logo = ContextCompat.getDrawable(context, R.drawable.venmo_logo_blue)
-                    }
-                    "black" -> {
-                        colorValue = "#000000"
-                        borderColorValue = colorValue
-                        logo = ContextCompat.getDrawable(context, R.drawable.venmo_logo_white)
-                    }
-                    else -> {
-                        colorValue = "#008CFF"
-                        borderColorValue = colorValue
-                        logo = ContextCompat.getDrawable(context, R.drawable.venmo_logo_white)
-                    }
-                }
+                currentStyle = VenmoButtonColor.fromId(getInt(R.styleable.VenmoButton_paymentButtonColor, 0))
             } finally {
                 recycle()
             }
         }
+        setupBackground()
+        applyStyle()
+    }
 
-        val cornerRadiusPx = resources.getDimension(R.dimen.pay_button_corner_radius)
-        val strokeWidthPx = resources.getDimension(R.dimen.pay_button_border).toInt()
-
-        val bg = GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = cornerRadiusPx
-            setColor(colorValue.toColorInt())
-            setStroke(strokeWidthPx, borderColorValue.toColorInt())
-        }
+    private fun setupBackground() {
+        gradientDrawable.shape = GradientDrawable.RECTANGLE
+        gradientDrawable.cornerRadius = resources.getDimension(R.dimen.pay_button_corner_radius)
+        background = gradientDrawable
         minWidth = minDesiredWidth
-        background = bg
+    }
+
+    private fun applyStyle() {
+        gradientDrawable.setColor(currentStyle.fill)
+        val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
+        gradientDrawable.setStroke(strokeWidth, currentStyle.border)
+        logo = ContextCompat.getDrawable(context, currentStyle.logoId)
+        invalidate()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -83,5 +66,17 @@ class VenmoButton @JvmOverloads constructor(
             d.setBounds(left, top, left + w, top + h)
             d.draw(canvas)
         }
+    }
+
+    /**
+     * Sets the color of the Venmo button
+     *
+     * @property color Value representing the button color. Valid values are BLUE, BLACK, and WHITE
+     */
+    fun setButtonColor(color: VenmoButtonColor) {
+        val style = color
+        if (style == currentStyle) return
+        currentStyle = style
+        applyStyle()
     }
 }
