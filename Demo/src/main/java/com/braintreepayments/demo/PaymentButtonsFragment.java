@@ -29,8 +29,6 @@ public class PaymentButtonsFragment extends BaseFragment {
         payPalButton = view.findViewById(R.id.pp_payment_button);
         ppToggleGroup = view.findViewById(R.id.pp_button_toggle_group);
 
-        ppToggleGroup.setSingleSelection(true);
-
         ppToggleGroup.addOnButtonCheckedListener(
                 new MaterialButtonToggleGroup.OnButtonCheckedListener() {
                     @Override
@@ -53,8 +51,6 @@ public class PaymentButtonsFragment extends BaseFragment {
 
         venmoButton = view.findViewById(R.id.venmo_payment_button);
         venmoToggleGroup = view.findViewById(R.id.venmo_button_toggle_group);
-
-        venmoToggleGroup.setSingleSelection(true);
 
         venmoToggleGroup.addOnButtonCheckedListener(
                 new MaterialButtonToggleGroup.OnButtonCheckedListener() {
