@@ -41,21 +41,24 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/blue_button_color_option" />
+                        android:text="@string/blue_button_color_option"
+                        custom:backgroundTint="@color/toggle_stroke_color" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/button_pp_black"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/black_button_color_option" />
+                        android:text="@string/black_button_color_option"
+                        custom:backgroundTint="@color/toggle_stroke_color" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/button_pp_white"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/white_button_color_option" />
+                        android:text="@string/white_button_color_option"
+                        custom:backgroundTint="@color/toggle_stroke_color" />
 
                 </com.google.android.material.button.MaterialButtonToggleGroup>
             </LinearLayout>
@@ -82,6 +85,55 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingBottom="15dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/venmo_button_toggle_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    custom:checkedButton="@id/button_venmo_blue"
+                    custom:singleSelection="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button_venmo_blue"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/blue_button_color_option"
+                        custom:backgroundTint="@color/toggle_stroke_color" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button_venmo_black"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/black_button_color_option"
+                        custom:backgroundTint="@color/toggle_stroke_color" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/button_venmo_white"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/white_button_color_option"
+                        custom:backgroundTint="@color/toggle_stroke_color" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+            </LinearLayout>
+
+            <com.braintreepayments.api.uicomponents.VenmoButton
+                android:id="@+id/venmo_payment_button"
+                custom:buttonColor="blue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
 
         </LinearLayout>
 
