@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -63,13 +62,15 @@ public class PaymentButtonsFragment extends BaseFragment {
                 }
         );
         payPalLauncher = new PayPalLauncher();
-        payPalButton.setPayPalClient(
-                new PayPalClient(
+
+        PayPalClient payPalClient = new PayPalClient(
                 requireContext(),
                 super.getAuthStringArg(),
                 Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"),
                 "com.braintreepayments.demo.braintree"
-        ));
+        );
+        payPalButton.setPayPalClient(payPalClient);
+
         PayPalRequest payPalRequest = createPayPalCheckoutRequest(
                 requireContext(),
                 "10.0",
@@ -83,6 +84,7 @@ public class PaymentButtonsFragment extends BaseFragment {
                 false
         );
         payPalButton.updatePayPalRequest(payPalRequest);
+
         PayPalPaymentAuthCallback payPalPaymentAuthCallback = new PayPalPaymentAuthCallback() {
             @Override
             public void onPayPalPaymentAuthRequest(@NonNull PayPalPaymentAuthRequest paymentAuthRequest) {
@@ -99,8 +101,9 @@ public class PaymentButtonsFragment extends BaseFragment {
                 }
             }
         };
-        payPalButton.setPayPalPaymentAuthCallback(payPalPaymentAuthCallback);
+
         payPalButton.setOnClickListener(v -> {
+            payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest, payPalPaymentAuthCallback);
         });
 
         return view;

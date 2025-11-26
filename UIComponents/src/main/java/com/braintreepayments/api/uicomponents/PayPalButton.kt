@@ -4,17 +4,13 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
-import android.net.Uri
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalPaymentAuthCallback
-import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
 import com.braintreepayments.api.paypal.PayPalPaymentAuthResult
-import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalRequest
-import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 
 /**
@@ -111,15 +107,6 @@ class PayPalButton @JvmOverloads constructor(
 
     fun setPayPalClient(payPalClient: PayPalClient) {
         this.payPalClient = payPalClient
-    }
-
-    override fun performClick(): Boolean {
-        super.performClick()
-        payPalPaymentAuthCallback?.let {
-            payPalClient?.createPaymentAuthRequest(
-                context, payPalRequest!!, it)
-        }
-        return true
     }
 
     fun tokenize(paymentAuthResult: PayPalPaymentAuthResult.Success, payPalResult: PayPalTokenizeCallback) {
