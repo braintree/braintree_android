@@ -41,21 +41,24 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/blue_button_color_option" />
+                        android:text="@string/blue_button_color_option"
+                        custom:backgroundTint="@color/toggle_stroke_color" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/button_pp_black"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/black_button_color_option" />
+                        android:text="@string/black_button_color_option"
+                        custom:backgroundTint="@color/toggle_stroke_color" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/button_pp_white"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/white_button_color_option" />
+                        android:text="@string/white_button_color_option"
+                        custom:backgroundTint="@color/toggle_stroke_color" />
 
                 </com.google.android.material.button.MaterialButtonToggleGroup>
             </LinearLayout>
@@ -95,7 +98,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
-                    custom:checkedButton="@id/button_pp_blue"
+                    custom:checkedButton="@id/button_venmo_blue"
                     custom:singleSelection="true">
 
                     <com.google.android.material.button.MaterialButton
@@ -103,21 +106,24 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/blue_button_color_option" />
+                        android:text="@string/blue_button_color_option"
+                        custom:backgroundTint="@color/toggle_stroke_color" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/button_venmo_black"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/black_button_color_option" />
+                        android:text="@string/black_button_color_option"
+                        custom:backgroundTint="@color/toggle_stroke_color" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/button_venmo_white"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/white_button_color_option" />
+                        android:text="@string/white_button_color_option"
+                        custom:backgroundTint="@color/toggle_stroke_color" />
 
                 </com.google.android.material.button.MaterialButtonToggleGroup>
             </LinearLayout>
