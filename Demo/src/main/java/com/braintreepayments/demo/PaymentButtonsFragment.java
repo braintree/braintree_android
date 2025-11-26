@@ -43,9 +43,6 @@ public class PaymentButtonsFragment extends BaseFragment {
         payPalButtonView = view.findViewById(R.id.pp_payment_button);
         toggleGroup = view.findViewById(R.id.pp_button_toggle_group);
 
-        payPalButton = view.findViewById(R.id.pp_payment_button);
-        payPalToggleGroup = view.findViewById(R.id.pp_button_toggle_group);
-
         payPalToggleGroup.addOnButtonCheckedListener(
                 new MaterialButtonToggleGroup.OnButtonCheckedListener() {
                     @Override
