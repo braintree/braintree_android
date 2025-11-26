@@ -1,7 +1,5 @@
 package com.braintreepayments.demo;
 
-import static com.braintreepayments.demo.PayPalRequestFactory.createPayPalCheckoutRequest;
-
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,21 +21,21 @@ import com.braintreepayments.api.paypal.PayPalRequest;
 import com.braintreepayments.api.paypal.PayPalResult;
 import com.braintreepayments.api.uicomponents.PayPalButton;
 import com.braintreepayments.api.uicomponents.PayPalButtonColor;
+import com.braintreepayments.api.uicomponents.PayPalButtonView;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 
 public class PaymentButtonsFragment extends BaseFragment {
 
+    private PayPalButtonView payPalButtonView;
     private PayPalButton payPalButton;
-    private MaterialButtonToggleGroup toggleGroup;
-
     private PayPalLauncher payPalLauncher;
-
+    private MaterialButtonToggleGroup toggleGroup;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_payment_buttons, container, false);
-        payPalButton = view.findViewById(R.id.pp_payment_button);
+        payPalButtonView = view.findViewById(R.id.pp_payment_button);
         toggleGroup = view.findViewById(R.id.pp_button_toggle_group);
 
         toggleGroup.setSingleSelection(true);
@@ -49,19 +47,28 @@ public class PaymentButtonsFragment extends BaseFragment {
                         if (!isChecked) return;
                         switch (checkedId) {
                             case R.id.button_pp_blue:
-                                payPalButton.setButtonColor(PayPalButtonColor.BLUE);
+                                payPalButtonView.setButtonColor(PayPalButtonColor.BLUE);
                                 break;
                             case R.id.button_pp_black:
-                                payPalButton.setButtonColor(PayPalButtonColor.BLACK);
+                                payPalButtonView.setButtonColor(PayPalButtonColor.BLACK);
                                 break;
                             case R.id.button_pp_white:
-                                payPalButton.setButtonColor(PayPalButtonColor.WHITE);
+                                payPalButtonView.setButtonColor(PayPalButtonColor.WHITE);
                                 break;
                         }
                     }
                 }
         );
+
         payPalLauncher = new PayPalLauncher();
+
+        payPalButton = new PayPalButton(
+                payPalButtonView,
+                requireContext(),
+                super.getAuthStringArg(),
+                Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"),
+                "com.braintreepayments.demo.braintree"
+        );
 
         PayPalClient payPalClient = new PayPalClient(
                 requireContext(),
@@ -70,41 +77,38 @@ public class PaymentButtonsFragment extends BaseFragment {
                 "com.braintreepayments.demo.braintree"
         );
         payPalButton.setPayPalClient(payPalClient);
-
-        PayPalRequest payPalRequest = createPayPalCheckoutRequest(
-                requireContext(),
-                "10.0",
-                null,
-                null,
-                null,
-                false,
-                null,
-                false,
-                false,
-                false
-        );
+        PayPalRequest payPalRequest = PayPalRequestFactory.createPayPalCheckoutRequest(
+                    requireContext(),
+                    "10.0",
+                    null,
+                    null,
+                    null,
+                    false,
+                    null,
+                    false,
+                    false,
+                    false
+            );
         payPalButton.updatePayPalRequest(payPalRequest);
-
-        PayPalPaymentAuthCallback payPalPaymentAuthCallback = new PayPalPaymentAuthCallback() {
-            @Override
-            public void onPayPalPaymentAuthRequest(@NonNull PayPalPaymentAuthRequest paymentAuthRequest) {
-                if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.Failure) {
-                    handleError(((PayPalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
-                } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch){
-                    PayPalPendingRequest request = payPalLauncher.launch(requireActivity(),
-                            ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
-                    if (request instanceof PayPalPendingRequest.Started) {
-                        storePendingRequest((PayPalPendingRequest.Started) request);
-                    } else if (request instanceof PayPalPendingRequest.Failure) {
-                        handleError(((PayPalPendingRequest.Failure) request).getError());
+            PayPalPaymentAuthCallback payPalPaymentAuthCallback = new PayPalPaymentAuthCallback() {
+                @Override
+                public void onPayPalPaymentAuthRequest(@NonNull PayPalPaymentAuthRequest paymentAuthRequest) {
+                    if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.Failure) {
+                        handleError(((PayPalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
+                    } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch){
+                        PayPalPendingRequest request = payPalLauncher.launch(requireActivity(),
+                                ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
+                        if (request instanceof PayPalPendingRequest.Started) {
+                            storePendingRequest((PayPalPendingRequest.Started) request);
+                        } else if (request instanceof PayPalPendingRequest.Failure) {
+                            handleError(((PayPalPendingRequest.Failure) request).getError());
+                        }
                     }
                 }
-            }
-        };
-
-        payPalButton.setOnClickListener(v -> {
-            payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest, payPalPaymentAuthCallback);
-        });
+            };
+            payPalButtonView.setOnClickListener(v -> {
+                payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest, payPalPaymentAuthCallback);
+            });
 
         return view;
     }
@@ -148,10 +152,9 @@ public class PaymentButtonsFragment extends BaseFragment {
             super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
             PaymentButtonsFragmentDirections.ActionPaymentButtonsFragmentToDisplayNonceFragment action =
-                    PaymentButtonsFragmentDirections.actionPaymentButtonsFragmentToDisplayNonceFragment(paymentMethodNonce);
-//            action.setTransactionAmount("10.0");
-//            action.setIsPayLaterSelected(false);
-
+                PaymentButtonsFragmentDirections.actionPaymentButtonsFragmentToDisplayNonceFragment(
+                    paymentMethodNonce
+                );
             NavHostFragment.findNavController(this).navigate(action);
         }
     }

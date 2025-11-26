@@ -60,7 +60,7 @@
                 </com.google.android.material.button.MaterialButtonToggleGroup>
             </LinearLayout>
 
-            <com.braintreepayments.api.uicomponents.PayPalButton
+            <com.braintreepayments.api.uicomponents.PayPalButtonView
                 android:id="@+id/pp_payment_button"
                 custom:buttonColor="blue"
                 android:layout_width="wrap_content"
