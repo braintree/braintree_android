@@ -6,7 +6,7 @@ import androidx.core.graphics.toColorInt
 /**
  * Enum representing the different colors of Venmo buttons
  */
-enum class VenmoButtonColor (
+enum class VenmoButtonColor(
         val key: Int,
         @ColorInt val fill: Int,
         @ColorInt val border: Int,
