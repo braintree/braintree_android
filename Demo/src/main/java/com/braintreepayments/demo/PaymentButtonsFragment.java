@@ -17,7 +17,7 @@ import com.google.android.material.button.MaterialButtonToggleGroup;
 public class PaymentButtonsFragment extends BaseFragment {
 
     private PayPalButton payPalButton;
-    private MaterialButtonToggleGroup ppToggleGroup;
+    private MaterialButtonToggleGroup payPalToggleGroup;
     private VenmoButton venmoButton;
     private MaterialButtonToggleGroup venmoToggleGroup;
 
@@ -27,9 +27,9 @@ public class PaymentButtonsFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_payment_buttons, container, false);
 
         payPalButton = view.findViewById(R.id.pp_payment_button);
-        ppToggleGroup = view.findViewById(R.id.pp_button_toggle_group);
+        payPalToggleGroup = view.findViewById(R.id.pp_button_toggle_group);
 
-        ppToggleGroup.addOnButtonCheckedListener(
+        payPalToggleGroup.addOnButtonCheckedListener(
                 new MaterialButtonToggleGroup.OnButtonCheckedListener() {
                     @Override
                     public void onButtonChecked(MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
