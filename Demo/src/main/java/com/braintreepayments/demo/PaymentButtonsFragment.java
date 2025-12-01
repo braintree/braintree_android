@@ -41,7 +41,7 @@ public class PaymentButtonsFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_payment_buttons, container, false);
         payPalButtonView = view.findViewById(R.id.pp_payment_button);
-        toggleGroup = view.findViewById(R.id.pp_button_toggle_group);
+        payPalToggleGroup = view.findViewById(R.id.pp_button_toggle_group);
 
         payPalToggleGroup.addOnButtonCheckedListener(
                 new MaterialButtonToggleGroup.OnButtonCheckedListener() {
