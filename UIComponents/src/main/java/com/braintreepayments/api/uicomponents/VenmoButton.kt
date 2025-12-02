@@ -16,10 +16,7 @@ class VenmoButton @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : AppCompatButton(context, attrs, defStyleAttr) {
-    interface OnVenmoClickListener {
-        fun onVenmoClick(view: VenmoButton)
-    }
-    var venmoClickListener: OnVenmoClickListener? = null
+
     private var currentStyle: VenmoButtonColor = VenmoButtonColor.BLUE
     private val gradientDrawable = GradientDrawable()
     private var logo: Drawable? = null
@@ -27,6 +24,17 @@ class VenmoButton @JvmOverloads constructor(
     private val desiredWidth = resources.getDimension(R.dimen.pay_button_width).toInt()
     private val desiredHeight = resources.getDimension(R.dimen.pay_button_height).toInt()
     private val minDesiredWidth = resources.getDimension(R.dimen.pay_button_min_width).toInt()
+
+    private var venmoClient: VenmoClient? = null
+    private var venmoLauncher: VenmoLauncher? = null
+
+    private var venmoRequest: VenmoRequest? = null
+    private var activityRef: WeakReference<FragmentActivity>? = null
+
+    private var resultCallback: ((VenmoResult) -> Unit)? = null
+    private var pendingRequestCreatedCallback: ((VenmoPendingRequest.Started) -> Unit)? = null
+    private var pendingRequestCompleteCallback: (() -> Unit)? = null
+
 
     init {
         context.theme.obtainStyledAttributes(attrs, R.styleable.VenmoButton, 0, 0).apply {
@@ -39,7 +47,7 @@ class VenmoButton @JvmOverloads constructor(
         setupBackground()
         applyStyle()
         setOnClickListener {
-            venmoClickListener?.onVenmoClick(this)
+            handleClick()
         }
     }
 
@@ -85,4 +93,61 @@ class VenmoButton @JvmOverloads constructor(
         currentStyle = style
         applyStyle()
     }
-}
+
+    fun initialize(
+        activity: FragmentActivity,
+        authorization: String,
+        request: VenmoRequest,
+        onPendingRequestCreated: (VenmoPendingRequest.Started) -> Unit,
+        onPendingRequestComplete: () -> Unit,
+        onResult: (VenmoResult) -> Unit
+    ){
+        this.activityRef = WeakReference(activity)
+        this.venmoRequest = request
+        this.pendingRequestCreatedCallback = onPendingRequestCreated
+        this.pendingRequestCompleteCallback = onPendingRequestComplete
+        this.resultCallback = onResult
+
+        this.venmoClient = VenmoClient(context, authorization)
+        this.venmoLauncher = VenmoLauncher()
+    }
+
+    fun setPaymentRequest(request: VenmoRequest) {
+        this.venmoRequest = request
+    }
+
+
+
+    private fun handleClick() {
+        startVenmoFlow(activity, request)
+    }
+
+    private fun startVenmoFlow(activity: FragmentActivity, request: VenmoRequest) {
+        venmoClient?.createPaymentAuthRequest(activity, request) { paymentAuthRequest ->
+        }
+    }
+
+
+
+    fun handleReturnToApp(pendingRequest: VenmoPendingRequest.Started, intent: Intent) {
+        val paymentAuthResult = venmoLauncher?.handleReturnToApp(pendingRequest, intent)
+
+        pendingRequestCompleteCallback?.invoke()
+
+        when (paymentAuthResult) {
+            is VenmoPaymentAuthResult.Success -> {
+                completeVenmoFlow(paymentAuthResult)
+            }
+            else -> {
+                resultCallback?.invoke(
+                    VenmoResult.Failure(Exception("User did not complete payment flow"))
+                )
+            }
+        }
+    }
+
+    private fun completeVenmoFlow(paymentAuthResult: VenmoPaymentAuthResult.Success) {
+        venmoClient?.tokenize(paymentAuthResult) { result ->
+            resultCallback?.invoke(result)
+        }
+

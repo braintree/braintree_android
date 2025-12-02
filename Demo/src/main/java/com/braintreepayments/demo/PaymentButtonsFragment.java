@@ -120,16 +120,17 @@ public class PaymentButtonsFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        VenmoPendingRequest.Started venmoPendingRequest = getVenmoPendingRequest();
-        if (venmoPendingRequest != null) {
-            VenmoPaymentAuthResult paymentAuthResult = venmoLauncher.handleReturnToApp(venmoPendingRequest, requireActivity().getIntent());
-            if (paymentAuthResult instanceof VenmoPaymentAuthResult.Success) {
-                completeVenmoFlow((VenmoPaymentAuthResult.Success) paymentAuthResult);
-            } else {
-                handleError(new Exception("User did not complete payment flow"));
-            }
-            clearVenmoPendingRequest();
-        }
+        venmoButton.handleReturnToApp(requireActivity().getIntent());
+//        VenmoPendingRequest.Started venmoPendingRequest = getVenmoPendingRequest();
+//        if (venmoPendingRequest != null) {
+//            VenmoPaymentAuthResult paymentAuthResult = venmoLauncher.handleReturnToApp(venmoPendingRequest, requireActivity().getIntent());
+//            if (paymentAuthResult instanceof VenmoPaymentAuthResult.Success) {
+//                completeVenmoFlow((VenmoPaymentAuthResult.Success) paymentAuthResult);
+//            } else {
+//                handleError(new Exception("User did not complete payment flow"));
+//            }
+//            clearVenmoPendingRequest();
+//        }
     }
 
     private void handleVenmoResult(VenmoResult result) {
@@ -149,7 +150,34 @@ public class PaymentButtonsFragment extends BaseFragment {
         NavHostFragment.findNavController(this).navigate(action);
     }
 
-    public void launchVenmo(View v) {
+//    public void launchVenmo(View v) {
+//        FragmentActivity activity = getActivity();
+//
+//        getActivity().setProgressBarIndeterminateVisibility(true);
+//
+//        boolean shouldVault =
+//                Settings.vaultVenmo(activity) && !TextUtils.isEmpty(Settings.getCustomerId(activity));
+//
+//        VenmoPaymentMethodUsage venmoPaymentMethodUsage = shouldVault ?
+//                VenmoPaymentMethodUsage.MULTI_USE : VenmoPaymentMethodUsage.SINGLE_USE;
+//        VenmoRequest venmoRequest = new VenmoRequest(venmoPaymentMethodUsage);
+//        venmoRequest.setProfileId(null);
+//        venmoRequest.setShouldVault(shouldVault);
+//        venmoRequest.setCollectCustomerBillingAddress(true);
+//        venmoRequest.setCollectCustomerShippingAddress(true);
+//        venmoRequest.setTotalAmount("20");
+//        venmoRequest.setSubTotalAmount("18");
+//        venmoRequest.setTaxAmount("1");
+//        venmoRequest.setShippingAmount("1");
+//        ArrayList<VenmoLineItem> lineItems = new ArrayList<>();
+//        lineItems.add(new VenmoLineItem(VenmoLineItemKind.CREDIT, "Some Item", 1, "2"));
+//        lineItems.add(new VenmoLineItem(VenmoLineItemKind.DEBIT, "Two Items", 2, "10"));
+//        venmoRequest.setLineItems(lineItems);
+//
+//        startVenmoFlow(venmoRequest);
+//    }
+
+    private VenmoRequest createVenmoRequest() {
         FragmentActivity activity = getActivity();
 
         getActivity().setProgressBarIndeterminateVisibility(true);
@@ -173,7 +201,7 @@ public class PaymentButtonsFragment extends BaseFragment {
         lineItems.add(new VenmoLineItem(VenmoLineItemKind.DEBIT, "Two Items", 2, "10"));
         venmoRequest.setLineItems(lineItems);
 
-        startVenmoFlow(venmoRequest);
+        return venmoRequest;
     }
 
     private void startVenmoFlow(VenmoRequest venmoRequest) {
