@@ -42,6 +42,7 @@ android {
 
 dependencies {
     api project(':BraintreeCore')
+    api project(':Venmo')
 
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat

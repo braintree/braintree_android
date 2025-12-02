@@ -16,7 +16,10 @@ class VenmoButton @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : AppCompatButton(context, attrs, defStyleAttr) {
-
+    interface OnVenmoClickListener {
+        fun onVenmoClick(view: VenmoButton)
+    }
+    var venmoClickListener: OnVenmoClickListener? = null
     private var currentStyle: VenmoButtonColor = VenmoButtonColor.BLUE
     private val gradientDrawable = GradientDrawable()
     private var logo: Drawable? = null
@@ -35,6 +38,9 @@ class VenmoButton @JvmOverloads constructor(
         }
         setupBackground()
         applyStyle()
+        setOnClickListener {
+            venmoClickListener?.onVenmoClick(this)
+        }
     }
 
     private fun setupBackground() {

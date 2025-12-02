@@ -73,7 +73,12 @@ public class PaymentButtonsFragment extends BaseFragment {
 
         venmoButton = view.findViewById(R.id.venmo_payment_button);
         venmoToggleGroup = view.findViewById(R.id.venmo_button_toggle_group);
-        venmoButton.setOnClickListener(this::launchVenmo);
+        venmoButton.setVenmoClickListener(new VenmoButton.OnVenmoClickListener() {
+            @Override
+            public void onVenmoClick(VenmoButton view) {
+                launchVenmo(view);
+            }
+        });
         venmoToggleGroup.addOnButtonCheckedListener(
                 new MaterialButtonToggleGroup.OnButtonCheckedListener() {
                     @Override
