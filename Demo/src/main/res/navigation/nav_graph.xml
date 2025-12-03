@@ -82,6 +82,16 @@
             android:name="isPayLaterSelected"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="venmoNonce"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="paypalNonce"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
         <action
             android:id="@+id/action_displayNonceFragment_to_createTransactionFragment"
             app:destination="@id/createTransactionFragment"
