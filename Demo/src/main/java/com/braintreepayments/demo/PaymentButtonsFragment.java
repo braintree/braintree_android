@@ -8,10 +8,12 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.navigation.fragment.NavHostFragment;
 
-import com.braintreepayments.api.paypal.PayPalPaymentAuthResult;
+import com.braintreepayments.api.core.PaymentMethodNonce;
 import com.braintreepayments.api.paypal.PayPalPendingRequest;
 import com.braintreepayments.api.paypal.PayPalRequest;
+import com.braintreepayments.api.paypal.PayPalResult;
 import com.braintreepayments.api.uicomponents.PayPalButton;
 import com.braintreepayments.api.uicomponents.PayPalButtonColor;
 import com.braintreepayments.api.uicomponents.VenmoButton;
@@ -80,28 +82,6 @@ public class PaymentButtonsFragment extends BaseFragment {
             }
         });
 
-//        payPalButton.updatePayPalRequest(payPalRequest);
-//            PayPalPaymentAuthCallback payPalPaymentAuthCallback = new PayPalPaymentAuthCallback() {
-//                @Override
-//                public void onPayPalPaymentAuthRequest(@NonNull PayPalPaymentAuthRequest paymentAuthRequest) {
-//                    if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.Failure) {
-//                        handleError(((PayPalPaymentAuthRequest.Failure) paymentAuthRequest).getError());
-//                    } else if (paymentAuthRequest instanceof PayPalPaymentAuthRequest.ReadyToLaunch){
-//                        PayPalPendingRequest request = payPalLauncher.launch(requireActivity(),
-//                                ((PayPalPaymentAuthRequest.ReadyToLaunch) paymentAuthRequest));
-//                        if (request instanceof PayPalPendingRequest.Started) {
-//                            storePendingRequest((PayPalPendingRequest.Started) request);
-//                        } else if (request instanceof PayPalPendingRequest.Failure) {
-//                            handleError(((PayPalPendingRequest.Failure) request).getError());
-//                        }
-//                    }
-//                }
-//            };
-//            payPalButtonView.setOnClickListener(v -> {
-//                payPalClient.createPaymentAuthRequest(requireContext(), payPalRequest, payPalPaymentAuthCallback);
-//            });
-
-
         venmoButton = view.findViewById(R.id.venmo_payment_button);
         venmoToggleGroup = view.findViewById(R.id.venmo_button_toggle_group);
 
@@ -134,14 +114,17 @@ public class PaymentButtonsFragment extends BaseFragment {
 
         PayPalPendingRequest.Started pendingRequest = getPendingRequest();
         if (pendingRequest != null) {
-            payPalButton.handleReturnToApp(pendingRequest, requireActivity().getIntent());
-
-//            PayPalPaymentAuthResult paymentAuthResult = payPalLauncher.handleReturnToApp(pendingRequest, requireActivity().getIntent());
-//            if (paymentAuthResult instanceof PayPalPaymentAuthResult.Success) {
-//                completePayPalFlow((PayPalPaymentAuthResult.Success) paymentAuthResult);
-//            } else {
-//                handleError(new Exception("User did not complete payment flow"));
-//            }
+            payPalButton.handleReturnToApp( pendingRequest, requireActivity().getIntent(),
+                    payPalResult -> {
+                        if (payPalResult instanceof PayPalResult.Success) {
+                            handlePayPalResult(((PayPalResult.Success) payPalResult).getNonce());
+                        } else if (payPalResult instanceof PayPalResult.Cancel) {
+                            handleError(new Exception("User did not complete payment flow"));
+                        } else if (payPalResult instanceof PayPalResult.Failure)  {
+                            handleError(((PayPalResult.Failure) payPalResult).getError());
+                        }
+                    }
+            );
             clearPendingRequest();
         }
     }
@@ -154,28 +137,18 @@ public class PaymentButtonsFragment extends BaseFragment {
         return PendingRequestStore.getInstance().getPayPalPendingRequest(requireContext());
     }
 
-//    private void completePayPalFlow(PayPalPaymentAuthResult.Success paymentAuthResult) {
-//        payPalButton.tokenize(paymentAuthResult, payPalResult -> {
-//            if (payPalResult instanceof PayPalResult.Failure) {
-//                handleError(((PayPalResult.Failure) payPalResult).getError());
-//            } else if (payPalResult instanceof PayPalResult.Success) {
-//                handlePayPalResult(((PayPalResult.Success) payPalResult).getNonce());
-//            }
-//        });
-//    }
-//
-//    private void handlePayPalResult(PaymentMethodNonce paymentMethodNonce) {
-//        if (paymentMethodNonce != null) {
-//            super.onPaymentMethodNonceCreated(paymentMethodNonce);
-//
-//            PaymentButtonsFragmentDirections.ActionPaymentButtonsFragmentToDisplayNonceFragment action =
-//                PaymentButtonsFragmentDirections.actionPaymentButtonsFragmentToDisplayNonceFragment(
-//                    paymentMethodNonce
-//                );
-//            NavHostFragment.findNavController(this).navigate(action);
-//        }
-//    }
-//
+    private void handlePayPalResult(PaymentMethodNonce paymentMethodNonce) {
+        if (paymentMethodNonce != null) {
+            super.onPaymentMethodNonceCreated(paymentMethodNonce);
+
+            PaymentButtonsFragmentDirections.ActionPaymentButtonsFragmentToDisplayNonceFragment action =
+                PaymentButtonsFragmentDirections.actionPaymentButtonsFragmentToDisplayNonceFragment(
+                    paymentMethodNonce
+                );
+            NavHostFragment.findNavController(this).navigate(action);
+        }
+    }
+
     private void clearPendingRequest() {
         PendingRequestStore.getInstance().clearPayPalPendingRequest(requireContext());
     }
