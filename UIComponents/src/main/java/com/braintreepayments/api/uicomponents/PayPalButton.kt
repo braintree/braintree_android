@@ -45,9 +45,16 @@ class PayPalButton @JvmOverloads constructor(
      * The PayPal client used to create payment auth requests and tokenize results.
      * Must be initialized via [initialize] before use.
      */
-    lateinit var payPalClient: PayPalClient
+    private lateinit var payPalClient: PayPalClient
     private val payPalLauncher: PayPalLauncher
 
+    /**
+     * Callback invoked when the PayPal payment authentication request is launched.
+     *
+     * This callback is used to receive notifications about the launch status, such as
+     * [PayPalPendingRequest.Started] or [PayPalPendingRequest.Failure]. The pending request
+     * returned on success should be stored and passed to [handleReturnToApp] to complete the payment flow.
+     */
     var payPalLaunchCallback: PayPalLaunchCallback? = null
 
     init {
@@ -91,43 +98,23 @@ class PayPalButton @JvmOverloads constructor(
     /**
      * Sets the PayPal request configuration and wires up the click handler.
      *
-     * When the button is clicked, it:
-     * 1. Creates a payment auth request using the provided PayPal request
-     * 2. Launches the PayPal authentication flow
-     * 3. Notifies the [payPalLaunchCallback] with the result
+     * When the button is clicked, it creates a payment auth request and either
+     * launches the PayPal flow or notifies the callback of any failures.
      *
      * @param payPalRequest the PayPal request containing payment details and configuration
      */
     fun setPayPalRequest(payPalRequest: PayPalRequest) {
         setOnClickListener {
+            if (payPalLaunchCallback == null) {
+                throw(NullPointerException("PayPalLaunchCallback must be initialized first"))
+            }
             payPalClient.createPaymentAuthRequest(
                 context = context,
                 payPalRequest = payPalRequest
             ) { paymentAuthRequest: PayPalPaymentAuthRequest ->
                 when (paymentAuthRequest) {
                     is PayPalPaymentAuthRequest.ReadyToLaunch -> {
-                        getActivity()?.let { activity ->
-                            val payPalPendingRequest = payPalLauncher.launch(
-                                activity = activity,
-                                paymentAuthRequest = paymentAuthRequest
-                            )
-                            when (payPalPendingRequest) {
-                                is PayPalPendingRequest.Started -> {
-                                    payPalLaunchCallback?.onPayPalPaymentAuthRequest(
-                                        PayPalPendingRequest.Started(payPalPendingRequest.pendingRequestString)
-                                    )
-                                }
-
-                                is PayPalPendingRequest.Failure -> {
-                                    payPalLaunchCallback?.onPayPalPaymentAuthRequest(
-                                        PayPalPendingRequest.Failure(payPalPendingRequest.error)
-                                    )
-                                }
-                            }
-                        } ?: run {
-                            payPalLaunchCallback?.onPayPalPaymentAuthRequest(
-                                PayPalPendingRequest.Failure(NullPointerException("Activity is null")))
-                        }
+                        completePayPalFlow(paymentAuthRequest)
                     }
 
                     is PayPalPaymentAuthRequest.Failure -> {
@@ -137,6 +124,39 @@ class PayPalButton @JvmOverloads constructor(
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Completes the PayPal flow by launching the authentication and handling the result.
+     *
+     * Launches the PayPal authentication flow and notifies the [payPalLaunchCallback]
+     * with the launch result (started or failure).
+     *
+     * @param paymentAuthRequest the ready-to-launch payment authentication request
+     */
+    private fun completePayPalFlow(paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch) {
+        getActivity()?.let { activity ->
+            val payPalPendingRequest = payPalLauncher.launch(
+                activity = activity,
+                paymentAuthRequest = paymentAuthRequest
+            )
+            when (payPalPendingRequest) {
+                is PayPalPendingRequest.Started -> {
+                    payPalLaunchCallback?.onPayPalPaymentAuthRequest(
+                        PayPalPendingRequest.Started(payPalPendingRequest.pendingRequestString)
+                    )
+                }
+
+                is PayPalPendingRequest.Failure -> {
+                    payPalLaunchCallback?.onPayPalPaymentAuthRequest(
+                        PayPalPendingRequest.Failure(payPalPendingRequest.error)
+                    )
+                }
+            }
+        } ?: run {
+            payPalLaunchCallback?.onPayPalPaymentAuthRequest(
+                PayPalPendingRequest.Failure(NullPointerException("Activity is null")))
         }
     }
 
