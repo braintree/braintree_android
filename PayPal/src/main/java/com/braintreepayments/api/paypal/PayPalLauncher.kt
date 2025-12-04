@@ -1,7 +1,7 @@
 package com.braintreepayments.api.paypal
 
+import android.app.Activity
 import android.content.Intent
-import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
@@ -48,7 +48,7 @@ class PayPalLauncher internal constructor(
      * launched in a browser.
      */
     fun launch(
-        activity: ComponentActivity,
+        activity: Activity,
         paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch
     ): PayPalPendingRequest {
         val contextId = paymentAuthRequest.requestParams.contextId
@@ -210,7 +210,7 @@ class PayPalLauncher internal constructor(
 
     @Throws(BrowserSwitchException::class)
     private fun assertCanPerformBrowserSwitch(
-        activity: ComponentActivity,
+        activity: Activity,
         params: PayPalPaymentAuthRequestParams
     ) {
         browserSwitchClient.assertCanPerformBrowserSwitch(activity, params.browserSwitchOptions)
