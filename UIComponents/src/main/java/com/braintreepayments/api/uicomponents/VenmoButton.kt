@@ -38,10 +38,22 @@ class VenmoButton @JvmOverloads constructor(
     private val desiredHeight = resources.getDimension(R.dimen.pay_button_height).toInt()
     private val minDesiredWidth = resources.getDimension(R.dimen.pay_button_min_width).toInt()
 
-    lateinit var venmoClient: VenmoClient
+    /**
+     * The Venmo client used to create payment auth requests and tokenize results.
+     * Must be initialized via [initialize] before use.
+     */
+    private lateinit var venmoClient: VenmoClient
     private var venmoLauncher: VenmoLauncher
 
     private var venmoRequest: VenmoRequest? = null
+
+    /**
+     * Callback invoked when the Venmo payment authentication request is launched.
+     *
+     * This callback is used to receive notifications about the launch status, such as
+     * [VenmoPendingRequest.Started] or [VenmoPendingRequest.Failure]. The pending request
+     * returned on success should be stored and passed to [handleReturnToApp] to complete the payment flow.
+     */
     var venmoLaunchCallback: VenmoLaunchCallback? = null
 
     init {
@@ -130,10 +142,8 @@ class VenmoButton @JvmOverloads constructor(
     /**
      * Sets the Venmo request configuration and wires up the click handler.
      *
-     * When the button is clicked, it:
-     * 1. Creates a payment auth request using the provided Venmo request
-     * 2. Launches the Venmo authentication flow
-     * 3. Notifies the [venmoLaunchCallback] with the result
+     * When the button is clicked, it creates a payment auth request and either
+     * launches the Venmo flow or notifies the callback of any failures.
      *
      * @param venmoRequest the Venmo request containing payment details and configuration
      */
@@ -145,28 +155,7 @@ class VenmoButton @JvmOverloads constructor(
             ) { venmoPaymentAuthRequest: VenmoPaymentAuthRequest ->
                 when (venmoPaymentAuthRequest) {
                     is VenmoPaymentAuthRequest.ReadyToLaunch -> {
-                        getActivity()?.let { activity ->
-                            val venmoPendingRequest = venmoLauncher.launch(
-                                activity = activity,
-                                paymentAuthRequest = venmoPaymentAuthRequest
-                            )
-                            when (venmoPendingRequest) {
-                                is VenmoPendingRequest.Started -> {
-                                    venmoLaunchCallback?.onVenmoPaymentAuthRequest(
-                                        VenmoPendingRequest.Started(venmoPendingRequest.pendingRequestString)
-                                    )
-                                }
-                                is VenmoPendingRequest.Failure -> {
-                                    venmoLaunchCallback?.onVenmoPaymentAuthRequest(
-                                        VenmoPendingRequest.Failure(venmoPendingRequest.error)
-                                    )
-                                }
-                            }
-                        } ?: run {
-                            venmoLaunchCallback?.onVenmoPaymentAuthRequest(
-                                VenmoPendingRequest.Failure(NullPointerException("Activity is null"))
-                            )
-                        }
+                        completeVenmoFlow(venmoPaymentAuthRequest)
                     }
                     is VenmoPaymentAuthRequest.Failure -> {
                         venmoLaunchCallback?.onVenmoPaymentAuthRequest(
@@ -175,6 +164,39 @@ class VenmoButton @JvmOverloads constructor(
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Completes the Venmo flow by launching the authentication and handling the result.
+     *
+     * Launches the Venmo authentication flow and notifies the [venmoLaunchCallback]
+     * with the launch result (started or failure).
+     *
+     * @param paymentAuthRequest the ready-to-launch payment authentication request
+     */
+    private fun completeVenmoFlow(venmoPaymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch) {
+        getActivity()?.let { activity ->
+            val venmoPendingRequest = venmoLauncher.launch(
+                activity = activity,
+                paymentAuthRequest = venmoPaymentAuthRequest
+            )
+            when (venmoPendingRequest) {
+                is VenmoPendingRequest.Started -> {
+                    venmoLaunchCallback?.onVenmoPaymentAuthRequest(
+                        VenmoPendingRequest.Started(venmoPendingRequest.pendingRequestString)
+                    )
+                }
+                is VenmoPendingRequest.Failure -> {
+                    venmoLaunchCallback?.onVenmoPaymentAuthRequest(
+                        VenmoPendingRequest.Failure(venmoPendingRequest.error)
+                    )
+                }
+            }
+        } ?: run {
+            venmoLaunchCallback?.onVenmoPaymentAuthRequest(
+                VenmoPendingRequest.Failure(NullPointerException("Activity is null"))
+            )
         }
     }
 
