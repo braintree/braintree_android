@@ -48,6 +48,8 @@ public class PaymentButtonsFragment extends BaseFragment {
 
         payPalButton = view.findViewById(R.id.pp_payment_button);
         payPalToggleGroup = view.findViewById(R.id.pp_button_toggle_group);
+        venmoButton = view.findViewById(R.id.venmo_payment_button);
+        venmoToggleGroup = view.findViewById(R.id.venmo_button_toggle_group);
 
         payPalToggleGroup.addOnButtonCheckedListener(
             new MaterialButtonToggleGroup.OnButtonCheckedListener() {
@@ -68,7 +70,27 @@ public class PaymentButtonsFragment extends BaseFragment {
                 }
             }
         );
+        venmoToggleGroup.addOnButtonCheckedListener(
+                new MaterialButtonToggleGroup.OnButtonCheckedListener() {
+                    @Override
+                    public void onButtonChecked(MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
+                        if (!isChecked) return;
+                        switch (checkedId) {
+                            case R.id.button_venmo_blue:
+                                venmoButton.setButtonColor(VenmoButtonColor.BLUE);
+                                break;
+                            case R.id.button_venmo_black:
+                                venmoButton.setButtonColor(VenmoButtonColor.BLACK);
+                                break;
+                            case R.id.button_venmo_white:
+                                venmoButton.setButtonColor(VenmoButtonColor.WHITE);
+                                break;
+                        }
+                    }
+                }
+        );
 
+        //PayPal flow setup
         PayPalRequest payPalRequest = PayPalRequestFactory.createPayPalCheckoutRequest(
             requireContext(),
             "10.0",
@@ -90,37 +112,17 @@ public class PaymentButtonsFragment extends BaseFragment {
         payPalButton.setPayPalRequest(payPalRequest);
         payPalButton.setPayPalLaunchCallback(request -> {
             if (request instanceof PayPalPendingRequest.Started) {
-                storePendingRequest((PayPalPendingRequest.Started) request);
+                storePayPalPendingRequest((PayPalPendingRequest.Started) request);
             } else if (request instanceof PayPalPendingRequest.Failure) {
                 handleError(((PayPalPendingRequest.Failure) request).getError());
             }
         });
 
+        //Venmo flow setup
         venmoButton = view.findViewById(R.id.venmo_payment_button);
         venmoToggleGroup = view.findViewById(R.id.venmo_button_toggle_group);
 
-        venmoToggleGroup.addOnButtonCheckedListener(
-            new MaterialButtonToggleGroup.OnButtonCheckedListener() {
-                @Override
-                public void onButtonChecked(MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
-                    if (!isChecked) return;
-                    switch (checkedId) {
-                        case R.id.button_venmo_blue:
-                            venmoButton.setButtonColor(VenmoButtonColor.BLUE);
-                            break;
-                        case R.id.button_venmo_black:
-                            venmoButton.setButtonColor(VenmoButtonColor.BLACK);
-                            break;
-                        case R.id.button_venmo_white:
-                            venmoButton.setButtonColor(VenmoButtonColor.WHITE);
-                            break;
-                    }
-                }
-            }
-        );
-
         FragmentActivity activity = getActivity();
-
         getActivity().setProgressBarIndeterminateVisibility(true);
 
         boolean shouldVault =
@@ -164,7 +166,8 @@ public class PaymentButtonsFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
 
-        PayPalPendingRequest.Started pendingRequest = getPendingRequest();
+        //PayPal flow after returning to app
+        PayPalPendingRequest.Started pendingRequest = getPayPalPendingRequest();
         if (pendingRequest != null) {
             payPalButton.handleReturnToApp( pendingRequest, requireActivity().getIntent(),
                     payPalResult -> {
@@ -177,8 +180,10 @@ public class PaymentButtonsFragment extends BaseFragment {
                         }
                     }
             );
-            clearPendingRequest();
+            clearPayPalPendingRequest();
         }
+
+        //Venmo flow after returning to app
         VenmoPendingRequest.Started venmoPendingRequest = getVenmoPendingRequest();
         if (venmoPendingRequest != null) {
             venmoButton.handleReturnToApp(venmoPendingRequest, requireActivity().getIntent(), venmoResult -> {
@@ -198,8 +203,7 @@ public class PaymentButtonsFragment extends BaseFragment {
         super.onPaymentMethodNonceCreated(venmoAccountNonce);
 
         NavDirections action = PaymentButtonsFragmentDirections
-                .actionPaymentButtonsFragmentToDisplayNonceFragment(venmoAccountNonce)
-                .setVenmoNonce(venmoAccountNonce.getString());
+                .actionPaymentButtonsFragmentToDisplayNonceFragment(venmoAccountNonce);
         NavHostFragment.findNavController(this).navigate(action);
     }
 
@@ -210,16 +214,9 @@ public class PaymentButtonsFragment extends BaseFragment {
     private VenmoPendingRequest.Started getVenmoPendingRequest() {
         return PendingRequestStore.getInstance().getVenmoPendingRequest(requireContext());
     }
+
     private void clearVenmoPendingRequest() {
         PendingRequestStore.getInstance().clearVenmoPendingRequest(requireContext());
-    }
-}
-    private void storePendingRequest(PayPalPendingRequest.Started request) {
-        PendingRequestStore.getInstance().putPayPalPendingRequest(requireContext(), request);
-    }
-
-    private PayPalPendingRequest.Started getPendingRequest() {
-        return PendingRequestStore.getInstance().getPayPalPendingRequest(requireContext());
     }
 
     private void handlePayPalResult(PaymentMethodNonce paymentMethodNonce) {
@@ -227,14 +224,22 @@ public class PaymentButtonsFragment extends BaseFragment {
             super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
             PaymentButtonsFragmentDirections.ActionPaymentButtonsFragmentToDisplayNonceFragment action =
-                PaymentButtonsFragmentDirections.actionPaymentButtonsFragmentToDisplayNonceFragment(
-                    paymentMethodNonce
-                );
+                    PaymentButtonsFragmentDirections.actionPaymentButtonsFragmentToDisplayNonceFragment(
+                            paymentMethodNonce
+                    );
             NavHostFragment.findNavController(this).navigate(action);
         }
     }
 
-    private void clearPendingRequest() {
+    private void storePayPalPendingRequest(PayPalPendingRequest.Started request) {
+        PendingRequestStore.getInstance().putPayPalPendingRequest(requireContext(), request);
+    }
+
+    private PayPalPendingRequest.Started getPayPalPendingRequest() {
+        return PendingRequestStore.getInstance().getPayPalPendingRequest(requireContext());
+    }
+
+    private void clearPayPalPendingRequest() {
         PendingRequestStore.getInstance().clearPayPalPendingRequest(requireContext());
     }
 
