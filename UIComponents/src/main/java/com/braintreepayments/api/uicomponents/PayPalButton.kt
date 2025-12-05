@@ -76,7 +76,7 @@ class PayPalButton @JvmOverloads constructor(
     }
 
     private fun applyStyle() {
-//        updateButtonAppearance()
+        updateButtonAppearance()
         rippleEffect()
         logo = ContextCompat.getDrawable(context, currentStyle.logoId)
         invalidate()
