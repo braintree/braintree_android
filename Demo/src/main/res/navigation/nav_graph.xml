@@ -244,5 +244,10 @@
             android:name="authString"
             android:defaultValue=""
             app:argType="string" />
+        <action
+            android:id="@+id/action_paymentButtonsFragment_to_displayNonceFragment"
+            app:destination="@id/displayNonceFragment"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false" />
     </fragment>
 </navigation>
