@@ -29,6 +29,7 @@ import com.braintreepayments.api.paypal.PayPalTokenizeCallback
  * This button provides a pre-styled PayPal button with configurable colors and handles
  * the complete PayPal payment flow.
  */
+@Suppress("MagicNumber")
 class PayPalButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -243,7 +244,6 @@ class PayPalButton @JvmOverloads constructor(
     private fun applyStyle() {
         updateButtonAppearance()
         rippleEffect()
-       
         gradientDrawable.setColor(currentStyle.fill)
         val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
         gradientDrawable.setStroke(strokeWidth, currentStyle.border)
