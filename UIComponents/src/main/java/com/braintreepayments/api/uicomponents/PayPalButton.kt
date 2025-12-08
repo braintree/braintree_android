@@ -72,12 +72,6 @@ class PayPalButton @JvmOverloads constructor(
         payPalLauncher = PayPalLauncher()
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        val analyticsClient = AnalyticsClient.lazyInstance.value
-        analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_BUTTON_PRESENTED)
-    }
-
     /**
      * Initializes the PayPal button with the required parameters needed to start the payment flow.
      *
@@ -100,6 +94,8 @@ class PayPalButton @JvmOverloads constructor(
             appLinkReturnUrl = appLinkReturnUrl,
             deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
         )
+        val analyticsClient = AnalyticsClient.lazyInstance.value
+        analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_BUTTON_PRESENTED)
     }
 
     /**

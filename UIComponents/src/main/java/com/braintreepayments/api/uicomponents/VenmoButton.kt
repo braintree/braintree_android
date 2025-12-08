@@ -115,12 +115,6 @@ class VenmoButton @JvmOverloads constructor(
         applyStyle()
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        val analyticsClient = AnalyticsClient.lazyInstance.value
-        analyticsClient.sendEvent(UIComponentsAnalytics.VENMO_BUTTON_PRESENTED)
-    }
-
     /**
      * Initializes the Venmo button with the required parameters needed to start the payment flow.
      *
@@ -144,6 +138,8 @@ class VenmoButton @JvmOverloads constructor(
             appLinkReturnUrl = appLinkReturnUrl,
             deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
         )
+        val analyticsClient = AnalyticsClient.lazyInstance.value
+        analyticsClient.sendEvent(UIComponentsAnalytics.VENMO_BUTTON_PRESENTED)
     }
 
     /**
