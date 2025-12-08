@@ -1,8 +1,8 @@
 package com.braintreepayments.api.venmo
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import androidx.activity.ComponentActivity
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
@@ -40,7 +40,7 @@ class VenmoLauncher internal constructor(
      * launched in the app or in a browser.
      */
     fun launch(
-        activity: ComponentActivity,
+        activity: Activity,
         paymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch
     ): VenmoPendingRequest {
         analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_STARTED, analyticsEventParams)
@@ -116,7 +116,7 @@ class VenmoLauncher internal constructor(
      *
      * @param activity used to open the Venmo's Google Play Store
      */
-    fun showVenmoInGooglePlayStore(activity: ComponentActivity) {
+    fun showVenmoInGooglePlayStore(activity: Activity) {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(
             "https://play.google.com/store/apps/details?id=$VENMO_PACKAGE_NAME"
@@ -126,7 +126,7 @@ class VenmoLauncher internal constructor(
 
     @Throws(BrowserSwitchException::class)
     private fun assertCanPerformBrowserSwitch(
-        activity: ComponentActivity,
+        activity: Activity,
         params: VenmoPaymentAuthRequestParams
     ) {
         browserSwitchClient.assertCanPerformBrowserSwitch(activity, params.browserSwitchOptions)
