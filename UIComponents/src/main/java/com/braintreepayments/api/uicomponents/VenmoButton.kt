@@ -118,7 +118,7 @@ class VenmoButton @JvmOverloads constructor(
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         val analyticsClient = AnalyticsClient.lazyInstance.value
-        analyticsClient.sendEvent(ButtonsAnalytics.VENMO_BUTTON_SHOWN)
+        analyticsClient.sendEvent(UIComponentsAnalytics.VENMO_BUTTON_PRESENTED)
     }
 
     /**
@@ -185,7 +185,7 @@ class VenmoButton @JvmOverloads constructor(
     private fun completeVenmoFlow(venmoPaymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch) {
         getActivity()?.let { activity ->
             val analyticsClient = AnalyticsClient.lazyInstance.value
-            analyticsClient.sendEvent(ButtonsAnalytics.VENMO_BUTTON_CLICKED)
+            analyticsClient.sendEvent(UIComponentsAnalytics.VENMO_BUTTON_SELECTED)
             val venmoPendingRequest = venmoLauncher.launch(
                 activity = activity,
                 paymentAuthRequest = venmoPaymentAuthRequest

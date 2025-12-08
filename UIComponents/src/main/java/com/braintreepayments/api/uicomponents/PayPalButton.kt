@@ -75,7 +75,7 @@ class PayPalButton @JvmOverloads constructor(
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         val analyticsClient = AnalyticsClient.lazyInstance.value
-        analyticsClient.sendEvent(ButtonsAnalytics.PAYPAL_BUTTON_SHOWN)
+        analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_BUTTON_PRESENTED)
     }
 
     /**
@@ -145,7 +145,7 @@ class PayPalButton @JvmOverloads constructor(
     private fun completePayPalFlow(paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch) {
         getActivity()?.let { activity ->
             val analyticsClient = AnalyticsClient.lazyInstance.value
-            analyticsClient.sendEvent(ButtonsAnalytics.PAYPAL_BUTTON_CLICKED)
+            analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_BUTTON_SELECTED)
             val payPalPendingRequest = payPalLauncher.launch(
                 activity = activity,
                 paymentAuthRequest = paymentAuthRequest
