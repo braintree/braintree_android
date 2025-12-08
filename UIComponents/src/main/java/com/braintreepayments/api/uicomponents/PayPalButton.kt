@@ -9,6 +9,7 @@ import android.net.Uri
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
+import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
@@ -93,6 +94,8 @@ class PayPalButton @JvmOverloads constructor(
             appLinkReturnUrl = appLinkReturnUrl,
             deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
         )
+        val analyticsClient = AnalyticsClient.lazyInstance.value
+        analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_BUTTON_PRESENTED)
     }
 
     /**
@@ -137,6 +140,8 @@ class PayPalButton @JvmOverloads constructor(
      */
     private fun completePayPalFlow(paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch) {
         getActivity()?.let { activity ->
+            val analyticsClient = AnalyticsClient.lazyInstance.value
+            analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_BUTTON_SELECTED)
             val payPalPendingRequest = payPalLauncher.launch(
                 activity = activity,
                 paymentAuthRequest = paymentAuthRequest
