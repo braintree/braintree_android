@@ -9,6 +9,8 @@
 * UIComponents
     * Add `PayPalButton` class to generate a PayPal-branded button for launching PayPal flow
     * Add `VenmoButton` class to generate a Venmo-branded button for launching Venmo flow
+    * Add FTPI tags `paypal-button:shown` and `paypal-button:clicked` to track button events
+    * Add FTPI tags `venmo-button:shown` and `venmo-button:clicked` to track button events
   
 
 
