@@ -7,6 +7,8 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.util.AttributeSet
+import android.view.View
+import android.widget.ProgressBar
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import com.braintreepayments.api.core.AnalyticsClient
@@ -34,6 +36,7 @@ class PayPalButton @JvmOverloads constructor(
     private var currentStyle: PayPalButtonColor = PayPalButtonColor.BLUE
     private val gradientDrawable = GradientDrawable()
     private var logo: Drawable? = null
+    private var spinner: ProgressBar? = null
 
     private val logoOffset = resources.getDimension(R.dimen.pp_logo_offset).toInt()
     private val desiredWidth = resources.getDimension(R.dimen.pay_button_width).toInt()
@@ -127,6 +130,8 @@ class PayPalButton @JvmOverloads constructor(
                     }
                 }
             }
+
+            setButtonClicked(it)
         }
     }
 
@@ -207,6 +212,7 @@ class PayPalButton @JvmOverloads constructor(
                 callback.onPayPalResult(PayPalResult.Failure(paymentAuthResult.error))
             }
         }
+        setButtonReEnabled(this)
     }
 
     private fun setupBackground() {
@@ -221,6 +227,20 @@ class PayPalButton @JvmOverloads constructor(
         val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
 
         gradientDrawable.setStroke(strokeWidth, currentStyle.border)
+        logo = ContextCompat.getDrawable(context, currentStyle.logoId)
+        invalidate()
+    }
+
+    private fun setButtonClicked(view: View) {
+        view.isEnabled = false
+        logo = ContextCompat.getDrawable(context, currentStyle.spinnerId)
+        (logo as? android.graphics.drawable.Animatable)?.start()
+        invalidate()
+    }
+
+    private fun setButtonReEnabled(view: View) {
+        view.isEnabled = true
+        (logo as? android.graphics.drawable.Animatable)?.stop()
         logo = ContextCompat.getDrawable(context, currentStyle.logoId)
         invalidate()
     }
