@@ -132,7 +132,7 @@ class PayPalButton @JvmOverloads constructor(
                 }
             }
 
-            setButtonClicked(it)
+            setButtonClicked()
         }
     }
 
@@ -213,18 +213,18 @@ class PayPalButton @JvmOverloads constructor(
                 callback.onPayPalResult(PayPalResult.Failure(paymentAuthResult.error))
             }
         }
-        setButtonReEnabled(this)
+        setButtonReEnabled()
     }
 
-    private fun setButtonClicked(view: View) {
-        view.isEnabled = false
+    private fun setButtonClicked() {
+        this.isEnabled = false
         logo = ContextCompat.getDrawable(context, currentStyle.spinnerId)
         (logo as? android.graphics.drawable.Animatable)?.start()
         invalidate()
     }
 
-    private fun setButtonReEnabled(view: View) {
-        view.isEnabled = true
+    private fun setButtonReEnabled() {
+        this.isEnabled = true
         (logo as? android.graphics.drawable.Animatable)?.stop()
         logo = ContextCompat.getDrawable(context, currentStyle.logoId)
         invalidate()
