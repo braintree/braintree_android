@@ -18,7 +18,6 @@ import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
-import com.braintreepayments.api.uicomponents.PayPalButtonColor.Companion.baseStyle
 import com.braintreepayments.api.uicomponents.PayPalButtonColor.Companion.fromId
 
 /**
@@ -224,39 +223,38 @@ class PayPalButton @JvmOverloads constructor(
 
     private fun applyStyle() {
         updateButtonAppearance()
-        gradientDrawable.setColor(currentStyle.fill)
+        gradientDrawable.setColor(currentStyle.default.fill)
         val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
-        gradientDrawable.setStroke(strokeWidth, currentStyle.border)
+        gradientDrawable.setStroke(strokeWidth, currentStyle.default.border)
         logo = ContextCompat.getDrawable(context, currentStyle.logoId)
         invalidate()
     }
 
     private fun updateButtonAppearance() {
         val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
-        val baseStyle = baseStyle(currentStyle)
 
         when {
             isPressed -> {
-                currentStyle = fromId(baseStyle.key + 12)
-                gradientDrawable.setColor(currentStyle.fill)
-                gradientDrawable.setStroke(strokeWidth, currentStyle.border)
+                gradientDrawable.setColor(currentStyle.pressed.fill)
+                gradientDrawable.setStroke(strokeWidth, currentStyle.pressed.border)
+                focusIndicatorDrawable.setColor(currentStyle.pressed.focusIndicator)
             }
             isHovered -> {
-                currentStyle = fromId(baseStyle.key + 3)
-                gradientDrawable.setColor(currentStyle.fill)
-                gradientDrawable.setStroke(strokeWidth, currentStyle.border)
+                gradientDrawable.setColor(currentStyle.hover.fill)
+                gradientDrawable.setStroke(strokeWidth, currentStyle.hover.border)
+                focusIndicatorDrawable.setColor(currentStyle.hover.focusIndicator)
             }
             isFocused -> {
-                currentStyle = fromId(baseStyle.key + 6)
-                gradientDrawable.setColor(currentStyle.fill)
-                gradientDrawable.setStroke(strokeWidth, currentStyle.border)
+                gradientDrawable.setColor(currentStyle.focus.fill)
+                gradientDrawable.setStroke(strokeWidth, currentStyle.focus.border)
+                focusIndicatorDrawable.setColor(currentStyle.focus.focusIndicator)
             }
             else -> {
-                gradientDrawable.setColor(currentStyle.fill)
-                gradientDrawable.setStroke(strokeWidth, currentStyle.border)
+                gradientDrawable.setColor(currentStyle.default.fill)
+                gradientDrawable.setStroke(strokeWidth, currentStyle.default.border)
+                focusIndicatorDrawable.setColor(currentStyle.default.focusIndicator)
             }
         }
-        focusIndicatorDrawable.setColor(currentStyle.focusIndicator)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
