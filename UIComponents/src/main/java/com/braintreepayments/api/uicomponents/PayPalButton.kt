@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.net.Uri
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatButton
@@ -35,6 +36,7 @@ class PayPalButton @JvmOverloads constructor(
 
     private var currentStyle: PayPalButtonColor = PayPalButtonColor.Blue.Default
     private val gradientDrawable = GradientDrawable()
+    private val focusIndicatorDrawable = GradientDrawable()
     private var logo: Drawable? = null
 
     private val logoOffset = resources.getDimension(R.dimen.pp_logo_offset).toInt()
@@ -210,7 +212,13 @@ class PayPalButton @JvmOverloads constructor(
     private fun setupBackground() {
         gradientDrawable.shape = GradientDrawable.RECTANGLE
         gradientDrawable.cornerRadius = resources.getDimension(R.dimen.pay_button_corner_radius)
-        background = gradientDrawable
+        focusIndicatorDrawable.shape = GradientDrawable.RECTANGLE
+        focusIndicatorDrawable.cornerRadius = resources.getDimension(R.dimen.pay_button_corner_radius)
+        val layers = arrayOf(focusIndicatorDrawable, gradientDrawable)
+        val layerDrawable = LayerDrawable(layers)
+        val focusPadding = resources.getDimension(R.dimen.pay_button_focus_border).toInt()
+        layerDrawable.setLayerInset(1, focusPadding, focusPadding, focusPadding, focusPadding)
+        background = layerDrawable
         minWidth = minDesiredWidth
     }
 
@@ -257,6 +265,7 @@ class PayPalButton @JvmOverloads constructor(
                 alpha = 1.0f
             }
         }
+        focusIndicatorDrawable.setColor(currentStyle.focusIndicator)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
