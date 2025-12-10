@@ -12,7 +12,7 @@ sealed interface PayPalButtonColor {
     val key: Int
     val default: ButtonColors
     val hover: ButtonColors
-    val focus: PayPalButtonColor.ButtonColors
+    val focus: ButtonColors
     val focusHover: ButtonColors
     val pressed: ButtonColors
     val logoId: Int
