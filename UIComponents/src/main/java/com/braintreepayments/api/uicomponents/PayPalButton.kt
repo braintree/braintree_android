@@ -1,15 +1,10 @@
 package com.braintreepayments.api.uicomponents
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.content.Intent
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.RippleDrawable
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.RectShape
 import android.net.Uri
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatButton
@@ -22,6 +17,8 @@ import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
+import com.braintreepayments.api.uicomponents.PayPalButtonColor.Companion.baseStyle
+import com.braintreepayments.api.uicomponents.PayPalButtonColor.Companion.fromId
 
 /**
  * A customizable PayPal branded button to initiate the PayPal flow.
@@ -29,14 +26,14 @@ import com.braintreepayments.api.paypal.PayPalTokenizeCallback
  * This button provides a pre-styled PayPal button with configurable colors and handles
  * the complete PayPal payment flow.
  */
-@Suppress("MagicNumber")
+@Suppress("MagicNumber", "TooManyFunctions")
 class PayPalButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : AppCompatButton(context, attrs, defStyleAttr) {
 
-    private var currentStyle: PayPalButtonColor = PayPalButtonColor.BLUE
+    private var currentStyle: PayPalButtonColor = PayPalButtonColor.Blue.Default
     private val gradientDrawable = GradientDrawable()
     private var logo: Drawable? = null
 
@@ -66,7 +63,7 @@ class PayPalButton @JvmOverloads constructor(
     init {
         context.theme.obtainStyledAttributes(attrs, R.styleable.PayPalButton, 0, 0).apply {
             try {
-                currentStyle = PayPalButtonColor.fromId(getInt(R.styleable.PayPalButton_paymentButtonColor, 0))
+                currentStyle = fromId(getInt(R.styleable.PayPalButton_paymentButtonColor, 0))
             } finally {
                 recycle()
             }
@@ -217,33 +214,8 @@ class PayPalButton @JvmOverloads constructor(
         minWidth = minDesiredWidth
     }
 
-    private fun rippleEffect() {
-        val rippleEffectWhite = RippleDrawable(
-            ColorStateList.valueOf(ContextCompat.getColor(context, android.R.color.black)),
-            null,
-            ShapeDrawable(RectShape()).apply { paint.color = Color.WHITE })
-        val rippleEffectBlack = RippleDrawable(
-            ColorStateList.valueOf(ContextCompat.getColor(context, android.R.color.white)),
-            null,
-            ShapeDrawable(RectShape()).apply { paint.color = Color.BLACK })
-        val rippleEffectBlue = RippleDrawable(
-            ColorStateList.valueOf(ContextCompat.getColor(context, android.R.color.white)),
-            null,
-            ShapeDrawable(RectShape()).apply { paint.color = PayPalButtonColor.BLUE.fill })
-        val rippleDrawable = when (currentStyle) {
-            PayPalButtonColor.BLUE -> rippleEffectBlue
-            PayPalButtonColor.WHITE -> rippleEffectWhite
-            PayPalButtonColor.BLACK -> rippleEffectBlack
-        }
-        isClickable = true
-        isFocusable = true
-
-        foreground = rippleDrawable
-    }
-
     private fun applyStyle() {
         updateButtonAppearance()
-        rippleEffect()
         gradientDrawable.setColor(currentStyle.fill)
         val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
         gradientDrawable.setStroke(strokeWidth, currentStyle.border)
@@ -253,54 +225,38 @@ class PayPalButton @JvmOverloads constructor(
 
     private fun updateButtonAppearance() {
         val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
+        val baseStyle = baseStyle(currentStyle)
 
         when {
             !isEnabled -> {
-                // Disabled state: reduced opacity
-                gradientDrawable.setColor(applyAlpha(currentStyle.fill, 0.4f))
-                gradientDrawable.setStroke(strokeWidth, applyAlpha(currentStyle.border, 0.4f))
+                gradientDrawable.setColor(currentStyle.fill)
+                gradientDrawable.setStroke(strokeWidth, currentStyle.border)
                 alpha = 0.5f
             }
             isPressed -> {
-                // Pressed state: darker fill
-                gradientDrawable.setColor(darkenColor(currentStyle.fill, 0.8f))
+                currentStyle = fromId(baseStyle.key + 12)
+                gradientDrawable.setColor(currentStyle.fill)
                 gradientDrawable.setStroke(strokeWidth, currentStyle.border)
                 alpha = 1.0f
             }
-            isHovered || isFocused -> {
-                // Hover/Focus state: slightly lighter fill
-                gradientDrawable.setColor(lightenColor(currentStyle.fill, 1.1f))
+            isHovered -> {
+                currentStyle = fromId(baseStyle.key + 3)
+                gradientDrawable.setColor(currentStyle.fill)
+                gradientDrawable.setStroke(strokeWidth, currentStyle.border)
+                alpha = 1.0f
+            }
+            isFocused -> {
+                currentStyle = fromId(baseStyle.key + 6)
+                gradientDrawable.setColor(currentStyle.fill)
                 gradientDrawable.setStroke(strokeWidth, currentStyle.border)
                 alpha = 1.0f
             }
             else -> {
-                // Default state
                 gradientDrawable.setColor(currentStyle.fill)
                 gradientDrawable.setStroke(strokeWidth, currentStyle.border)
                 alpha = 1.0f
             }
         }
-    }
-
-    private fun applyAlpha(color: Int, alphaFactor: Float): Int {
-        val alpha = ((color shr 24 and 0xFF) * alphaFactor).toInt()
-        return (alpha shl 24) or (color and 0x00FFFFFF)
-    }
-
-    private fun darkenColor(color: Int, factor: Float): Int {
-        val r = ((color shr 16 and 0xFF) * factor).toInt()
-        val g = ((color shr 8 and 0xFF) * factor).toInt()
-        val b = ((color and 0xFF) * factor).toInt()
-        val a = (color shr 24 and 0xFF)
-        return (a shl 24) or (r shl 16) or (g shl 8) or b
-    }
-
-    private fun lightenColor(color: Int, factor: Float): Int {
-        val r = minOf(255, ((color shr 16 and 0xFF) * factor).toInt())
-        val g = minOf(255, ((color shr 8 and 0xFF) * factor).toInt())
-        val b = minOf(255, ((color and 0xFF) * factor).toInt())
-        val a = (color shr 24 and 0xFF)
-        return (a shl 24) or (r shl 16) or (g shl 8) or b
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
