@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.util.AttributeSet
+import android.view.View
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import com.braintreepayments.api.core.AnalyticsClient
@@ -25,6 +26,7 @@ import com.braintreepayments.api.venmo.VenmoTokenizeCallback
  * This button provides a pre-styled Venmo button with configurable colors and handles
  * the complete Venmo payment flow.
  */
+@Suppress("TooManyFunctions")
 class VenmoButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -70,49 +72,6 @@ class VenmoButton @JvmOverloads constructor(
         applyStyle()
 
         venmoLauncher = VenmoLauncher()
-    }
-
-    private fun setupBackground() {
-        gradientDrawable.shape = GradientDrawable.RECTANGLE
-        gradientDrawable.cornerRadius = resources.getDimension(R.dimen.pay_button_corner_radius)
-        background = gradientDrawable
-        minWidth = minDesiredWidth
-    }
-
-    private fun applyStyle() {
-        gradientDrawable.setColor(currentStyle.fill)
-        val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
-        gradientDrawable.setStroke(strokeWidth, currentStyle.border)
-        logo = ContextCompat.getDrawable(context, currentStyle.logoId)
-        invalidate()
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        setMeasuredDimension(desiredWidth, desiredHeight)
-    }
-
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        logo?.let { d ->
-            val w = d.intrinsicWidth
-            val h = d.intrinsicHeight
-            val left = (width - w) / 2
-            val top = (height - h) / 2
-            d.setBounds(left, top, left + w, top + h)
-            d.draw(canvas)
-        }
-    }
-
-    /**
-     * Sets the color of the Venmo button
-     *
-     * @property color Value representing the button color. Valid values are BLUE, BLACK, and WHITE
-     */
-    fun setButtonColor(color: VenmoButtonColor) {
-        val style = color
-        if (style == currentStyle) return
-        currentStyle = style
-        applyStyle()
     }
 
     /**
@@ -167,6 +126,8 @@ class VenmoButton @JvmOverloads constructor(
                     }
                 }
             }
+
+            setButtonClicked(it)
         }
     }
 
@@ -247,5 +208,63 @@ class VenmoButton @JvmOverloads constructor(
                 callback.onVenmoResult(VenmoResult.Cancel)
             }
         }
+        setButtonReEnabled(this)
+    }
+
+    private fun setButtonClicked(view: View) {
+        view.isEnabled = false
+        logo = ContextCompat.getDrawable(context, currentStyle.spinnerId)
+        (logo as? android.graphics.drawable.Animatable)?.start()
+        invalidate()
+    }
+
+    private fun setButtonReEnabled(view: View) {
+        view.isEnabled = true
+        (logo as? android.graphics.drawable.Animatable)?.stop()
+        logo = ContextCompat.getDrawable(context, currentStyle.logoId)
+        invalidate()
+    }
+
+    private fun setupBackground() {
+        gradientDrawable.shape = GradientDrawable.RECTANGLE
+        gradientDrawable.cornerRadius = resources.getDimension(R.dimen.pay_button_corner_radius)
+        background = gradientDrawable
+        minWidth = minDesiredWidth
+    }
+
+    private fun applyStyle() {
+        gradientDrawable.setColor(currentStyle.fill)
+        val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
+        gradientDrawable.setStroke(strokeWidth, currentStyle.border)
+        logo = ContextCompat.getDrawable(context, currentStyle.logoId)
+        invalidate()
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        setMeasuredDimension(desiredWidth, desiredHeight)
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        logo?.let { d ->
+            val w = d.intrinsicWidth
+            val h = d.intrinsicHeight
+            val left = (width - w) / 2
+            val top = (height - h) / 2
+            d.setBounds(left, top, left + w, top + h)
+            d.draw(canvas)
+        }
+    }
+
+    /**
+     * Sets the color of the Venmo button
+     *
+     * @property color Value representing the button color. Valid values are BLUE, BLACK, and WHITE
+     */
+    fun setButtonColor(color: VenmoButtonColor) {
+        val style = color
+        if (style == currentStyle) return
+        currentStyle = style
+        applyStyle()
     }
 }

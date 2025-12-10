@@ -6,6 +6,7 @@ import androidx.core.graphics.toColorInt
 /**
  * Enum representing the different colors of PayPal buttons
  */
+@Suppress("MaxLineLength")
 enum class PayPalButtonColor(
         val key: Int,
         @ColorInt val fill: Int,

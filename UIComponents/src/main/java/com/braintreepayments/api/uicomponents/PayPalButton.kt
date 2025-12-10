@@ -27,6 +27,7 @@ import com.braintreepayments.api.paypal.PayPalTokenizeCallback
  * This button provides a pre-styled PayPal button with configurable colors and handles
  * the complete PayPal payment flow.
  */
+@Suppress("TooManyFunctions")
 class PayPalButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -215,6 +216,20 @@ class PayPalButton @JvmOverloads constructor(
         setButtonReEnabled(this)
     }
 
+    private fun setButtonClicked(view: View) {
+        view.isEnabled = false
+        logo = ContextCompat.getDrawable(context, currentStyle.spinnerId)
+        (logo as? android.graphics.drawable.Animatable)?.start()
+        invalidate()
+    }
+
+    private fun setButtonReEnabled(view: View) {
+        view.isEnabled = true
+        (logo as? android.graphics.drawable.Animatable)?.stop()
+        logo = ContextCompat.getDrawable(context, currentStyle.logoId)
+        invalidate()
+    }
+
     private fun setupBackground() {
         gradientDrawable.shape = GradientDrawable.RECTANGLE
         gradientDrawable.cornerRadius = resources.getDimension(R.dimen.pay_button_corner_radius)
@@ -227,20 +242,6 @@ class PayPalButton @JvmOverloads constructor(
         val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
 
         gradientDrawable.setStroke(strokeWidth, currentStyle.border)
-        logo = ContextCompat.getDrawable(context, currentStyle.logoId)
-        invalidate()
-    }
-
-    private fun setButtonClicked(view: View) {
-        view.isEnabled = false
-        logo = ContextCompat.getDrawable(context, currentStyle.spinnerId)
-        (logo as? android.graphics.drawable.Animatable)?.start()
-        invalidate()
-    }
-
-    private fun setButtonReEnabled(view: View) {
-        view.isEnabled = true
-        (logo as? android.graphics.drawable.Animatable)?.stop()
         logo = ContextCompat.getDrawable(context, currentStyle.logoId)
         invalidate()
     }
