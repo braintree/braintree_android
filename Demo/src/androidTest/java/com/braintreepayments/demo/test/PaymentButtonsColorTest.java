@@ -9,6 +9,7 @@ import static com.braintreepayments.UiObjectMatcher.withText;
 import static org.junit.Assert.assertEquals;
 
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
@@ -35,6 +36,21 @@ public class PaymentButtonsColorTest extends TestHelper {
         onDevice(withResourceId("com.braintreepayments.demo:id/button_pp_blue")).waitForExists();
     }
 
+    private int getColorFromDrawable(GradientDrawable drawable) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return Objects.requireNonNull(drawable.getColor()).getDefaultColor();
+        } else {
+            try {
+                java.lang.reflect.Field colorField = GradientDrawable.class.getDeclaredField("mFillPaint");
+                colorField.setAccessible(true);
+                android.graphics.Paint paint = (android.graphics.Paint) colorField.get(drawable);
+                return paint != null ? paint.getColor() : 0;
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to get color from GradientDrawable", e);
+            }
+        }
+    }
+
     @Test(timeout = 30000)
     public void testPayPalButton_changesToBlue() {
         onView(withId(R.id.button_pp_blue)).perform(click());
@@ -42,7 +58,7 @@ public class PaymentButtonsColorTest extends TestHelper {
         onView(withId(R.id.pp_payment_button)).check((view, noViewFoundException) -> {
             PayPalButton button = (PayPalButton) view;
             GradientDrawable background = (GradientDrawable) button.getBackground();
-            int actualColor = Objects.requireNonNull(background.getColor()).getDefaultColor();
+            int actualColor = getColorFromDrawable(background);
             assertEquals(0xFF60CDFF, actualColor);
         });
     }
@@ -54,7 +70,7 @@ public class PaymentButtonsColorTest extends TestHelper {
         onView(withId(R.id.pp_payment_button)).check((view, noViewFoundException) -> {
             PayPalButton button = (PayPalButton) view;
             GradientDrawable background = (GradientDrawable) button.getBackground();
-            int actualColor = Objects.requireNonNull(background.getColor()).getDefaultColor();
+            int actualColor = getColorFromDrawable(background);
             assertEquals(0xFF000000, actualColor);
         });
     }
@@ -66,7 +82,7 @@ public class PaymentButtonsColorTest extends TestHelper {
         onView(withId(R.id.pp_payment_button)).check((view, noViewFoundException) -> {
             PayPalButton button = (PayPalButton) view;
             GradientDrawable background = (GradientDrawable) button.getBackground();
-            int actualColor = Objects.requireNonNull(background.getColor()).getDefaultColor();
+            int actualColor = getColorFromDrawable(background);
             assertEquals(0xFFFFFFFF, actualColor);
         });
     }
@@ -78,7 +94,7 @@ public class PaymentButtonsColorTest extends TestHelper {
         onView(withId(R.id.venmo_payment_button)).check((view, noViewFoundException) -> {
             VenmoButton button = (VenmoButton) view;
             GradientDrawable background = (GradientDrawable) button.getBackground();
-            int actualColor = Objects.requireNonNull(background.getColor()).getDefaultColor();
+            int actualColor = getColorFromDrawable(background);
             assertEquals(0xFF008CFF, actualColor);
         });
     }
@@ -90,7 +106,7 @@ public class PaymentButtonsColorTest extends TestHelper {
         onView(withId(R.id.venmo_payment_button)).check((view, noViewFoundException) -> {
             VenmoButton button = (VenmoButton) view;
             GradientDrawable background = (GradientDrawable) button.getBackground();
-            int actualColor = Objects.requireNonNull(background.getColor()).getDefaultColor();
+            int actualColor = getColorFromDrawable(background);
             assertEquals(0xFF000000, actualColor);
         });
     }
@@ -102,7 +118,7 @@ public class PaymentButtonsColorTest extends TestHelper {
         onView(withId(R.id.venmo_payment_button)).check((view, noViewFoundException) -> {
             VenmoButton button = (VenmoButton) view;
             GradientDrawable background = (GradientDrawable) button.getBackground();
-            int actualColor = Objects.requireNonNull(background.getColor()).getDefaultColor();
+            int actualColor = getColorFromDrawable(background);
             assertEquals(0xFFFFFFFF, actualColor);
         });
     }
