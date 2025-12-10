@@ -16,9 +16,11 @@ sealed interface PayPalButtonColor {
     val focusHover: ButtonColors
     val pressed: ButtonColors
     val logoId: Int
+    val spinnerId: Int
 
     sealed interface Blue : PayPalButtonColor {
         override val logoId: Int get() = R.drawable.paypal_logo_black
+        override val spinnerId: Int get() = R.drawable.avd_spinner_black
 
         data object Default : Blue {
             override val key = 0
@@ -32,6 +34,7 @@ sealed interface PayPalButtonColor {
 
     sealed interface Black : PayPalButtonColor {
         override val logoId: Int get() = R.drawable.paypal_logo_white
+        override val spinnerId: Int get() = R.drawable.avd_spinner_white
 
         data object Default : Black {
             override val key = 1
@@ -45,6 +48,7 @@ sealed interface PayPalButtonColor {
 
     sealed interface White : PayPalButtonColor {
         override val logoId: Int get() = R.drawable.paypal_logo_black
+        override val spinnerId: Int get() = R.drawable.avd_spinner_black
 
         data object Default : White {
             override val key = 2

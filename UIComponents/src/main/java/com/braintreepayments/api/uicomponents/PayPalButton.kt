@@ -8,8 +8,10 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.net.Uri
 import android.util.AttributeSet
+import android.widget.ProgressBar
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
+import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
@@ -37,6 +39,7 @@ class PayPalButton @JvmOverloads constructor(
     private val gradientDrawable = GradientDrawable()
     private val focusIndicatorDrawable = GradientDrawable()
     private var logo: Drawable? = null
+    private var spinner: ProgressBar? = null
 
     private val logoOffset = resources.getDimension(R.dimen.pp_logo_offset).toInt()
     private val desiredWidth = resources.getDimension(R.dimen.pay_button_width).toInt()
@@ -97,6 +100,8 @@ class PayPalButton @JvmOverloads constructor(
             appLinkReturnUrl = appLinkReturnUrl,
             deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
         )
+        val analyticsClient = AnalyticsClient.lazyInstance.value
+        analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_BUTTON_PRESENTED)
     }
 
     /**
@@ -128,6 +133,8 @@ class PayPalButton @JvmOverloads constructor(
                     }
                 }
             }
+
+            setButtonClicked()
         }
     }
 
@@ -141,6 +148,8 @@ class PayPalButton @JvmOverloads constructor(
      */
     private fun completePayPalFlow(paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch) {
         getActivity()?.let { activity ->
+            val analyticsClient = AnalyticsClient.lazyInstance.value
+            analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_BUTTON_SELECTED)
             val payPalPendingRequest = payPalLauncher.launch(
                 activity = activity,
                 paymentAuthRequest = paymentAuthRequest
@@ -206,6 +215,21 @@ class PayPalButton @JvmOverloads constructor(
                 callback.onPayPalResult(PayPalResult.Failure(paymentAuthResult.error))
             }
         }
+        setButtonReEnabled()
+    }
+
+    private fun setButtonClicked() {
+        this.isEnabled = false
+        logo = ContextCompat.getDrawable(context, currentStyle.spinnerId)
+        (logo as? android.graphics.drawable.Animatable)?.start()
+        invalidate()
+    }
+
+    private fun setButtonReEnabled() {
+        this.isEnabled = true
+        (logo as? android.graphics.drawable.Animatable)?.stop()
+        logo = ContextCompat.getDrawable(context, currentStyle.logoId)
+        invalidate()
     }
 
     private fun setupBackground() {

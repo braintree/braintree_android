@@ -19,5 +19,5 @@ sealed class VenmoPendingRequest {
     /**
      * An error occurred launching the Venmo flow. See [error] for details.
      */
-    class Failure internal constructor(val error: Exception) : VenmoPendingRequest()
+    class Failure(val error: Exception) : VenmoPendingRequest()
 }
