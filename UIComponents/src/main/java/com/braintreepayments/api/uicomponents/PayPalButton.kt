@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.util.AttributeSet
+import android.widget.ProgressBar
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import com.braintreepayments.api.core.AnalyticsClient
@@ -25,6 +26,7 @@ import com.braintreepayments.api.paypal.PayPalTokenizeCallback
  * This button provides a pre-styled PayPal button with configurable colors and handles
  * the complete PayPal payment flow.
  */
+@Suppress("TooManyFunctions")
 class PayPalButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -34,6 +36,7 @@ class PayPalButton @JvmOverloads constructor(
     private var currentStyle: PayPalButtonColor = PayPalButtonColor.BLUE
     private val gradientDrawable = GradientDrawable()
     private var logo: Drawable? = null
+    private var spinner: ProgressBar? = null
 
     private val logoOffset = resources.getDimension(R.dimen.pp_logo_offset).toInt()
     private val desiredWidth = resources.getDimension(R.dimen.pay_button_width).toInt()
@@ -127,6 +130,8 @@ class PayPalButton @JvmOverloads constructor(
                     }
                 }
             }
+
+            setButtonClicked()
         }
     }
 
@@ -207,6 +212,21 @@ class PayPalButton @JvmOverloads constructor(
                 callback.onPayPalResult(PayPalResult.Failure(paymentAuthResult.error))
             }
         }
+        setButtonReEnabled()
+    }
+
+    private fun setButtonClicked() {
+        this.isEnabled = false
+        logo = ContextCompat.getDrawable(context, currentStyle.spinnerId)
+        (logo as? android.graphics.drawable.Animatable)?.start()
+        invalidate()
+    }
+
+    private fun setButtonReEnabled() {
+        this.isEnabled = true
+        (logo as? android.graphics.drawable.Animatable)?.stop()
+        logo = ContextCompat.getDrawable(context, currentStyle.logoId)
+        invalidate()
     }
 
     private fun setupBackground() {
