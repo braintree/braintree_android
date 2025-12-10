@@ -27,7 +27,8 @@ sealed interface PayPalButtonColor {
             override val default = ButtonColors("#60CDFF".toColorInt(), "#60CDFF".toColorInt())
             override val hover = ButtonColors("#54B4E0".toColorInt(), "#54B4E0".toColorInt())
             override val focus = ButtonColors("#60CDFF".toColorInt(), "#60CDFF".toColorInt(), "#0066F5".toColorInt())
-            override val focusHover = ButtonColors("#54B4E0".toColorInt(), "#54B4E0".toColorInt(), "#0066F5".toColorInt())
+            override val focusHover =
+                ButtonColors("#54B4E0".toColorInt(), "#54B4E0".toColorInt(), "#0066F5".toColorInt())
             override val pressed = ButtonColors("#3DB5FF".toColorInt(), "#3DB5FF".toColorInt())
         }
     }
@@ -41,7 +42,8 @@ sealed interface PayPalButtonColor {
             override val default = ButtonColors("#000000".toColorInt(), "#000000".toColorInt())
             override val hover = ButtonColors("#333333".toColorInt(), "#333333".toColorInt())
             override val focus = ButtonColors("#000000".toColorInt(), "#000000".toColorInt(), "#0066F5".toColorInt())
-            override val focusHover = ButtonColors("#333333".toColorInt(), "#333333".toColorInt(), "#0066F5".toColorInt())
+            override val focusHover =
+                ButtonColors("#333333".toColorInt(), "#333333".toColorInt(), "#0066F5".toColorInt())
             override val pressed = ButtonColors("#696969".toColorInt(), "#696969".toColorInt())
         }
     }
@@ -55,7 +57,8 @@ sealed interface PayPalButtonColor {
             override val default = ButtonColors("#FFFFFF".toColorInt(), "#555555".toColorInt())
             override val hover = ButtonColors("#F2F2F2".toColorInt(), "#555555".toColorInt())
             override val focus = ButtonColors("#FFFFFF".toColorInt(), "#555555".toColorInt(), "#0066F5".toColorInt())
-            override val focusHover = ButtonColors("#F2F2F2".toColorInt(), "#555555".toColorInt(), "#0066F5".toColorInt())
+            override val focusHover =
+                ButtonColors("#F2F2F2".toColorInt(), "#555555".toColorInt(), "#0066F5".toColorInt())
             override val pressed = ButtonColors("#E9E9E9".toColorInt(), "#555555".toColorInt())
         }
     }

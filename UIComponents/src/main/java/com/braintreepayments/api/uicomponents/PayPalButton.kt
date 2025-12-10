@@ -28,7 +28,7 @@ import com.braintreepayments.api.uicomponents.PayPalButtonColor.Companion.fromId
  * This button provides a pre-styled PayPal button with configurable colors and handles
  * the complete PayPal payment flow.
  */
-@Suppress("MagicNumber", "TooManyFunctions")
+@Suppress("TooManyFunctions")
 class PayPalButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
