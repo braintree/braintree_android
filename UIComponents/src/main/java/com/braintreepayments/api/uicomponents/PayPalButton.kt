@@ -236,33 +236,24 @@ class PayPalButton @JvmOverloads constructor(
         val baseStyle = baseStyle(currentStyle)
 
         when {
-            !isEnabled -> {
-                gradientDrawable.setColor(currentStyle.fill)
-                gradientDrawable.setStroke(strokeWidth, currentStyle.border)
-                alpha = 0.5f
-            }
             isPressed -> {
                 currentStyle = fromId(baseStyle.key + 12)
                 gradientDrawable.setColor(currentStyle.fill)
                 gradientDrawable.setStroke(strokeWidth, currentStyle.border)
-                alpha = 1.0f
             }
             isHovered -> {
                 currentStyle = fromId(baseStyle.key + 3)
                 gradientDrawable.setColor(currentStyle.fill)
                 gradientDrawable.setStroke(strokeWidth, currentStyle.border)
-                alpha = 1.0f
             }
             isFocused -> {
                 currentStyle = fromId(baseStyle.key + 6)
                 gradientDrawable.setColor(currentStyle.fill)
                 gradientDrawable.setStroke(strokeWidth, currentStyle.border)
-                alpha = 1.0f
             }
             else -> {
                 gradientDrawable.setColor(currentStyle.fill)
                 gradientDrawable.setStroke(strokeWidth, currentStyle.border)
-                alpha = 1.0f
             }
         }
         focusIndicatorDrawable.setColor(currentStyle.focusIndicator)
