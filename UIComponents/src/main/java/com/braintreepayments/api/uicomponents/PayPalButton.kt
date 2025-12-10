@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.util.AttributeSet
-import android.view.View
 import android.widget.ProgressBar
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
