@@ -878,6 +878,7 @@ class VenmoClientUnitTest {
         assertFalse(analyticsSlot.captured.isVaultRequest)
         assertEquals(expectedAnalyticsParams.appSwitchUrl, analyticsSlot.captured.appSwitchUrl)
         assertEquals(graphQLError.message, analyticsSlot.captured.errorDescription)
+        verify { analyticsParamRepository.reset() }
     }
 
     @Test
