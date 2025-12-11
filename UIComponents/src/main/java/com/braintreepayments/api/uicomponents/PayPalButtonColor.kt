@@ -2,6 +2,7 @@ package com.braintreepayments.api.uicomponents
 
 import android.graphics.Color
 import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 
 /**
@@ -20,12 +21,12 @@ sealed class PayPalButtonColor(val key: Int) {
     object Blue : PayPalButtonColor(key = 0) {
         override val logoId: Int get() = R.drawable.paypal_logo_black
         override val spinnerId: Int get() = R.drawable.avd_spinner_black
-        override val default = ButtonColors("#60CDFF".toColorInt(), "#60CDFF".toColorInt())
-        override val hover = ButtonColors("#54B4E0".toColorInt(), "#54B4E0".toColorInt())
-        override val focus = ButtonColors("#60CDFF".toColorInt(), "#60CDFF".toColorInt(), "#0066F5".toColorInt())
+        override val default = ButtonColors(PAYPAL_FEATURED_MAIN, PAYPAL_FEATURED_MAIN)
+        override val hover = ButtonColors(PAYPAL_FEATURED_HOVER, PAYPAL_FEATURED_HOVER)
+        override val focus = ButtonColors(PAYPAL_FEATURED_MAIN, PAYPAL_FEATURED_MAIN, PAYPAL_FOCUS_INDICATOR)
         override val focusHover =
-            ButtonColors("#54B4E0".toColorInt(), "#54B4E0".toColorInt(), "#0066F5".toColorInt())
-        override val pressed = ButtonColors("#3DB5FF".toColorInt(), "#3DB5FF".toColorInt())
+            ButtonColors(PAYPAL_FEATURED_HOVER, PAYPAL_FEATURED_HOVER, PAYPAL_FOCUS_INDICATOR)
+        override val pressed = ButtonColors(PAYPAL_FEATURED_MAIN_ACTIVE, PAYPAL_FEATURED_MAIN_ACTIVE)
     }
 
     object Black : PayPalButtonColor(key = 1) {
@@ -63,5 +64,10 @@ sealed class PayPalButtonColor(val key: Int) {
             2 -> White
             else -> Blue
         }
+
+        private val PAYPAL_FEATURED_MAIN = "#60CDFF".toColorInt()
+        private val PAYPAL_FEATURED_HOVER = "#54B4E0".toColorInt()
+        private val PAYPAL_FEATURED_MAIN_ACTIVE = "#3DB5FF".toColorInt()
+        private val PAYPAL_FOCUS_INDICATOR = "#0066F5".toColorInt()
     }
 }
