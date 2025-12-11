@@ -13,16 +13,16 @@ import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
 import com.braintreepayments.api.core.ExperimentalBetaApi
+import com.braintreepayments.api.core.LinkType
+import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
+import com.braintreepayments.api.core.usecase.GetDefaultAppUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
 import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase.ReturnLinkResult
 import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase.ReturnLinkResult.AppLink
 import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase.ReturnLinkResult.DeepLink
-import com.braintreepayments.api.core.LinkType
-import com.braintreepayments.api.core.MerchantRepository
-import com.braintreepayments.api.core.usecase.GetDefaultAppUseCase
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import io.mockk.every
@@ -375,7 +375,6 @@ class PayPalClientUnitTest {
             errorDescription = PayPalClient.Companion.PAYPAL_NOT_ENABLED_MESSAGE
         )
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true) }
-        verify { analyticsParamRepository.reset() }
     }
 
     @Test
@@ -668,7 +667,6 @@ class PayPalClientUnitTest {
             appSwitchUrl = approvalUrl
         )
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params, true) }
-        verify { analyticsParamRepository.reset() }
     }
 
     @Test
@@ -718,7 +716,6 @@ class PayPalClientUnitTest {
             appSwitchUrl = approvalUrl
         )
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, params, true) }
-        verify { analyticsParamRepository.reset() }
     }
 
     @Test

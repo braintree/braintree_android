@@ -13,14 +13,14 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
-import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
-import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
-import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.UserCanceledException
+import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
 import com.braintreepayments.api.core.usecase.GetDefaultAppUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
+import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
@@ -358,7 +358,6 @@ class PayPalClient internal constructor(
             params = analyticsEventParams.copy(errorDescription = failure.error.message)
         )
         callback.onPayPalPaymentAuthRequest(failure)
-        analyticsParamRepository.reset()
     }
 
     private fun callbackBrowserSwitchCancel(
@@ -374,7 +373,6 @@ class PayPalClient internal constructor(
         }
 
         callback.onPayPalResult(cancel)
-        analyticsParamRepository.reset()
     }
 
     private fun callbackTokenizeFailure(
@@ -387,7 +385,6 @@ class PayPalClient internal constructor(
             analyticsEventParams.copy(errorDescription = failure.error.message)
         )
         callback.onPayPalResult(failure)
-        analyticsParamRepository.reset()
     }
 
     private fun callbackTokenizeSuccess(
@@ -397,7 +394,6 @@ class PayPalClient internal constructor(
     ) {
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, analyticsEventParams)
         callback.onPayPalResult(success)
-        analyticsParamRepository.reset()
     }
 
     companion object {

@@ -25,9 +25,9 @@ import com.braintreepayments.api.core.usecase.GetDefaultAppUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
 import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
-import java.util.Objects
 import org.json.JSONException
 import org.json.JSONObject
+import java.util.Objects
 
 /**
  * Used to create and tokenize Venmo accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/venmo/overview)
@@ -401,19 +401,16 @@ class VenmoClient internal constructor(
             analyticsParams.copy(errorDescription = request.error.message)
         )
         callback.onVenmoPaymentAuthRequest(request)
-        analyticsParamRepository.reset()
     }
 
     private fun callbackSuccess(callback: VenmoTokenizeCallback, venmoResult: VenmoResult) {
         braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_SUCCEEDED, analyticsParams)
         callback.onVenmoResult(venmoResult)
-        analyticsParamRepository.reset()
     }
 
     private fun callbackTokenizeCancel(callback: VenmoTokenizeCallback) {
         braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_CANCELED, analyticsParams)
         callback.onVenmoResult(VenmoResult.Cancel)
-        analyticsParamRepository.reset()
     }
 
     private fun callbackTokenizeFailure(callback: VenmoTokenizeCallback, venmoResult: VenmoResult.Failure) {
@@ -422,7 +419,6 @@ class VenmoClient internal constructor(
             analyticsParams.copy(errorDescription = venmoResult.error.message)
         )
         callback.onVenmoResult(venmoResult)
-        analyticsParamRepository.reset()
     }
 
     private val analyticsParams: AnalyticsEventParams

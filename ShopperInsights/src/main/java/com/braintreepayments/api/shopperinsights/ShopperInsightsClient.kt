@@ -62,7 +62,6 @@ class ShopperInsightsClient internal constructor(
         experiment: String? = null,
         callback: ShopperInsightsCallback
     ) {
-        analyticsParamRepository.reset()
         braintreeClient.sendAnalyticsEvent(
             GET_RECOMMENDED_PAYMENTS_STARTED,
             AnalyticsEventParams(
