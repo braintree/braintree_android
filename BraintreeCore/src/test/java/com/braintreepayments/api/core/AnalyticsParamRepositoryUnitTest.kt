@@ -19,7 +19,6 @@ class AnalyticsParamRepositoryUnitTest {
     fun setUp() {
         uuidHelper = mockk()
         every { uuidHelper.formattedUUID } returnsMany listOf(uuid, newUuid)
-
         sut = AnalyticsParamRepository(uuidHelper)
 
         sut.didPayPalServerAttemptAppSwitch = true
