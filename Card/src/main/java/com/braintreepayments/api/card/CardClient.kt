@@ -62,6 +62,7 @@ class CardClient internal constructor(
      * @param callback [CardTokenizeCallback]
      */
     fun tokenize(card: Card, callback: CardTokenizeCallback) {
+        analyticsParamRepository.reset()
         braintreeClient.sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_STARTED)
         braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
             if (error != null) {

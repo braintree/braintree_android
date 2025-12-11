@@ -212,6 +212,7 @@ class VenmoClientUnitTest {
         assertFalse(analyticsSlot.captured.isVaultRequest)
         assertEquals(expectedAnalyticsParams.appSwitchUrl, analyticsSlot.captured.appSwitchUrl)
         assertEquals(errorDesc, analyticsSlot.captured.errorDescription)
+        verify { analyticsParamRepository.reset() }
         assertTrue(authRequestSlot.captured is VenmoPaymentAuthRequest.Failure)
         assertEquals(
             errorDesc,
@@ -782,6 +783,7 @@ class VenmoClientUnitTest {
                 true
             )
         }
+        verify { analyticsParamRepository.reset() }
     }
 
     @Test
@@ -827,6 +829,7 @@ class VenmoClientUnitTest {
                 true
             )
         }
+        verify { analyticsParamRepository.reset() }
     }
 
     @Test

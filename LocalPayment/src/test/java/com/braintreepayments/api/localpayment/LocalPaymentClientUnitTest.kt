@@ -109,6 +109,13 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
+    fun createPaymentAuthRequest_resetsSessionId() {
+        sut.createPaymentAuthRequest(createLocalPaymentRequest(), localPaymentAuthCallback)
+
+        verify { analyticsParamRepository.reset() }
+    }
+
+    @Test
     fun createPaymentAuthRequest_sendsPaymentStartedEvent() {
         sut.createPaymentAuthRequest(createLocalPaymentRequest(), localPaymentAuthCallback)
 

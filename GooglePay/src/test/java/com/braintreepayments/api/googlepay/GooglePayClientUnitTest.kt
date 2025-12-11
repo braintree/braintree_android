@@ -182,6 +182,40 @@ class GooglePayClientUnitTest {
     }
 
     @Test
+    fun createPaymentAuthRequest_resetsSessionId() {
+        val configuration = Configuration.fromJson(TestConfigurationBuilder()
+            .googlePay(
+                TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
+                    .enabled(false)
+            )
+            .build())
+
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
+            .activityInfo(activityInfo)
+            .build()
+
+        every { merchantRepository.authorization } returns Authorization.fromString(Fixtures.TOKENIZATION_KEY)
+
+        val internalGooglePayClient = MockkGooglePayInternalClientBuilder()
+            .isReadyToPay(true)
+            .build()
+
+        val sut = GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository
+        )
+
+        val googlePayRequest = mockk<GooglePayRequest>(relaxed = true)
+        val requestCallback = mockk<GooglePayPaymentAuthRequestCallback>(relaxed = true)
+        sut.createPaymentAuthRequest(googlePayRequest, requestCallback)
+
+        verify { analyticsParamRepository.reset() }
+    }
+
+    @Test
     fun createPaymentAuthRequest_callsBackIntentData() {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(

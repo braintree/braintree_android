@@ -358,6 +358,7 @@ class PayPalClient internal constructor(
             params = analyticsEventParams.copy(errorDescription = failure.error.message)
         )
         callback.onPayPalPaymentAuthRequest(failure)
+        analyticsParamRepository.reset()
     }
 
     private fun callbackBrowserSwitchCancel(
@@ -373,6 +374,7 @@ class PayPalClient internal constructor(
         }
 
         callback.onPayPalResult(cancel)
+        analyticsParamRepository.reset()
     }
 
     private fun callbackTokenizeFailure(
@@ -385,6 +387,7 @@ class PayPalClient internal constructor(
             analyticsEventParams.copy(errorDescription = failure.error.message)
         )
         callback.onPayPalResult(failure)
+        analyticsParamRepository.reset()
     }
 
     private fun callbackTokenizeSuccess(
@@ -394,6 +397,7 @@ class PayPalClient internal constructor(
     ) {
         braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, analyticsEventParams)
         callback.onPayPalResult(success)
+        analyticsParamRepository.reset()
     }
 
     companion object {

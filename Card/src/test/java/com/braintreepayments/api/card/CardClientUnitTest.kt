@@ -36,6 +36,17 @@ class CardClientUnitTest {
         Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
 
     @Test
+    fun tokenize_resetsSessionId() {
+        val braintreeClient = MockkBraintreeClientBuilder().build()
+        apiClient = MockkApiClientBuilder().build()
+
+        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository)
+        sut.tokenize(card, cardTokenizeCallback)
+
+        verify { analyticsParamRepository.reset() }
+    }
+
+    @Test
     fun tokenize_sendsTokenizeStartedAnalytics() {
         val braintreeClient = MockkBraintreeClientBuilder().build()
         apiClient = MockkApiClientBuilder().build()

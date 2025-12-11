@@ -70,6 +70,13 @@ class ShopperInsightsClientUnitTest {
     }
 
     @Test
+    fun `when getRecommendedPaymentMethods is called without shopper session id, session id is reset`() {
+        sut.getRecommendedPaymentMethods(mockk(relaxed = true), "some_experiment", mockk(relaxed = true))
+
+        verify { analyticsParamRepository.reset() }
+    }
+
+    @Test
     fun `when getRecommendedPaymentMethods is called, started event is sent`() {
         val experiment = "some_experiment"
         sut.getRecommendedPaymentMethods(mockk(relaxed = true), experiment, mockk(relaxed = true))

@@ -375,6 +375,7 @@ class PayPalClientUnitTest {
             errorDescription = PayPalClient.Companion.PAYPAL_NOT_ENABLED_MESSAGE
         )
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_FAILED, params, true) }
+        analyticsParamRepository.reset()
     }
 
     @Test
@@ -667,6 +668,7 @@ class PayPalClientUnitTest {
             appSwitchUrl = approvalUrl
         )
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.BROWSER_LOGIN_CANCELED, params, true) }
+        analyticsParamRepository.reset()
     }
 
     @Test
@@ -716,6 +718,7 @@ class PayPalClientUnitTest {
             appSwitchUrl = approvalUrl
         )
         verify { braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_SUCCEEDED, params, true) }
+        analyticsParamRepository.reset()
     }
 
     @Test
