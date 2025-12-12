@@ -276,7 +276,6 @@ class VenmoButton @JvmOverloads constructor(
         }
     }
 
-
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         setMeasuredDimension(desiredWidth, desiredHeight)
     }
