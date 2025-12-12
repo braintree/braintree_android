@@ -50,6 +50,10 @@ dependencies {
 
     testImplementation libs.kotlin.test
     testImplementation project(':TestUtils')
+
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
 // region signing and publishing
