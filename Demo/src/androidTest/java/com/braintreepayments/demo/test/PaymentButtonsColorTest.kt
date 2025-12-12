@@ -37,6 +37,7 @@ class PaymentButtonsColorTest : TestHelper() {
             .waitForExists()
     }
 
+    @Suppress("TooGenericExceptionThrown")
     private fun getColorFromDrawable(drawable: LayerDrawable): Int {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             /*Assumes knowledge of the internals of the implementation, might be fragile.
