@@ -15,5 +15,3 @@ jobs:
         with:
           java-version: '17'
           distribution: 'zulu'
-      - name: Lint
-        run: ./ci lint

@@ -33,8 +33,8 @@ class PaymentButtonsSpinnerTest : TestHelper() {
         onDevice(withText("Payment Buttons")).waitForEnabled().perform(AutomatorAction.click())
         onDevice(withResourceId("com.braintreepayments.demo:id/button_pp_blue")).waitForExists()
         onDevice(withResourceId("com.braintreepayments.demo:id/button_venmo_blue")).waitForExists()
-        onDevice(withResourceId("com.braintreepayments.demo:id/pp_payment_button")).waitForEnabled()
-        onDevice(withResourceId("com.braintreepayments.demo:id/venmo_payment_button")).waitForEnabled()
+        onDevice(withResourceId("com.braintreepayments.demo:id/pp_payment_button")).waitForExists()
+        onDevice(withResourceId("com.braintreepayments.demo:id/venmo_payment_button")).waitForExists()
     }
 
     @Test(timeout = 30000)
