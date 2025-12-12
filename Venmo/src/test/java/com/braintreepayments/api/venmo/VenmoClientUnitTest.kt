@@ -13,13 +13,13 @@ import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
-import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
-import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
-import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.core.IntegrationType
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
+import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
 import com.braintreepayments.api.core.usecase.GetDefaultAppUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import io.mockk.every
@@ -31,9 +31,9 @@ import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.test.assertFalse
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
