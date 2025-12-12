@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.net.Uri
 import android.util.AttributeSet
 import android.widget.ProgressBar
@@ -19,6 +20,7 @@ import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
+import com.braintreepayments.api.uicomponents.PayPalButtonColor.Companion.fromId
 
 /**
  * A customizable PayPal branded button to initiate the PayPal flow.
@@ -33,8 +35,9 @@ class PayPalButton @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : AppCompatButton(context, attrs, defStyleAttr) {
 
-    private var currentStyle: PayPalButtonColor = PayPalButtonColor.BLUE
+    private var currentStyle: PayPalButtonColor = PayPalButtonColor.Blue
     private val gradientDrawable = GradientDrawable()
+    private val focusIndicatorDrawable = GradientDrawable()
     private var logo: Drawable? = null
     private var spinner: ProgressBar? = null
 
@@ -64,7 +67,7 @@ class PayPalButton @JvmOverloads constructor(
     init {
         context.theme.obtainStyledAttributes(attrs, R.styleable.PayPalButton, 0, 0).apply {
             try {
-                currentStyle = PayPalButtonColor.fromId(getInt(R.styleable.PayPalButton_paymentButtonColor, 0))
+                currentStyle = fromId(getInt(R.styleable.PayPalButton_paymentButtonColor, 0))
             } finally {
                 recycle()
             }
@@ -232,17 +235,51 @@ class PayPalButton @JvmOverloads constructor(
     private fun setupBackground() {
         gradientDrawable.shape = GradientDrawable.RECTANGLE
         gradientDrawable.cornerRadius = resources.getDimension(R.dimen.pay_button_corner_radius)
-        background = gradientDrawable
+        focusIndicatorDrawable.shape = GradientDrawable.RECTANGLE
+        focusIndicatorDrawable.cornerRadius = resources.getDimension(R.dimen.pay_button_corner_radius)
+        val layers = arrayOf(focusIndicatorDrawable, gradientDrawable)
+        val layerDrawable = LayerDrawable(layers)
+        val focusPadding = 2 * resources.getDimension(R.dimen.pay_button_focus_border).toInt()
+        layerDrawable.setLayerInset(1, focusPadding, focusPadding, focusPadding, focusPadding)
+        background = layerDrawable
         minWidth = minDesiredWidth
     }
 
     private fun applyStyle() {
-        gradientDrawable.setColor(currentStyle.fill)
+        updateButtonAppearance()
+        gradientDrawable.setColor(currentStyle.default.fill)
         val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
-
-        gradientDrawable.setStroke(strokeWidth, currentStyle.border)
+        gradientDrawable.setStroke(strokeWidth, currentStyle.default.border)
         logo = ContextCompat.getDrawable(context, currentStyle.logoId)
         invalidate()
+    }
+
+    private fun updateButtonAppearance() {
+        val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
+        val focusStrokeWidth = resources.getDimension(R.dimen.pay_button_focus_border).toInt()
+
+        when {
+            isPressed -> {
+                gradientDrawable.setColor(currentStyle.pressed.fill)
+                gradientDrawable.setStroke(strokeWidth, currentStyle.pressed.border)
+                focusIndicatorDrawable.setStroke(strokeWidth, currentStyle.pressed.focusIndicator)
+            }
+            isHovered -> {
+                gradientDrawable.setColor(currentStyle.hover.fill)
+                gradientDrawable.setStroke(strokeWidth, currentStyle.hover.border)
+                focusIndicatorDrawable.setStroke(focusStrokeWidth, currentStyle.hover.focusIndicator)
+            }
+            isFocused -> {
+                gradientDrawable.setColor(currentStyle.focus.fill)
+                gradientDrawable.setStroke(strokeWidth, currentStyle.focus.border)
+                focusIndicatorDrawable.setStroke(focusStrokeWidth, currentStyle.focus.focusIndicator)
+            }
+            else -> {
+                gradientDrawable.setColor(currentStyle.default.fill)
+                gradientDrawable.setStroke(strokeWidth, currentStyle.default.border)
+                focusIndicatorDrawable.setStroke(focusStrokeWidth, currentStyle.default.focusIndicator)
+            }
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -258,6 +295,16 @@ class PayPalButton @JvmOverloads constructor(
         val top = (height - h) / 2 + logoOffset
         d.setBounds(left, top, left + w, top + h)
         d.draw(canvas)
+    }
+
+    override fun setEnabled(enabled: Boolean) {
+        super.setEnabled(enabled)
+        updateButtonAppearance()
+    }
+
+    override fun drawableStateChanged() {
+        super.drawableStateChanged()
+        updateButtonAppearance()
     }
 
     /**

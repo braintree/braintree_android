@@ -58,13 +58,13 @@ public class PaymentButtonsFragment extends BaseFragment {
                     if (!isChecked) return;
                     switch (checkedId) {
                         case R.id.button_pp_blue:
-                            payPalButton.setButtonColor(PayPalButtonColor.BLUE);
+                            payPalButton.setButtonColor(PayPalButtonColor.Blue.INSTANCE);
                             break;
                         case R.id.button_pp_black:
-                            payPalButton.setButtonColor(PayPalButtonColor.BLACK);
+                            payPalButton.setButtonColor(PayPalButtonColor.Black.INSTANCE);
                             break;
                         case R.id.button_pp_white:
-                            payPalButton.setButtonColor(PayPalButtonColor.WHITE);
+                            payPalButton.setButtonColor(PayPalButtonColor.White.INSTANCE);
                             break;
                     }
                 }
