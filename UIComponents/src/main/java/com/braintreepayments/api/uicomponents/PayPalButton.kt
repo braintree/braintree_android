@@ -239,7 +239,7 @@ class PayPalButton @JvmOverloads constructor(
         focusIndicatorDrawable.cornerRadius = resources.getDimension(R.dimen.pay_button_corner_radius)
         val layers = arrayOf(focusIndicatorDrawable, gradientDrawable)
         val layerDrawable = LayerDrawable(layers)
-        val focusPadding = 2*resources.getDimension(R.dimen.pay_button_focus_border).toInt()
+        val focusPadding = 2 * resources.getDimension(R.dimen.pay_button_focus_border).toInt()
         layerDrawable.setLayerInset(1, focusPadding, focusPadding, focusPadding, focusPadding)
         background = layerDrawable
         minWidth = minDesiredWidth
