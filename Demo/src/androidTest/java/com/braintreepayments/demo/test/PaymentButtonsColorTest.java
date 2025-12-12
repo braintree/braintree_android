@@ -64,7 +64,8 @@ public class PaymentButtonsColorTest extends TestHelper {
             try {
                 java.lang.reflect.Field colorField = GradientDrawable.class.getDeclaredField("mFillPaint");
                 colorField.setAccessible(true);
-                android.graphics.Paint paint = (android.graphics.Paint) colorField.get(drawable);
+                GradientDrawable gradientDrawable = (GradientDrawable) drawable.getDrawable(1);
+                android.graphics.Paint paint = (android.graphics.Paint) colorField.get(gradientDrawable);
                 return paint != null ? paint.getColor() : 0;
             } catch (Exception e) {
                 throw new RuntimeException("Failed to get color from GradientDrawable", e);
