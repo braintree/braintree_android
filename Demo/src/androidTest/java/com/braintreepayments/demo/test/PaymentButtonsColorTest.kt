@@ -37,21 +37,6 @@ class PaymentButtonsColorTest : TestHelper() {
             .waitForExists()
     }
 
-    private fun getColorFromDrawable(drawable: GradientDrawable): Int {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return Objects.requireNonNull<ColorStateList>(drawable.color).defaultColor
-        } else {
-            try {
-                val colorField = GradientDrawable::class.java.getDeclaredField("mFillPaint")
-                colorField.isAccessible = true
-                val paint = colorField.get(drawable) as Paint?
-                return paint?.color ?: 0
-            } catch (e: Exception) {
-                throw RuntimeException("Failed to get color from GradientDrawable", e)
-            }
-        }
-    }
-
     private fun getColorFromDrawable(drawable: LayerDrawable): Int {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             /*Assumes knowledge of the internals of the implementation, might be fragile.
@@ -119,7 +104,7 @@ class PaymentButtonsColorTest : TestHelper() {
         Espresso.onView(ViewMatchers.withId(R.id.venmo_payment_button))
             .check(ViewAssertion { view: View?, noViewFoundException: NoMatchingViewException? ->
                 val button = view as VenmoButton
-                val background = button.background as GradientDrawable
+                val background = button.background as LayerDrawable
                 val actualColor = getColorFromDrawable(background)
                 Assert.assertEquals(-0xff7301, actualColor.toLong())
             })
@@ -132,7 +117,7 @@ class PaymentButtonsColorTest : TestHelper() {
         Espresso.onView(ViewMatchers.withId(R.id.venmo_payment_button))
             .check(ViewAssertion { view: View?, noViewFoundException: NoMatchingViewException? ->
                 val button = view as VenmoButton
-                val background = button.background as GradientDrawable
+                val background = button.background as LayerDrawable
                 val actualColor = getColorFromDrawable(background)
                 Assert.assertEquals(-0x1000000, actualColor.toLong())
             })
@@ -145,7 +130,7 @@ class PaymentButtonsColorTest : TestHelper() {
         Espresso.onView(ViewMatchers.withId(R.id.venmo_payment_button))
             .check(ViewAssertion { view: View?, noViewFoundException: NoMatchingViewException? ->
                 val button = view as VenmoButton
-                val background = button.background as GradientDrawable
+                val background = button.background as LayerDrawable
                 val actualColor = getColorFromDrawable(background)
                 Assert.assertEquals(-0x1, actualColor.toLong())
             })
