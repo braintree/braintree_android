@@ -239,7 +239,7 @@ class PayPalButton @JvmOverloads constructor(
         focusIndicatorDrawable.cornerRadius = resources.getDimension(R.dimen.pay_button_corner_radius)
         val layers = arrayOf(focusIndicatorDrawable, gradientDrawable)
         val layerDrawable = LayerDrawable(layers)
-        val focusPadding = resources.getDimension(R.dimen.pay_button_focus_border).toInt()
+        val focusPadding = 2*resources.getDimension(R.dimen.pay_button_focus_border).toInt()
         layerDrawable.setLayerInset(1, focusPadding, focusPadding, focusPadding, focusPadding)
         background = layerDrawable
         minWidth = minDesiredWidth
@@ -256,27 +256,28 @@ class PayPalButton @JvmOverloads constructor(
 
     private fun updateButtonAppearance() {
         val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
+        val focusStrokeWidth = resources.getDimension(R.dimen.pay_button_focus_border).toInt()
 
         when {
             isPressed -> {
                 gradientDrawable.setColor(currentStyle.pressed.fill)
                 gradientDrawable.setStroke(strokeWidth, currentStyle.pressed.border)
-                focusIndicatorDrawable.setColor(currentStyle.pressed.focusIndicator)
+                focusIndicatorDrawable.setStroke(strokeWidth, currentStyle.pressed.focusIndicator)
             }
             isHovered -> {
                 gradientDrawable.setColor(currentStyle.hover.fill)
                 gradientDrawable.setStroke(strokeWidth, currentStyle.hover.border)
-                focusIndicatorDrawable.setColor(currentStyle.hover.focusIndicator)
+                focusIndicatorDrawable.setStroke(focusStrokeWidth, currentStyle.hover.focusIndicator)
             }
             isFocused -> {
                 gradientDrawable.setColor(currentStyle.focus.fill)
                 gradientDrawable.setStroke(strokeWidth, currentStyle.focus.border)
-                focusIndicatorDrawable.setColor(currentStyle.focus.focusIndicator)
+                focusIndicatorDrawable.setStroke(focusStrokeWidth, currentStyle.focus.focusIndicator)
             }
             else -> {
                 gradientDrawable.setColor(currentStyle.default.fill)
                 gradientDrawable.setStroke(strokeWidth, currentStyle.default.border)
-                focusIndicatorDrawable.setColor(currentStyle.default.focusIndicator)
+                focusIndicatorDrawable.setStroke(focusStrokeWidth, currentStyle.default.focusIndicator)
             }
         }
     }
