@@ -78,7 +78,7 @@ Versions 3.x.x and below are unsupported.
 
 The Braintree Android SDK now allows merchants to draw and render both PayPal and Venmo payment buttons using a discrete set of parameters. The SDK will handle the loading and disable state of the button and allow you to display and offer buttons meeting the current brand guidelines versus maintaining responsibility on your own. We will call the `tokenize` methods with your request and allow you a seamless branded experience in your mobile apps.
 
-*Note:* Ensure you include the `ui-components` module in your project to use this feature.
+*Note:* Ensure you include the `UIComponents` module in your project to use this feature.
 
 If you would like to draw a PayPal branded button in your mobile app, you can do so like this:
 
@@ -114,6 +114,7 @@ class ExampleFragment : Fragment() {
             }
         }
     }
+    
     override fun onResume() {
         super.onResume()
         val pendingRequest = fetchPendingRequest()
@@ -171,6 +172,7 @@ class ExampleFragment : Fragment() {
             }
         }
     }
+    
     override fun onResume() {
         super.onResume()
         val pendingRequest = fetchPendingRequest()
