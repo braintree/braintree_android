@@ -7,7 +7,6 @@ import androidx.core.graphics.toColorInt
 /**
  * A representation of the different colors of PayPal buttons
  */
-@Suppress("MagicNumber", "CyclomaticComplexMethod")
 sealed class PayPalButtonColor(val key: Int) {
     abstract val default: ButtonColors
     abstract val hover: ButtonColors
