@@ -8,13 +8,13 @@ import androidx.core.graphics.toColorInt
  * A representation of the different colors of Venmo buttons
  */
 sealed class VenmoButtonColor(val key: Int) {
-    abstract val default: ButtonColors
-    abstract val hover: ButtonColors
-    abstract val focus: ButtonColors
-    abstract val focusHover: ButtonColors
-    abstract val pressed: ButtonColors
-    abstract val logoId: Int
-    abstract val spinnerId: Int
+    internal abstract val default: ButtonColors
+    internal abstract val hover: ButtonColors
+    internal abstract val focus: ButtonColors
+    internal abstract val focusHover: ButtonColors
+    internal abstract val pressed: ButtonColors
+    internal abstract val logoId: Int
+    internal abstract val spinnerId: Int
 
     object Blue : VenmoButtonColor(key = 0) {
         override val logoId: Int get() = R.drawable.venmo_logo_white
@@ -67,7 +67,7 @@ sealed class VenmoButtonColor(val key: Int) {
         private val VENMO_WHITE_MAIN_ACTIVE = "#E9E9E9".toColorInt()
     }
 
-    data class ButtonColors(
+    internal data class ButtonColors(
         @ColorInt val fill: Int,
         @ColorInt val border: Int,
         @ColorInt val focusIndicator: Int = Color.argb(0, 0, 0, 0)

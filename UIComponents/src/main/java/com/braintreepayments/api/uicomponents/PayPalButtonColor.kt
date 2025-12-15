@@ -8,13 +8,13 @@ import androidx.core.graphics.toColorInt
  * A representation of the different colors of PayPal buttons
  */
 sealed class PayPalButtonColor(val key: Int) {
-    abstract val default: ButtonColors
-    abstract val hover: ButtonColors
-    abstract val focus: ButtonColors
-    abstract val focusHover: ButtonColors
-    abstract val pressed: ButtonColors
-    abstract val logoId: Int
-    abstract val spinnerId: Int
+    internal abstract val default: ButtonColors
+    internal abstract val hover: ButtonColors
+    internal abstract val focus: ButtonColors
+    internal abstract val focusHover: ButtonColors
+    internal abstract val pressed: ButtonColors
+    internal abstract val logoId: Int
+    internal abstract val spinnerId: Int
 
     object Blue : PayPalButtonColor(key = 0) {
         override val logoId: Int get() = R.drawable.paypal_logo_black
@@ -22,8 +22,7 @@ sealed class PayPalButtonColor(val key: Int) {
         override val default = ButtonColors(PAYPAL_FEATURED_MAIN, PAYPAL_FEATURED_MAIN)
         override val hover = ButtonColors(PAYPAL_FEATURED_HOVER, PAYPAL_FEATURED_HOVER)
         override val focus = ButtonColors(PAYPAL_FEATURED_MAIN, PAYPAL_FEATURED_MAIN, PAYPAL_FOCUS_INDICATOR)
-        override val focusHover =
-            ButtonColors(PAYPAL_FEATURED_HOVER, PAYPAL_FEATURED_HOVER, PAYPAL_FOCUS_INDICATOR)
+        override val focusHover = ButtonColors(PAYPAL_FEATURED_HOVER, PAYPAL_FEATURED_HOVER, PAYPAL_FOCUS_INDICATOR)
         override val pressed = ButtonColors(PAYPAL_FEATURED_MAIN_ACTIVE, PAYPAL_FEATURED_MAIN_ACTIVE)
     }
 
@@ -47,7 +46,7 @@ sealed class PayPalButtonColor(val key: Int) {
         override val pressed = ButtonColors(PAYPAL_WHITE_MAIN_ACTIVE, PAYPAL_WHITE_BORDER)
     }
 
-    data class ButtonColors(
+    internal data class ButtonColors(
         @ColorInt val fill: Int,
         @ColorInt val border: Int,
         @ColorInt val focusIndicator: Int = Color.argb(0, 0, 0, 0)
