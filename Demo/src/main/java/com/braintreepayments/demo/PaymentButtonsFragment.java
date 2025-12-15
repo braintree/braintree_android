@@ -77,13 +77,13 @@ public class PaymentButtonsFragment extends BaseFragment {
                         if (!isChecked) return;
                         switch (checkedId) {
                             case R.id.button_venmo_blue:
-                                venmoButton.setButtonColor(VenmoButtonColor.BLUE);
+                                venmoButton.setButtonColor(VenmoButtonColor.Blue.INSTANCE);
                                 break;
                             case R.id.button_venmo_black:
-                                venmoButton.setButtonColor(VenmoButtonColor.BLACK);
+                                venmoButton.setButtonColor(VenmoButtonColor.Black.INSTANCE);
                                 break;
                             case R.id.button_venmo_white:
-                                venmoButton.setButtonColor(VenmoButtonColor.WHITE);
+                                venmoButton.setButtonColor(VenmoButtonColor.White.INSTANCE);
                                 break;
                         }
                     }
