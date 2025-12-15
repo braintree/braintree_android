@@ -62,7 +62,7 @@ class VenmoLauncherUnitTest {
     @Test
     fun `launch starts browser switch and returns pending request`() {
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
-        every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
+        every { browserSwitchClient.start(activity, options, true) } returns startedPendingRequest
 
         val pendingRequest = sut.launch(activity, VenmoPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
 
@@ -76,7 +76,7 @@ class VenmoLauncherUnitTest {
     @Test
     fun `when launch is called and Started is returned, app switch succeeded analytics event is sent`() {
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
-        every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
+        every { browserSwitchClient.start(activity, options, true) } returns startedPendingRequest
 
         sut.launch(activity, VenmoPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
 
@@ -92,7 +92,7 @@ class VenmoLauncherUnitTest {
     fun `launch on error returns pending request failure`() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         val exception = BrowserSwitchException("error")
-        every { browserSwitchClient.start(eq(activity), eq(options)) } returns
+        every { browserSwitchClient.start(eq(activity), eq(options), eq(true)) } returns
             BrowserSwitchStartResult.Failure(exception)
 
         val pendingRequest =
@@ -105,7 +105,7 @@ class VenmoLauncherUnitTest {
     @Test
     fun `when launch is called and Failure is returned, app switch failed analytics event is sent`() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
-        every { browserSwitchClient.start(eq(activity), eq(options)) } returns
+        every { browserSwitchClient.start(eq(activity), eq(options), eq(true)) } returns
             BrowserSwitchStartResult.Failure(BrowserSwitchException("error"))
 
         sut.launch(activity, VenmoPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
