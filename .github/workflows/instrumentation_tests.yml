@@ -4,6 +4,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         api-level: [ 23, 31, 35 ]
         target: [ default, google_apis ]
@@ -24,4 +25,4 @@ jobs:
           target: ${{ matrix.target }}
           arch: x86_64
           profile: pixel_7_pro
-          script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck
+          script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :Demo:connectedCheck --stacktrace

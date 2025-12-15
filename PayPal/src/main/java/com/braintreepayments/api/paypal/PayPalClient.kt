@@ -13,12 +13,14 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
-import com.braintreepayments.api.core.GetReturnLinkTypeUseCase
-import com.braintreepayments.api.core.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
-import com.braintreepayments.api.core.GetReturnLinkUseCase
+import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
+import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.UserCanceledException
+import com.braintreepayments.api.core.usecase.GetDefaultAppUseCase
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.sharedutils.Json
 import org.json.JSONException
@@ -31,7 +33,15 @@ class PayPalClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalPayPalClient: PayPalInternalClient = PayPalInternalClient(braintreeClient),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
-    getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(merchantRepository),
+    getDefaultAppUseCase: GetDefaultAppUseCase =
+        GetDefaultAppUseCase(merchantRepository.applicationContext.packageManager),
+    getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase =
+        GetAppLinksCompatibleBrowserUseCase(getDefaultAppUseCase),
+    getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(
+        merchantRepository,
+        getDefaultAppUseCase,
+        getAppLinksCompatibleBrowserUseCase
+    ),
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
 ) {
@@ -206,13 +216,15 @@ class PayPalClient internal constructor(
             put("intent", paymentAuthRequest.intent)
         }
 
+        val approvalUri = Uri.parse(paymentAuthRequest.approvalUrl)
+
         return BrowserSwitchOptions()
             .requestCode(BraintreeRequestCodes.PAYPAL.code)
-            .url(Uri.parse(paymentAuthRequest.approvalUrl))
+            .url(approvalUri)
             .launchType(LaunchType.ACTIVITY_CLEAR_TOP)
             .metadata(metadata)
             .apply {
-                when (val returnLinkResult = getReturnLinkUseCase()) {
+                when (val returnLinkResult = getReturnLinkUseCase(approvalUri)) {
                     is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> {
                         appLinkUri(returnLinkResult.appLinkReturnUri)
                         successAppLinkUri(paymentAuthRequest.successUrl?.toUri())
