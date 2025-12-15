@@ -22,7 +22,6 @@ import com.braintreepayments.api.uicomponents.VenmoButton
 import com.braintreepayments.demo.R
 import com.braintreepayments.demo.test.utilities.TestHelper
 import java.lang.Thread.sleep
-import kotlin.text.matches
 import org.hamcrest.Matcher
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -46,7 +45,7 @@ class PaymentButtonsSpinnerTest : TestHelper() {
     fun testPayPalButton_isDisabledAndShowsSpinnerAfterClick() {
         waitForView(withId(R.id.pp_payment_button)).perform(click())
 
-        onView(withId(R.id.pp_payment_button))
+        waitForView(withId(R.id.pp_payment_button))
             .check(ViewAssertion { view: View?, noViewFoundException: NoMatchingViewException? ->
                 val button = view as? PayPalButton
                 button?.let {
@@ -65,7 +64,7 @@ class PaymentButtonsSpinnerTest : TestHelper() {
     fun testVenmoButton_isDisabledAndShowsSpinnerAfterClick() {
         waitForView(withId(R.id.venmo_payment_button)).perform(click())
 
-        onView(withId(R.id.venmo_payment_button))
+        waitForView(withId(R.id.venmo_payment_button))
             .check(ViewAssertion { view: View?, noViewFoundException: NoMatchingViewException? ->
                 val button = view as? VenmoButton
                 button?.let {
