@@ -31,28 +31,19 @@ class AnalyticsParamRepository(
      */
     var didSdkAttemptAppSwitch: Boolean? = null
 
-    private lateinit var _sessionId: String
-
     /**
      * Session ID to tie analytics events together which is used for reporting conversion funnels.
      */
-    val sessionId: String
-        get() {
-            if (!this::_sessionId.isInitialized) {
-                _sessionId = uuidHelper.formattedUUID
-            }
-            return _sessionId
-        }
+    val sessionId: String = uuidHelper.formattedUUID
 
     /**
-     * Resets the [sessionId] and clears all other repository values.
+     * Clears all repository values.
      *
      * Note that this function is called in different spots of the SDK lifecycle for different payment modules. Some
      * modules call reset during launch of the SDK. The PayPal module calls reset at the end of the payment flow to
      * persist the [sessionId] value set from the Shopper Insights module.
      */
     fun reset() {
-        _sessionId = uuidHelper.formattedUUID
         linkType = null
         didEnablePayPalAppSwitch = null
         didPayPalServerAttemptAppSwitch = null

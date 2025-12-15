@@ -74,6 +74,128 @@ This SDK abides by our Client SDK Deprecation Policy. For more information on th
 
 Versions 3.x.x and below are unsupported.
 
+## Payment Buttons
+
+The Braintree Android SDK now allows merchants to draw and render both PayPal and Venmo payment buttons using a discrete set of parameters. The SDK will handle the loading and disable state of the button and allow you to display and offer buttons meeting the current brand guidelines versus maintaining responsibility on your own. We will call the `tokenize` methods with your request and allow you a seamless branded experience in your mobile apps.
+
+*Note:* Ensure you include the `UIComponents` module in your project to use this feature.
+
+If you would like to draw a PayPal branded button in your mobile app, you can do so like this:
+
+```xml
+<com.braintreepayments.api.uicomponents.PayPalButton
+    android:id="@+id/payPalButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    custom:buttonColor="blue" />
+```
+
+```kotlin
+class ExampleFragment : Fragment() {
+    private lateinit var payPalButton: PayPalButton
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        payPalButton = view.findViewById<PayPalButton>(R.id.payPalButton)
+        payPalButton.initialize(
+            authorization = "[TOKENIZATION_KEY or CLIENT_TOKEN]",
+            appLinkReturnUrl = Uri.parse("https://merchant-app.com"),
+            deepLinkFallbackUrlScheme = "com.merchant.app.payments"
+        )
+        payPalButton.updatePayPalRequest(PayPalRequest(...))
+        paypalButton.setLaunchCallback = { launchResult ->
+            when (launchResult) {
+                is PayPalPendingRequest.Started-> {
+                    // store pending request to disk
+                }
+                is PayPalPendingRequest.Failure -> {
+                    // handle error
+                }
+            }
+        }
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        val pendingRequest = fetchPendingRequest()
+        if (pendingRequest != null) {
+            payPalButton.handleReturnToApp(pendingRequest, intent) { payPalResult ->
+                when (payPalResult) {
+                    is PayPalResult.Success -> {
+                        // handle success
+                    }
+                    is PayPalResult.Failure -> {
+                        // handle failure
+                    }
+                    is PayPalResult.Cancel -> {
+                        // handle canceled
+                    }
+                }
+            }
+        }
+        // clear pending request
+    }
+}
+```
+
+Similarly, if you would like to draw a Venmo branded button in your mobile app, you can do so like this:
+
+```xml
+<com.braintreepayments.api.uicomponents.VenmoButton
+    android:id="@+id/venmoButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    custom:buttonColor="blue" />
+```
+
+```kotlin
+class ExampleFragment : Fragment() {
+    private lateinit var venmoButton: VenmoButton
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        venmoButton = view.findViewById<VenmoButton>(R.id.venmoButton)
+        venmoButton.initialize(
+            authorization = "[TOKENIZATION_KEY or CLIENT_TOKEN]",
+            appLinkReturnUrl = Uri.parse("https://merchant-app.com"),
+            deepLinkFallbackUrlScheme = "com.merchant.app.payments"
+        )
+        venmoButton.setVenmoRequest(VenmoRequest(...))
+        venmoButton.setLaunchCallback = { launchResult ->
+            when (launchResult) {
+                is  VenmoPendingRequest.Started-> {
+                    // store pending request to disk
+                }
+                is VenmoPendingRequest.Failure -> {
+                    // handle error
+                }
+            }
+        }
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        val pendingRequest = fetchPendingRequest()
+        if (pendingRequest != null) {
+            venmoButton.handleReturnToApp(pendingRequest, intent) { payPalResult ->
+                when (payPalResult) {
+                    is VenmoResult.Success -> {
+                        // handle success
+                    }
+                    is VenmoResult.Failure -> {
+                        // handle failure
+                    }
+                    is VenmoResult.Cancel -> {
+                        // handle canceled
+                    }
+                }
+            }
+        }
+        // clear pending request
+    }
+}
+```
+
 ## Help
 
 * [Read the docs](https://developer.paypal.com/braintree/docs/guides/overview)
