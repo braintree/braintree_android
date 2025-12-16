@@ -19,31 +19,31 @@ sealed class VenmoButtonColor(val key: Int) {
     object Blue : VenmoButtonColor(key = 0) {
         override val logoId: Int get() = R.drawable.venmo_logo_white
         override val spinnerId: Int get() = R.drawable.avd_spinner_white
-        override val default = ButtonColors(VENMO_FEATURED_MAIN, VENMO_FEATURED_MAIN)
-        override val hover = ButtonColors(VENMO_FEATURED_HOVER, VENMO_FEATURED_HOVER)
-        override val focus = ButtonColors(VENMO_FEATURED_MAIN, VENMO_FEATURED_MAIN, VENMO_FOCUS_INDICATOR)
-        override val focusHover = ButtonColors(VENMO_FEATURED_HOVER, VENMO_FEATURED_HOVER, VENMO_FOCUS_INDICATOR)
-        override val pressed = ButtonColors(VENMO_FEATURED_MAIN_ACTIVE, VENMO_FEATURED_MAIN_ACTIVE)
+        override val default = ButtonColors(R.color.venmo_featured_main, R.color.venmo_featured_main)
+        override val hover = ButtonColors(R.color.venmo_featured_hover, R.color.venmo_featured_hover)
+        override val focus = ButtonColors(R.color.venmo_featured_main, R.color.venmo_featured_main, R.color.venmo_focus_indicator)
+        override val focusHover = ButtonColors(R.color.venmo_featured_hover, R.color.venmo_featured_hover, R.color.venmo_focus_indicator)
+        override val pressed = ButtonColors(R.color.venmo_featured_main_active, R.color.venmo_featured_main_active)
     }
 
     object Black : VenmoButtonColor(key = 1) {
         override val logoId: Int get() = R.drawable.venmo_logo_white
         override val spinnerId: Int get() = R.drawable.avd_spinner_white
-        override val default = ButtonColors(VENMO_TERTIARY_MAIN, VENMO_TERTIARY_MAIN)
-        override val hover = ButtonColors(VENMO_TERTIARY_HOVER, VENMO_TERTIARY_HOVER)
-        override val focus = ButtonColors(VENMO_TERTIARY_MAIN, VENMO_TERTIARY_MAIN, VENMO_FOCUS_INDICATOR)
-        override val focusHover = ButtonColors(VENMO_TERTIARY_HOVER, VENMO_TERTIARY_HOVER, VENMO_FOCUS_INDICATOR)
-        override val pressed = ButtonColors(VENMO_TERTIARY_MAIN_ACTIVE, VENMO_TERTIARY_MAIN_ACTIVE)
+        override val default = ButtonColors(R.color.venmo_tertiary_main, R.color.venmo_tertiary_main)
+        override val hover = ButtonColors(R.color.venmo_tertiary_hover, R.color.venmo_tertiary_hover)
+        override val focus = ButtonColors(R.color.venmo_tertiary_main, R.color.venmo_tertiary_main, R.color.venmo_focus_indicator)
+        override val focusHover = ButtonColors(R.color.venmo_tertiary_hover, R.color.venmo_tertiary_hover, R.color.venmo_focus_indicator)
+        override val pressed = ButtonColors(R.color.venmo_tertiary_main_active, R.color.venmo_tertiary_main_active)
     }
 
     object White : VenmoButtonColor(key = 2) {
         override val logoId: Int get() = R.drawable.venmo_logo_blue
         override val spinnerId: Int get() = R.drawable.avd_spinner_black
-        override val default = ButtonColors(VENMO_WHITE_MAIN, VENMO_WHITE_BORDER)
-        override val hover = ButtonColors(VENMO_WHITE_HOVER, VENMO_WHITE_BORDER)
-        override val focus = ButtonColors(VENMO_WHITE_MAIN, VENMO_WHITE_BORDER, VENMO_FOCUS_INDICATOR)
-        override val focusHover = ButtonColors(VENMO_WHITE_HOVER, VENMO_WHITE_BORDER, VENMO_FOCUS_INDICATOR)
-        override val pressed = ButtonColors(VENMO_WHITE_MAIN_ACTIVE, VENMO_WHITE_BORDER)
+        override val default = ButtonColors(R.color.venmo_white_main, R.color.venmo_white_border)
+        override val hover = ButtonColors(R.color.venmo_white_hover, R.color.venmo_white_border)
+        override val focus = ButtonColors(R.color.venmo_white_main, R.color.venmo_white_border, R.color.venmo_focus_indicator)
+        override val focusHover = ButtonColors(R.color.venmo_white_hover, R.color.venmo_white_border, R.color.venmo_focus_indicator)
+        override val pressed = ButtonColors(R.color.venmo_white_main_active, R.color.venmo_white_border)
     }
 
     companion object {
@@ -53,23 +53,11 @@ sealed class VenmoButtonColor(val key: Int) {
             2 -> White
             else -> Blue
         }
-
-        private val VENMO_FEATURED_MAIN = "#008CFF".toColorInt()
-        private val VENMO_FEATURED_HOVER = "#0073E0".toColorInt()
-        private val VENMO_FEATURED_MAIN_ACTIVE = "#0074FF".toColorInt()
-        private val VENMO_FOCUS_INDICATOR = "#0066F5".toColorInt()
-        private val VENMO_TERTIARY_MAIN = "#000000".toColorInt()
-        private val VENMO_TERTIARY_HOVER = "#333333".toColorInt()
-        private val VENMO_TERTIARY_MAIN_ACTIVE = "#696969".toColorInt()
-        private val VENMO_WHITE_BORDER = "#555555".toColorInt()
-        private val VENMO_WHITE_MAIN = "#FFFFFF".toColorInt()
-        private val VENMO_WHITE_HOVER = "#F2F2F2".toColorInt()
-        private val VENMO_WHITE_MAIN_ACTIVE = "#E9E9E9".toColorInt()
     }
 
     internal data class ButtonColors(
-        @ColorInt val fill: Int,
-        @ColorInt val border: Int,
-        @ColorInt val focusIndicator: Int = Color.argb(0, 0, 0, 0)
+        val fill: Int,
+        val border: Int,
+        val focusIndicator: Int = Color.argb(0, 0, 0, 0)
     )
 }

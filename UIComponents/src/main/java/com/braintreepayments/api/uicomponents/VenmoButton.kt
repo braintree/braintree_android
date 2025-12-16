@@ -241,7 +241,7 @@ class VenmoButton @JvmOverloads constructor(
 
     private fun applyStyle() {
         updateButtonAppearance()
-        gradientDrawable.setColor(currentStyle.default.fill)
+        gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.default.fill))
         val strokeWidth = resources.getDimension(R.dimen.pay_button_border).toInt()
         gradientDrawable.setStroke(strokeWidth, currentStyle.default.border)
         logo = ContextCompat.getDrawable(context, currentStyle.logoId)
@@ -254,22 +254,22 @@ class VenmoButton @JvmOverloads constructor(
 
         when {
             isPressed -> {
-                gradientDrawable.setColor(currentStyle.pressed.fill)
+                gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.pressed.fill))
                 gradientDrawable.setStroke(strokeWidth, currentStyle.pressed.border)
                 focusIndicatorDrawable.setStroke(strokeWidth, currentStyle.pressed.focusIndicator)
             }
             isHovered -> {
-                gradientDrawable.setColor(currentStyle.hover.fill)
+                gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.hover.fill))
                 gradientDrawable.setStroke(strokeWidth, currentStyle.hover.border)
                 focusIndicatorDrawable.setStroke(focusStrokeWidth, currentStyle.hover.focusIndicator)
             }
             isFocused -> {
-                gradientDrawable.setColor(currentStyle.focus.fill)
+                gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.focus.fill))
                 gradientDrawable.setStroke(strokeWidth, currentStyle.focus.border)
                 focusIndicatorDrawable.setStroke(focusStrokeWidth, currentStyle.focus.focusIndicator)
             }
             else -> {
-                gradientDrawable.setColor(currentStyle.default.fill)
+                gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.default.fill))
                 gradientDrawable.setStroke(strokeWidth, currentStyle.default.border)
                 focusIndicatorDrawable.setStroke(focusStrokeWidth, currentStyle.default.focusIndicator)
             }
