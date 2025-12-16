@@ -85,4 +85,15 @@ class GetReturnLinkTypeUseCaseUnitTest {
 
         assertEquals(GetReturnLinkTypeUseCase.ReturnLinkTypeResult.APP_LINK, result)
     }
+
+    @Test
+    fun `when invoke is called and merchant app is able to handle return uri by default and Venmo app can handle checkout uri, APP_LINK is returned`() {
+        every { getDefaultAppUseCase(appLinkReturnUri) } returns packageName
+        every { getDefaultAppUseCase(someUri) } returns "com.venmo"
+        every { getAppLinksCompatibleBrowserUseCase.invoke(someUri) } returns false
+
+        val result = sut.invoke(someUri)
+
+        assertEquals(GetReturnLinkTypeUseCase.ReturnLinkTypeResult.APP_LINK, result)
+    }
 }
