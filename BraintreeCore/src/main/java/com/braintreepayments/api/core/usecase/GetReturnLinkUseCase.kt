@@ -37,7 +37,7 @@ class GetReturnLinkUseCase(
         data class Failure(val exception: Exception) : ReturnLinkResult()
     }
 
-    operator fun invoke(@CheckoutUri uri: Uri? = "https://www.paypal.com/checkout".toUri()): ReturnLinkResult {
+    operator fun invoke(@CheckoutUri uri: Uri = "https://www.paypal.com/checkout".toUri()): ReturnLinkResult {
         return when (getReturnLinkTypeUseCase(uri)) {
             GetReturnLinkTypeUseCase.ReturnLinkTypeResult.APP_LINK -> {
                 merchantRepository.appLinkReturnUri?.let { ReturnLinkResult.AppLink(it) }

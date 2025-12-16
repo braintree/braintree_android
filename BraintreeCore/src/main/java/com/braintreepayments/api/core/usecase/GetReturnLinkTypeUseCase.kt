@@ -24,8 +24,10 @@ class GetReturnLinkTypeUseCase(
         APP_LINK, DEEP_LINK
     }
 
-    operator fun invoke(@CheckoutUri uri: Uri? = "https://www.paypal.com/checkout".toUri()): ReturnLinkTypeResult {
-        return if (checkReturnUriDefaultAppHandler() && getAppLinksCompatibleBrowserUseCase(uri)) {
+    operator fun invoke(@CheckoutUri uri: Uri = "https://www.paypal.com/checkout".toUri()): ReturnLinkTypeResult {
+        return if (checkReturnUriDefaultAppHandler() &&
+            (canFirstPartyAppHandleAppLink(uri) || getAppLinksCompatibleBrowserUseCase(uri))
+        ) {
             ReturnLinkTypeResult.APP_LINK
         } else {
             ReturnLinkTypeResult.DEEP_LINK
@@ -39,4 +41,20 @@ class GetReturnLinkTypeUseCase(
      */
     private fun checkReturnUriDefaultAppHandler(): Boolean =
         merchantRepository.applicationContext.packageName == getDefaultAppUseCase(merchantRepository.appLinkReturnUri)
+
+    /**
+     * Checks if the PayPal app can handle the checkout uri. Returns true if the PayPal app can properly handle the
+     * checkout uri, false otherwise.
+     */
+    private fun canFirstPartyAppHandleAppLink(@CheckoutUri uri: Uri): Boolean {
+        return FIRST_PARTY_PACKAGE_NAMES.any { it ->
+            getDefaultAppUseCase(uri)?.contains(it) == true
+        }
+    }
+
+    private companion object {
+        private const val PAYPAL_APP_PACKAGE_NAME = "com.paypal.android.p2pmobile"
+        private const val VENMO_APP_PACKAGE_NAME = "com.venmo"
+        private val FIRST_PARTY_PACKAGE_NAMES = setOf<String>(PAYPAL_APP_PACKAGE_NAME, VENMO_APP_PACKAGE_NAME)
+    }
 }
