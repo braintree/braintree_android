@@ -29,6 +29,7 @@ class GetReturnLinkTypeUseCaseUnitTest {
         every { merchantRepository.applicationContext } returns applicationContext
         every { merchantRepository.appLinkReturnUri } returns appLinkReturnUri
         every { applicationContext.packageName } returns packageName
+        every { getDefaultAppUseCase(someUri) } returns ""
         sut = GetReturnLinkTypeUseCase(merchantRepository, getDefaultAppUseCase, getAppLinksCompatibleBrowserUseCase)
     }
 
@@ -72,5 +73,16 @@ class GetReturnLinkTypeUseCaseUnitTest {
         val result = sut(someUri)
 
         assertEquals(GetReturnLinkTypeUseCase.ReturnLinkTypeResult.DEEP_LINK, result)
+    }
+
+    @Test
+    fun `when invoke is called and merchant app is able to handle return uri by default and PayPal app can handle checkout uri, APP_LINK is returned`() {
+        every { getDefaultAppUseCase(appLinkReturnUri) } returns packageName
+        every { getDefaultAppUseCase(someUri) } returns "com.paypal.android.p2pmobile"
+        every { getAppLinksCompatibleBrowserUseCase.invoke(someUri) } returns false
+
+        val result = sut.invoke(someUri)
+
+        assertEquals(GetReturnLinkTypeUseCase.ReturnLinkTypeResult.APP_LINK, result)
     }
 }
