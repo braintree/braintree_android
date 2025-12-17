@@ -38,7 +38,7 @@ sealed class VenmoButtonColor(val key: Int) {
 
     object White : VenmoButtonColor(key = 2) {
         override val logoId: Int get() = R.drawable.venmo_logo_blue
-        override val spinnerId: Int get() = R.drawable.avd_spinner_black
+        override val spinnerId: Int get() = R.drawable.avd_spinner_blue
         override val default = ButtonColors(R.color.venmo_white_main, R.color.venmo_white_border)
         override val hover = ButtonColors(R.color.venmo_white_hover, R.color.venmo_white_border)
         override val focus =
