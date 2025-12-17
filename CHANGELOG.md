@@ -28,7 +28,7 @@
 * Card
   * Fix an issue where a tokenize card errors are masked with a JSON parsing error
 * PayPal
-  * Add `shouldOfferCreditproperty` to `PayPalCheckoutRequest`. Enables merchants to offer PayPal Credit for Checkout requests.
+  * Add `shouldOfferCredit` property to `PayPalCheckoutRequest`. Enables merchants to offer PayPal Credit for Checkout requests.
 
 ## 5.18.0 (2025-10-01)
 
