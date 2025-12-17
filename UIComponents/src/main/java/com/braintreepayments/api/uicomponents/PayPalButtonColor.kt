@@ -1,9 +1,5 @@
 package com.braintreepayments.api.uicomponents
 
-import android.graphics.Color
-import androidx.annotation.ColorInt
-import androidx.core.graphics.toColorInt
-
 /**
  * A representation of the different colors of PayPal buttons
  */
