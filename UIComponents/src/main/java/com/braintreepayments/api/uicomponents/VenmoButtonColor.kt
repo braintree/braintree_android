@@ -58,6 +58,6 @@ sealed class VenmoButtonColor(val key: Int) {
     internal data class ButtonColors(
         val fill: Int,
         val border: Int,
-        val focusIndicator: Int = Color.argb(0, 0, 0, 0)
+        val focusIndicator: Int = R.color.color_transparent
     )
 }

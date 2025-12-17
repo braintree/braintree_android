@@ -256,22 +256,34 @@ class VenmoButton @JvmOverloads constructor(
             isPressed -> {
                 gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.pressed.fill))
                 gradientDrawable.setStroke(strokeWidth, currentStyle.pressed.border)
-                focusIndicatorDrawable.setStroke(strokeWidth, currentStyle.pressed.focusIndicator)
+                focusIndicatorDrawable.setStroke(
+                    strokeWidth,
+                    ContextCompat.getColor(context, currentStyle.pressed.focusIndicator)
+                )
             }
             isHovered -> {
                 gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.hover.fill))
                 gradientDrawable.setStroke(strokeWidth, currentStyle.hover.border)
-                focusIndicatorDrawable.setStroke(focusStrokeWidth, currentStyle.hover.focusIndicator)
+                focusIndicatorDrawable.setStroke(
+                    focusStrokeWidth,
+                    ContextCompat.getColor(context, currentStyle.hover.focusIndicator)
+                )
             }
             isFocused -> {
                 gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.focus.fill))
                 gradientDrawable.setStroke(strokeWidth, currentStyle.focus.border)
-                focusIndicatorDrawable.setStroke(focusStrokeWidth, currentStyle.focus.focusIndicator)
+                focusIndicatorDrawable.setStroke(
+                    focusStrokeWidth,
+                    ContextCompat.getColor(context, currentStyle.focus.focusIndicator)
+                )
             }
             else -> {
                 gradientDrawable.setColor(ContextCompat.getColor(context, currentStyle.default.fill))
                 gradientDrawable.setStroke(strokeWidth, currentStyle.default.border)
-                focusIndicatorDrawable.setStroke(focusStrokeWidth, currentStyle.default.focusIndicator)
+                focusIndicatorDrawable.setStroke(
+                    focusStrokeWidth,
+                    ContextCompat.getColor(context, currentStyle.default.focusIndicator)
+                )
             }
         }
     }

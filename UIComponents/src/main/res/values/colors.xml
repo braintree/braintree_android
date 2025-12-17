@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="color_transparent">#00000000</color>
+
     <color name="venmo_featured_main">#008CFF</color>
     <color name="venmo_featured_hover">#0073E0</color>
     <color name="venmo_featured_main_active">#0074FF</color>
