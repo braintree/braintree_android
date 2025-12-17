@@ -51,7 +51,7 @@ sealed class PayPalButtonColor(val key: Int) {
     internal data class ButtonColors(
         val fill: Int,
         val border: Int,
-        val focusIndicator: Int = R.color.color_transparent
+        val focusIndicator: Int = R.color.paypal_color_transparent
     )
 
     companion object {
