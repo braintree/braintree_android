@@ -20,7 +20,7 @@
     * Add `restorePendingRequest` method to restore browser state after app switch
 * BraintreeCore
     * Update Browser Switch version to 3.4.0
-    * Update Gradle version to 8.9.1
+    * Update Android Gradle Plugin version to 8.9.1
     * Update compileSdkVersion and targetSdkVersion to 36
 
 ## 5.19.0 (2025-11-18)
