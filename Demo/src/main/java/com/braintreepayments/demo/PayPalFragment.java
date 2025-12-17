@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.BrowserSwitchException;
 import com.braintreepayments.api.core.PaymentMethodNonce;
 import com.braintreepayments.api.datacollector.DataCollector;
 import com.braintreepayments.api.datacollector.DataCollectorRequest;
@@ -39,6 +40,23 @@ public class PayPalFragment extends BaseFragment {
     private Boolean isPayLaterSelected = false;
 
     private DataCollector dataCollector;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PayPalPendingRequest.Started payPalPendingRequest = PendingRequestStore.getInstance().getPayPalPendingRequest(getContext());
+        if (payPalPendingRequest != null) {
+            String pendingRequest = payPalPendingRequest.getPendingRequestString();
+            payPalLauncher = new PayPalLauncher(this);
+            try {
+                payPalLauncher.restorePendingRequest(pendingRequest);
+            } catch (BrowserSwitchException e) {
+                PendingRequestStore.getInstance().clearPayPalPendingRequest(getContext());
+            }
+        } else {
+            payPalLauncher = new PayPalLauncher(this);
+        }
+    }
 
     @Nullable
     @Override
@@ -116,7 +134,6 @@ public class PayPalFragment extends BaseFragment {
             Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"),
             "com.braintreepayments.demo.braintree"
         );
-        payPalLauncher = new PayPalLauncher();
 
         amount = RandomDollarAmount.getNext();
         return view;
@@ -134,6 +151,7 @@ public class PayPalFragment extends BaseFragment {
                 handleError(new Exception("User did not complete payment flow"));
             }
             clearPendingRequest();
+            requireActivity().getIntent().setData(null);
         }
     }
 

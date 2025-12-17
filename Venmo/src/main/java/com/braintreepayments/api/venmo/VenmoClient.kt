@@ -263,7 +263,10 @@ class VenmoClient internal constructor(
             .url(venmoBaseURL)
             .apply {
                 when (returnLinkResult) {
-                    is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> appLinkUri(returnLinkResult.appLinkReturnUri)
+                    is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> {
+                        appLinkUri(returnLinkResult.appLinkReturnUri)
+                        successAppLinkUri(successUri.toUri())
+                    }
                     is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> {
                         returnUrlScheme(returnLinkResult.deepLinkFallbackUrlScheme)
                     }
