@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="color_transparent">#00000000</color>
+    <color name="paypal_color_transparent">#00000000</color>
 
     <color name="paypal_featured_main">#60CDFF</color>
     <color name="paypal_featured_hover">#54B4E0</color>
