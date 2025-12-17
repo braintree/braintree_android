@@ -6,13 +6,7 @@
     * Fallback to using deep links when the user's default browser does not support app links.
         * Known limitation: Flow doesn't work on UC and Opera GX browsers for both app links and deep links. See #1473 
           for testing note.
-
-## 5.19.0 (2025-11-18)
-
-* Card
-  * Fix an issue where a tokenize card errors are masked with a JSON parsing error
 * PayPal
-    * Add `shouldOfferCredit`property to `PayPalCheckoutRequest`. Enables merchants to offer PayPal Credit for Checkout requests.
     * Update `PayPalLauncher` constructor to support ActivityResultCaller parameter for Browser Switch with AuthTab integration
     * Add `restorePendingRequest` method to restore browser state after app switch
 * LocalPayment
@@ -25,11 +19,16 @@
     * Update `VenmoLauncher` constructor to support ActivityResultCaller parameter for Browser Switch with AuthTab integration
     * Add `restorePendingRequest` method to restore browser state after app switch
 * BraintreeCore
-    * Update Browser Switch version to 3.3.0
-    * Update Gradle version to 8.11.1
+    * Update Browser Switch version to 3.4.0
+    * Update Gradle version to 8.9.1
     * Update compileSdkVersion and targetSdkVersion to 36
-* Demo
-    *  Disable Databinding library
+
+## 5.19.0 (2025-11-18)
+
+* Card
+  * Fix an issue where a tokenize card errors are masked with a JSON parsing error
+* PayPal
+  * Add `shouldOfferCreditproperty` to `PayPalCheckoutRequest`. Enables merchants to offer PayPal Credit for Checkout requests.
 
 ## 5.18.0 (2025-10-01)
 
