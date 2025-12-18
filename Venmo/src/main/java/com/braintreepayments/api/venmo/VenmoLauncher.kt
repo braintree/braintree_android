@@ -1,8 +1,9 @@
 package com.braintreepayments.api.venmo
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultCaller
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
@@ -19,12 +20,20 @@ class VenmoLauncher internal constructor(
     private val venmoRepository: VenmoRepository,
     lazyAnalyticsClient: Lazy<AnalyticsClient>,
 ) {
-
-    constructor() : this(
-        browserSwitchClient = BrowserSwitchClient(),
+    /**
+     * Used to launch the Venmo flow in a web browser and deliver results to your Activity
+     * @param caller Optional ActivityResultCaller parameter. If provided, it will be passed to BrowserSwitchClient
+     */
+    constructor(caller: ActivityResultCaller? = null) : this(
+        browserSwitchClient = if (caller != null) BrowserSwitchClient(caller) else BrowserSwitchClient(),
         venmoRepository = VenmoRepository.instance,
         lazyAnalyticsClient = AnalyticsClient.lazyInstance
     )
+
+    @Throws(BrowserSwitchException::class)
+    fun restorePendingRequest(pendingRequestString: String) {
+        browserSwitchClient.restorePendingRequest(pendingRequestString)
+    }
 
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
 
@@ -40,7 +49,7 @@ class VenmoLauncher internal constructor(
      * launched in the app or in a browser.
      */
     fun launch(
-        activity: Activity,
+        activity: ComponentActivity,
         paymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch
     ): VenmoPendingRequest {
         analyticsClient.sendEvent(VenmoAnalytics.APP_SWITCH_STARTED, analyticsEventParams)
@@ -53,7 +62,8 @@ class VenmoLauncher internal constructor(
         }
         val request = browserSwitchClient.start(
             activity,
-            paymentAuthRequest.requestParams.browserSwitchOptions
+            paymentAuthRequest.requestParams.browserSwitchOptions,
+            true
         )
         return when (request) {
             is BrowserSwitchStartResult.Failure -> {
@@ -116,7 +126,7 @@ class VenmoLauncher internal constructor(
      *
      * @param activity used to open the Venmo's Google Play Store
      */
-    fun showVenmoInGooglePlayStore(activity: Activity) {
+    fun showVenmoInGooglePlayStore(activity: ComponentActivity) {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(
             "https://play.google.com/store/apps/details?id=$VENMO_PACKAGE_NAME"
@@ -126,7 +136,7 @@ class VenmoLauncher internal constructor(
 
     @Throws(BrowserSwitchException::class)
     private fun assertCanPerformBrowserSwitch(
-        activity: Activity,
+        activity: ComponentActivity,
         params: VenmoPaymentAuthRequestParams
     ) {
         browserSwitchClient.assertCanPerformBrowserSwitch(activity, params.browserSwitchOptions)

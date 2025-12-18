@@ -1,21 +1,35 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.20.0 (2025-12-17)
 
 * All Modules
     * Fallback to using deep links when the user's default browser does not support app links.
         * Known limitation: Flow doesn't work on UC and Opera GX browsers for both app links and deep links. See #1473 
           for testing note.
-* UIComponents
-    * Add `PayPalButton` class to generate a PayPal-branded button for launching PayPal flow
-    * Add `VenmoButton` class to generate a Venmo-branded button for launching Venmo flow
+* PayPal
+    * Update `PayPalLauncher` constructor to support ActivityResultCaller parameter for Browser Switch with AuthTab integration
+    * Add `restorePendingRequest` method to restore browser state after app switch
+* LocalPayment
+    * Update `LocalPaymentLauncher` constructor to support ActivityResultCaller parameter for Browser Switch with AuthTab integration
+    * Add `restorePendingRequest` method to restore browser state after app switch
+* SEPADirectDebit
+    * Update `SEPADirectDebitLauncher` constructor to support ActivityResultCaller parameter for Browser Switch with AuthTab integration
+    * Add `restorePendingRequest` method to restore browser state after app switch
+* Venmo
+    * Update `VenmoLauncher` constructor to support ActivityResultCaller parameter for Browser Switch with AuthTab integration
+    * Add `restorePendingRequest` method to restore browser state after app switch
+* BraintreeCore
+    * Update Browser Switch version to 3.4.0
+    * Update Android Gradle Plugin version to 8.9.1
+    * Update compileSdkVersion and targetSdkVersion to 36
 
 ## 5.19.0 (2025-11-18)
 
 * Card
   * Fix an issue where a tokenize card errors are masked with a JSON parsing error
 * PayPal
-    * Add `shouldOfferCredit`property to `PayPalCheckoutRequest`. Enables merchants to offer PayPal Credit for Checkout requests.
+  * Add `shouldOfferCredit` property to `PayPalCheckoutRequest`. Enables merchants to offer PayPal Credit for Checkout requests.
+
 ## 5.18.0 (2025-10-01)
 
 * PayPal

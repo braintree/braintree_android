@@ -34,7 +34,7 @@ class ThreeDSecureLauncherUnitTest {
             activityResultRegistry?.register(
                 any(),
                 any(),
-                any<ActivityResultContract<ThreeDSecureParams, Any>>(),
+                any<ActivityResultContract<ThreeDSecureParams?, Any>>(),
                 any()
             )
         } returns activityResultLauncher

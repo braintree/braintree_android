@@ -7,8 +7,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.braintreepayments.api.BrowserSwitchException;
 import com.braintreepayments.api.core.PostalAddress;
 import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitClient;
 import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitLauncher;
@@ -26,7 +28,24 @@ import java.util.UUID;
 public class SEPADirectDebitFragment extends BaseFragment {
 
     private SEPADirectDebitClient sepaDirectDebitClient;
-    private final SEPADirectDebitLauncher sepaDirectDebitLauncher = new SEPADirectDebitLauncher();
+    private SEPADirectDebitLauncher sepaDirectDebitLauncher;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        SEPADirectDebitPendingRequest.Started sepaPendingRequest = PendingRequestStore.getInstance().getSEPADirectDebitPendingRequest(getContext());
+        if (sepaPendingRequest != null) {
+            String pendingRequest = sepaPendingRequest.getPendingRequestString();
+            sepaDirectDebitLauncher = new SEPADirectDebitLauncher(this);
+            try {
+                sepaDirectDebitLauncher.restorePendingRequest(pendingRequest);
+            } catch (BrowserSwitchException e) {
+                PendingRequestStore.getInstance().clearSEPADirectDebitPendingRequest(getContext());
+            }
+        } else {
+            sepaDirectDebitLauncher = new SEPADirectDebitLauncher(this);
+        }
+    }
 
 
     @Override
@@ -57,6 +76,7 @@ public class SEPADirectDebitFragment extends BaseFragment {
                 handleError(new Exception("User did not complete payment flow"));
             }
             clearPendingRequest();
+            requireActivity().getIntent().setData(null);
         }
     }
 

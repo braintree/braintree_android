@@ -1,7 +1,8 @@
 package com.braintreepayments.api.paypal
 
-import android.app.Activity
 import android.content.Intent
+import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultCaller
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
@@ -27,11 +28,17 @@ class PayPalLauncher internal constructor(
 ) {
     /**
      * Used to launch the PayPal flow in a web browser and deliver results to your Activity
+     * @param caller Optional ActivityResultCaller parameter. If provided, it will be passed to BrowserSwitchClient
      */
-    constructor() : this(
-        browserSwitchClient = BrowserSwitchClient(),
+    constructor(caller: ActivityResultCaller? = null) : this(
+        browserSwitchClient = if (caller != null) BrowserSwitchClient(caller) else BrowserSwitchClient(),
         lazyAnalyticsClient = AnalyticsClient.lazyInstance
     )
+
+    @Throws(BrowserSwitchException::class)
+    fun restorePendingRequest(pendingRequestString: String) {
+        browserSwitchClient.restorePendingRequest(pendingRequestString)
+    }
 
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
 
@@ -48,7 +55,7 @@ class PayPalLauncher internal constructor(
      * launched in a browser.
      */
     fun launch(
-        activity: Activity,
+        activity: ComponentActivity,
         paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch
     ): PayPalPendingRequest {
         val contextId = paymentAuthRequest.requestParams.contextId
@@ -210,7 +217,7 @@ class PayPalLauncher internal constructor(
 
     @Throws(BrowserSwitchException::class)
     private fun assertCanPerformBrowserSwitch(
-        activity: Activity,
+        activity: ComponentActivity,
         params: PayPalPaymentAuthRequestParams
     ) {
         browserSwitchClient.assertCanPerformBrowserSwitch(activity, params.browserSwitchOptions)

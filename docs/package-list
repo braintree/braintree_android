@@ -5,6 +5,7 @@ module:AmericanExpress
 com.braintreepayments.api.americanexpress
 module:BraintreeCore
 com.braintreepayments.api.core
+com.braintreepayments.api.core.usecase
 module:Card
 com.braintreepayments.api.card
 module:DataCollector
