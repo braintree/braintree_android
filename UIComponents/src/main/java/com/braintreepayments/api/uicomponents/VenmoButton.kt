@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.net.Uri
 import android.util.AttributeSet
+import androidx.activity.result.ActivityResultCaller
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import com.braintreepayments.api.core.AnalyticsClient
@@ -48,7 +49,7 @@ class VenmoButton @JvmOverloads constructor(
      * Must be initialized via [initialize] before use.
      */
     private lateinit var venmoClient: VenmoClient
-    private var venmoLauncher: VenmoLauncher
+    private lateinit var venmoLauncher: VenmoLauncher
 
     private var venmoRequest: VenmoRequest? = null
 
@@ -71,8 +72,6 @@ class VenmoButton @JvmOverloads constructor(
         }
         setupBackground()
         applyStyle()
-
-        venmoLauncher = VenmoLauncher()
     }
 
     /**
@@ -85,19 +84,24 @@ class VenmoButton @JvmOverloads constructor(
      * merchant's application to be used to return to merchant's app from the Venmo payment flows.
      * @param deepLinkFallbackUrlScheme a return url scheme that will be used as a deep link fallback when returning to
      * merchant's app via App Link is not available (buyer unchecks the "Open supported links" setting).
+     * @param activityResultCaller      an [ActivityResultCaller] (typically a Fragment or Activity) that will be used
+     * to register the ActivityResultLauncher for the Venmo browser switch flow.
      */
 
     fun initialize(
         authorization: String,
         appLinkReturnUrl: Uri,
-        deepLinkFallbackUrlScheme: String? = null
+        deepLinkFallbackUrlScheme: String? = null,
+        activityResultCaller: ActivityResultCaller
     ) {
+        venmoLauncher = VenmoLauncher(activityResultCaller)
         venmoClient = VenmoClient(
             context = context,
             authorization = authorization,
             appLinkReturnUrl = appLinkReturnUrl,
             deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
         )
+
         val analyticsClient = AnalyticsClient.lazyInstance.value
         analyticsClient.sendEvent(UIComponentsAnalytics.VENMO_BUTTON_PRESENTED)
     }

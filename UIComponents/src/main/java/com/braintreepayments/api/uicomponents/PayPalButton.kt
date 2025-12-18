@@ -88,8 +88,7 @@ class PayPalButton @JvmOverloads constructor(
      * @param deepLinkFallbackUrlScheme a return url scheme that will be used as a deep link fallback when returning to
      * merchant's app via App Link is not available (buyer unchecks the "Open supported links" setting).
      * @param activityResultCaller      an [ActivityResultCaller] (typically a Fragment or Activity) that will be used
-     * to register the ActivityResultLauncher for the PayPal browser switch flow. This ties the launcher's lifecycle
-     * to the provided caller, enabling proper handling of process death and configuration changes.
+     * to register the ActivityResultLauncher for the PayPal browser switch flow.
      */
     fun initialize(
         authorization: String,
