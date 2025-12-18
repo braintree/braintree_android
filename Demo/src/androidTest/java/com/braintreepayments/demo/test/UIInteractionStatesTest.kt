@@ -2,6 +2,7 @@ package com.braintreepayments.demo.test
 
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
+import android.os.Build
 import android.os.SystemClock
 import android.view.InputDevice
 import android.view.MotionEvent
@@ -14,6 +15,7 @@ import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers.hasFocus
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.filters.SdkSuppress
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
@@ -44,6 +46,7 @@ class UIInteractionStatesTest : TestHelper() {
             .waitForExists()
     }
 
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
     @Test
     fun payPalButton_canReceiveFocus() {
         DeviceAutomator.onDevice().pressTab()
@@ -53,6 +56,7 @@ class UIInteractionStatesTest : TestHelper() {
         onView(withId(R.id.pp_payment_button)).check(matches(hasFocus()))
     }
 
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
     @Test
     fun venmoButton_canReceiveFocus() {
         DeviceAutomator.onDevice().pressTab()
@@ -62,6 +66,7 @@ class UIInteractionStatesTest : TestHelper() {
         onView(withId(R.id.venmo_payment_button)).check(matches(hasFocus()))
     }
 
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
     @Test
     fun payPalButton_hoverChangesAppearance() {
         var defaultBackgroundColor: Int? = null
@@ -86,6 +91,7 @@ class UIInteractionStatesTest : TestHelper() {
             .check(matches(hasBackgroundColor(defaultBackgroundColor)))
     }
 
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
     @Test
     fun venmoButton_hoverChangesAppearance() {
         var defaultBackgroundColor: Int? = null
