@@ -105,6 +105,7 @@ public class PaymentButtonsFragment extends BaseFragment {
         );
 
         payPalButton.initialize(
+            this,
             super.getAuthStringArg(),
             Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"),
             "com.braintreepayments.demo.braintree"
@@ -145,6 +146,7 @@ public class PaymentButtonsFragment extends BaseFragment {
         venmoRequest.setLineItems(lineItems);
 
         venmoButton.initialize(
+                this,
                 super.getAuthStringArg(),
                 Uri.parse("https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments"),
                 "com.braintreepayments.demo.braintree"

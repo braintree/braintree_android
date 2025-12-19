@@ -9,6 +9,7 @@ import android.graphics.drawable.LayerDrawable
 import android.net.Uri
 import android.util.AttributeSet
 import android.widget.ProgressBar
+import androidx.activity.result.ActivityResultCaller
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import com.braintreepayments.api.core.AnalyticsClient
@@ -53,7 +54,7 @@ class PayPalButton @JvmOverloads constructor(
      * Must be initialized via [initialize] before use.
      */
     private lateinit var payPalClient: PayPalClient
-    private val payPalLauncher: PayPalLauncher
+    private lateinit var payPalLauncher: PayPalLauncher
 
     /**
      * Callback invoked when the PayPal payment authentication request is launched.
@@ -74,8 +75,6 @@ class PayPalButton @JvmOverloads constructor(
         }
         setupBackground()
         applyStyle()
-
-        payPalLauncher = PayPalLauncher()
     }
 
     /**
@@ -88,18 +87,24 @@ class PayPalButton @JvmOverloads constructor(
      * merchant's application to be used to return to merchant's app from the PayPal payment flows.
      * @param deepLinkFallbackUrlScheme a return url scheme that will be used as a deep link fallback when returning to
      * merchant's app via App Link is not available (buyer unchecks the "Open supported links" setting).
+     * @param activityResultCaller      an [ActivityResultCaller] (typically a Fragment or Activity) that will be used
+     * to register the ActivityResultLauncher for the PayPal browser switch flow.
      */
     fun initialize(
+        activityResultCaller: ActivityResultCaller,
         authorization: String,
         appLinkReturnUrl: Uri,
-        deepLinkFallbackUrlScheme: String? = null,
+        deepLinkFallbackUrlScheme: String? = null
     ) {
+
+        payPalLauncher = PayPalLauncher(activityResultCaller)
         payPalClient = PayPalClient(
             context = context,
             authorization = authorization,
             appLinkReturnUrl = appLinkReturnUrl,
             deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
         )
+
         val analyticsClient = AnalyticsClient.lazyInstance.value
         analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_BUTTON_PRESENTED)
     }
