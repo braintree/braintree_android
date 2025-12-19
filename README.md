@@ -101,7 +101,8 @@ class ExampleFragment : Fragment() {
         payPalButton.initialize(
             authorization = "[TOKENIZATION_KEY or CLIENT_TOKEN]",
             appLinkReturnUrl = Uri.parse("https://merchant-app.com"),
-            deepLinkFallbackUrlScheme = "com.merchant.app.payments"
+            deepLinkFallbackUrlScheme = "com.merchant.app.payments", 
+            activityResultCaller = this
         )
         payPalButton.updatePayPalRequest(PayPalRequest(...))
         paypalButton.setLaunchCallback = { launchResult ->
@@ -159,7 +160,8 @@ class ExampleFragment : Fragment() {
         venmoButton.initialize(
             authorization = "[TOKENIZATION_KEY or CLIENT_TOKEN]",
             appLinkReturnUrl = Uri.parse("https://merchant-app.com"),
-            deepLinkFallbackUrlScheme = "com.merchant.app.payments"
+            deepLinkFallbackUrlScheme = "com.merchant.app.payments",
+            activityResultCaller = this
         )
         venmoButton.setVenmoRequest(VenmoRequest(...))
         venmoButton.setLaunchCallback = { launchResult ->
