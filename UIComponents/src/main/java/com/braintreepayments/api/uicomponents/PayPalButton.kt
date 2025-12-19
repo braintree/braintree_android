@@ -91,10 +91,10 @@ class PayPalButton @JvmOverloads constructor(
      * to register the ActivityResultLauncher for the PayPal browser switch flow.
      */
     fun initialize(
+        activityResultCaller: ActivityResultCaller,
         authorization: String,
         appLinkReturnUrl: Uri,
-        deepLinkFallbackUrlScheme: String? = null,
-        activityResultCaller: ActivityResultCaller
+        deepLinkFallbackUrlScheme: String? = null
     ) {
 
         payPalLauncher = PayPalLauncher(activityResultCaller)

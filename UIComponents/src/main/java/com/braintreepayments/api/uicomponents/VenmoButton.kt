@@ -89,10 +89,10 @@ class VenmoButton @JvmOverloads constructor(
      */
 
     fun initialize(
+        activityResultCaller: ActivityResultCaller,
         authorization: String,
         appLinkReturnUrl: Uri,
-        deepLinkFallbackUrlScheme: String? = null,
-        activityResultCaller: ActivityResultCaller
+        deepLinkFallbackUrlScheme: String? = null
     ) {
         venmoLauncher = VenmoLauncher(activityResultCaller)
         venmoClient = VenmoClient(
