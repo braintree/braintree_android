@@ -42,7 +42,6 @@ class PayPalButton @JvmOverloads constructor(
     private var logo: Drawable? = null
     private var spinner: ProgressBar? = null
 
-    private val logoOffset = resources.getDimension(R.dimen.pp_logo_offset).toInt()
     private val desiredWidth = resources.getDimension(R.dimen.pay_button_width).toInt()
     private val desiredHeight = resources.getDimension(R.dimen.pay_button_height).toInt()
     private val minDesiredWidth = resources.getDimension(R.dimen.pay_button_min_width).toInt()
@@ -305,13 +304,14 @@ class PayPalButton @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        val d = logo ?: return
-        val w = d.intrinsicWidth
-        val h = d.intrinsicHeight
-        val left = (width - w) / 2
-        val top = (height - h) / 2 + logoOffset
-        d.setBounds(left, top, left + w, top + h)
-        d.draw(canvas)
+        logo?.let { d ->
+            val w = d.intrinsicWidth
+            val h = d.intrinsicHeight
+            val left = (width - w) / 2
+            val top = (height - h) / 2
+            d.setBounds(left, top, left + w, top + h)
+            d.draw(canvas)
+        }
     }
 
     override fun setEnabled(enabled: Boolean) {

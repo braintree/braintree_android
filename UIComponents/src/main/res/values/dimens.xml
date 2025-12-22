@@ -3,7 +3,6 @@
     <dimen name="pay_button_width">300dp</dimen>
     <dimen name="pay_button_height">45dp</dimen>
     <dimen name="pay_button_min_width">75dp</dimen>
-    <dimen name="pp_logo_offset">1.5dp</dimen>
     <dimen name="pay_button_corner_radius">4dp</dimen>
     <dimen name="pay_button_focus_border">2dp</dimen>
     <dimen name="pay_button_border">1dp</dimen>
