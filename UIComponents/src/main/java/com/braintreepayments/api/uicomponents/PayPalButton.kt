@@ -8,7 +8,6 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.net.Uri
 import android.util.AttributeSet
-import android.widget.ProgressBar
 import androidx.activity.result.ActivityResultCaller
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
@@ -40,15 +39,12 @@ class PayPalButton @JvmOverloads constructor(
     private val gradientDrawable = GradientDrawable()
     private val focusIndicatorDrawable = GradientDrawable()
     private var logo: Drawable? = null
-    private var spinner: ProgressBar? = null
 
     private val ppLogoOffset = resources.getDimension(R.dimen.pp_logo_offset).toInt()
     private var logoOffset = ppLogoOffset
     private val desiredWidth = resources.getDimension(R.dimen.pay_button_width).toInt()
     private val desiredHeight = resources.getDimension(R.dimen.pay_button_height).toInt()
     private val minDesiredWidth = resources.getDimension(R.dimen.pay_button_min_width).toInt()
-
-    private var payPalRequest: PayPalRequest? = null
 
     /**
      * The PayPal client used to create payment auth requests and tokenize results.
