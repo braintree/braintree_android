@@ -183,6 +183,7 @@ public class PaymentButtonsFragment extends BaseFragment {
                     }
             );
             clearPayPalPendingRequest();
+            requireActivity().getIntent().setData(null);
         }
 
         //Venmo flow after returning to app
@@ -198,6 +199,7 @@ public class PaymentButtonsFragment extends BaseFragment {
                 }
             });
             clearVenmoPendingRequest();
+            requireActivity().getIntent().setData(null);
         }
     }
 
