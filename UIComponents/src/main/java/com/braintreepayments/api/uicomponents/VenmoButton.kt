@@ -51,8 +51,6 @@ class VenmoButton @JvmOverloads constructor(
     private lateinit var venmoClient: VenmoClient
     private lateinit var venmoLauncher: VenmoLauncher
 
-    private var venmoRequest: VenmoRequest? = null
-
     /**
      * Callback invoked when the Venmo payment authentication request is launched.
      *
