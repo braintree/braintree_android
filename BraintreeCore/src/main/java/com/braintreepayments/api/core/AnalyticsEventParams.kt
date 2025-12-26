@@ -20,6 +20,7 @@ import androidx.annotation.RestrictTo
  * @property buttonOrder The order or ranking in which payment buttons appear.
  * @property pageType The page or view that a button is displayed on.
  * @property errorDescription use this to provide more detail on a failure event.
+ * @property fundingSource Value to determine whether PayPal, PayLater or PayPal Credit was clicked.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 data class AnalyticsEventParams @JvmOverloads constructor(
@@ -35,4 +36,5 @@ data class AnalyticsEventParams @JvmOverloads constructor(
     val buttonOrder: String? = null,
     val pageType: String? = null,
     val errorDescription: String? = null,
+    val fundingSource: String? = null
 )
