@@ -40,6 +40,7 @@ class PayPalLauncherUnitTest {
     private val analyticsParamRepository = mockk<AnalyticsParamRepository>(relaxed = true)
     private val paymentToken = "paymentToken"
     private val approvalUrl = "https://return.url?ba_token=$paymentToken"
+    private val fundingSource = PayPalFundingSource.PAYPAL.value
 
     private lateinit var sut: PayPalLauncher
 
@@ -50,6 +51,7 @@ class PayPalLauncherUnitTest {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         every { paymentAuthRequestParams.contextId } returns paymentToken
         every { paymentAuthRequestParams.approvalUrl } returns approvalUrl
+        every { paymentAuthRequestParams.fundingSource.value } returns fundingSource
         every { intent.data } returns Uri.parse(approvalUrl)
         every { options.url } returns Uri.parse(approvalUrl)
 
@@ -134,6 +136,7 @@ class PayPalLauncherUnitTest {
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
+                    fundingSource = fundingSource
                 )
             )
         }
@@ -148,6 +151,7 @@ class PayPalLauncherUnitTest {
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
+                    fundingSource = fundingSource
                 )
             )
         }
@@ -172,6 +176,7 @@ class PayPalLauncherUnitTest {
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
+                    fundingSource = fundingSource
                 )
             )
         }
@@ -182,6 +187,7 @@ class PayPalLauncherUnitTest {
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
+                    fundingSource = fundingSource,
                     errorDescription = "AndroidManifest.xml is incorrectly configured or another app " +
                         "defines the same browser switch url as this app. See " +
                         "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/" +
@@ -205,6 +211,7 @@ class PayPalLauncherUnitTest {
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
+                    fundingSource = fundingSource
                 )
             )
         }
@@ -215,6 +222,7 @@ class PayPalLauncherUnitTest {
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
+                    fundingSource = fundingSource,
                     errorDescription = "BrowserSwitchOptions is null"
                 )
             )
@@ -243,6 +251,7 @@ class PayPalLauncherUnitTest {
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
+                    fundingSource = fundingSource,
                 )
             )
         }
@@ -253,6 +262,7 @@ class PayPalLauncherUnitTest {
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
+                    fundingSource = fundingSource,
                     errorDescription = "BrowserSwitchOptions URL is null"
                 )
             )
@@ -273,7 +283,10 @@ class PayPalLauncherUnitTest {
         verify {
             analyticsClient.sendEvent(
                 PayPalAnalytics.HANDLE_RETURN_STARTED,
-                AnalyticsEventParams(contextId = token, appSwitchUrl = returnUrl)
+                AnalyticsEventParams(
+                    contextId = token,
+                    appSwitchUrl = returnUrl
+                )
             )
         }
     }
@@ -361,6 +374,7 @@ class PayPalLauncherUnitTest {
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
+                    fundingSource = fundingSource,
                 )
             )
         }
@@ -382,6 +396,7 @@ class PayPalLauncherUnitTest {
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
+                    fundingSource = fundingSource,
                 )
             )
         }
@@ -403,6 +418,7 @@ class PayPalLauncherUnitTest {
                 AnalyticsEventParams(
                     contextId = paymentToken,
                     appSwitchUrl = approvalUrl,
+                    fundingSource = fundingSource,
                 )
             )
         }

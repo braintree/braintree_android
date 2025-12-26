@@ -160,7 +160,8 @@ internal class PayPalInternalClient(
                 if (getAppSwitchUseCase()) {
                     if (!contextId.isNullOrEmpty()) {
                         val flowType = if (payPalRequest.isBillingAgreement()) "va" else "ecs"
-                        val uri = createAppSwitchUri(parsedRedirectUri, configuration.merchantId, flowType)
+                        val fundingSource = payPalRequest.getFundingSource()
+                        val uri = createAppSwitchUri(parsedRedirectUri, configuration.merchantId, flowType, fundingSource)
                         paymentAuthRequest.approvalUrl = uri.toString()
                     } else {
                         callback.onResult(null, BraintreeException("Missing Token for PayPal App Switch."))
@@ -185,13 +186,15 @@ internal class PayPalInternalClient(
      * @param uri The base [Uri] to build upon.
      * @param flowType The checkout flow type.
      * @param merchantId The merchant ID for the integration.
+     * @param fundingSource PayPal, PayLater, or PayPal Credit.
      */
-    private fun createAppSwitchUri(uri: Uri, merchantId: String, flowType: String): Uri {
+    private fun createAppSwitchUri(uri: Uri, merchantId: String, flowType: String, fundingSource: PayPalFundingSource): Uri {
         return uri.buildUpon()
             .appendQueryParameter("source", "braintree_sdk")
             .appendQueryParameter("switch_initiated_time", System.currentTimeMillis().toString())
             .appendQueryParameter("merchant", merchantId)
             .appendQueryParameter("flow_type", flowType)
+            .appendQueryParameter("fundingSource", fundingSource.value)
             .build()
     }
 

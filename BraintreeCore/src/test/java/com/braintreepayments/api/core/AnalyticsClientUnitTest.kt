@@ -41,6 +41,7 @@ class AnalyticsClientUnitTest {
         buttonType = "button-type",
         buttonOrder = "button-order",
         pageType = "page-type",
+        fundingSource = "funding-source",
     )
 
     private val expectedAnalyticsEvent = AnalyticsEvent(
@@ -58,6 +59,7 @@ class AnalyticsClientUnitTest {
         buttonType = analyticsEventParams.buttonType,
         buttonOrder = analyticsEventParams.buttonOrder,
         pageType = analyticsEventParams.pageType,
+        fundingSource = analyticsEventParams.fundingSource,
         didEnablePayPalAppSwitch = true,
         didPayPalServerAttemptAppSwitch = true,
         didSdkAttemptAppSwitch = true,

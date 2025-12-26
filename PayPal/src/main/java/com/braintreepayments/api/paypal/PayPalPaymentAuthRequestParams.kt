@@ -24,4 +24,8 @@ data class PayPalPaymentAuthRequestParams @JvmOverloads internal constructor(
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val merchantAccountId: String?
         get() = payPalRequest.merchantAccountId
+
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val fundingSource: PayPalFundingSource
+        get() = payPalRequest.getFundingSource()
 }

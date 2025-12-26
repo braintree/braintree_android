@@ -1,5 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+    * Add `fundingSource` to the app switch url link. 
+    * Add `funding_source` attribute to instrumentation events. 
+
 ## 5.20.0 (2025-12-17)
 
 * All Modules
