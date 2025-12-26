@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
 import android.util.Base64
+import androidx.core.net.toUri
 import com.braintreepayments.api.BrowserSwitchFinalResult
 import com.braintreepayments.api.BrowserSwitchOptions
 import com.braintreepayments.api.core.AnalyticsEventParams
@@ -16,15 +17,17 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
 import com.braintreepayments.api.core.ClientToken
 import com.braintreepayments.api.core.Configuration
-import com.braintreepayments.api.core.GetReturnLinkTypeUseCase
-import com.braintreepayments.api.core.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
-import com.braintreepayments.api.core.GetReturnLinkUseCase
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.MetadataBuilder
+import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
+import com.braintreepayments.api.core.usecase.GetDefaultAppUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
+import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
+import java.util.Objects
 import org.json.JSONException
 import org.json.JSONObject
-import java.util.Objects
 
 /**
  * Used to create and tokenize Venmo accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/venmo/overview)
@@ -37,7 +40,15 @@ class VenmoClient internal constructor(
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val venmoRepository: VenmoRepository = VenmoRepository.instance,
-    getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(merchantRepository),
+    getDefaultAppUseCase: GetDefaultAppUseCase =
+        GetDefaultAppUseCase(merchantRepository.applicationContext.packageManager),
+    getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase =
+        GetAppLinksCompatibleBrowserUseCase(getDefaultAppUseCase),
+    getReturnLinkTypeUseCase: GetReturnLinkTypeUseCase = GetReturnLinkTypeUseCase(
+        merchantRepository,
+        getDefaultAppUseCase,
+        getAppLinksCompatibleBrowserUseCase
+    ),
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository)
 ) {
     /**
@@ -212,7 +223,9 @@ class VenmoClient internal constructor(
 
         val applicationName = context.packageManager.getApplicationLabel(context.applicationInfo).toString()
 
-        val returnLinkResult = getReturnLinkUseCase()
+        val venmoBaseUri = "https://venmo.com/go/checkout".toUri()
+
+        val returnLinkResult = getReturnLinkUseCase(venmoBaseUri)
         val merchantBaseUrl: String = when (returnLinkResult) {
             is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
             is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> {
@@ -226,7 +239,7 @@ class VenmoClient internal constructor(
         val cancelUri = "$merchantBaseUrl/cancel"
         val errorUri = "$merchantBaseUrl/error"
 
-        val venmoBaseURL = Uri.parse("https://venmo.com/go/checkout")
+        val venmoBaseURL = venmoBaseUri
             .buildUpon()
             .appendQueryParameter("x-success", successUri)
             .appendQueryParameter("x-error", errorUri)
@@ -250,7 +263,10 @@ class VenmoClient internal constructor(
             .url(venmoBaseURL)
             .apply {
                 when (returnLinkResult) {
-                    is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> appLinkUri(returnLinkResult.appLinkReturnUri)
+                    is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> {
+                        appLinkUri(returnLinkResult.appLinkReturnUri)
+                        successAppLinkUri(successUri.toUri())
+                    }
                     is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> {
                         returnUrlScheme(returnLinkResult.deepLinkFallbackUrlScheme)
                     }

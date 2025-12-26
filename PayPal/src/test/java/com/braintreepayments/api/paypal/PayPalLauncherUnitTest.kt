@@ -11,7 +11,7 @@ import com.braintreepayments.api.BrowserSwitchStartResult
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.AnalyticsParamRepository
-import com.braintreepayments.api.core.GetAppSwitchUseCase
+import com.braintreepayments.api.core.usecase.GetAppSwitchUseCase
 import com.google.testing.junit.testparameterinjector.TestParameter
 import io.mockk.CapturingSlot
 import io.mockk.every
@@ -67,7 +67,7 @@ class PayPalLauncherUnitTest {
     @Test
     fun `launch starts browser switch and returns pending request`() {
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
-        every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
+        every { browserSwitchClient.start(activity, options, any()) } returns startedPendingRequest
 
         val pendingRequest =
             sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
@@ -83,7 +83,7 @@ class PayPalLauncherUnitTest {
     fun `launch on error returns pending request failure`() {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         val exception = BrowserSwitchException("error")
-        every { browserSwitchClient.start(eq(activity), eq(options)) } returns
+        every { browserSwitchClient.start(eq(activity), eq(options), any()) } returns
             BrowserSwitchStartResult.Failure(exception)
 
         val pendingRequest =
@@ -124,7 +124,7 @@ class PayPalLauncherUnitTest {
         @TestParameter isAppSwitch: Boolean
     ) {
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
-        every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
+        every { browserSwitchClient.start(activity, options, any()) } returns startedPendingRequest
         every { getAppSwitchUseCase() } returns isAppSwitch
         every { resolvePayPalUseCase() } returns isAppSwitch
 
@@ -363,7 +363,7 @@ class PayPalLauncherUnitTest {
         every { getAppSwitchUseCase() } returns true
         every { resolvePayPalUseCase() } returns true
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
-        every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
+        every { browserSwitchClient.start(activity, options, any()) } returns startedPendingRequest
 
         sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
 
@@ -385,7 +385,7 @@ class PayPalLauncherUnitTest {
         every { getAppSwitchUseCase() } returns true
         every { resolvePayPalUseCase() } returns false
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
-        every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
+        every { browserSwitchClient.start(activity, options, any()) } returns startedPendingRequest
 
         sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
 
@@ -407,7 +407,7 @@ class PayPalLauncherUnitTest {
         every { getAppSwitchUseCase() } returns false
         every { resolvePayPalUseCase() } returns true
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
-        every { browserSwitchClient.start(activity, options) } returns startedPendingRequest
+        every { browserSwitchClient.start(activity, options, any()) } returns startedPendingRequest
 
         sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
 
@@ -445,5 +445,29 @@ class PayPalLauncherUnitTest {
 
         assertSame(PayPalAnalytics.HANDLE_RETURN_NO_RESULT, slot1.captured)
         assertEquals(paymentToken, slot2.captured.contextId)
+    }
+
+    @Test
+    fun `launch passes isAppSwitch as true to browserSwitchClient when both conditions are met`() {
+        every { getAppSwitchUseCase() } returns true
+        every { resolvePayPalUseCase() } returns true
+        val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
+        every { browserSwitchClient.start(activity, options, true) } returns startedPendingRequest
+
+        sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        verify { browserSwitchClient.start(activity, options, true) }
+    }
+
+    @Test
+    fun `launch passes isAppSwitch as false to browserSwitchClient when forceCCT is enabled`() {
+        every { getAppSwitchUseCase() } returns false
+        every { resolvePayPalUseCase() } returns false
+        val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
+        every { browserSwitchClient.start(activity, options, false) } returns startedPendingRequest
+
+        sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        verify { browserSwitchClient.start(activity, options, false) }
     }
 }
