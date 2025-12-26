@@ -78,6 +78,7 @@ dependencies {
     implementation project(':ShopperInsights')
     implementation project(':SEPADirectDebit')
     implementation project(':ThreeDSecure')
+    implementation project(':UIComponents')
     implementation project(':Venmo')
     implementation project(':VisaCheckout')
 
@@ -103,6 +104,7 @@ dependencies {
 
     androidTestImplementation libs.device.automator
     androidTestImplementation project(':TestUtils')
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     testImplementation libs.junit
     testImplementation libs.test.parameter.injector

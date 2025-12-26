@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="paypal_color_transparent">#00000000</color>
+
+    <color name="paypal_featured_main">#60CDFF</color>
+    <color name="paypal_featured_hover">#54B4E0</color>
+    <color name="paypal_featured_main_active">#3DB5FF</color>
+    <color name="paypal_focus_indicator">#0066F5</color>
+    <color name="paypal_tertiary_main">#000000</color>
+    <color name="paypal_tertiary_hover">#333333</color>
+    <color name="paypal_tertiary_main_active">#696969</color>
+    <color name="paypal_white_main">#FFFFFF</color>
+    <color name="paypal_white_hover">#F2F2F2</color>
+    <color name="paypal_white_main_active">#E9E9E9</color>
+    <color name="paypal_white_border">#555555</color>
+
+    <color name="venmo_featured_main">#008CFF</color>
+    <color name="venmo_featured_hover">#0073E0</color>
+    <color name="venmo_featured_main_active">#0074FF</color>
+    <color name="venmo_focus_indicator">#0066F5</color>
+    <color name="venmo_tertiary_main">#000000</color>
+    <color name="venmo_tertiary_hover">#333333</color>
+    <color name="venmo_tertiary_main_active">#696969</color>
+    <color name="venmo_white_main">#FFFFFF</color>
+    <color name="venmo_white_hover">#F2F2F2</color>
+    <color name="venmo_white_main_active">#E9E9E9</color>
+    <color name="venmo_white_border">#555555</color>
+</resources>

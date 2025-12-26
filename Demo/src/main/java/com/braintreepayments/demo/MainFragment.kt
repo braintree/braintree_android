@@ -72,6 +72,7 @@ class MainFragment : BaseFragment() {
                                     style = MaterialTheme.typography.headlineSmall
                                 )
 
+                                PaymentModuleButton(R.string.payment_buttons_button) { launchPaymentButtons() }
                                 PaymentModuleButton(R.string.venmo) { launchVenmo() }
                                 PaymentModuleButton(R.string.cards) { launchCards() }
                                 PaymentModuleButton(R.string.google_pay) { launchGooglePay() }
@@ -211,6 +212,14 @@ class MainFragment : BaseFragment() {
         fetchAuthorizationAndHandleError { authString ->
             val action = MainFragmentDirections.actionMainFragmentToShopperInsightsFragmentV2()
                 .setAuthString(authString)
+            findNavController().navigate(action)
+        }
+    }
+
+    private fun launchPaymentButtons() {
+        fetchAuthorizationAndHandleError { authString ->
+            val action = MainFragmentDirections.actionMainFragmentToPaymentButtonsFragment()
+            action.setAuthString(authString)
             findNavController().navigate(action)
         }
     }

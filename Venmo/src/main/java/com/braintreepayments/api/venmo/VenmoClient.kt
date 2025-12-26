@@ -25,9 +25,9 @@ import com.braintreepayments.api.core.usecase.GetDefaultAppUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
 import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
-import java.util.Objects
 import org.json.JSONException
 import org.json.JSONObject
+import java.util.Objects
 
 /**
  * Used to create and tokenize Venmo accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/venmo/overview)

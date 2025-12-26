@@ -21,5 +21,5 @@ sealed class PayPalPendingRequest {
     /**
      * An error occurred launching the PayPal browser flow. See [error] for details.
      */
-    class Failure internal constructor(val error: Exception) : PayPalPendingRequest()
+    class Failure(val error: Exception) : PayPalPendingRequest()
 }

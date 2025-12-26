@@ -18,9 +18,8 @@ class AnalyticsParamRepositoryUnitTest {
     @Before
     fun setUp() {
         uuidHelper = mockk()
-        sut = AnalyticsParamRepository(uuidHelper)
-
         every { uuidHelper.formattedUUID } returnsMany listOf(uuid, newUuid)
+        sut = AnalyticsParamRepository(uuidHelper)
 
         sut.didPayPalServerAttemptAppSwitch = true
         sut.didSdkAttemptAppSwitch = true
@@ -39,7 +38,7 @@ class AnalyticsParamRepositoryUnitTest {
     }
 
     @Test
-    fun `invoking reset resets all of the repository's values`() {
+    fun `invoking reset resets all of the repository's values except sessionId`() {
         assertEquals(uuid, sut.sessionId)
         assertEquals(true, sut.didPayPalServerAttemptAppSwitch)
         assertEquals(true, sut.didEnablePayPalAppSwitch)
@@ -47,7 +46,7 @@ class AnalyticsParamRepositoryUnitTest {
 
         sut.reset()
 
-        assertEquals(newUuid, sut.sessionId)
+        assertEquals(uuid, sut.sessionId)
         assertNull(sut.didPayPalServerAttemptAppSwitch)
         assertNull(sut.didEnablePayPalAppSwitch)
         assertNull(sut.didSdkAttemptAppSwitch)

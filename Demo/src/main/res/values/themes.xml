@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="DemoAppTheme" parent="Theme.AppCompat.Light.NoActionBar" />
+    <style name="PaymentButtonsTheme" parent="Theme.MaterialComponents.Light">
+        <item name="colorPrimary">#4B4B4B</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+    </style>
 </resources>
