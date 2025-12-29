@@ -17,10 +17,20 @@ It produces client tokens that point to Braintree's Sandbox Environment.
 
 ## Tests
 
-All tests can be run on the command line with `rake`. It's a good idea to run `rake`, before committing.
+### Unit Tests
 
-You can also run `rake unit_tests` or `rake integration_tests` if you want to run a subset of the tests. 
-You will need to start an emulator before running `rake integration_tests`.
+Run all unit tests:
+```bash
+./gradlew test
+```
+
+### Integration Tests
+
+Run all integration tests:
+```bash
+./gradlew connectedAndroidTest
+```
+**Note:** You need to start an emulator or connect a device before running integration tests.
 
 ## Architecture
 
