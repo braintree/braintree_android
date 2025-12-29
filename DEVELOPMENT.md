@@ -4,9 +4,9 @@ This document outlines development practices that we follow internally while dev
 
 ## Setup
 
-* Make sure Java 8 is installed and available in your `PATH`.
-* If you do not have the Android SDK installed, run `./gradlew build` 3 times to download the Android SDK and install all required tools as well as set your `local.properties` file (we use [sdk-manager-plugin](https://github.com/JakeWharton/sdk-manager-plugin) to do this automatically).
-* If you do have the Android SDK installed, add a `local.properties` file to the top level directory with `sdk.dir=/path/to/your/sdk/.android-sdk`
+* Make sure Java 11 is installed and available in your `PATH`.
+* If you do not have the Android SDK installed, install [Android Studio](https://developer.android.com/studio) which includes the Android SDK.
+* If you do have the Android SDK installed, add a `local.properties` file to the top level directory with `sdk.dir=/path/to/your/sdk`
 * Run `./gradlew :Demo:installDebug` to install the [Demo](Demo) app on a device.
 * See [the testing section](#tests) for more about setting up and running tests.
 
@@ -36,21 +36,31 @@ Run all integration tests:
 
 There are several components that comprise this SDK:
 
-* [Braintree](Braintree) provides the networking, communication and modeling layer for Braintree.
-* [Core](Core) provides shared code across all the modules in the SDK.
-* [Demo](Demo) is a collection of Braintree reference integrations.
-* [PayPalOneTouch](PayPalOneTouch) provides support for PayPal app and browser switch.
+* [AmericanExpress](AmericanExpress) provides American Express rewards balance functionality.
+* [BraintreeCore](BraintreeCore) provides the networking, communication and modeling layer for Braintree.
+* [Card](Card) provides credit and debit card tokenization functionality.
 * [DataCollector](DataCollector) collects and provides data for PayPal fraud detection.
+* [Demo](Demo) is a collection of Braintree reference integrations.
+* [GooglePay](GooglePay) provides Google Pay integration.
+* [LocalPayment](LocalPayment) provides LocalPayment integration.
+* [PayPal](PayPal) provides PayPal integration.
+* [PayPalMessaging](PayPalMessaging) provides PayPal messaging and promotional offers.
+* [SEPADirectDebit](SEPADirectDebit) provides SEPA Direct Debit integration.
+* [SharedUtils](SharedUtils) provides shared utilities across all modules in the SDK.
+* [ShopperInsights](ShopperInsights) provides shopper insights and recommendations.
 * [TestUtils](TestUtils) contains common test code used between modules.
+* [ThreeDSecure](ThreeDSecure) provides 3D Secure authentication support.
+* [Venmo](Venmo) provides Venmo integration.
+* [VisaCheckout](VisaCheckout) provides Visa Checkout integration.
 
 The individual components may be of interest for advanced integrations and are each available as modules in maven.
 
 ## Environmental Assumptions
 
-* Java 8
+* Java 11
 * Android Studio
 * Gradle
-* Android SDK >= 21
+* Android SDK >= 23
 * Host app does not integrate with the Kount SDK
 * Host app has a secure, authenticated server with a [Braintree server-side integration](https://developer.paypal.com/braintree/docs/start/hello-server)
 
