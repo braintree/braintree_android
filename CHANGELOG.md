@@ -1,5 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* UIComponents
+    * Add `PayPalButton` class to generate a PayPal-branded button for launching PayPal flow
+    * Add `VenmoButton` class to generate a Venmo-branded button for launching Venmo flow
+
 ## 5.20.0 (2025-12-17)
 
 * All Modules
