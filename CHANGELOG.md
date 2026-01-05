@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.21.0 (2026-01-05)
 
 * UIComponents
     * Add `PayPalButton` class to generate a PayPal-branded button for launching PayPal flow
