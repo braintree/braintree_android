@@ -50,6 +50,7 @@ There are several components that comprise this SDK:
 * [ShopperInsights](ShopperInsights) provides shopper insights and recommendations.
 * [TestUtils](TestUtils) contains common test code used between modules.
 * [ThreeDSecure](ThreeDSecure) provides 3D Secure authentication support.
+* [UIComponents](UIComponents) provides PayPal/Venmo branded buttons that support complete PayPal/Venmo flows.
 * [Venmo](Venmo) provides Venmo integration.
 * [VisaCheckout](VisaCheckout) provides Visa Checkout integration.
 
