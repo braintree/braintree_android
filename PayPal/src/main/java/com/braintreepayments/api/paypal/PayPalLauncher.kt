@@ -62,7 +62,7 @@ class PayPalLauncher internal constructor(
         val analyticsEventParams = AnalyticsEventParams(
             contextId = contextId,
             appSwitchUrl = paymentAuthRequest.requestParams.approvalUrl,
-            fundingSource = paymentAuthRequest.requestParams.fundingSource.value
+            fundingSource = paymentAuthRequest.requestParams.fundingSource
         )
 
         val isAppSwitch = processAppSwitchAttempt(analyticsEventParams)

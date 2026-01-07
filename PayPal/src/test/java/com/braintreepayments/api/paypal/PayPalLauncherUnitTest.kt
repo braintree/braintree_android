@@ -51,7 +51,7 @@ class PayPalLauncherUnitTest {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         every { paymentAuthRequestParams.contextId } returns paymentToken
         every { paymentAuthRequestParams.approvalUrl } returns approvalUrl
-        every { paymentAuthRequestParams.fundingSource.value } returns fundingSource
+        every { paymentAuthRequestParams.fundingSource } returns fundingSource
         every { intent.data } returns Uri.parse(approvalUrl)
         every { options.url } returns Uri.parse(approvalUrl)
 
