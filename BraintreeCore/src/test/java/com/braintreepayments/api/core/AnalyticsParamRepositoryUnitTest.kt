@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
+import kotlin.math.exp
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
@@ -14,6 +15,7 @@ class AnalyticsParamRepositoryUnitTest {
 
     private val uuid = "test-uuid"
     private val newUuid = "new-uuid"
+    private val expectedFundingSource = "funding-source"
 
     @Before
     fun setUp() {
@@ -24,6 +26,7 @@ class AnalyticsParamRepositoryUnitTest {
         sut.didPayPalServerAttemptAppSwitch = true
         sut.didSdkAttemptAppSwitch = true
         sut.didEnablePayPalAppSwitch = true
+        sut.fundingSource = expectedFundingSource
     }
 
     @Test
@@ -43,6 +46,7 @@ class AnalyticsParamRepositoryUnitTest {
         assertEquals(true, sut.didPayPalServerAttemptAppSwitch)
         assertEquals(true, sut.didEnablePayPalAppSwitch)
         assertEquals(true, sut.didSdkAttemptAppSwitch)
+        assertEquals(expectedFundingSource, sut.fundingSource)
 
         sut.reset()
 
@@ -50,5 +54,6 @@ class AnalyticsParamRepositoryUnitTest {
         assertNull(sut.didPayPalServerAttemptAppSwitch)
         assertNull(sut.didEnablePayPalAppSwitch)
         assertNull(sut.didSdkAttemptAppSwitch)
+        assertNull(sut.fundingSource)
     }
 }
