@@ -5,6 +5,9 @@ import com.braintreepayments.api.sharedutils.HttpClient
 import com.braintreepayments.api.sharedutils.Method
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.sharedutils.OkHttpRequest
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -47,7 +50,15 @@ internal class BraintreeHttpClient(
             headers = assembleHeaders(authorization)
         )
 
-        httpClient.sendRequest(request, callback)
+        // httpClient.sendRequest(request, callback)
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                val response = httpClient.sendRequest(request)
+                callback.onResult(NetworkResponseCallback.Result.Success(response))
+            } catch (e: BraintreeException) {
+                callback.onResult(NetworkResponseCallback.Result.Failure(e))
+            }
+        }
     }
 
     /**
@@ -90,7 +101,15 @@ internal class BraintreeHttpClient(
             headers = assembleHeaders(authorization, additionalHeaders)
         )
 
-        httpClient.sendRequest(request, callback)
+        // httpClient.sendRequest(request, callback)
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                val response = httpClient.sendRequest(request)
+                callback?.onResult(NetworkResponseCallback.Result.Success(response))
+            } catch (e: BraintreeException) {
+                callback?.onResult(NetworkResponseCallback.Result.Failure(e))
+            }
+        }
     }
 
     private fun validateAuthorization(
