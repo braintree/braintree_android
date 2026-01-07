@@ -95,6 +95,7 @@ dependencies {
     implementation libs.androidx.lifecycle.extensions
     implementation libs.androidx.lifecycle.viewmodel.ktx
     implementation libs.bt.card.form
+    implementation libs.android.compose
 
     def composeBom = platform(libs.androidx.compose.bom)
     implementation composeBom

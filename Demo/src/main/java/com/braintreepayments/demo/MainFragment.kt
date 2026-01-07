@@ -73,6 +73,7 @@ class MainFragment : BaseFragment() {
                                 )
 
                                 PaymentModuleButton(R.string.payment_buttons_button) { launchPaymentButtons() }
+                                PaymentModuleButton(R.string.payment_buttons_compose_button) { launchComposePaymentButtons() }
                                 PaymentModuleButton(R.string.venmo) { launchVenmo() }
                                 PaymentModuleButton(R.string.cards) { launchCards() }
                                 PaymentModuleButton(R.string.google_pay) { launchGooglePay() }
@@ -219,6 +220,14 @@ class MainFragment : BaseFragment() {
     private fun launchPaymentButtons() {
         fetchAuthorizationAndHandleError { authString ->
             val action = MainFragmentDirections.actionMainFragmentToPaymentButtonsFragment()
+            action.setAuthString(authString)
+            findNavController().navigate(action)
+        }
+    }
+
+    private fun launchComposePaymentButtons() {
+        fetchAuthorizationAndHandleError { authString ->
+            val action = MainFragmentDirections.actionMainFragmentToComposePaymentButtonsFragment()
             action.setAuthString(authString)
             findNavController().navigate(action)
         }
