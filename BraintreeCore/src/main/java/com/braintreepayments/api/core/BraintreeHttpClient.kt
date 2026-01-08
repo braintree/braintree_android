@@ -50,7 +50,6 @@ internal class BraintreeHttpClient(
             headers = assembleHeaders(authorization)
         )
 
-        // httpClient.sendRequest(request, callback)
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 val response = httpClient.sendRequest(request)
@@ -101,7 +100,6 @@ internal class BraintreeHttpClient(
             headers = assembleHeaders(authorization, additionalHeaders)
         )
 
-        // httpClient.sendRequest(request, callback)
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 val response = httpClient.sendRequest(request)
