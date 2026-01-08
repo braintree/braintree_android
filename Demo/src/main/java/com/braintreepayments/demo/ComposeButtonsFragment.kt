@@ -18,6 +18,7 @@ import com.braintreepayments.api.core.PaymentMethodNonce
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalRequest
 import com.braintreepayments.api.uicomponents.PayPalButton
+import com.braintreepayments.api.uicomponents.PayPalButtonComposeImpl
 import com.braintreepayments.api.uicomponents.PayPalLaunchCallback
 
 class ComposeButtonsFragment : BaseFragment() {
@@ -51,12 +52,18 @@ class ComposeButtonsFragment : BaseFragment() {
                 }
             }
             setContent {
-                ComposePayPalButton(
-                    this@ComposeButtonsFragment,
-                    authStringArg,
-                    payPalRequest,
-                    payPalLaunchCallback
+                PayPalButtonComposeImpl(
+                    payPalRequest = payPalRequest,
+                    authorization = authStringArg,
+                    appLinkReturnUrl = "AnotherTodo".toUri(),
+                    deepLinkFallbackUrlScheme = "TODO",
                 )
+//                ComposePayPalButton(
+//                    this@ComposeButtonsFragment,
+//                    authStringArg,
+//                    payPalRequest,
+//                    payPalLaunchCallback
+//                )
             }
         }
     }

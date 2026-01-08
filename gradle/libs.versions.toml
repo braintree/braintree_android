@@ -44,6 +44,7 @@ material = "1.12.0"
 leakcanary = "2.12"
 deviceAutomator = "1.0.0"
 btCardForm = "5.4.0"
+runtime = "1.10.0"
 
 [libraries]
 # Androidx
@@ -105,6 +106,7 @@ material = { module = "com.google.android.material:material", version.ref = "mat
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 device-automator = { module = "com.braintreepayments:device-automator", version.ref = "deviceAutomator" }
 bt-card-form = { module = "com.braintreepayments:card-form", version.ref = "btCardForm" }
+androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradle" }

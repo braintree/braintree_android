@@ -33,6 +33,14 @@ android {
         jvmTarget = versions.javaTargetCompatibility.toString()
     }
 
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.3"
+    }
+
     kotlin {
         jvmToolchain {
             languageVersion.set(JavaLanguageVersion.of(versions.javaTargetCompatibility.toString()))
@@ -47,6 +55,12 @@ dependencies {
 
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
+    implementation libs.androidx.runtime
+    implementation libs.android.compose
+
+    def composeBom = platform(libs.androidx.compose.bom)
+    implementation composeBom
+    implementation libs.androidx.material3
 
     testImplementation libs.kotlin.test
     testImplementation project(':TestUtils')
