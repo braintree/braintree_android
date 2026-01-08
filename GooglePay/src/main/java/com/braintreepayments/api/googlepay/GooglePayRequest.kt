@@ -2,6 +2,7 @@ package com.braintreepayments.api.googlepay
 
 import android.os.Parcelable
 import androidx.annotation.RestrictTo
+import com.braintreepayments.api.googlepay.GooglePayCheckoutOption
 import kotlinx.parcelize.Parcelize
 import org.json.JSONArray
 import org.json.JSONException
@@ -55,6 +56,7 @@ class GooglePayRequest @JvmOverloads constructor(
     var countryCode: String? = null,
     var totalPriceLabel: String? = null,
     var allowCreditCards: Boolean = true,
+    var checkoutOption: GooglePayCheckoutOption? = GooglePayCheckoutOption.DEFAULT,
     private var environment: String? = null,
     private val allowedPaymentMethods: MutableMap<String, String> = HashMap(),
     private val tokenizationSpecifications: MutableMap<String, String> = HashMap(),
@@ -145,6 +147,7 @@ class GooglePayRequest @JvmOverloads constructor(
         transactionInfoJson.put("currencyCode", currencyCode)
         transactionInfoJson.putOpt("countryCode", countryCode)
         transactionInfoJson.putOpt("totalPriceLabel", totalPriceLabel)
+        transactionInfoJson.putOpt("checkoutOption", checkoutOption?.stringValue)
 
         for ((key, value) in this.allowedPaymentMethods) {
             try {

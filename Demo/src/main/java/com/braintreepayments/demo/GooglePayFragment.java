@@ -15,6 +15,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.braintreepayments.api.core.PaymentMethodNonce;
 import com.braintreepayments.api.core.UserCanceledException;
 import com.braintreepayments.api.googlepay.GooglePayBillingAddressFormat;
+import com.braintreepayments.api.googlepay.GooglePayCheckoutOption;
 import com.braintreepayments.api.googlepay.GooglePayClient;
 import com.braintreepayments.api.googlepay.GooglePayLauncher;
 import com.braintreepayments.api.googlepay.GooglePayPaymentAuthRequest;
@@ -97,7 +98,7 @@ public class GooglePayFragment extends BaseFragment {
         googlePayRequest.setShippingAddressRequired(
                 Settings.isGooglePayShippingAddressRequired(activity));
         googlePayRequest.setShippingAddressParameters(new GooglePayShippingAddressParameters(Settings.getGooglePayAllowedCountriesForShipping(requireContext())));
-
+        googlePayRequest.setCheckoutOption(GooglePayCheckoutOption.COMPLETE_IMMEDIATE_PURCHASE);
         googlePayClient.createPaymentAuthRequest(googlePayRequest, (paymentAuthRequest) -> {
             if (paymentAuthRequest instanceof GooglePayPaymentAuthRequest.ReadyToLaunch) {
                 googlePayLauncher.launch(

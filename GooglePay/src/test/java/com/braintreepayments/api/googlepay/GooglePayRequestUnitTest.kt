@@ -273,4 +273,17 @@ class GooglePayRequestUnitTest {
 
         JSONAssert.assertEquals(expected, actual, false)
     }
+
+    @Test
+    fun `toJson includes checkoutOption when set`() {
+        val request = GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL)
+        request.checkoutOption = GooglePayCheckoutOption.DEFAULT
+
+        val json = JSONObject(request.toJson())
+        assertEquals("DEFAULT", json.optString("checkoutOption"))
+
+        request.checkoutOption = GooglePayCheckoutOption.COMPLETE_IMMEDIATE_PURCHASE
+        val json2 = JSONObject(request.toJson())
+        assertEquals("COMPLETE_IMMEDIATE_PURCHASE", json2.optString("checkoutOption"))
+    }
 }
