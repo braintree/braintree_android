@@ -55,8 +55,9 @@ class ComposeButtonsFragment : BaseFragment() {
                 PayPalButtonComposeImpl(
                     payPalRequest = payPalRequest,
                     authorization = authStringArg,
-                    appLinkReturnUrl = "AnotherTodo".toUri(),
-                    deepLinkFallbackUrlScheme = "TODO",
+                    appLinkReturnUrl = "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments".toUri(),
+                    deepLinkFallbackUrlScheme = "com.braintreepayments.demo.braintree",
+                    payPalLaunchCallback = payPalLaunchCallback
                 )
 //                ComposePayPalButton(
 //                    this@ComposeButtonsFragment,

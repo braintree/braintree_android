@@ -7,8 +7,9 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -162,15 +163,19 @@ fun PayPalButtonCompose(color: PayPalButtonColor, enabled: Boolean = true, loadi
             Color.White
         }
     }
-    Button(
-        onClick = { onClick() },
-        modifier = Modifier.height(48.dp).width(200.dp).padding(8.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = color)) {
-        if(!loading && enabled) {
-            Text(text = "Fancy PayPal Button")
-        }
-        if(loading) {
-            Text(text = "Loading...")
+    Column(
+        modifier = Modifier.fillMaxWidth().height(64.dp)
+    ) {
+        Button(
+            onClick = { onClick() },
+            modifier = Modifier.height(48.dp).width(200.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = color)) {
+            if(!loading && enabled) {
+                Text(text = "Fancy PayPal Button")
+            }
+            if(loading) {
+                Text(text = "Loading...")
+            }
         }
     }
 }
