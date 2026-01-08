@@ -54,7 +54,7 @@ internal class BraintreeHttpClient(
             try {
                 val response = httpClient.sendRequest(request)
                 callback.onResult(NetworkResponseCallback.Result.Success(response))
-            } catch (e: BraintreeException) {
+            } catch (e: Exception) {
                 callback.onResult(NetworkResponseCallback.Result.Failure(e))
             }
         }
@@ -104,7 +104,7 @@ internal class BraintreeHttpClient(
             try {
                 val response = httpClient.sendRequest(request)
                 callback?.onResult(NetworkResponseCallback.Result.Success(response))
-            } catch (e: BraintreeException) {
+            } catch (e: Exception) {
                 callback?.onResult(NetworkResponseCallback.Result.Failure(e))
             }
         }
