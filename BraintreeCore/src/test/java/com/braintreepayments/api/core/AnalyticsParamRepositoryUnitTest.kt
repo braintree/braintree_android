@@ -4,7 +4,6 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
-import kotlin.math.exp
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
