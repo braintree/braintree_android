@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -18,22 +19,22 @@ import kotlin.test.assertFailsWith
 class HttpClientUnitTest {
 
     private lateinit var mockOkHttpClient: OkHttpSynchronousHttpClient
-    private lateinit var sut: HttpClient
 
     @Before
     fun setUp() {
         mockOkHttpClient = mockk<OkHttpSynchronousHttpClient>()
-        sut = HttpClient(mockOkHttpClient)
     }
 
     @Test
     fun `sendRequest is a suspend function that executes in a coroutine`() = runTest {
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val sut = HttpClient(mockOkHttpClient, testDispatcher)
         val request = mockk<OkHttpRequest>()
         val mockResponse = mockk<HttpResponse>()
 
         every { mockOkHttpClient.executeRequest(request) } returns mockResponse
 
-        //if sendRequest is not a suspend function it wouldn't be able to run within runTest coroutine
+        // if sendRequest is not a suspend function it wouldn't be able to run within runTest coroutine
         val result = sut.sendRequest(request)
 
         assertEquals(mockResponse, result)
@@ -42,6 +43,8 @@ class HttpClientUnitTest {
 
     @Test
     fun `when sendRequest is called with successful response, returns response`() = runTest {
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val sut = HttpClient(mockOkHttpClient, testDispatcher)
         val request = mockk<OkHttpRequest>()
         val mockResponse = mockk<HttpResponse>()
 
@@ -55,6 +58,8 @@ class HttpClientUnitTest {
 
     @Test
     fun `when sendRequest is called with exception, throws exception`() = runTest {
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val sut = HttpClient(mockOkHttpClient, testDispatcher)
         val request = mockk<OkHttpRequest>()
         val exception = RuntimeException("Network error")
 
@@ -70,6 +75,8 @@ class HttpClientUnitTest {
 
     @Test
     fun `when IOException occurs, throws IOException`() = runTest {
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val sut = HttpClient(mockOkHttpClient, testDispatcher)
         val request = mockk<OkHttpRequest>()
         val ioException = java.io.IOException("Network timeout")
 

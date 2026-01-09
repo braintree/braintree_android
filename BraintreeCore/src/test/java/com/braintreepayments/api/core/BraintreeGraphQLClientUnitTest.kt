@@ -12,14 +12,11 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -31,32 +28,27 @@ import kotlin.test.assertTrue
 @RunWith(RobolectricTestRunner::class)
 class BraintreeGraphQLClientUnitTest {
 
-    private val testDispatcher = StandardTestDispatcher()
     private lateinit var httpClient: HttpClient
-    private lateinit var sut: BraintreeGraphQLClient
     private lateinit var callback: NetworkResponseCallback
 
     @Before
     fun setUp() {
-        Dispatchers.setMain(testDispatcher)
         httpClient = mockk(relaxed = true)
         callback = mockk(relaxed = true)
-        sut = BraintreeGraphQLClient(httpClient)
-    }
-
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
     }
 
     @Test
     fun `when post is called with invalid authorization, callback is called with error`() {
+        val testDispatcher = StandardTestDispatcher()
+        val testScope = TestScope(testDispatcher)
+        val sut = BraintreeGraphQLClient(httpClient, testDispatcher, testScope)
         val invalidAuth = InvalidAuthorization(
             rawValue = "bad auth",
             errorMessage = "bad auth"
         )
         val config = mockk<Configuration>(relaxed = true)
         every { config.graphQLUrl } returns "https://graphql.example.com"
+
         sut.post("{}", config, invalidAuth, callback)
         verify {
             callback.onResult(match {
@@ -69,6 +61,9 @@ class BraintreeGraphQLClientUnitTest {
 
     @Test
     fun `when post is called with valid authorization, request is sent with correct headers and body`() = runTest {
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        val sut = BraintreeGraphQLClient(httpClient, testDispatcher, testScope)
         val auth = mockk<Authorization>(relaxed = true)
         every { auth.bearer } returns "token123"
         val config = mockk<Configuration>(relaxed = true)
