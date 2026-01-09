@@ -22,7 +22,6 @@ class HttpClientUnitTest {
     private lateinit var mockOkHttpClient: OkHttpSynchronousHttpClient
     private lateinit var sut: HttpClient
 
-
     @Before
     fun setUp() {
         mockOkHttpClient = mockk<OkHttpSynchronousHttpClient>()

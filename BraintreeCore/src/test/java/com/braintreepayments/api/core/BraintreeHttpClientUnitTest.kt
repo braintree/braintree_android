@@ -31,7 +31,6 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class BraintreeHttpClientUnitTest {
 
-
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var httpClient: HttpClient
     private lateinit var configuration: Configuration
@@ -45,7 +44,6 @@ class BraintreeHttpClientUnitTest {
         callback = mockk(relaxed = true)
         val testScope = TestScope(testDispatcher)
         sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
-
 
         every { configuration.clientApiUrl } returns "https://api.braintreegateway.com/"
     }
