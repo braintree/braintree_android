@@ -28,20 +28,21 @@ import kotlin.test.assertTrue
 @RunWith(RobolectricTestRunner::class)
 class BraintreeGraphQLClientUnitTest {
 
+    private val testDispatcher = StandardTestDispatcher()
     private lateinit var httpClient: HttpClient
+    private lateinit var sut: BraintreeGraphQLClient
     private lateinit var callback: NetworkResponseCallback
 
     @Before
     fun setUp() {
         httpClient = mockk(relaxed = true)
         callback = mockk(relaxed = true)
+        val testScope = TestScope(testDispatcher)
+        sut = BraintreeGraphQLClient(httpClient, testDispatcher, testScope)
     }
 
     @Test
     fun `when post is called with invalid authorization, callback is called with error`() {
-        val testDispatcher = StandardTestDispatcher()
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeGraphQLClient(httpClient, testDispatcher, testScope)
         val invalidAuth = InvalidAuthorization(
             rawValue = "bad auth",
             errorMessage = "bad auth"
@@ -60,31 +61,29 @@ class BraintreeGraphQLClientUnitTest {
     }
 
     @Test
-    fun `when post is called with valid authorization, request is sent with correct headers and body`() = runTest {
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeGraphQLClient(httpClient, testDispatcher, testScope)
-        val auth = mockk<Authorization>(relaxed = true)
-        every { auth.bearer } returns "token123"
-        val config = mockk<Configuration>(relaxed = true)
-        every { config.graphQLUrl } returns "https://graphql.example.com"
-        val slot = slot<OkHttpRequest>()
-        val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
-        coEvery { httpClient.sendRequest(capture(slot)) } returns mockResponse
+    fun `when post is called with valid authorization, request is sent with correct headers and body`() =
+        runTest(testDispatcher) {
+            val auth = mockk<Authorization>(relaxed = true)
+            every { auth.bearer } returns "token123"
+            val config = mockk<Configuration>(relaxed = true)
+            every { config.graphQLUrl } returns "https://graphql.example.com"
+            val slot = slot<OkHttpRequest>()
+            val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
+            coEvery { httpClient.sendRequest(capture(slot)) } returns mockResponse
 
-        sut.post("{\"query\":\"test\"}", config, auth, callback)
+            sut.post("{\"query\":\"test\"}", config, auth, callback)
 
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        val req = slot.captured
-        assertTrue(req.method is Method.Post)
-        assertEquals("{\"query\":\"test\"}", (req.method as Method.Post).body)
-        assertEquals("https://graphql.example.com", req.url)
-        assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, req.headers["User-Agent"])
-        assertEquals("Bearer token123", req.headers["Authorization"])
-        assertEquals(GraphQLConstants.Headers.API_VERSION, req.headers["Braintree-Version"])
-        verify {
-            callback.onResult(match { it is NetworkResponseCallback.Result.Success })
+            val req = slot.captured
+            assertTrue(req.method is Method.Post)
+            assertEquals("{\"query\":\"test\"}", (req.method as Method.Post).body)
+            assertEquals("https://graphql.example.com", req.url)
+            assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, req.headers["User-Agent"])
+            assertEquals("Bearer token123", req.headers["Authorization"])
+            assertEquals(GraphQLConstants.Headers.API_VERSION, req.headers["Braintree-Version"])
+            verify {
+                callback.onResult(match { it is NetworkResponseCallback.Result.Success })
+            }
         }
-    }
 }

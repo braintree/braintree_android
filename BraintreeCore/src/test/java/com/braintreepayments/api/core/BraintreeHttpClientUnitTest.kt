@@ -31,15 +31,21 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class BraintreeHttpClientUnitTest {
 
+
+    private val testDispatcher = StandardTestDispatcher()
     private lateinit var httpClient: HttpClient
     private lateinit var configuration: Configuration
     private lateinit var callback: NetworkResponseCallback
+    private lateinit var sut: BraintreeHttpClient
 
     @Before
     fun beforeEach() {
         httpClient = mockk(relaxed = true)
         configuration = mockk()
         callback = mockk(relaxed = true)
+        val testScope = TestScope(testDispatcher)
+        sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
+
 
         every { configuration.clientApiUrl } returns "https://api.braintreegateway.com/"
     }
@@ -47,10 +53,8 @@ class BraintreeHttpClientUnitTest {
     // GET method tests
 
     @Test
-    fun `when get is called with TokenizationKey, correct request is sent`() = runTest {
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
+    fun `when get is called with TokenizationKey, correct request is sent`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val requestSlot = slot<OkHttpRequest>()
         val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
@@ -71,10 +75,8 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when get is called with ClientToken, authorization fingerprint is appended to URL and header`() = runTest {
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
+    fun `when get is called with ClientToken, authorization fingerprint is appended to URL and header`() =
+        runTest(testDispatcher) {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
@@ -98,10 +100,8 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when get is called with absolute URL, configuration base URL is ignored`() = runTest {
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
+    fun `when get is called with absolute URL, configuration base URL is ignored`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val requestSlot = slot<OkHttpRequest>()
         val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
@@ -119,11 +119,9 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when get is called with null configuration and relative path, BraintreeException is thrown`() = runTest {
+    fun `when get is called with null configuration and relative path, BraintreeException is thrown`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
 
         sut.get("v1/payment_methods", null, tokenizationKey, callback)
 
@@ -137,11 +135,9 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when get is called with InvalidAuthorization, callback is called with error`() = runTest {
+    fun `when get is called with InvalidAuthorization, callback is called with error`() =
+        runTest(testDispatcher) {
         val invalidAuth = InvalidAuthorization("invalid_token", "Invalid token")
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
 
         sut.get("v1/payment_methods", configuration, invalidAuth, callback)
 
@@ -155,15 +151,13 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when get is called with authorization bearer, Authorization header is added`() = runTest {
+    fun `when get is called with authorization bearer, Authorization header is added`() =
+        runTest(testDispatcher) {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
         val requestSlot = slot<OkHttpRequest>()
         val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
         coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
         sut.get("v1/payment_methods", configuration, clientToken, callback)
@@ -180,13 +174,11 @@ class BraintreeHttpClientUnitTest {
     // POST method tests
 
     @Test
-    fun `when post is called with TokenizationKey, correct request is sent`() = runTest {
+    fun `when post is called with TokenizationKey, correct request is sent`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val requestSlot = slot<OkHttpRequest>()
         val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
         coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
         sut.post("v1/payment_methods", "{\"test\":\"data\"}", configuration, tokenizationKey, callback = callback)
@@ -206,10 +198,8 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when post is called with ClientToken, authorization fingerprint is added to request body`() = runTest {
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
+    fun `when post is called with ClientToken, authorization fingerprint is added to request body`() =
+        runTest(testDispatcher) {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
@@ -233,14 +223,12 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when post is called with additional headers, headers are included in request`() = runTest {
+    fun `when post is called with additional headers, headers are included in request`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val additionalHeaders = mapOf("X-Custom-Header" to "custom-value", "Accept" to "application/json")
         val requestSlot = slot<OkHttpRequest>()
         val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
         coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
         sut.post(
@@ -263,13 +251,11 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when post is called with absolute URL, configuration base URL is ignored`() = runTest {
+    fun `when post is called with absolute URL, configuration base URL is ignored`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val requestSlot = slot<OkHttpRequest>()
         val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
         coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
         sut.post("https://example.com/custom/path", "{}", configuration, tokenizationKey, callback = callback)
@@ -284,11 +270,9 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when post is called with null configuration and relative path, BraintreeException is thrown`() = runTest {
+    fun `when post is called with null configuration and relative path, BraintreeException is thrown`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
 
         sut.post("v1/payment_methods", "{}", null, tokenizationKey, callback = callback)
 
@@ -302,11 +286,9 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when post is called with InvalidAuthorization, callback is called with error`() = runTest {
+    fun `when post is called with InvalidAuthorization, callback is called with error`() =
+        runTest(testDispatcher) {
         val invalidAuth = InvalidAuthorization("invalid_token", "Invalid token")
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
 
         sut.post("v1/payment_methods", "{}", configuration, invalidAuth, callback = callback)
 
@@ -320,13 +302,11 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when post is called with invalid JSON, callback is called with JSONException`() = runTest {
+    fun `when post is called with invalid JSON, callback is called with JSONException`() =
+        runTest(testDispatcher) {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
 
         sut.post("v1/payment_methods", "invalid json", configuration, clientToken, callback = callback)
 
@@ -339,11 +319,9 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when post is called with null callback and InvalidAuthorization, request does not crash`() = runTest {
+    fun `when post is called with null callback and InvalidAuthorization, request does not crash`() =
+        runTest(testDispatcher) {
         val invalidAuth = InvalidAuthorization("invalid_token", "Invalid token")
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
 
         sut.post("v1/payment_methods", "{}", configuration, invalidAuth, callback = null)
 
@@ -351,13 +329,11 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when post is called with null callback and JSON exception occurs, request does not crash`() = runTest {
+    fun `when post is called with null callback and JSON exception occurs, request does not crash`() =
+        runTest(testDispatcher) {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
 
         sut.post("v1/payment_methods", "invalid json", configuration, clientToken, callback = null)
 
@@ -365,11 +341,9 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when post is called with null callback and BraintreeException occurs, request does not crash`() = runTest {
+    fun `when post is called with null callback and BraintreeException occurs, request does not crash`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
 
         sut.post("v1/payment_methods", "{}", null, tokenizationKey, callback = null)
 
@@ -379,13 +353,11 @@ class BraintreeHttpClientUnitTest {
     // Header assembly tests
 
     @Test
-    fun `when assembleHeaders is called, User-Agent header is included`() = runTest {
+    fun `when assembleHeaders is called, User-Agent header is included`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val requestSlot = slot<OkHttpRequest>()
         val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
         coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
         sut.get("v1/payment_methods", configuration, tokenizationKey, callback)
@@ -400,14 +372,12 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when assembleHeaders is called with null bearer, Authorization header is not included`() = runTest {
+    fun `when assembleHeaders is called with null bearer, Authorization header is not included`() =
+        runTest(testDispatcher) {
         val authorization = mockk<Authorization>()
         every { authorization.bearer } returns null
         val requestSlot = slot<OkHttpRequest>()
         val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
         coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
         sut.get("v1/payment_methods", configuration, authorization, callback)
@@ -423,13 +393,11 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when get is called with null configuration and absolute URL, base URL is not set`() = runTest {
+    fun `when get is called with null configuration and absolute URL, base URL is not set`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val requestSlot = slot<OkHttpRequest>()
         val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
         coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
         sut.get("https://example.com/custom/path", null, tokenizationKey, callback)
@@ -444,13 +412,11 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when post is called with null configuration and absolute URL, base URL is not set`() = runTest {
+    fun `when post is called with null configuration and absolute URL, base URL is not set`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val requestSlot = slot<OkHttpRequest>()
         val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
-        val sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
         coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
         sut.post("https://example.com/custom/path", "{}", null, tokenizationKey, callback = callback)
