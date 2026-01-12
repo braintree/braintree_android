@@ -2,7 +2,6 @@ package com.braintreepayments.api.googlepay
 
 import android.os.Parcelable
 import androidx.annotation.RestrictTo
-import com.braintreepayments.api.googlepay.GooglePayCheckoutOption
 import kotlinx.parcelize.Parcelize
 import org.json.JSONArray
 import org.json.JSONException

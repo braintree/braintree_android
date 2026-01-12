@@ -262,7 +262,7 @@ class GooglePayRequestUnitTest {
                 "\"shippingAddressRequired\":true," +
                 "\"merchantInfo\":{},\"transactionInfo\":" +
                 "{\"totalPriceStatus\":\"FINAL\",\"totalPrice\":\"12.24\"," +
-                "\"currencyCode\":\"USD\"},\"shippingAddressParameters\":{}}"
+                "\"currencyCode\":\"USD\",\"checkoutOption\":\"DEFAULT\"},\"shippingAddressParameters\":{}}"
 
         val nullyShippingAddressRequirements = GooglePayShippingAddressParameters()
 
@@ -280,10 +280,12 @@ class GooglePayRequestUnitTest {
         request.checkoutOption = GooglePayCheckoutOption.DEFAULT
 
         val json = JSONObject(request.toJson())
-        assertEquals("DEFAULT", json.optString("checkoutOption"))
+        val transactionInfo = json.getJSONObject("transactionInfo")
+        assertEquals("DEFAULT", transactionInfo.optString("checkoutOption"))
 
         request.checkoutOption = GooglePayCheckoutOption.COMPLETE_IMMEDIATE_PURCHASE
         val json2 = JSONObject(request.toJson())
-        assertEquals("COMPLETE_IMMEDIATE_PURCHASE", json2.optString("checkoutOption"))
+        val transactionInfo2 = json2.getJSONObject("transactionInfo")
+        assertEquals("COMPLETE_IMMEDIATE_PURCHASE", transactionInfo2.optString("checkoutOption"))
     }
 }
