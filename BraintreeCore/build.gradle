@@ -105,6 +105,7 @@ dependencies {
     testImplementation libs.mockk
     testImplementation libs.test.parameter.injector
     testImplementation libs.kotlin.test
+    testImplementation libs.coroutines.test
     testImplementation project(':PayPal')
     testImplementation project(':TestUtils')
     testImplementation project(':Venmo')

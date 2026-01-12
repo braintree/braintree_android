@@ -1,17 +1,23 @@
 package com.braintreepayments.api.core
 
 import com.braintreepayments.api.sharedutils.HttpClient
+import com.braintreepayments.api.sharedutils.HttpResponse
+import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.Method
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.sharedutils.OkHttpRequest
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.FixturesHelper
+import io.mockk.coEvery
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
-import io.mockk.runs
 import io.mockk.slot
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -21,18 +27,23 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class BraintreeHttpClientUnitTest {
 
+    private val testDispatcher = StandardTestDispatcher()
     private lateinit var httpClient: HttpClient
     private lateinit var configuration: Configuration
     private lateinit var callback: NetworkResponseCallback
+    private lateinit var sut: BraintreeHttpClient
 
     @Before
     fun beforeEach() {
         httpClient = mockk(relaxed = true)
         configuration = mockk()
         callback = mockk(relaxed = true)
+        val testScope = TestScope(testDispatcher)
+        sut = BraintreeHttpClient(httpClient, testDispatcher, testScope)
 
         every { configuration.clientApiUrl } returns "https://api.braintreegateway.com/"
     }
@@ -40,31 +51,40 @@ class BraintreeHttpClientUnitTest {
     // GET method tests
 
     @Test
-    fun `when get is called with TokenizationKey, correct request is sent`() {
+    fun `when get is called with TokenizationKey, correct request is sent`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val requestSlot = slot<OkHttpRequest>()
-        every { httpClient.sendRequest(capture(requestSlot), callback) } just runs
+        val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
+        coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.get("v1/payment_methods", configuration, tokenizationKey, callback)
+
+        advanceUntilIdle()
 
         val request = requestSlot.captured
         assertEquals("https://api.braintreegateway.com/v1/payment_methods", request.url)
         assertTrue(request.method is Method.Get)
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, request.headers["User-Agent"])
         assertEquals(Fixtures.TOKENIZATION_KEY, request.headers["Client-Key"])
+        verify {
+            callback.onResult(match { it is NetworkResponseCallback.Result.Success })
+        }
     }
 
     @Test
-    fun `when get is called with ClientToken, authorization fingerprint is appended to URL and header`() {
+    fun `when get is called with ClientToken, authorization fingerprint is appended to URL and header`() =
+        runTest(testDispatcher) {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
         val requestSlot = slot<OkHttpRequest>()
-        every { httpClient.sendRequest(capture(requestSlot), callback) } just runs
+        val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
+        coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.get("v1/payment_methods", configuration, clientToken, callback)
+
+        advanceUntilIdle()
 
         val request = requestSlot.captured
         val expectedUrl =
@@ -72,31 +92,35 @@ class BraintreeHttpClientUnitTest {
         assertEquals(expectedUrl, request.url)
         assertEquals("Bearer ${clientToken.bearer}", request.headers["Authorization"])
         assertNull(request.headers["Client-Key"])
+        verify {
+            callback.onResult(match { it is NetworkResponseCallback.Result.Success })
+        }
     }
 
     @Test
-    fun `when get is called with absolute URL, configuration base URL is ignored`() {
+    fun `when get is called with absolute URL, configuration base URL is ignored`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val requestSlot = slot<OkHttpRequest>()
-        every { httpClient.sendRequest(capture(requestSlot), callback) } just runs
+        val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
+        coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.get("https://example.com/custom/path", configuration, tokenizationKey, callback)
+
+        advanceUntilIdle()
 
         val request = requestSlot.captured
         assertEquals("https://example.com/custom/path", request.url)
+        verify {
+            callback.onResult(match { it is NetworkResponseCallback.Result.Success })
+        }
     }
 
     @Test
-    fun `when get is called with null configuration and relative path, BraintreeException is thrown`() {
+    fun `when get is called with null configuration and relative path, BraintreeException is thrown`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
-        every {
-            callback.onResult(
-                match { it is NetworkResponseCallback.Result.Failure && it.error is BraintreeException }
-            )
-        } just runs
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.get("v1/payment_methods", null, tokenizationKey, callback)
 
         verify {
@@ -109,10 +133,10 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when get is called with InvalidAuthorization, callback is called with error`() {
+    fun `when get is called with InvalidAuthorization, callback is called with error`() =
+        runTest(testDispatcher) {
         val invalidAuth = InvalidAuthorization("invalid_token", "Invalid token")
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.get("v1/payment_methods", configuration, invalidAuth, callback)
 
         verify {
@@ -125,30 +149,39 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when get is called with authorization bearer, Authorization header is added`() {
+    fun `when get is called with authorization bearer, Authorization header is added`() =
+        runTest(testDispatcher) {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
         val requestSlot = slot<OkHttpRequest>()
-        every { httpClient.sendRequest(capture(requestSlot), callback) } just runs
+        val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
+        coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.get("v1/payment_methods", configuration, clientToken, callback)
+
+        advanceUntilIdle()
 
         val request = requestSlot.captured
         assertEquals("Bearer ${clientToken.bearer}", request.headers["Authorization"])
+        verify {
+            callback.onResult(match { it is NetworkResponseCallback.Result.Success })
+        }
     }
 
     // POST method tests
 
     @Test
-    fun `when post is called with TokenizationKey, correct request is sent`() {
+    fun `when post is called with TokenizationKey, correct request is sent`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val requestSlot = slot<OkHttpRequest>()
-        every { httpClient.sendRequest(capture(requestSlot), callback) } just runs
+        val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
+        coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.post("v1/payment_methods", "{\"test\":\"data\"}", configuration, tokenizationKey, callback = callback)
+
+        advanceUntilIdle()
 
         val request = requestSlot.captured
         assertEquals("https://api.braintreegateway.com/v1/payment_methods", request.url)
@@ -157,18 +190,24 @@ class BraintreeHttpClientUnitTest {
         assertEquals("{\"test\":\"data\"}", postMethod.body)
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, request.headers["User-Agent"])
         assertEquals(Fixtures.TOKENIZATION_KEY, request.headers["Client-Key"])
+        verify {
+            callback.onResult(match { it is NetworkResponseCallback.Result.Success })
+        }
     }
 
     @Test
-    fun `when post is called with ClientToken, authorization fingerprint is added to request body`() {
+    fun `when post is called with ClientToken, authorization fingerprint is added to request body`() =
+        runTest(testDispatcher) {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
         val requestSlot = slot<OkHttpRequest>()
-        every { httpClient.sendRequest(capture(requestSlot), callback) } just runs
+        val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
+        coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.post("v1/payment_methods", "{}", configuration, clientToken, callback = callback)
+
+        advanceUntilIdle()
 
         val request = requestSlot.captured
         val postMethod = request.method as Method.Post
@@ -176,16 +215,20 @@ class BraintreeHttpClientUnitTest {
         assertTrue(postMethod.body.contains(clientToken.authorizationFingerprint))
         assertEquals("Bearer ${clientToken.bearer}", request.headers["Authorization"])
         assertNull(request.headers["Client-Key"])
+        verify {
+            callback.onResult(match { it is NetworkResponseCallback.Result.Success })
+        }
     }
 
     @Test
-    fun `when post is called with additional headers, headers are included in request`() {
+    fun `when post is called with additional headers, headers are included in request`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val additionalHeaders = mapOf("X-Custom-Header" to "custom-value", "Accept" to "application/json")
         val requestSlot = slot<OkHttpRequest>()
-        every { httpClient.sendRequest(capture(requestSlot), callback) } just runs
+        val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
+        coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.post(
             "v1/payment_methods",
             "{}",
@@ -195,29 +238,40 @@ class BraintreeHttpClientUnitTest {
             callback
         )
 
+        advanceUntilIdle()
+
         val request = requestSlot.captured
         assertEquals("custom-value", request.headers["X-Custom-Header"])
         assertEquals("application/json", request.headers["Accept"])
+        verify {
+            callback.onResult(match { it is NetworkResponseCallback.Result.Success })
+        }
     }
 
     @Test
-    fun `when post is called with absolute URL, configuration base URL is ignored`() {
+    fun `when post is called with absolute URL, configuration base URL is ignored`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val requestSlot = slot<OkHttpRequest>()
-        every { httpClient.sendRequest(capture(requestSlot), callback) } just runs
+        val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
+        coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.post("https://example.com/custom/path", "{}", configuration, tokenizationKey, callback = callback)
+
+        advanceUntilIdle()
 
         val request = requestSlot.captured
         assertEquals("https://example.com/custom/path", request.url)
+        verify {
+            callback.onResult(match { it is NetworkResponseCallback.Result.Success })
+        }
     }
 
     @Test
-    fun `when post is called with null configuration and relative path, BraintreeException is thrown`() {
+    fun `when post is called with null configuration and relative path, BraintreeException is thrown`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.post("v1/payment_methods", "{}", null, tokenizationKey, callback = callback)
 
         verify {
@@ -230,10 +284,10 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when post is called with InvalidAuthorization, callback is called with error`() {
+    fun `when post is called with InvalidAuthorization, callback is called with error`() =
+        runTest(testDispatcher) {
         val invalidAuth = InvalidAuthorization("invalid_token", "Invalid token")
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.post("v1/payment_methods", "{}", configuration, invalidAuth, callback = callback)
 
         verify {
@@ -246,12 +300,12 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when post is called with invalid JSON in ClientToken request body, callback is called with JSONException`() {
+    fun `when post is called with invalid JSON, callback is called with JSONException`() =
+        runTest(testDispatcher) {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.post("v1/payment_methods", "invalid json", configuration, clientToken, callback = callback)
 
         verify {
@@ -263,32 +317,32 @@ class BraintreeHttpClientUnitTest {
     }
 
     @Test
-    fun `when post is called with null callback and InvalidAuthorization, request does not crash`() {
+    fun `when post is called with null callback and InvalidAuthorization, request does not crash`() =
+        runTest(testDispatcher) {
         val invalidAuth = InvalidAuthorization("invalid_token", "Invalid token")
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.post("v1/payment_methods", "{}", configuration, invalidAuth, callback = null)
 
         // Should not crash
     }
 
     @Test
-    fun `when post is called with null callback and JSON exception occurs, request does not crash`() {
+    fun `when post is called with null callback and JSON exception occurs, request does not crash`() =
+        runTest(testDispatcher) {
         val clientToken = Authorization.fromString(
             FixturesHelper.base64Encode(Fixtures.CLIENT_TOKEN)
         ) as ClientToken
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.post("v1/payment_methods", "invalid json", configuration, clientToken, callback = null)
 
         // Should not crash
     }
 
     @Test
-    fun `when post is called with null callback and BraintreeException occurs, request does not crash`() {
+    fun `when post is called with null callback and BraintreeException occurs, request does not crash`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.post("v1/payment_methods", "{}", null, tokenizationKey, callback = null)
 
         // Should not crash
@@ -297,56 +351,80 @@ class BraintreeHttpClientUnitTest {
     // Header assembly tests
 
     @Test
-    fun `when assembleHeaders is called, User-Agent header is included`() {
+    fun `when assembleHeaders is called, User-Agent header is included`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val requestSlot = slot<OkHttpRequest>()
-        every { httpClient.sendRequest(capture(requestSlot), callback) } just runs
+        val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
+        coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.get("v1/payment_methods", configuration, tokenizationKey, callback)
+
+        advanceUntilIdle()
 
         val request = requestSlot.captured
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, request.headers["User-Agent"])
+        verify {
+            callback.onResult(match { it is NetworkResponseCallback.Result.Success })
+        }
     }
 
     @Test
-    fun `when assembleHeaders is called with null bearer, Authorization header is not included`() {
+    fun `when assembleHeaders is called with null bearer, Authorization header is not included`() =
+        runTest(testDispatcher) {
         val authorization = mockk<Authorization>()
         every { authorization.bearer } returns null
         val requestSlot = slot<OkHttpRequest>()
-        every { httpClient.sendRequest(capture(requestSlot), callback) } just runs
+        val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
+        coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.get("v1/payment_methods", configuration, authorization, callback)
+
+        advanceUntilIdle()
 
         val request = requestSlot.captured
         assertNull(request.headers["Authorization"])
         assertNull(request.headers["Client-Key"])
+        verify {
+            callback.onResult(match { it is NetworkResponseCallback.Result.Success })
+        }
     }
 
     @Test
-    fun `when get is called with null configuration and absolute URL, base URL is not set`() {
+    fun `when get is called with null configuration and absolute URL, base URL is not set`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val requestSlot = slot<OkHttpRequest>()
-        every { httpClient.sendRequest(capture(requestSlot), callback) } just runs
+        val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
+        coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.get("https://example.com/custom/path", null, tokenizationKey, callback)
 
+        advanceUntilIdle()
+
         val request = requestSlot.captured
         assertEquals("https://example.com/custom/path", request.url)
+        verify {
+            callback.onResult(match { it is NetworkResponseCallback.Result.Success })
+        }
     }
 
     @Test
-    fun `when post is called with null configuration and absolute URL, base URL is not set`() {
+    fun `when post is called with null configuration and absolute URL, base URL is not set`() =
+        runTest(testDispatcher) {
         val tokenizationKey = TokenizationKey(Fixtures.TOKENIZATION_KEY)
         val requestSlot = slot<OkHttpRequest>()
-        every { httpClient.sendRequest(capture(requestSlot), callback) } just runs
+        val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
+        coEvery { httpClient.sendRequest(capture(requestSlot)) } returns mockResponse
 
-        val sut = BraintreeHttpClient(httpClient)
         sut.post("https://example.com/custom/path", "{}", null, tokenizationKey, callback = callback)
+
+        advanceUntilIdle()
 
         val request = requestSlot.captured
         assertEquals("https://example.com/custom/path", request.url)
+        verify {
+            callback.onResult(match { it is NetworkResponseCallback.Result.Success })
+        }
     }
 }
