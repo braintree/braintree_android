@@ -35,7 +35,8 @@ fun PayPalButtonComposeImpl(
     authorization: String,
     appLinkReturnUrl: Uri,
     deepLinkFallbackUrlScheme: String,
-    payPalLaunchCallback: PayPalLaunchCallback? = null
+    paypalLaunchCallback: PayPalLaunchCallback? = null,
+    paypalTokenizeCallback: PayPalTokenizeCallback
 ) {
     // this might not be needed with LifecycleResumeEffect
 //    val activityLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
@@ -66,13 +67,14 @@ fun PayPalButtonComposeImpl(
                     )
                     when (payPalPendingRequest) {
                         is PayPalPendingRequest.Started -> {
-                            payPalLaunchCallback?.onPayPalPaymentAuthRequest(
+                            paypalLaunchCallback?.onPayPalPaymentAuthRequest(
                                 PayPalPendingRequest.Started(payPalPendingRequest.pendingRequestString)
                             )
+                            storePayPalPendingRequest(PayPalPendingRequest.Started(payPalPendingRequest.pendingRequestString))
                         }
 
                         is PayPalPendingRequest.Failure -> {
-                            payPalLaunchCallback?.onPayPalPaymentAuthRequest(
+                            paypalLaunchCallback?.onPayPalPaymentAuthRequest(
                                 PayPalPendingRequest.Failure(payPalPendingRequest.error)
                             )
                         }
@@ -81,7 +83,7 @@ fun PayPalButtonComposeImpl(
                 }
 
                 is PayPalPaymentAuthRequest.Failure -> {
-                    payPalLaunchCallback?.onPayPalPaymentAuthRequest(
+                    paypalLaunchCallback?.onPayPalPaymentAuthRequest(
                         PayPalPendingRequest.Failure(paymentAuthRequest.error)
                     )
                 }
@@ -91,29 +93,30 @@ fun PayPalButtonComposeImpl(
 
     LifecycleResumeEffect(Unit) {
         // Do something on resume or launch effect
-        val pendingRequest = PayPalPendingRequest.Started("someString") //getPendingRequestFromSavedStore()
+        val pendingRequest = getPayPalPendingRequest()
 
         activity?.intent?.let { intent ->
-            handleReturnToApp(payPalLauncher, payPalClient, pendingRequest, intent) {
-                PayPalTokenizeCallback { payPalResult: PayPalResult? ->
-                    if (payPalResult is PayPalResult.Success) {
-                        Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
-//                        handlePayPalResult(payPalResult.nonce)
-                    } else if (payPalResult is PayPalResult.Cancel) {
-                        Toast.makeText(context, "Canceled", Toast.LENGTH_SHORT).show()
-//                        handleError(Exception("User did not complete payment flow"))
-                    } else if (payPalResult is PayPalResult.Failure) {
-                        Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show()
-//                        handleError(payPalResult.error)
-                    }
-                }
-            }
+            handleReturnToApp(payPalLauncher, payPalClient, pendingRequest, intent, paypalTokenizeCallback)
         }
 
         onPauseOrDispose {
             // Do something on pause or dispose effect
         }
     }
+}
+
+private var pendingRequest: String? = null
+
+private fun storePayPalPendingRequest(request: PayPalPendingRequest.Started) {
+    pendingRequest = request.pendingRequestString
+}
+
+private fun getPayPalPendingRequest(): PayPalPendingRequest.Started {
+    return PayPalPendingRequest.Started(pendingRequest ?: "")
+}
+
+private fun clearPayPalPendingRequest() {
+    pendingRequest = null
 }
 
 fun Context.findActivity(): Activity? = when (this) {
@@ -164,11 +167,15 @@ fun PayPalButtonCompose(color: PayPalButtonColor, enabled: Boolean = true, loadi
         }
     }
     Column(
-        modifier = Modifier.fillMaxWidth().height(64.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp)
     ) {
         Button(
             onClick = { onClick() },
-            modifier = Modifier.height(48.dp).width(200.dp),
+            modifier = Modifier
+                .height(48.dp)
+                .width(200.dp),
             colors = ButtonDefaults.buttonColors(containerColor = color)) {
             if(!loading && enabled) {
                 Text(text = "Fancy PayPal Button")
