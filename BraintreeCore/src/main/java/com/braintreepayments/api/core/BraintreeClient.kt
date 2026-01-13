@@ -8,8 +8,13 @@ import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
 
 /**
  * Core Braintree class that handles network requests.
@@ -30,6 +35,8 @@ class BraintreeClient internal constructor(
     private val manifestValidator: ManifestValidator = ManifestValidator(),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val analyticsClient: AnalyticsClient = AnalyticsClient(),
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(mainDispatcher),
 ) {
 
     private val crashReporter: CrashReporter
@@ -196,36 +203,34 @@ class BraintreeClient internal constructor(
     fun sendGraphQLPOST(json: JSONObject, responseCallback: HttpResponseCallback) {
         getConfiguration { configuration, configError ->
             if (configuration != null) {
-                graphQLClient.post(
-                    data = json.toString(),
-                    configuration = configuration,
-                    authorization = merchantRepository.authorization
-                ) { result ->
-                    when (result) {
-                        is NetworkResponseCallback.Result.Success -> {
-                            try {
-                                val query = json.optString(GraphQLConstants.Keys.QUERY)
-                                val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
-                                val finalQuery = query.replace(queryDiscardHolder, "")
-                                val params = AnalyticsEventParams(
-                                    startTime = result.response.timing.startTime,
-                                    endTime = result.response.timing.endTime,
-                                    endpoint = finalQuery
-                                )
-                                sendAnalyticsEvent(
-                                    eventName = CoreAnalytics.API_REQUEST_LATENCY,
-                                    params = params,
-                                    sendImmediately = false
-                                )
-                                responseCallback.onResult(result.response.body, null)
-                            } catch (jsonException: JSONException) {
-                                responseCallback.onResult(null, jsonException)
-                            }
-                        }
+                coroutineScope.launch {
+                    try {
+                        val response = graphQLClient.post(
+                            data = json.toString(),
+                            configuration = configuration,
+                            authorization = merchantRepository.authorization
+                        )
 
-                        is NetworkResponseCallback.Result.Failure -> {
-                            responseCallback.onResult(null, result.error)
+                        try {
+                            val query = json.optString(GraphQLConstants.Keys.QUERY)
+                            val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
+                            val finalQuery = query.replace(queryDiscardHolder, "")
+                            val params = AnalyticsEventParams(
+                                startTime = response.timing.startTime,
+                                endTime = response.timing.endTime,
+                                endpoint = finalQuery
+                            )
+                            sendAnalyticsEvent(
+                                eventName = CoreAnalytics.API_REQUEST_LATENCY,
+                                params = params,
+                                sendImmediately = false
+                            )
+                            responseCallback.onResult(response.body, null)
+                        } catch (jsonException: JSONException) {
+                            responseCallback.onResult(null, jsonException)
                         }
+                    } catch (e: IOException) {
+                        responseCallback.onResult(null, e)
                     }
                 }
             } else {
