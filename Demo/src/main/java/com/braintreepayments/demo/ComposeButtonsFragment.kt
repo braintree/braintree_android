@@ -8,11 +8,9 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.core.net.toUri
 import androidx.navigation.fragment.NavHostFragment
 import com.braintreepayments.api.core.PaymentMethodNonce
-import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayPalButtonComposeImpl
-import com.braintreepayments.api.uicomponents.PayPalLaunchCallback
 
 class ComposeButtonsFragment : BaseFragment() {
 
@@ -38,14 +36,6 @@ class ComposeButtonsFragment : BaseFragment() {
         )
 
         return ComposeView(requireContext()).apply {
-            val payPalLaunchCallback = PayPalLaunchCallback { request: PayPalPendingRequest? ->
-                if (request is PayPalPendingRequest.Started) {
-                    storePayPalPendingRequest(request)
-                } else if (request is PayPalPendingRequest.Failure) {
-                    handleError(request.error)
-                }
-            }
-
             val paypalTokenizeCallback = PayPalTokenizeCallback { payPalResult ->
                 when (payPalResult) {
                     is PayPalResult.Success -> {
@@ -67,7 +57,6 @@ class ComposeButtonsFragment : BaseFragment() {
                     authorization = authStringArg,
                     appLinkReturnUrl = "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments".toUri(),
                     deepLinkFallbackUrlScheme = "com.braintreepayments.demo.braintree",
-                    paypalLaunchCallback = payPalLaunchCallback,
                     paypalTokenizeCallback = paypalTokenizeCallback
                 )
             }
@@ -84,17 +73,5 @@ class ComposeButtonsFragment : BaseFragment() {
                 )
             NavHostFragment.findNavController(this).navigate(action)
         }
-    }
-
-    private fun storePayPalPendingRequest(request: PayPalPendingRequest.Started) {
-        PendingRequestStore.getInstance().putPayPalPendingRequest(requireContext(), request)
-    }
-
-    private fun getPayPalPendingRequest(): PayPalPendingRequest.Started? {
-        return PendingRequestStore.getInstance().getPayPalPendingRequest(requireContext())
-    }
-
-    private fun clearPayPalPendingRequest() {
-        PendingRequestStore.getInstance().clearPayPalPendingRequest(requireContext())
     }
 }

@@ -45,6 +45,7 @@ leakcanary = "2.12"
 deviceAutomator = "1.0.0"
 btCardForm = "5.4.0"
 runtime = "1.10.0"
+androidComposeViewModel = "2.5.1"
 
 [libraries]
 # Androidx
@@ -95,6 +96,7 @@ androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "andr
 androidx-legacy-support-v4 = { module = "androidx.legacy:legacy-support-v4", version.ref = "androidxLegacySupportV4" }
 androidx-lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensions", version.ref = "androidxLifecycleExtensions" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidxLifecycleExtensions" }
+androidx-compose-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref ="androidComposeViewModel"  }
 android-compose = { module = "androidx.activity:activity-compose", version.ref = "androidCompose"  }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidxComposeBom" }
 androidx-material3 = { module = "androidx.compose.material3:material3" }
