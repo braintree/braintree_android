@@ -6,6 +6,10 @@ import android.content.ContextWrapper
 import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -32,6 +36,8 @@ fun PayPalButtonComposeImpl(
     val context = LocalContext.current
     val activity = context.findActivity()
 
+    var loading by remember { mutableStateOf(false) }
+
     val viewModel: PayPalComposeButtonViewModel = viewModel { PayPalComposeButtonViewModel() }
 
     val payPalLauncher = PayPalLauncher()
@@ -41,7 +47,8 @@ fun PayPalButtonComposeImpl(
         appLinkReturnUrl = appLinkReturnUrl,
         deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
     )
-    PayPalButtonCompose(color = PayPalButtonColor.Blue, enabled = true, loading = false) {
+    PayPalButtonCompose(color = PayPalButtonColor.Blue, enabled = true, loading = loading) {
+        loading = true
         payPalClient.createPaymentAuthRequest(
             context = context,
             payPalRequest = payPalRequest
@@ -65,6 +72,7 @@ fun PayPalButtonComposeImpl(
 
         activity?.intent?.let { intent ->
             viewModel.handleReturnToApp(payPalLauncher, payPalClient, pendingRequest, intent, paypalTokenizeCallback)
+            loading = false
             viewModel.clearPayPalPendingRequest()
             activity.intent.data = null
         }

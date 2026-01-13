@@ -52,6 +52,5 @@ class PayPalComposeButtonViewModel: ViewModel() {
                 callback.onPayPalResult(PayPalResult.Failure(paymentAuthResult.error))
             }
         }
-//    setButtonReEnabled()
     }
 }
