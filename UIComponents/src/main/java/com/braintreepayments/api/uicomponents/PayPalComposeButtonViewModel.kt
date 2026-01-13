@@ -1,6 +1,7 @@
 package com.braintreepayments.api.uicomponents
 
 import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher

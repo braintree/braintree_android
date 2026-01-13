@@ -48,31 +48,12 @@ fun PayPalButtonComposeImpl(
         ) { paymentAuthRequest: PayPalPaymentAuthRequest ->
             when (paymentAuthRequest) {
                 is PayPalPaymentAuthRequest.ReadyToLaunch -> {
-                    val payPalPendingRequest = payPalLauncher.launch(
-                        activity = activity as ComponentActivity,
-                        paymentAuthRequest = paymentAuthRequest
-                    )
-                    when (payPalPendingRequest) {
-                        is PayPalPendingRequest.Started -> {
-//                            paypalLaunchCallback?.onPayPalPaymentAuthRequest(
-//                                PayPalPendingRequest.Started(payPalPendingRequest.pendingRequestString)
-//                            )
-                            viewModel.storePayPalPendingRequest(PayPalPendingRequest.Started(payPalPendingRequest.pendingRequestString))
-                        }
-
-                        is PayPalPendingRequest.Failure -> {
-//                            paypalLaunchCallback?.onPayPalPaymentAuthRequest(
-//                                PayPalPendingRequest.Failure(payPalPendingRequest.error)
-//                            )
-                        }
+                    activity?.let {
+                        completePayPalFlow(payPalLauncher, it, paymentAuthRequest, viewModel)
                     }
-//                    completePayPalFlow(paymentAuthRequest)
                 }
 
                 is PayPalPaymentAuthRequest.Failure -> {
-//                    paypalLaunchCallback?.onPayPalPaymentAuthRequest(
-//                        PayPalPendingRequest.Failure(paymentAuthRequest.error)
-//                    )
                 }
             }
         }
@@ -84,11 +65,28 @@ fun PayPalButtonComposeImpl(
 
         activity?.intent?.let { intent ->
             viewModel.handleReturnToApp(payPalLauncher, payPalClient, pendingRequest, intent, paypalTokenizeCallback)
+            viewModel.clearPayPalPendingRequest()
+            activity.intent.data = null
         }
 
         onPauseOrDispose {
             // Do something on pause or dispose effect
-            viewModel.clearPayPalPendingRequest()
+//            viewModel.clearPayPalPendingRequest()
+        }
+    }
+}
+
+fun completePayPalFlow(payPalLauncher: PayPalLauncher, activity: Activity, paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch, viewModel: PayPalComposeButtonViewModel) {
+    val payPalPendingRequest = payPalLauncher.launch(
+        activity = activity as ComponentActivity,
+        paymentAuthRequest = paymentAuthRequest
+    )
+    when (payPalPendingRequest) {
+        is PayPalPendingRequest.Started -> {
+            viewModel.storePayPalPendingRequest(PayPalPendingRequest.Started(payPalPendingRequest.pendingRequestString))
+        }
+
+        is PayPalPendingRequest.Failure -> {
         }
     }
 }
