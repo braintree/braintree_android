@@ -450,7 +450,7 @@ class BraintreeClientUnitTest {
         manifestValidator = manifestValidator,
         configurationLoader = configurationLoader,
         merchantRepository = merchantRepository,
-        mainDispatcher = testDispatcher ?: kotlinx.coroutines.Dispatchers.Main,
+        dispatcher = testDispatcher ?: kotlinx.coroutines.Dispatchers.Main,
         coroutineScope = testScope ?: kotlinx.coroutines
             .CoroutineScope(testDispatcher ?: kotlinx.coroutines.Dispatchers.Main)
     )

@@ -35,8 +35,8 @@ class BraintreeClient internal constructor(
     private val manifestValidator: ManifestValidator = ManifestValidator(),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val analyticsClient: AnalyticsClient = AnalyticsClient(),
-    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
-    private val coroutineScope: CoroutineScope = CoroutineScope(mainDispatcher),
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher),
 ) {
 
     private val crashReporter: CrashReporter
