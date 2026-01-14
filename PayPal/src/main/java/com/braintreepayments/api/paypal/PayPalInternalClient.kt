@@ -141,7 +141,6 @@ internal class PayPalInternalClient(
                     }
                     dataCollector.getClientMetadataId(context, dataCollectorRequest, configuration)
                 }
-
                 val returnLink: String = when (val returnLinkResult = getReturnLinkUseCase(parsedRedirectUri)) {
                     is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> returnLinkResult.appLinkReturnUri.toString()
                     is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> returnLinkResult.deepLinkFallbackUrlScheme
@@ -159,8 +158,8 @@ internal class PayPalInternalClient(
                 )
                 if (getAppSwitchUseCase()) {
                     if (!contextId.isNullOrEmpty()) {
-                        val flowType = if (payPalRequest.isBillingAgreement()) "va" else "ecs"
-                        val uri = createAppSwitchUri(parsedRedirectUri, configuration.merchantId, flowType)
+                        val merchantId = configuration.merchantId
+                        val uri = createAppSwitchUri(parsedRedirectUri, merchantId, payPalRequest)
                         paymentAuthRequest.approvalUrl = uri.toString()
                     } else {
                         callback.onResult(null, BraintreeException("Missing Token for PayPal App Switch."))
@@ -183,15 +182,23 @@ internal class PayPalInternalClient(
      * These parameters support observability for BT SDK app switch integrations.
      *
      * @param uri The base [Uri] to build upon.
-     * @param flowType The checkout flow type.
      * @param merchantId The merchant ID for the integration.
+     * @param payPalRequest The original [PayPalRequest] associated to the request.
      */
-    private fun createAppSwitchUri(uri: Uri, merchantId: String, flowType: String): Uri {
+    private fun createAppSwitchUri(
+        uri: Uri,
+        merchantId: String,
+        payPalRequest: PayPalRequest
+    ): Uri {
+        val flowType = if (payPalRequest.isBillingAgreement()) "va" else "ecs"
+        val fundingSource = payPalRequest.getFundingSource()
+
         return uri.buildUpon()
             .appendQueryParameter("source", "braintree_sdk")
             .appendQueryParameter("switch_initiated_time", System.currentTimeMillis().toString())
             .appendQueryParameter("merchant", merchantId)
             .appendQueryParameter("flow_type", flowType)
+            .appendQueryParameter("fundingSource", fundingSource.value)
             .build()
     }
 

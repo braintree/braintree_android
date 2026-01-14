@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+    * Pass `fundingSource` to the app switch url link and to analytics events.
+
 ## 5.21.0 (2026-01-05)
 
 * UIComponents

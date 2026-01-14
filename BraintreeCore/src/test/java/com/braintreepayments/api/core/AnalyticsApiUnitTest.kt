@@ -59,7 +59,8 @@ class AnalyticsApiUnitTest {
         didEnablePayPalAppSwitch = true,
         didPayPalServerAttemptAppSwitch = true,
         didSdkAttemptAppSwitch = true,
-        errorDescription = "error-description"
+        errorDescription = "error-description",
+        fundingSource = "funding-source"
     )
 
     private val tokenizationKeyEvent = AnalyticsEvent(
@@ -80,7 +81,8 @@ class AnalyticsApiUnitTest {
         didEnablePayPalAppSwitch = true,
         didPayPalServerAttemptAppSwitch = true,
         didSdkAttemptAppSwitch = true,
-        errorDescription = "error-description"
+        errorDescription = "error-description",
+        fundingSource = "funding-source"
     )
 
     @Before
@@ -200,6 +202,7 @@ class AnalyticsApiUnitTest {
                                     "experiment": "${tokenizationKeyEvent.experiment}",
                                     "shopper_session_id": "${tokenizationKeyEvent.shopperSessionId}",
                                     "error_desc": "${tokenizationKeyEvent.errorDescription}",
+                                    "funding_source": "${tokenizationKeyEvent.fundingSource}",
                                     "event_name": "${tokenizationKeyEvent.name}",
                                     "button_position": "${tokenizationKeyEvent.buttonOrder}",
                                     "context_type": "EC-TOKEN",
@@ -258,6 +261,7 @@ class AnalyticsApiUnitTest {
                                     "experiment": "${clientTokenEvent.experiment}",
                                     "shopper_session_id": "${clientTokenEvent.shopperSessionId}",
                                     "error_desc": "${clientTokenEvent.errorDescription}",
+                                    "funding_source": "${clientTokenEvent.fundingSource}",
                                     "event_name": "${clientTokenEvent.name}",
                                     "button_position": "${clientTokenEvent.buttonOrder}",
                                     "context_type": "BA-TOKEN",
