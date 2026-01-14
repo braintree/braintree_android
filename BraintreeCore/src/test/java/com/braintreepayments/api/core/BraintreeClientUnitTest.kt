@@ -7,14 +7,28 @@ import androidx.fragment.app.FragmentActivity
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.braintreepayments.api.BrowserSwitchClient
+import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
+import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
 import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.testutils.Fixtures
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.json.JSONObject
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -259,28 +273,43 @@ class BraintreeClientUnitTest {
         assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun sendGraphQLPOST_onGetConfigurationSuccess_forwardsRequestToHttpClient() {
+    fun sendGraphQLPOST_onGetConfigurationSuccess_forwardsRequestToHttpClient() = runTest {
         val configuration = mockk<Configuration>(relaxed = true)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
 
-        val sut = createBraintreeClient(configurationLoader)
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        val networkResponseCallbackSlot = slot<NetworkResponseCallback>()
-
-        sut.sendGraphQLPOST(JSONObject(), httpResponseCallback)
-        verify {
+        val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
+        coEvery {
             braintreeGraphQLClient.post(
                 "{}",
                 configuration,
-                authorization,
-                capture(networkResponseCallbackSlot)
+                authorization
+            )
+        } returns mockResponse
+
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        val sut = createBraintreeClient(
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
+        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
+
+        sut.sendGraphQLPOST(JSONObject(), httpResponseCallback)
+        advanceUntilIdle()
+
+        coVerify {
+            braintreeGraphQLClient.post(
+                "{}",
+                configuration,
+                authorization
             )
         }
-
-        assertTrue(networkResponseCallbackSlot.isCaptured)
+        verify { httpResponseCallback.onResult("{}", null) }
     }
 
     @Test
@@ -402,10 +431,13 @@ class BraintreeClientUnitTest {
         verify(exactly = 0) { merchantRepository.appLinkReturnUri = null }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun createBraintreeClient(
         configurationLoader: ConfigurationLoader = mockk(),
         appLinkReturnUri: Uri? = Uri.parse("https://example.com"),
-        merchantRepository: MerchantRepository = MerchantRepository.instance
+        merchantRepository: MerchantRepository = MerchantRepository.instance,
+        testDispatcher: kotlinx.coroutines.CoroutineDispatcher? = null,
+        testScope: kotlinx.coroutines.CoroutineScope? = null
     ) = BraintreeClient(
         applicationContext = applicationContext,
         integrationType = IntegrationType.CUSTOM,
@@ -418,5 +450,8 @@ class BraintreeClientUnitTest {
         manifestValidator = manifestValidator,
         configurationLoader = configurationLoader,
         merchantRepository = merchantRepository,
+        dispatcher = testDispatcher ?: kotlinx.coroutines.Dispatchers.Main,
+        coroutineScope = testScope ?: kotlinx.coroutines
+            .CoroutineScope(testDispatcher ?: kotlinx.coroutines.Dispatchers.Main)
     )
 }

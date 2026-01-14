@@ -1,32 +1,27 @@
 package com.braintreepayments.api.core
 
 import com.braintreepayments.api.sharedutils.HttpClient
+import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.Method
-import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.sharedutils.OkHttpRequest
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.io.IOException
 import java.util.Locale
 
 internal class BraintreeGraphQLClient(
     private val httpClient: HttpClient = HttpClient(),
-    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
-    private val coroutineScope: CoroutineScope = CoroutineScope(mainDispatcher),
 ) {
 
-    fun post(
+    /**
+     * @throws BraintreeException if authorization is invalid
+     * @throws Exception if the network request fails
+     */
+    suspend fun post(
         data: String,
         configuration: Configuration,
         authorization: Authorization,
-        callback: NetworkResponseCallback
-    ) {
+    ): HttpResponse {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
-            callback.onResult(NetworkResponseCallback.Result.Failure(BraintreeException(message)))
-            return
+            throw BraintreeException(message)
         }
 
         val request = OkHttpRequest(
@@ -39,13 +34,6 @@ internal class BraintreeGraphQLClient(
             )
         )
 
-        coroutineScope.launch {
-            try {
-                val response = httpClient.sendRequest(request)
-                callback.onResult(NetworkResponseCallback.Result.Success(response))
-            } catch (e: IOException) {
-                callback.onResult(NetworkResponseCallback.Result.Failure(e))
-            }
-        }
+        return httpClient.sendRequest(request)
     }
 }
