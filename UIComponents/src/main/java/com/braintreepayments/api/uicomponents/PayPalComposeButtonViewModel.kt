@@ -10,20 +10,20 @@ import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 
-class PayPalComposeButtonViewModel: ViewModel() {
-
-    private var pendingRequest: String? = null
-
-    fun storePayPalPendingRequest(request: PayPalPendingRequest.Started) {
-        pendingRequest = request.pendingRequestString
-    }
+internal class PayPalComposeButtonViewModel(
+    val repository: PayPalPendingRequestRepository
+): ViewModel() {
 
     fun getPayPalPendingRequest(): PayPalPendingRequest.Started {
-        return PayPalPendingRequest.Started(pendingRequest ?: "")
+        return PayPalPendingRequest.Started(repository.pendingRequest ?: "")
+    }
+
+    fun storePayPalPendingRequest(request: PayPalPendingRequest.Started) {
+        repository.pendingRequest = request.pendingRequestString
     }
 
     fun clearPayPalPendingRequest() {
-        pendingRequest = null
+        repository.pendingRequest = null
     }
 
     fun handleReturnToApp(

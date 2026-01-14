@@ -38,7 +38,8 @@ fun PayPalButtonComposeImpl(
 
     var loading by remember { mutableStateOf(false) }
 
-    val viewModel: PayPalComposeButtonViewModel = viewModel { PayPalComposeButtonViewModel() }
+    val viewModel: PayPalComposeButtonViewModel =
+        viewModel { PayPalComposeButtonViewModel(PayPalPendingRequestRepository()) }
 
     val payPalLauncher = PayPalLauncher()
     val payPalClient = PayPalClient(
@@ -47,7 +48,7 @@ fun PayPalButtonComposeImpl(
         appLinkReturnUrl = appLinkReturnUrl,
         deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
     )
-    PayPalButtonCompose(color = PayPalButtonColor.Blue, enabled = true, loading = loading) {
+    PayPalButtonCompose(color = PayPalButtonColor.Blue, loading = loading) {
         loading = true
         payPalClient.createPaymentAuthRequest(
             context = context,
@@ -84,7 +85,12 @@ fun PayPalButtonComposeImpl(
     }
 }
 
-fun completePayPalFlow(payPalLauncher: PayPalLauncher, activity: Activity, paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch, viewModel: PayPalComposeButtonViewModel) {
+internal fun completePayPalFlow(
+    payPalLauncher: PayPalLauncher,
+    activity: Activity,
+    paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch,
+    viewModel: PayPalComposeButtonViewModel
+) {
     val payPalPendingRequest = payPalLauncher.launch(
         activity = activity as ComponentActivity,
         paymentAuthRequest = paymentAuthRequest
