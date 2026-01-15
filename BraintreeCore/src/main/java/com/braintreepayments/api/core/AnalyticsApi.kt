@@ -1,5 +1,9 @@
 package com.braintreepayments.api.core
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -12,6 +16,8 @@ internal class AnalyticsApi(
     private val deviceInspector: DeviceInspector = DeviceInspectorProvider().deviceInspector,
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
 
     fun execute(
@@ -26,13 +32,14 @@ internal class AnalyticsApi(
             integration = merchantRepository.integrationType
         )
         val analyticsRequest = createFPTIPayload(merchantRepository.authorization, jsonEvents, metadata)
-        httpClient.post(
-            path = FPTI_ANALYTICS_URL,
-            data = analyticsRequest.toString(),
-            configuration = null,
-            authorization = merchantRepository.authorization,
-            callback = null
-        )
+        coroutineScope.launch {
+            httpClient.post(
+                path = FPTI_ANALYTICS_URL,
+                data = analyticsRequest.toString(),
+                configuration = null,
+                authorization = merchantRepository.authorization,
+                )
+        }
     }
 
     @Throws(JSONException::class)

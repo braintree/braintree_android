@@ -2,51 +2,39 @@ package com.braintreepayments.api.core
 
 import androidx.core.net.toUri
 import com.braintreepayments.api.sharedutils.HttpClient
+import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.Method
-import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.sharedutils.OkHttpRequest
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 
 /**
  * Network request class that handles Braintree request specifics and threading.
  */
 internal class BraintreeHttpClient(
     private val httpClient: HttpClient = HttpClient(),
-    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
-    private val coroutineScope: CoroutineScope = CoroutineScope(mainDispatcher),
 ) {
 
     /**
      * Make a HTTP GET request to Braintree using the base url, path and authorization provided.
      * If the path is a full url, it will be used instead of the previously provided url.
      */
-    fun get(
+    suspend fun get(
         path: String,
         configuration: Configuration?,
         authorization: Authorization?,
-        callback: NetworkResponseCallback
-    ) {
-        if (!validateAuthorization(authorization, callback)) return
+    ): HttpResponse {
 
-        val url = try {
-            val urlWithBase = assembleUrl(path, configuration)
+        validateAuthorization(authorization)
+
+        val url =
             if (authorization is ClientToken) {
+                val urlWithBase = assembleUrl(path, configuration)
                 urlWithBase.toUri().buildUpon()
                     .appendQueryParameter(AUTHORIZATION_FINGERPRINT_KEY, authorization.bearer)
                     .toString()
             } else {
-                urlWithBase
+                assembleUrl(path, configuration)
             }
-        } catch (e: BraintreeException) {
-            callback.onResult(NetworkResponseCallback.Result.Failure(e))
-            return
-        }
 
         val request = OkHttpRequest(
             method = Method.Get,
@@ -54,49 +42,33 @@ internal class BraintreeHttpClient(
             headers = assembleHeaders(authorization)
         )
 
-        coroutineScope.launch {
-            try {
-                val response = httpClient.sendRequest(request)
-                callback.onResult(NetworkResponseCallback.Result.Success(response))
-            } catch (e: IOException) {
-                callback.onResult(NetworkResponseCallback.Result.Failure(e))
-            }
-        }
+        return httpClient.sendRequest(request)
     }
 
     /**
      * Make a HTTP POST request to Braintree.
      * If the path is a full url, it will be used instead of the previously provided url.
      */
-    fun post(
+    suspend fun post(
         path: String,
         data: String,
         configuration: Configuration?,
         authorization: Authorization?,
         additionalHeaders: Map<String, String> = emptyMap(),
-        callback: NetworkResponseCallback?
-    ) {
-        if (!validateAuthorization(authorization, callback)) return
+    ): HttpResponse {
 
-        val requestBody = if (authorization is ClientToken) {
-            try {
+        validateAuthorization(authorization)
+
+        val requestBody =
+            if (authorization is ClientToken) {
                 JSONObject(data)
                     .put(AUTHORIZATION_FINGERPRINT_KEY, authorization.authorizationFingerprint)
                     .toString()
-            } catch (e: JSONException) {
-                callback?.onResult(NetworkResponseCallback.Result.Failure(e))
-                return
+            } else {
+                data
             }
-        } else {
-            data
-        }
 
-        val url = try {
-            assembleUrl(path, configuration)
-        } catch (e: BraintreeException) {
-            callback?.onResult(NetworkResponseCallback.Result.Failure(e))
-            return
-        }
+        val url = assembleUrl(path, configuration)
 
         val request = OkHttpRequest(
             method = Method.Post(requestBody),
@@ -104,25 +76,16 @@ internal class BraintreeHttpClient(
             headers = assembleHeaders(authorization, additionalHeaders)
         )
 
-        coroutineScope.launch {
-            try {
-                val response = httpClient.sendRequest(request)
-                callback?.onResult(NetworkResponseCallback.Result.Success(response))
-            } catch (e: IOException) {
-                callback?.onResult(NetworkResponseCallback.Result.Failure(e))
-            }
-        }
+        return httpClient.sendRequest(request)
     }
 
     private fun validateAuthorization(
         authorization: Authorization?,
-        callback: NetworkResponseCallback?
-    ): Boolean {
+    ) {
         if (authorization is InvalidAuthorization) {
-            callback?.onResult(NetworkResponseCallback.Result.Failure(BraintreeException(authorization.errorMessage)))
-            return false
+            val message = authorization.errorMessage
+            throw BraintreeException(message)
         }
-        return true
     }
 
     @Throws(BraintreeException::class)

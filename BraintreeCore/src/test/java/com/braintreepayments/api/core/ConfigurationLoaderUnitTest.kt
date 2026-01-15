@@ -3,20 +3,27 @@ package com.braintreepayments.api.core
 import android.util.Base64
 import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
-import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.testutils.Fixtures
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class ConfigurationLoaderUnitTest {
     private val configurationCache: ConfigurationCache = mockk(relaxed = true)
@@ -31,39 +38,28 @@ class ConfigurationLoaderUnitTest {
     @Before
     fun setUp() {
         every { merchantRepository.authorization } returns authorization
-
-        sut = ConfigurationLoader(
-            httpClient = braintreeHttpClient,
-            merchantRepository = merchantRepository,
-            configurationCache = configurationCache,
-            lazyAnalyticsClient = lazy { analyticsClient }
-        )
     }
 
     @Test
-    fun loadConfiguration_loadsConfigurationForTheCurrentEnvironment() {
+    fun loadConfiguration_loadsConfigurationForTheCurrentEnvironment() = runTest {
         every { authorization.configUrl } returns "https://example.com/config"
         every { merchantRepository.authorization } returns authorization
 
-        sut.loadConfiguration(callback)
-
-        val expectedConfigUrl = "https://example.com/config?configVersion=3"
-        val callbackSlot = slot<NetworkResponseCallback>()
-        verify {
+        val mockResponse = HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0))
+        coEvery {
             braintreeHttpClient.get(
-                expectedConfigUrl,
+                "https://example.com/config?configVersion=3",
                 null,
-                authorization,
-                capture(callbackSlot)
+                authorization
             )
-        }
+        } returns mockResponse
 
-        val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(
-            NetworkResponseCallback.Result.Success(
-                HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0))
-            )
-        )
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        sut = createConfigurationLoader(testDispatcher, testScope)
+
+        sut.loadConfiguration(callback)
+        advanceUntilIdle()
 
         val successSlot = slot<ConfigurationLoaderResult>()
         verify { callback.onResult(capture(successSlot)) }
@@ -72,29 +68,26 @@ class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    fun loadConfiguration_savesFetchedConfigurationToCache() {
+    fun loadConfiguration_savesFetchedConfigurationToCache() = runTest {
         every { authorization.configUrl } returns "https://example.com/config"
         every { authorization.bearer } returns "bearer"
 
-        sut.loadConfiguration(callback)
-
-        val expectedConfigUrl = "https://example.com/config?configVersion=3"
-        val callbackSlot = slot<NetworkResponseCallback>()
-        verify {
+        val mockResponse = HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0))
+        coEvery {
             braintreeHttpClient.get(
-                expectedConfigUrl,
+                "https://example.com/config?configVersion=3",
                 null,
-                authorization,
-                capture(callbackSlot)
+                authorization
             )
-        }
+        } returns mockResponse
 
-        val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(
-            NetworkResponseCallback.Result.Success(
-                HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 0))
-            )
-        )
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        sut = createConfigurationLoader(testDispatcher, testScope)
+
+        sut.loadConfiguration(callback)
+        advanceUntilIdle()
+
         val cacheKey = Base64.encodeToString(
             "https://example.com/config?configVersion=3bearer".toByteArray(),
             0
@@ -106,24 +99,24 @@ class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    fun loadConfiguration_onJSONParsingError_forwardsExceptionToErrorResponseListener() {
+    fun loadConfiguration_onJSONParsingError_forwardsExceptionToErrorResponseListener() = runTest {
         every { authorization.configUrl } returns "https://example.com/config"
 
-        sut.loadConfiguration(callback)
-
-        val callbackSlot = slot<NetworkResponseCallback>()
-        verify {
+        val mockResponse = HttpResponse("not json", HttpResponseTiming(0, 0))
+        coEvery {
             braintreeHttpClient.get(
                 ofType(String::class),
                 null,
-                authorization,
-                capture(callbackSlot)
+                authorization
             )
-        }
-        val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(
-            NetworkResponseCallback.Result.Success(HttpResponse("not json", HttpResponseTiming(0, 0)))
-        )
+        } returns mockResponse
+
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        sut = createConfigurationLoader(testDispatcher, testScope)
+
+        sut.loadConfiguration(callback)
+        advanceUntilIdle()
 
         val errorSlot = slot<ConfigurationLoaderResult>()
         verify { callback.onResult(capture(errorSlot)) }
@@ -132,25 +125,25 @@ class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    fun loadConfiguration_onHttpError_forwardsExceptionToErrorResponseListener() {
+    fun loadConfiguration_onHttpError_forwardsExceptionToErrorResponseListener() = runTest {
         every { authorization.configUrl } returns "https://example.com/config"
 
-        sut.loadConfiguration(callback)
-
-        val callbackSlot = slot<NetworkResponseCallback>()
-
-        verify {
+        val httpError = IOException("http error")
+        coEvery {
             braintreeHttpClient.get(
                 ofType(String::class),
                 null,
-                authorization,
-                capture(callbackSlot)
+                authorization
             )
-        }
+        } throws httpError
 
-        val httpResponseCallback = callbackSlot.captured
-        val httpError = Exception("http error")
-        httpResponseCallback.onResult(NetworkResponseCallback.Result.Failure(httpError))
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        sut = createConfigurationLoader(testDispatcher, testScope)
+
+        sut.loadConfiguration(callback)
+        advanceUntilIdle()
+
         val errorSlot = slot<ConfigurationLoaderResult>()
         verify { callback.onResult(capture(errorSlot)) }
 
@@ -164,6 +157,7 @@ class ConfigurationLoaderUnitTest {
     fun loadConfiguration_whenInvalidToken_exception_is_returned() {
         every { merchantRepository.authorization } returns InvalidAuthorization("invalid", "token invalid")
 
+        sut = createConfigurationLoader()
         sut.loadConfiguration(callback)
 
         val errorSlot = slot<ConfigurationLoaderResult>()
@@ -187,16 +181,8 @@ class ConfigurationLoaderUnitTest {
         every { authorization.bearer } returns "bearer"
         every { configurationCache.getConfiguration(cacheKey) } returns Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN
 
+        sut = createConfigurationLoader()
         sut.loadConfiguration(callback)
-
-        verify(exactly = 0) {
-            braintreeHttpClient.get(
-                ofType(String::class),
-                null,
-                authorization,
-                ofType(NetworkResponseCallback::class)
-            )
-        }
 
         val successSlot = slot<ConfigurationLoaderResult>()
         verify { callback.onResult(capture(successSlot)) }
@@ -205,29 +191,26 @@ class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    fun `when loadConfiguration is called and configuration is fetched from the API, analytics event is sent`() {
+    fun `when loadConfiguration is called and configuration is fetched from the API, analytics event is sent`() =
+        runTest {
         every { authorization.configUrl } returns "https://example.com/config"
         every { merchantRepository.authorization } returns authorization
 
-        sut.loadConfiguration(callback)
-
-        val expectedConfigUrl = "https://example.com/config?configVersion=3"
-        val callbackSlot = slot<NetworkResponseCallback>()
-        verify {
+        val mockResponse = HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 10))
+        coEvery {
             braintreeHttpClient.get(
-                expectedConfigUrl,
+                "https://example.com/config?configVersion=3",
                 null,
-                authorization,
-                capture(callbackSlot)
+                authorization
             )
-        }
+        } returns mockResponse
 
-        val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(
-            NetworkResponseCallback.Result.Success(
-                HttpResponse(Fixtures.CONFIGURATION_WITH_ACCESS_TOKEN, HttpResponseTiming(0, 10))
-            )
-        )
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        sut = createConfigurationLoader(testDispatcher, testScope)
+
+        sut.loadConfiguration(callback)
+        advanceUntilIdle()
 
         verify {
             analyticsClient.sendEvent(
@@ -248,25 +231,24 @@ class ConfigurationLoaderUnitTest {
     }
 
     @Test
-    fun loadConfiguration_onNullResponseBody_forwardsConfigurationExceptionToErrorResponseListener() {
+    fun loadConfiguration_onNullResponseBody_forwardsConfigurationExceptionToErrorResponseListener() = runTest {
         every { authorization.configUrl } returns "https://example.com/config"
 
-        sut.loadConfiguration(callback)
-
-        val callbackSlot = slot<NetworkResponseCallback>()
-        verify {
+        val mockResponse = HttpResponse(null, HttpResponseTiming(0, 0))
+        coEvery {
             braintreeHttpClient.get(
                 path = ofType(String::class),
                 configuration = null,
-                authorization = authorization,
-                callback = capture(callbackSlot)
+                authorization = authorization
             )
-        }
+        } returns mockResponse
 
-        val httpResponseCallback = callbackSlot.captured
-        httpResponseCallback.onResult(
-            NetworkResponseCallback.Result.Success(HttpResponse(null, HttpResponseTiming(0, 0)))
-        )
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        sut = createConfigurationLoader(testDispatcher, testScope)
+
+        sut.loadConfiguration(callback)
+        advanceUntilIdle()
 
         val errorSlot = slot<ConfigurationLoaderResult>()
         verify { callback.onResult(capture(errorSlot)) }
@@ -275,4 +257,16 @@ class ConfigurationLoaderUnitTest {
         assertTrue(failure.error is ConfigurationException)
         assertEquals("Configuration responseBody is null", failure.error.message)
     }
+
+    private fun createConfigurationLoader(
+        testDispatcher: kotlinx.coroutines.CoroutineDispatcher? = null,
+        testScope: kotlinx.coroutines.CoroutineScope? = null
+    ) = ConfigurationLoader(
+        httpClient = braintreeHttpClient,
+        merchantRepository = merchantRepository,
+        configurationCache = configurationCache,
+        dispatcher = testDispatcher ?: kotlinx.coroutines.Dispatchers.Main,
+        coroutineScope = testScope ?: kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main),
+        lazyAnalyticsClient = lazy { analyticsClient }
+    )
 }

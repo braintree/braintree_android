@@ -92,6 +92,7 @@ dependencies {
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.work.testing
     androidTestImplementation libs.androidx.room.testing
+    androidTestImplementation libs.coroutines.test
     androidTestImplementation project(':Card')
     androidTestImplementation project(':PayPal')
     androidTestImplementation project(':TestUtils')
