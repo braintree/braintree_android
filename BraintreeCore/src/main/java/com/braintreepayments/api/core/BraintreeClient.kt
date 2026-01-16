@@ -137,9 +137,10 @@ class BraintreeClient internal constructor(
                 coroutineScope.launch {
                     try {
                         val response = httpClient.get(
-                                        path = url,
-                                        configuration = configuration,
-                                        authorization = merchantRepository.authorization)
+                            path = url,
+                            configuration = configuration,
+                            authorization = merchantRepository.authorization
+                        )
                         try {
                             sendAnalyticsTimingEvent(url, response.timing)
                             responseCallback.onResult(response.body, null)
@@ -171,11 +172,11 @@ class BraintreeClient internal constructor(
                 coroutineScope.launch {
                     try {
                         val response = httpClient.post(
-                                        path = url,
-                                        data = data,
-                                        configuration = configuration,
-                                        authorization = merchantRepository.authorization,
-                                        additionalHeaders = additionalHeaders
+                            path = url,
+                            data = data,
+                            configuration = configuration,
+                            authorization = merchantRepository.authorization,
+                            additionalHeaders = additionalHeaders
                         )
                         try {
                             sendAnalyticsTimingEvent(url, response.timing)

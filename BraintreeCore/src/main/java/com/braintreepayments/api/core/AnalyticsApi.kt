@@ -31,14 +31,15 @@ internal class AnalyticsApi(
             sessionId = analyticsParamRepository.sessionId,
             integration = merchantRepository.integrationType
         )
-        val analyticsRequest = createFPTIPayload(merchantRepository.authorization, jsonEvents, metadata)
+        val analyticsRequest =
+            createFPTIPayload(merchantRepository.authorization, jsonEvents, metadata)
         coroutineScope.launch {
             httpClient.post(
                 path = FPTI_ANALYTICS_URL,
                 data = analyticsRequest.toString(),
                 configuration = null,
                 authorization = merchantRepository.authorization,
-                )
+            )
         }
     }
 
@@ -100,7 +101,8 @@ internal class AnalyticsApi(
 
     @Throws(JSONException::class)
     private fun mapDeviceMetadataToFPTIBatchParamsJSON(metadata: DeviceMetadata): JSONObject {
-        val isVenmoInstalled = deviceInspector.isVenmoInstalled(merchantRepository.applicationContext)
+        val isVenmoInstalled =
+            deviceInspector.isVenmoInstalled(merchantRepository.applicationContext)
         val isPayPalInstalled = deviceInspector.isPayPalInstalled()
         return metadata.run {
             JSONObject()
