@@ -98,6 +98,8 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
                     if (request.riskCorrelationId != null) {
                         internalRequest.clientMetadataId = request.riskCorrelationId
                     }
+
+                    //modify the call to receive the correlation id with the new callback
                     val correlationId =
                         magnesInternalClient.getClientMetadataId(
                             context,

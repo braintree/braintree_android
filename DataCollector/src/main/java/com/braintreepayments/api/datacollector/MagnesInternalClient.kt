@@ -21,6 +21,8 @@ class MagnesInternalClient(
         context: Context?,
         configuration: Configuration?,
         request: DataCollectorInternalRequest?
+        //add callback here ?
+        //submitApiCallback
     ): String {
         if (context == null || configuration == null || request == null) {
             return ""
@@ -48,7 +50,7 @@ class MagnesInternalClient(
                 context.applicationContext,
                 request.clientMetadataId,
                 request.additionalData
-            )
+            ) /*result ->  {  return result.paypalClientMetaDataId }*/
             return result.paypalClientMetaDataId
         } catch (e: InvalidInputException) {
             // Either clientMetadataId or appGuid exceeds their character limit
