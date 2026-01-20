@@ -2,13 +2,19 @@ package com.braintreepayments.api.core
 
 import android.net.Uri
 import android.util.Base64
-import com.braintreepayments.api.sharedutils.NetworkResponseCallback
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
+import java.io.IOException
 
 internal class ConfigurationLoader(
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val configurationCache: ConfigurationCache = ConfigurationCacheProvider().configurationCache,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher),
     /**
      * TODO: AnalyticsClient must be lazy due to the circular dependency between ConfigurationLoader and AnalyticsClient
      * This should be refactored to remove the circular dependency.
@@ -49,47 +55,45 @@ internal class ConfigurationLoader(
         authorization: Authorization,
         callback: ConfigurationLoaderCallback
     ) {
-        httpClient.get(
-            path = configUrl,
-            configuration = null,
-            authorization = authorization,
-        ) { result ->
-            when (result) {
-                is NetworkResponseCallback.Result.Success -> {
-                    val responseBody = result.response.body ?: run {
-                        callback.onResult(
-                            ConfigurationLoaderResult.Failure(
-                                ConfigurationException("Configuration responseBody is null")
-                            )
-                        )
-                        return@get
-                    }
-                    val timing = result.response.timing
-                    try {
-                        val configuration = Configuration.fromJson(responseBody)
-                        saveConfigurationToCache(configuration, authorization, configUrl)
-                        callback.onResult(ConfigurationLoaderResult.Success(configuration, timing))
+        coroutineScope.launch {
+            try {
+                val response = httpClient.get(
+                    path = configUrl,
+                    configuration = null,
+                    authorization = authorization
+                )
 
-                        analyticsClient.sendEvent(
-                            eventName = CoreAnalytics.API_REQUEST_LATENCY,
-                            analyticsEventParams = AnalyticsEventParams(
-                                startTime = timing.startTime,
-                                endTime = timing.endTime,
-                                endpoint = "/v1/configuration"
-                            ),
-                            sendImmediately = false
+                val responseBody = response.body ?: run {
+                    callback.onResult(
+                        ConfigurationLoaderResult.Failure(
+                            ConfigurationException("Configuration responseBody is null")
                         )
-                    } catch (jsonException: JSONException) {
-                        callback.onResult(ConfigurationLoaderResult.Failure(jsonException))
-                    }
+                    )
+                    return@launch
                 }
 
-                is NetworkResponseCallback.Result.Failure -> {
-                    val errorMessageFormat = "Request for configuration has failed: %s"
-                    val errorMessage = String.format(errorMessageFormat, result.error.message)
-                    val configurationException = ConfigurationException(errorMessage, result.error)
-                    callback.onResult(ConfigurationLoaderResult.Failure(configurationException))
+                val timing = response.timing
+                try {
+                    val configuration = Configuration.fromJson(responseBody)
+                    saveConfigurationToCache(configuration, authorization, configUrl)
+                    callback.onResult(ConfigurationLoaderResult.Success(configuration, timing))
+                    analyticsClient.sendEvent(
+                        eventName = CoreAnalytics.API_REQUEST_LATENCY,
+                        analyticsEventParams = AnalyticsEventParams(
+                            startTime = timing.startTime,
+                            endTime = timing.endTime,
+                            endpoint = "/v1/configuration"
+                        ),
+                        sendImmediately = false
+                    )
+                } catch (jsonException: JSONException) {
+                    callback.onResult(ConfigurationLoaderResult.Failure(jsonException))
                 }
+            } catch (e: IOException) {
+                val errorMessageFormat = "Request for configuration has failed: %s"
+                val errorMessage = String.format(errorMessageFormat, e.message)
+                val configurationException = ConfigurationException(errorMessage, e)
+                callback.onResult(ConfigurationLoaderResult.Failure(configurationException))
             }
         }
     }

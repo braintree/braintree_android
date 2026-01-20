@@ -7,7 +7,6 @@ import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
-import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -135,20 +134,21 @@ class BraintreeClient internal constructor(
     fun sendGET(url: String, responseCallback: HttpResponseCallback) {
         getConfiguration { configuration, configError ->
             if (configuration != null) {
-                httpClient.get(url, configuration, merchantRepository.authorization) { result ->
-                    when (result) {
-                        is NetworkResponseCallback.Result.Success -> {
-                            try {
-                                sendAnalyticsTimingEvent(url, result.response.timing)
-                                responseCallback.onResult(result.response.body, null)
-                            } catch (jsonException: JSONException) {
-                                responseCallback.onResult(null, jsonException)
-                            }
+                coroutineScope.launch {
+                    try {
+                        val response = httpClient.get(
+                            path = url,
+                            configuration = configuration,
+                            authorization = merchantRepository.authorization
+                        )
+                        try {
+                            sendAnalyticsTimingEvent(url, response.timing)
+                            responseCallback.onResult(response.body, null)
+                        } catch (jsonException: JSONException) {
+                            responseCallback.onResult(null, jsonException)
                         }
-
-                        is NetworkResponseCallback.Result.Failure -> {
-                            responseCallback.onResult(null, result.error)
-                        }
+                    } catch (e: IOException) {
+                        responseCallback.onResult(null, e)
                     }
                 }
             } else {
@@ -169,26 +169,23 @@ class BraintreeClient internal constructor(
     ) {
         getConfiguration { configuration, configError ->
             if (configuration != null) {
-                httpClient.post(
-                    path = url,
-                    data = data,
-                    configuration = configuration,
-                    authorization = merchantRepository.authorization,
-                    additionalHeaders = additionalHeaders
-                ) { result ->
-                    when (result) {
-                        is NetworkResponseCallback.Result.Success -> {
-                            try {
-                                sendAnalyticsTimingEvent(url, result.response.timing)
-                                responseCallback.onResult(result.response.body, null)
-                            } catch (jsonException: JSONException) {
-                                responseCallback.onResult(null, jsonException)
-                            }
+                coroutineScope.launch {
+                    try {
+                        val response = httpClient.post(
+                            path = url,
+                            data = data,
+                            configuration = configuration,
+                            authorization = merchantRepository.authorization,
+                            additionalHeaders = additionalHeaders
+                        )
+                        try {
+                            sendAnalyticsTimingEvent(url, response.timing)
+                            responseCallback.onResult(response.body, null)
+                        } catch (jsonException: JSONException) {
+                            responseCallback.onResult(null, jsonException)
                         }
-
-                        is NetworkResponseCallback.Result.Failure -> {
-                            responseCallback.onResult(null, result.error)
-                        }
+                    } catch (e: IOException) {
+                        responseCallback.onResult(null, e)
                     }
                 }
             } else {

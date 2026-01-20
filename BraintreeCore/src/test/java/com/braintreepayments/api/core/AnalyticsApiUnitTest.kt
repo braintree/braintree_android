@@ -1,13 +1,19 @@
 package com.braintreepayments.api.core
 
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class AnalyticsApiUnitTest {
 
     private val httpClient = mockk<BraintreeHttpClient>(relaxed = true)
@@ -98,57 +104,70 @@ class AnalyticsApiUnitTest {
         every { deviceInspector.isVenmoInstalled(merchantRepository.applicationContext) } returns false
         every { deviceInspector.isPayPalInstalled() } returns false
         every { merchantRepository.integrationType } returns integrationType
-
-        sut = AnalyticsApi(
-            httpClient = httpClient,
-            deviceInspector = deviceInspector,
-            analyticsParamRepository = analyticsParamRepository,
-            merchantRepository = merchantRepository
-        )
     }
 
+    private fun createAnalyticsApi(
+        testDispatcher: kotlinx.coroutines.CoroutineDispatcher? = null,
+        testScope: kotlinx.coroutines.CoroutineScope? = null
+    ) = AnalyticsApi(
+        httpClient = httpClient,
+        deviceInspector = deviceInspector,
+        analyticsParamRepository = analyticsParamRepository,
+        merchantRepository = merchantRepository,
+        dispatcher = testDispatcher ?: kotlinx.coroutines.Dispatchers.Main,
+        coroutineScope = testScope ?: kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main)
+    )
+
     @Test
-    fun `when execute is called with client token, httpClient post is invoked`() {
+    fun `when execute is called with client token, httpClient post is invoked`() = runTest {
         val authFingerprint = "auth-fingerprint"
         every { merchantRepository.authorization } returns clientToken
         every { clientToken.bearer } returns authFingerprint
 
         val expectedJson = getExpectedJson(clientToken)
 
-        sut.execute(listOf(clientTokenEvent), configuration)
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        sut = createAnalyticsApi(testDispatcher, testScope)
 
-        verify {
+        sut.execute(listOf(clientTokenEvent), configuration)
+        advanceUntilIdle()
+
+        coVerify {
             httpClient.post(
                 path = "https://api-m.paypal.com/v1/tracking/batch/events",
                 data = withArg {
                     assertEquals(JSONObject(expectedJson).toString(), JSONObject(it).toString())
                 },
                 configuration = null,
-                authorization = clientToken,
-                callback = null
+                authorization = clientToken
             )
         }
     }
 
     @Test
-    fun `when execute is called with tokenization key, httpClient post is invoked`() {
+    fun `when execute is called with tokenization key, httpClient post is invoked`() = runTest {
         val tokenizationKeyBearer = "tokenization-key-bearer"
         every { merchantRepository.authorization } returns tokenizationKey
         every { tokenizationKey.bearer } returns tokenizationKeyBearer
 
         val expectedJson = getExpectedJson(tokenizationKey)
 
-        sut.execute(listOf(tokenizationKeyEvent), configuration)
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        sut = createAnalyticsApi(testDispatcher, testScope)
 
-        verify {
+        sut.execute(listOf(tokenizationKeyEvent), configuration)
+        advanceUntilIdle()
+
+        coVerify {
             httpClient.post(
                 path = "https://api-m.paypal.com/v1/tracking/batch/events",
                 data = withArg {
                     assertEquals(JSONObject(expectedJson).toString(), JSONObject(it).toString())
                 },
                 configuration = null,
-                authorization = tokenizationKey,
-                callback = null
+                authorization = tokenizationKey
             )
         }
     }
