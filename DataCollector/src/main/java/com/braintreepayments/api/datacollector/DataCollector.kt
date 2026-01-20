@@ -47,12 +47,13 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
     fun getClientMetadataId(
         context: Context,
         configuration: Configuration?,
-        hasUserLocationConsent: Boolean
-    ): String {
+        hasUserLocationConsent: Boolean,
+        callback: (String) -> Unit
+    ) {
         val request = DataCollectorInternalRequest(hasUserLocationConsent).apply {
             applicationGuid = getPayPalInstallationGUID(context)
         }
-        return getClientMetadataId(context, request, configuration)
+        getClientMetadataId(context, request, configuration, callback)
     }
 
     /**
@@ -63,9 +64,10 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
     fun getClientMetadataId(
         context: Context?,
         request: DataCollectorInternalRequest?,
-        configuration: Configuration?
-    ): String {
-        return magnesInternalClient.getClientMetadataId(context, configuration, request)
+        configuration: Configuration?,
+        callback: (String) -> Unit
+    ) {
+        magnesInternalClient.getClientMetadataId(context, configuration, request, callback)
     }
 
     /**
@@ -98,20 +100,21 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
                     if (request.riskCorrelationId != null) {
                         internalRequest.clientMetadataId = request.riskCorrelationId
                     }
-
-                    //modify the call to receive the correlation id with the new callback
-                    val correlationId =
-                        magnesInternalClient.getClientMetadataId(
-                            context,
-                            configuration,
-                            internalRequest
-                        )
-                    if (!TextUtils.isEmpty(correlationId)) {
-                        deviceData.put(CORRELATION_ID_KEY, correlationId)
+                    magnesInternalClient.getClientMetadataId(
+                        context = context,
+                        configuration = configuration,
+                        request = internalRequest
+                    ) { correlationId ->
+                        try {
+                            if (!TextUtils.isEmpty(correlationId)) {
+                                deviceData.put(CORRELATION_ID_KEY, correlationId)
+                            }
+                        } catch (ignored: JSONException) {
+                        }
+                        callback.onDataCollectorResult(DataCollectorResult.Success(deviceData.toString()))
                     }
                 } catch (ignored: JSONException) {
                 }
-                callback.onDataCollectorResult(DataCollectorResult.Success(deviceData.toString()))
             } else if (error != null) {
                 callback.onDataCollectorResult(DataCollectorResult.Failure(error))
             }

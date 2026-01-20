@@ -20,12 +20,12 @@ class MagnesInternalClient(
     internal fun getClientMetadataId(
         context: Context?,
         configuration: Configuration?,
-        request: DataCollectorInternalRequest?
-        //add callback here ?
-        //submitApiCallback
-    ): String {
+        request: DataCollectorInternalRequest?,
+        callback: (String) -> Unit
+    ) {
         if (context == null || configuration == null || request == null) {
-            return ""
+            callback("")
+            return
         }
 
         val btEnvironment = configuration.environment
@@ -46,12 +46,14 @@ class MagnesInternalClient(
                     .setHasUserLocationConsent(request.hasUserLocationConsent)
 
             magnesSDK.setUp(magnesSettingsBuilder.build())
-            val result = magnesSDK.collectAndSubmit(
+            magnesSDK.collectAndSubmit(
                 context.applicationContext,
                 request.clientMetadataId,
                 request.additionalData
-            ) /*result ->  {  return result.paypalClientMetaDataId }*/
-            return result.paypalClientMetaDataId
+            ) { result ->
+                // Callback is invoked when device data collection AND submit API completes
+                callback(result.paypalClientMetaDataId)
+            }
         } catch (e: InvalidInputException) {
             // Either clientMetadataId or appGuid exceeds their character limit
             Log.e(
@@ -59,7 +61,7 @@ class MagnesInternalClient(
                 "Error fetching client metadata ID. Contact Braintree Support for assistance.",
                 e
             )
-            return ""
+            callback("")
         }
     }
 }

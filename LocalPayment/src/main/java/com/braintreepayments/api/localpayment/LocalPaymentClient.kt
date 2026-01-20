@@ -182,19 +182,21 @@ class LocalPaymentClient internal constructor(
         }
         braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
             if (configuration != null) {
-                localPaymentApi.tokenize(
-                    merchantAccountId, responseString,
-                    dataCollector.getClientMetadataId(
-                        context,
-                        configuration,
-                        hasUserLocationConsent
-                    )
-                ) { localPaymentNonce: LocalPaymentNonce?, localPaymentError: Exception? ->
-                    if (localPaymentNonce != null) {
-                        sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_SUCCEEDED)
-                        callback.onLocalPaymentResult(LocalPaymentResult.Success(localPaymentNonce))
-                    } else if (localPaymentError != null) {
-                        tokenizeFailure(localPaymentError, callback)
+                dataCollector.getClientMetadataId(
+                    context,
+                    configuration,
+                    hasUserLocationConsent
+                ) { clientMetadataId ->
+                    localPaymentApi.tokenize(
+                        merchantAccountId, responseString,
+                        clientMetadataId
+                    ) { localPaymentNonce: LocalPaymentNonce?, localPaymentError: Exception? ->
+                        if (localPaymentNonce != null) {
+                            sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_SUCCEEDED)
+                            callback.onLocalPaymentResult(LocalPaymentResult.Success(localPaymentNonce))
+                        } else if (localPaymentError != null) {
+                            tokenizeFailure(localPaymentError, callback)
+                        }
                     }
                 }
             } else if (error != null) {
