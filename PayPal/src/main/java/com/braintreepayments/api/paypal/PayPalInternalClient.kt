@@ -198,7 +198,7 @@ internal class PayPalInternalClient(
             .appendQueryParameter("switch_initiated_time", System.currentTimeMillis().toString())
             .appendQueryParameter("merchant", merchantId)
             .appendQueryParameter("flow_type", flowType)
-            .appendQueryParameter("fundingSource", fundingSource.value)
+            .appendQueryParameter("funding_source", fundingSource.value)
             .build()
     }
 

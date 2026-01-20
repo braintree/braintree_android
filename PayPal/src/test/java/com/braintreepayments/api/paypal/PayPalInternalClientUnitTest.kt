@@ -1010,7 +1010,7 @@ class PayPalInternalClientUnitTest {
         val approvalUri = Uri.parse(slot.captured.approvalUrl)
         assertEquals("braintree_sdk", approvalUri.getQueryParameter("source"))
         assertEquals("ecs", approvalUri.getQueryParameter("flow_type"))
-        assertEquals(PayPalFundingSource.PAYPAL.value, approvalUri.getQueryParameter("fundingSource"))
+        assertEquals(PayPalFundingSource.PAYPAL.value, approvalUri.getQueryParameter("funding_source"))
         assertEquals(configuration.merchantId, approvalUri.getQueryParameter("merchant"))
         assertNotNull(approvalUri.getQueryParameter("switch_initiated_time"))
         assertTrue(approvalUri.getQueryParameter("switch_initiated_time")!!.toLong() > 0)
@@ -1038,7 +1038,7 @@ class PayPalInternalClientUnitTest {
         verify { payPalInternalClientCallback.onResult(capture(slot), null) }
 
         val approvalUri = Uri.parse(slot.captured.approvalUrl)
-        assertEquals(PayPalFundingSource.CREDIT.value, approvalUri.getQueryParameter("fundingSource"))
+        assertEquals(PayPalFundingSource.CREDIT.value, approvalUri.getQueryParameter("funding_source"))
     }
 
     @Test
@@ -1063,7 +1063,7 @@ class PayPalInternalClientUnitTest {
         verify { payPalInternalClientCallback.onResult(capture(slot), null) }
 
         val approvalUri = Uri.parse(slot.captured.approvalUrl)
-        assertEquals(PayPalFundingSource.PAY_LATER.value, approvalUri.getQueryParameter("fundingSource"))
+        assertEquals(PayPalFundingSource.PAY_LATER.value, approvalUri.getQueryParameter("funding_source"))
     }
 
     @Test
