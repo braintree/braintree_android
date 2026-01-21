@@ -55,6 +55,7 @@ class GooglePayRequest @JvmOverloads constructor(
     var countryCode: String? = null,
     var totalPriceLabel: String? = null,
     var allowCreditCards: Boolean = true,
+    var checkoutOption: GooglePayCheckoutOption? = GooglePayCheckoutOption.DEFAULT,
     private var environment: String? = null,
     private val allowedPaymentMethods: MutableMap<String, String> = HashMap(),
     private val tokenizationSpecifications: MutableMap<String, String> = HashMap(),
@@ -145,6 +146,7 @@ class GooglePayRequest @JvmOverloads constructor(
         transactionInfoJson.put("currencyCode", currencyCode)
         transactionInfoJson.putOpt("countryCode", countryCode)
         transactionInfoJson.putOpt("totalPriceLabel", totalPriceLabel)
+        transactionInfoJson.putOpt("checkoutOption", checkoutOption?.stringValue)
 
         for ((key, value) in this.allowedPaymentMethods) {
             try {
