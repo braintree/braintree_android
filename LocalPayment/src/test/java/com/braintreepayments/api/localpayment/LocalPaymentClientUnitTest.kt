@@ -79,6 +79,7 @@ class LocalPaymentClientUnitTest {
     ): LocalPaymentAuthRequestParams {
         return LocalPaymentAuthRequestParams(request, approvalUrl, paymentId)
     }
+
     @Before
     @Throws(JSONException::class)
     fun beforeEach() {
@@ -86,8 +87,11 @@ class LocalPaymentClientUnitTest {
         localPaymentAuthCallback = mockk<LocalPaymentAuthCallback>(relaxed = true)
         localPaymentTokenizeCallback = mockk<LocalPaymentTokenizeCallback>(relaxed = true)
 
+        payPalEnabledConfig = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
+        payPalDisabledConfig = fromJson(Fixtures.CONFIGURATION_WITH_DISABLED_PAYPAL)
+
         braintreeClient = MockkBraintreeClientBuilder()
-            .configurationSuccess(fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
+            .configurationSuccess(payPalEnabledConfig)
             .build()
         dataCollector = mockk<DataCollector>(relaxed = true)
         localPaymentApi = mockk<LocalPaymentApi>(relaxed = true)
@@ -103,9 +107,6 @@ class LocalPaymentClientUnitTest {
         every { localPaymentAuthRequestParams!!.request } returns createLocalPaymentRequest()
         every { localPaymentAuthRequestParams!!.paymentId } returns "paymentId"
         every { analyticsParamRepository!!.sessionId } returns "sample-session-id"
-
-        payPalEnabledConfig = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
-        payPalDisabledConfig = fromJson(Fixtures.CONFIGURATION_WITH_DISABLED_PAYPAL)
     }
 
     @Test
@@ -423,7 +424,8 @@ class LocalPaymentClientUnitTest {
             .build()
         val request = createLocalPaymentRequest()
         val approvalUrl = "https://sample.com/approval?token=sample-token"
-        val transaction = createLocalPaymentAuthRequestParams(request, approvalUrl, "some-paypal-context-id")
+        val transaction =
+            createLocalPaymentAuthRequestParams(request, approvalUrl, "some-paypal-context-id")
 
         val localPaymentApi = MockkLocalPaymentApiBuilder()
             .createPaymentMethodSuccess(transaction)
@@ -468,8 +470,14 @@ class LocalPaymentClientUnitTest {
         assert(paymentAuthRequest is LocalPaymentAuthRequest.ReadyToLaunch)
         val params = (paymentAuthRequest as LocalPaymentAuthRequest.ReadyToLaunch).requestParams
         val browserSwitchOptions = params.browserSwitchOptions
-        assertEquals(BraintreeRequestCodes.LOCAL_PAYMENT.code, browserSwitchOptions!!.getRequestCode())
-        assertEquals(Uri.parse("https://sample.com/approval?token=sample-token"), browserSwitchOptions.getUrl())
+        assertEquals(
+            BraintreeRequestCodes.LOCAL_PAYMENT.code,
+            browserSwitchOptions!!.getRequestCode()
+        )
+        assertEquals(
+            Uri.parse("https://sample.com/approval?token=sample-token"),
+            browserSwitchOptions.getUrl()
+        )
         assertFalse(browserSwitchOptions.isLaunchAsNewTask())
 
         val metadata = browserSwitchOptions.getMetadata()
@@ -542,9 +550,13 @@ class LocalPaymentClientUnitTest {
             dataCollector.getClientMetadataId(
                 any(),
                 payPalEnabledConfig,
-                false
+                false,
+                any()
             )
-        } returns "sample-correlation-id"
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("sample-correlation-id")
+        }
 
         sut = LocalPaymentClient(
             braintreeClient, dataCollector,
@@ -594,9 +606,13 @@ class LocalPaymentClientUnitTest {
             dataCollector.getClientMetadataId(
                 any(),
                 payPalEnabledConfig,
-                false
+                false,
+                any()
             )
-        } returns "sample-correlation-id"
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("sample-correlation-id")
+        }
 
         sut = LocalPaymentClient(
             braintreeClient, dataCollector,
@@ -630,9 +646,13 @@ class LocalPaymentClientUnitTest {
             dataCollector.getClientMetadataId(
                 any(),
                 payPalEnabledConfig,
-                false
+                false,
+                any()
             )
-        } returns "client-metadata-id"
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("client-metadata-id")
+        }
 
         val successNonce = fromJSON(
             JSONObject(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE)
@@ -671,10 +691,14 @@ class LocalPaymentClientUnitTest {
         every {
             dataCollector.getClientMetadataId(
                 any(),
-                payPalEnabledConfig,
-                false
+                eq(payPalEnabledConfig),
+                eq(false),
+                any()
             )
-        } returns "client-metadata-id"
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("client-metadata-id")
+        }
 
         val localPaymentApi = MockkLocalPaymentApiBuilder()
             .tokenizeSuccess(
@@ -722,9 +746,13 @@ class LocalPaymentClientUnitTest {
             dataCollector.getClientMetadataId(
                 any<FragmentActivity>(),
                 any<Configuration>(),
-                any<Boolean>()
+                any<Boolean>(),
+                any()
             )
-        } returns "sample-correlation-id"
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("sample-correlation-id")
+        }
 
         val localPaymentAuthResult = LocalPaymentAuthResult.Success(browserSwitchResult)
         sut = LocalPaymentClient(
@@ -794,9 +822,13 @@ class LocalPaymentClientUnitTest {
             dataCollector.getClientMetadataId(
                 any(),
                 payPalEnabledConfig,
+                any(),
                 any()
             )
-        } returns "client-metadata-id"
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("client-metadata-id")
+        }
 
         val request = createLocalPaymentRequest()
         sut = LocalPaymentClient(
@@ -818,7 +850,8 @@ class LocalPaymentClientUnitTest {
             dataCollector.getClientMetadataId(
                 any(),
                 payPalEnabledConfig,
-                eq(true)
+                eq(true),
+                any()
             )
         }
     }

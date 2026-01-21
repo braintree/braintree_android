@@ -1,5 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* DataCollector
+    * Bump Magnes version to `5.6.0`
+
+
 ## 5.21.0 (2026-01-05)
 
 * UIComponents

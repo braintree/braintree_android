@@ -2,26 +2,39 @@ package com.braintreepayments.api.paypal
 
 import android.content.Context
 import android.net.Uri
-import com.braintreepayments.api.core.*
+import com.braintreepayments.api.core.AnalyticsParamRepository
+import com.braintreepayments.api.core.ApiClient
+import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.ClientToken
+import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
-import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase.ReturnLinkResult
-import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase.ReturnLinkResult.DeepLink
+import com.braintreepayments.api.core.DeviceInspector
+import com.braintreepayments.api.core.MerchantRepository
+import com.braintreepayments.api.core.PostalAddress
+import com.braintreepayments.api.core.SetAppSwitchUseCase
+import com.braintreepayments.api.core.TokenizationKey
 import com.braintreepayments.api.core.usecase.GetAppSwitchUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
+import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase.ReturnLinkResult
+import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase.ReturnLinkResult.DeepLink
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.datacollector.DataCollectorInternalRequest
 import com.braintreepayments.api.paypal.PayPalAccountNonce.Companion.fromJSON
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkApiClientBuilder
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -221,7 +234,10 @@ class PayPalInternalClientUnitTest {
         return request
     }
 
-    private fun assertPayPalCheckoutParams(params: PayPalPaymentAuthRequestParams, expectedUrl: String) {
+    private fun assertPayPalCheckoutParams(
+        params: PayPalPaymentAuthRequestParams,
+        expectedUrl: String
+    ) {
         assertFalse(params.isBillingAgreement)
         assertEquals(PayPalPaymentIntent.AUTHORIZE, params.intent)
         assertEquals("sample-merchant-account-id", params.merchantAccountId)
@@ -238,7 +254,10 @@ class PayPalInternalClientUnitTest {
         return request
     }
 
-    private fun assertPayPalVaultParams(params: PayPalPaymentAuthRequestParams, expectedUrl: String) {
+    private fun assertPayPalVaultParams(
+        params: PayPalPaymentAuthRequestParams,
+        expectedUrl: String
+    ) {
         assertTrue(params.isBillingAgreement)
         assertEquals("sample-merchant-account-id", params.merchantAccountId)
         assertEquals("https://example.com://onetouch/v1/success", params.successUrl)
@@ -627,9 +646,13 @@ class PayPalInternalClientUnitTest {
             dataCollector.getClientMetadataId(
                 eq(context),
                 eq(configuration),
-                eq(true)
+                eq(true),
+                any()
             )
-        } returns "sample-client-metadata-id"
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("sample-client-metadata-id")
+        }
 
         every { merchantRepository.authorization } returns clientToken
 
@@ -654,9 +677,13 @@ class PayPalInternalClientUnitTest {
             dataCollector.getClientMetadataId(
                 eq(context),
                 any(),
-                eq(configuration)
+                eq(configuration),
+                any()
             )
-        } returns "sample-client-metadata-id"
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("sample-client-metadata-id")
+        }
 
         every { merchantRepository.authorization } returns clientToken
         val (sut, braintreeClient) = createSutWithMocks()
@@ -683,9 +710,13 @@ class PayPalInternalClientUnitTest {
             dataCollector.getClientMetadataId(
                 eq(context),
                 eq(configuration),
-                eq(true)
+                eq(true),
+                any()
             )
-        } returns "sample-client-metadata-id"
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("sample-client-metadata-id")
+        }
 
         val (sut, braintreeClient) = createSutWithMocks()
         every { merchantRepository.authorization } returns clientToken
@@ -698,17 +729,17 @@ class PayPalInternalClientUnitTest {
         verify { payPalInternalClientCallback.onResult(capture(slot), null) }
 
         val expectedUrl = "https://checkout.paypal.com/one-touch-login-sandbox/index.html?" +
-            "ba_token=fake-ba-token&action=create_payment_resource&amount=1.00&" +
-            "authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%" +
-            "7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%" +
-            "3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&" +
-            "cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel&" +
-            "controller=client_api%2Fpaypal_hermes&currency_iso_code=USD&" +
-            "experience_profile%5Baddress_override%5D=false&" +
-            "experience_profile%5Bno_shipping%5D=false&" +
-            "merchant_id=dcpspy2brwdjr3qn&" +
-            "return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&" +
-            "offer_paypal_credit=true&version=1"
+                "ba_token=fake-ba-token&action=create_payment_resource&amount=1.00&" +
+                "authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%" +
+                "7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%" +
+                "3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&" +
+                "cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fcancel&" +
+                "controller=client_api%2Fpaypal_hermes&currency_iso_code=USD&" +
+                "experience_profile%5Baddress_override%5D=false&" +
+                "experience_profile%5Bno_shipping%5D=false&" +
+                "merchant_id=dcpspy2brwdjr3qn&" +
+                "return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&" +
+                "offer_paypal_credit=true&version=1"
         assertPayPalVaultParams(slot.captured, expectedUrl)
     }
 
@@ -718,9 +749,13 @@ class PayPalInternalClientUnitTest {
             dataCollector.getClientMetadataId(
                 eq(context),
                 eq(configuration),
-                eq(true)
+                eq(true),
+                any()
             )
-        } returns "sample-client-metadata-id"
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("sample-client-metadata-id")
+        }
 
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
@@ -743,6 +778,17 @@ class PayPalInternalClientUnitTest {
         every { getAppSwitchUseCase.invoke() } returns true
         every { deviceInspector.isPayPalInstalled() } returns true
         every { resolvePayPalUseCase() } returns true
+        every {
+            dataCollector.getClientMetadataId(
+                eq(context),
+                any<DataCollectorInternalRequest>(),
+                eq(configuration),
+                any()
+            )
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("sample-client-metadata-id")
+        }
 
         val (sut, braintreeClient) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_PAYPAL_REDIRECT_URL
@@ -780,6 +826,17 @@ class PayPalInternalClientUnitTest {
 
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+        every {
+            dataCollector.getClientMetadataId(
+                eq(context),
+                any<DataCollectorInternalRequest>(),
+                eq(configuration),
+                any()
+            )
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("sample-client-metadata-id")
+        }
 
         val (sut, braintreeClient) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_APPROVAL_URL
@@ -803,8 +860,16 @@ class PayPalInternalClientUnitTest {
     @Test
     fun sendRequest_withPayPalCheckoutRequest_callsBackPayPalResponseOnSuccess() {
         every {
-            dataCollector.getClientMetadataId(eq(context), eq(configuration), eq(true))
-        } returns "sample-client-metadata-id"
+            dataCollector.getClientMetadataId(
+                eq(context),
+                eq(configuration),
+                eq(true),
+                any()
+            )
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("sample-client-metadata-id")
+        }
 
         val (sut, _) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM
@@ -817,16 +882,16 @@ class PayPalInternalClientUnitTest {
 
         val expectedUrl =
             "https://checkout.paypal.com/one-touch-login-sandbox/index.html?" +
-                "token=fake-token&action=create_payment_resource&amount=1.00&" +
-                "authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%" +
-                "7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%" +
-                "3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&" +
-                "cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%" +
-                "2Fv1%2Fcancel&controller=client_api%2Fpaypal_hermes&currency_iso_code=USD&" +
-                "experience_profile%5Baddress_override%5D=false&experience_profile%5" +
-                "Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=" +
-                "com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&" +
-                "offer_paypal_credit=true&version=1"
+                    "token=fake-token&action=create_payment_resource&amount=1.00&" +
+                    "authorization_fingerprint=63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06%" +
+                    "7Ccreated_at%3D2015-10-13T18%3A49%3A48.371382792%2B0000%26merchant_id%" +
+                    "3Ddcpspy2brwdjr3qn%26public_key%3D9wwrzqk3vr3t4nc8&" +
+                    "cancel_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%" +
+                    "2Fv1%2Fcancel&controller=client_api%2Fpaypal_hermes&currency_iso_code=USD&" +
+                    "experience_profile%5Baddress_override%5D=false&experience_profile%5" +
+                    "Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=" +
+                    "com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&" +
+                    "offer_paypal_credit=true&version=1"
         assertPayPalCheckoutParams(slot.captured, expectedUrl)
     }
 
@@ -952,7 +1017,8 @@ class PayPalInternalClientUnitTest {
             dataCollector.getClientMetadataId(
                 context,
                 capture(slot),
-                configuration
+                configuration,
+                any()
             )
         }
 
@@ -966,6 +1032,17 @@ class PayPalInternalClientUnitTest {
         every { getAppSwitchUseCase.invoke() } returns true
         every { deviceInspector.isPayPalInstalled() } returns true
         every { resolvePayPalUseCase() } returns true
+        every {
+            dataCollector.getClientMetadataId(
+                eq(context),
+                any<DataCollectorInternalRequest>(),
+                eq(configuration),
+                any()
+            )
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("sample-client-metadata-id")
+        }
 
         val (sut, _) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_PAYPAL_REDIRECT_URL
@@ -994,6 +1071,17 @@ class PayPalInternalClientUnitTest {
         every { getAppSwitchUseCase.invoke() } returns true
         every { deviceInspector.isPayPalInstalled() } returns true
         every { resolvePayPalUseCase() } returns true
+        every {
+            dataCollector.getClientMetadataId(
+                eq(context),
+                any<DataCollectorInternalRequest>(),
+                eq(configuration),
+                any()
+            )
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("sample-client-metadata-id")
+        }
 
         val (sut, _) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM

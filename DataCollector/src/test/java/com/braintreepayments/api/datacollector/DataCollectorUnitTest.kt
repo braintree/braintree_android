@@ -54,11 +54,17 @@ class DataCollectorUnitTest {
 
         every { configuration.environment } returns "sandbox"
         every { uuidHelper.getInstallationGUID(context) } returns sampleInstallationGUID
-        every { magnesInternalClient.getClientMetadataId(
-            context,
-            configuration,
-            any()
-        ) } returns "paypal-clientmetadata-id"
+        every {
+            magnesInternalClient.getClientMetadataId(
+                context,
+                configuration,
+                any(),
+                any()
+            )
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("paypal-clientmetadata-id")
+        }
     }
 
     @Test
@@ -74,14 +80,15 @@ class DataCollectorUnitTest {
         val hasUserLocationConsent = true
 
         val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
-        sut.getClientMetadataId(context, configuration, hasUserLocationConsent)
+        sut.getClientMetadataId(context, configuration, hasUserLocationConsent) {}
 
         val captor = slot<DataCollectorInternalRequest>()
         verify {
             magnesInternalClient.getClientMetadataId(
                 context,
                 configuration,
-                capture(captor)
+                capture(captor),
+                any()
             )
         }
 
@@ -97,20 +104,27 @@ class DataCollectorUnitTest {
         val customRequest =
             DataCollectorInternalRequest(true)
 
-        every { magnesInternalClient.getClientMetadataId(
-            context,
-            configuration,
-            customRequest
-        ) } returns "paypal-clientmetadata-id"
+        every {
+            magnesInternalClient.getClientMetadataId(
+                context,
+                configuration,
+                customRequest,
+                any()
+            )
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("paypal-clientmetadata-id")
+        }
 
         val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
-        sut.getClientMetadataId(context, customRequest, configuration)
+        sut.getClientMetadataId(context, customRequest, configuration) {}
 
         verify {
             magnesInternalClient.getClientMetadataId(
                 context,
                 configuration,
-                customRequest
+                customRequest,
+                any()
             )
         }
     }
@@ -119,9 +133,15 @@ class DataCollectorUnitTest {
     fun getClientMetadataId_forwardsClientMetadataIdFromMagnesResult() {
 
         val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
-        val result = sut.getClientMetadataId(context, configuration, true)
+        var receivedClientMetadataId: String? = null
 
-        Assert.assertEquals("paypal-clientmetadata-id", result)
+        sut.getClientMetadataId(
+            context, configuration,
+            true
+        ) { clientMetadataId ->
+            receivedClientMetadataId = clientMetadataId
+        }
+        Assert.assertEquals("paypal-clientmetadata-id", receivedClientMetadataId)
     }
 
     @Test
@@ -156,7 +176,8 @@ class DataCollectorUnitTest {
             magnesInternalClient.getClientMetadataId(
                 context,
                 configuration,
-                capture(captor)
+                capture(captor),
+                any()
             )
         }
 
@@ -179,7 +200,8 @@ class DataCollectorUnitTest {
             magnesInternalClient.getClientMetadataId(
                 context,
                 configuration,
-                capture(captor)
+                capture(captor),
+                any()
             )
         }
 
@@ -203,7 +225,8 @@ class DataCollectorUnitTest {
             magnesInternalClient.getClientMetadataId(
                 context,
                 configuration,
-                capture(captor)
+                capture(captor),
+                any()
             )
         }
 
@@ -250,7 +273,8 @@ class DataCollectorUnitTest {
             magnesInternalClient.getClientMetadataId(
                 context,
                 configuration,
-                capture(captor)
+                capture(captor),
+                any()
             )
         }
         Assert.assertFalse(captor.captured.hasUserLocationConsent)
@@ -274,7 +298,8 @@ class DataCollectorUnitTest {
             magnesInternalClient.getClientMetadataId(
                 context,
                 configuration,
-                capture(captor)
+                capture(captor),
+                any()
             )
         }
         Assert.assertTrue(captor.captured.hasUserLocationConsent)

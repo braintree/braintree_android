@@ -50,9 +50,13 @@ class MagnesInternalClient(
                 context.applicationContext,
                 request.clientMetadataId,
                 request.additionalData
-            ) { result ->
+            ) { status, clientMetadataId ->
                 // Callback is invoked when device data collection AND submit API completes
-                callback(result.paypalClientMetaDataId)
+                Log.d(
+                    "MagnesInternalClient", "Received callback - status: $status," +
+                            " clientMetadataId: $clientMetadataId"
+                )
+                callback(clientMetadataId)
             }
         } catch (e: InvalidInputException) {
             // Either clientMetadataId or appGuid exceeds their character limit
