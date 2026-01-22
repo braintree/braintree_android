@@ -1098,9 +1098,60 @@ class PayPalInternalClientUnitTest {
         val approvalUri = Uri.parse(slot.captured.approvalUrl)
         assertEquals("braintree_sdk", approvalUri.getQueryParameter("source"))
         assertEquals("ecs", approvalUri.getQueryParameter("flow_type"))
+        assertEquals(PayPalFundingSource.PAYPAL.value, approvalUri.getQueryParameter("funding_source"))
         assertEquals(configuration.merchantId, approvalUri.getQueryParameter("merchant"))
         assertNotNull(approvalUri.getQueryParameter("switch_initiated_time"))
         assertTrue(approvalUri.getQueryParameter("switch_initiated_time")!!.toLong() > 0)
+    }
+
+    @Test
+    fun sendRequest_whenShouldOfferCredit_addsCreditQueryParameter() {
+        every { merchantRepository.authorization } returns clientToken
+        every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+        every { getAppSwitchUseCase.invoke() } returns true
+        every { deviceInspector.isPayPalInstalled() } returns true
+        every { resolvePayPalUseCase() } returns true
+
+        val (sut, _) = createSutWithMocks(
+            fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM
+        )
+
+        val payPalRequest = PayPalCheckoutRequest("1.00", true)
+        payPalRequest.enablePayPalAppSwitch = true
+        payPalRequest.shouldOfferCredit = true
+
+        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
+
+        val slot = slot<PayPalPaymentAuthRequestParams>()
+        verify { payPalInternalClientCallback.onResult(capture(slot), null) }
+
+        val approvalUri = Uri.parse(slot.captured.approvalUrl)
+        assertEquals(PayPalFundingSource.CREDIT.value, approvalUri.getQueryParameter("funding_source"))
+    }
+
+    @Test
+    fun sendRequest_whenShouldOfferPayLater_addsPayLaterQueryParameter() {
+        every { merchantRepository.authorization } returns clientToken
+        every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
+        every { getAppSwitchUseCase.invoke() } returns true
+        every { deviceInspector.isPayPalInstalled() } returns true
+        every { resolvePayPalUseCase() } returns true
+
+        val (sut, _) = createSutWithMocks(
+            fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM
+        )
+
+        val payPalRequest = PayPalCheckoutRequest("1.00", true)
+        payPalRequest.enablePayPalAppSwitch = true
+        payPalRequest.shouldOfferPayLater = true
+
+        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
+
+        val slot = slot<PayPalPaymentAuthRequestParams>()
+        verify { payPalInternalClientCallback.onResult(capture(slot), null) }
+
+        val approvalUri = Uri.parse(slot.captured.approvalUrl)
+        assertEquals(PayPalFundingSource.PAY_LATER.value, approvalUri.getQueryParameter("funding_source"))
     }
 
     @Test

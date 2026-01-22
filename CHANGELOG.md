@@ -2,8 +2,11 @@
 
 ## unreleased
 
+
 * DataCollector
     * Bump Magnes version to `5.6.0`
+* PayPal
+    * Pass `funding_source` to the app switch url link and to analytics events.
 
 
 ## 5.21.0 (2026-01-05)
