@@ -80,7 +80,7 @@ class MagnesInternalClientUnitTest {
     @Test
     fun getClientMetaDataId_returnsEmptyStringWhenContextIsNull() {
         val sut = MagnesInternalClient(magnesSDK)
-        var receivedClientMetadataId: String? = null
+        var receivedClientMetadataId = "non-empty"
 
         sut.getClientMetadataId(
             null, sandboxConfiguration,
@@ -89,7 +89,7 @@ class MagnesInternalClientUnitTest {
             receivedClientMetadataId = clientMetadataId
         }
 
-        Assert.assertTrue(receivedClientMetadataId!!.isEmpty())
+        Assert.assertTrue(receivedClientMetadataId.isEmpty())
     }
 
     @Throws(InvalidInputException::class)
@@ -187,7 +187,7 @@ class MagnesInternalClientUnitTest {
         requestWithInvalidGUID.applicationGuid = "invalid guid"
 
         val sut = MagnesInternalClient(magnesSDK)
-        var receivedClientMetadataId: String? = null
+        var receivedClientMetadataId = "non-empty"
         sut.getClientMetadataId(
             null, sandboxConfiguration,
             dataCollectorInternalRequest
@@ -195,7 +195,7 @@ class MagnesInternalClientUnitTest {
             receivedClientMetadataId = clientMetadataId
         }
 
-        Assert.assertTrue(receivedClientMetadataId!!.isEmpty())
+        Assert.assertTrue(receivedClientMetadataId.isEmpty())
     }
 
     @Throws(InvalidInputException::class)
@@ -203,7 +203,7 @@ class MagnesInternalClientUnitTest {
     fun getClientMetaDataId_forwardsClientMetadataIdFromMagnesStart() {
 
         val sut = MagnesInternalClient(magnesSDK)
-        var receivedClientMetadataId: String? = null
+        var receivedClientMetadataId = "non-empty"
         sut.getClientMetadataId(
             context, prodConfiguration,
             dataCollectorInternalRequest
@@ -227,7 +227,7 @@ class MagnesInternalClientUnitTest {
         } throws InvalidInputException("invalid input")
 
         val sut = MagnesInternalClient(magnesSDK)
-        var receivedClientMetadataId: String? = null
+        var receivedClientMetadataId = "non-empty"
 
         sut.getClientMetadataId(
             context, prodConfiguration,
@@ -236,6 +236,6 @@ class MagnesInternalClientUnitTest {
             receivedClientMetadataId = clientMetadataId
         }
 
-        Assert.assertTrue(receivedClientMetadataId!!.isEmpty())
+        Assert.assertTrue(receivedClientMetadataId.isEmpty())
     }
 }

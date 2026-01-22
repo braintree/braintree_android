@@ -133,7 +133,7 @@ class DataCollectorUnitTest {
     fun getClientMetadataId_forwardsClientMetadataIdFromMagnesResult() {
 
         val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
-        var receivedClientMetadataId: String? = null
+        var receivedClientMetadataId: String = "non-empty"
 
         sut.getClientMetadataId(
             context, configuration,
