@@ -14,16 +14,26 @@ import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.concurrent.CountDownLatch;
+
+import kotlin.Unit;
+
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class DataCollectorTest {
 
-    @Test
-    public void getClientMetadataId_returnsClientMetadataId() throws JSONException {
+    @Test(timeout = 10000)
+    public void getClientMetadataId_returnsClientMetadataId() throws JSONException, InterruptedException {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL);
         DataCollector sut = new DataCollector(ApplicationProvider.getApplicationContext(), Fixtures.TOKENIZATION_KEY);
-        String clientMetadataId = sut.getClientMetadataId(ApplicationProvider.getApplicationContext(), configuration, true);
 
-        assertFalse(TextUtils.isEmpty(clientMetadataId));
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        sut.getClientMetadataId(ApplicationProvider.getApplicationContext(), configuration, true, (String clientMetadataId) -> {
+            assertFalse(TextUtils.isEmpty(clientMetadataId));
+            countDownLatch.countDown();
+            return Unit.INSTANCE;
+        });
+
+        countDownLatch.await();
     }
 }
 
