@@ -51,11 +51,7 @@ class MagnesInternalClient(
                 request.clientMetadataId,
                 request.additionalData
             ) { status, clientMetadataId ->
-                // Callback is invoked when device data collection AND submit API completes
-                Log.d(
-                    "MagnesInternalClient", "Received callback - status: $status," +
-                            " clientMetadataId: $clientMetadataId"
-                )
+                // Callback is invoked when device data collection and submit API completes
                 callback(clientMetadataId)
             }
         } catch (e: InvalidInputException) {
