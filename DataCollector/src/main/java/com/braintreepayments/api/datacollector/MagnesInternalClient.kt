@@ -10,6 +10,7 @@ import lib.android.paypal.com.magnessdk.InvalidInputException
 import lib.android.paypal.com.magnessdk.MagnesSDK
 import lib.android.paypal.com.magnessdk.MagnesSettings
 import lib.android.paypal.com.magnessdk.MagnesSource
+import lib.android.paypal.com.magnessdk.MagnesSubmitStatus
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class MagnesInternalClient(
@@ -52,7 +53,11 @@ class MagnesInternalClient(
                 request.additionalData
             ) { status, clientMetadataId ->
                 // Callback is invoked when device data collection and submit API completes
-                callback(clientMetadataId)
+                if (status == MagnesSubmitStatus.SUCCESS) {
+                    callback(clientMetadataId)
+                } else {
+                    callback("")
+                }
             }
         } catch (e: InvalidInputException) {
             // Either clientMetadataId or appGuid exceeds their character limit

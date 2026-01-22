@@ -14,6 +14,7 @@ import lib.android.paypal.com.magnessdk.MagnesResult
 import lib.android.paypal.com.magnessdk.MagnesSDK
 import lib.android.paypal.com.magnessdk.MagnesSettings
 import lib.android.paypal.com.magnessdk.MagnesSource
+import lib.android.paypal.com.magnessdk.MagnesSubmitStatus
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -64,7 +65,7 @@ class MagnesInternalClientUnitTest {
             )
         } answers {
             val callback = arg<lib.android.paypal.com.magnessdk.MagnesSubmitListener>(3)
-            callback.onSubmitComplete(io.mockk.mockk(), "magnes-client-metadata-id")
+            callback.onSubmitComplete(MagnesSubmitStatus.SUCCESS, "magnes-client-metadata-id")
             magnesResult
         }
 
@@ -88,7 +89,6 @@ class MagnesInternalClientUnitTest {
             receivedClientMetadataId = clientMetadataId
         }
 
-        Assert.assertNotNull(receivedClientMetadataId)
         Assert.assertTrue(receivedClientMetadataId!!.isEmpty())
     }
 
@@ -236,7 +236,6 @@ class MagnesInternalClientUnitTest {
             receivedClientMetadataId = clientMetadataId
         }
 
-        Assert.assertNotNull(receivedClientMetadataId)
         Assert.assertTrue(receivedClientMetadataId!!.isEmpty())
     }
 }
