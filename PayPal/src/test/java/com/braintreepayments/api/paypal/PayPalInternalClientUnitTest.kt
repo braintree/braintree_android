@@ -1111,7 +1111,17 @@ class PayPalInternalClientUnitTest {
         every { getAppSwitchUseCase.invoke() } returns true
         every { deviceInspector.isPayPalInstalled() } returns true
         every { resolvePayPalUseCase() } returns true
-
+        every {
+            dataCollector.getClientMetadataId(
+                eq(context),
+                any<DataCollectorInternalRequest>(),
+                eq(configuration),
+                any()
+            )
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("sample-client-metadata-id")
+        }
         val (sut, _) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM
         )
@@ -1136,7 +1146,17 @@ class PayPalInternalClientUnitTest {
         every { getAppSwitchUseCase.invoke() } returns true
         every { deviceInspector.isPayPalInstalled() } returns true
         every { resolvePayPalUseCase() } returns true
-
+        every {
+            dataCollector.getClientMetadataId(
+                eq(context),
+                any<DataCollectorInternalRequest>(),
+                eq(configuration),
+                any()
+            )
+        } answers {
+            val callback = arg<(String) -> Unit>(3)
+            callback("sample-client-metadata-id")
+        }
         val (sut, _) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM
         )
