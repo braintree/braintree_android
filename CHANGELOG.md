@@ -4,7 +4,7 @@
 
 
 * DataCollector
-    * Bump Magnes version to `5.6.0`
+    * Bump Magnes version to `5.6.0` with internal completion handler to ensure device data is not returned until Magnes SDK completes data submission
 * PayPal
     * Pass `funding_source` to the app switch url link and to analytics events.
 

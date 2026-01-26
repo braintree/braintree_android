@@ -154,15 +154,19 @@ internal class PayPalInternalClient(
                         context,
                         dataCollectorRequest,
                         configuration
-                    ) { clientMetadataId ->
-                        buildAndReturnPaymentAuthRequest(
-                            clientMetadataId = clientMetadataId,
-                            contextId = contextId,
-                            parsedRedirectUri = parsedRedirectUri,
-                            payPalRequest = payPalRequest,
-                            configuration = configuration,
-                            callback = callback
-                        )
+                    ) { clientMetadataId, error ->
+                        if (error != null) {
+                            callback.onResult(null, error)
+                        } else {
+                            buildAndReturnPaymentAuthRequest(
+                                clientMetadataId = clientMetadataId ?: "",
+                                contextId = contextId,
+                                parsedRedirectUri = parsedRedirectUri,
+                                payPalRequest = payPalRequest,
+                                configuration = configuration,
+                                callback = callback
+                            )
+                        }
                     }
                 }
             } catch (exception: JSONException) {

@@ -22,10 +22,10 @@ class MagnesInternalClient(
         context: Context?,
         configuration: Configuration?,
         request: DataCollectorInternalRequest?,
-        callback: (String) -> Unit
+        callback: (String?, Exception?) -> Unit
     ) {
         if (context == null || configuration == null || request == null) {
-            callback("")
+            callback("", null)
             return
         }
 
@@ -53,10 +53,11 @@ class MagnesInternalClient(
                 request.additionalData
             ) { status, clientMetadataId ->
                 // Callback is invoked when device data collection and submit API completes
-                if (status == MagnesSubmitStatus.SUCCESS) {
-                    callback(clientMetadataId)
-                } else {
-                    callback("")
+                when (status) {
+                    MagnesSubmitStatus.SUCCESS -> callback(clientMetadataId, null)
+                    MagnesSubmitStatus.ERROR -> callback(null, CallbackSubmitException.SubmitError())
+                    MagnesSubmitStatus.TIMEOUT -> callback(null, CallbackSubmitException.SubmitTimeout())
+                    else -> callback(null, CallbackSubmitException.Unknown(status.toString()))
                 }
             }
         } catch (e: InvalidInputException) {
@@ -66,7 +67,7 @@ class MagnesInternalClient(
                 "Error fetching client metadata ID. Contact Braintree Support for assistance.",
                 e
             )
-            callback("")
+            callback("", null)
         }
     }
 }

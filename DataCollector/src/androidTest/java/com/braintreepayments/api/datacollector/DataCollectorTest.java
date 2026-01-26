@@ -1,6 +1,7 @@
 package com.braintreepayments.api.datacollector;
 
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
 
 import android.text.TextUtils;
 
@@ -27,7 +28,8 @@ public class DataCollectorTest {
         DataCollector sut = new DataCollector(ApplicationProvider.getApplicationContext(), Fixtures.TOKENIZATION_KEY);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        sut.getClientMetadataId(ApplicationProvider.getApplicationContext(), configuration, true, (String clientMetadataId) -> {
+        sut.getClientMetadataId(ApplicationProvider.getApplicationContext(), configuration, true, (String clientMetadataId, Exception error) -> {
+            assertNull(error);
             assertFalse(TextUtils.isEmpty(clientMetadataId));
             countDownLatch.countDown();
             return Unit.INSTANCE;

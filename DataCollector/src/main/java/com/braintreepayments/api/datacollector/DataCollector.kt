@@ -48,7 +48,7 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
         context: Context,
         configuration: Configuration?,
         hasUserLocationConsent: Boolean,
-        callback: (String) -> Unit
+        callback: (String?, Exception?) -> Unit
     ) {
         val request = DataCollectorInternalRequest(hasUserLocationConsent).apply {
             applicationGuid = getPayPalInstallationGUID(context)
@@ -65,7 +65,7 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
         context: Context?,
         request: DataCollectorInternalRequest?,
         configuration: Configuration?,
-        callback: (String) -> Unit
+        callback: (String?, Exception?) -> Unit
     ) {
         magnesInternalClient.getClientMetadataId(context, configuration, request, callback)
     }
@@ -104,14 +104,18 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
                         context = context,
                         configuration = configuration,
                         request = internalRequest
-                    ) { correlationId ->
-                        try {
-                            if (!TextUtils.isEmpty(correlationId)) {
-                                deviceData.put(CORRELATION_ID_KEY, correlationId)
+                    ) { correlationId, submitError ->
+                        if (submitError != null) {
+                            callback.onDataCollectorResult(DataCollectorResult.Failure(submitError))
+                        } else {
+                            try {
+                                if (!TextUtils.isEmpty(correlationId)) {
+                                    deviceData.put(CORRELATION_ID_KEY, correlationId)
+                                }
+                            } catch (ignored: JSONException) {
                             }
-                        } catch (ignored: JSONException) {
+                            callback.onDataCollectorResult(DataCollectorResult.Success(deviceData.toString()))
                         }
-                        callback.onDataCollectorResult(DataCollectorResult.Success(deviceData.toString()))
                     }
                 } catch (ignored: JSONException) {
                 }

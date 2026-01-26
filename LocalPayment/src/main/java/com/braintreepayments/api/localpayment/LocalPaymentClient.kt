@@ -186,16 +186,20 @@ class LocalPaymentClient internal constructor(
                     context,
                     configuration,
                     hasUserLocationConsent
-                ) { clientMetadataId ->
-                    localPaymentApi.tokenize(
-                        merchantAccountId, responseString,
-                        clientMetadataId
-                    ) { localPaymentNonce: LocalPaymentNonce?, localPaymentError: Exception? ->
-                        if (localPaymentNonce != null) {
-                            sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_SUCCEEDED)
-                            callback.onLocalPaymentResult(LocalPaymentResult.Success(localPaymentNonce))
-                        } else if (localPaymentError != null) {
-                            tokenizeFailure(localPaymentError, callback)
+                ) { clientMetadataId, submitError ->
+                    if (submitError != null) {
+                        tokenizeFailure(submitError, callback)
+                    } else {
+                        localPaymentApi.tokenize(
+                            merchantAccountId, responseString,
+                            clientMetadataId ?: ""
+                        ) { localPaymentNonce: LocalPaymentNonce?, localPaymentError: Exception? ->
+                            if (localPaymentNonce != null) {
+                                sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_SUCCEEDED)
+                                callback.onLocalPaymentResult(LocalPaymentResult.Success(localPaymentNonce))
+                            } else if (localPaymentError != null) {
+                                tokenizeFailure(localPaymentError, callback)
+                            }
                         }
                     }
                 }

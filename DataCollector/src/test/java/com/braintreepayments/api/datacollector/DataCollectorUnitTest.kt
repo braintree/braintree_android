@@ -62,8 +62,8 @@ class DataCollectorUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("paypal-clientmetadata-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("paypal-clientmetadata-id", null)
         }
     }
 
@@ -80,7 +80,7 @@ class DataCollectorUnitTest {
         val hasUserLocationConsent = true
 
         val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
-        sut.getClientMetadataId(context, configuration, hasUserLocationConsent) {}
+        sut.getClientMetadataId(context, configuration, hasUserLocationConsent) { _, _ -> }
 
         val captor = slot<DataCollectorInternalRequest>()
         verify {
@@ -112,12 +112,12 @@ class DataCollectorUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("paypal-clientmetadata-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("paypal-clientmetadata-id", null)
         }
 
         val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
-        sut.getClientMetadataId(context, customRequest, configuration) {}
+        sut.getClientMetadataId(context, customRequest, configuration) { _, _ -> }
 
         verify {
             magnesInternalClient.getClientMetadataId(
@@ -138,8 +138,8 @@ class DataCollectorUnitTest {
         sut.getClientMetadataId(
             context, configuration,
             true
-        ) { clientMetadataId ->
-            receivedClientMetadataId = clientMetadataId
+        ) { clientMetadataId, _ ->
+            receivedClientMetadataId = clientMetadataId ?: ""
         }
         Assert.assertEquals("paypal-clientmetadata-id", receivedClientMetadataId)
     }
@@ -303,5 +303,65 @@ class DataCollectorUnitTest {
             )
         }
         Assert.assertTrue(captor.captured.hasUserLocationConsent)
+    }
+
+    @Test
+    fun collectDeviceData_forwardsSubmitError() {
+        val submitError = CallbackSubmitException.SubmitError()
+        every {
+            magnesInternalClient.getClientMetadataId(
+                context,
+                configuration,
+                any(),
+                any()
+            )
+        } answers {
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback(null, submitError)
+        }
+
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
+            .build()
+
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        sut.collectDeviceData(context, dataCollectorRequest, callback)
+
+        val deviceDataCaptor = slot<DataCollectorResult>()
+        verify { callback.onDataCollectorResult(capture(deviceDataCaptor)) }
+
+        val result = deviceDataCaptor.captured
+        Assert.assertTrue(result is DataCollectorResult.Failure)
+        Assert.assertEquals(submitError, (result as DataCollectorResult.Failure).error)
+    }
+
+    @Test
+    fun collectDeviceData_forwardsSubmitTimeoutError() {
+        val submitTimeoutError = CallbackSubmitException.SubmitTimeout()
+        every {
+            magnesInternalClient.getClientMetadataId(
+                context,
+                configuration,
+                any(),
+                any()
+            )
+        } answers {
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback(null, submitTimeoutError)
+        }
+
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
+            .build()
+
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        sut.collectDeviceData(context, dataCollectorRequest, callback)
+
+        val deviceDataCaptor = slot<DataCollectorResult>()
+        verify { callback.onDataCollectorResult(capture(deviceDataCaptor)) }
+
+        val result = deviceDataCaptor.captured
+        Assert.assertTrue(result is DataCollectorResult.Failure)
+        Assert.assertEquals(submitTimeoutError, (result as DataCollectorResult.Failure).error)
     }
 }

@@ -554,8 +554,8 @@ class LocalPaymentClientUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("sample-correlation-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("sample-correlation-id", null)
         }
 
         sut = LocalPaymentClient(
@@ -610,8 +610,8 @@ class LocalPaymentClientUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("sample-correlation-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("sample-correlation-id", null)
         }
 
         sut = LocalPaymentClient(
@@ -650,8 +650,8 @@ class LocalPaymentClientUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("client-metadata-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("client-metadata-id", null)
         }
 
         val successNonce = fromJSON(
@@ -696,8 +696,8 @@ class LocalPaymentClientUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("client-metadata-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("client-metadata-id", null)
         }
 
         val localPaymentApi = MockkLocalPaymentApiBuilder()
@@ -750,8 +750,8 @@ class LocalPaymentClientUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("sample-correlation-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("sample-correlation-id", null)
         }
 
         val localPaymentAuthResult = LocalPaymentAuthResult.Success(browserSwitchResult)
@@ -826,8 +826,8 @@ class LocalPaymentClientUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("client-metadata-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("client-metadata-id", null)
         }
 
         val request = createLocalPaymentRequest()

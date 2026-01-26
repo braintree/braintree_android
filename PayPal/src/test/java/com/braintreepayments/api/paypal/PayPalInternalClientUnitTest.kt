@@ -650,8 +650,8 @@ class PayPalInternalClientUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("sample-client-metadata-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("sample-client-metadata-id", null)
         }
 
         every { merchantRepository.authorization } returns clientToken
@@ -681,8 +681,8 @@ class PayPalInternalClientUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("sample-client-metadata-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("sample-client-metadata-id", null)
         }
 
         every { merchantRepository.authorization } returns clientToken
@@ -714,8 +714,8 @@ class PayPalInternalClientUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("sample-client-metadata-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("sample-client-metadata-id", null)
         }
 
         val (sut, braintreeClient) = createSutWithMocks()
@@ -753,8 +753,8 @@ class PayPalInternalClientUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("sample-client-metadata-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("sample-client-metadata-id", null)
         }
 
         every { merchantRepository.authorization } returns clientToken
@@ -786,8 +786,8 @@ class PayPalInternalClientUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("sample-client-metadata-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("sample-client-metadata-id", null)
         }
 
         val (sut, braintreeClient) = createSutWithMocks(
@@ -834,8 +834,8 @@ class PayPalInternalClientUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("sample-client-metadata-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("sample-client-metadata-id", null)
         }
 
         val (sut, braintreeClient) = createSutWithMocks(
@@ -867,8 +867,8 @@ class PayPalInternalClientUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("sample-client-metadata-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("sample-client-metadata-id", null)
         }
 
         val (sut, _) = createSutWithMocks(
@@ -1040,8 +1040,8 @@ class PayPalInternalClientUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("sample-client-metadata-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("sample-client-metadata-id", null)
         }
 
         val (sut, _) = createSutWithMocks(
@@ -1079,8 +1079,8 @@ class PayPalInternalClientUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("sample-client-metadata-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("sample-client-metadata-id", null)
         }
 
         val (sut, _) = createSutWithMocks(
@@ -1119,8 +1119,8 @@ class PayPalInternalClientUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("sample-client-metadata-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("sample-client-metadata-id", null)
         }
         val (sut, _) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM
@@ -1154,8 +1154,8 @@ class PayPalInternalClientUnitTest {
                 any()
             )
         } answers {
-            val callback = arg<(String) -> Unit>(3)
-            callback("sample-client-metadata-id")
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("sample-client-metadata-id", null)
         }
         val (sut, _) = createSutWithMocks(
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM
