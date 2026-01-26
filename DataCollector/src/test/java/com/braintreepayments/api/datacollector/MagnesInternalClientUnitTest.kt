@@ -14,6 +14,8 @@ import lib.android.paypal.com.magnessdk.MagnesResult
 import lib.android.paypal.com.magnessdk.MagnesSDK
 import lib.android.paypal.com.magnessdk.MagnesSettings
 import lib.android.paypal.com.magnessdk.MagnesSource
+import lib.android.paypal.com.magnessdk.MagnesSubmitListener
+import lib.android.paypal.com.magnessdk.MagnesSubmitStatus
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -56,11 +58,7 @@ class MagnesInternalClientUnitTest {
         every { sandboxConfiguration.environment } returns "sandbox"
         every { magnesResult.paypalClientMetaDataId } returns "magnes-client-metadata-id"
         every {
-            magnesSDK.collectAndSubmit(
-                context,
-                "sample-client-metadata-id",
-                mapData
-            )
+            magnesSDK.collectAndSubmit(any(), any(), any(), any())
         } returns magnesResult
 
         dataCollectorInternalRequest = DataCollectorInternalRequest(hasUserLocationConsent).apply {
@@ -74,12 +72,16 @@ class MagnesInternalClientUnitTest {
     @Test
     fun getClientMetaDataId_returnsEmptyStringWhenContextIsNull() {
         val sut = MagnesInternalClient(magnesSDK)
-        val result = sut.getClientMetadataId(
+        var receivedClientMetadataId = "non-empty"
+
+        sut.getClientMetadataId(
             null, sandboxConfiguration,
             dataCollectorInternalRequest
-        )
+        ) { clientMetadataId, _ ->
+            receivedClientMetadataId = clientMetadataId ?: ""
+        }
 
-        Assert.assertTrue(result.isEmpty())
+        Assert.assertTrue(receivedClientMetadataId.isEmpty())
     }
 
     @Throws(InvalidInputException::class)
@@ -87,7 +89,7 @@ class MagnesInternalClientUnitTest {
     fun getClientMetaDataId_configuresMagnesSourceAsBraintree() {
 
         val sut = MagnesInternalClient(magnesSDK)
-        sut.getClientMetadataId(context, sandboxConfiguration, dataCollectorInternalRequest)
+        sut.getClientMetadataId(context, sandboxConfiguration, dataCollectorInternalRequest) { _, _ -> }
 
         val captor = slot<MagnesSettings>()
         verify { magnesSDK.setUp(capture(captor)) }
@@ -104,7 +106,7 @@ class MagnesInternalClientUnitTest {
     fun getClientMetaDataId_whenBraintreeEnvironmentIsSandbox_configuresMagnesEnvironmentToSandbox() {
 
         val sut = MagnesInternalClient(magnesSDK)
-        sut.getClientMetadataId(context, sandboxConfiguration, dataCollectorInternalRequest)
+        sut.getClientMetadataId(context, sandboxConfiguration, dataCollectorInternalRequest) { _, _ -> }
 
         val captor = slot<MagnesSettings>()
         verify { magnesSDK.setUp(capture(captor)) }
@@ -118,7 +120,7 @@ class MagnesInternalClientUnitTest {
     fun getClientMetaDataId_whenBraintreeEnvironmentIsProd_configuresMagnesEnvironmentToLive() {
 
         val sut = MagnesInternalClient(magnesSDK)
-        sut.getClientMetadataId(context, prodConfiguration, dataCollectorInternalRequest)
+        sut.getClientMetadataId(context, prodConfiguration, dataCollectorInternalRequest) { _, _ -> }
 
         val captor = slot<MagnesSettings>()
         verify { magnesSDK.setUp(capture(captor)) }
@@ -132,7 +134,7 @@ class MagnesInternalClientUnitTest {
     fun getClientMetaDataId_forwardsDisableBeaconOptionToMagnes() {
 
         val sut = MagnesInternalClient(magnesSDK)
-        sut.getClientMetadataId(context, prodConfiguration, dataCollectorInternalRequest)
+        sut.getClientMetadataId(context, prodConfiguration, dataCollectorInternalRequest) { _, _ -> }
 
         val captor = slot<MagnesSettings>()
         verify { magnesSDK.setUp(capture(captor)) }
@@ -146,7 +148,7 @@ class MagnesInternalClientUnitTest {
     fun getClientMetaDataId_forwardsApplicationGUIDOptionToMagnes() {
 
         val sut = MagnesInternalClient(magnesSDK)
-        sut.getClientMetadataId(context, prodConfiguration, dataCollectorInternalRequest)
+        sut.getClientMetadataId(context, prodConfiguration, dataCollectorInternalRequest) { _, _ -> }
 
         val captor = slot<MagnesSettings>()
         verify { magnesSDK.setUp(capture(captor)) }
@@ -160,7 +162,7 @@ class MagnesInternalClientUnitTest {
     fun getClientMetaDataId_setsHasUserLocationConsent() {
 
         val sut = MagnesInternalClient(magnesSDK)
-        sut.getClientMetadataId(context, prodConfiguration, dataCollectorInternalRequest)
+        sut.getClientMetadataId(context, prodConfiguration, dataCollectorInternalRequest) { _, _ -> }
 
         val captor = slot<MagnesSettings>()
         verify { magnesSDK.setUp(capture(captor)) }
@@ -177,41 +179,122 @@ class MagnesInternalClientUnitTest {
         requestWithInvalidGUID.applicationGuid = "invalid guid"
 
         val sut = MagnesInternalClient(magnesSDK)
-        val result = sut.getClientMetadataId(context, prodConfiguration, requestWithInvalidGUID)
+        var receivedClientMetadataId = "non-empty"
+        sut.getClientMetadataId(
+            null, sandboxConfiguration,
+            dataCollectorInternalRequest
+        ) { clientMetadataId, _ ->
+            receivedClientMetadataId = clientMetadataId ?: ""
+        }
 
-        Assert.assertTrue(result.isEmpty())
+        Assert.assertTrue(receivedClientMetadataId.isEmpty())
     }
 
     @Throws(InvalidInputException::class)
     @Test
     fun getClientMetaDataId_forwardsClientMetadataIdFromMagnesStart() {
+        val callbackSlot = slot<MagnesSubmitListener>()
+        every {
+            magnesSDK.collectAndSubmit(
+                context,
+                "sample-client-metadata-id",
+                mapData,
+                capture(callbackSlot)
+            )
+        } returns magnesResult
 
         val sut = MagnesInternalClient(magnesSDK)
-        val result = sut.getClientMetadataId(
+        var receivedClientMetadataId = "non-empty"
+        sut.getClientMetadataId(
             context, prodConfiguration,
             dataCollectorInternalRequest
-        )
+        ) { clientMetadataId, _ ->
+            receivedClientMetadataId = clientMetadataId ?: ""
+        }
 
-        Assert.assertEquals("magnes-client-metadata-id", result)
+        callbackSlot.captured.onSubmitComplete(MagnesSubmitStatus.SUCCESS, "magnes-client-metadata-id")
+
+        Assert.assertEquals("magnes-client-metadata-id", receivedClientMetadataId)
     }
 
     @Throws(InvalidInputException::class)
     @Test
     fun getClientMetaDataId_returnsAnEmptyStringWhenCollectAndSubmitThrows() {
-
         every {
             magnesSDK.collectAndSubmit(
                 context,
                 "sample-client-metadata-id",
-                mapData
-        ) } throws InvalidInputException("invalid input")
+                mapData,
+                any()
+            )
+        } throws InvalidInputException("invalid input")
 
         val sut = MagnesInternalClient(magnesSDK)
-        val result = sut.getClientMetadataId(
+        var receivedClientMetadataId = "non-empty"
+
+        sut.getClientMetadataId(
             context, prodConfiguration,
             dataCollectorInternalRequest
-        )
+        ) { clientMetadataId, _ ->
+            receivedClientMetadataId = clientMetadataId ?: ""
+        }
 
-        Assert.assertTrue(result.isEmpty())
+        Assert.assertTrue(receivedClientMetadataId.isEmpty())
+    }
+
+    @Test
+    fun getClientMetaDataId_returnsSubmitErrorWhenMagnesReturnsError() {
+        every {
+            magnesSDK.collectAndSubmit(
+                context,
+                "sample-client-metadata-id",
+                mapData,
+                any()
+            )
+        } answers {
+            val callback = arg<lib.android.paypal.com.magnessdk.MagnesSubmitListener>(3)
+            callback.onSubmitComplete(MagnesSubmitStatus.ERROR, "")
+            magnesResult
+        }
+
+        val sut = MagnesInternalClient(magnesSDK)
+        var receivedError: Exception? = null
+
+        sut.getClientMetadataId(
+            context, prodConfiguration,
+            dataCollectorInternalRequest
+        ) { _, error ->
+            receivedError = error
+        }
+
+        Assert.assertTrue(receivedError is CallbackSubmitException.SubmitError)
+    }
+
+    @Test
+    fun getClientMetaDataId_returnsSubmitTimeoutWhenMagnesReturnsTimeout() {
+        every {
+            magnesSDK.collectAndSubmit(
+                context,
+                "sample-client-metadata-id",
+                mapData,
+                any()
+            )
+        } answers {
+            val callback = arg<lib.android.paypal.com.magnessdk.MagnesSubmitListener>(3)
+            callback.onSubmitComplete(MagnesSubmitStatus.TIMEOUT, "")
+            magnesResult
+        }
+
+        val sut = MagnesInternalClient(magnesSDK)
+        var receivedError: Exception? = null
+
+        sut.getClientMetadataId(
+            context, prodConfiguration,
+            dataCollectorInternalRequest
+        ) { _, error ->
+            receivedError = error
+        }
+
+        Assert.assertTrue(receivedError is CallbackSubmitException.SubmitTimeout)
     }
 }
