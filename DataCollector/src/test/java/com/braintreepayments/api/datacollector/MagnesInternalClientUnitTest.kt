@@ -14,6 +14,7 @@ import lib.android.paypal.com.magnessdk.MagnesResult
 import lib.android.paypal.com.magnessdk.MagnesSDK
 import lib.android.paypal.com.magnessdk.MagnesSettings
 import lib.android.paypal.com.magnessdk.MagnesSource
+import lib.android.paypal.com.magnessdk.MagnesSubmitListener
 import lib.android.paypal.com.magnessdk.MagnesSubmitStatus
 import org.junit.Assert
 import org.junit.Before
@@ -57,17 +58,8 @@ class MagnesInternalClientUnitTest {
         every { sandboxConfiguration.environment } returns "sandbox"
         every { magnesResult.paypalClientMetaDataId } returns "magnes-client-metadata-id"
         every {
-            magnesSDK.collectAndSubmit(
-                context,
-                "sample-client-metadata-id",
-                mapData,
-                any()
-            )
-        } answers {
-            val callback = arg<lib.android.paypal.com.magnessdk.MagnesSubmitListener>(3)
-            callback.onSubmitComplete(MagnesSubmitStatus.SUCCESS, "magnes-client-metadata-id")
-            magnesResult
-        }
+            magnesSDK.collectAndSubmit(any(), any(), any(), any())
+        } returns magnesResult
 
         dataCollectorInternalRequest = DataCollectorInternalRequest(hasUserLocationConsent).apply {
             clientMetadataId = "sample-client-metadata-id"
@@ -201,6 +193,15 @@ class MagnesInternalClientUnitTest {
     @Throws(InvalidInputException::class)
     @Test
     fun getClientMetaDataId_forwardsClientMetadataIdFromMagnesStart() {
+        val callbackSlot = slot<MagnesSubmitListener>()
+        every {
+            magnesSDK.collectAndSubmit(
+                context,
+                "sample-client-metadata-id",
+                mapData,
+                capture(callbackSlot)
+            )
+        } returns magnesResult
 
         val sut = MagnesInternalClient(magnesSDK)
         var receivedClientMetadataId = "non-empty"
@@ -210,6 +211,8 @@ class MagnesInternalClientUnitTest {
         ) { clientMetadataId, _ ->
             receivedClientMetadataId = clientMetadataId ?: ""
         }
+
+        callbackSlot.captured.onSubmitComplete(MagnesSubmitStatus.SUCCESS, "magnes-client-metadata-id")
 
         Assert.assertEquals("magnes-client-metadata-id", receivedClientMetadataId)
     }
