@@ -33,7 +33,7 @@ internal class PayPalComposeButtonViewModel(
         intent: Intent,
         callback: PayPalTokenizeCallback
     ) {
-        if (pendingRequest.pendingRequestString.isEmpty()) return
+//        if (pendingRequest.pendingRequestString.isEmpty()) return
         val paymentAuthResult = payPalLauncher.handleReturnToApp(
             pendingRequest = pendingRequest,
             intent = intent,

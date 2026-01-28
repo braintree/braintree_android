@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.net.Uri
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,11 +29,6 @@ fun PayPalButtonComposeImpl(
     deepLinkFallbackUrlScheme: String,
     paypalTokenizeCallback: PayPalTokenizeCallback
 ) {
-    // this might still be needed for auth tab, but the impl might have to change to take in a launcher instead of a
-    // caller
-//    val activityLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
-//            handleReturnToApp()
-//        }
     val context = LocalContext.current
     val activity = context.findActivity()
 
@@ -41,7 +37,7 @@ fun PayPalButtonComposeImpl(
     val viewModel: PayPalComposeButtonViewModel =
         viewModel { PayPalComposeButtonViewModel(PayPalPendingRequestRepository()) }
 
-    val payPalLauncher = PayPalLauncher()
+    val payPalLauncher = PayPalLauncher(LocalActivityResultRegistryOwner.current?.activityResultRegistry)
     val payPalClient = PayPalClient(
         context = context,
         authorization = authorization,

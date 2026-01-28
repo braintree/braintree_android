@@ -58,6 +58,7 @@ dependencies {
     implementation libs.androidx.runtime
     implementation libs.android.compose
     implementation libs.androidx.compose.viewModel
+    implementation libs.androidx.browser
 
     def composeBom = platform(libs.androidx.compose.bom)
     implementation composeBom
