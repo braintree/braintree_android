@@ -5,6 +5,7 @@ import android.net.Uri
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.ApiClient.Companion.versionedPath
 import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.sharedutils.AuthorizationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -54,9 +55,9 @@ class AmericanExpressClient internal constructor(
             .toString()
 
         braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED)
-        coroutineScope.launch{
+        coroutineScope.launch {
             try {
-                val responseBody = braintreeClient.sendGet(getRewardsBalanceUrl)
+                val responseBody = braintreeClient.sendGET(getRewardsBalanceUrl)
                 val rewardsBalance =
                     AmericanExpressRewardsBalance.fromJson(responseBody)
                 callbackSuccess(AmericanExpressResult.Success(rewardsBalance), callback)
@@ -64,7 +65,7 @@ class AmericanExpressClient internal constructor(
                 callbackFailure(AmericanExpressResult.Failure(e), callback)
             } catch (e: IOException) {
                 callbackFailure(AmericanExpressResult.Failure(e), callback)
-            } catch (e: RuntimeException) {
+            } catch (e: AuthorizationException) {
                 callbackFailure(AmericanExpressResult.Failure(e), callback)
             }
         }

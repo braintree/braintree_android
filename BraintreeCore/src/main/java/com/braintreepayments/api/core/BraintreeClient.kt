@@ -134,10 +134,10 @@ class BraintreeClient internal constructor(
     /**
      * @suppress
      */
-    suspend fun sendGet(url: String): String {
+    suspend fun sendGET(url: String): String {
         val configuration = suspendCoroutine { continuation ->
             getConfiguration { config, error ->
-                if(config != null) {
+                if (config != null) {
                     continuation.resume(config)
                 } else {
                     continuation.resumeWithException(error ?: Exception("Unknown configuration error"))
@@ -151,7 +151,7 @@ class BraintreeClient internal constructor(
         )
 
         sendAnalyticsTimingEvent(url, response.timing)
-        return response.body ?: throw RuntimeException("Response body is null")
+        return response.body ?: throw IOException("Response body is null")
     }
 
     /**
