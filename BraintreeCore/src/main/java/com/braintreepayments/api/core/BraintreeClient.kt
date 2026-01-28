@@ -105,14 +105,15 @@ class BraintreeClient internal constructor(
      * @param callback [ConfigurationCallback]
      */
     fun getConfiguration(callback: ConfigurationCallback) {
-        configurationLoader.loadConfiguration { result ->
-            when (result) {
+        coroutineScope.launch {
+            val configResult = configurationLoader.loadConfiguration()
+            when (configResult) {
                 is ConfigurationLoaderResult.Success -> {
-                    callback.onResult(result.configuration, null)
-                    result.timing?.let { sendAnalyticsTimingEvent("/v1/configuration", it) }
+                    callback.onResult(configResult.configuration, null)
+                    configResult.timing?.let { sendAnalyticsTimingEvent("/v1/configuration", it) }
                 }
 
-                is ConfigurationLoaderResult.Failure -> callback.onResult(null, result.error)
+                is ConfigurationLoaderResult.Failure -> callback.onResult(null, configResult.error)
             }
         }
     }
