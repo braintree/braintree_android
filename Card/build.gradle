@@ -45,6 +45,7 @@ dependencies {
     api project(':BraintreeCore')
 
     implementation libs.androidx.annotation
+    implementation libs.coroutines.core
 
     testImplementation libs.robolectric
     testImplementation libs.mockito.core
@@ -56,11 +57,13 @@ dependencies {
     testImplementation libs.kotlin.stdlib
     testImplementation libs.kotlin.test
     testImplementation libs.test.parameter.injector
+    testImplementation libs.coroutines.test
 
     androidTestImplementation project(':TestUtils')
     androidTestImplementation libs.androidx.test.rules
     androidTestImplementation libs.androidx.test.runner
     androidTestImplementation libs.androidx.junit
+
 }
 
 // region signing and publishing

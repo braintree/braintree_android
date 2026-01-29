@@ -57,18 +57,19 @@ internal class SEPADirectDebitApi(
             val jsonObject =
                 buildTokenizeRequest(ibanLastFour, customerId, bankReferenceToken, mandateType)
             val url = "/v1/payment_methods/sepa_debit_accounts"
-            braintreeClient.sendPOST(
-                url,
-                jsonObject.toString()
-            ) { responseBody, httpError ->
-                if (responseBody != null) {
+            coroutineScope.launch {
+                try {
+                    val responseBody = braintreeClient.sendPOST(
+                        url,
+                        jsonObject.toString()
+                    )
                     try {
                         val nonce = parseTokenizeResponse(responseBody)
                         callback.onResult(nonce, null)
-                    } catch (jsonException: JSONException) {
-                        callback.onResult(null, jsonException)
+                    } catch (e: JSONException) {
+                        callback.onResult(null, e)
                     }
-                } else if (httpError != null) {
+                } catch (httpError: IOException) {
                     callback.onResult(null, httpError)
                 }
             }

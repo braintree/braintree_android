@@ -1,8 +1,13 @@
 package com.braintreepayments.api.core
 
 import androidx.annotation.RestrictTo
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
 
 /**
  * @suppress
@@ -10,7 +15,9 @@ import org.json.JSONObject
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class ApiClient(
     private val braintreeClient: BraintreeClient,
-    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
 
     fun tokenizeGraphQL(tokenizePayload: JSONObject, callback: TokenizeCallback) =
@@ -29,14 +36,17 @@ class ApiClient(
             val url = versionedPath("$PAYMENT_METHOD_ENDPOINT/${paymentMethod.apiPath}")
             paymentMethod.sessionId = analyticsParamRepository.sessionId
 
-            sendPOST(
-                url = url,
-                data = paymentMethod.buildJSON().toString(),
-            ) { responseBody, httpError ->
-                parseResponseToJSON(responseBody)?.let { json ->
-                    callback.onResult(json, null)
-                } ?: httpError?.let { error ->
-                    callback.onResult(null, error)
+            coroutineScope.launch {
+                try {
+                    val responseBody = sendPOST(
+                        url = url,
+                        data = paymentMethod.buildJSON().toString(),
+                    )
+                    parseResponseToJSON(responseBody)?.let { json ->
+                        callback.onResult(json, null)
+                    } ?: callback.onResult(null, JSONException("Invalid JSON response"))
+                } catch (httpError: IOException) {
+                    callback.onResult(null, httpError)
                 }
             }
         }
