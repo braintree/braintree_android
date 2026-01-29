@@ -2,6 +2,10 @@ package com.braintreepayments.api.core
 
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.Time
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
@@ -12,6 +16,8 @@ class AnalyticsClient internal constructor(
     private val analyticsEventRepository: AnalyticsEventRepository = AnalyticsEventRepository.instance,
     private val time: Time = Time(),
     private val configurationLoader: ConfigurationLoader = ConfigurationLoader.instance,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher),
 ) {
 
     fun sendEvent(
@@ -41,9 +47,10 @@ class AnalyticsClient internal constructor(
             didSdkAttemptAppSwitch = analyticsParamRepository.didSdkAttemptAppSwitch,
         )
         if (sendImmediately) {
-            configurationLoader.loadConfiguration { result ->
-                if (result is ConfigurationLoaderResult.Success) {
-                    executeEventsApi(event, result.configuration)
+            coroutineScope.launch {
+                val configResult = configurationLoader.loadConfiguration()
+                if (configResult is ConfigurationLoaderResult.Success) {
+                    executeEventsApi(event, configResult.configuration)
                 }
             }
         } else {

@@ -6,6 +6,11 @@ import com.braintreepayments.api.testutils.Fixtures
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -99,31 +104,61 @@ class AnalyticsClientUnitTest {
         verify { analyticsEventRepository.addEvent(expectedAnalyticsEvent) }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `when sendEvent is called with sendImmediately as true, the events api is executed`() {
-        sut.sendEvent(
-            eventName = eventName,
-            analyticsEventParams = analyticsEventParams,
-            sendImmediately = true
-        )
-
-        verify {
-            analyticsApi.execute(
-                events = listOf(expectedAnalyticsEvent),
-                configuration = configuration
+    fun `when sendEvent is called with sendImmediately as true, the events api is executed`() = runTest {
+            val testDispatcher = StandardTestDispatcher(testScheduler)
+            val testScope = TestScope(testDispatcher)
+            val sut = AnalyticsClient(
+                analyticsApi = analyticsApi,
+                analyticsParamRepository = analyticsParamRepository,
+                analyticsEventRepository = analyticsEventRepository,
+                time = time,
+                configurationLoader = configurationLoader,
+                dispatcher = testDispatcher,
+                coroutineScope = testScope
             )
-        }
-    }
 
+            sut.sendEvent(
+                eventName = eventName,
+                analyticsEventParams = analyticsEventParams,
+                sendImmediately = true
+            )
+            advanceUntilIdle()
+
+            verify {
+                analyticsApi.execute(
+                    events = listOf(expectedAnalyticsEvent),
+                    configuration = configuration
+                )
+            }
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `when sendEvent is called with sendImmediately as true, all events in the analyticsEventRepository are sent`() {
+    fun `when sendEvent is called with sendImmediately as true, all events in the analyticsEventRepository are sent`() =
+    runTest {
+
         every { analyticsEventRepository.flushAndReturnEvents() } returns listOf(expectedAnalyticsEvent)
+
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        val sut = AnalyticsClient(
+            analyticsApi = analyticsApi,
+            analyticsParamRepository = analyticsParamRepository,
+            analyticsEventRepository = analyticsEventRepository,
+            time = time,
+            configurationLoader = configurationLoader,
+            dispatcher = testDispatcher,
+            coroutineScope = testScope
+        )
 
         sut.sendEvent(
             eventName = "initial-event",
             analyticsEventParams = analyticsEventParams,
             sendImmediately = true
         )
+        advanceUntilIdle()
 
         val initialEvent = expectedAnalyticsEvent.copy(name = "initial-event")
 
