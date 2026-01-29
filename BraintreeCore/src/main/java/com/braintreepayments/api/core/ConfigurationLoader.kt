@@ -42,7 +42,6 @@ internal class ConfigurationLoader(
         }
 
         return executeConfigurationApi(configUrl, authorization)
-
     }
 
     private suspend fun executeConfigurationApi(

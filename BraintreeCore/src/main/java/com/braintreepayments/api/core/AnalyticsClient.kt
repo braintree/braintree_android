@@ -7,7 +7,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONException
-import java.io.IOException
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 @Suppress("SwallowedException", "TooGenericExceptionCaught")

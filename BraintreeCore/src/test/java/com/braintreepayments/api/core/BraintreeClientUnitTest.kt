@@ -430,7 +430,7 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sendGraphQLPOST_whenInvalidAuth_callsBackAuthError() = runTest{
+    fun sendGraphQLPOST_whenInvalidAuth_callsBackAuthError() = runTest {
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(expectedAuthException)
             .build()
