@@ -2,10 +2,19 @@ package com.braintreepayments.api.sepadirectdebit
 
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitNonce.Companion.fromJSON
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
 
-internal class SEPADirectDebitApi(private val braintreeClient: BraintreeClient) {
+internal class SEPADirectDebitApi(
+    private val braintreeClient: BraintreeClient,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
+) {
 
     fun createMandate(
         sepaDirectDebitRequest: SEPADirectDebitRequest,
@@ -16,18 +25,19 @@ internal class SEPADirectDebitApi(private val braintreeClient: BraintreeClient) 
             val jsonObject =
                 buildCreateMandateRequest(sepaDirectDebitRequest, returnUrlScheme)
             val url = "/v1/sepa_debit"
-            braintreeClient.sendPOST(
-                url,
-                jsonObject.toString()
-            ) { responseBody, httpError ->
-                if (responseBody != null) {
+            coroutineScope.launch {
+                try {
+                    val responseBody = braintreeClient.sendPOST(
+                        url,
+                        jsonObject.toString()
+                    )
                     try {
                         val result = parseCreateMandateResponse(responseBody)
                         callback.onResult(result, null)
                     } catch (e: JSONException) {
                         callback.onResult(null, e)
                     }
-                } else if (httpError != null) {
+                } catch (httpError: IOException) {
                     callback.onResult(null, httpError)
                 }
             }

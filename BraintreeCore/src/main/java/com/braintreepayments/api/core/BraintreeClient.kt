@@ -14,6 +14,9 @@ import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Core Braintree class that handles network requests.
@@ -161,37 +164,29 @@ class BraintreeClient internal constructor(
      * @suppress
      */
     @JvmOverloads
-    fun sendPOST(
+    suspend fun sendPOST(
         url: String,
         data: String,
         additionalHeaders: Map<String, String> = emptyMap(),
-        responseCallback: HttpResponseCallback,
-    ) {
-        getConfiguration { configuration, configError ->
-            if (configuration != null) {
-                coroutineScope.launch {
-                    try {
-                        val response = httpClient.post(
-                            path = url,
-                            data = data,
-                            configuration = configuration,
-                            authorization = merchantRepository.authorization,
-                            additionalHeaders = additionalHeaders
-                        )
-                        try {
-                            sendAnalyticsTimingEvent(url, response.timing)
-                            responseCallback.onResult(response.body, null)
-                        } catch (jsonException: JSONException) {
-                            responseCallback.onResult(null, jsonException)
-                        }
-                    } catch (e: IOException) {
-                        responseCallback.onResult(null, e)
-                    }
+    ): String {
+        val configuration = suspendCoroutine { continuation ->
+            getConfiguration { config, error ->
+                if (config != null) {
+                    continuation.resume(config)
+                } else {
+                    continuation.resumeWithException(error ?: IOException("Unknown configuration error"))
                 }
-            } else {
-                responseCallback.onResult(null, configError)
             }
         }
+        val response = httpClient.post(
+            path = url,
+            data = data,
+            configuration = configuration,
+            authorization = merchantRepository.authorization,
+            additionalHeaders = additionalHeaders
+        )
+        sendAnalyticsTimingEvent(url, response.timing)
+        return response.body ?: throw IOException("Response body is null")
     }
 
     /**
