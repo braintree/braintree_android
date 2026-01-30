@@ -6,8 +6,10 @@ import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ConfigurationCallback
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import java.io.IOException
 
 @Suppress("MagicNumber", "TooManyFunctions")
 class MockkBraintreeClientBuilder {
@@ -109,25 +111,23 @@ class MockkBraintreeClientBuilder {
 
         every { braintreeClient.getManifestActivityInfo(any<Class<*>>()) } returns activityInfo
 
-        every {
-            braintreeClient.sendPOST(any<String>(), any<String>(), responseCallback = any<HttpResponseCallback>())
-        } answers { call ->
-            val callback = call.invocation.args[2] as HttpResponseCallback
-            sendPostSuccess?.let { callback.onResult(it, null) }
-                ?: sendPostError?.let { callback.onResult(null, it) }
+        coEvery {
+            braintreeClient.sendPOST(
+                url = any<String>(),
+                data = any<String>(),
+            )
+        } answers {
+            sendPostSuccess ?: throw (sendPostError ?: IOException("Unknown error"))
         }
 
-        every {
+        coEvery {
             braintreeClient.sendPOST(
-                any<String>(),
-                any<String>(),
-                any<Map<String, String>>(),
-                any<HttpResponseCallback>()
+                url = any<String>(),
+                data = any<String>(),
+                additionalHeaders = any<Map<String, String>>(),
             )
-        } answers { call ->
-            val callback = call.invocation.args[3] as HttpResponseCallback
-            sendPostSuccess?.let { callback.onResult(it, null) }
-                ?: sendPostError?.let { callback.onResult(null, it) }
+        } answers {
+            sendPostSuccess ?: throw (sendPostError ?: IOException("Unknown error"))
         }
 
         every { braintreeClient.sendGET(any<String>(), responseCallback = any<HttpResponseCallback>())
