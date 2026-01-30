@@ -14,6 +14,9 @@ import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Core Braintree class that handles network requests.
@@ -131,30 +134,24 @@ class BraintreeClient internal constructor(
     /**
      * @suppress
      */
-    fun sendGET(url: String, responseCallback: HttpResponseCallback) {
-        getConfiguration { configuration, configError ->
-            if (configuration != null) {
-                coroutineScope.launch {
-                    try {
-                        val response = httpClient.get(
-                            path = url,
-                            configuration = configuration,
-                            authorization = merchantRepository.authorization
-                        )
-                        try {
-                            sendAnalyticsTimingEvent(url, response.timing)
-                            responseCallback.onResult(response.body, null)
-                        } catch (jsonException: JSONException) {
-                            responseCallback.onResult(null, jsonException)
-                        }
-                    } catch (e: IOException) {
-                        responseCallback.onResult(null, e)
-                    }
+    suspend fun sendGET(url: String): String {
+        val configuration = suspendCoroutine { continuation ->
+            getConfiguration { config, error ->
+                if (config != null) {
+                    continuation.resume(config)
+                } else {
+                    continuation.resumeWithException(error ?: Exception("Unknown configuration error"))
                 }
-            } else {
-                responseCallback.onResult(null, configError)
             }
         }
+        val response = httpClient.get(
+            path = url,
+            configuration = configuration,
+            authorization = merchantRepository.authorization
+        )
+
+        sendAnalyticsTimingEvent(url, response.timing)
+        return response.body ?: throw IOException("Response body is null")
     }
 
     /**

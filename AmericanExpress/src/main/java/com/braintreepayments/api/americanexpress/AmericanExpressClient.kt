@@ -5,13 +5,21 @@ import android.net.Uri
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.ApiClient.Companion.versionedPath
 import com.braintreepayments.api.core.BraintreeClient
+import com.braintreepayments.api.sharedutils.AuthorizationException
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
+import java.io.IOException
 
 /**
  * Used to integrate with Braintree's American Express API
  */
 class AmericanExpressClient internal constructor(
-    private val braintreeClient: BraintreeClient
+    private val braintreeClient: BraintreeClient,
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(mainDispatcher),
 ) {
 
     /**
@@ -47,17 +55,18 @@ class AmericanExpressClient internal constructor(
             .toString()
 
         braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED)
-        braintreeClient.sendGET(getRewardsBalanceUrl) { responseBody: String?, httpError: Exception? ->
-            if (responseBody != null) {
-                try {
-                    val rewardsBalance =
-                        AmericanExpressRewardsBalance.fromJson(responseBody)
-                    callbackSuccess(AmericanExpressResult.Success(rewardsBalance), callback)
-                } catch (e: JSONException) {
-                    callbackFailure(AmericanExpressResult.Failure(e), callback)
-                }
-            } else if (httpError != null) {
-                callbackFailure(AmericanExpressResult.Failure(httpError), callback)
+        coroutineScope.launch {
+            try {
+                val responseBody = braintreeClient.sendGET(getRewardsBalanceUrl)
+                val rewardsBalance =
+                    AmericanExpressRewardsBalance.fromJson(responseBody)
+                callbackSuccess(AmericanExpressResult.Success(rewardsBalance), callback)
+            } catch (e: JSONException) {
+                callbackFailure(AmericanExpressResult.Failure(e), callback)
+            } catch (e: IOException) {
+                callbackFailure(AmericanExpressResult.Failure(e), callback)
+            } catch (e: AuthorizationException) {
+                callbackFailure(AmericanExpressResult.Failure(e), callback)
             }
         }
     }
