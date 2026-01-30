@@ -3,7 +3,19 @@ package com.braintreepayments.api.core
 import com.braintreepayments.api.card.Card
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.spyk
+import io.mockk.verify
+import io.mockk.verifyOrder
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
@@ -12,6 +24,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class ApiClientUnitTest {
 
@@ -21,6 +34,7 @@ class ApiClientUnitTest {
 
     private lateinit var graphQLEnabledConfig: Configuration
     private lateinit var graphQLDisabledConfig: Configuration
+    private val testDispatcher = StandardTestDispatcher()
 
     @Before
     @Throws(JSONException::class)
@@ -34,22 +48,41 @@ class ApiClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun tokenizeREST_setsSessionIdBeforeTokenizing() {
+    fun tokenizeREST_setsSessionIdBeforeTokenizing() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLDisabledConfig)
+            .sendPostSuccessfulResponse("{}")
             .build()
 
         every { analyticsParamRepository.sessionId } returns "session-id"
         val bodySlot = slot<String>()
-        every { braintreeClient.sendPOST(any(), capture(bodySlot), any(), any()) } returns Unit
-
-        val sut = ApiClient(braintreeClient, analyticsParamRepository)
+        coEvery {
+            braintreeClient.sendPOST(
+                url = any<String>(),
+                data = capture(bodySlot),
+            )
+        } returns "{}"
+        val testScope = TestScope(testDispatcher)
+        val sut = ApiClient(
+            braintreeClient = braintreeClient,
+            analyticsParamRepository = analyticsParamRepository,
+            dispatcher = testDispatcher,
+            coroutineScope = testScope
+        )
         val card = spyk(Card())
         sut.tokenizeREST(card, tokenizeCallback)
 
+        advanceUntilIdle()
+
         verifyOrder {
             card.sessionId = "session-id"
-            braintreeClient.sendPOST(any(), any(), any(), any())
+        }
+
+        coVerify {
+            braintreeClient.sendPOST(
+                url = any<String>(),
+                data = any<String>(),
+            )
         }
 
         val data = JSONObject(bodySlot.captured).getJSONObject("_meta")
@@ -70,31 +103,56 @@ class ApiClientUnitTest {
         val card = Card()
         sut.tokenizeGraphQL(card.buildJSONForGraphQL(), tokenizeCallback)
 
-        verify(inverse = true) { braintreeClient.sendPOST(any(), any(), any(), any()) }
+        coVerify(inverse = true) {
+            braintreeClient.sendPOST(
+                url = any<String>(),
+                data = any<String>(),
+            )
+        }
         assertEquals(card.buildJSONForGraphQL().toString(), graphQLBodySlot.captured.toString())
     }
 
     @Test
-    fun tokenizeREST_tokenizesPaymentMethodsWithREST() {
+    fun tokenizeREST_tokenizesPaymentMethodsWithREST() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLEnabledConfig)
+            .sendPostSuccessfulResponse("{}")
             .build()
+        val testScope = TestScope(testDispatcher)
+        val sut = ApiClient(
+            braintreeClient = braintreeClient,
+            dispatcher = testDispatcher,
+            coroutineScope = testScope
+        )
+        sut.tokenizeREST(mockk(relaxed = true), tokenizeCallback)
+        sut.tokenizeREST(mockk(relaxed = true), tokenizeCallback)
 
-        val sut = ApiClient(braintreeClient)
-        sut.tokenizeREST(mockk(relaxed = true), tokenizeCallback)
-        sut.tokenizeREST(mockk(relaxed = true), tokenizeCallback)
+        advanceUntilIdle()
 
         verify(inverse = true) { braintreeClient.sendGraphQLPOST(any(), any()) }
     }
 
     @Test
-    fun `when tokenizeREST is called, braintreeClient sendPOST is called with empty headers`() {
-        val braintreeClient = MockkBraintreeClientBuilder().build()
-        val sut = ApiClient(braintreeClient)
+    fun `when tokenizeREST is called, braintreeClient sendPOST is called with empty headers`() = runTest(testDispatcher) {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .sendPostSuccessfulResponse("{}")
+            .build()
+        val testScope = TestScope(testDispatcher)
+        val sut = ApiClient(
+            braintreeClient = braintreeClient,
+            dispatcher = testDispatcher,
+            coroutineScope = testScope
+        )
 
         sut.tokenizeREST(mockk(relaxed = true), mockk(relaxed = true))
+        advanceUntilIdle()
 
-        verify { braintreeClient.sendPOST(any(), any(), emptyMap(), any()) }
+        coVerify {
+            braintreeClient.sendPOST(
+                url = any<String>(),
+                data = any<String>(),
+            )
+        }
     }
 
     @Test
