@@ -1005,6 +1005,47 @@ class VenmoClientUnitTest {
     }
 
     @Test
+    fun createPaymentAuthRequest_withRiskCorrelationId_passesRiskCorrelationIdToCreatePaymentContext() {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(venmoEnabledConfiguration)
+            .build()
+
+        every { merchantRepository.authorization } returns clientToken
+
+        val riskCorrelationId = "risk-id-123"
+        venmoApi = MockkVenmoApiBuilder()
+            .createPaymentContextSuccess("venmo-payment-context-id")
+            .build()
+
+        val request = VenmoRequest(
+            paymentMethodUsage = VenmoPaymentMethodUsage.SINGLE_USE,
+            profileId = "sample-venmo-merchant",
+            shouldVault = false,
+            riskCorrelationId = riskCorrelationId
+        )
+
+        sut = VenmoClient(
+            braintreeClient,
+            apiClient,
+            venmoApi,
+            sharedPrefsWriter,
+            analyticsParamRepository,
+            merchantRepository,
+            venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
+            getReturnLinkTypeUseCase,
+            getReturnLinkUseCase
+        )
+        sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
+
+        // Verify the request succeeds and returns ReadyToLaunch
+        val authRequestSlot = slot<VenmoPaymentAuthRequest>()
+        verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
+        assertTrue(authRequestSlot.captured is VenmoPaymentAuthRequest.ReadyToLaunch)
+    }
+
+    @Test
     fun tokenize_withSuccessfulVaultCall_forwardsResultToActivityResultListener_andSendsAnalytics() {
         val braintreeClient = MockkBraintreeClientBuilder().build()
 
