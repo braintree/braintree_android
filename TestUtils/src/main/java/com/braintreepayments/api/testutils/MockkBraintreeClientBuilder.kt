@@ -130,11 +130,10 @@ class MockkBraintreeClientBuilder {
             )
         } answers { sendPostAnswer() }
 
-        every { braintreeClient.sendGET(any<String>(), responseCallback = any<HttpResponseCallback>())
-        } answers { call ->
-            val callback = call.invocation.args[1] as HttpResponseCallback
-            sendGetSuccess?.let { callback.onResult(it, null) }
-                ?: sendGetError?.let { callback.onResult(null, it) }
+        coEvery { braintreeClient.sendGET(any<String>()) } answers {
+            sendGetSuccess
+                ?: sendGetError?.let { throw it }
+                ?: throw IOException("No sendGet response configured")
         }
 
         return braintreeClient

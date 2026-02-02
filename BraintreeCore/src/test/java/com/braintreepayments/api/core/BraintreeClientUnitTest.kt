@@ -116,6 +116,7 @@ class BraintreeClientUnitTest {
         assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun sendGET_onGetConfigurationSuccess_forwardsRequestToHttpClient() = runTest {
         val configuration = mockk<Configuration>(relaxed = true)
@@ -138,32 +139,41 @@ class BraintreeClientUnitTest {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun sendGET_onGetConfigurationFailure_forwardsErrorToCallback() {
+    fun sendGET_onGetConfigurationFailure_forwardsErrorToCallback() = runTest {
         val configError = Exception("configuration error")
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(configError)
             .build()
 
-        val sut = createBraintreeClient(configurationLoader)
-
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        sut.sendGET("sample-url", httpResponseCallback)
-
-        verify { httpResponseCallback.onResult(null, configError) }
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        val sut = createBraintreeClient(
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
+        try {
+            sut.sendGET("sample-url")
+            advanceUntilIdle()
+            fail("Must throw an exception")
+        } catch (e: Exception) {
+            assertEquals("configuration error", e.message)
+        }
     }
 
+    @OptIn(ExperimentalCoroutinesApi:: class)
     @Test
-    fun sendGET_whenInvalidAuth_callsBackAuthError() {
+    fun sendGET_whenInvalidAuth_callsBackAuthError() = runTest {
         val sut = BraintreeClient(context, "invalid-auth-string")
 
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        sut.sendGET("sample-url", httpResponseCallback)
-
-        val authErrorSlot = slot<BraintreeException>()
-        verify { httpResponseCallback.onResult(isNull(), capture(authErrorSlot)) }
-
-        assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
+        try {
+            sut.sendGET("sample-url")
+            fail("Must throw an exception")
+        } catch (e: BraintreeException) {
+            assertEquals(expectedAuthException.message, e.message)
+        }
     }
 
     @Test
