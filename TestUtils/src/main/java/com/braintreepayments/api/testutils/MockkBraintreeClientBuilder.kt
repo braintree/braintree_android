@@ -91,6 +91,7 @@ class MockkBraintreeClientBuilder {
         return this
     }
 
+    @Suppress("ThrowsCount")
     fun build(): BraintreeClient {
         val braintreeClient = mockk<BraintreeClient>(relaxed = true)
 

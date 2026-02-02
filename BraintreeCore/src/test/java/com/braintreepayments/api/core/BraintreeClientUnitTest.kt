@@ -124,15 +124,22 @@ class BraintreeClientUnitTest {
             .configuration(configuration)
             .build()
 
+        val mockResponse = HttpResponse(body = "response-body", timing = HttpResponseTiming(0, 0))
+        coEvery {
+            braintreeHttpClient.get("sample-url", configuration, authorization)
+        } returns mockResponse
+
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
         val sut = createBraintreeClient(
             configurationLoader = configurationLoader,
             testDispatcher = testDispatcher,
-            testScope = TestScope(testDispatcher)
+            testScope = testScope
         )
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
 
-        sut.sendGET("sample-url", httpResponseCallback)
-        testDispatcher.scheduler.advanceUntilIdle()
+        val responseBody = sut.sendGET("sample-url")
+        advanceUntilIdle()
+        assertEquals("response-body", responseBody)
 
         coVerify {
             braintreeHttpClient.get("sample-url", configuration, authorization)
