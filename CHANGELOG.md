@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Venmo
+    * Expose the `riskCorrelationId` property on `VenmoRequest` 
+
 ## 5.22.0 (2026-01-29)
 
 * PayPal
