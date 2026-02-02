@@ -31,8 +31,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.io.IOException
-import kotlin.test.assertNotNull
 import kotlin.test.fail
 
 @RunWith(RobolectricTestRunner::class)
@@ -125,15 +123,18 @@ class BraintreeClientUnitTest {
             .configuration(configuration)
             .build()
 
-        val sut = createBraintreeClient(configurationLoader)
+        val sut = createBraintreeClient(
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = TestScope(testDispatcher)
+        )
         val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
 
         sut.sendGET("sample-url", httpResponseCallback)
-        try {
-            val response = braintreeHttpClient.get("sample-url", configuration, authorization)
-            assertNotNull(response)
-        } catch (e: IOException) {
-            fail("Exception must not be thrown. Exception: $e")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            braintreeHttpClient.get("sample-url", configuration, authorization)
         }
     }
 

@@ -111,12 +111,7 @@ class MockkBraintreeClientBuilder {
 
         every { braintreeClient.getManifestActivityInfo(any<Class<*>>()) } returns activityInfo
 
-        coEvery {
-            braintreeClient.sendPOST(
-                url = any<String>(),
-                data = any<String>(),
-            )
-        } answers {
+        val sendPostAnswer: () -> String = {
             sendPostSuccess ?: throw (sendPostError ?: IOException("Unknown error"))
         }
 
@@ -124,11 +119,16 @@ class MockkBraintreeClientBuilder {
             braintreeClient.sendPOST(
                 url = any<String>(),
                 data = any<String>(),
+            )
+        } answers { sendPostAnswer() }
+
+        coEvery {
+            braintreeClient.sendPOST(
+                url = any<String>(),
+                data = any<String>(),
                 additionalHeaders = any<Map<String, String>>(),
             )
-        } answers {
-            sendPostSuccess ?: throw (sendPostError ?: IOException("Unknown error"))
-        }
+        } answers { sendPostAnswer() }
 
         every { braintreeClient.sendGET(any<String>(), responseCallback = any<HttpResponseCallback>())
         } answers { call ->
