@@ -47,9 +47,16 @@ dependencies {
 
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
+    implementation libs.androidx.ui.tooling.preview
+
+    def composeBom = platform(libs.androidx.compose.bom)
+    implementation composeBom
+    implementation libs.androidx.material3
+    implementation libs.androidx.runtime
 
     testImplementation libs.kotlin.test
     testImplementation project(':TestUtils')
+    debugImplementation libs.androidx.ui.tooling
 }
 
 // region signing and publishing
