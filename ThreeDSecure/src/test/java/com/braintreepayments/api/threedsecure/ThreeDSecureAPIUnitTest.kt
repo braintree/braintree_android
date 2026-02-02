@@ -181,7 +181,8 @@ class ThreeDSecureAPIUnitTest {
     }
 
     @Test
-    fun authenticateCardinalJWT_onThreeDSecureError_callbackThreeDSecureResultWithOriginalLookupNonce() = runTest(testDispatcher) {
+    fun authenticateCardinalJWT_onThreeDSecureError_callbackThreeDSecureResultWithOriginalLookupNonce() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE_WITH_ERROR)
             .build()

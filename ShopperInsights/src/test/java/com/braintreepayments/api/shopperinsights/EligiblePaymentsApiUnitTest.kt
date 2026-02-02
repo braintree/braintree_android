@@ -47,7 +47,8 @@ class EligiblePaymentsApiUnitTest {
     }
 
     @Test
-    fun `when environment is production, braintreeClient sendPOST is called with the correct url`() = runTest(testDispatcher) {
+    fun `when environment is production, braintreeClient sendPOST is called with the correct url`() =
+        runTest(testDispatcher) {
         val expectedUrl = "https://api.paypal.com/v2/payments/find-eligible-methods"
         every { configuration.environment } returns "production"
         coEvery { braintreeClient.sendPOST(url = any(), data = any(), additionalHeaders = any()) } returns "{}"
@@ -58,7 +59,8 @@ class EligiblePaymentsApiUnitTest {
         }
 
     @Test
-    fun `when environment is sandbox, braintreeClient sendPOST is called with the correct url`()  = runTest(testDispatcher) {
+    fun `when environment is sandbox, braintreeClient sendPOST is called with the correct url`() =
+        runTest(testDispatcher) {
         val expectedUrl = "https://api.sandbox.paypal.com/v2/payments/find-eligible-methods"
         every { configuration.environment } returns "sandbox"
         coEvery { braintreeClient.sendPOST(url = any(), data = any(), additionalHeaders = any()) } returns "{}"
@@ -83,7 +85,8 @@ class EligiblePaymentsApiUnitTest {
     }
 
     @Test
-    fun `when sendPost is called and an error occurs, callback onResult is invoked with the error`()  = runTest(testDispatcher) {
+    fun `when sendPost is called and an error occurs, callback onResult is invoked with the error`() =
+        runTest(testDispatcher) {
         val error = IOException("error")
 
         mockBraintreeClientToSendPOSTWithError(error)

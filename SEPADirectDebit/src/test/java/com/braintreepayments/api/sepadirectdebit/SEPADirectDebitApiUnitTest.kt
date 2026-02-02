@@ -94,7 +94,8 @@ class SEPADirectDebitApiUnitTest {
     }
 
     @Test
-    fun `creates a Mandate on invalid response JSON and returns an error on MandateCallback call`() = runTest(testDispatcher) {
+    fun `creates a Mandate on invalid response JSON and returns an error on MandateCallback call`() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .returnUrlScheme("sample-scheme")
             .sendPostSuccessfulResponse("not-json")
@@ -117,7 +118,8 @@ class SEPADirectDebitApiUnitTest {
     }
 
     @Test
-    fun `creates a Mandate on HTTPResponseError and returns an error on MandateCallback call`() = runTest(testDispatcher) {
+    fun `creates a Mandate on HTTPResponseError and returns an error on MandateCallback call`() =
+        runTest(testDispatcher) {
         val exception = IOException("http-error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .returnUrlScheme("sample-scheme")
@@ -164,7 +166,8 @@ class SEPADirectDebitApiUnitTest {
     }
 
     @Test
-    fun `tokenizes on successful HTTP response with invalid JSON and calls back JSON exception`() = runTest(testDispatcher) {
+    fun `tokenizes on successful HTTP response with invalid JSON and calls back JSON exception`() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .returnUrlScheme("sample-scheme")
             .sendPostSuccessfulResponse("not-json")

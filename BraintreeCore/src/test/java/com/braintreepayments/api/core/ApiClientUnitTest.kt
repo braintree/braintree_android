@@ -133,7 +133,8 @@ class ApiClientUnitTest {
     }
 
     @Test
-    fun `when tokenizeREST is called, braintreeClient sendPOST is called with empty headers`() = runTest(testDispatcher) {
+    fun `when tokenizeREST is called, braintreeClient sendPOST is called with empty headers`() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse("{}")
             .build()

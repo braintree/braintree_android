@@ -212,7 +212,7 @@ class BraintreeClientUnitTest {
             sut.sendPOST("sample-url", "{}", emptyMap())
             fail("Expected exception to be thrown")
         } catch (e: Exception) {
-            assertEquals("configuration error", exception.message)
+            assertEquals("configuration error", e.message)
         }
     }
 

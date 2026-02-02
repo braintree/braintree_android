@@ -377,7 +377,7 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_withPayPalCheckoutRequest_sendsAllParameters()  = runTest(testDispatcher) {
+    fun sendRequest_withPayPalCheckoutRequest_sendsAllParameters() = runTest(testDispatcher) {
         every { clientToken.bearer } returns "client-token-bearer"
         every { merchantRepository.authorization } returns clientToken
 
@@ -396,7 +396,7 @@ class PayPalInternalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun sendRequest_withTokenizationKey_sendsClientKeyParam()  = runTest(testDispatcher) {
+    fun sendRequest_withTokenizationKey_sendsClientKeyParam() = runTest(testDispatcher) {
         every { tokenizationKey.bearer } returns "tokenization-key-bearer"
 
         val slot = slot<String>()
@@ -493,7 +493,8 @@ class PayPalInternalClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun sendRequest_withShippingAddressSpecified_sendsAddressOverrideBasedOnShippingAddressEditability() = runTest(testDispatcher) {
+    fun sendRequest_withShippingAddressSpecified_sendsAddressOverrideBasedOnShippingAddressEditability() =
+        runTest(testDispatcher) {
         every { clientToken.bearer } returns "client-token-bearer"
         every { merchantRepository.authorization } returns tokenizationKey
 
@@ -661,7 +662,8 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_whenServerReturnsNonAppSwitchFlow_setsDidPayPalServerAttemptAppSwitchToFalse() = runTest(testDispatcher) {
+    fun sendRequest_whenServerReturnsNonAppSwitchFlow_setsDidPayPalServerAttemptAppSwitchToFalse() =
+        runTest(testDispatcher) {
         every {
             dataCollector.getClientMetadataId(
                 eq(context),
@@ -685,7 +687,8 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess_returnsPayPalURL() = runTest(testDispatcher) {
+    fun sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess_returnsPayPalURL() =
+        runTest(testDispatcher) {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { getAppSwitchUseCase.invoke() } returns true
@@ -724,7 +727,8 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess_returnsApprovalURL() = runTest(testDispatcher) {
+    fun sendRequest_withPayPalVaultRequest_callsBackPayPalResponseOnSuccess_returnsApprovalURL() =
+        runTest(testDispatcher) {
 
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
@@ -1105,7 +1109,8 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_whenServerReturnsAppSwitchFlow_setsDidPayPalServerAttemptAppSwitchToTrue() = runTest(testDispatcher) {
+    fun sendRequest_whenServerReturnsAppSwitchFlow_setsDidPayPalServerAttemptAppSwitchToTrue() =
+        runTest(testDispatcher) {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { deviceInspector.isPayPalInstalled() } returns true
@@ -1130,7 +1135,8 @@ class PayPalInternalClientUnitTest {
     }
 
     @Test
-    fun sendRequest_whenMerchantEnablesAppSwitchButServerReturnsAppSwitchFalse_setsBothCorrectly() = runTest(testDispatcher) {
+    fun sendRequest_whenMerchantEnablesAppSwitchButServerReturnsAppSwitchFalse_setsBothCorrectly() =
+        runTest(testDispatcher) {
         every { merchantRepository.authorization } returns clientToken
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
         every { deviceInspector.isPayPalInstalled() } returns true
