@@ -9,8 +9,6 @@ import kotlinx.parcelize.Parcelize
  * @property paymentMethodUsage - [VenmoPaymentMethodUsage] for the tokenized Venmo account: either
  * multi-use or single use.
  *
- * @property riskCorrelationId - Optional - A unique identifier that is used to correlate risk information for this payment.
- *
  * @property lineItems - Optional - The line items for this transaction. Can include up to 249 line
  * items. If this value is set, `totalAmount` must also be set.
  *
@@ -63,11 +61,12 @@ import kotlinx.parcelize.Parcelize
  * @property isFinalAmount Optional - The boolean value of the flag that signifies whether the purchase
  * amount is the final amount. Indicates whether the purchase amount is the final amount.
  * Defaults to false.
+ *
+ * @property riskCorrelationId Optional - A unique identifier that is used to correlate risk information for this payment.
  */
 @Parcelize
 class VenmoRequest @JvmOverloads constructor(
     val paymentMethodUsage: VenmoPaymentMethodUsage,
-    val riskCorrelationId: String? = null,
     var lineItems: ArrayList<VenmoLineItem>? = null,
     var shouldVault: Boolean = false,
     var profileId: String? = null,
@@ -79,5 +78,6 @@ class VenmoRequest @JvmOverloads constructor(
     var discountAmount: String? = null,
     var taxAmount: String? = null,
     var shippingAmount: String? = null,
-    var isFinalAmount: Boolean = false
+    var isFinalAmount: Boolean = false,
+    val riskCorrelationId: String? = null
 ) : Parcelable
