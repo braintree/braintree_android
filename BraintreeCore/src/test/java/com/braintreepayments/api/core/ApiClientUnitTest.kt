@@ -4,6 +4,11 @@ import com.braintreepayments.api.card.Card
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import io.mockk.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
@@ -56,19 +61,23 @@ class ApiClientUnitTest {
         assertEquals("session-id", data.getString("sessionId"))
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     @Throws(BraintreeException::class, InvalidArgumentException::class, JSONException::class)
-    fun tokenizeGraphQL_tokenizesCardsWithGraphQL() {
+    fun tokenizeGraphQL_tokenizesCardsWithGraphQL() = runTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLEnabledConfig)
             .build()
 
         val graphQLBodySlot = slot<JSONObject>()
-        every { braintreeClient.sendGraphQLPOST(capture(graphQLBodySlot), any()) } returns Unit
+        coEvery { braintreeClient.sendGraphQLPOST(capture(graphQLBodySlot)) } returns ""
 
-        val sut = ApiClient(braintreeClient)
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        val sut = ApiClient(braintreeClient, analyticsParamRepository, testDispatcher, testScope)
         val card = Card()
         sut.tokenizeGraphQL(card.buildJSONForGraphQL(), tokenizeCallback)
+        advanceUntilIdle()
 
         verify(inverse = true) { braintreeClient.sendPOST(any(), any(), any(), any()) }
         assertEquals(card.buildJSONForGraphQL().toString(), graphQLBodySlot.captured.toString())
@@ -84,7 +93,7 @@ class ApiClientUnitTest {
         sut.tokenizeREST(mockk(relaxed = true), tokenizeCallback)
         sut.tokenizeREST(mockk(relaxed = true), tokenizeCallback)
 
-        verify(inverse = true) { braintreeClient.sendGraphQLPOST(any(), any()) }
+        coVerify(inverse = true) { braintreeClient.sendGraphQLPOST(any()) }
     }
 
     @Test

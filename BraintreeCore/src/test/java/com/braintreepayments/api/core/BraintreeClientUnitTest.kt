@@ -347,9 +347,8 @@ class BraintreeClientUnitTest {
             testDispatcher = testDispatcher,
             testScope = testScope
         )
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
 
-        sut.sendGraphQLPOST(JSONObject(), httpResponseCallback)
+        val response = sut.sendGraphQLPOST(JSONObject())
         advanceUntilIdle()
 
         coVerify {
@@ -359,34 +358,45 @@ class BraintreeClientUnitTest {
                 authorization
             )
         }
-        verify { httpResponseCallback.onResult("{}", null) }
+        assertEquals("{}", response)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun sendGraphQLPOST_onGetConfigurationFailure_forwardsErrorToCallback() {
+    fun sendGraphQLPOST_onGetConfigurationFailure_forwardsErrorToCallback() = runTest {
         val exception = Exception("configuration error")
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(exception)
             .build()
 
-        val sut = createBraintreeClient(configurationLoader)
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        val sut = createBraintreeClient(
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
 
-        sut.sendGraphQLPOST(JSONObject(), httpResponseCallback)
-        verify { httpResponseCallback.onResult(null, exception) }
+        try {
+            sut.sendGraphQLPOST(JSONObject())
+            advanceUntilIdle()
+            fail("Must throw an exception")
+        } catch (e: Exception) {
+            assertEquals("configuration error", e.message)
+        }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun sendGraphQLPOST_whenInvalidAuth_callsBackAuthError() {
+    fun sendGraphQLPOST_whenInvalidAuth_callsBackAuthError() = runTest {
         val sut = BraintreeClient(context, "invalid-auth-string")
 
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        sut.sendGraphQLPOST(JSONObject(), httpResponseCallback)
-
-        val authErrorSlot = slot<BraintreeException>()
-        verify { httpResponseCallback.onResult(isNull(), capture(authErrorSlot)) }
-
-        assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
+        try {
+            sut.sendGraphQLPOST(JSONObject())
+            fail("Must throw an exception")
+        } catch (e: BraintreeException) {
+            assertEquals(expectedAuthException.message, e.message)
+        }
     }
 
     @Test

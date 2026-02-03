@@ -4,6 +4,10 @@ import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.TokenizeCallback
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 class MockkApiClientBuilder {
@@ -34,6 +38,7 @@ class MockkApiClientBuilder {
         return this
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun build(): ApiClient {
         val apiClient = mockk<ApiClient>(relaxed = true)
 
@@ -44,7 +49,9 @@ class MockkApiClientBuilder {
 
         every { apiClient.tokenizeGraphQL(any(), any()) } answers {
             val listener = lastArg() as TokenizeCallback
-            listener.onResult(tokenizeGraphQLSuccess, tokenizeGraphQLError)
+            GlobalScope.launch(Dispatchers.Unconfined) {
+                listener.onResult(tokenizeGraphQLSuccess, tokenizeGraphQLError)
+            }
         }
         return apiClient
     }

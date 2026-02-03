@@ -8,15 +8,23 @@ import com.braintreepayments.api.shopperinsights.v2.PaymentOptions
 import com.braintreepayments.api.shopperinsights.v2.PurchaseUnit
 import com.braintreepayments.api.shopperinsights.v2.internal.CustomerSessionRequestBuilder.JsonRequestObjects
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
+import java.io.IOException
 
 @OptIn(ExperimentalBetaApi::class)
 class GenerateCustomerRecommendationsApiUnitTest {
@@ -120,8 +128,9 @@ class GenerateCustomerRecommendationsApiUnitTest {
         callback = mockk(relaxed = true)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `when execute is called and a responseBody is returned, callback with Success is invoked`() {
+    fun `when execute is called and a responseBody is returned, callback with Success is invoked`() = runTest {
         val sessionId = "test-session-id"
         val responseBody = """
             {
@@ -144,12 +153,17 @@ class GenerateCustomerRecommendationsApiUnitTest {
             .sendGraphQLPostSuccessfulResponse(responseBody)
             .build()
 
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
         val generateCustomerRecommendationsApi = GenerateCustomerRecommendationsApi(
             braintreeClient = braintreeClient,
-            customerSessionRequestBuilder = customerSessionRequestBuilder
+            customerSessionRequestBuilder = customerSessionRequestBuilder,
+            mainDispatcher = testDispatcher,
+            coroutineScope = testScope
         )
 
         generateCustomerRecommendationsApi.execute(customerSessionRequest, "test-session-id", callback)
+        advanceUntilIdle()
 
         val expectedResult = CustomerRecommendations(
             sessionId = sessionId,
@@ -166,36 +180,50 @@ class GenerateCustomerRecommendationsApiUnitTest {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `when execute is called and an error is returned, callback with Error is invoked`() {
-        val error = Exception("Network error")
+    fun `when execute is called and an error is returned, callback with Error is invoked`() = runTest {
+        val error = IOException("Network error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendGraphQLPostErrorResponse(error)
             .build()
+
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
         val generateCustomerRecommendationsApi = GenerateCustomerRecommendationsApi(
             braintreeClient = braintreeClient,
-            customerSessionRequestBuilder = customerSessionRequestBuilder
+            customerSessionRequestBuilder = customerSessionRequestBuilder,
+            mainDispatcher = testDispatcher,
+            coroutineScope = testScope
         )
 
         generateCustomerRecommendationsApi.execute(customerSessionRequest, "test-session-id", callback)
+        advanceUntilIdle()
 
         verify {
             callback.invoke(GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult.Error(error))
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `when execute is called and a JSONException is thrown, callback with Error is invoked`() {
+    fun `when execute is called and a JSONException is thrown, callback with Error is invoked`() = runTest {
         val exception = JSONException("Test exception")
         val braintreeClient = mockk<BraintreeClient> {
-            every { sendGraphQLPOST(any(), any()) } throws exception
+            coEvery { sendGraphQLPOST(any()) } throws exception
         }
+
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
         val generateCustomerRecommendationsApi = GenerateCustomerRecommendationsApi(
             braintreeClient = braintreeClient,
-            customerSessionRequestBuilder = customerSessionRequestBuilder
+            customerSessionRequestBuilder = customerSessionRequestBuilder,
+            mainDispatcher = testDispatcher,
+            coroutineScope = testScope
         )
 
         generateCustomerRecommendationsApi.execute(customerSessionRequest, "test-session-id", callback)
+        advanceUntilIdle()
 
         verify {
             callback.invoke(
@@ -204,15 +232,20 @@ class GenerateCustomerRecommendationsApiUnitTest {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `when execute is called, the correct GraphQL request body is sent`() {
+    fun `when execute is called, the correct GraphQL request body is sent`() = runTest {
         val braintreeClient = mockk<BraintreeClient>(relaxed = true)
 
         every { customerSessionRequestBuilder.createRequestObjects(customerSessionRequest) } returns jsonRequestObjects
 
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
         val generateCustomerRecommendationsApi = GenerateCustomerRecommendationsApi(
             braintreeClient = braintreeClient,
             customerSessionRequestBuilder = customerSessionRequestBuilder,
+            mainDispatcher = testDispatcher,
+            coroutineScope = testScope
         )
 
         generateCustomerRecommendationsApi.execute(
@@ -220,11 +253,12 @@ class GenerateCustomerRecommendationsApiUnitTest {
             sessionId = "test-session-id",
             callback = mockk(relaxed = true)
         )
+        advanceUntilIdle()
 
-        verify {
+        coVerify {
             braintreeClient.sendGraphQLPOST(withArg { actualRequestBody ->
                 JSONAssert.assertEquals(expectedRequestBody, actualRequestBody, false)
-            }, any())
+            })
         }
     }
 }

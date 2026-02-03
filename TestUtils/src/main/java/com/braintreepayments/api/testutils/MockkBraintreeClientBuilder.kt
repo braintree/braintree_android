@@ -91,6 +91,7 @@ class MockkBraintreeClientBuilder {
         return this
     }
 
+    @Suppress("ThrowsCount")
     fun build(): BraintreeClient {
         val braintreeClient = mockk<BraintreeClient>(relaxed = true)
 
@@ -101,10 +102,10 @@ class MockkBraintreeClientBuilder {
             callback.onResult(configurationSuccess, configurationException)
         }
 
-        every { braintreeClient.sendGraphQLPOST(any(), any()) } answers { call ->
-            val callback = call.invocation.args[1] as HttpResponseCallback
-            sendGraphQLPostSuccess?.let { callback.onResult(it, null) }
-                ?: sendGraphQLPostError?.let { callback.onResult(null, it) }
+        coEvery { braintreeClient.sendGraphQLPOST(any()) } answers {
+            sendGraphQLPostSuccess
+                ?: sendGraphQLPostError?.let { throw it }
+                ?: throw IOException("No sendGraphQLPost response configured")
         }
 
         every { braintreeClient.getReturnUrlScheme() } returns returnUrlScheme
