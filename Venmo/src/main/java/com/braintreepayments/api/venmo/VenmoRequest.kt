@@ -62,7 +62,8 @@ import kotlinx.parcelize.Parcelize
  * amount is the final amount. Indicates whether the purchase amount is the final amount.
  * Defaults to false.
  *
- * @property riskCorrelationId Optional - A unique identifier that is used to correlate risk information for this payment.
+ * @property riskCorrelationId Optional - A unique identifier that is used
+ * to correlate risk information for this payment.
  */
 @Parcelize
 class VenmoRequest @JvmOverloads constructor(
