@@ -153,15 +153,24 @@ class BraintreeClientUnitTest {
             .configuration(configuration)
             .build()
 
-        val sut = createBraintreeClient(configurationLoader)
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
+        val mockResponse = HttpResponse(body = "response-body", timing = HttpResponseTiming(0, 0))
+        coEvery {
+            braintreeHttpClient.get("sample-url", configuration, authorization)
+        } returns mockResponse
 
-        sut.sendGET("sample-url", httpResponseCallback)
-        try {
-            val response = braintreeHttpClient.get("sample-url", configuration, authorization)
-            assertNotNull(response)
-        } catch (e: IOException) {
-            fail("Exception must not be thrown. Exception: $e")
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        val sut = createBraintreeClient(
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
+
+        val responseBody = sut.sendGET("sample-url")
+        assertEquals("response-body", responseBody)
+
+        coVerify {
+            braintreeHttpClient.get("sample-url", configuration, authorization)
         }
     }
 
@@ -180,12 +189,12 @@ class BraintreeClientUnitTest {
             testScope = testScope
         )
 
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        sut.sendGET("sample-url", httpResponseCallback)
-
-        advanceUntilIdle()
-
-        verify { httpResponseCallback.onResult(null, configError) }
+        try {
+            sut.sendGET("sample-url")
+            fail("Must throw an exception")
+        } catch (e: Exception) {
+            assertEquals("configuration error", e.message)
+        }
     }
 
     @Test
@@ -203,14 +212,12 @@ class BraintreeClientUnitTest {
             testScope = testScope
         )
 
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        sut.sendGET("sample-url", httpResponseCallback)
-        advanceUntilIdle()
-
-        val authErrorSlot = slot<BraintreeException>()
-        verify { httpResponseCallback.onResult(isNull(), capture(authErrorSlot)) }
-
-        assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
+        try {
+            sut.sendGET("sample-url")
+            fail("Must throw an exception")
+        } catch (e: BraintreeException) {
+            assertEquals(expectedAuthException.message, e.message)
+        }
     }
 
     @Test
