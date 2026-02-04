@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
@@ -35,6 +36,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import androidx.core.content.ContextCompat
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
 import com.braintreepayments.api.uicomponents.R
@@ -49,7 +51,6 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
     val spinnerLogo: Drawable? = ContextCompat.getDrawable(context, style.spinnerId)
 
     val ppLogoOffset = dimensionResource(R.dimen.pp_logo_offset)
-    var logoOffset = ppLogoOffset
     val desiredWidth = dimensionResource(R.dimen.pay_button_width)
     val desiredHeight = dimensionResource(R.dimen.pay_button_height)
     val minDesiredWidth = dimensionResource(R.dimen.pay_button_min_width)
@@ -97,6 +98,7 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
                 if (enabled) {
                     Image(
                         painter = rememberDrawablePainter(drawable = logo),
+                        modifier = Modifier.padding(top = ppLogoOffset),
                         contentDescription = "PayPal",
                     )
                 } else {
