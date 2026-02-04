@@ -36,7 +36,6 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.times
 import androidx.core.content.ContextCompat
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
 import com.braintreepayments.api.uicomponents.R
@@ -45,10 +44,7 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 @Composable
 fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () -> Unit) {
     val context = LocalContext.current
-    val gradientDrawable = GradientDrawable()
-    val focusIndicatorDrawable = GradientDrawable()
     val logo: Drawable? = ContextCompat.getDrawable(context, style.logoId)
-    val spinnerLogo: Drawable? = ContextCompat.getDrawable(context, style.spinnerId)
 
     val ppLogoOffset = dimensionResource(R.dimen.pp_logo_offset)
     val desiredWidth = dimensionResource(R.dimen.pay_button_width)
