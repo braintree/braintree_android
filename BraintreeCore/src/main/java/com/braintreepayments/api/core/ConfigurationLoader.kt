@@ -2,10 +2,6 @@ package com.braintreepayments.api.core
 
 import android.net.Uri
 import android.util.Base64
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.json.JSONException
 import java.io.IOException
 
@@ -13,8 +9,7 @@ internal class ConfigurationLoader(
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val configurationCache: ConfigurationCache = ConfigurationCacheProvider().configurationCache,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
-    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher),
+
     /**
      * TODO: AnalyticsClient must be lazy due to the circular dependency between ConfigurationLoader and AnalyticsClient
      * This should be refactored to remove the circular dependency.
@@ -25,7 +20,7 @@ internal class ConfigurationLoader(
 ) {
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
 
-    fun loadConfiguration(callback: ConfigurationLoaderCallback) {
+    suspend fun loadConfiguration(): ConfigurationLoaderResult {
         val authorization = merchantRepository.authorization
         if (authorization is InvalidAuthorization) {
             val clientSDKSetupURL =
@@ -33,68 +28,61 @@ internal class ConfigurationLoader(
             val message = "Valid authorization required. See $clientSDKSetupURL for more info."
 
             // NOTE: timing information is null when configuration comes from cache
-            callback.onResult(ConfigurationLoaderResult.Failure(BraintreeException(message)))
-            return
+            return ConfigurationLoaderResult.Failure(BraintreeException(message))
         }
         val configUrl = Uri.parse(authorization.configUrl)
             .buildUpon()
             .appendQueryParameter("configVersion", "3")
             .build()
             .toString()
-        val cachedConfig = getCachedConfiguration(authorization, configUrl)
 
-        cachedConfig?.let {
-            callback.onResult(ConfigurationLoaderResult.Success(it))
-        } ?: run {
-            executeConfigurationApi(configUrl, authorization, callback)
+        val cachedConfig = getCachedConfiguration(authorization, configUrl)
+        if (cachedConfig != null) {
+            return ConfigurationLoaderResult.Success(cachedConfig)
         }
+
+        return executeConfigurationApi(configUrl, authorization)
     }
 
-    private fun executeConfigurationApi(
+    private suspend fun executeConfigurationApi(
         configUrl: String,
-        authorization: Authorization,
-        callback: ConfigurationLoaderCallback
-    ) {
-        coroutineScope.launch {
-            try {
-                val response = httpClient.get(
-                    path = configUrl,
-                    configuration = null,
-                    authorization = authorization
+        authorization: Authorization
+    ): ConfigurationLoaderResult {
+        try {
+            val response = httpClient.get(
+                path = configUrl,
+                configuration = null,
+                authorization = authorization
+            )
+
+            val responseBody = response.body ?: run {
+                return ConfigurationLoaderResult.Failure(
+                    ConfigurationException("Configuration responseBody is null")
                 )
-
-                val responseBody = response.body ?: run {
-                    callback.onResult(
-                        ConfigurationLoaderResult.Failure(
-                            ConfigurationException("Configuration responseBody is null")
-                        )
-                    )
-                    return@launch
-                }
-
-                val timing = response.timing
-                try {
-                    val configuration = Configuration.fromJson(responseBody)
-                    saveConfigurationToCache(configuration, authorization, configUrl)
-                    callback.onResult(ConfigurationLoaderResult.Success(configuration, timing))
-                    analyticsClient.sendEvent(
-                        eventName = CoreAnalytics.API_REQUEST_LATENCY,
-                        analyticsEventParams = AnalyticsEventParams(
-                            startTime = timing.startTime,
-                            endTime = timing.endTime,
-                            endpoint = "/v1/configuration"
-                        ),
-                        sendImmediately = false
-                    )
-                } catch (jsonException: JSONException) {
-                    callback.onResult(ConfigurationLoaderResult.Failure(jsonException))
-                }
-            } catch (e: IOException) {
-                val errorMessageFormat = "Request for configuration has failed: %s"
-                val errorMessage = String.format(errorMessageFormat, e.message)
-                val configurationException = ConfigurationException(errorMessage, e)
-                callback.onResult(ConfigurationLoaderResult.Failure(configurationException))
             }
+
+            val timing = response.timing
+            try {
+                val configuration = Configuration.fromJson(responseBody)
+                saveConfigurationToCache(configuration, authorization, configUrl)
+                analyticsClient.sendEvent(
+                    eventName = CoreAnalytics.API_REQUEST_LATENCY,
+                    analyticsEventParams = AnalyticsEventParams(
+                        startTime = timing.startTime,
+                        endTime = timing.endTime,
+                        endpoint = "/v1/configuration"
+                    ),
+                    sendImmediately = false
+                )
+                return ConfigurationLoaderResult.Success(configuration, timing)
+            } catch (jsonException: JSONException) {
+                return ConfigurationLoaderResult.Failure(jsonException)
+            }
+        } catch (e: IOException) {
+            val errorMessageFormat = "Request for configuration has failed: %s"
+            val errorMessage = String.format(errorMessageFormat, e.message)
+            val configurationException = ConfigurationException(errorMessage, e)
+            return ConfigurationLoaderResult.Failure(configurationException)
         }
     }
 
