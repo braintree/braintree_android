@@ -24,6 +24,14 @@ android {
         }
     }
 
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.3"
+    }
+
     compileOptions {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
@@ -48,11 +56,12 @@ dependencies {
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
     implementation libs.androidx.ui.tooling.preview
+    implementation libs.accompanist.drawablepainter
+    implementation libs.compose.animation
 
     def composeBom = platform(libs.androidx.compose.bom)
     implementation composeBom
     implementation libs.androidx.material3
-    implementation libs.androidx.runtime
 
     testImplementation libs.kotlin.test
     testImplementation project(':TestUtils')
