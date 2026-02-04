@@ -2,9 +2,6 @@ package com.braintreepayments.api.uicomponents.compose
 
 import android.graphics.drawable.Drawable
 import android.widget.Toast
-import androidx.compose.animation.graphics.res.animatedVectorResource
-import androidx.compose.animation.graphics.res.rememberAnimatedVectorPainter
-import androidx.compose.animation.graphics.vector.AnimatedImageVector
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -20,16 +17,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -61,12 +57,20 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
 
     val containerColor = fillColor(style, isPressed.value, isHovered.value, isFocused.value)
     val borderColor = borderColor(style, isPressed.value, isHovered.value, isFocused.value)
+    val focusColor = focusColor(style, isPressed.value, isHovered.value, isFocused.value)
 
     val resolvedBorderWidth = if (isFocused.value) focusBorderWidth else borderWidth
 
     Surface(
         onClick = onClick,
-        modifier = Modifier.semantics { role = Role.Button },
+        modifier = Modifier.semantics { role = Role.Button }
+            .drawBehind{
+                drawRoundRect(
+                    Color(ContextCompat.getColor(context, focusColor)),
+                    cornerRadius = CornerRadius(2.dp.toPx())
+                )
+            }
+            .padding(resolvedBorderWidth),
         enabled = enabled,
         shape = RoundedCornerShape(buttonCornerRadius),
         color = Color(ContextCompat.getColor(context, containerColor)),
@@ -75,15 +79,14 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
     ) {
         Row(
             Modifier
-                .defaultMinSize(
-                    minWidth = minDesiredWidth
-                )
+                .defaultMinSize(minWidth = minDesiredWidth)
                 .width(desiredWidth)
                 .height(desiredHeight),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
             content = {
-                if (enabled) {
+                val loading = !enabled
+                if (!loading) {
                     val logo: Drawable? = ContextCompat.getDrawable(context, style.logoId)
                     Image(
                         painter = rememberDrawablePainter(drawable = logo),
@@ -123,6 +126,13 @@ private fun borderColor(style: PayPalButtonColor, isPressed: Boolean, isHovered:
     else -> style.default.border
 }
 
+private fun focusColor(style: PayPalButtonColor, isPressed: Boolean, isHovered: Boolean, isFocused: Boolean) = when {
+    isPressed -> style.pressed.focusIndicator
+    isHovered && isFocused -> style.focusHover.focusIndicator
+    isHovered -> style.hover.focusIndicator
+    isFocused -> style.focus.focusIndicator
+    else -> style.default.focusIndicator
+}
 @Preview
 @Composable
 fun PreviewButtons() {
