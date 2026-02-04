@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,8 +45,6 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 @Composable
 fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () -> Unit) {
     val context = LocalContext.current
-    val logo: Drawable? = ContextCompat.getDrawable(context, style.logoId)
-
     val ppLogoOffset = dimensionResource(R.dimen.pp_logo_offset)
     val desiredWidth = dimensionResource(R.dimen.pay_button_width)
     val desiredHeight = dimensionResource(R.dimen.pay_button_height)
@@ -55,21 +55,8 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
     val isHovered = interactionSource.collectIsHoveredAsState()
     val isFocused = interactionSource.collectIsFocusedAsState()
 
-    val containerColor = when {
-        isPressed.value -> style.pressed.fill
-        isHovered.value && isFocused.value -> style.focusHover.fill
-        isHovered.value -> style.hover.fill
-        isFocused.value -> style.focus.fill
-        else -> style.default.fill
-    }
-
-    val borderColor = when {
-        isPressed.value -> style.pressed.border
-        isHovered.value && isFocused.value -> style.focusHover.border
-        isHovered.value -> style.hover.border
-        isFocused.value -> style.focus.border
-        else -> style.default.border
-    }
+    val containerColor = fillColor(style, isPressed.value, isHovered.value, isFocused.value)
+    val borderColor = borderColor(style, isPressed.value, isHovered.value, isFocused.value)
 
     Surface(
         onClick = onClick,
@@ -91,22 +78,43 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
             verticalAlignment = Alignment.CenterVertically,
             content = {
                 if (enabled) {
+                    val logo: Drawable? = ContextCompat.getDrawable(context, style.logoId)
                     Image(
                         painter = rememberDrawablePainter(drawable = logo),
                         modifier = Modifier.padding(top = ppLogoOffset),
                         contentDescription = "PayPal",
                     )
                 } else {
-                    val image = AnimatedImageVector.animatedVectorResource(style.spinnerId)
-                    var atEnd by remember { mutableStateOf(true) }
-                    Image(
-                        painter = rememberAnimatedVectorPainter(image, atEnd),
-                        contentDescription = "",
+                    val color = when (style) {
+                        PayPalButtonColor.Blue -> Color.Black
+                        PayPalButtonColor.Black -> Color.White
+                        PayPalButtonColor.White -> Color.Black
+                    }
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = color,
+                        strokeWidth = 2.dp
                     )
                 }
             }
         )
     }
+}
+
+private fun fillColor(style: PayPalButtonColor, isPressed: Boolean, isHovered: Boolean, isFocused: Boolean) = when {
+    isPressed -> style.pressed.fill
+    isHovered && isFocused -> style.focusHover.fill
+    isHovered -> style.hover.fill
+    isFocused -> style.focus.fill
+    else -> style.default.fill
+}
+
+private fun borderColor(style: PayPalButtonColor, isPressed: Boolean, isHovered: Boolean, isFocused: Boolean) = when {
+    isPressed -> style.pressed.border
+    isHovered && isFocused -> style.focusHover.border
+    isHovered -> style.hover.border
+    isFocused -> style.focus.border
+    else -> style.default.border
 }
 
 @Preview
@@ -124,7 +132,13 @@ fun PreviewButtons() {
             Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
         }
 
+        PayPalButton(style = PayPalButtonColor.Blue, enabled = false) {
+            Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+        }
         PayPalButton(style = PayPalButtonColor.Black, enabled = false) {
+            Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+        }
+        PayPalButton(style = PayPalButtonColor.White, enabled = false) {
             Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
         }
     }
