@@ -126,15 +126,11 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
      * is also fine. When using this method you should only proceed if a success is
      * returned. In cases where an error is returned, retrying this method is recommended.
      *
-     * Use the return value on your server, e.g. with `Transaction.sale`. or in
-     * client side requests such as PayPal, Venmo, or Local Payment Methods.
-     * Parameter completion:  A completion block that returns either a device data
-     * string or an error with the failure reason. Retries are recommended on failure.
-     *
-     *
      * @param context           Android Context
      * @param request           Optional client metadata id
-     * @param callback          [DataCollectorCallback]
+     * @param callback          [DataCollectorCallback] invoked with either a device data
+     *                          string on success or an error with the failure reason.
+     *                          Retries are recommended on failure.
      */
     fun collectDeviceDataOnSuccess(
         context: Context,
