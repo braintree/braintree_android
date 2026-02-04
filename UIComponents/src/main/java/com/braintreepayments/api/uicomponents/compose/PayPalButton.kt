@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
@@ -49,6 +50,9 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
     val desiredWidth = dimensionResource(R.dimen.pay_button_width)
     val desiredHeight = dimensionResource(R.dimen.pay_button_height)
     val minDesiredWidth = dimensionResource(R.dimen.pay_button_min_width)
+    val borderWidth = dimensionResource(R.dimen.pay_button_border)
+    val focusBorderWidth = dimensionResource(R.dimen.pay_button_focus_border)
+    val buttonCornerRadius = dimensionResource(R.dimen.pay_button_corner_radius)
 
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
@@ -58,13 +62,15 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
     val containerColor = fillColor(style, isPressed.value, isHovered.value, isFocused.value)
     val borderColor = borderColor(style, isPressed.value, isHovered.value, isFocused.value)
 
+    val resolvedBorderWidth = if (isFocused.value) focusBorderWidth else borderWidth
+
     Surface(
         onClick = onClick,
         modifier = Modifier.semantics { role = Role.Button },
         enabled = enabled,
-        shape = ButtonDefaults.shape,
+        shape = RoundedCornerShape(buttonCornerRadius),
         color = Color(ContextCompat.getColor(context, containerColor)),
-        border = BorderStroke(2.dp, Color(ContextCompat.getColor(context, borderColor))),
+        border = BorderStroke(resolvedBorderWidth, Color(ContextCompat.getColor(context, borderColor))),
         interactionSource = interactionSource
     ) {
         Row(
