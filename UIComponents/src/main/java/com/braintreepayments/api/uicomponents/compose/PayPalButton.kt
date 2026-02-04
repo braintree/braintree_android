@@ -61,7 +61,7 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
     val borderColor = borderColor(style, isPressed.value, isHovered.value, isFocused.value)
     val focusColor = focusColor(style, isPressed.value, isHovered.value, isFocused.value)
 
-    val resolvedBorderWidth = if (isFocused.value) 2*focusBorderWidth else focusBorderWidth
+    val resolvedBorderWidth = if (isFocused.value) 2 * focusBorderWidth else focusBorderWidth
 
     Surface(
         onClick = onClick,
@@ -104,7 +104,7 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
                         PayPalButtonColor.White -> Color.Black
                     }
                     CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
+                        modifier = Modifier.size(desiredHeight / 2),
                         color = color,
                         strokeWidth = 2.dp
                     )
