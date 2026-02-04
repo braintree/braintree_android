@@ -1,7 +1,6 @@
 package com.braintreepayments.api.uicomponents.compose
 
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
 import android.widget.Toast
 import androidx.compose.animation.graphics.res.animatedVectorResource
 import androidx.compose.animation.graphics.res.rememberAnimatedVectorPainter
