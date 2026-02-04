@@ -11,6 +11,7 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,9 +25,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.semantics.Role
@@ -34,6 +35,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import androidx.core.content.ContextCompat
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
 import com.braintreepayments.api.uicomponents.R
@@ -46,7 +48,7 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
     val desiredWidth = dimensionResource(R.dimen.pay_button_width)
     val desiredHeight = dimensionResource(R.dimen.pay_button_height)
     val minDesiredWidth = dimensionResource(R.dimen.pay_button_min_width)
-    val borderWidth = dimensionResource(R.dimen.pay_button_border)
+    val borderStroke = dimensionResource(R.dimen.pay_button_border)
     val focusBorderWidth = dimensionResource(R.dimen.pay_button_focus_border)
     val buttonCornerRadius = dimensionResource(R.dimen.pay_button_corner_radius)
 
@@ -59,22 +61,24 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
     val borderColor = borderColor(style, isPressed.value, isHovered.value, isFocused.value)
     val focusColor = focusColor(style, isPressed.value, isHovered.value, isFocused.value)
 
-    val resolvedBorderWidth = if (isFocused.value) focusBorderWidth else borderWidth
+    val resolvedBorderWidth = if (isFocused.value) 2*focusBorderWidth else focusBorderWidth
 
     Surface(
         onClick = onClick,
-        modifier = Modifier.semantics { role = Role.Button }
-            .drawBehind{
+        modifier = Modifier
+            .semantics { role = Role.Button }
+            .drawBehind {
                 drawRoundRect(
                     Color(ContextCompat.getColor(context, focusColor)),
-                    cornerRadius = CornerRadius(2.dp.toPx())
+                    cornerRadius = CornerRadius(buttonCornerRadius.toPx()),
+                    style = Stroke(width = 2.dp.toPx())
                 )
             }
             .padding(resolvedBorderWidth),
         enabled = enabled,
         shape = RoundedCornerShape(buttonCornerRadius),
         color = Color(ContextCompat.getColor(context, containerColor)),
-        border = BorderStroke(resolvedBorderWidth, Color(ContextCompat.getColor(context, borderColor))),
+        border = BorderStroke(borderStroke, Color(ContextCompat.getColor(context, borderColor))),
         interactionSource = interactionSource
     ) {
         Row(
@@ -137,16 +141,19 @@ private fun focusColor(style: PayPalButtonColor, isPressed: Boolean, isHovered: 
 @Composable
 fun PreviewButtons() {
     val context = LocalContext.current
-    Column {
+    Column(modifier = Modifier.padding(16.dp).width(480.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         PayPalButton(style = PayPalButtonColor.Blue) {
             Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
         }
+        Spacer(modifier = Modifier.padding(16.dp))
         PayPalButton(style = PayPalButtonColor.Black) {
             Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
         }
+        Spacer(modifier = Modifier.padding(16.dp))
         PayPalButton(style = PayPalButtonColor.White) {
             Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
         }
+        Spacer(modifier = Modifier.padding(16.dp))
 
         PayPalButton(style = PayPalButtonColor.Blue, enabled = false) {
             Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
