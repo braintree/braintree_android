@@ -70,9 +70,15 @@ class MagnesInternalClient(
         request: DataCollectorInternalRequest?,
         callback: (String?, Exception?) -> Unit
     ) {
-        context ?: return callback(null, IllegalArgumentException("Context is null"))
-        configuration ?: return callback(null, IllegalArgumentException("Configuration is null"))
-        request ?: return callback(null, IllegalArgumentException("Request is null"))
+        if (context == null || configuration == null || request == null) {
+            val errors = buildList {
+                if (context == null) add("Context is null")
+                if (configuration == null) add("Configuration is null")
+                if (request == null) add("Request is null")
+            }
+            return callback(null, IllegalArgumentException(
+                "The following required field(s) are null: ${errors.joinToString(", ")}"))
+        }
 
         val btEnvironment = configuration.environment
         val magnesEnvironment =
