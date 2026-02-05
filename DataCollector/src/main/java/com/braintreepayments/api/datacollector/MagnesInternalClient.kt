@@ -108,8 +108,8 @@ class MagnesInternalClient(
                 // Callback is invoked when device data collection and submit API completes
                 when (status) {
                     MagnesSubmitStatus.SUCCESS -> callback(result.paypalClientMetaDataId, null)
-                    MagnesSubmitStatus.ERROR -> callback(null, CallbackSubmitException.SubmitError())
-                    MagnesSubmitStatus.TIMEOUT -> callback(null, CallbackSubmitException.SubmitTimeout())
+                    MagnesSubmitStatus.ERROR -> callback(null, CallbackSubmitException.SubmitError)
+                    MagnesSubmitStatus.TIMEOUT -> callback(null, CallbackSubmitException.SubmitTimeout)
                     else -> callback(null, CallbackSubmitException.Unknown(status.toString()))
                 }
             }

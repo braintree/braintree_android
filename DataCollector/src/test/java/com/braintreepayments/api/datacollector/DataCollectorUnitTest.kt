@@ -383,7 +383,7 @@ class DataCollectorUnitTest {
 
     @Test
     fun collectDeviceDataOnSuccess_whenMagnesReturnsSubmitError_callsCallbackWithFailure() {
-        val submitError = CallbackSubmitException.SubmitError()
+        val submitError = CallbackSubmitException.SubmitError
         every {
             magnesInternalClient.getClientMetadataIdWithCallback(
                 context,
@@ -413,7 +413,7 @@ class DataCollectorUnitTest {
 
     @Test
     fun collectDeviceDataOnSuccess_whenMagnesReturnsSubmitTimeout_callsCallbackWithFailure() {
-        val submitTimeout = CallbackSubmitException.SubmitTimeout()
+        val submitTimeout = CallbackSubmitException.SubmitTimeout
         every {
             magnesInternalClient.getClientMetadataIdWithCallback(
                 context,
