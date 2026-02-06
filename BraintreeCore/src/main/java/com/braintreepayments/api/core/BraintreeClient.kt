@@ -3,6 +3,7 @@ package com.braintreepayments.api.core
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.net.Uri
+import android.provider.Settings.System.getConfiguration
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
@@ -10,6 +11,7 @@ import com.braintreepayments.api.sharedutils.ManifestValidator
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
@@ -95,11 +97,13 @@ class BraintreeClient internal constructor(
     private fun prefetchConfiguration() {
         // This method is called to prefetch the configuration when the BraintreeClient is created.
         // It ensures that the configuration is loaded and ready for use in subsequent requests.
-        getConfiguration(callback = object : ConfigurationCallback {
-            override fun onResult(configuration: Configuration?, error: Exception?) {
-                // no op
+        coroutineScope.launch {
+            try {
+                val config = getConfiguration()
+            } catch (e: IOException) {
+                //no op
             }
-        })
+        }
     }
 
     /**
@@ -107,17 +111,15 @@ class BraintreeClient internal constructor(
      *
      * @param callback [ConfigurationCallback]
      */
-    fun getConfiguration(callback: ConfigurationCallback) {
-        coroutineScope.launch {
-            val configResult = configurationLoader.loadConfiguration()
-            when (configResult) {
-                is ConfigurationLoaderResult.Success -> {
-                    callback.onResult(configResult.configuration, null)
-                    configResult.timing?.let { sendAnalyticsTimingEvent("/v1/configuration", it) }
-                }
-
-                is ConfigurationLoaderResult.Failure -> callback.onResult(null, configResult.error)
+    suspend fun getConfiguration(): Configuration {
+        val configResult = configurationLoader.loadConfiguration()
+        when (configResult) {
+            is ConfigurationLoaderResult.Success -> {
+                configResult.timing?.let { sendAnalyticsTimingEvent("/v1/configuration", it) }
+                return configResult.configuration
             }
+
+            is ConfigurationLoaderResult.Failure -> throw configResult.error
         }
     }
 
@@ -136,15 +138,7 @@ class BraintreeClient internal constructor(
      * @suppress
      */
     suspend fun sendGET(url: String): String {
-        val configuration = suspendCoroutine { continuation ->
-            getConfiguration { config, error ->
-                if (config != null) {
-                    continuation.resume(config)
-                } else {
-                    continuation.resumeWithException(error ?: Exception("Unknown configuration error"))
-                }
-            }
-        }
+        val configuration = getConfiguration()
         val response = httpClient.get(
             path = url,
             configuration = configuration,
