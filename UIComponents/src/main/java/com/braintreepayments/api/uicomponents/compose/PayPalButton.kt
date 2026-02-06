@@ -36,9 +36,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.times
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
 import com.braintreepayments.api.uicomponents.R
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
@@ -52,6 +50,7 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
     val minDesiredWidth = dimensionResource(R.dimen.pay_button_min_width)
     val borderStroke = dimensionResource(R.dimen.pay_button_border)
     val focusBorderWidth = dimensionResource(R.dimen.pay_button_focus_border)
+    val focusBorderPadding = dimensionResource(R.dimen.pay_button_focus_padding)
     val buttonCornerRadius = dimensionResource(R.dimen.pay_button_corner_radius)
 
     val interactionSource = remember { MutableInteractionSource() }
@@ -63,8 +62,6 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
     val borderColor = colorResource(borderColor(style, isPressed.value, isHovered.value, isFocused.value))
     val focusColor = colorResource(focusColor(style, isPressed.value, isHovered.value, isFocused.value))
 
-    val resolvedBorderWidth = if (isFocused.value) 2 * focusBorderWidth else focusBorderWidth
-
     Surface(
         onClick = onClick,
         modifier = Modifier
@@ -73,10 +70,10 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
                 drawRoundRect(
                     focusColor,
                     cornerRadius = CornerRadius(buttonCornerRadius.toPx()),
-                    style = Stroke(width = 2.dp.toPx())
+                    style = Stroke(width = focusBorderWidth.toPx())
                 )
             }
-            .padding(resolvedBorderWidth),
+            .padding(focusBorderPadding),
         enabled = enabled,
         shape = RoundedCornerShape(buttonCornerRadius),
         color = containerColor,
