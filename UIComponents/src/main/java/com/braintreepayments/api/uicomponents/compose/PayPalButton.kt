@@ -29,6 +29,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -37,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
 import com.braintreepayments.api.uicomponents.R
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
@@ -57,9 +59,9 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
     val isHovered = interactionSource.collectIsHoveredAsState()
     val isFocused = interactionSource.collectIsFocusedAsState()
 
-    val containerColor = fillColor(style, isPressed.value, isHovered.value, isFocused.value)
-    val borderColor = borderColor(style, isPressed.value, isHovered.value, isFocused.value)
-    val focusColor = focusColor(style, isPressed.value, isHovered.value, isFocused.value)
+    val containerColor = colorResource(fillColor(style, isPressed.value, isHovered.value, isFocused.value))
+    val borderColor = colorResource(borderColor(style, isPressed.value, isHovered.value, isFocused.value))
+    val focusColor = colorResource(focusColor(style, isPressed.value, isHovered.value, isFocused.value))
 
     val resolvedBorderWidth = if (isFocused.value) 2 * focusBorderWidth else focusBorderWidth
 
@@ -69,7 +71,7 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
             .semantics { role = Role.Button }
             .drawBehind {
                 drawRoundRect(
-                    Color(ContextCompat.getColor(context, focusColor)),
+                    focusColor,
                     cornerRadius = CornerRadius(buttonCornerRadius.toPx()),
                     style = Stroke(width = 2.dp.toPx())
                 )
@@ -77,8 +79,8 @@ fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () 
             .padding(resolvedBorderWidth),
         enabled = enabled,
         shape = RoundedCornerShape(buttonCornerRadius),
-        color = Color(ContextCompat.getColor(context, containerColor)),
-        border = BorderStroke(borderStroke, Color(ContextCompat.getColor(context, borderColor))),
+        color = containerColor,
+        border = BorderStroke(borderStroke, borderColor),
         interactionSource = interactionSource
     ) {
         Row(
