@@ -11,7 +11,6 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -145,16 +144,12 @@ fun PreviewButtons() {
         PayPalButton(style = PayPalButtonColor.Blue) {
             Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
         }
-        Spacer(modifier = Modifier.padding(16.dp))
         PayPalButton(style = PayPalButtonColor.Black) {
             Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
         }
-        Spacer(modifier = Modifier.padding(16.dp))
         PayPalButton(style = PayPalButtonColor.White) {
             Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
         }
-        Spacer(modifier = Modifier.padding(16.dp))
-
         PayPalButton(style = PayPalButtonColor.Blue, enabled = false) {
             Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
         }
