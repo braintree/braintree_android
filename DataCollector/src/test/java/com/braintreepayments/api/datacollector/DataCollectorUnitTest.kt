@@ -59,6 +59,18 @@ class DataCollectorUnitTest {
             configuration,
             any()
         ) } returns "paypal-clientmetadata-id"
+
+        every {
+            magnesInternalClient.getClientMetadataIdWithCallback(
+                context,
+                configuration,
+                any(),
+                any()
+            )
+        } answers {
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback("paypal-clientmetadata-id", null)
+        }
     }
 
     @Test
@@ -275,6 +287,180 @@ class DataCollectorUnitTest {
                 context,
                 configuration,
                 capture(captor)
+            )
+        }
+        Assert.assertTrue(captor.captured.hasUserLocationConsent)
+    }
+
+    // Tests for collectDeviceDataOnSuccess
+
+    @Test
+    fun collectDeviceDataOnSuccess_forwardsConfigurationFetchErrors() {
+        val configError = Exception("configuration error")
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationError(configError)
+            .build()
+
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        sut.collectDeviceDataOnSuccess(context, dataCollectorRequest, callback)
+
+        val deviceDataCaptor = slot<DataCollectorResult>()
+        verify { callback.onDataCollectorResult(capture(deviceDataCaptor)) }
+
+        val result = deviceDataCaptor.captured
+        Assert.assertTrue(result is DataCollectorResult.Failure)
+        Assert.assertEquals(configError, (result as DataCollectorResult.Failure).error)
+    }
+
+    @Test
+    fun collectDeviceDataOnSuccess_configuresMagnesWithDefaultRequest() {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
+            .build()
+
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        sut.collectDeviceDataOnSuccess(context, dataCollectorRequest, callback)
+
+        val captor = slot<DataCollectorInternalRequest>()
+        verify {
+            magnesInternalClient.getClientMetadataIdWithCallback(
+                context,
+                configuration,
+                capture(captor),
+                any()
+            )
+        }
+
+        val request = captor.captured
+        Assert.assertEquals(sampleInstallationGUID, request.applicationGuid)
+        Assert.assertFalse(request.hasUserLocationConsent)
+    }
+
+    @Test
+    fun collectDeviceDataOnSuccess_withRequest_configuresMagnesWithRiskCorrelationId() {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
+            .build()
+
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        sut.collectDeviceDataOnSuccess(context, dataCollectorRequest, callback)
+
+        val captor = slot<DataCollectorInternalRequest>()
+        verify {
+            magnesInternalClient.getClientMetadataIdWithCallback(
+                context,
+                configuration,
+                capture(captor),
+                any()
+            )
+        }
+
+        val request = captor.captured
+        Assert.assertEquals(sampleInstallationGUID, request.applicationGuid)
+        Assert.assertEquals("risk_correlation_id", request.clientMetadataId)
+        Assert.assertFalse(request.hasUserLocationConsent)
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun collectDeviceDataOnSuccess_whenMagnesReturnsSuccess_callsCallbackWithDeviceData() {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
+            .build()
+
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        sut.collectDeviceDataOnSuccess(context, dataCollectorRequest, callback)
+
+        val deviceDataCaptor = slot<DataCollectorResult>()
+        verify { callback.onDataCollectorResult(capture(deviceDataCaptor)) }
+
+        val result = deviceDataCaptor.captured
+        Assert.assertTrue(result is DataCollectorResult.Success)
+        val deviceData = (result as DataCollectorResult.Success).deviceData
+        val json = JSONObject(deviceData)
+        Assert.assertEquals("paypal-clientmetadata-id", json.getString("correlation_id"))
+    }
+
+    @Test
+    fun collectDeviceDataOnSuccess_whenMagnesReturnsSubmitError_callsCallbackWithFailure() {
+        val submitError = CallbackSubmitException.SubmitError
+        every {
+            magnesInternalClient.getClientMetadataIdWithCallback(
+                context,
+                configuration,
+                any(),
+                any()
+            )
+        } answers {
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback(null, submitError)
+        }
+
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
+            .build()
+
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        sut.collectDeviceDataOnSuccess(context, dataCollectorRequest, callback)
+
+        val deviceDataCaptor = slot<DataCollectorResult>()
+        verify { callback.onDataCollectorResult(capture(deviceDataCaptor)) }
+
+        val result = deviceDataCaptor.captured
+        Assert.assertTrue(result is DataCollectorResult.Failure)
+        Assert.assertTrue((result as DataCollectorResult.Failure).error is CallbackSubmitException.SubmitError)
+    }
+
+    @Test
+    fun collectDeviceDataOnSuccess_whenMagnesReturnsSubmitTimeout_callsCallbackWithFailure() {
+        val submitTimeout = CallbackSubmitException.SubmitTimeout
+        every {
+            magnesInternalClient.getClientMetadataIdWithCallback(
+                context,
+                configuration,
+                any(),
+                any()
+            )
+        } answers {
+            val callback = arg<(String?, Exception?) -> Unit>(3)
+            callback(null, submitTimeout)
+        }
+
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
+            .build()
+
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        sut.collectDeviceDataOnSuccess(context, dataCollectorRequest, callback)
+
+        val deviceDataCaptor = slot<DataCollectorResult>()
+        verify { callback.onDataCollectorResult(capture(deviceDataCaptor)) }
+
+        val result = deviceDataCaptor.captured
+        Assert.assertTrue(result is DataCollectorResult.Failure)
+        Assert.assertTrue((result as DataCollectorResult.Failure).error is CallbackSubmitException.SubmitTimeout)
+    }
+
+    @Test
+    fun collectDeviceDataOnSuccess_withDataCollectorRequest_setsCorrectValuesForGetClientMetadataIdWithCallback() {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
+            .build()
+
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        val dataCollectorRequest = DataCollectorRequest(true)
+        sut.collectDeviceDataOnSuccess(context, dataCollectorRequest, callback)
+
+        val deviceDataCaptor = slot<DataCollectorResult>()
+        verify { callback.onDataCollectorResult(capture(deviceDataCaptor)) }
+
+        val captor = slot<DataCollectorInternalRequest>()
+        verify {
+            magnesInternalClient.getClientMetadataIdWithCallback(
+                context,
+                configuration,
+                capture(captor),
+                any()
             )
         }
         Assert.assertTrue(captor.captured.hasUserLocationConsent)
