@@ -209,6 +209,7 @@ class AnalyticsApiUnitTest {
                                 {
                                     "tenant_name": "Braintree",
                                     "attempted_app_switch": ${tokenizationKeyEvent.didSdkAttemptAppSwitch},
+                                    "billing_with_purchase": ${tokenizationKeyEvent.billingWithPurchase},
                                     "page_type": "${tokenizationKeyEvent.pageType}",
                                     "merchant_enabled_app_switch": ${tokenizationKeyEvent.didEnablePayPalAppSwitch},
                                     "button_type": "${tokenizationKeyEvent.buttonType}",
@@ -224,7 +225,6 @@ class AnalyticsApiUnitTest {
                                     "shopper_session_id": "${tokenizationKeyEvent.shopperSessionId}",
                                     "error_desc": "${tokenizationKeyEvent.errorDescription}",
                                     "funding_source": "${tokenizationKeyEvent.fundingSource}",
-                                    "billing_with_purchase": "${tokenizationKeyEvent.billingWithPurchase}",
                                     "event_name": "${tokenizationKeyEvent.name}",
                                     "button_position": "${tokenizationKeyEvent.buttonOrder}",
                                     "context_type": "EC-TOKEN",
@@ -269,6 +269,7 @@ class AnalyticsApiUnitTest {
                                 {
                                     "tenant_name": "Braintree",
                                     "attempted_app_switch": ${clientTokenEvent.didSdkAttemptAppSwitch},
+                                    "billing_with_purchase": ${clientTokenEvent.billingWithPurchase},
                                     "page_type": "${clientTokenEvent.pageType}",
                                     "merchant_enabled_app_switch": ${clientTokenEvent.didEnablePayPalAppSwitch},
                                     "button_type": "${clientTokenEvent.buttonType}",
@@ -284,7 +285,6 @@ class AnalyticsApiUnitTest {
                                     "shopper_session_id": "${clientTokenEvent.shopperSessionId}",
                                     "error_desc": "${clientTokenEvent.errorDescription}",
                                     "funding_source": "${clientTokenEvent.fundingSource}",
-                                    "billing_with_purchase": "${tokenizationKeyEvent.billingWithPurchase}",
                                     "event_name": "${clientTokenEvent.name}",
                                     "button_position": "${clientTokenEvent.buttonOrder}",
                                     "context_type": "BA-TOKEN",
