@@ -98,6 +98,7 @@ internal class AnalyticsApi(
             .putOpt(FPTI_KEY_CONTEXT_TYPE, if (event.isVaultRequest) "BA-TOKEN" else "EC-TOKEN")
             .putOpt(FPTI_KEY_PAYPAL_ATTEMPTED_APP_SWITCH, event.didSdkAttemptAppSwitch)
             .putOpt(FPTI_KEY_FUNDING_SOURCE, event.fundingSource)
+            .putOpt(FPTI_KEY_BILLING_WITH_PURCHASE, event.billingWithPurchase)
     }
 
     @Throws(JSONException::class)
@@ -157,6 +158,7 @@ internal class AnalyticsApi(
         private const val FPTI_KEY_ERROR_DESC = "error_desc"
         private const val FPTI_KEY_CONTEXT_TYPE = "context_type"
         private const val FPTI_KEY_FUNDING_SOURCE = "funding_source"
+        private const val FPTI_KEY_BILLING_WITH_PURCHASE = "billing_with_purchase"
 
         private const val FPTI_BATCH_KEY_VENMO_INSTALLED = "venmo_installed"
         private const val FPTI_BATCH_KEY_PAYPAL_INSTALLED = "paypal_installed"

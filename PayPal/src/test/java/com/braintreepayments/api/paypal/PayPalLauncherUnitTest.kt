@@ -418,6 +418,15 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
+    fun `launch sets billingWithPurchase`() {
+        val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
+        every { browserSwitchClient.start(activity, options, any()) } returns startedPendingRequest
+
+        sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+        verify { analyticsParamRepository.fundingSource = paymentAuthRequestParams.fundingSource }
+    }
+
+    @Test
     @Throws(JSONException::class)
     fun `handleReturnToApp when result does not exist returns null`() {
         every {

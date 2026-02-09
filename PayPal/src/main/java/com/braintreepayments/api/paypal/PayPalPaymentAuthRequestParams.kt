@@ -28,4 +28,8 @@ data class PayPalPaymentAuthRequestParams @JvmOverloads internal constructor(
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val fundingSource: String
         get() = payPalRequest.getFundingSource().value
+
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val billingWithPurchase: Boolean
+        get() = payPalRequest is PayPalCheckoutRequest && payPalRequest.shouldRequestBillingAgreement
 }

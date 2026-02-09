@@ -32,6 +32,7 @@ class AnalyticsClientUnitTest {
     private val timestamp = 123L
     private val linkType = LinkType.APP_LINK
     private val fundingSource = "paypal"
+    private val billingWithPurchase = true
 
     private lateinit var sut: AnalyticsClient
 
@@ -67,7 +68,8 @@ class AnalyticsClientUnitTest {
         didEnablePayPalAppSwitch = true,
         didPayPalServerAttemptAppSwitch = true,
         didSdkAttemptAppSwitch = true,
-        fundingSource = fundingSource
+        fundingSource = fundingSource,
+        billingWithPurchase = billingWithPurchase
     )
 
     @Before
@@ -79,6 +81,7 @@ class AnalyticsClientUnitTest {
         every { analyticsParamRepository.didPayPalServerAttemptAppSwitch } returns true
         every { analyticsParamRepository.didSdkAttemptAppSwitch } returns true
         every { analyticsParamRepository.fundingSource } returns fundingSource
+        every { analyticsParamRepository.billingWithPurchase } returns billingWithPurchase
 
         configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)

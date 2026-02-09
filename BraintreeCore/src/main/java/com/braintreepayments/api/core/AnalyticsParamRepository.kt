@@ -37,6 +37,12 @@ class AnalyticsParamRepository(
     var fundingSource: String? = null
 
     /**
+     * Whether or not user is in Billing With Purchase flow - customer opted to save
+     * PayPal for future purchases and a vaulted billing agreement was created with the charge.
+     */
+    var billingWithPurchase: Boolean? = null
+
+    /**
      * Session ID to tie analytics events together which is used for reporting conversion funnels.
      */
     val sessionId: String = uuidHelper.formattedUUID
@@ -54,6 +60,7 @@ class AnalyticsParamRepository(
         didPayPalServerAttemptAppSwitch = null
         didSdkAttemptAppSwitch = null
         fundingSource = null
+        billingWithPurchase = null
     }
 
     companion object {
