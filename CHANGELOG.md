@@ -6,7 +6,7 @@
     * Bump Magnes version to `5.6.0`
     * Add `collectDeviceDataOnSuccess` method that ensures Magnes SDK completes data submission prior to returning device data
 * PayPal
-    * Pass `billing_with_purchase` to analytics events.
+    * Pass `is_billing_agreement`, `is_purchase`, and `billing_plan_type` to analytics events.
 
 ## 5.22.0 (2026-01-29)
 
