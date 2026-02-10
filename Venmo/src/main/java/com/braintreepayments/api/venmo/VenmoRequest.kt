@@ -80,5 +80,5 @@ class VenmoRequest @JvmOverloads constructor(
     var taxAmount: String? = null,
     var shippingAmount: String? = null,
     var isFinalAmount: Boolean = false,
-    val riskCorrelationId: String? = null
+    var riskCorrelationId: String? = null
 ) : Parcelable
