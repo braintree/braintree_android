@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.net.toUri
 import androidx.navigation.fragment.NavHostFragment
@@ -52,13 +53,15 @@ class ComposeButtonsFragment : BaseFragment() {
                 }
             }
             setContent {
-                PayPalSmartButton(
-                    payPalRequest = payPalRequest,
-                    authorization = authStringArg,
-                    appLinkReturnUrl = "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments".toUri(),
-                    deepLinkFallbackUrlScheme = "com.braintreepayments.demo.braintree",
-                    paypalTokenizeCallback = paypalTokenizeCallback
-                )
+                Column {
+                    PayPalSmartButton(
+                        payPalRequest = payPalRequest,
+                        authorization = authStringArg,
+                        appLinkReturnUrl = "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments".toUri(),
+                        deepLinkFallbackUrlScheme = "com.braintreepayments.demo.braintree",
+                        paypalTokenizeCallback = paypalTokenizeCallback
+                    )
+                }
             }
         }
     }
