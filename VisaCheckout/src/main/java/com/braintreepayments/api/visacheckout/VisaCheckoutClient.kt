@@ -4,22 +4,28 @@ import android.content.Context
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.BraintreeClient
-import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ConfigurationException
 import com.braintreepayments.api.visacheckout.VisaCheckoutNonce.Companion.fromJSON
 import com.visa.checkout.Environment
 import com.visa.checkout.Profile
 import com.visa.checkout.Profile.ProfileBuilder
 import com.visa.checkout.VisaPaymentSummary
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
 
 /**
  * Used to create and tokenize Visa Checkout. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/secure-remote-commerce/overview)
  */
 class VisaCheckoutClient internal constructor(
     private val braintreeClient: BraintreeClient,
-    private val apiClient: ApiClient = ApiClient(braintreeClient)
+    private val apiClient: ApiClient = ApiClient(braintreeClient),
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
     /**
      * Initializes a new [VisaCheckoutClient] instance
@@ -52,8 +58,9 @@ class VisaCheckoutClient internal constructor(
     fun createProfileBuilder(
         callback: VisaCheckoutCreateProfileBuilderCallback
     ) {
-        braintreeClient.getConfiguration { configuration: Configuration?, exception: Exception? ->
-            if (configuration != null) {
+        coroutineScope.launch {
+            try {
+                val configuration = braintreeClient.getConfiguration()
                 val enabledAndSdkAvailable =
                     isVisaCheckoutSDKAvailable && configuration.isVisaCheckoutEnabled
                 if (!enabledAndSdkAvailable) {
@@ -62,9 +69,8 @@ class VisaCheckoutClient internal constructor(
                             ConfigurationException("Visa Checkout is not enabled.")
                         )
                     )
-                    return@getConfiguration
+                    return@launch
                 }
-
                 val merchantApiKey = configuration.visaCheckoutApiKey
                 val acceptedCardBrands = configuration.visaCheckoutSupportedNetworks
                 val environment = if ("production" == configuration.environment) {
@@ -80,15 +86,9 @@ class VisaCheckoutClient internal constructor(
                 callback.onVisaCheckoutProfileBuilderResult(
                     VisaCheckoutProfileBuilderResult.Success(profileBuilder)
                 )
-            } else if (exception != null) {
+            } catch (e: IOException) {
                 callback.onVisaCheckoutProfileBuilderResult(
-                    VisaCheckoutProfileBuilderResult.Failure(exception)
-                )
-            } else {
-                callback.onVisaCheckoutProfileBuilderResult(
-                    VisaCheckoutProfileBuilderResult.Failure(
-                        ConfigurationException("Error getting configuration.")
-                    )
+                    VisaCheckoutProfileBuilderResult.Failure(e)
                 )
             }
         }

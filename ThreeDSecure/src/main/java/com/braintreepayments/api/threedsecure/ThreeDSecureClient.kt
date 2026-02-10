@@ -11,8 +11,13 @@ import com.braintreepayments.api.core.InvalidArgumentException
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.threedsecure.ThreeDSecureParams.Companion.fromJson
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
 
 /**
  * 3D Secure is a protocol that enables cardholders and issuers to add a layer of security to
@@ -28,6 +33,8 @@ class ThreeDSecureClient internal constructor(
     private val cardinalClient: CardinalClient = CardinalClient(),
     private val api: ThreeDSecureAPI = ThreeDSecureAPI(braintreeClient),
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
     /**
      * Initializes a new [ThreeDSecureClient] instance
@@ -74,37 +81,33 @@ class ThreeDSecureClient internal constructor(
             )
             return
         }
+        coroutineScope.launch {
+            try {
+                val configuration = braintreeClient.getConfiguration()
+                when {
+                    !configuration.isThreeDSecureEnabled -> {
+                        val failure = BraintreeException(
+                            "Three D Secure is not enabled for this account. " +
+                                    "Please contact Braintree Support for assistance."
+                        )
+                        callbackCreatePaymentAuthFailure(callback, ThreeDSecurePaymentAuthRequest.Failure(failure))
+                    }
+                    configuration.cardinalAuthenticationJwt == null -> {
+                        val failure = BraintreeException(
+                            "Merchant is not configured for 3DS 2.0. " +
+                                    "Please contact Braintree Support for assistance."
+                        )
+                        callbackCreatePaymentAuthFailure(callback, ThreeDSecurePaymentAuthRequest.Failure(failure))
+                    }
 
-        braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
-            val failure = when {
-                configuration == null -> {
-                    error ?: BraintreeException("Configuration is null")
+                    else -> initializeCardinalClient(context, configuration, request, callback)
                 }
-
-                !configuration.isThreeDSecureEnabled -> {
-                    BraintreeException(
-                        "Three D Secure is not enabled for this account. " +
-                            "Please contact Braintree Support for assistance."
-                    )
-                }
-
-                configuration.cardinalAuthenticationJwt == null -> {
-                    BraintreeException(
-                        "Merchant is not configured for 3DS 2.0. " +
-                            "Please contact Braintree Support for assistance."
-                    )
-                }
-
-                else -> {
-                    initializeCardinalClient(context, configuration, request, callback)
-                    return@getConfiguration
-                }
+            } catch (e: IOException) {
+                callbackCreatePaymentAuthFailure(
+                    callback,
+                    ThreeDSecurePaymentAuthRequest.Failure(e)
+                )
             }
-
-            callbackCreatePaymentAuthFailure(
-                callback,
-                ThreeDSecurePaymentAuthRequest.Failure(failure)
-            )
         }
     }
 
@@ -230,6 +233,11 @@ class ThreeDSecureClient internal constructor(
                     callback,
                     ThreeDSecurePrepareLookupResult.Failure(initializeException)
                 )
+            }
+        }
+        coroutineScope.launch {
+            try {
+                val configuration = braintreeClient.getConfiguration()
             }
         }
     }

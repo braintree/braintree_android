@@ -3,7 +3,6 @@ package com.braintreepayments.api.core
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.net.Uri
-import android.provider.Settings.System.getConfiguration
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
@@ -11,14 +10,10 @@ import com.braintreepayments.api.sharedutils.ManifestValidator
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * Core Braintree class that handles network requests.
@@ -40,7 +35,7 @@ class BraintreeClient internal constructor(
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
     private val analyticsClient: AnalyticsClient = AnalyticsClient(),
     private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
-    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher),
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
 
     private val crashReporter: CrashReporter
@@ -159,29 +154,24 @@ class BraintreeClient internal constructor(
         additionalHeaders: Map<String, String> = emptyMap(),
         responseCallback: HttpResponseCallback,
     ) {
-        getConfiguration { configuration, configError ->
-            if (configuration != null) {
-                coroutineScope.launch {
-                    try {
-                        val response = httpClient.post(
-                            path = url,
-                            data = data,
-                            configuration = configuration,
-                            authorization = merchantRepository.authorization,
-                            additionalHeaders = additionalHeaders
-                        )
-                        try {
-                            sendAnalyticsTimingEvent(url, response.timing)
-                            responseCallback.onResult(response.body, null)
-                        } catch (jsonException: JSONException) {
-                            responseCallback.onResult(null, jsonException)
-                        }
-                    } catch (e: IOException) {
-                        responseCallback.onResult(null, e)
-                    }
+        coroutineScope.launch {
+            try {
+                val configuration = getConfiguration()
+                val response = httpClient.post(
+                    path = url,
+                    data = data,
+                    configuration = configuration,
+                    authorization = merchantRepository.authorization,
+                    additionalHeaders = additionalHeaders
+                )
+                try {
+                    sendAnalyticsTimingEvent(url, response.timing)
+                    responseCallback.onResult(response.body, null)
+                } catch (jsonException: JSONException) {
+                    responseCallback.onResult(null, jsonException)
                 }
-            } else {
-                responseCallback.onResult(null, configError)
+            } catch (e: IOException) {
+                responseCallback.onResult(null, e)
             }
         }
     }
@@ -190,41 +180,36 @@ class BraintreeClient internal constructor(
      * @suppress
      */
     fun sendGraphQLPOST(json: JSONObject, responseCallback: HttpResponseCallback) {
-        getConfiguration { configuration, configError ->
-            if (configuration != null) {
-                coroutineScope.launch {
-                    try {
-                        val response = graphQLClient.post(
-                            data = json.toString(),
-                            configuration = configuration,
-                            authorization = merchantRepository.authorization
-                        )
-
-                        try {
-                            val query = json.optString(GraphQLConstants.Keys.QUERY)
-                            val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
-                            val finalQuery = query.replace(queryDiscardHolder, "")
-                            val params = AnalyticsEventParams(
-                                startTime = response.timing.startTime,
-                                endTime = response.timing.endTime,
-                                endpoint = finalQuery
-                            )
-                            sendAnalyticsEvent(
-                                eventName = CoreAnalytics.API_REQUEST_LATENCY,
-                                params = params,
-                                sendImmediately = false
-                            )
-                            responseCallback.onResult(response.body, null)
-                        } catch (jsonException: JSONException) {
-                            responseCallback.onResult(null, jsonException)
-                        }
-                    } catch (e: IOException) {
-                        responseCallback.onResult(null, e)
-                    }
+        coroutineScope.launch {
+            try {
+                val configuration = getConfiguration()
+                val response = graphQLClient.post(
+                    data = json.toString(),
+                    configuration = configuration,
+                    authorization = merchantRepository.authorization
+                )
+                try {
+                    val query = json.optString(GraphQLConstants.Keys.QUERY)
+                    val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
+                    val finalQuery = query.replace(queryDiscardHolder, "")
+                    val params = AnalyticsEventParams(
+                        startTime = response.timing.startTime,
+                        endTime = response.timing.endTime,
+                        endpoint = finalQuery
+                    )
+                    sendAnalyticsEvent(
+                        eventName = CoreAnalytics.API_REQUEST_LATENCY,
+                        params = params,
+                        sendImmediately = false
+                    )
+                    responseCallback.onResult(response.body, null)
+                } catch (jsonException: JSONException) {
+                    responseCallback.onResult(null, jsonException)
                 }
-            } else {
-                responseCallback.onResult(null, configError)
+            } catch (e: IOException) {
+                responseCallback.onResult(null, e)
             }
+
         }
     }
 
@@ -249,10 +234,16 @@ class BraintreeClient internal constructor(
     /**
      * @suppress
      */
-    internal fun reportCrash() =
-        getConfiguration { configuration, _ ->
-            analyticsClient.reportCrash(configuration)
+    internal fun reportCrash() {
+        coroutineScope.launch {
+            try {
+                val configuration = getConfiguration()
+                analyticsClient.reportCrash(configuration)
+            } catch (e : IOException) {
+                //no op
+            }
         }
+    }
 
     // TODO: Make launches browser switch as new task a property of `BraintreeOptions`
     fun launchesBrowserSwitchAsNewTask(): Boolean {
