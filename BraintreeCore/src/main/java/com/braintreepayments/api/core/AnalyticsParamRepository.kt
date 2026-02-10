@@ -70,7 +70,9 @@ class AnalyticsParamRepository(
         didPayPalServerAttemptAppSwitch = null
         didSdkAttemptAppSwitch = null
         fundingSource = null
+        isPurchase = null
         isBillingAgreement = null
+        recurringBillingPlanType = null
     }
 
     companion object {
