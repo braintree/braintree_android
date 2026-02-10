@@ -31,6 +31,7 @@ class AnalyticsClient internal constructor(
             contextId = analyticsEventParams.contextId,
             linkType = analyticsParamRepository.linkType?.stringValue,
             isVaultRequest = analyticsEventParams.isVaultRequest,
+            isPurchase = analyticsParamRepository.isPurchase,
             isBillingAgreement = analyticsParamRepository.isBillingAgreement,
             startTime = analyticsEventParams.startTime,
             endTime = analyticsEventParams.endTime,

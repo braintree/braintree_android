@@ -53,6 +53,8 @@ class AnalyticsApiUnitTest {
         contextId = "context-id",
         linkType = "link-type",
         isVaultRequest = true,
+        isPurchase = true,
+        isBillingAgreement = true,
         startTime = 123,
         endTime = 234,
         endpoint = "endpoint",
@@ -66,8 +68,7 @@ class AnalyticsApiUnitTest {
         didPayPalServerAttemptAppSwitch = true,
         didSdkAttemptAppSwitch = true,
         errorDescription = "error-description",
-        fundingSource = "funding-source",
-        isBillingAgreement = true
+        fundingSource = "funding-source"
     )
 
     private val tokenizationKeyEvent = AnalyticsEvent(
@@ -76,6 +77,8 @@ class AnalyticsApiUnitTest {
         contextId = "context-id",
         linkType = "link-type",
         isVaultRequest = false,
+        isPurchase = true,
+        isBillingAgreement = true,
         startTime = 123,
         endTime = 234,
         endpoint = "endpoint",
@@ -89,8 +92,7 @@ class AnalyticsApiUnitTest {
         didPayPalServerAttemptAppSwitch = true,
         didSdkAttemptAppSwitch = true,
         errorDescription = "error-description",
-        fundingSource = "funding-source",
-        isBillingAgreement = true
+        fundingSource = "funding-source"
     )
 
     @Before
@@ -210,6 +212,7 @@ class AnalyticsApiUnitTest {
                                     "tenant_name": "Braintree",
                                     "attempted_app_switch": ${tokenizationKeyEvent.didSdkAttemptAppSwitch},
                                     "is_billing_agreement": ${tokenizationKeyEvent.isBillingAgreement},
+                                    "is_purchase": ${tokenizationKeyEvent.isPurchase},
                                     "page_type": "${tokenizationKeyEvent.pageType}",
                                     "merchant_enabled_app_switch": ${tokenizationKeyEvent.didEnablePayPalAppSwitch},
                                     "button_type": "${tokenizationKeyEvent.buttonType}",
@@ -270,6 +273,7 @@ class AnalyticsApiUnitTest {
                                     "tenant_name": "Braintree",
                                     "attempted_app_switch": ${clientTokenEvent.didSdkAttemptAppSwitch},
                                     "is_billing_agreement": ${clientTokenEvent.isBillingAgreement},
+                                    "is_purchase": ${tokenizationKeyEvent.isPurchase},
                                     "page_type": "${clientTokenEvent.pageType}",
                                     "merchant_enabled_app_switch": ${clientTokenEvent.didEnablePayPalAppSwitch},
                                     "button_type": "${clientTokenEvent.buttonType}",
