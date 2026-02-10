@@ -48,6 +48,11 @@ class AnalyticsParamRepository(
     var isBillingAgreement: Boolean? = null
 
     /**
+     * Recurring billing plan type, or charge pattern.
+     */
+    var recurringBillingPlanType: String? = null
+
+    /**
      * Session ID to tie analytics events together which is used for reporting conversion funnels.
      */
     val sessionId: String = uuidHelper.formattedUUID

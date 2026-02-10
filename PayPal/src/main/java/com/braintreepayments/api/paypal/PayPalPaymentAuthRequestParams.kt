@@ -36,4 +36,8 @@ data class PayPalPaymentAuthRequestParams @JvmOverloads internal constructor(
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val isBillingAgreement: Boolean
         get() = payPalRequest is PayPalCheckoutRequest && payPalRequest.shouldRequestBillingAgreement
+
+    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    val recurringBillingPlanType: String?
+        get() = payPalRequest.recurringBillingPlanType?.name
 }

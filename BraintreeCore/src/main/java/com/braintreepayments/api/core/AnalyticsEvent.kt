@@ -13,6 +13,7 @@ internal data class AnalyticsEvent(
     val isVaultRequest: Boolean = false,
     val isPurchase: Boolean? = null,
     val isBillingAgreement: Boolean? = null,
+    val recurringBillingPlanType: String? = null,
     val startTime: Long? = null,
     val endTime: Long? = null,
     val endpoint: String? = null,

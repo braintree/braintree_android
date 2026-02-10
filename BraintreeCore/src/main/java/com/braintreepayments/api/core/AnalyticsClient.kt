@@ -33,6 +33,7 @@ class AnalyticsClient internal constructor(
             isVaultRequest = analyticsEventParams.isVaultRequest,
             isPurchase = analyticsParamRepository.isPurchase,
             isBillingAgreement = analyticsParamRepository.isBillingAgreement,
+            recurringBillingPlanType = analyticsParamRepository.recurringBillingPlanType,
             startTime = analyticsEventParams.startTime,
             endTime = analyticsEventParams.endTime,
             endpoint = analyticsEventParams.endpoint,
