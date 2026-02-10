@@ -55,7 +55,6 @@ class MainFragment : BaseFragment() {
                                 )
 
                                 PaymentModuleButton(R.string.paypal_button) { launchPayPal() }
-                                PaymentModuleButton(R.string.payment_buttons_compose_button) { launchComposePaymentButtons() }
                                 PaymentModuleButton(R.string.shopper_insights_button) { launchShopperInsights() }
                                 PaymentModuleButton(R.string.shopper_insights_v2_button) { launchShopperInsightsV2() }
                                 PaymentModuleButton(R.string.paypal_messaging_button) { launchPayPalMessaging() }
@@ -74,6 +73,7 @@ class MainFragment : BaseFragment() {
                                 )
 
                                 PaymentModuleButton(R.string.payment_buttons_button) { launchPaymentButtons() }
+                                PaymentModuleButton(R.string.payment_buttons_compose_button) { launchComposePaymentButtons() }
                                 PaymentModuleButton(R.string.venmo) { launchVenmo() }
                                 PaymentModuleButton(R.string.cards) { launchCards() }
                                 PaymentModuleButton(R.string.google_pay) { launchGooglePay() }

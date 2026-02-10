@@ -23,7 +23,7 @@ import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
 
 @Composable
-fun PayPalButtonComposeImpl(
+fun PayPalSmartButton(
     payPalRequest: PayPalRequest,
     authorization: String,
     appLinkReturnUrl: Uri,
