@@ -4,6 +4,7 @@ import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.TokenizeCallback
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.Job
 import org.json.JSONObject
 
 class MockkApiClientBuilder {
@@ -40,6 +41,7 @@ class MockkApiClientBuilder {
         every { apiClient.tokenizeREST(any(), any()) } answers {
             val listener = lastArg() as TokenizeCallback
             listener.onResult(tokenizeRESTSuccess, tokenizeRESTError)
+            mockk<Job>(relaxed = true)
         }
 
         every { apiClient.tokenizeGraphQL(any(), any()) } answers {
