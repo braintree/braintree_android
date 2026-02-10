@@ -6,12 +6,16 @@ import android.content.ContextWrapper
 import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivityResultRegistryOwner
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.braintreepayments.api.paypal.PayPalClient
@@ -45,20 +49,22 @@ fun PayPalSmartButton(
         appLinkReturnUrl = appLinkReturnUrl,
         deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
     )
-    PayPalButton(style = PayPalButtonColor.Blue, enabled = enabled) {
-        enabled = false
-        payPalClient.createPaymentAuthRequest(
-            context = context,
-            payPalRequest = payPalRequest
-        ) { paymentAuthRequest: PayPalPaymentAuthRequest ->
-            when (paymentAuthRequest) {
-                is PayPalPaymentAuthRequest.ReadyToLaunch -> {
-                    activity?.let {
-                        completePayPalFlow(payPalLauncher, it, paymentAuthRequest, viewModel)
+    Column {
+        PayPalButton(style = PayPalButtonColor.Blue, enabled = enabled) {
+            enabled = false
+            payPalClient.createPaymentAuthRequest(
+                context = context,
+                payPalRequest = payPalRequest
+            ) { paymentAuthRequest: PayPalPaymentAuthRequest ->
+                when (paymentAuthRequest) {
+                    is PayPalPaymentAuthRequest.ReadyToLaunch -> {
+                        activity?.let {
+                            completePayPalFlow(payPalLauncher, it, paymentAuthRequest, viewModel)
+                        }
                     }
-                }
 
-                is PayPalPaymentAuthRequest.Failure -> {
+                    is PayPalPaymentAuthRequest.Failure -> {
+                    }
                 }
             }
         }
