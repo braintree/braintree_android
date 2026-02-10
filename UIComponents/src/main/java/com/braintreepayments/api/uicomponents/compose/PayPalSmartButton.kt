@@ -3,6 +3,7 @@ package com.braintreepayments.api.uicomponents.compose
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivityResultRegistryOwner
@@ -17,10 +18,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
+import com.braintreepayments.api.paypal.PayPalPaymentAuthResult
 import com.braintreepayments.api.paypal.PayPalPendingRequest
 import com.braintreepayments.api.paypal.PayPalRequest
+import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
+
+private var pendingRequest: String? = null
 
 @Composable
 fun PayPalSmartButton(
@@ -66,12 +71,12 @@ fun PayPalSmartButton(
 
     LifecycleResumeEffect(Unit) {
         // Do something on resume or launch effect
-        val pendingRequest = viewModel.getPayPalPendingRequest()
+        val pendingRequest = getPayPalPendingRequest()
 
         activity?.intent?.let { intent ->
-            viewModel.handleReturnToApp(payPalLauncher, payPalClient, pendingRequest, intent, paypalTokenizeCallback)
+            handleReturnToApp(payPalLauncher, payPalClient, pendingRequest, intent, paypalTokenizeCallback)
             enabled = true
-            viewModel.clearPayPalPendingRequest()
+            clearPayPalPendingRequest()
             activity.intent.data = null
         }
 
@@ -94,12 +99,51 @@ internal fun completePayPalFlow(
     )
     when (payPalPendingRequest) {
         is PayPalPendingRequest.Started -> {
-            viewModel.storePayPalPendingRequest(PayPalPendingRequest.Started(payPalPendingRequest.pendingRequestString))
+            storePayPalPendingRequest(PayPalPendingRequest.Started(payPalPendingRequest.pendingRequestString))
         }
 
         is PayPalPendingRequest.Failure -> {
         }
     }
+}
+
+private fun handleReturnToApp(
+    payPalLauncher: PayPalLauncher,
+    payPalClient: PayPalClient,
+    pendingRequest: PayPalPendingRequest.Started,
+    intent: Intent,
+    callback: PayPalTokenizeCallback
+) {
+    val paymentAuthResult = payPalLauncher.handleReturnToApp(
+        pendingRequest = pendingRequest,
+        intent = intent,
+    )
+
+    when (paymentAuthResult) {
+        is PayPalPaymentAuthResult.Success -> {
+            payPalClient.tokenize(paymentAuthResult) { payPalResult ->
+                callback.onPayPalResult(payPalResult)
+            }
+        }
+        is PayPalPaymentAuthResult.NoResult -> {
+            callback.onPayPalResult(PayPalResult.Cancel)
+        }
+        is PayPalPaymentAuthResult.Failure -> {
+            callback.onPayPalResult(PayPalResult.Failure(paymentAuthResult.error))
+        }
+    }
+}
+
+private fun getPayPalPendingRequest(): PayPalPendingRequest.Started {
+    return PayPalPendingRequest.Started(pendingRequest ?: "")
+}
+
+private fun storePayPalPendingRequest(request: PayPalPendingRequest.Started) {
+    pendingRequest = request.pendingRequestString
+}
+
+private fun clearPayPalPendingRequest() {
+    pendingRequest = null
 }
 
 fun Context.findActivity(): Activity? = when (this) {
