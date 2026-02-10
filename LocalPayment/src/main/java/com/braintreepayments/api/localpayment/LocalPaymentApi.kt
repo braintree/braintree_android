@@ -4,13 +4,20 @@ import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.localpayment.LocalPaymentNonce.Companion.fromJSON
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
 
 internal class LocalPaymentApi(
     private val braintreeClient: BraintreeClient,
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
 
     fun createPaymentMethod(
@@ -23,11 +30,12 @@ internal class LocalPaymentApi(
 
         val url = "/v1/local_payments/create"
 
-        braintreeClient.sendPOST(
-            url = url,
-            data = request.build(returnUrl, cancel)
-        ) { responseBody: String?, httpError: Exception? ->
-            if (responseBody != null) {
+        coroutineScope.launch {
+            try {
+                val responseBody = braintreeClient.sendPOST(
+                    url,
+                    request.build(returnUrl, cancel)
+                )
                 try {
                     val responseJson = JSONObject(responseBody)
                     val redirectUrl = responseJson.getJSONObject("paymentResource")
@@ -41,7 +49,7 @@ internal class LocalPaymentApi(
                 } catch (e: JSONException) {
                     callback.onLocalPaymentInternalAuthResult(null, e)
                 }
-            } else {
+            } catch (httpError: IOException) {
                 callback.onLocalPaymentInternalAuthResult(null, httpError)
             }
         }
@@ -73,11 +81,12 @@ internal class LocalPaymentApi(
             payload.put("_meta", metaData)
 
             val url = "/v1/payment_methods/paypal_accounts"
-            braintreeClient.sendPOST(
-                url = url,
-                data = payload.toString()
-            ) { responseBody: String?, httpError: Exception? ->
-                if (responseBody != null) {
+            coroutineScope.launch {
+                try {
+                    val responseBody = braintreeClient.sendPOST(
+                        url = url,
+                        data = payload.toString()
+                    )
                     try {
                         val result =
                             fromJSON(JSONObject(responseBody))
@@ -85,7 +94,7 @@ internal class LocalPaymentApi(
                     } catch (jsonException: JSONException) {
                         callback.onResult(null, jsonException)
                     }
-                } else {
+                } catch (httpError: IOException) {
                     callback.onResult(null, httpError)
                 }
             }

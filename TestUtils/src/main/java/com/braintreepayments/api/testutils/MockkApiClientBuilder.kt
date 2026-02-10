@@ -8,6 +8,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
 import org.json.JSONObject
 
 class MockkApiClientBuilder {
@@ -45,6 +46,7 @@ class MockkApiClientBuilder {
         every { apiClient.tokenizeREST(any(), any()) } answers {
             val listener = lastArg() as TokenizeCallback
             listener.onResult(tokenizeRESTSuccess, tokenizeRESTError)
+            mockk<Job>(relaxed = true)
         }
 
         every { apiClient.tokenizeGraphQL(any(), any()) } answers {

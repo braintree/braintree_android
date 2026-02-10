@@ -116,6 +116,63 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
         }
     }
 
+    /**
+     * This method should be used for markets where high coverage of device data
+     * is needed (ex: Predictions Market). Collects device data based on
+     * your merchant configuration.
+     *
+     * We recommend that you call this method as early as possible, e.g. at app
+     * launch. If that's too early, calling it when the customer initiates checkout
+     * is also fine. When using this method you should only proceed if a success is
+     * returned. In cases where an error is returned, retrying this method is recommended.
+     *
+     * @param context           Android Context
+     * @param request           Optional client metadata id
+     * @param callback          [DataCollectorCallback] invoked with either a device data
+     *                          string on success or an error with the failure reason.
+     *                          Retries are recommended on failure.
+     */
+    fun collectDeviceDataOnSuccess(
+        context: Context,
+        request: DataCollectorRequest,
+        callback: DataCollectorCallback
+    ) {
+        braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
+            if (configuration != null) {
+                val deviceData = JSONObject()
+                try {
+                    val internalRequest =
+                        DataCollectorInternalRequest(request.hasUserLocationConsent).apply {
+                            applicationGuid = getPayPalInstallationGUID(context)
+                        }
+                    if (request.riskCorrelationId != null) {
+                        internalRequest.clientMetadataId = request.riskCorrelationId
+                    }
+                    magnesInternalClient.getClientMetadataIdWithCallback(
+                        context = context,
+                        configuration = configuration,
+                        request = internalRequest
+                    ) { correlationId, submitError ->
+                        if (submitError != null) {
+                            callback.onDataCollectorResult(DataCollectorResult.Failure(submitError))
+                        } else {
+                            try {
+                                if (!TextUtils.isEmpty(correlationId)) {
+                                    deviceData.put(CORRELATION_ID_KEY, correlationId)
+                                }
+                            } catch (ignored: JSONException) {
+                            }
+                            callback.onDataCollectorResult(DataCollectorResult.Success(deviceData.toString()))
+                        }
+                    }
+                } catch (ignored: JSONException) {
+                }
+            } else if (error != null) {
+                callback.onDataCollectorResult(DataCollectorResult.Failure(error))
+            }
+        }
+    }
+
     companion object {
         private const val CORRELATION_ID_KEY = "correlation_id"
     }

@@ -16,8 +16,8 @@ import java.io.IOException
 class ApiClient(
     private val braintreeClient: BraintreeClient,
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
-    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
-    private val coroutineScope: CoroutineScope = CoroutineScope(mainDispatcher)
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
 
     fun tokenizeGraphQL(tokenizePayload: JSONObject, callback: TokenizeCallback) =
@@ -42,14 +42,17 @@ class ApiClient(
             val url = versionedPath("$PAYMENT_METHOD_ENDPOINT/${paymentMethod.apiPath}")
             paymentMethod.sessionId = analyticsParamRepository.sessionId
 
-            sendPOST(
-                url = url,
-                data = paymentMethod.buildJSON().toString(),
-            ) { responseBody, httpError ->
-                parseResponseToJSON(responseBody)?.let { json ->
-                    callback.onResult(json, null)
-                } ?: httpError?.let { error ->
-                    callback.onResult(null, error)
+            coroutineScope.launch {
+                try {
+                    val responseBody = sendPOST(
+                        url = url,
+                        data = paymentMethod.buildJSON().toString(),
+                    )
+                    parseResponseToJSON(responseBody)?.let { json ->
+                        callback.onResult(json, null)
+                    } ?: callback.onResult(null, JSONException("Invalid JSON response"))
+                } catch (httpError: IOException) {
+                    callback.onResult(null, httpError)
                 }
             }
         }
