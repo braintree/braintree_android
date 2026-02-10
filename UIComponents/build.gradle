@@ -58,6 +58,8 @@ dependencies {
     implementation libs.androidx.ui.tooling.preview
     implementation libs.accompanist.drawablepainter
     implementation libs.compose.animation
+    implementation libs.android.compose
+    implementation libs.androidx.compose.viewModel
 
     def composeBom = platform(libs.androidx.compose.bom)
     implementation composeBom
