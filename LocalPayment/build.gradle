@@ -53,6 +53,7 @@ dependencies {
     testImplementation libs.mockk
     testImplementation libs.test.parameter.injector
     testImplementation project(':TestUtils')
+    testImplementation libs.coroutines.test
 
     androidTestImplementation project(':TestUtils')
     androidTestImplementation libs.androidx.test.rules

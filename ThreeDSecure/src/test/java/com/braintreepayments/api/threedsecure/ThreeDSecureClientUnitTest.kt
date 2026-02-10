@@ -1,28 +1,40 @@
 package com.braintreepayments.api.threedsecure
 
 import androidx.fragment.app.FragmentActivity
-import com.braintreepayments.api.core.*
+import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.core.Authorization
+import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import com.braintreepayments.api.testutils.TestConfigurationBuilder
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.json.JSONObject
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertSame
-import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class ThreeDSecureClientUnitTest {
+    private val testDispatcher = StandardTestDispatcher()
 
     private val activity: FragmentActivity = mockk(relaxed = true)
     private val threeDSecureAPI: ThreeDSecureAPI = mockk(relaxed = true)
@@ -67,7 +79,11 @@ class ThreeDSecureClientUnitTest {
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
-            ThreeDSecureAPI(braintreeClient),
+            ThreeDSecureAPI(
+                braintreeClient,
+                dispatcher = testDispatcher,
+                coroutineScope = TestScope(testDispatcher)
+            ),
             merchantRepository
         )
 
@@ -112,7 +128,11 @@ class ThreeDSecureClientUnitTest {
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
-            ThreeDSecureAPI(braintreeClient),
+            ThreeDSecureAPI(
+                braintreeClient,
+                dispatcher = testDispatcher,
+                coroutineScope = TestScope(testDispatcher)
+            ),
             merchantRepository
         )
 
@@ -143,7 +163,11 @@ class ThreeDSecureClientUnitTest {
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
-            ThreeDSecureAPI(braintreeClient),
+            ThreeDSecureAPI(
+                braintreeClient,
+                dispatcher = testDispatcher,
+                coroutineScope = TestScope(testDispatcher)
+            ),
             merchantRepository
         )
 
@@ -171,7 +195,11 @@ class ThreeDSecureClientUnitTest {
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
-            ThreeDSecureAPI(braintreeClient),
+            ThreeDSecureAPI(
+                braintreeClient,
+                dispatcher = testDispatcher,
+                coroutineScope = TestScope(testDispatcher)
+            ),
             merchantRepository
         )
 
@@ -203,7 +231,11 @@ class ThreeDSecureClientUnitTest {
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
-            ThreeDSecureAPI(braintreeClient),
+            ThreeDSecureAPI(
+                braintreeClient,
+                dispatcher = testDispatcher,
+                coroutineScope = TestScope(testDispatcher)
+            ),
             merchantRepository
         )
 
@@ -246,14 +278,23 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_sendsParamsInLookupRequest() {
+    fun createPaymentAuthRequest_sendsParamsInLookupRequest() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder()
             .successReferenceId("df-reference-id")
             .build()
 
+        val bodyCaptor = slot<String>()
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(threeDSecureEnabledConfig)
+            .sendPostSuccessfulResponse("{}")
             .build()
+
+        coEvery {
+            braintreeClient.sendPOST(
+                url = eq("/v1/payment_methods/a-nonce/three_d_secure/lookup"),
+                data = capture(bodyCaptor)
+            )
+        } returns "{}"
 
         val request = ThreeDSecureRequest().apply {
             nonce = "a-nonce"
@@ -267,21 +308,15 @@ class ThreeDSecureClientUnitTest {
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
-            ThreeDSecureAPI(braintreeClient),
+            ThreeDSecureAPI(
+                braintreeClient,
+                dispatcher = testDispatcher,
+                coroutineScope = TestScope(testDispatcher)
+            ),
             merchantRepository
         )
         sut.createPaymentAuthRequest(activity, request, paymentAuthRequestCallback)
-
-        val bodyCaptor = slot<String>()
-        verify {
-            braintreeClient.sendPOST(
-                "/v1/payment_methods/a-nonce/three_d_secure/lookup",
-                capture(bodyCaptor),
-                any(),
-                any()
-            )
-        }
-
+        advanceUntilIdle()
         val body = JSONObject(bodyCaptor.captured)
         assertEquals("amount", body.getString("amount"))
         assertEquals("df-reference-id", body.getString("df_reference_id"))
@@ -290,14 +325,23 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_performsLookup_WhenCardinalSDKInitFails() {
+    fun createPaymentAuthRequest_performsLookup_WhenCardinalSDKInitFails() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder()
             .error(Exception("error"))
             .build()
 
+        val bodyCaptor = slot<String>()
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(threeDSecureEnabledConfig)
+            .sendPostSuccessfulResponse("{}")
             .build()
+
+        coEvery {
+            braintreeClient.sendPOST(
+                url = eq("/v1/payment_methods/a-nonce/three_d_secure/lookup"),
+                data = capture(bodyCaptor)
+            )
+        } returns "{}"
 
         val request = ThreeDSecureRequest().apply {
             nonce = "a-nonce"
@@ -310,22 +354,18 @@ class ThreeDSecureClientUnitTest {
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
-            ThreeDSecureAPI(braintreeClient),
+            ThreeDSecureAPI(
+                braintreeClient,
+                dispatcher = testDispatcher,
+                coroutineScope = TestScope(testDispatcher)
+            ),
             merchantRepository
         )
         sut.createPaymentAuthRequest(activity, request, paymentAuthRequestCallback)
-
-        val pathCaptor = slot<String>()
-        val bodyCaptor = slot<String>()
-        verify {
-            braintreeClient.sendPOST(capture(pathCaptor), capture(bodyCaptor), any(), any())
-        }
-
-        val path = pathCaptor.captured
+        advanceUntilIdle()
         val body = bodyCaptor.captured
         val bodyJson = JSONObject(body)
 
-        assertEquals("/v1/payment_methods/a-nonce/three_d_secure/lookup", path)
         assertEquals("amount", bodyJson.get("amount"))
         assertFalse(bodyJson.getBoolean("challenge_requested"))
         assertFalse(bodyJson.getBoolean("data_only_requested"))
@@ -335,7 +375,7 @@ class ThreeDSecureClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_callsLookupListener() {
+    fun createPaymentAuthRequest_callsLookupListener() = runTest(testDispatcher) {
         val cardinalClient = MockkCardinalClientBuilder()
             .successReferenceId("sample-session-id")
             .build()
@@ -356,12 +396,16 @@ class ThreeDSecureClientUnitTest {
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
-            ThreeDSecureAPI(braintreeClient),
+            ThreeDSecureAPI(
+                braintreeClient,
+                dispatcher = testDispatcher,
+                coroutineScope = TestScope(testDispatcher)
+            ),
             merchantRepository
         )
 
         sut.createPaymentAuthRequest(activity, request, paymentAuthRequestCallback)
-
+        advanceUntilIdle()
         verify { paymentAuthRequestCallback.onThreeDSecurePaymentAuthRequest(any<ThreeDSecurePaymentAuthRequest>()) }
     }
 
@@ -406,7 +450,11 @@ class ThreeDSecureClientUnitTest {
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
-            ThreeDSecureAPI(braintreeClient),
+            ThreeDSecureAPI(
+                braintreeClient,
+                dispatcher = testDispatcher,
+                coroutineScope = TestScope(testDispatcher)
+            ),
             merchantRepository
         )
         sut.createPaymentAuthRequest(activity, basicRequest, paymentAuthRequestCallback)
@@ -428,7 +476,11 @@ class ThreeDSecureClientUnitTest {
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
-            ThreeDSecureAPI(braintreeClient),
+            ThreeDSecureAPI(
+                braintreeClient,
+                dispatcher = testDispatcher,
+                coroutineScope = TestScope(testDispatcher)
+            ),
             merchantRepository
         )
 
@@ -454,7 +506,11 @@ class ThreeDSecureClientUnitTest {
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
-            ThreeDSecureAPI(braintreeClient),
+            ThreeDSecureAPI(
+                braintreeClient,
+                dispatcher = testDispatcher,
+                coroutineScope = TestScope(testDispatcher)
+            ),
             merchantRepository
         )
         sut.createPaymentAuthRequest(activity, basicRequest, paymentAuthRequestCallback)
@@ -481,7 +537,11 @@ class ThreeDSecureClientUnitTest {
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
-            ThreeDSecureAPI(braintreeClient),
+            ThreeDSecureAPI(
+                braintreeClient,
+                dispatcher = testDispatcher,
+                coroutineScope = TestScope(testDispatcher)
+            ),
             merchantRepository
         )
 
@@ -512,7 +572,11 @@ class ThreeDSecureClientUnitTest {
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
-            ThreeDSecureAPI(braintreeClient),
+            ThreeDSecureAPI(
+                braintreeClient,
+                dispatcher = testDispatcher,
+                coroutineScope = TestScope(testDispatcher)
+            ),
             merchantRepository
         )
 
@@ -536,7 +600,11 @@ class ThreeDSecureClientUnitTest {
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
-            ThreeDSecureAPI(braintreeClient),
+            ThreeDSecureAPI(
+                braintreeClient,
+                dispatcher = testDispatcher,
+                coroutineScope = TestScope(testDispatcher)
+            ),
             merchantRepository
         )
 
@@ -560,7 +628,11 @@ class ThreeDSecureClientUnitTest {
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
-            ThreeDSecureAPI(braintreeClient),
+            ThreeDSecureAPI(
+                braintreeClient,
+                dispatcher = testDispatcher,
+                coroutineScope = TestScope(testDispatcher)
+            ),
             merchantRepository
         )
 
@@ -588,7 +660,11 @@ class ThreeDSecureClientUnitTest {
         val sut = ThreeDSecureClient(
             braintreeClient,
             cardinalClient,
-            ThreeDSecureAPI(braintreeClient),
+            ThreeDSecureAPI(
+                braintreeClient,
+                dispatcher = testDispatcher,
+                coroutineScope = TestScope(testDispatcher)
+            ),
             merchantRepository
         )
 
