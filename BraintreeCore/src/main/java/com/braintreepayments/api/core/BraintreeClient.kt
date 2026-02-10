@@ -4,14 +4,12 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import androidx.annotation.RestrictTo
-import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import kotlin.coroutines.resume

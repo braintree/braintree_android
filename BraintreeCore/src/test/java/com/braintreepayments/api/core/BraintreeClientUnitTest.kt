@@ -8,7 +8,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.sharedutils.HttpResponse
-import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
 import com.braintreepayments.api.testutils.Fixtures
