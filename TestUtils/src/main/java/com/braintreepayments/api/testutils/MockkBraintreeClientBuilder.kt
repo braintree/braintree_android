@@ -91,6 +91,7 @@ class MockkBraintreeClientBuilder {
         return this
     }
 
+    @Suppress("ThrowsCount")
     fun build(): BraintreeClient {
         val braintreeClient = mockk<BraintreeClient>(relaxed = true)
 
@@ -111,26 +112,24 @@ class MockkBraintreeClientBuilder {
 
         every { braintreeClient.getManifestActivityInfo(any<Class<*>>()) } returns activityInfo
 
-        every {
-            braintreeClient.sendPOST(any<String>(), any<String>(), responseCallback = any<HttpResponseCallback>())
-        } answers { call ->
-            val callback = call.invocation.args[2] as HttpResponseCallback
-            sendPostSuccess?.let { callback.onResult(it, null) }
-                ?: sendPostError?.let { callback.onResult(null, it) }
+        val sendPostAnswer: () -> String = {
+            sendPostSuccess ?: throw (sendPostError ?: IOException("Unknown error"))
         }
 
-        every {
+        coEvery {
             braintreeClient.sendPOST(
-                any<String>(),
-                any<String>(),
-                any<Map<String, String>>(),
-                any<HttpResponseCallback>()
+                url = any<String>(),
+                data = any<String>(),
             )
-        } answers { call ->
-            val callback = call.invocation.args[3] as HttpResponseCallback
-            sendPostSuccess?.let { callback.onResult(it, null) }
-                ?: sendPostError?.let { callback.onResult(null, it) }
-        }
+        } answers { sendPostAnswer() }
+
+        coEvery {
+            braintreeClient.sendPOST(
+                url = any<String>(),
+                data = any<String>(),
+                additionalHeaders = any<Map<String, String>>(),
+            )
+        } answers { sendPostAnswer() }
 
         coEvery { braintreeClient.sendGET(any<String>()) } answers {
             sendGetSuccess
