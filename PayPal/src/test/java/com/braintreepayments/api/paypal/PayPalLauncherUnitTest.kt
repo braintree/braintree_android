@@ -50,6 +50,7 @@ class PayPalLauncherUnitTest {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         every { paymentAuthRequestParams.contextId } returns paymentToken
         every { paymentAuthRequestParams.approvalUrl } returns approvalUrl
+        every { paymentAuthRequestParams.isBillingAgreement } returns true
         every { intent.data } returns Uri.parse(approvalUrl)
         every { options.url } returns Uri.parse(approvalUrl)
 
@@ -418,12 +419,12 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
-    fun `launch sets billingWithPurchase`() {
+    fun `launch sets isBillingAgreement`() {
         val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
         every { browserSwitchClient.start(activity, options, any()) } returns startedPendingRequest
 
         sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
-        verify { analyticsParamRepository.fundingSource = paymentAuthRequestParams.fundingSource }
+        verify { analyticsParamRepository.isBillingAgreement = true }
     }
 
     @Test

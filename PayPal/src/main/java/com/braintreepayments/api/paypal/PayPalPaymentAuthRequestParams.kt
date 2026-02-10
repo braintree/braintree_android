@@ -18,7 +18,7 @@ data class PayPalPaymentAuthRequestParams @JvmOverloads internal constructor(
         get() = if (payPalRequest is PayPalCheckoutRequest) payPalRequest.intent else null
 
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val isBillingAgreement: Boolean
+    val isVaultRequest: Boolean
         get() = payPalRequest is PayPalVaultRequest
 
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
@@ -30,6 +30,6 @@ data class PayPalPaymentAuthRequestParams @JvmOverloads internal constructor(
         get() = payPalRequest.getFundingSource().value
 
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    val billingWithPurchase: Boolean
+    val isBillingAgreement: Boolean
         get() = payPalRequest is PayPalCheckoutRequest && payPalRequest.shouldRequestBillingAgreement
 }

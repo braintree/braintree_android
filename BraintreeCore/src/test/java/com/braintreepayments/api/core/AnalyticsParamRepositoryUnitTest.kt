@@ -25,7 +25,7 @@ class AnalyticsParamRepositoryUnitTest {
         sut.didPayPalServerAttemptAppSwitch = true
         sut.didSdkAttemptAppSwitch = true
         sut.didEnablePayPalAppSwitch = true
-        sut.billingWithPurchase = true
+        sut.isBillingAgreement = true
         sut.fundingSource = expectedFundingSource
     }
 
@@ -46,7 +46,7 @@ class AnalyticsParamRepositoryUnitTest {
         assertEquals(true, sut.didPayPalServerAttemptAppSwitch)
         assertEquals(true, sut.didEnablePayPalAppSwitch)
         assertEquals(true, sut.didSdkAttemptAppSwitch)
-        assertEquals(true, sut.billingWithPurchase)
+        assertEquals(true, sut.isBillingAgreement)
         assertEquals(expectedFundingSource, sut.fundingSource)
 
         sut.reset()
@@ -55,7 +55,7 @@ class AnalyticsParamRepositoryUnitTest {
         assertNull(sut.didPayPalServerAttemptAppSwitch)
         assertNull(sut.didEnablePayPalAppSwitch)
         assertNull(sut.didSdkAttemptAppSwitch)
-        assertNull(sut.billingWithPurchase)
+        assertNull(sut.isBillingAgreement)
         assertNull(sut.fundingSource)
     }
 }

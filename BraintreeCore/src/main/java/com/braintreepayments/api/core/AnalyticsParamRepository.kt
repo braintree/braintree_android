@@ -37,10 +37,10 @@ class AnalyticsParamRepository(
     var fundingSource: String? = null
 
     /**
-     * Whether or not user is in Billing With Purchase flow - customer opted to save
+     * Whether or not billing agreement will be created - customer opted to save
      * PayPal for future purchases and a vaulted billing agreement was created with the charge.
      */
-    var billingWithPurchase: Boolean? = null
+    var isBillingAgreement: Boolean? = null
 
     /**
      * Session ID to tie analytics events together which is used for reporting conversion funnels.
@@ -60,7 +60,7 @@ class AnalyticsParamRepository(
         didPayPalServerAttemptAppSwitch = null
         didSdkAttemptAppSwitch = null
         fundingSource = null
-        billingWithPurchase = null
+        isBillingAgreement = null
     }
 
     companion object {

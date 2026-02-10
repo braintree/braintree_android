@@ -67,7 +67,7 @@ class AnalyticsApiUnitTest {
         didSdkAttemptAppSwitch = true,
         errorDescription = "error-description",
         fundingSource = "funding-source",
-        billingWithPurchase = true
+        isBillingAgreement = true
     )
 
     private val tokenizationKeyEvent = AnalyticsEvent(
@@ -90,7 +90,7 @@ class AnalyticsApiUnitTest {
         didSdkAttemptAppSwitch = true,
         errorDescription = "error-description",
         fundingSource = "funding-source",
-        billingWithPurchase = true
+        isBillingAgreement = true
     )
 
     @Before
@@ -209,7 +209,7 @@ class AnalyticsApiUnitTest {
                                 {
                                     "tenant_name": "Braintree",
                                     "attempted_app_switch": ${tokenizationKeyEvent.didSdkAttemptAppSwitch},
-                                    "billing_with_purchase": ${tokenizationKeyEvent.billingWithPurchase},
+                                    "is_billing_agreement": ${tokenizationKeyEvent.isBillingAgreement},
                                     "page_type": "${tokenizationKeyEvent.pageType}",
                                     "merchant_enabled_app_switch": ${tokenizationKeyEvent.didEnablePayPalAppSwitch},
                                     "button_type": "${tokenizationKeyEvent.buttonType}",
@@ -269,7 +269,7 @@ class AnalyticsApiUnitTest {
                                 {
                                     "tenant_name": "Braintree",
                                     "attempted_app_switch": ${clientTokenEvent.didSdkAttemptAppSwitch},
-                                    "billing_with_purchase": ${clientTokenEvent.billingWithPurchase},
+                                    "is_billing_agreement": ${clientTokenEvent.isBillingAgreement},
                                     "page_type": "${clientTokenEvent.pageType}",
                                     "merchant_enabled_app_switch": ${clientTokenEvent.didEnablePayPalAppSwitch},
                                     "button_type": "${clientTokenEvent.buttonType}",

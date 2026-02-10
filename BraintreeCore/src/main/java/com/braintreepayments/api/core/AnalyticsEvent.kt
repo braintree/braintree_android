@@ -11,6 +11,7 @@ internal data class AnalyticsEvent(
     val contextId: String? = null,
     val linkType: String? = null,
     val isVaultRequest: Boolean = false,
+    val isBillingAgreement: Boolean? = null,
     val startTime: Long? = null,
     val endTime: Long? = null,
     val endpoint: String? = null,
@@ -25,5 +26,4 @@ internal data class AnalyticsEvent(
     val didPayPalServerAttemptAppSwitch: Boolean? = null,
     val didSdkAttemptAppSwitch: Boolean? = null,
     val fundingSource: String? = null,
-    val billingWithPurchase: Boolean? = null,
 )

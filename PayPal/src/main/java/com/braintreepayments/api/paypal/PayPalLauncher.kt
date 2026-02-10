@@ -65,7 +65,7 @@ class PayPalLauncher internal constructor(
         )
 
         analyticsParamRepository.fundingSource = paymentAuthRequest.requestParams.fundingSource
-        analyticsParamRepository.billingWithPurchase = paymentAuthRequest.requestParams.billingWithPurchase
+        analyticsParamRepository.isBillingAgreement = paymentAuthRequest.requestParams.isBillingAgreement
         val isAppSwitch = processAppSwitchAttempt(analyticsEventParams)
 
         try {
