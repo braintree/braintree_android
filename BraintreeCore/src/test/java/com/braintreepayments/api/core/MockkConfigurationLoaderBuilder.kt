@@ -1,6 +1,6 @@
 package com.braintreepayments.api.core
 
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
 
 internal class MockkConfigurationLoaderBuilder {
@@ -20,13 +20,10 @@ internal class MockkConfigurationLoaderBuilder {
 
     fun build(): ConfigurationLoader {
         val configurationLoader = mockk<ConfigurationLoader>(relaxed = true)
-        every { configurationLoader.loadConfiguration(any()) } answers {
-            val callback = firstArg<ConfigurationLoaderCallback>()
+        coEvery { configurationLoader.loadConfiguration() } answers {
             configuration?.let {
-                callback.onResult(ConfigurationLoaderResult.Success(it))
-            } ?: run {
-                callback.onResult(ConfigurationLoaderResult.Failure(configurationError))
-            }
+                ConfigurationLoaderResult.Success(it)
+            } ?: ConfigurationLoaderResult.Failure(configurationError)
         }
         return configurationLoader
     }

@@ -4,6 +4,9 @@
 
 * Venmo
     * Expose the `riskCorrelationId` property on `VenmoRequest` 
+* DataCollector
+    * Bump Magnes version to `5.6.0`
+    * Add `collectDeviceDataOnSuccess` method that ensures Magnes SDK completes data submission prior to returning device data
 
 ## 5.22.0 (2026-01-29)
 
