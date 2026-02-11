@@ -213,9 +213,6 @@ class AnalyticsApiUnitTest {
                                 {
                                     "tenant_name": "Braintree",
                                     "attempted_app_switch": ${tokenizationKeyEvent.didSdkAttemptAppSwitch},
-                                    "is_billing_agreement": ${tokenizationKeyEvent.isBillingAgreement},
-                                    "is_purchase": ${tokenizationKeyEvent.isPurchase},
-                                    "billing_plan_type": ${tokenizationKeyEvent.recurringBillingPlanType},
                                     "page_type": "${tokenizationKeyEvent.pageType}",
                                     "merchant_enabled_app_switch": ${tokenizationKeyEvent.didEnablePayPalAppSwitch},
                                     "button_type": "${tokenizationKeyEvent.buttonType}",
@@ -234,7 +231,10 @@ class AnalyticsApiUnitTest {
                                     "event_name": "${tokenizationKeyEvent.name}",
                                     "button_position": "${tokenizationKeyEvent.buttonOrder}",
                                     "context_type": "EC-TOKEN",
-                                    "paypal_app_switch_url_received": ${tokenizationKeyEvent.didPayPalServerAttemptAppSwitch}
+                                    "paypal_app_switch_url_received": ${tokenizationKeyEvent.didPayPalServerAttemptAppSwitch},
+                                    "is_purchase": ${tokenizationKeyEvent.isPurchase},
+                                    "is_billing_agreement": ${tokenizationKeyEvent.isBillingAgreement},
+                                    "billing_plan_type": "${tokenizationKeyEvent.recurringBillingPlanType}"
                                 }
                             ]
                         }
@@ -275,9 +275,6 @@ class AnalyticsApiUnitTest {
                                 {
                                     "tenant_name": "Braintree",
                                     "attempted_app_switch": ${clientTokenEvent.didSdkAttemptAppSwitch},
-                                    "is_billing_agreement": ${clientTokenEvent.isBillingAgreement},
-                                    "is_purchase": ${tokenizationKeyEvent.isPurchase},
-                                    "billing_plan_type": ${tokenizationKeyEvent.recurringBillingPlanType},
                                     "page_type": "${clientTokenEvent.pageType}",
                                     "merchant_enabled_app_switch": ${clientTokenEvent.didEnablePayPalAppSwitch},
                                     "button_type": "${clientTokenEvent.buttonType}",
@@ -296,7 +293,10 @@ class AnalyticsApiUnitTest {
                                     "event_name": "${clientTokenEvent.name}",
                                     "button_position": "${clientTokenEvent.buttonOrder}",
                                     "context_type": "BA-TOKEN",
-                                    "paypal_app_switch_url_received": ${clientTokenEvent.didPayPalServerAttemptAppSwitch}
+                                    "paypal_app_switch_url_received": ${clientTokenEvent.didPayPalServerAttemptAppSwitch},
+                                    "is_purchase": ${tokenizationKeyEvent.isPurchase},
+                                    "is_billing_agreement": ${tokenizationKeyEvent.isBillingAgreement},
+                                    "billing_plan_type": "${tokenizationKeyEvent.recurringBillingPlanType}"
                                 }
                             ]
                         }
