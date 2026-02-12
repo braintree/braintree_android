@@ -179,65 +179,59 @@ class ThreeDSecureClient internal constructor(
         } catch (ignored: JSONException) {
         }
 
-        braintreeClient.getConfiguration { configuration: Configuration?, configError: Exception? ->
-            if (configuration == null) {
-                callbackPrepareLookupFailure(
-                    callback,
-                    ThreeDSecurePrepareLookupResult.Failure(
-                        configError ?: BraintreeException("Error getting configuration")
-                    )
-                )
-                return@getConfiguration
-            }
-            if (configuration.cardinalAuthenticationJwt == null) {
-                callbackPrepareLookupFailure(
-                    callback,
-                    ThreeDSecurePrepareLookupResult.Failure(
-                        BraintreeException(
-                            "Merchant is not configured for 3DS 2.0. " +
-                                "Please contact Braintree Support for assistance."
-                        )
-                    )
-                )
-                return@getConfiguration
-            }
-
-            try {
-                cardinalClient.initialize(
-                    context,
-                    configuration,
-                    request
-                ) { consumerSessionId: String?, _ ->
-                    if (!consumerSessionId.isNullOrEmpty()) {
-                            lookupJSON.put("dfReferenceId", consumerSessionId)
-                    } else {
-                        callbackPrepareLookupFailure(
-                            callback,
-                            ThreeDSecurePrepareLookupResult.Failure(
-                                BraintreeException("There was an error retrieving the dfReferenceId.")
-                            )
-                        )
-
-                        return@initialize
-                    }
-                    braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED)
-                    callback.onPrepareLookupResult(
-                        ThreeDSecurePrepareLookupResult.Success(
-                            request,
-                            lookupJSON.toString()
-                        )
-                    )
-                }
-            } catch (initializeException: BraintreeException) {
-                callbackPrepareLookupFailure(
-                    callback,
-                    ThreeDSecurePrepareLookupResult.Failure(initializeException)
-                )
-            }
-        }
         coroutineScope.launch {
             try {
                 val configuration = braintreeClient.getConfiguration()
+                if (configuration.cardinalAuthenticationJwt == null) {
+                    callbackPrepareLookupFailure(
+                        callback,
+                        ThreeDSecurePrepareLookupResult.Failure(
+                            BraintreeException(
+                                "Merchant is not configured for 3DS 2.0. " +
+                                    "Please contact Braintree Support for assistance."
+                            )
+                        )
+                    )
+                    return@launch
+                }
+
+                try {
+                    cardinalClient.initialize(
+                        context,
+                        configuration,
+                        request
+                    ) { consumerSessionId: String?, _ ->
+                        if (!consumerSessionId.isNullOrEmpty()) {
+                            lookupJSON.put("dfReferenceId", consumerSessionId)
+                        } else {
+                            callbackPrepareLookupFailure(
+                                callback,
+                                ThreeDSecurePrepareLookupResult.Failure(
+                                    BraintreeException("There was an error retrieving the dfReferenceId.")
+                                )
+                            )
+
+                            return@initialize
+                        }
+                        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED)
+                        callback.onPrepareLookupResult(
+                            ThreeDSecurePrepareLookupResult.Success(
+                                request,
+                                lookupJSON.toString()
+                            )
+                        )
+                    }
+                } catch (initializeException: BraintreeException) {
+                    callbackPrepareLookupFailure(
+                        callback,
+                        ThreeDSecurePrepareLookupResult.Failure(initializeException)
+                    )
+                }
+            } catch (configError: IOException) {
+                callbackPrepareLookupFailure(
+                    callback,
+                    ThreeDSecurePrepareLookupResult.Failure(configError)
+                )
             }
         }
     }
@@ -253,10 +247,17 @@ class ThreeDSecureClient internal constructor(
         lookupResponse: String,
         callback: ThreeDSecurePaymentAuthRequestCallback
     ) {
-        braintreeClient.getConfiguration { _, _ ->
+        coroutineScope.launch {
             try {
+                braintreeClient.getConfiguration()
                 sendAnalyticsAndCallbackResult(fromJson(lookupResponse), callback)
             } catch (e: JSONException) {
+                braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_FAILED)
+                callbackCreatePaymentAuthFailure(
+                    callback,
+                    ThreeDSecurePaymentAuthRequest.Failure(e)
+                )
+            } catch (e: IOException) {
                 braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_FAILED)
                 callbackCreatePaymentAuthFailure(
                     callback,

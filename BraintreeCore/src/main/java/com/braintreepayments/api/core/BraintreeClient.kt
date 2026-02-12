@@ -89,6 +89,7 @@ class BraintreeClient internal constructor(
         prefetchConfiguration()
     }
 
+    @Suppress("SwallowedException")
     private fun prefetchConfiguration() {
         // This method is called to prefetch the configuration when the BraintreeClient is created.
         // It ensures that the configuration is loaded and ready for use in subsequent requests.
@@ -96,7 +97,7 @@ class BraintreeClient internal constructor(
             try {
                 val config = getConfiguration()
             } catch (e: IOException) {
-                //no op
+                // no op
             }
         }
     }
@@ -114,9 +115,7 @@ class BraintreeClient internal constructor(
                 return configResult.configuration
             }
 
-
             is ConfigurationLoaderResult.Failure -> throw configResult.error
-
         }
     }
 
@@ -200,7 +199,6 @@ class BraintreeClient internal constructor(
             } catch (e: IOException) {
                 responseCallback.onResult(null, e)
             }
-
         }
     }
 
@@ -225,13 +223,14 @@ class BraintreeClient internal constructor(
     /**
      * @suppress
      */
+    @Suppress("SwallowedException")
     internal fun reportCrash() {
         coroutineScope.launch {
             try {
                 val configuration = getConfiguration()
                 analyticsClient.reportCrash(configuration)
-            } catch (e : IOException) {
-                //no op
+            } catch (e: IOException) {
+                // no op
             }
         }
     }

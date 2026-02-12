@@ -179,7 +179,6 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
             } catch (e: IOException) {
                 callback.onDataCollectorResult(DataCollectorResult.Failure(e))
             }
-
         }
     }
 

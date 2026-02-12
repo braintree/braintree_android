@@ -18,32 +18,31 @@ internal class EligiblePaymentsApi(
 ) {
     fun execute(request: EligiblePaymentsApiRequest, callback: EligiblePaymentsCallback) {
         val jsonBody = request.toJson()
-        braintreeClient.getConfiguration { configuration, _ ->
-            // TODO: Move url to PaypalHttpClient class when it is created
-            val baseUrl = when (configuration?.environment) {
-                "production" -> "https://api.paypal.com"
-                else -> "https://api.sandbox.paypal.com"
-            }
-            val url = "$baseUrl/v2/payments/find-eligible-methods"
-            val additionalHeaders = mapOf(PAYPAL_CLIENT_METADATA_ID to analyticsParamRepository.sessionId)
-            coroutineScope.launch {
+        coroutineScope.launch {
+            try {
+                val configuration = braintreeClient.getConfiguration()
+                // TODO: Move url to PaypalHttpClient class when it is created
+                val baseUrl = when (configuration.environment) {
+                    "production" -> "https://api.paypal.com"
+                    else -> "https://api.sandbox.paypal.com"
+                }
+                val url = "$baseUrl/v2/payments/find-eligible-methods"
+                val additionalHeaders = mapOf(PAYPAL_CLIENT_METADATA_ID to analyticsParamRepository.sessionId)
+                val responseBody = braintreeClient.sendPOST(
+                    url = url,
+                    data = jsonBody,
+                    additionalHeaders = additionalHeaders
+                )
                 try {
-                    val responseBody = braintreeClient.sendPOST(
-                        url = url,
-                        data = jsonBody,
-                        additionalHeaders = additionalHeaders
+                    callback.onResult(
+                        result = EligiblePaymentsApiResult.fromJson(responseBody),
+                        error = null
                     )
-                    try {
-                        callback.onResult(
-                            result = EligiblePaymentsApiResult.fromJson(responseBody),
-                            error = null
-                        )
-                    } catch (e: JSONException) {
-                        callback.onResult(null, e)
-                    }
-                } catch (e: IOException) {
+                } catch (e: JSONException) {
                     callback.onResult(null, e)
                 }
+            } catch (e: IOException) {
+                callback.onResult(null, e)
             }
         }
     }
