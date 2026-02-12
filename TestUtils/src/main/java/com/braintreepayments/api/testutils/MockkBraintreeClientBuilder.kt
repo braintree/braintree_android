@@ -4,7 +4,6 @@ import android.content.pm.ActivityInfo
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.Configuration
-import com.braintreepayments.api.core.ConfigurationCallback
 import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import io.mockk.coEvery
 import io.mockk.every
@@ -97,9 +96,8 @@ class MockkBraintreeClientBuilder {
 
         every { braintreeClient.launchesBrowserSwitchAsNewTask() } returns launchesBrowserSwitchAsNewTask
 
-        every { braintreeClient.getConfiguration(any()) } answers { call ->
-            val callback = call.invocation.args[0] as ConfigurationCallback
-            callback.onResult(configurationSuccess, configurationException)
+        coEvery { braintreeClient.getConfiguration() } answers {
+            configurationSuccess ?: throw (configurationException ?: IOException("No configuration configured"))
         }
 
         every { braintreeClient.sendGraphQLPOST(any(), any()) } answers { call ->
