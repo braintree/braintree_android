@@ -258,7 +258,7 @@ class PayPalInternalClientUnitTest {
     }
 
     private fun assertPayPalCheckoutParams(params: PayPalPaymentAuthRequestParams, expectedUrl: String) {
-        assertFalse(params.isBillingAgreement)
+        assertFalse(params.isVaultRequest)
         assertEquals(PayPalPaymentIntent.AUTHORIZE, params.intent)
         assertEquals("sample-merchant-account-id", params.merchantAccountId)
         assertEquals("https://example.com://onetouch/v1/success", params.successUrl)
@@ -275,7 +275,7 @@ class PayPalInternalClientUnitTest {
     }
 
     private fun assertPayPalVaultParams(params: PayPalPaymentAuthRequestParams, expectedUrl: String) {
-        assertTrue(params.isBillingAgreement)
+        assertTrue(params.isVaultRequest)
         assertEquals("sample-merchant-account-id", params.merchantAccountId)
         assertEquals("https://example.com://onetouch/v1/success", params.successUrl)
         assertEquals("fake-ba-token", params.contextId)
@@ -715,7 +715,7 @@ class PayPalInternalClientUnitTest {
         val slot = slot<PayPalPaymentAuthRequestParams>()
         verify { payPalInternalClientCallback.onResult(capture(slot), null) }
         val payPalPaymentAuthRequestParams = slot.captured
-        assertTrue(payPalPaymentAuthRequestParams.isBillingAgreement)
+        assertTrue(payPalPaymentAuthRequestParams.isVaultRequest)
 
         val approvalUri = Uri.parse(payPalPaymentAuthRequestParams.approvalUrl)
         val contextId = approvalUri.getQueryParameter("ba_token")
@@ -748,7 +748,7 @@ class PayPalInternalClientUnitTest {
 
         val expectedUrl = "https://www.example.com/some?ba_token=fake-ba-token"
         val payPalPaymentAuthRequestParams = slot.captured
-        assertTrue(payPalPaymentAuthRequestParams.isBillingAgreement)
+        assertTrue(payPalPaymentAuthRequestParams.isVaultRequest)
         assertEquals("fake-ba-token", payPalPaymentAuthRequestParams.contextId)
         assertEquals(expectedUrl, payPalPaymentAuthRequestParams.approvalUrl)
     }

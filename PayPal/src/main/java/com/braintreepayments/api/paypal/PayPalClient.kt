@@ -200,7 +200,7 @@ class PayPalClient internal constructor(
     private fun buildBrowserSwitchOptions(
         paymentAuthRequest: PayPalPaymentAuthRequestParams
     ): BrowserSwitchOptions {
-        val paymentType = if (paymentAuthRequest.isBillingAgreement) {
+        val paymentType = if (paymentAuthRequest.isVaultRequest) {
             "billing-agreement"
         } else {
             "single-payment"

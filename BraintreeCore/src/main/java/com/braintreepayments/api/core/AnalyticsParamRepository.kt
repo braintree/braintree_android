@@ -37,6 +37,22 @@ class AnalyticsParamRepository(
     var fundingSource: String? = null
 
     /**
+     * Whether or not there's a purchase as part of the transaction.
+     */
+    var isPurchase: Boolean? = null
+
+    /**
+     * Whether or not billing agreement will be created - customer opted to save
+     * PayPal for future purchases and a vaulted billing agreement was created with the charge.
+     */
+    var isBillingAgreement: Boolean? = null
+
+    /**
+     * Recurring billing plan type, or charge pattern.
+     */
+    var recurringBillingPlanType: String? = null
+
+    /**
      * Session ID to tie analytics events together which is used for reporting conversion funnels.
      */
     val sessionId: String = uuidHelper.formattedUUID
@@ -54,6 +70,9 @@ class AnalyticsParamRepository(
         didPayPalServerAttemptAppSwitch = null
         didSdkAttemptAppSwitch = null
         fundingSource = null
+        isPurchase = null
+        isBillingAgreement = null
+        recurringBillingPlanType = null
     }
 
     companion object {

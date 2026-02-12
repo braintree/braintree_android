@@ -40,6 +40,9 @@ class PayPalLauncherUnitTest {
     private val analyticsParamRepository = mockk<AnalyticsParamRepository>(relaxed = true)
     private val paymentToken = "paymentToken"
     private val approvalUrl = "https://return.url?ba_token=$paymentToken"
+    private val isBillingAgreement = true
+    private val isPurchase = true
+    private val recurringBillingPlanType = PayPalRecurringBillingPlanType.RECURRING.name
 
     private lateinit var sut: PayPalLauncher
 
@@ -50,6 +53,9 @@ class PayPalLauncherUnitTest {
         every { paymentAuthRequestParams.browserSwitchOptions } returns options
         every { paymentAuthRequestParams.contextId } returns paymentToken
         every { paymentAuthRequestParams.approvalUrl } returns approvalUrl
+        every { paymentAuthRequestParams.isBillingAgreement } returns isBillingAgreement
+        every { paymentAuthRequestParams.isPurchase } returns isPurchase
+        every { paymentAuthRequestParams.recurringBillingPlanType } returns recurringBillingPlanType
         every { intent.data } returns Uri.parse(approvalUrl)
         every { options.url } returns Uri.parse(approvalUrl)
 
@@ -415,6 +421,33 @@ class PayPalLauncherUnitTest {
 
         sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
         verify { analyticsParamRepository.fundingSource = paymentAuthRequestParams.fundingSource }
+    }
+
+    @Test
+    fun `launch sets isBillingAgreement`() {
+        val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
+        every { browserSwitchClient.start(activity, options, any()) } returns startedPendingRequest
+
+        sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+        verify { analyticsParamRepository.isBillingAgreement = isBillingAgreement }
+    }
+
+    @Test
+    fun `launch sets isPurchase`() {
+        val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
+        every { browserSwitchClient.start(activity, options, any()) } returns startedPendingRequest
+
+        sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+        verify { analyticsParamRepository.isPurchase = isPurchase }
+    }
+
+    @Test
+    fun `launch sets billingPlanType`() {
+        val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
+        every { browserSwitchClient.start(activity, options, any()) } returns startedPendingRequest
+
+        sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+        verify { analyticsParamRepository.recurringBillingPlanType = recurringBillingPlanType }
     }
 
     @Test
