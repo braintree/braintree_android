@@ -17,6 +17,7 @@ import kotlinx.coroutines.test.runTest
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import org.junit.Before
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import java.io.IOException
@@ -50,10 +51,18 @@ class UpdateCustomerSessionApiUnitTest {
     )
 
     private val sessionId = "updated-session-id"
+    private lateinit var testScope: TestScope
+    private val testDispatcher = StandardTestDispatcher()
+
+    @Before
+    fun setup() {
+        testScope = TestScope(testDispatcher)
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `when execute is called and a responseBody is returned, callback with Success is invoked`() = runTest {
+    fun `when execute is called and a responseBody is returned, callback with Success is invoked`() =
+    runTest(testDispatcher) {
         val responseBody = """
             {
                 "data": {
@@ -72,8 +81,6 @@ class UpdateCustomerSessionApiUnitTest {
             every { parseSessionId(responseBody, "updateCustomerSession") } returns sessionId
         }
 
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
         val updateCustomerSessionApi = UpdateCustomerSessionApi(
             braintreeClient = braintreeClient,
             customerSessionRequestBuilder = mockk<CustomerSessionRequestBuilder>(relaxed = true),
@@ -91,15 +98,13 @@ class UpdateCustomerSessionApiUnitTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `when execute is called and an error is returned, callback with Error is invoked`() = runTest {
+    fun `when execute is called and an error is returned, callback with Error is invoked`() = runTest(testDispatcher) {
         val error = IOException("Network error")
 
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendGraphQLPostErrorResponse(error)
             .build()
 
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
         val updateCustomerSessionApi = UpdateCustomerSessionApi(
             braintreeClient = braintreeClient,
             customerSessionRequestBuilder = mockk<CustomerSessionRequestBuilder>(relaxed = true),
@@ -137,7 +142,7 @@ class UpdateCustomerSessionApiUnitTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @SuppressWarnings("LongMethod")
     @Test
-    fun `when execute is called, the correct GraphQL request body is sent`() = runTest {
+    fun `when execute is called, the correct GraphQL request body is sent`() = runTest(testDispatcher) {
         val braintreeClient = mockk<BraintreeClient>(relaxed = true)
 
         val customerSessionRequestWithPurchaseUnits = customerSessionRequest.copy(
@@ -150,8 +155,6 @@ class UpdateCustomerSessionApiUnitTest {
             every { createRequestObjects(customerSessionRequestWithPurchaseUnits) } returns expectedJsonRequestObjects
         }
 
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
         val updateCustomerSessionApi = UpdateCustomerSessionApi(
             braintreeClient = braintreeClient,
             customerSessionRequestBuilder = customerSessionRequestBuilder,

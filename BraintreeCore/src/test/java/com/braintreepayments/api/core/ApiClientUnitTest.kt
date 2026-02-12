@@ -27,6 +27,7 @@ class ApiClientUnitTest {
 
     private lateinit var graphQLEnabledConfig: Configuration
     private lateinit var graphQLDisabledConfig: Configuration
+    private lateinit var testScope: TestScope
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
@@ -37,6 +38,8 @@ class ApiClientUnitTest {
 
         graphQLEnabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL)
         graphQLDisabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
+
+        testScope = TestScope(testDispatcher)
     }
 
     @Test
@@ -55,7 +58,7 @@ class ApiClientUnitTest {
                 data = capture(bodySlot),
             )
         } returns "{}"
-        val testScope = TestScope(testDispatcher)
+
         val sut = ApiClient(
             braintreeClient = braintreeClient,
             analyticsParamRepository = analyticsParamRepository,
@@ -85,7 +88,7 @@ class ApiClientUnitTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     @Throws(BraintreeException::class, InvalidArgumentException::class, JSONException::class)
-    fun tokenizeGraphQL_tokenizesCardsWithGraphQL() = runTest {
+    fun tokenizeGraphQL_tokenizesCardsWithGraphQL() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLEnabledConfig)
             .build()
@@ -93,8 +96,6 @@ class ApiClientUnitTest {
         val graphQLBodySlot = slot<JSONObject>()
         coEvery { braintreeClient.sendGraphQLPOST(capture(graphQLBodySlot)) } returns ""
 
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
         val sut = ApiClient(braintreeClient, analyticsParamRepository, testDispatcher, testScope)
         val card = Card()
         sut.tokenizeGraphQL(card.buildJSONForGraphQL(), tokenizeCallback)
@@ -115,7 +116,7 @@ class ApiClientUnitTest {
             .configurationSuccess(graphQLEnabledConfig)
             .sendPostSuccessfulResponse("{}")
             .build()
-        val testScope = TestScope(testDispatcher)
+
         val sut = ApiClient(
             braintreeClient = braintreeClient,
             dispatcher = testDispatcher,
@@ -135,7 +136,7 @@ class ApiClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse("{}")
             .build()
-        val testScope = TestScope(testDispatcher)
+
         val sut = ApiClient(
             braintreeClient = braintreeClient,
             dispatcher = testDispatcher,
