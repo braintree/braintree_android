@@ -5,7 +5,6 @@ import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ConfigurationCallback
-import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -102,10 +101,10 @@ class MockkBraintreeClientBuilder {
             callback.onResult(configurationSuccess, configurationException)
         }
 
-        every { braintreeClient.sendGraphQLPOST(any(), any()) } answers { call ->
-            val callback = call.invocation.args[1] as HttpResponseCallback
-            sendGraphQLPostSuccess?.let { callback.onResult(it, null) }
-                ?: sendGraphQLPostError?.let { callback.onResult(null, it) }
+        coEvery { braintreeClient.sendGraphQLPOST(any()) } answers {
+            sendGraphQLPostSuccess
+                ?: sendGraphQLPostError?.let { throw it }
+                ?: throw IOException("No sendGraphQLPost response configured")
         }
 
         every { braintreeClient.getReturnUrlScheme() } returns returnUrlScheme
