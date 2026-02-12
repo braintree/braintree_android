@@ -61,6 +61,9 @@ import kotlinx.parcelize.Parcelize
  * @property isFinalAmount Optional - The boolean value of the flag that signifies whether the purchase
  * amount is the final amount. Indicates whether the purchase amount is the final amount.
  * Defaults to false.
+ *
+ * @property riskCorrelationId Optional - A unique identifier that is used
+ * to correlate risk information for this payment.
  */
 @Parcelize
 class VenmoRequest @JvmOverloads constructor(
@@ -76,5 +79,6 @@ class VenmoRequest @JvmOverloads constructor(
     var discountAmount: String? = null,
     var taxAmount: String? = null,
     var shippingAmount: String? = null,
-    var isFinalAmount: Boolean = false
+    var isFinalAmount: Boolean = false,
+    var riskCorrelationId: String? = null
 ) : Parcelable

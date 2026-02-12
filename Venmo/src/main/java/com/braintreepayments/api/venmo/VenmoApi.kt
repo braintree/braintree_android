@@ -46,6 +46,7 @@ internal class VenmoApi(
             )
             val input = JSONObject()
             input.put("paymentMethodUsage", request.paymentMethodUsage.name)
+            input.put("venmoRiskCorrelationId", request.riskCorrelationId)
             input.put("merchantProfileId", venmoProfileId)
             input.put("customerClient", "MOBILE_APP")
             input.put("intent", "CONTINUE")
