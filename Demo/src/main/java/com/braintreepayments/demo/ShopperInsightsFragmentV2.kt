@@ -50,8 +50,8 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
     private lateinit var payPalClient: PayPalClient
     private lateinit var venmoClient: VenmoClient
 
-    private val venmoLauncher: VenmoLauncher = VenmoLauncher()
-    private val paypalLauncher: PayPalLauncher = PayPalLauncher()
+    private val venmoLauncher: VenmoLauncher = VenmoLauncher(this)
+    private val paypalLauncher: PayPalLauncher = PayPalLauncher(this)
 
     private lateinit var paypalStartedPendingRequest: PayPalPendingRequest.Started
     private lateinit var venmoStartedPendingRequest: VenmoPendingRequest.Started

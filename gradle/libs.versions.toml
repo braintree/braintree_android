@@ -13,7 +13,7 @@ androidxAnnotation = "1.7.0"
 androidxWork = "2.8.1"
 androidxJunit = "1.1.5"
 coroutines = "1.7.1"
-browserSwitch = "3.4.0"
+browserSwitch = "3.4.1-SNAPSHOT" # don't ship with snapshot version
 cardinal = "2.2.7-7"
 navigationSafeArgsGradlePlugin = "2.5.0"
 paypalMessages = "1.1.13"
@@ -36,6 +36,8 @@ androidxCardview = "1.0.0"
 androidxLegacySupportV4 = "1.0.0"
 androidxLifecycleExtensions = "2.2.0"
 androidxComposeBom = "2025.06.01"
+androidCompose = "1.12.0"
+androidComposeViewModel = "2.5.1"
 retrofit = "2.11.0"
 gson = "2.10.1"
 eventbus = "2.4.1"
@@ -95,6 +97,8 @@ androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "andr
 androidx-legacy-support-v4 = { module = "androidx.legacy:legacy-support-v4", version.ref = "androidxLegacySupportV4" }
 androidx-lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensions", version.ref = "androidxLifecycleExtensions" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidxLifecycleExtensions" }
+androidx-compose-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref ="androidComposeViewModel" }
+android-compose = { module = "androidx.activity:activity-compose", version.ref = "androidCompose" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidxComposeBom" }
 androidx-material3 = { module = "androidx.compose.material3:material3" }
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist" }

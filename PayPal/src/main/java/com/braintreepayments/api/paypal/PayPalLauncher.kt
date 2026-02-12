@@ -3,6 +3,7 @@ package com.braintreepayments.api.paypal
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultCaller
+import androidx.activity.result.ActivityResultRegistry
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
@@ -32,6 +33,11 @@ class PayPalLauncher internal constructor(
      */
     constructor(caller: ActivityResultCaller? = null) : this(
         browserSwitchClient = if (caller != null) BrowserSwitchClient(caller) else BrowserSwitchClient(),
+        lazyAnalyticsClient = AnalyticsClient.lazyInstance
+    )
+
+    constructor(registry: ActivityResultRegistry? = null) : this(
+        browserSwitchClient = registry?.let { BrowserSwitchClient(it) } ?: BrowserSwitchClient(),
         lazyAnalyticsClient = AnalyticsClient.lazyInstance
     )
 

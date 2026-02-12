@@ -44,6 +44,7 @@ allprojects {
     repositories {
         mavenCentral()
         google()
+        mavenLocal() // remove this before merge
     }
 }
 
