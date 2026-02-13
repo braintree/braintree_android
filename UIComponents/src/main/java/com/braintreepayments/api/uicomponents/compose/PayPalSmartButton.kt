@@ -29,6 +29,7 @@ private var pendingRequest: String? = null
 
 @Composable
 fun PayPalSmartButton(
+    style: PayPalButtonColor,
     payPalRequest: PayPalRequest,
     authorization: String,
     appLinkReturnUrl: Uri,
@@ -50,7 +51,7 @@ fun PayPalSmartButton(
         appLinkReturnUrl = appLinkReturnUrl,
         deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
     )
-    PayPalButton(style = PayPalButtonColor.Blue, enabled = enabled) {
+    PayPalButton(style = style, enabled = enabled) {
         enabled = false
         payPalClient.createPaymentAuthRequest(
             context = context,
