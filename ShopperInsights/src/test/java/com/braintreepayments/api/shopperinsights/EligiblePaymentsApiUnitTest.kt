@@ -3,7 +3,6 @@ package com.braintreepayments.api.shopperinsights
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.Configuration
-import com.braintreepayments.api.core.ConfigurationCallback
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -136,13 +135,9 @@ class EligiblePaymentsApiUnitTest {
     }
 
     private fun setupBraintreeClientToReturnConfiguration() {
-        val callbackSlot = slot<ConfigurationCallback>()
-        every {
-            braintreeClient.getConfiguration(capture(callbackSlot))
-        } answers {
-            val callback = callbackSlot.captured
-            callback.onResult(configuration, error = null)
-        }
+        coEvery {
+            braintreeClient.getConfiguration()
+        } returns configuration
     }
 
     private fun createMockConfiguration(): Configuration {

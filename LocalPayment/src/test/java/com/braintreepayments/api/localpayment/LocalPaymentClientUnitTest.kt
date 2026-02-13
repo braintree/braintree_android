@@ -20,6 +20,11 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
@@ -31,8 +36,10 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.skyscreamer.jsonassert.JSONAssert
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class LocalPaymentClientUnitTest {
+    private val testDispatcher = StandardTestDispatcher()
     private lateinit var activity: FragmentActivity
     private lateinit var localPaymentAuthCallback: LocalPaymentAuthCallback
     private lateinit var localPaymentTokenizeCallback: LocalPaymentTokenizeCallback
@@ -93,11 +100,14 @@ class LocalPaymentClientUnitTest {
         localPaymentApi = mockk<LocalPaymentApi>(relaxed = true)
         analyticsParamRepository = mockk<AnalyticsParamRepository>(relaxed = true)
         localPaymentAuthRequestParams = mockk<LocalPaymentAuthRequestParams>(relaxed = true)
+        val testScope = TestScope(testDispatcher)
         sut = LocalPaymentClient(
             braintreeClient,
             dataCollector,
             localPaymentApi,
-            analyticsParamRepository
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
         )
         every { localPaymentAuthRequestParams!!.approvalUrl } returns "https://"
         every { localPaymentAuthRequestParams!!.request } returns createLocalPaymentRequest()
@@ -109,15 +119,17 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_resetsSessionId() {
+    fun createPaymentAuthRequest_resetsSessionId() = runTest(testDispatcher) {
         sut.createPaymentAuthRequest(createLocalPaymentRequest(), localPaymentAuthCallback)
+        advanceUntilIdle()
 
         verify { analyticsParamRepository.reset() }
     }
 
     @Test
-    fun createPaymentAuthRequest_sendsPaymentStartedEvent() {
+    fun createPaymentAuthRequest_sendsPaymentStartedEvent() = runTest(testDispatcher) {
         sut.createPaymentAuthRequest(createLocalPaymentRequest(), localPaymentAuthCallback)
+        advanceUntilIdle()
 
         verify {
             braintreeClient.sendAnalyticsEvent(
@@ -129,10 +141,11 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_sendsPaymentFailedEvent_forNullGetPaymentType() {
+    fun createPaymentAuthRequest_sendsPaymentFailedEvent_forNullGetPaymentType() = runTest(testDispatcher) {
         val request = createLocalPaymentRequest()
         request.paymentType = null
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
+        advanceUntilIdle()
 
         val errorDescription =
             "LocalPaymentRequest is invalid, paymentType and amount are required."
@@ -146,18 +159,21 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_createsPaymentMethodWithLocalPaymentApi() {
+    fun createPaymentAuthRequest_createsPaymentMethodWithLocalPaymentApi() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalEnabledConfig)
             .build()
         val localPaymentApi = mockk<LocalPaymentApi>(relaxed = true)
+        val testScope = TestScope(testDispatcher)
 
         sut = LocalPaymentClient(
             braintreeClient, dataCollector,
-            localPaymentApi, analyticsParamRepository
+            localPaymentApi, analyticsParamRepository,
+            testDispatcher, testScope
         )
         val request = createLocalPaymentRequest()
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
+        advanceUntilIdle()
 
         verify {
             localPaymentApi.createPaymentMethod(
@@ -168,7 +184,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_success_forwardsResultToCallback() {
+    fun createPaymentAuthRequest_success_forwardsResultToCallback() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalEnabledConfig)
             .build()
@@ -176,13 +192,16 @@ class LocalPaymentClientUnitTest {
         val localPaymentApi = MockkLocalPaymentApiBuilder()
             .createPaymentMethodSuccess(localPaymentAuthRequestParams)
             .build()
+        val testScope = TestScope(testDispatcher)
 
         sut = LocalPaymentClient(
             braintreeClient, dataCollector,
-            localPaymentApi, analyticsParamRepository
+            localPaymentApi, analyticsParamRepository,
+            testDispatcher, testScope
         )
         val request = createLocalPaymentRequest()
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
+        advanceUntilIdle()
 
         val slot = slot<LocalPaymentAuthRequest>()
         verify { localPaymentAuthCallback.onLocalPaymentAuthRequest(capture(slot)) }
@@ -194,20 +213,23 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_success_sendsAnalyticsEvents() {
+    fun createPaymentAuthRequest_success_sendsAnalyticsEvents() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalEnabledConfig)
             .build()
         val localPaymentApi = MockkLocalPaymentApiBuilder()
             .createPaymentMethodSuccess(localPaymentAuthRequestParams)
             .build()
+        val testScope = TestScope(testDispatcher)
 
         sut = LocalPaymentClient(
             braintreeClient, dataCollector,
-            localPaymentApi, analyticsParamRepository
+            localPaymentApi, analyticsParamRepository,
+            testDispatcher, testScope
         )
         val request = createLocalPaymentRequest()
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
+        advanceUntilIdle()
 
         verify {
             braintreeClient.sendAnalyticsEvent(
@@ -219,18 +241,21 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_configurationFetchError_forwardsErrorToCallback() {
+    fun createPaymentAuthRequest_configurationFetchError_forwardsErrorToCallback() = runTest(testDispatcher) {
         val configException = Exception("Configuration not fetched")
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(configException)
             .build()
+        val testScope = TestScope(testDispatcher)
 
         sut = LocalPaymentClient(
             braintreeClient, dataCollector,
-            localPaymentApi, analyticsParamRepository
+            localPaymentApi, analyticsParamRepository,
+            testDispatcher, testScope
         )
         val request = createLocalPaymentRequest()
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
+        advanceUntilIdle()
 
         val slot = slot<LocalPaymentAuthRequest>()
         verify { localPaymentAuthCallback.onLocalPaymentAuthRequest(capture(slot)) }
@@ -242,7 +267,7 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_onLocalPaymentApiError_sendsAnalyticsEvents() {
+    fun createPaymentAuthRequest_onLocalPaymentApiError_sendsAnalyticsEvents() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalEnabledConfig)
             .build()
@@ -250,13 +275,16 @@ class LocalPaymentClientUnitTest {
         val localPaymentApi = MockkLocalPaymentApiBuilder()
             .createPaymentMethodError(Exception("error"))
             .build()
+        val testScope = TestScope(testDispatcher)
 
         sut = LocalPaymentClient(
             braintreeClient, dataCollector,
-            localPaymentApi, analyticsParamRepository
+            localPaymentApi, analyticsParamRepository,
+            testDispatcher, testScope
         )
         val request = createLocalPaymentRequest()
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
+        advanceUntilIdle()
 
         val errorDescription = "An error occurred creating the local payment method."
         verify {
