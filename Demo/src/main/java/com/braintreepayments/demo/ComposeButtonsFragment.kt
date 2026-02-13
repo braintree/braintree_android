@@ -11,6 +11,7 @@ import androidx.navigation.fragment.NavHostFragment
 import com.braintreepayments.api.core.PaymentMethodNonce
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
+import com.braintreepayments.api.uicomponents.PayPalButtonColor
 import com.braintreepayments.api.uicomponents.compose.PayPalSmartButton
 
 class ComposeButtonsFragment : BaseFragment() {
@@ -55,6 +56,7 @@ class ComposeButtonsFragment : BaseFragment() {
             setContent {
                 Column {
                     PayPalSmartButton(
+                        style = PayPalButtonColor.Blue,
                         payPalRequest = payPalRequest,
                         authorization = authStringArg,
                         appLinkReturnUrl = "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments".toUri(),
