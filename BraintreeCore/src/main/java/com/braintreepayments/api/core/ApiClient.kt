@@ -22,11 +22,17 @@ class ApiClient(
 
     fun tokenizeGraphQL(tokenizePayload: JSONObject, callback: TokenizeCallback) =
         braintreeClient.run {
-            sendGraphQLPOST(tokenizePayload) { responseBody, httpError ->
-                parseResponseToJSON(responseBody)?.let { json ->
-                    callback.onResult(json, null)
-                } ?: httpError?.let { error ->
-                    callback.onResult(null, error)
+            coroutineScope.launch {
+                try {
+                    val responseBody = sendGraphQLPOST(tokenizePayload)
+                    parseResponseToJSON(responseBody)?.let { json ->
+                        callback.onResult(json, null)
+                    } ?: callback.onResult(
+                        null,
+                        BraintreeException("Unable to parse GraphQL response.")
+                    )
+                } catch (e: IOException) {
+                    callback.onResult(null, e)
                 }
             }
         }
