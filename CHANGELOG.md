@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.23.0 (2026-02-12)
 
 * Venmo
     * Expose the `riskCorrelationId` property on `VenmoRequest` 
