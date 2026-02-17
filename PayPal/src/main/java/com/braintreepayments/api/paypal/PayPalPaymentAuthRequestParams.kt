@@ -31,7 +31,8 @@ data class PayPalPaymentAuthRequestParams @JvmOverloads internal constructor(
 
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val isPurchase: Boolean
-        get() = payPalRequest is PayPalCheckoutRequest && payPalRequest.amount.isNotEmpty()
+        get() = payPalRequest is PayPalCheckoutRequest &&
+                payPalRequest.amount.toDoubleOrNull()?.let { it > 0 } == true
 
     @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     val isBillingAgreement: Boolean
