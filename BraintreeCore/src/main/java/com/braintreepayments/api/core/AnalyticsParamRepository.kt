@@ -37,15 +37,15 @@ class AnalyticsParamRepository(
     var fundingSource: String? = null
 
     /**
-     * Whether or not there's a purchase as part of the transaction.
+     * Whether a purchase is part of the payment flow.
      */
-    var isPurchase: Boolean? = null
+    var isPurchaseFlow: Boolean? = null
 
     /**
      * Whether or not billing agreement will be created - customer opted to save
      * PayPal for future purchases and a vaulted billing agreement was created with the charge.
      */
-    var isBillingAgreement: Boolean? = null
+    var shouldRequestBillingAgreement: Boolean? = null
 
     /**
      * Recurring billing plan type, or charge pattern.
@@ -70,8 +70,8 @@ class AnalyticsParamRepository(
         didPayPalServerAttemptAppSwitch = null
         didSdkAttemptAppSwitch = null
         fundingSource = null
-        isPurchase = null
-        isBillingAgreement = null
+        isPurchaseFlow = null
+        shouldRequestBillingAgreement = null
         recurringBillingPlanType = null
     }
 

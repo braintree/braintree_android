@@ -226,8 +226,8 @@ class PayPalLauncher internal constructor(
 
     private fun setLaunchAnalyticAttributes(paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch) {
         analyticsParamRepository.fundingSource = paymentAuthRequest.requestParams.fundingSource
-        analyticsParamRepository.isBillingAgreement = paymentAuthRequest.requestParams.isBillingAgreement
-        analyticsParamRepository.isPurchase = paymentAuthRequest.requestParams.isPurchase
+        analyticsParamRepository.shouldRequestBillingAgreement = paymentAuthRequest.requestParams.shouldRequestBillingAgreement
+        analyticsParamRepository.isPurchaseFlow = paymentAuthRequest.requestParams.isPurchaseFlow
         analyticsParamRepository.recurringBillingPlanType = paymentAuthRequest.requestParams.recurringBillingPlanType
     }
 

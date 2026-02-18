@@ -59,9 +59,9 @@ class AnalyticsClientUnitTest {
         contextId = analyticsEventParams.contextId,
         linkType = linkType.stringValue,
         isVaultRequest = analyticsEventParams.isVaultRequest,
-        isPurchase = isPurchase,
+        isPurchaseFlow = isPurchase,
         recurringBillingPlanType = billingPlanType,
-        isBillingAgreement = isBillingAgreement,
+        shouldRequestBillingAgreement = isBillingAgreement,
         startTime = analyticsEventParams.startTime,
         endTime = analyticsEventParams.endTime,
         endpoint = analyticsEventParams.endpoint,
@@ -86,8 +86,8 @@ class AnalyticsClientUnitTest {
         every { analyticsParamRepository.didPayPalServerAttemptAppSwitch } returns true
         every { analyticsParamRepository.didSdkAttemptAppSwitch } returns true
         every { analyticsParamRepository.fundingSource } returns fundingSource
-        every { analyticsParamRepository.isBillingAgreement } returns isBillingAgreement
-        every { analyticsParamRepository.isPurchase } returns isPurchase
+        every { analyticsParamRepository.shouldRequestBillingAgreement } returns isBillingAgreement
+        every { analyticsParamRepository.isPurchaseFlow } returns isPurchase
         every { analyticsParamRepository.recurringBillingPlanType } returns billingPlanType
 
         configurationLoader = MockkConfigurationLoaderBuilder()
