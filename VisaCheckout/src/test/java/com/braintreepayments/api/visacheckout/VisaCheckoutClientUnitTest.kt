@@ -27,6 +27,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -148,7 +149,7 @@ class VisaCheckoutClientUnitTest {
 
     @Test
     fun `when createProfileBuilder is called and configuration is null, exception is returned as a failure`() = runTest(testDispatcher) {
-        val exception = java.io.IOException("test error")
+        val exception = IOException("test error")
         val callback = mockk<VisaCheckoutCreateProfileBuilderCallback>(relaxed = true)
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(exception)

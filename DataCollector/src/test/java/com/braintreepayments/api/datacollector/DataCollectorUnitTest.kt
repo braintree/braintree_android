@@ -23,6 +23,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -146,7 +147,7 @@ class DataCollectorUnitTest {
 
     @Test
     fun collectDeviceData_forwardsConfigurationFetchErrors() = runTest(testDispatcher) {
-        val configError = java.io.IOException("configuration error")
+        val configError = IOException("configuration error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(configError)
             .build()
@@ -320,7 +321,7 @@ class DataCollectorUnitTest {
 
     @Test
     fun collectDeviceDataOnSuccess_forwardsConfigurationFetchErrors() = runTest(testDispatcher) {
-        val configError = java.io.IOException("configuration error")
+        val configError = IOException("configuration error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(configError)
             .build()
