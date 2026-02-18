@@ -5,6 +5,10 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.TestClientTokenBuilder
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
@@ -16,6 +20,8 @@ class BraintreeClientTest {
 
     private lateinit var context: Context
     private lateinit var countDownLatch: CountDownLatch
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
+    private val coroutineScope: CoroutineScope = CoroutineScope(mainDispatcher)
 
     @Before
     fun setUp() {
@@ -28,7 +34,8 @@ class BraintreeClientTest {
     fun configuration_succeedsWithATokenizationKey() {
         val sut = BraintreeClient(context, Fixtures.TOKENIZATION_KEY)
 
-        sut.getConfiguration { configuration, _ ->
+        coroutineScope.launch {
+            val configuration = sut.getConfiguration()
             assertNotNull(configuration)
             countDownLatch.countDown()
         }
@@ -42,7 +49,8 @@ class BraintreeClientTest {
         val clientToken = TestClientTokenBuilder().build()
         val sut = BraintreeClient(context, clientToken)
 
-        sut.getConfiguration { configuration, _ ->
+        coroutineScope.launch {
+            val configuration = sut.getConfiguration()
             assertNotNull(configuration)
             countDownLatch.countDown()
         }
