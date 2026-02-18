@@ -4,6 +4,10 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.braintreepayments.api.testutils.Fixtures
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertFalse
@@ -17,6 +21,8 @@ import javax.net.ssl.SSLException
 class BraintreeGraphQLClientTest {
 
     private lateinit var countDownLatch: CountDownLatch
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
+    private val coroutineScope: CoroutineScope = CoroutineScope(mainDispatcher)
 
     @Before
     fun setup() {
@@ -29,10 +35,14 @@ class BraintreeGraphQLClientTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val braintreeClient = BraintreeClient(context, Fixtures.TOKENIZATION_KEY)
 
-        braintreeClient.sendGraphQLPOST(JSONObject("{}")) { _, httpError ->
-            // Make sure SSL handshake is successful
-            assertFalse(httpError is SSLException)
-            countDownLatch.countDown()
+        coroutineScope.launch {
+            try {
+                braintreeClient.sendGraphQLPOST(JSONObject("{}"))
+            } catch (e: Exception) {
+                assertFalse(e is SSLException)
+            } finally {
+                countDownLatch.countDown()
+            }
         }
 
         countDownLatch.await()
@@ -44,10 +54,14 @@ class BraintreeGraphQLClientTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val braintreeClient = BraintreeClient(context, Fixtures.PROD_TOKENIZATION_KEY)
 
-        braintreeClient.sendGraphQLPOST(JSONObject("{}")) { _, httpError ->
-            // Make sure SSL handshake is successful
-            assertFalse(httpError is SSLException)
-            countDownLatch.countDown()
+        coroutineScope.launch {
+            try {
+                braintreeClient.sendGraphQLPOST(JSONObject("{}"))
+            } catch (e: Exception) {
+                assertFalse(e is SSLException)
+            } finally {
+                countDownLatch.countDown()
+            }
         }
 
         countDownLatch.await()

@@ -14,6 +14,9 @@ import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Core Braintree class that handles network requests.
@@ -169,37 +172,39 @@ class BraintreeClient internal constructor(
     /**
      * @suppress
      */
-    fun sendGraphQLPOST(json: JSONObject, responseCallback: HttpResponseCallback) {
-        coroutineScope.launch {
-            try {
-                val configuration = getConfiguration()
-                val response = graphQLClient.post(
-                    data = json.toString(),
-                    configuration = configuration,
-                    authorization = merchantRepository.authorization
-                )
-                try {
-                    val query = json.optString(GraphQLConstants.Keys.QUERY)
-                    val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
-                    val finalQuery = query.replace(queryDiscardHolder, "")
-                    val params = AnalyticsEventParams(
-                        startTime = response.timing.startTime,
-                        endTime = response.timing.endTime,
-                        endpoint = finalQuery
-                    )
-                    sendAnalyticsEvent(
-                        eventName = CoreAnalytics.API_REQUEST_LATENCY,
-                        params = params,
-                        sendImmediately = false
-                    )
-                    responseCallback.onResult(response.body, null)
-                } catch (jsonException: JSONException) {
-                    responseCallback.onResult(null, jsonException)
+    suspend fun sendGraphQLPOST(json: JSONObject): String {
+        val configuration = suspendCoroutine { continuation ->
+            getConfiguration { config, error ->
+                if (config != null) {
+                    continuation.resume(config)
+                } else {
+                    continuation.resumeWithException(error ?: Exception("Unknown configuration error"))
                 }
-            } catch (e: IOException) {
-                responseCallback.onResult(null, e)
             }
         }
+
+        val response = graphQLClient.post(
+            data = json.toString(),
+            configuration = configuration,
+            authorization = merchantRepository.authorization
+        )
+
+        val query = json.optString(GraphQLConstants.Keys.QUERY)
+        val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
+        val finalQuery = query.replace(queryDiscardHolder, "")
+        val params = AnalyticsEventParams(
+            startTime = response.timing.startTime,
+            endTime = response.timing.endTime,
+            endpoint = finalQuery
+        )
+
+        sendAnalyticsEvent(
+            eventName = CoreAnalytics.API_REQUEST_LATENCY,
+            params = params,
+            sendImmediately = false
+        )
+
+        return response.body ?: throw IOException("Response body is null")
     }
 
     /**
