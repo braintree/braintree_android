@@ -4,8 +4,6 @@ import android.content.pm.ActivityInfo
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.Configuration
-import com.braintreepayments.api.sharedutils.HttpResponseCallback
-import com.braintreepayments.api.core.ConfigurationCallback
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
