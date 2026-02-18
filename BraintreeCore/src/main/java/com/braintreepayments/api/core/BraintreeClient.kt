@@ -4,19 +4,14 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import androidx.annotation.RestrictTo
-import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * Core Braintree class that handles network requests.
@@ -173,16 +168,7 @@ class BraintreeClient internal constructor(
      * @suppress
      */
     suspend fun sendGraphQLPOST(json: JSONObject): String {
-        val configuration = suspendCoroutine { continuation ->
-            getConfiguration { config, error ->
-                if (config != null) {
-                    continuation.resume(config)
-                } else {
-                    continuation.resumeWithException(error ?: Exception("Unknown configuration error"))
-                }
-            }
-        }
-
+        val configuration = getConfiguration()
         val response = graphQLClient.post(
             data = json.toString(),
             configuration = configuration,
