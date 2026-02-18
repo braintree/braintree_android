@@ -11,7 +11,6 @@ internal data class AnalyticsEvent(
     val contextId: String? = null,
     val linkType: String? = null,
     val isVaultRequest: Boolean = false,
-    val isPurchaseFlow: Boolean? = null,
     val shouldRequestBillingAgreement: Boolean? = null,
     val recurringBillingPlanType: String? = null,
     val startTime: Long? = null,

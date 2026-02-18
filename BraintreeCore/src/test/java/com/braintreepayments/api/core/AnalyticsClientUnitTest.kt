@@ -59,7 +59,6 @@ class AnalyticsClientUnitTest {
         contextId = analyticsEventParams.contextId,
         linkType = linkType.stringValue,
         isVaultRequest = analyticsEventParams.isVaultRequest,
-        isPurchaseFlow = isPurchase,
         recurringBillingPlanType = billingPlanType,
         shouldRequestBillingAgreement = isBillingAgreement,
         startTime = analyticsEventParams.startTime,
@@ -87,7 +86,6 @@ class AnalyticsClientUnitTest {
         every { analyticsParamRepository.didSdkAttemptAppSwitch } returns true
         every { analyticsParamRepository.fundingSource } returns fundingSource
         every { analyticsParamRepository.shouldRequestBillingAgreement } returns isBillingAgreement
-        every { analyticsParamRepository.isPurchaseFlow } returns isPurchase
         every { analyticsParamRepository.recurringBillingPlanType } returns billingPlanType
 
         configurationLoader = MockkConfigurationLoaderBuilder()

@@ -53,7 +53,6 @@ class AnalyticsApiUnitTest {
         contextId = "context-id",
         linkType = "link-type",
         isVaultRequest = true,
-        isPurchaseFlow = true,
         shouldRequestBillingAgreement = true,
         recurringBillingPlanType = "billing_plan_type",
         startTime = 123,
@@ -78,7 +77,6 @@ class AnalyticsApiUnitTest {
         contextId = "context-id",
         linkType = "link-type",
         isVaultRequest = false,
-        isPurchaseFlow = true,
         shouldRequestBillingAgreement = true,
         recurringBillingPlanType = "billing_plan_type",
         startTime = 123,
@@ -232,7 +230,6 @@ class AnalyticsApiUnitTest {
                                     "button_position": "${tokenizationKeyEvent.buttonOrder}",
                                     "context_type": "EC-TOKEN",
                                     "paypal_app_switch_url_received": ${tokenizationKeyEvent.didPayPalServerAttemptAppSwitch},
-                                    "is_purchase": ${tokenizationKeyEvent.isPurchaseFlow},
                                     "is_billing_agreement": ${tokenizationKeyEvent.shouldRequestBillingAgreement},
                                     "billing_plan_type": "${tokenizationKeyEvent.recurringBillingPlanType}"
                                 }
@@ -294,7 +291,6 @@ class AnalyticsApiUnitTest {
                                     "button_position": "${clientTokenEvent.buttonOrder}",
                                     "context_type": "BA-TOKEN",
                                     "paypal_app_switch_url_received": ${clientTokenEvent.didPayPalServerAttemptAppSwitch},
-                                    "is_purchase": ${tokenizationKeyEvent.isPurchaseFlow},
                                     "is_billing_agreement": ${tokenizationKeyEvent.shouldRequestBillingAgreement},
                                     "billing_plan_type": "${tokenizationKeyEvent.recurringBillingPlanType}"
                                 }

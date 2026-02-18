@@ -3,7 +3,7 @@
 ## unreleased
 
 * PayPal
-    * Pass `is_billing_agreement`, `is_purchase`, and `billing_plan_type` to analytics events.
+    * Pass `is_billing_agreement` and `billing_plan_type` to analytics events.
 
 ## 5.23.0 (2026-02-12)
 
