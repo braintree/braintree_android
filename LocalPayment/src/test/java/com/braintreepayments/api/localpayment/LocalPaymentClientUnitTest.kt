@@ -390,7 +390,8 @@ class LocalPaymentClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenCreatePaymentMethodSuccess_returnsLocalPaymentResultToCallback() = runTest(testDispatcher) {
+    fun createPaymentAuthRequest_whenCreatePaymentMethodSuccess_returnsLocalPaymentResultToCallback() =
+        runTest(testDispatcher) {
         val localPaymentApi = MockkLocalPaymentApiBuilder()
             .createPaymentMethodSuccess(localPaymentAuthRequestParams)
             .build()
@@ -828,7 +829,8 @@ class LocalPaymentClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun onBrowserSwitchResult_sends_the_correct_value_of_hasUserLocationConsent_to_getClientMetadataId() = runTest(testDispatcher) {
+    fun onBrowserSwitchResult_sends_the_correct_value_of_hasUserLocationConsent_to_getClientMetadataId() =
+        runTest(testDispatcher) {
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>(relaxed = true)
         every { browserSwitchResult.requestMetadata } returns JSONObject()
             .put("payment-type", "ideal")

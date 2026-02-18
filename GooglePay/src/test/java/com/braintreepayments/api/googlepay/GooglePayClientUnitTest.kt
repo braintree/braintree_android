@@ -116,7 +116,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun isReadyToPay_whenExistingPaymentMethodRequired_sendsIsReadyToPayRequestWithExistingPaymentRequired() = runTest(testDispatcher) {
+    fun isReadyToPay_whenExistingPaymentMethodRequired_sendsIsReadyToPayRequestWithExistingPaymentRequired() =
+        runTest(testDispatcher) {
         val readyForGooglePayRequest = ReadyForGooglePayRequest().apply {
             isExistingPaymentMethodRequired = true
         }
@@ -767,7 +768,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenGooglePayCanProcessPayPal_tokenizationPropertiesIncludePayPal() = runTest(testDispatcher) {
+    fun createPaymentAuthRequest_whenGooglePayCanProcessPayPal_tokenizationPropertiesIncludePayPal() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -819,7 +821,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenPayPalDisabledByRequest_tokenizationPropertiesLackPayPal() = runTest(testDispatcher) {
+    fun createPaymentAuthRequest_whenPayPalDisabledByRequest_tokenizationPropertiesLackPayPal() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -871,7 +874,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenPayPalDisabledAndGooglePayHasPayPalClientId_tokenizationPropsContainPayPal() = runTest(testDispatcher) {
+    fun createPaymentAuthRequest_whenPayPalDisabledAndGooglePayHasPayPalClientId_tokenizationPropsContainPayPal() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -995,7 +999,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenGooglePayConfigurationLacksClientId_tokenizationPropertiesLackPayPal() = runTest(testDispatcher) {
+    fun createPaymentAuthRequest_whenGooglePayConfigurationLacksClientId_tokenizationPropertiesLackPayPal() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -1046,7 +1051,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenConfigurationContainsElo_addsEloAndEloDebitToAllowedPaymentMethods() = runTest(testDispatcher) {
+    fun createPaymentAuthRequest_whenConfigurationContainsElo_addsEloAndEloDebitToAllowedPaymentMethods() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()

@@ -167,7 +167,8 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenCreatePaymentContextFails_collectAddressWithEcdDisabled() = runTest(testDispatcher) {
+    fun createPaymentAuthRequest_whenCreatePaymentContextFails_collectAddressWithEcdDisabled() =
+        runTest(testDispatcher) {
         val errorDesc = "Cannot collect customer data when ECD is disabled. Enable this feature " +
                 "in the Control Panel to collect this data."
 
@@ -232,8 +233,10 @@ class VenmoClientUnitTest {
         )
     }
 
+    @Suppress("LongMethod")
     @Test
-    fun createPaymentAuthRequest_withDeepLink_whenCreatePaymentContextSucceeds_createsVenmoAuthChallenge() = runTest(testDispatcher) {
+    fun createPaymentAuthRequest_withDeepLink_whenCreatePaymentContextSucceeds_createsVenmoAuthChallenge() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .returnUrlScheme("com.example")
@@ -539,7 +542,8 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenProfileIdIsSpecified_appSwitchesWithProfileIdAndAccessToken() = runTest(testDispatcher) {
+    fun createPaymentAuthRequest_whenProfileIdIsSpecified_appSwitchesWithProfileIdAndAccessToken() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
@@ -699,7 +703,8 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenVenmoApiError_forwardsErrorToListener_andSendsAnalytics() = runTest(testDispatcher) {
+    fun createPaymentAuthRequest_whenVenmoApiError_forwardsErrorToListener_andSendsAnalytics() =
+        runTest(testDispatcher) {
         val graphQLError = BraintreeException("GraphQL error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
@@ -1047,7 +1052,8 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_withRiskCorrelationId_passesRiskCorrelationIdToCreatePaymentContext() = runTest(testDispatcher) {
+    fun createPaymentAuthRequest_withRiskCorrelationId_passesRiskCorrelationIdToCreatePaymentContext() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()

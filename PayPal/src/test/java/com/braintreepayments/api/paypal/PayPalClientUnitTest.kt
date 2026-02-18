@@ -407,7 +407,8 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenCheckoutRequest_whenConfigError_forwardsErrorToListener() = runTest(testDispatcher) {
+    fun createPaymentAuthRequest_whenCheckoutRequest_whenConfigError_forwardsErrorToListener() =
+        runTest(testDispatcher) {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
 
         val errorMessage = "Error fetching auth"

@@ -264,7 +264,8 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceData_without_DataCollectorRequest_sets_hasUserLocationConsent_to_false() = runTest(testDispatcher) {
+    fun collectDeviceData_without_DataCollectorRequest_sets_hasUserLocationConsent_to_false() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
@@ -289,7 +290,8 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceData_with_DataCollectorRequest_sets_correct_values_for_getClientMetadataId() = runTest(testDispatcher) {
+    fun collectDeviceData_with_DataCollectorRequest_sets_correct_values_for_getClientMetadataId() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
@@ -476,7 +478,8 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceDataOnSuccess_withDataCollectorRequest_setsCorrectValuesForGetClientMetadataIdWithCallback() = runTest(testDispatcher) {
+    fun collectDeviceDataOnSuccess_withDataCollectorRequest_setsCorrectValuesForGetClientMetadataIdWithCallback() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()

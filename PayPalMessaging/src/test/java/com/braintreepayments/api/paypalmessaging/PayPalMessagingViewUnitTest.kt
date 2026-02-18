@@ -38,7 +38,8 @@ class PayPalMessagingViewUnitTest {
     }
 
     @Test
-    fun `test start with configuration error calls onPayPalMessagingFailure delegate with error`() = runTest(testDispatcher) {
+    fun `test start with configuration error calls onPayPalMessagingFailure delegate with error`() =
+        runTest(testDispatcher) {
         val configError = IOException("Configuration error.")
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(configError)
@@ -57,7 +58,8 @@ class PayPalMessagingViewUnitTest {
     }
 
     @Test
-    fun `test start with no client ID calls onPayPalMessagingFailure delegate with error and sends analytics`() = runTest(testDispatcher) {
+    fun `test start with no client ID calls onPayPalMessagingFailure delegate with error and sends analytics`() =
+        runTest(testDispatcher) {
         val payPalMissingClientIdConfig: Configuration = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL_NO_CLIENT_ID)
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(payPalMissingClientIdConfig)
@@ -78,7 +80,8 @@ class PayPalMessagingViewUnitTest {
     }
 
     @Test
-    fun `test start with valid configuration calls onPayPalMessagingLoading delegate and sends analytics`() = runTest(testDispatcher) {
+    fun `test start with valid configuration calls onPayPalMessagingLoading delegate and sends analytics`() =
+        runTest(testDispatcher) {
         val payPalConfiguration: Configuration = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
         mockkObject(PayPalMessageConfig)
         val braintreeClient = MockkBraintreeClientBuilder()
@@ -105,7 +108,8 @@ class PayPalMessagingViewUnitTest {
     }
 
     @Test
-    fun `test start with valid configuration multiple times does not increase number of subviews`() = runTest(testDispatcher) {
+    fun `test start with valid configuration multiple times does not increase number of subviews`() =
+        runTest(testDispatcher) {
         val payPalConfiguration: Configuration = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
         mockkObject(PayPalMessageConfig)
         val braintreeClient = MockkBraintreeClientBuilder()
