@@ -108,6 +108,8 @@ class LocalPaymentClient internal constructor(
                     }
                 } catch (e: IOException) {
                     authRequestFailure(e, callback)
+                } catch (e: JSONException) {
+                    authRequestFailure(e, callback)
                 }
             }
         }
@@ -206,6 +208,8 @@ class LocalPaymentClient internal constructor(
                     }
                 }
             } catch (e: IOException) {
+                tokenizeFailure(e, callback)
+            } catch (e: JSONException) {
                 tokenizeFailure(e, callback)
             }
         }

@@ -104,6 +104,8 @@ class CardClient internal constructor(
                 }
             } catch (e: IOException) {
                 callbackFailure(callback, CardResult.Failure(e))
+            } catch (e: JSONException) {
+                callbackFailure(callback, CardResult.Failure(e))
             }
         }
     }

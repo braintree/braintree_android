@@ -202,6 +202,8 @@ class VenmoClient internal constructor(
                 }
             } catch (e: IOException) {
                 callbackPaymentAuthFailure(callback, VenmoPaymentAuthRequest.Failure(e))
+            } catch (e: JSONException) {
+                callbackPaymentAuthFailure(callback, VenmoPaymentAuthRequest.Failure(e))
             }
         }
     }

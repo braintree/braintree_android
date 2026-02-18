@@ -136,6 +136,12 @@ class PayPalClient internal constructor(
                     PayPalPaymentAuthRequest.Failure(e),
                     analyticsEventParams
                 )
+            } catch (e: JSONException) {
+                callbackCreatePaymentAuthFailure(
+                    callback,
+                    PayPalPaymentAuthRequest.Failure(e),
+                    analyticsEventParams
+                )
             }
         }
     }

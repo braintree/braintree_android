@@ -19,6 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okio.IOException
+import org.json.JSONException
 
 /**
  *  Use [PayPalMessagingView] to display PayPal messages to promote offers such as Pay Later
@@ -91,6 +92,8 @@ class PayPalMessagingView internal constructor(
                     }
                 }
             } catch (e: IOException) {
+                notifyFailure(error = e)
+            } catch (e: JSONException) {
                 notifyFailure(error = e)
             }
         }

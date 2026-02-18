@@ -90,6 +90,10 @@ class VisaCheckoutClient internal constructor(
                 callback.onVisaCheckoutProfileBuilderResult(
                     VisaCheckoutProfileBuilderResult.Failure(e)
                 )
+            } catch (e: JSONException) {
+                callback.onVisaCheckoutProfileBuilderResult(
+                    VisaCheckoutProfileBuilderResult.Failure(e)
+                )
             }
         }
     }

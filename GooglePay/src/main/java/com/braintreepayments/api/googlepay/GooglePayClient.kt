@@ -136,6 +136,8 @@ class GooglePayClient internal constructor(
                 )
             } catch (e: IOException) {
                 callback.onGooglePayReadinessResult(NotReadyToPay(e))
+            } catch (e: JSONException) {
+                callback.onGooglePayReadinessResult(NotReadyToPay(e))
             }
         }
     }
@@ -167,6 +169,10 @@ class GooglePayClient internal constructor(
                     )
                 )
             } catch (e: IOException) {
+                callback.onTokenizationParametersResult(
+                    GooglePayTokenizationParameters.Failure(e)
+                )
+            } catch (e: JSONException) {
                 callback.onTokenizationParametersResult(
                     GooglePayTokenizationParameters.Failure(e)
                 )
@@ -231,6 +237,11 @@ class GooglePayClient internal constructor(
                     )
                 }
             } catch (configError: IOException) {
+                callbackPaymentRequestFailure(
+                    GooglePayPaymentAuthRequest.Failure(configError),
+                    callback
+                )
+            } catch (configError: JSONException) {
                 callbackPaymentRequestFailure(
                     GooglePayPaymentAuthRequest.Failure(configError),
                     callback
