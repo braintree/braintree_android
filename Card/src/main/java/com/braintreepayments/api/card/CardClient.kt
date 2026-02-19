@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
 
 /**
  * Used to tokenize credit or debit cards using a [Card]. For more information see the
@@ -89,7 +90,9 @@ class CardClient internal constructor(
                         try {
                             val tokenizationResponse = apiClient.tokenizeGraphQL(tokenizePayload)
                             handleTokenizeResponse(tokenizationResponse, null, callback)
-                        } catch (e: Exception) {
+                        } catch (e: IOException) {
+                            handleTokenizeResponse(null, e, callback)
+                        } catch (e: JSONException) {
                             handleTokenizeResponse(null, e, callback)
                         }
                     }
@@ -101,7 +104,9 @@ class CardClient internal constructor(
                     try {
                         val tokenizationResponse = apiClient.tokenizeREST(card)
                         handleTokenizeResponse(tokenizationResponse, null, callback)
-                    } catch (e: Exception) {
+                    } catch (e: IOException) {
+                        handleTokenizeResponse(null, e, callback)
+                    } catch (e: JSONException) {
                         handleTokenizeResponse(null, e, callback)
                     }
                 }

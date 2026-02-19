@@ -17,6 +17,11 @@ import io.mockk.slot
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertTrue
@@ -32,11 +37,15 @@ class VisaCheckoutClientUnitTest {
     private lateinit var configurationWithVisaCheckout: Configuration
     private lateinit var visaPaymentSummary: VisaPaymentSummary
 
+    private val testDispatcher = StandardTestDispatcher()
+    private lateinit var testScope: TestScope
+
     @Before
     @Throws(Exception::class)
     fun setup() {
         configurationWithVisaCheckout = fromJson(Fixtures.CONFIGURATION_WITH_VISA_CHECKOUT)
         visaPaymentSummary = mockk(relaxed = true)
+        testScope = TestScope(testDispatcher)
 
         every { visaPaymentSummary.callId } returns "stubbedCallId"
         every { visaPaymentSummary.encKey } returns "stubbedEncKey"
@@ -196,9 +205,10 @@ class VisaCheckoutClientUnitTest {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     @Throws(JSONException::class)
-    fun tokenize_whenSuccessful_sendsAnalyticEvent() {
+    fun tokenize_whenSuccessful_sendsAnalyticEvent() = runTest(testDispatcher) {
         val apiClient = MockkApiClientBuilder()
             .tokenizeRESTSuccess(JSONObject(Fixtures.PAYMENT_METHODS_VISA_CHECKOUT_RESPONSE))
             .build()
@@ -207,10 +217,13 @@ class VisaCheckoutClientUnitTest {
             .build()
         val sut = VisaCheckoutClient(
             braintreeClient,
-            apiClient
+            apiClient,
+            testDispatcher,
+            testScope
         )
         val listener = mockk<VisaCheckoutTokenizeCallback>(relaxed = true)
         sut.tokenize(visaPaymentSummary, listener)
+        advanceUntilIdle()
         verify { braintreeClient.sendAnalyticsEvent(VisaCheckoutAnalytics.TOKENIZE_STARTED) }
         verify { braintreeClient.sendAnalyticsEvent(VisaCheckoutAnalytics.TOKENIZE_SUCCEEDED) }
     }
@@ -235,8 +248,9 @@ class VisaCheckoutClientUnitTest {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun tokenize_whenFailure_sendsAnalyticEvent() {
+    fun tokenize_whenFailure_sendsAnalyticEvent() = runTest(testDispatcher) {
         val tokenizeError = Exception("Mock Failure")
         val apiClient = MockkApiClientBuilder()
             .tokenizeRESTError(tokenizeError)
@@ -246,10 +260,13 @@ class VisaCheckoutClientUnitTest {
             .build()
         val sut = VisaCheckoutClient(
             braintreeClient,
-            apiClient
+            apiClient,
+            testDispatcher,
+            testScope
         )
         val listener = mockk<VisaCheckoutTokenizeCallback>(relaxed = true)
         sut.tokenize(visaPaymentSummary, listener)
+        advanceUntilIdle()
         verify { braintreeClient.sendAnalyticsEvent(VisaCheckoutAnalytics.TOKENIZE_STARTED) }
         verify {
             braintreeClient.sendAnalyticsEvent(

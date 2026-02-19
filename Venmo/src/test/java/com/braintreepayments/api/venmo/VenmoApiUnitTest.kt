@@ -407,12 +407,20 @@ class VenmoApiUnitTest {
     }
 
     @Test
-    fun vaultVenmoAccountNonce_performsVaultRequest() {
-        val sut = VenmoApi(braintreeClient, apiClient, analyticsParamRepository, merchantRepository)
+    fun vaultVenmoAccountNonce_performsVaultRequest() = runTest(testDispatcher) {
+        val sut = VenmoApi(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            merchantRepository,
+            testDispatcher,
+            testScope
+        )
         sut.vaultVenmoAccountNonce("nonce", mockk(relaxed = true))
+        advanceUntilIdle()
 
         val captor = slot<VenmoAccount>()
-        verify { apiClient.tokenizeREST(capture(captor), any()) }
+        coVerify { apiClient.tokenizeREST(capture(captor)) }
 
         val venmoAccount = captor.captured
         val venmoJSON = venmoAccount.buildJSON()
@@ -420,14 +428,22 @@ class VenmoApiUnitTest {
     }
 
     @Test
-    fun vaultVenmoAccountNonce_tokenizeRESTSuccess_callsBackNonce() {
+    fun vaultVenmoAccountNonce_tokenizeRESTSuccess_callsBackNonce() = runTest(testDispatcher) {
         val apiClient = MockkApiClientBuilder()
             .tokenizeRESTSuccess(JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_WITH_NULL_PAYER_INFO_JSON))
             .build()
-        val sut = VenmoApi(braintreeClient, apiClient, analyticsParamRepository, merchantRepository)
+        val sut = VenmoApi(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            merchantRepository,
+            testDispatcher,
+            testScope
+        )
 
         val callback = mockk<VenmoInternalCallback>(relaxed = true)
         sut.vaultVenmoAccountNonce("nonce", callback)
+        advanceUntilIdle()
 
         val captor = slot<VenmoAccountNonce>()
         verify { callback.onResult(capture(captor), isNull()) }
@@ -437,15 +453,23 @@ class VenmoApiUnitTest {
     }
 
     @Test
-    fun vaultVenmoAccountNonce_tokenizeRESTError_forwardsErrorToCallback() {
-        val error = Exception("error")
+    fun vaultVenmoAccountNonce_tokenizeRESTError_forwardsErrorToCallback() = runTest(testDispatcher) {
+        val error = IOException("error")
         val apiClient = MockkApiClientBuilder()
             .tokenizeRESTError(error)
             .build()
-        val sut = VenmoApi(braintreeClient, apiClient, analyticsParamRepository, merchantRepository)
+        val sut = VenmoApi(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            merchantRepository,
+            testDispatcher,
+            testScope
+        )
 
         val callback = mockk<VenmoInternalCallback>(relaxed = true)
         sut.vaultVenmoAccountNonce("nonce", callback)
+        advanceUntilIdle()
 
         verify { callback.onResult(null, error) }
     }
