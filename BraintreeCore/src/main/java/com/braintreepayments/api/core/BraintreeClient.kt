@@ -4,14 +4,12 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import androidx.annotation.RestrictTo
-import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import kotlin.coroutines.resume
@@ -187,43 +185,39 @@ class BraintreeClient internal constructor(
     /**
      * @suppress
      */
-    fun sendGraphQLPOST(json: JSONObject, responseCallback: HttpResponseCallback) {
-        getConfiguration { configuration, configError ->
-            if (configuration != null) {
-                coroutineScope.launch {
-                    try {
-                        val response = graphQLClient.post(
-                            data = json.toString(),
-                            configuration = configuration,
-                            authorization = merchantRepository.authorization
-                        )
-
-                        try {
-                            val query = json.optString(GraphQLConstants.Keys.QUERY)
-                            val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
-                            val finalQuery = query.replace(queryDiscardHolder, "")
-                            val params = AnalyticsEventParams(
-                                startTime = response.timing.startTime,
-                                endTime = response.timing.endTime,
-                                endpoint = finalQuery
-                            )
-                            sendAnalyticsEvent(
-                                eventName = CoreAnalytics.API_REQUEST_LATENCY,
-                                params = params,
-                                sendImmediately = false
-                            )
-                            responseCallback.onResult(response.body, null)
-                        } catch (jsonException: JSONException) {
-                            responseCallback.onResult(null, jsonException)
-                        }
-                    } catch (e: IOException) {
-                        responseCallback.onResult(null, e)
-                    }
+    suspend fun sendGraphQLPOST(json: JSONObject): String {
+        val configuration = suspendCoroutine { continuation ->
+            getConfiguration { config, error ->
+                if (config != null) {
+                    continuation.resume(config)
+                } else {
+                    continuation.resumeWithException(error ?: Exception("Unknown configuration error"))
                 }
-            } else {
-                responseCallback.onResult(null, configError)
             }
         }
+
+        val response = graphQLClient.post(
+            data = json.toString(),
+            configuration = configuration,
+            authorization = merchantRepository.authorization
+        )
+
+        val query = json.optString(GraphQLConstants.Keys.QUERY)
+        val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
+        val finalQuery = query.replace(queryDiscardHolder, "")
+        val params = AnalyticsEventParams(
+            startTime = response.timing.startTime,
+            endTime = response.timing.endTime,
+            endpoint = finalQuery
+        )
+
+        sendAnalyticsEvent(
+            eventName = CoreAnalytics.API_REQUEST_LATENCY,
+            params = params,
+            sendImmediately = false
+        )
+
+        return response.body ?: throw IOException("Response body is null")
     }
 
     /**

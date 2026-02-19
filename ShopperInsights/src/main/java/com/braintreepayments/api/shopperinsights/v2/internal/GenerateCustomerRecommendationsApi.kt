@@ -5,8 +5,13 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendations
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
 import com.braintreepayments.api.shopperinsights.v2.PaymentOptions
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
 
 /**
  * API to return customer recommendations using the `GenerateCustomerRecommendations` GraphQL mutation.
@@ -15,6 +20,8 @@ import org.json.JSONObject
 internal class GenerateCustomerRecommendationsApi(
     private val braintreeClient: BraintreeClient,
     private val customerSessionRequestBuilder: CustomerSessionRequestBuilder = CustomerSessionRequestBuilder(),
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(mainDispatcher)
 ) {
 
     sealed class GenerateCustomerRecommendationsResult {
@@ -48,13 +55,15 @@ internal class GenerateCustomerRecommendationsApi(
             )
 
             params.put(VARIABLES, assembleVariables(sessionId, customerSessionRequest))
-
-            braintreeClient.sendGraphQLPOST(params) { responseBody: String?, httpError: Exception? ->
-                if (responseBody != null) {
+            coroutineScope.launch {
+                try {
+                    val responseBody = braintreeClient.sendGraphQLPOST(params)
                     val recommendationsResult = parseRecommendationsResponse(responseBody)
                     callback(GenerateCustomerRecommendationsResult.Success(recommendationsResult))
-                } else if (httpError != null) {
-                    callback(GenerateCustomerRecommendationsResult.Error(httpError))
+                } catch (e: IOException) {
+                    callback(GenerateCustomerRecommendationsResult.Error(e))
+                } catch (e: JSONException) {
+                    callback(GenerateCustomerRecommendationsResult.Error(e))
                 }
             }
         } catch (e: JSONException) {

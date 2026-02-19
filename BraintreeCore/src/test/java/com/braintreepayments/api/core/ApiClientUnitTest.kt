@@ -3,14 +3,7 @@ package com.braintreepayments.api.core
 import com.braintreepayments.api.card.Card
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.slot
-import io.mockk.spyk
-import io.mockk.verify
-import io.mockk.verifyOrder
+import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -34,6 +27,7 @@ class ApiClientUnitTest {
 
     private lateinit var graphQLEnabledConfig: Configuration
     private lateinit var graphQLDisabledConfig: Configuration
+    private lateinit var testScope: TestScope
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
@@ -44,6 +38,8 @@ class ApiClientUnitTest {
 
         graphQLEnabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL)
         graphQLDisabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
+
+        testScope = TestScope(testDispatcher)
     }
 
     @Test
@@ -62,7 +58,7 @@ class ApiClientUnitTest {
                 data = capture(bodySlot),
             )
         } returns "{}"
-        val testScope = TestScope(testDispatcher)
+
         val sut = ApiClient(
             braintreeClient = braintreeClient,
             analyticsParamRepository = analyticsParamRepository,
@@ -89,19 +85,21 @@ class ApiClientUnitTest {
         assertEquals("session-id", data.getString("sessionId"))
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     @Throws(BraintreeException::class, InvalidArgumentException::class, JSONException::class)
-    fun tokenizeGraphQL_tokenizesCardsWithGraphQL() {
+    fun tokenizeGraphQL_tokenizesCardsWithGraphQL() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(graphQLEnabledConfig)
             .build()
 
         val graphQLBodySlot = slot<JSONObject>()
-        every { braintreeClient.sendGraphQLPOST(capture(graphQLBodySlot), any()) } returns Unit
+        coEvery { braintreeClient.sendGraphQLPOST(capture(graphQLBodySlot)) } returns ""
 
-        val sut = ApiClient(braintreeClient)
+        val sut = ApiClient(braintreeClient, analyticsParamRepository, testDispatcher, testScope)
         val card = Card()
         sut.tokenizeGraphQL(card.buildJSONForGraphQL(), tokenizeCallback)
+        advanceUntilIdle()
 
         coVerify(inverse = true) {
             braintreeClient.sendPOST(
@@ -118,7 +116,7 @@ class ApiClientUnitTest {
             .configurationSuccess(graphQLEnabledConfig)
             .sendPostSuccessfulResponse("{}")
             .build()
-        val testScope = TestScope(testDispatcher)
+
         val sut = ApiClient(
             braintreeClient = braintreeClient,
             dispatcher = testDispatcher,
@@ -129,7 +127,7 @@ class ApiClientUnitTest {
 
         advanceUntilIdle()
 
-        verify(inverse = true) { braintreeClient.sendGraphQLPOST(any(), any()) }
+        coVerify(inverse = true) { braintreeClient.sendGraphQLPOST(any()) }
     }
 
     @Test
@@ -138,7 +136,7 @@ class ApiClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse("{}")
             .build()
-        val testScope = TestScope(testDispatcher)
+
         val sut = ApiClient(
             braintreeClient = braintreeClient,
             dispatcher = testDispatcher,
