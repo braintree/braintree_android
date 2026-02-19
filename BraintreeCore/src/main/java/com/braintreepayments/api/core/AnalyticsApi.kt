@@ -161,6 +161,7 @@ internal class AnalyticsApi(
         private const val FPTI_KEY_FUNDING_SOURCE = "funding_source"
         private const val FPTI_KEY_IS_BILLING_AGREEMENT = "is_billing_agreement"
         private const val FPTI_KEY_BILLING_PLAN_TYPE = "billing_plan_type"
+
         private const val FPTI_BATCH_KEY_VENMO_INSTALLED = "venmo_installed"
         private const val FPTI_BATCH_KEY_PAYPAL_INSTALLED = "paypal_installed"
         private const val FPTI_BATCH_KEY_APP_ID = "app_id"
