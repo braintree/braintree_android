@@ -20,7 +20,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 import java.util.Locale
 
 /**
@@ -106,9 +105,7 @@ class LocalPaymentClient internal constructor(
                             authRequestFailure(BraintreeException(errorMessage), callback)
                         }
                     }
-                } catch (e: IOException) {
-                    authRequestFailure(e, callback)
-                } catch (e: JSONException) {
+                } catch (e: Exception) {
                     authRequestFailure(e, callback)
                 }
             }
@@ -207,9 +204,7 @@ class LocalPaymentClient internal constructor(
                         tokenizeFailure(localPaymentError, callback)
                     }
                 }
-            } catch (e: IOException) {
-                tokenizeFailure(e, callback)
-            } catch (e: JSONException) {
+            } catch (e: Exception) {
                 tokenizeFailure(e, callback)
             }
         }

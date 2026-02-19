@@ -17,7 +17,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 
 /**
  * 3D Secure is a protocol that enables cardholders and issuers to add a layer of security to
@@ -102,7 +101,7 @@ class ThreeDSecureClient internal constructor(
 
                     else -> initializeCardinalClient(context, configuration, request, callback)
                 }
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 callbackCreatePaymentAuthFailure(
                     callback,
                     ThreeDSecurePaymentAuthRequest.Failure(e)
@@ -227,7 +226,7 @@ class ThreeDSecureClient internal constructor(
                         ThreeDSecurePrepareLookupResult.Failure(initializeException)
                     )
                 }
-            } catch (configError: IOException) {
+            } catch (configError: Exception) {
                 callbackPrepareLookupFailure(
                     callback,
                     ThreeDSecurePrepareLookupResult.Failure(configError)
@@ -257,7 +256,7 @@ class ThreeDSecureClient internal constructor(
                     callback,
                     ThreeDSecurePaymentAuthRequest.Failure(e)
                 )
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_FAILED)
                 callbackCreatePaymentAuthFailure(
                     callback,

@@ -31,7 +31,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 import java.util.Objects
 
 /**
@@ -142,7 +141,7 @@ class VenmoClient internal constructor(
         coroutineScope.launch {
             try {
                 val configuration = braintreeClient.getConfiguration()
-                val isVenmoEnabled = configuration?.isVenmoEnabled ?: false
+                val isVenmoEnabled = configuration.isVenmoEnabled
                 if (!isVenmoEnabled) {
                     callbackPaymentAuthFailure(
                         callback,
@@ -170,7 +169,7 @@ class VenmoClient internal constructor(
 
                 var venmoProfileId = request.profileId
                 if (TextUtils.isEmpty(venmoProfileId)) {
-                    venmoProfileId = configuration?.venmoMerchantId
+                    venmoProfileId = configuration.venmoMerchantId
                 }
 
                 val finalVenmoProfileId = venmoProfileId
@@ -200,9 +199,7 @@ class VenmoClient internal constructor(
                         callbackPaymentAuthFailure(callback, VenmoPaymentAuthRequest.Failure(exception))
                     }
                 }
-            } catch (e: IOException) {
-                callbackPaymentAuthFailure(callback, VenmoPaymentAuthRequest.Failure(e))
-            } catch (e: JSONException) {
+            } catch (e: Exception) {
                 callbackPaymentAuthFailure(callback, VenmoPaymentAuthRequest.Failure(e))
             }
         }
@@ -212,7 +209,7 @@ class VenmoClient internal constructor(
     private fun createPaymentAuthRequest(
         context: Context,
         request: VenmoRequest,
-        configuration: Configuration?,
+        configuration: Configuration,
         authorization: Authorization,
         venmoProfileId: String?,
         paymentContextId: String?,
@@ -256,8 +253,8 @@ class VenmoClient internal constructor(
             .appendQueryParameter("x-cancel", cancelUri)
             .appendQueryParameter("x-source", applicationName)
             .appendQueryParameter("braintree_merchant_id", venmoProfileId)
-            .appendQueryParameter("braintree_access_token", configuration?.venmoAccessToken)
-            .appendQueryParameter("braintree_environment", configuration?.venmoEnvironment)
+            .appendQueryParameter("braintree_access_token", configuration.venmoAccessToken)
+            .appendQueryParameter("braintree_environment", configuration.venmoEnvironment)
             .appendQueryParameter("resource_id", paymentContextId)
             .appendQueryParameter(
                 "braintree_sdk_data",

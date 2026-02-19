@@ -29,7 +29,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 
 /**
  * Used to tokenize PayPal accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4)
@@ -130,13 +129,7 @@ class PayPalClient internal constructor(
                 } else {
                     sendPayPalRequest(context, payPalRequest, configuration, callback)
                 }
-            } catch (e: IOException) {
-                callbackCreatePaymentAuthFailure(
-                    callback,
-                    PayPalPaymentAuthRequest.Failure(e),
-                    analyticsEventParams
-                )
-            } catch (e: JSONException) {
+            } catch (e: Exception) {
                 callbackCreatePaymentAuthFailure(
                     callback,
                     PayPalPaymentAuthRequest.Failure(e),

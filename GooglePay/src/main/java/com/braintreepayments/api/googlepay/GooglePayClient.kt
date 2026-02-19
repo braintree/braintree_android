@@ -29,7 +29,6 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 
 /**
  * Used to create and tokenize Google Pay payment methods. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/google-pay/overview)
@@ -134,9 +133,7 @@ class GooglePayClient internal constructor(
                     readyToPayRequest,
                     callback
                 )
-            } catch (e: IOException) {
-                callback.onGooglePayReadinessResult(NotReadyToPay(e))
-            } catch (e: JSONException) {
+            } catch (e: Exception) {
                 callback.onGooglePayReadinessResult(NotReadyToPay(e))
             }
         }
@@ -168,11 +165,7 @@ class GooglePayClient internal constructor(
                         getAllowedCardNetworks(configuration)
                     )
                 )
-            } catch (e: IOException) {
-                callback.onTokenizationParametersResult(
-                    GooglePayTokenizationParameters.Failure(e)
-                )
-            } catch (e: JSONException) {
+            } catch (e: Exception) {
                 callback.onTokenizationParametersResult(
                     GooglePayTokenizationParameters.Failure(e)
                 )
@@ -236,12 +229,7 @@ class GooglePayClient internal constructor(
                         ), callback
                     )
                 }
-            } catch (configError: IOException) {
-                callbackPaymentRequestFailure(
-                    GooglePayPaymentAuthRequest.Failure(configError),
-                    callback
-                )
-            } catch (configError: JSONException) {
+            } catch (configError: Exception) {
                 callbackPaymentRequestFailure(
                     GooglePayPaymentAuthRequest.Failure(configError),
                     callback

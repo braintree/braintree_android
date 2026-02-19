@@ -8,7 +8,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONException
-import java.io.IOException
 
 internal class EligiblePaymentsApi(
     private val braintreeClient: BraintreeClient,
@@ -41,7 +40,7 @@ internal class EligiblePaymentsApi(
                 } catch (e: JSONException) {
                     callback.onResult(null, e)
                 }
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 callback.onResult(null, e)
             }
         }

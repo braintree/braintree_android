@@ -13,7 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 
 /**
  * PayPalDataCollector is used to collect PayPal specific device information to aid in fraud detection and prevention.
@@ -118,7 +117,7 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
                 } catch (ignored: JSONException) {
                 }
                 callback.onDataCollectorResult(DataCollectorResult.Success(deviceData.toString()))
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 callback.onDataCollectorResult(DataCollectorResult.Failure(e))
             }
         }
@@ -176,7 +175,7 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
                     }
                 } catch (ignored: JSONException) {
                 }
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 callback.onDataCollectorResult(DataCollectorResult.Failure(e))
             }
         }

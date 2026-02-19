@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 
 /**
  * Used to tokenize credit or debit cards using a [Card]. For more information see the
@@ -79,19 +78,13 @@ class CardClient internal constructor(
                     )
                 if (shouldTokenizeViaGraphQL) {
                     card.sessionId = analyticsParamRepository.sessionId
-                    try {
-                        val tokenizePayload = card.buildJSONForGraphQL()
-                        apiClient.tokenizeGraphQL(
-                            tokenizePayload
-                        ) { tokenizationResponse: JSONObject?, exception: Exception? ->
-                            handleTokenizeResponse(
-                                tokenizationResponse, exception, callback
-                            )
-                        }
-                    } catch (e: BraintreeException) {
-                        callbackFailure(callback, CardResult.Failure(e))
-                    } catch (e: JSONException) {
-                        callbackFailure(callback, CardResult.Failure(e))
+                    val tokenizePayload = card.buildJSONForGraphQL()
+                    apiClient.tokenizeGraphQL(
+                        tokenizePayload
+                    ) { tokenizationResponse: JSONObject?, exception: Exception? ->
+                        handleTokenizeResponse(
+                            tokenizationResponse, exception, callback
+                        )
                     }
                 } else {
                     apiClient.tokenizeREST(
@@ -102,9 +95,7 @@ class CardClient internal constructor(
                         )
                     }
                 }
-            } catch (e: IOException) {
-                callbackFailure(callback, CardResult.Failure(e))
-            } catch (e: JSONException) {
+            } catch (e: Exception) {
                 callbackFailure(callback, CardResult.Failure(e))
             }
         }

@@ -16,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 
 /**
  * Used to create and tokenize Visa Checkout. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/secure-remote-commerce/overview)
@@ -86,11 +85,7 @@ class VisaCheckoutClient internal constructor(
                 callback.onVisaCheckoutProfileBuilderResult(
                     VisaCheckoutProfileBuilderResult.Success(profileBuilder)
                 )
-            } catch (e: IOException) {
-                callback.onVisaCheckoutProfileBuilderResult(
-                    VisaCheckoutProfileBuilderResult.Failure(e)
-                )
-            } catch (e: JSONException) {
+            } catch (e: Exception) {
                 callback.onVisaCheckoutProfileBuilderResult(
                     VisaCheckoutProfileBuilderResult.Failure(e)
                 )

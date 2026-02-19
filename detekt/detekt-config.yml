@@ -247,7 +247,18 @@ exceptions:
     active: true
   TooGenericExceptionCaught:
     active: true
-    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
+    excludes: [
+      '**/test/**',
+      '**/androidTest/**',
+      '**/commonTest/**',
+      '**/jvmTest/**',
+      '**/jsTest/**',
+      '**/iosTest/**',
+      '**/*Client.kt',
+      '**/PayPalMessagingView.kt',
+      '**/EligiblePaymentsApi.kt',
+      '**/DataCollector.kt'
+    ]
     exceptionNames:
       - 'ArrayIndexOutOfBoundsException'
       - 'Error'

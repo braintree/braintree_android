@@ -220,7 +220,7 @@ class BraintreeClient internal constructor(
             try {
                 val configuration = getConfiguration()
                 analyticsClient.reportCrash(configuration)
-            } catch (e: IOException) {
+            } catch (e: Exception) {
                 // no op
             }
         }
