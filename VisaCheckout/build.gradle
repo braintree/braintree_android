@@ -61,6 +61,7 @@ dependencies {
     testImplementation libs.kotlin.test
     testImplementation libs.json.assert
     testImplementation libs.test.parameter.injector
+    testImplementation libs.coroutines.test
 }
 
 /* maven deploy + signing */
