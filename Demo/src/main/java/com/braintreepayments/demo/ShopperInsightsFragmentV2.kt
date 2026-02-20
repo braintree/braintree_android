@@ -134,7 +134,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                 enabled = shopperInsightsClientSuccessfullyInstantiated,
                 onClick = {
                     viewModel.resetRecommendationsCompleted()
-                    handleCreateCustomerSession(emailText, countryCodeText, nationalNumberText)
+                    handleCreateCustomerSession(emailText, nationalNumberText)
                 }
             ) {
                 Text(text = "Create customer session")
@@ -143,7 +143,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                 enabled = shopperInsightsClientSuccessfullyInstantiated,
                 onClick = {
                     viewModel.resetRecommendationsCompleted()
-                    handleUpdateCustomerSession(emailText, countryCodeText, nationalNumberText, currentSessionId)
+                    handleUpdateCustomerSession(emailText, nationalNumberText, currentSessionId)
                 }
             ) {
                 Text(text = "Update customer session")
@@ -345,7 +345,6 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
 
     private fun handleCreateCustomerSession(
         emailText: String,
-        countryCodeText: String,
         nationalNumberText: String
     ) {
         viewModel.handleCreateCustomerSession(emailText, nationalNumberText)
@@ -353,7 +352,6 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
 
     private fun handleUpdateCustomerSession(
         emailText: String,
-        countryCodeText: String,
         nationalNumberText: String,
         sessionId: String
     ) {
