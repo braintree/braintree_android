@@ -185,6 +185,7 @@ internal class VenmoApi(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun vaultVenmoAccountNonce(nonce: String?, callback: VenmoInternalCallback) {
         val venmoAccount = VenmoAccount(nonce)
 
