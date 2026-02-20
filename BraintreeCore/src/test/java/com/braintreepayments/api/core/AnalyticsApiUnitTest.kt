@@ -53,6 +53,8 @@ class AnalyticsApiUnitTest {
         contextId = "context-id",
         linkType = "link-type",
         isVaultRequest = true,
+        shouldRequestBillingAgreement = true,
+        recurringBillingPlanType = "billing_plan_type",
         startTime = 123,
         endTime = 234,
         endpoint = "endpoint",
@@ -75,6 +77,8 @@ class AnalyticsApiUnitTest {
         contextId = "context-id",
         linkType = "link-type",
         isVaultRequest = false,
+        shouldRequestBillingAgreement = true,
+        recurringBillingPlanType = "billing_plan_type",
         startTime = 123,
         endTime = 234,
         endpoint = "endpoint",
@@ -225,7 +229,9 @@ class AnalyticsApiUnitTest {
                                     "event_name": "${tokenizationKeyEvent.name}",
                                     "button_position": "${tokenizationKeyEvent.buttonOrder}",
                                     "context_type": "EC-TOKEN",
-                                    "paypal_app_switch_url_received": ${tokenizationKeyEvent.didPayPalServerAttemptAppSwitch}
+                                    "paypal_app_switch_url_received": ${tokenizationKeyEvent.didPayPalServerAttemptAppSwitch},
+                                    "is_billing_agreement": ${tokenizationKeyEvent.shouldRequestBillingAgreement},
+                                    "billing_plan_type": "${tokenizationKeyEvent.recurringBillingPlanType}"
                                 }
                             ]
                         }
@@ -284,7 +290,9 @@ class AnalyticsApiUnitTest {
                                     "event_name": "${clientTokenEvent.name}",
                                     "button_position": "${clientTokenEvent.buttonOrder}",
                                     "context_type": "BA-TOKEN",
-                                    "paypal_app_switch_url_received": ${clientTokenEvent.didPayPalServerAttemptAppSwitch}
+                                    "paypal_app_switch_url_received": ${clientTokenEvent.didPayPalServerAttemptAppSwitch},
+                                    "is_billing_agreement": ${tokenizationKeyEvent.shouldRequestBillingAgreement},
+                                    "billing_plan_type": "${tokenizationKeyEvent.recurringBillingPlanType}"
                                 }
                             ]
                         }

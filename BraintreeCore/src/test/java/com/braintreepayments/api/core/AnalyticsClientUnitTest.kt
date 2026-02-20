@@ -1,6 +1,7 @@
 package com.braintreepayments.api.core
 
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
+import com.braintreepayments.api.paypal.PayPalRecurringBillingPlanType
 import com.braintreepayments.api.sharedutils.Time
 import com.braintreepayments.api.testutils.Fixtures
 import io.mockk.every
@@ -32,6 +33,9 @@ class AnalyticsClientUnitTest {
     private val timestamp = 123L
     private val linkType = LinkType.APP_LINK
     private val fundingSource = "paypal"
+    private val isBillingAgreement = true
+    private val isPurchase = true
+    private val billingPlanType = PayPalRecurringBillingPlanType.RECURRING.name
 
     private lateinit var sut: AnalyticsClient
 
@@ -55,6 +59,8 @@ class AnalyticsClientUnitTest {
         contextId = analyticsEventParams.contextId,
         linkType = linkType.stringValue,
         isVaultRequest = analyticsEventParams.isVaultRequest,
+        recurringBillingPlanType = billingPlanType,
+        shouldRequestBillingAgreement = isBillingAgreement,
         startTime = analyticsEventParams.startTime,
         endTime = analyticsEventParams.endTime,
         endpoint = analyticsEventParams.endpoint,
@@ -79,6 +85,8 @@ class AnalyticsClientUnitTest {
         every { analyticsParamRepository.didPayPalServerAttemptAppSwitch } returns true
         every { analyticsParamRepository.didSdkAttemptAppSwitch } returns true
         every { analyticsParamRepository.fundingSource } returns fundingSource
+        every { analyticsParamRepository.shouldRequestBillingAgreement } returns isBillingAgreement
+        every { analyticsParamRepository.recurringBillingPlanType } returns billingPlanType
 
         configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
