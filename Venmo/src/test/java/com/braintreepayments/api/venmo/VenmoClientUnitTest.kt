@@ -264,7 +264,7 @@ class VenmoClientUnitTest {
         val paymentAuthRequest = authRequestSlot.captured
         assertTrue(paymentAuthRequest is VenmoPaymentAuthRequest.ReadyToLaunch)
 
-        val params = (paymentAuthRequest as VenmoPaymentAuthRequest.ReadyToLaunch).requestParams
+        val params = paymentAuthRequest.requestParams
         assertEquals(BraintreeRequestCodes.VENMO.code, params.browserSwitchOptions.requestCode)
         assertEquals("com.example", params.browserSwitchOptions.returnUrlScheme)
 
@@ -545,7 +545,7 @@ class VenmoClientUnitTest {
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
         val paymentAuthRequest = authRequestSlot.captured
         assertTrue(paymentAuthRequest is VenmoPaymentAuthRequest.ReadyToLaunch)
-        val params = (paymentAuthRequest as VenmoPaymentAuthRequest.ReadyToLaunch).requestParams
+        val params = paymentAuthRequest.requestParams
         val url = params.browserSwitchOptions.url
         assertEquals("second-pwv-profile-id", url!!.getQueryParameter("braintree_merchant_id"))
         assertEquals("venmo-payment-context-id", url.getQueryParameter("resource_id"))

@@ -174,7 +174,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                 if (isInPayPalNetwork && recommendations.first().paymentOption == "VENMO") {
                     Button(
                         enabled = true,
-                        onClick = { launchVenmo(emailText, countryCodeText, nationalNumberText, sessionId) }
+                        onClick = { launchVenmo(sessionId) }
                     ) {
                         Text(text = "Venmo")
                     }
@@ -303,9 +303,6 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
     }
 
     private fun launchVenmo(
-        emailText: String,
-        countryCodeText: String,
-        nationalNumberText: String,
         sessionId: String
     ) {
         viewModel.sendSelectedEvent(
@@ -351,7 +348,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         countryCodeText: String,
         nationalNumberText: String
     ) {
-        viewModel.handleCreateCustomerSession(emailText, countryCodeText, nationalNumberText)
+        viewModel.handleCreateCustomerSession(emailText, nationalNumberText)
     }
 
     private fun handleUpdateCustomerSession(
@@ -360,7 +357,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
         nationalNumberText: String,
         sessionId: String
     ) {
-        viewModel.handleUpdateCustomerSession(emailText, countryCodeText, nationalNumberText, sessionId)
+        viewModel.handleUpdateCustomerSession(emailText, nationalNumberText, sessionId)
     }
 
     private fun handleGetRecommendations(sessionId: String) {
