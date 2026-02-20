@@ -3,10 +3,10 @@ package com.braintreepayments.api.paypalmessaging
 import android.content.Context
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
+import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.paypal.messages.PayPalMessageView
 import com.paypal.messages.config.PayPalEnvironment
 import com.paypal.messages.config.message.PayPalMessageConfig
@@ -14,6 +14,10 @@ import com.paypal.messages.config.message.PayPalMessageData
 import com.paypal.messages.config.message.PayPalMessageEventsCallbacks
 import com.paypal.messages.config.message.PayPalMessageStyle
 import com.paypal.messages.config.message.PayPalMessageViewStateCallbacks
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  *  Use [PayPalMessagingView] to display PayPal messages to promote offers such as Pay Later
@@ -23,7 +27,9 @@ import com.paypal.messages.config.message.PayPalMessageViewStateCallbacks
 @ExperimentalBetaApi
 class PayPalMessagingView internal constructor(
     private val braintreeClient: BraintreeClient,
-    context: Context
+    context: Context,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) : FrameLayout(context) {
 
     /**
@@ -57,11 +63,9 @@ class PayPalMessagingView internal constructor(
         )
 
         braintreeClient.sendAnalyticsEvent(PayPalMessagingAnalytics.STARTED)
-
-        braintreeClient.getConfiguration { configuration, configError ->
-            if (configError != null) {
-                notifyFailure(error = configError)
-            } else if (configuration != null) {
+        coroutineScope.launch {
+            try {
+                val configuration = braintreeClient.getConfiguration()
                 val clientId = configuration.payPalClientId
                 if (clientId == null) {
                     val clientIdError = BraintreeException(
@@ -77,14 +81,16 @@ class PayPalMessagingView internal constructor(
                     } else {
                         val payPalMessageView = PayPalMessageView(context = context, config = messageConfig)
                         payPalMessageView.layoutParams = ViewGroup.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.MATCH_PARENT
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
                         )
 
                         addView(payPalMessageView)
                         messageView = payPalMessageView
                     }
                 }
+            } catch (e: Exception) {
+                notifyFailure(error = e)
             }
         }
     }

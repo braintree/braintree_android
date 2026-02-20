@@ -7,6 +7,10 @@ import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.UUIDHelper
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -16,7 +20,9 @@ import org.json.JSONObject
 class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
     private val braintreeClient: BraintreeClient,
     private val magnesInternalClient: MagnesInternalClient = MagnesInternalClient(),
-    private val uuidHelper: UUIDHelper = UUIDHelper()
+    private val uuidHelper: UUIDHelper = UUIDHelper(),
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
     /**
      * Initializes a new [DataCollector] instance
@@ -87,8 +93,9 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
         request: DataCollectorRequest,
         callback: DataCollectorCallback
     ) {
-        braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
-            if (configuration != null) {
+        coroutineScope.launch {
+            try {
+                val configuration = braintreeClient.getConfiguration()
                 val deviceData = JSONObject()
                 try {
                     val internalRequest =
@@ -110,8 +117,8 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
                 } catch (ignored: JSONException) {
                 }
                 callback.onDataCollectorResult(DataCollectorResult.Success(deviceData.toString()))
-            } else if (error != null) {
-                callback.onDataCollectorResult(DataCollectorResult.Failure(error))
+            } catch (e: Exception) {
+                callback.onDataCollectorResult(DataCollectorResult.Failure(e))
             }
         }
     }
@@ -137,8 +144,9 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
         request: DataCollectorRequest,
         callback: DataCollectorCallback
     ) {
-        braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
-            if (configuration != null) {
+        coroutineScope.launch {
+            try {
+                val configuration = braintreeClient.getConfiguration()
                 val deviceData = JSONObject()
                 try {
                     val internalRequest =
@@ -167,8 +175,8 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
                     }
                 } catch (ignored: JSONException) {
                 }
-            } else if (error != null) {
-                callback.onDataCollectorResult(DataCollectorResult.Failure(error))
+            } catch (e: Exception) {
+                callback.onDataCollectorResult(DataCollectorResult.Failure(e))
             }
         }
     }

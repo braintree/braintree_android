@@ -27,15 +27,22 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import io.mockk.verifyOrder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class VenmoClientUnitTest {
 
@@ -62,6 +69,8 @@ class VenmoClientUnitTest {
     private val getDefaultAppUseCase: GetDefaultAppUseCase = GetDefaultAppUseCase(packageManager)
     private val getAppLinksCompatibleBrowserUseCase: GetAppLinksCompatibleBrowserUseCase =
         GetAppLinksCompatibleBrowserUseCase(getDefaultAppUseCase)
+
+    private val testDispatcher = StandardTestDispatcher()
 
     private val venmoEnabledConfiguration: Configuration =
         Configuration.fromJson(Fixtures.CONFIGURATION_WITH_PAY_WITH_VENMO)
@@ -158,7 +167,8 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenCreatePaymentContextFails_collectAddressWithEcdDisabled() {
+    fun createPaymentAuthRequest_whenCreatePaymentContextFails_collectAddressWithEcdDisabled() =
+        runTest(testDispatcher) {
         val errorDesc = "Cannot collect customer data when ECD is disabled. Enable this feature " +
                 "in the Control Panel to collect this data."
 
@@ -192,9 +202,12 @@ class VenmoClientUnitTest {
             getDefaultAppUseCase,
             getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            testDispatcher,
+            this
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
+        advanceUntilIdle()
 
         verify {
             venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(
@@ -220,8 +233,10 @@ class VenmoClientUnitTest {
         )
     }
 
+    @Suppress("LongMethod")
     @Test
-    fun createPaymentAuthRequest_withDeepLink_whenCreatePaymentContextSucceeds_createsVenmoAuthChallenge() {
+    fun createPaymentAuthRequest_withDeepLink_whenCreatePaymentContextSucceeds_createsVenmoAuthChallenge() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .returnUrlScheme("com.example")
@@ -251,9 +266,12 @@ class VenmoClientUnitTest {
             getDefaultAppUseCase,
             getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            testDispatcher,
+            this
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
+        advanceUntilIdle()
 
         val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verifyOrder {
@@ -289,9 +307,9 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenConfigurationException_forwardsExceptionToListener() {
+    fun createPaymentAuthRequest_whenConfigurationException_forwardsExceptionToListener() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
-            .configurationError(Exception("Configuration fetching error"))
+            .configurationError(IOException("Configuration fetching error"))
             .build()
 
         val request = VenmoRequest(
@@ -311,9 +329,12 @@ class VenmoClientUnitTest {
             getDefaultAppUseCase,
             getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            testDispatcher,
+            this
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
+        advanceUntilIdle()
 
         val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
@@ -335,7 +356,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenVenmoNotEnabled_forwardsExceptionToListener() {
+    fun createPaymentAuthRequest_whenVenmoNotEnabled_forwardsExceptionToListener() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoDisabledConfiguration)
             .build()
@@ -357,9 +378,12 @@ class VenmoClientUnitTest {
             getDefaultAppUseCase,
             getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            testDispatcher,
+            CoroutineScope(testDispatcher)
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
+        advanceUntilIdle()
 
         val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
@@ -383,7 +407,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenProfileIdIsNull_appSwitchesWithMerchantId() {
+    fun createPaymentAuthRequest_whenProfileIdIsNull_appSwitchesWithMerchantId() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
@@ -411,9 +435,12 @@ class VenmoClientUnitTest {
             getDefaultAppUseCase,
             getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            testDispatcher,
+            this
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
+        advanceUntilIdle()
 
         val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
@@ -425,7 +452,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenAppLinkUriSet_appSwitchesWithAppLink() {
+    fun createPaymentAuthRequest_whenAppLinkUriSet_appSwitchesWithAppLink() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
@@ -451,9 +478,12 @@ class VenmoClientUnitTest {
             getDefaultAppUseCase,
             getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            testDispatcher,
+            this
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
+        advanceUntilIdle()
 
         val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
@@ -467,7 +497,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_throws_error_when_getReturnLinkUseCase_returnsFailure() {
+    fun createPaymentAuthRequest_throws_error_when_getReturnLinkUseCase_returnsFailure() = runTest(testDispatcher) {
         val exception = BraintreeException()
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
@@ -498,9 +528,12 @@ class VenmoClientUnitTest {
             getDefaultAppUseCase,
             getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            testDispatcher,
+            this
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
+        advanceUntilIdle()
 
         val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
@@ -509,7 +542,8 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenProfileIdIsSpecified_appSwitchesWithProfileIdAndAccessToken() {
+    fun createPaymentAuthRequest_whenProfileIdIsSpecified_appSwitchesWithProfileIdAndAccessToken() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
@@ -537,9 +571,12 @@ class VenmoClientUnitTest {
             getDefaultAppUseCase,
             getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            testDispatcher,
+            this
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
+        advanceUntilIdle()
 
         val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
@@ -588,7 +625,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenShouldVaultIsTrue_persistsVenmoVaultTrue() {
+    fun createPaymentAuthRequest_whenShouldVaultIsTrue_persistsVenmoVaultTrue() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
@@ -616,15 +653,18 @@ class VenmoClientUnitTest {
             getDefaultAppUseCase,
             getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            testDispatcher,
+            this
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
+        advanceUntilIdle()
 
         verify { sharedPrefsWriter.persistVenmoVaultOption(context, true) }
     }
 
     @Test
-    fun createPaymentAuthRequest_whenShouldVaultIsFalse_persistsVenmoVaultFalse() {
+    fun createPaymentAuthRequest_whenShouldVaultIsFalse_persistsVenmoVaultFalse() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
@@ -652,15 +692,19 @@ class VenmoClientUnitTest {
             getDefaultAppUseCase,
             getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            testDispatcher,
+            this
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
+        advanceUntilIdle()
 
         verify { sharedPrefsWriter.persistVenmoVaultOption(context, false) }
     }
 
     @Test
-    fun createPaymentAuthRequest_whenVenmoApiError_forwardsErrorToListener_andSendsAnalytics() {
+    fun createPaymentAuthRequest_whenVenmoApiError_forwardsErrorToListener_andSendsAnalytics() =
+        runTest(testDispatcher) {
         val graphQLError = BraintreeException("GraphQL error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
@@ -687,9 +731,12 @@ class VenmoClientUnitTest {
             getDefaultAppUseCase,
             getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            testDispatcher,
+            this
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
+        advanceUntilIdle()
 
         val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
@@ -1005,7 +1052,8 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_withRiskCorrelationId_passesRiskCorrelationIdToCreatePaymentContext() {
+    fun createPaymentAuthRequest_withRiskCorrelationId_passesRiskCorrelationIdToCreatePaymentContext() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
@@ -1035,9 +1083,12 @@ class VenmoClientUnitTest {
             getDefaultAppUseCase,
             getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            testDispatcher,
+            this
         )
         sut.createPaymentAuthRequest(context, request, venmoPaymentAuthRequestCallback)
+        advanceUntilIdle()
 
         // Verify the request succeeds and returns ReadyToLaunch
         val authRequestSlot = slot<VenmoPaymentAuthRequest>()

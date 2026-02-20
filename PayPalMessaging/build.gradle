@@ -58,6 +58,7 @@ dependencies {
     testImplementation libs.mockito.core
     testImplementation libs.test.parameter.injector
     testImplementation project(':TestUtils')
+    testImplementation libs.coroutines.test
 }
 
 // region signing and publishing

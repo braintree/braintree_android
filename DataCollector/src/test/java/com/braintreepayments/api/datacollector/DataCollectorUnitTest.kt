@@ -12,15 +12,24 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.IOException
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class DataCollectorUnitTest {
+
+    private val testDispatcher = StandardTestDispatcher()
 
     @MockK
     lateinit var context: Context
@@ -137,14 +146,16 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceData_forwardsConfigurationFetchErrors() {
-        val configError = Exception("configuration error")
+    fun collectDeviceData_forwardsConfigurationFetchErrors() = runTest(testDispatcher) {
+        val configError = IOException("configuration error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(configError)
             .build()
 
-        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        val testScope = TestScope(testDispatcher)
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
         sut.collectDeviceData(context, dataCollectorRequest, callback)
+        advanceUntilIdle()
 
         val deviceDataCaptor = slot<DataCollectorResult>()
         verify { callback.onDataCollectorResult(capture(deviceDataCaptor)) }
@@ -155,13 +166,15 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceData_configuresMagnesWithDefaultRequest() {
+    fun collectDeviceData_configuresMagnesWithDefaultRequest() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
 
-        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        val testScope = TestScope(testDispatcher)
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
         sut.collectDeviceData(context, dataCollectorRequest, callback)
+        advanceUntilIdle()
 
         val captor = slot<DataCollectorInternalRequest>()
         verify {
@@ -178,13 +191,15 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceData_with_request_configuresMagnesWithDefaultRequest() {
+    fun collectDeviceData_with_request_configuresMagnesWithDefaultRequest() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
 
-        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        val testScope = TestScope(testDispatcher)
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
         sut.collectDeviceData(context, dataCollectorRequest, callback)
+        advanceUntilIdle()
 
         val captor = slot<DataCollectorInternalRequest>()
         verify {
@@ -202,13 +217,15 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceData_configuresMagnesWithClientId() {
+    fun collectDeviceData_configuresMagnesWithClientId() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
 
-        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        val testScope = TestScope(testDispatcher)
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
         sut.collectDeviceData(context, dataCollectorRequest, callback)
+        advanceUntilIdle()
 
         val captor = slot<DataCollectorInternalRequest>()
         verify {
@@ -227,13 +244,15 @@ class DataCollectorUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun collectDeviceData_getsDeviceDataJSONWithCorrelationIdFromPayPal() {
+    fun collectDeviceData_getsDeviceDataJSONWithCorrelationIdFromPayPal() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
 
-        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        val testScope = TestScope(testDispatcher)
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
         sut.collectDeviceData(context, dataCollectorRequest, callback)
+        advanceUntilIdle()
 
         val deviceDataCaptor = slot<DataCollectorResult>()
         verify { callback.onDataCollectorResult(capture(deviceDataCaptor)) }
@@ -246,13 +265,16 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceData_without_DataCollectorRequest_sets_hasUserLocationConsent_to_false() {
+    fun collectDeviceData_without_DataCollectorRequest_sets_hasUserLocationConsent_to_false() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
 
-        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        val testScope = TestScope(testDispatcher)
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
         sut.collectDeviceData(context, dataCollectorRequest, callback)
+        advanceUntilIdle()
 
         val deviceDataCaptor = slot<DataCollectorResult>()
         verify { callback.onDataCollectorResult(capture(deviceDataCaptor)) }
@@ -269,14 +291,17 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceData_with_DataCollectorRequest_sets_correct_values_for_getClientMetadataId() {
+    fun collectDeviceData_with_DataCollectorRequest_sets_correct_values_for_getClientMetadataId() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
 
-        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        val testScope = TestScope(testDispatcher)
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
         val dataCollectorRequest = DataCollectorRequest(true)
         sut.collectDeviceData(context, dataCollectorRequest, callback)
+        advanceUntilIdle()
 
         val deviceDataCaptor = slot<DataCollectorResult>()
         verify { callback.onDataCollectorResult(capture(deviceDataCaptor)) }
@@ -295,14 +320,16 @@ class DataCollectorUnitTest {
     // Tests for collectDeviceDataOnSuccess
 
     @Test
-    fun collectDeviceDataOnSuccess_forwardsConfigurationFetchErrors() {
-        val configError = Exception("configuration error")
+    fun collectDeviceDataOnSuccess_forwardsConfigurationFetchErrors() = runTest(testDispatcher) {
+        val configError = IOException("configuration error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(configError)
             .build()
 
-        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        val testScope = TestScope(testDispatcher)
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
         sut.collectDeviceDataOnSuccess(context, dataCollectorRequest, callback)
+        advanceUntilIdle()
 
         val deviceDataCaptor = slot<DataCollectorResult>()
         verify { callback.onDataCollectorResult(capture(deviceDataCaptor)) }
@@ -313,13 +340,15 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceDataOnSuccess_configuresMagnesWithDefaultRequest() {
+    fun collectDeviceDataOnSuccess_configuresMagnesWithDefaultRequest() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
 
-        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        val testScope = TestScope(testDispatcher)
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
         sut.collectDeviceDataOnSuccess(context, dataCollectorRequest, callback)
+        advanceUntilIdle()
 
         val captor = slot<DataCollectorInternalRequest>()
         verify {
@@ -337,13 +366,15 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceDataOnSuccess_withRequest_configuresMagnesWithRiskCorrelationId() {
+    fun collectDeviceDataOnSuccess_withRequest_configuresMagnesWithRiskCorrelationId() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
 
-        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        val testScope = TestScope(testDispatcher)
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
         sut.collectDeviceDataOnSuccess(context, dataCollectorRequest, callback)
+        advanceUntilIdle()
 
         val captor = slot<DataCollectorInternalRequest>()
         verify {
@@ -363,13 +394,15 @@ class DataCollectorUnitTest {
 
     @Test
     @Throws(Exception::class)
-    fun collectDeviceDataOnSuccess_whenMagnesReturnsSuccess_callsCallbackWithDeviceData() {
+    fun collectDeviceDataOnSuccess_whenMagnesReturnsSuccess_callsCallbackWithDeviceData() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
 
-        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        val testScope = TestScope(testDispatcher)
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
         sut.collectDeviceDataOnSuccess(context, dataCollectorRequest, callback)
+        advanceUntilIdle()
 
         val deviceDataCaptor = slot<DataCollectorResult>()
         verify { callback.onDataCollectorResult(capture(deviceDataCaptor)) }
@@ -382,7 +415,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceDataOnSuccess_whenMagnesReturnsSubmitError_callsCallbackWithFailure() {
+    fun collectDeviceDataOnSuccess_whenMagnesReturnsSubmitError_callsCallbackWithFailure() = runTest(testDispatcher) {
         val submitError = CallbackSubmitException.SubmitError
         every {
             magnesInternalClient.getClientMetadataIdWithCallback(
@@ -400,8 +433,10 @@ class DataCollectorUnitTest {
             .configurationSuccess(configuration)
             .build()
 
-        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        val testScope = TestScope(testDispatcher)
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
         sut.collectDeviceDataOnSuccess(context, dataCollectorRequest, callback)
+        advanceUntilIdle()
 
         val deviceDataCaptor = slot<DataCollectorResult>()
         verify { callback.onDataCollectorResult(capture(deviceDataCaptor)) }
@@ -412,7 +447,7 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceDataOnSuccess_whenMagnesReturnsSubmitTimeout_callsCallbackWithFailure() {
+    fun collectDeviceDataOnSuccess_whenMagnesReturnsSubmitTimeout_callsCallbackWithFailure() = runTest(testDispatcher) {
         val submitTimeout = CallbackSubmitException.SubmitTimeout
         every {
             magnesInternalClient.getClientMetadataIdWithCallback(
@@ -430,8 +465,10 @@ class DataCollectorUnitTest {
             .configurationSuccess(configuration)
             .build()
 
-        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        val testScope = TestScope(testDispatcher)
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
         sut.collectDeviceDataOnSuccess(context, dataCollectorRequest, callback)
+        advanceUntilIdle()
 
         val deviceDataCaptor = slot<DataCollectorResult>()
         verify { callback.onDataCollectorResult(capture(deviceDataCaptor)) }
@@ -442,14 +479,17 @@ class DataCollectorUnitTest {
     }
 
     @Test
-    fun collectDeviceDataOnSuccess_withDataCollectorRequest_setsCorrectValuesForGetClientMetadataIdWithCallback() {
+    fun collectDeviceDataOnSuccess_withDataCollectorRequest_setsCorrectValuesForGetClientMetadataIdWithCallback() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(configuration)
             .build()
 
-        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper)
+        val testScope = TestScope(testDispatcher)
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
         val dataCollectorRequest = DataCollectorRequest(true)
         sut.collectDeviceDataOnSuccess(context, dataCollectorRequest, callback)
+        advanceUntilIdle()
 
         val deviceDataCaptor = slot<DataCollectorResult>()
         verify { callback.onDataCollectorResult(capture(deviceDataCaptor)) }
