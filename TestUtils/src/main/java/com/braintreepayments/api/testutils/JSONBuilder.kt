@@ -3,7 +3,6 @@ package com.braintreepayments.api.testutils
 import org.json.JSONException
 import org.json.JSONObject
 
-@Suppress("MagicNumber")
 abstract class JSONBuilder protected constructor(json: JSONObject = JSONObject()) {
 
     protected var jsonBody: JSONObject = json
@@ -11,7 +10,7 @@ abstract class JSONBuilder protected constructor(json: JSONObject = JSONObject()
     fun build(): String = jsonBody.toString()
 
     fun put(value: Any?) {
-        var stackIndex = 3
+        var stackIndex = STACK_INDEX_CALLER
         val stack = Thread.currentThread().stackTrace
         if (!stack[0].isNativeMethod) {
             stackIndex--
@@ -25,5 +24,9 @@ abstract class JSONBuilder protected constructor(json: JSONObject = JSONObject()
             jsonBody.put(key, value)
         } catch (_: JSONException) {
         }
+    }
+
+    companion object {
+        private const val STACK_INDEX_CALLER = 3
     }
 }

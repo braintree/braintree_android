@@ -1,6 +1,5 @@
 package com.braintreepayments.demo
 
-import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -41,7 +40,6 @@ import com.google.android.material.textfield.TextInputLayout
 /**
  * Fragment for handling shopping insights.
  */
-@SuppressLint("SetTextI18n")
 @OptIn(ExperimentalBetaApi::class)
 class ShopperInsightsFragment : BaseFragment() {
 
@@ -222,12 +220,12 @@ class ShopperInsightsFragment : BaseFragment() {
                         )
                     }
 
-                    responseTextView.text =
-                        """
-                            Eligible in PayPal Network: ${result.response.isEligibleInPayPalNetwork}
-                            PayPal Recommended: ${result.response.isPayPalRecommended}
-                            Venmo Recommended: ${result.response.isVenmoRecommended}
-                        """.trimIndent()
+                    responseTextView.text = getString(
+                        R.string.insights_recommendation_response,
+                        result.response.isEligibleInPayPalNetwork.toString(),
+                        result.response.isPayPalRecommended.toString(),
+                        result.response.isVenmoRecommended.toString()
+                    )
                 }
 
                 is ShopperInsightsResult.Failure -> {

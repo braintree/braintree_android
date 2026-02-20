@@ -91,11 +91,10 @@ class DeviceInspector(
                 context?.packageManager?.getApplicationLabel(appInfo).toString()
         } ?: "ApplicationNameUnknown"
 
-    @Suppress("SwallowedException")
     private fun getApplicationInfo(context: Context?) =
         try {
             context?.packageManager?.getApplicationInfo(context.packageName, 0)
-        } catch (e: PackageManager.NameNotFoundException) {
+        } catch (ignored: PackageManager.NameNotFoundException) {
             null
         }
 

@@ -14,7 +14,6 @@ import org.json.JSONObject
  * @suppress
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-@Suppress("SwallowedException", "TooGenericExceptionCaught")
 class ClientToken @Throws(InvalidArgumentException::class) internal constructor(
     clientTokenString: String
 ) : Authorization(clientTokenString) {
@@ -33,10 +32,10 @@ class ClientToken @Throws(InvalidArgumentException::class) internal constructor(
             authorizationFingerprint = jsonObject.getString(AUTHORIZATION_FINGERPRINT_KEY)
             bearer = authorizationFingerprint
             customerId = parseCustomerId(authorizationFingerprint)
-        } catch (e: NullPointerException) {
-            throw InvalidArgumentException("Client token was invalid")
         } catch (e: JSONException) {
-            throw InvalidArgumentException("Client token was invalid")
+            throw InvalidArgumentException("Client token was invalid", e)
+        } catch (e: IllegalArgumentException) {
+            throw InvalidArgumentException("Client token was invalid", e)
         }
     }
 

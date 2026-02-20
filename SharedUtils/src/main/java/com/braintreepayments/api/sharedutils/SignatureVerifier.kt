@@ -23,7 +23,7 @@ class SignatureVerifier(
      * @param base64EncodedSignature the base64 encoded signature to verify.
      * @return true is signature is valid or signature verification has been disabled.
      */
-    @Suppress("SwallowedException", "ReturnCount")
+    @Suppress("ReturnCount")
     fun isSignatureValid(
         context: Context,
         packageName: String,

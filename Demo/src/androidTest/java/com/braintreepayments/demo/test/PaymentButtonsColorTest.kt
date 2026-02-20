@@ -37,7 +37,6 @@ class PaymentButtonsColorTest : TestHelper() {
             .waitForExists()
     }
 
-    @Suppress("TooGenericExceptionThrown")
     private fun getColorFromDrawable(drawable: LayerDrawable): Int {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             /*Assumes knowledge of the internals of the implementation, might be fragile.
@@ -54,7 +53,7 @@ class PaymentButtonsColorTest : TestHelper() {
                 val paint = colorField.get(gradientDrawable) as Paint?
                 return paint?.color ?: 0
             } catch (e: Exception) {
-                throw RuntimeException("Failed to get color from GradientDrawable", e)
+                throw IllegalStateException("Failed to get color from GradientDrawable", e)
             }
         }
     }

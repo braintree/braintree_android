@@ -23,25 +23,23 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/autofill_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_weight="1"
                 android:enabled="false"
-                android:text="@string/autofill"
-                tools:ignore="ButtonStyle" />
+                android:text="@string/autofill" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/purchase_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_weight="1"
                 android:enabled="false"
-                android:text="@string/purchase"
-                tools:ignore="ButtonStyle" />
+                android:text="@string/purchase" />
 
         </LinearLayout>
 

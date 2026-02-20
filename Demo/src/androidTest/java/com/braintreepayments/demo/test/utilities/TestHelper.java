@@ -1,7 +1,6 @@
 package com.braintreepayments.demo.test.utilities;
 
 import android.Manifest.permission;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
@@ -23,7 +22,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 
 public class TestHelper {
 
-    @SuppressLint("ApplySharedPref")
     public void setup() {
         clearPreference("BraintreeApi");
         clearPreference("com.braintreepayments.api.paypal");
@@ -32,7 +30,7 @@ public class TestHelper {
                 .edit()
                 .clear()
                 .putBoolean("paypal_use_hardcoded_configuration", true)
-                .commit();
+                .apply();
 
         enableStoragePermission();
     }
@@ -50,12 +48,11 @@ public class TestHelper {
         return onDevice(withResourceId("com.braintreepayments.demo:id/nonce_details"));
     }
 
-    @SuppressLint("ApplySharedPref")
     private void clearPreference(String preference) {
         ApplicationProvider.getApplicationContext().getSharedPreferences(preference, Context.MODE_PRIVATE)
                 .edit()
                 .clear()
-                .commit();
+                .apply();
     }
 
     private static void ensureEnvironmentIs(String environment) {

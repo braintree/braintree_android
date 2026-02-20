@@ -9,7 +9,6 @@ import kotlinx.coroutines.launch
 import org.json.JSONException
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-@Suppress("SwallowedException", "TooGenericExceptionCaught")
 class AnalyticsClient internal constructor(
     private val analyticsApi: AnalyticsApi = AnalyticsApi(),
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
@@ -65,7 +64,7 @@ class AnalyticsClient internal constructor(
         )
         try {
             executeEventsApi(event, configuration)
-        } catch (e: JSONException) { /* ignored */
+        } catch (ignored: JSONException) {
         }
     }
 

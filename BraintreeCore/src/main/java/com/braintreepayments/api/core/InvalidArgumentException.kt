@@ -8,4 +8,10 @@ import androidx.annotation.RestrictTo
  * @param message the error message
  */
 class InvalidArgumentException
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(message: String?) : Exception(message)
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(message: String?) : Exception(message) {
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    constructor(message: String?, cause: Throwable?) : this(message) {
+        initCause(cause)
+    }
+}

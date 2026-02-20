@@ -10,7 +10,7 @@ import io.mockk.every
 import io.mockk.mockk
 import java.io.IOException
 
-@Suppress("MagicNumber", "TooManyFunctions")
+@Suppress("TooManyFunctions")
 class MockkBraintreeClientBuilder {
 
     private var sendGraphQLPostSuccess: String? = null
@@ -97,7 +97,7 @@ class MockkBraintreeClientBuilder {
         every { braintreeClient.launchesBrowserSwitchAsNewTask() } returns launchesBrowserSwitchAsNewTask
 
         every { braintreeClient.getConfiguration(any()) } answers { call ->
-            val callback = call.invocation.args[0] as ConfigurationCallback
+            val callback = call.invocation.args[CONFIGURATION_CALLBACK_ARG_INDEX] as ConfigurationCallback
             callback.onResult(configurationSuccess, configurationException)
         }
 
@@ -137,5 +137,9 @@ class MockkBraintreeClientBuilder {
         }
 
         return braintreeClient
+    }
+
+    companion object {
+        private const val CONFIGURATION_CALLBACK_ARG_INDEX = 0
     }
 }

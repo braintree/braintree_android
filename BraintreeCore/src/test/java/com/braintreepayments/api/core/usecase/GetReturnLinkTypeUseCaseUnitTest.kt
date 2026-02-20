@@ -11,7 +11,6 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-@Suppress("MaxLineLength")
 @RunWith(RobolectricTestRunner::class)
 class GetReturnLinkTypeUseCaseUnitTest {
 
@@ -30,11 +29,15 @@ class GetReturnLinkTypeUseCaseUnitTest {
         every { merchantRepository.appLinkReturnUri } returns appLinkReturnUri
         every { applicationContext.packageName } returns packageName
         every { getDefaultAppUseCase(someUri) } returns ""
-        sut = GetReturnLinkTypeUseCase(merchantRepository, getDefaultAppUseCase, getAppLinksCompatibleBrowserUseCase)
+        sut = GetReturnLinkTypeUseCase(
+            merchantRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase
+        )
     }
 
     @Test
-    fun `when invoke is called and merchant app is able to handle return uri by default and we have an app link compatible browser, APP_LINK is returned`() {
+    fun `when invoke and app can handle return uri with compatible browser then APP_LINK returned`() {
         every { getDefaultAppUseCase(appLinkReturnUri) } returns packageName
         every { getAppLinksCompatibleBrowserUseCase.invoke(someUri) } returns true
 
@@ -44,7 +47,7 @@ class GetReturnLinkTypeUseCaseUnitTest {
     }
 
     @Test
-    fun `when invoke is called and merchant app is able to handle return uri by default and app link compatible browser is not available, DEEP_LINK is returned`() {
+    fun `when invoke and app can handle return uri without compatible browser then DEEP_LINK returned`() {
         every { getDefaultAppUseCase(appLinkReturnUri) } returns packageName
         every { getAppLinksCompatibleBrowserUseCase(someUri) } returns false
 
@@ -65,7 +68,7 @@ class GetReturnLinkTypeUseCaseUnitTest {
     }
 
     @Test
-    fun `when invoke is called and merchant app is unable to handle return uri by default and app link compatible browser is not available, DEEP_LINK is returned`() {
+    fun `when invoke and app cannot handle return uri without compatible browser then DEEP_LINK returned`() {
         val someUri = "example.com".toUri()
         every { getDefaultAppUseCase(appLinkReturnUri) } returns "some.other.package"
         every { getAppLinksCompatibleBrowserUseCase(someUri) } returns false
@@ -76,7 +79,7 @@ class GetReturnLinkTypeUseCaseUnitTest {
     }
 
     @Test
-    fun `when invoke is called and merchant app is able to handle return uri by default and PayPal app can handle checkout uri, APP_LINK is returned`() {
+    fun `when invoke and app can handle return uri and PayPal can handle checkout uri then APP_LINK returned`() {
         every { getDefaultAppUseCase(appLinkReturnUri) } returns packageName
         every { getDefaultAppUseCase(someUri) } returns "com.paypal.android.p2pmobile"
         every { getAppLinksCompatibleBrowserUseCase.invoke(someUri) } returns false
@@ -87,7 +90,7 @@ class GetReturnLinkTypeUseCaseUnitTest {
     }
 
     @Test
-    fun `when invoke is called and merchant app is able to handle return uri by default and Venmo app can handle checkout uri, APP_LINK is returned`() {
+    fun `when invoke and app can handle return uri and Venmo can handle checkout uri then APP_LINK returned`() {
         every { getDefaultAppUseCase(appLinkReturnUri) } returns packageName
         every { getDefaultAppUseCase(someUri) } returns "com.venmo"
         every { getAppLinksCompatibleBrowserUseCase.invoke(someUri) } returns false

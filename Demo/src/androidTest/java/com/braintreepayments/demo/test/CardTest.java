@@ -9,7 +9,6 @@ import static com.braintreepayments.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.preference.PreferenceManager;
 
@@ -22,7 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@SuppressLint("ApplySharedPref")
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class CardTest extends TestHelper {
 
@@ -39,7 +37,7 @@ public class CardTest extends TestHelper {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .putBoolean("amex_rewards_balance", false)
-                .commit();
+                .apply();
 
         onDevice(withText("Card Number")).perform(setText("4111111111111111"));
         onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
@@ -58,7 +56,7 @@ public class CardTest extends TestHelper {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .putBoolean("amex_rewards_balance", true)
-                .commit();
+                .apply();
 
         onDevice(withText("Card Number")).perform(setText("371260714673002"));
         onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
@@ -76,7 +74,7 @@ public class CardTest extends TestHelper {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .putBoolean("amex_rewards_balance", true)
-                .commit();
+                .apply();
 
         onDevice(withText("Card Number")).perform(setText("371544868764018"));
         onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));
@@ -94,7 +92,7 @@ public class CardTest extends TestHelper {
         PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .putBoolean("amex_rewards_balance", true)
-                .commit();
+                .apply();
 
         onDevice(withText("Card Number")).perform(setText("378267515471109"));
         onDevice(withText("Expiration Date")).perform(setText(validExpirationText()));

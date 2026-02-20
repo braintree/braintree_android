@@ -145,7 +145,6 @@ class PayPalClient internal constructor(
         }
     }
 
-    @Suppress("TooGenericExceptionCaught")
     private fun sendPayPalRequest(
         context: Context,
         payPalRequest: PayPalRequest,
@@ -164,23 +163,26 @@ class PayPalClient internal constructor(
                 try {
                     payPalResponse.browserSwitchOptions = buildBrowserSwitchOptions(payPalResponse)
                     callback.onPayPalPaymentAuthRequest(PayPalPaymentAuthRequest.ReadyToLaunch(payPalResponse))
-                } catch (exception: Exception) {
-                    when (exception) {
-                        is JSONException,
-                        is BraintreeException -> {
-                            callbackCreatePaymentAuthFailure(
-                                callback,
-                                PayPalPaymentAuthRequest.Failure(exception),
-                                AnalyticsEventParams(
-                                    contextId = contextId,
-                                    isVaultRequest = isVaultRequest,
-                                    shopperSessionId = shopperSessionId
-                                )
-                            )
-                        }
-
-                        else -> throw exception
-                    }
+                } catch (exception: JSONException) {
+                    callbackCreatePaymentAuthFailure(
+                        callback,
+                        PayPalPaymentAuthRequest.Failure(exception),
+                        AnalyticsEventParams(
+                            contextId = contextId,
+                            isVaultRequest = isVaultRequest,
+                            shopperSessionId = shopperSessionId
+                        )
+                    )
+                } catch (exception: BraintreeException) {
+                    callbackCreatePaymentAuthFailure(
+                        callback,
+                        PayPalPaymentAuthRequest.Failure(exception),
+                        AnalyticsEventParams(
+                            contextId = contextId,
+                            isVaultRequest = isVaultRequest,
+                            shopperSessionId = shopperSessionId
+                        )
+                    )
                 }
             } else {
                 callbackCreatePaymentAuthFailure(
@@ -249,7 +251,6 @@ class PayPalClient internal constructor(
      * from  [PayPalLauncher.handleReturnToApp]
      * @param callback          [PayPalTokenizeCallback]
      */
-    @Suppress("SwallowedException")
     fun tokenize(
         paymentAuthResult: PayPalPaymentAuthResult.Success,
         callback: PayPalTokenizeCallback
@@ -302,7 +303,7 @@ class PayPalClient internal constructor(
                     callbackTokenizeFailure(callback, PayPalResult.Failure(error), analyticsEventParams)
                 }
             }
-        } catch (e: UserCanceledException) {
+        } catch (ignored: UserCanceledException) {
             callbackBrowserSwitchCancel(callback, PayPalResult.Cancel, isAppSwitchFlow, analyticsEventParams)
         } catch (e: JSONException) {
             callbackTokenizeFailure(callback, PayPalResult.Failure(e), analyticsEventParams)

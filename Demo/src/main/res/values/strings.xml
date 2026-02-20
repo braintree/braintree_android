@@ -130,6 +130,9 @@
     <string name="insights_venmo_button">Venmo</string>
     <string name="insights_paypal_vault_button">PayPal Vault</string>
     <string name="insights_response_label">Response:</string>
+    <string name="insights_recommendation_response">Eligible in PayPal Network: %1$s
+PayPal Recommended: %2$s
+Venmo Recommended: %3$s</string>
     <string name="insights_null_switch">Null </string>
 
     <!-- Payment Buttons -->

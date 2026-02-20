@@ -6,7 +6,6 @@ import com.google.android.gms.wallet.IsReadyToPayRequest
 import io.mockk.every
 import io.mockk.mockk
 
-@Suppress("MagicNumber")
 internal class MockkGooglePayInternalClientBuilder {
 
     private var isReadyToPay: Boolean = false
@@ -33,7 +32,8 @@ internal class MockkGooglePayInternalClientBuilder {
                 any<GooglePayIsReadyToPayCallback>()
             )
         } answers { call ->
-            val callback = call.invocation.args[3] as GooglePayIsReadyToPayCallback
+            val callback =
+                call.invocation.args[GOOGLE_PAY_READINESS_CALLBACK_ARG_INDEX] as GooglePayIsReadyToPayCallback
             isReadyToPayError?.let { callback.onGooglePayReadinessResult(
                 GooglePayReadinessResult.NotReadyToPay(isReadyToPayError!!)
             ) }
@@ -41,5 +41,9 @@ internal class MockkGooglePayInternalClientBuilder {
         }
 
         return googlePayInternalClient
+    }
+
+    companion object {
+        private const val GOOGLE_PAY_READINESS_CALLBACK_ARG_INDEX = 3
     }
 }

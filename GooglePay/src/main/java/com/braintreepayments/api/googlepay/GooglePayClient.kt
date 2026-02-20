@@ -73,7 +73,6 @@ class GooglePayClient internal constructor(
      * @param request  [ReadyForGooglePayRequest]
      * @param callback [GooglePayIsReadyToPayCallback]
      */
-    @SuppressWarnings("SwallowedException")
     fun isReadyToPay(
         context: Context,
         request: ReadyForGooglePayRequest?,
@@ -81,10 +80,10 @@ class GooglePayClient internal constructor(
     ) {
         try {
             Class.forName(PaymentsClient::class.java.name)
-        } catch (e: ClassNotFoundException) {
+        } catch (ignored: ClassNotFoundException) {
             callback.onGooglePayReadinessResult(NotReadyToPay(null))
             return
-        } catch (e: NoClassDefFoundError) {
+        } catch (ignored: NoClassDefFoundError) {
             callback.onGooglePayReadinessResult(NotReadyToPay(null))
             return
         }
