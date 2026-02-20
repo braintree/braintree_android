@@ -104,9 +104,7 @@ internal class PayPalInternalClient(
                 val tokenizationResponse = apiClient.tokenizeREST(payPalAccount)
                 val nonce = PayPalAccountNonce.fromJSON(tokenizationResponse)
                 callback.onResult(nonce, null)
-            } catch (e: IOException) {
-                callback.onResult(null, e)
-            } catch (e: JSONException) {
+            } catch (e: Exception) {
                 callback.onResult(null, e)
             }
         }

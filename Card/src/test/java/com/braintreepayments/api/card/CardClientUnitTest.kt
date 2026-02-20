@@ -25,7 +25,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -224,7 +223,7 @@ class CardClientUnitTest {
             .configurationSuccess(graphQLEnabledConfig)
             .build()
 
-        val error = IOException()
+        val error = Exception()
         apiClient = MockkApiClientBuilder()
             .tokenizeGraphQLError(error)
             .build()
@@ -254,7 +253,7 @@ class CardClientUnitTest {
             .configurationSuccess(graphQLDisabledConfig)
             .build()
 
-        val error = IOException()
+        val error = Exception()
         apiClient = MockkApiClientBuilder()
             .tokenizeRESTError(error)
             .build()
@@ -284,7 +283,7 @@ class CardClientUnitTest {
             .configurationSuccess(graphQLEnabledConfig)
             .build()
 
-        val error = IOException()
+        val error = Exception()
         apiClient = MockkApiClientBuilder()
             .tokenizeGraphQLError(error)
             .build()
@@ -308,7 +307,7 @@ class CardClientUnitTest {
             .configurationSuccess(graphQLDisabledConfig)
             .build()
 
-        val error = IOException()
+        val error = Exception()
         apiClient = MockkApiClientBuilder()
             .tokenizeRESTError(error)
             .build()

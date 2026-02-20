@@ -193,9 +193,7 @@ internal class VenmoApi(
                 val tokenizationResponse = apiClient.tokenizeREST(venmoAccount)
                 val venmoAccountNonce = fromJSON(tokenizationResponse)
                 callback.onResult(venmoAccountNonce, null)
-            } catch (e: IOException) {
-                callback.onResult(null, e)
-            } catch (e: JSONException) {
+            } catch (e: Exception) {
                 callback.onResult(null, e)
             }
         }

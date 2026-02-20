@@ -14,26 +14,24 @@ class ApiClient(
 ) {
 
     suspend fun tokenizeGraphQL(tokenizePayload: JSONObject): JSONObject {
-        return braintreeClient.run {
-            val responseBody = sendGraphQLPOST(tokenizePayload)
-            parseResponseToJSON(responseBody)
-                ?: throw JSONException("Invalid JSON response")
-        }
+        val responseBody = braintreeClient.sendGraphQLPOST(tokenizePayload)
+        val response = parseResponseToJSON(responseBody)
+            ?: throw JSONException("Invalid JSON response")
+        return response
     }
 
     suspend fun tokenizeREST(paymentMethod: PaymentMethod): JSONObject {
-        return braintreeClient.run {
-            val url = versionedPath("$PAYMENT_METHOD_ENDPOINT/${paymentMethod.apiPath}")
-            paymentMethod.sessionId = analyticsParamRepository.sessionId
+        val url = versionedPath("$PAYMENT_METHOD_ENDPOINT/${paymentMethod.apiPath}")
+        paymentMethod.sessionId = analyticsParamRepository.sessionId
 
-            val responseBody = sendPOST(
-                url = url,
-                data = paymentMethod.buildJSON().toString(),
-            )
+        val responseBody = braintreeClient.sendPOST(
+            url = url,
+            data = paymentMethod.buildJSON().toString(),
+        )
 
-            parseResponseToJSON(responseBody)
-                ?: throw JSONException("Invalid JSON response")
-        }
+        val response = parseResponseToJSON(responseBody)
+            ?: throw JSONException("Invalid JSON response")
+        return response
     }
 
     private fun parseResponseToJSON(responseBody: String?): JSONObject? =

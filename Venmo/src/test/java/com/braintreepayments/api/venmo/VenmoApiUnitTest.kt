@@ -454,7 +454,7 @@ class VenmoApiUnitTest {
 
     @Test
     fun vaultVenmoAccountNonce_tokenizeRESTError_forwardsErrorToCallback() = runTest(testDispatcher) {
-        val error = IOException("error")
+        val error = Exception("error")
         val apiClient = MockkApiClientBuilder()
             .tokenizeRESTError(error)
             .build()
