@@ -170,7 +170,7 @@ class MainFragment : BaseFragment() {
     }
 
     private fun launchLocalPayment() {
-        fetchAuthorizationAndHandleError { authString ->
+        fetchAuthorizationAndHandleError { _ ->
             // Local Payment uses a different tokenization key than the rest of the demo app.
             val localPaymentTokenizationKey = Settings.getLocalPaymentsTokenizationKey(requireContext())
             if (localPaymentTokenizationKey != null) {
