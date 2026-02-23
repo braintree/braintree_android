@@ -15,7 +15,6 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -89,12 +88,10 @@ class BraintreeClientUnitTest {
             testDispatcher = testDispatcher,
             testScope = testScope
         )
-        val callback = mockk<ConfigurationCallback>(relaxed = true)
-        sut.getConfiguration(callback)
 
-        advanceUntilIdle()
+        val result = sut.getConfiguration()
 
-        verify { callback.onResult(configuration, null) }
+        assertEquals(configuration, result)
     }
 
     @Test
@@ -110,12 +107,12 @@ class BraintreeClientUnitTest {
             testScope = testScope
         )
 
-        val callback = mockk<ConfigurationCallback>(relaxed = true)
-        sut.getConfiguration(callback)
-
-        advanceUntilIdle()
-
-        verify { callback.onResult(null, configFetchError) }
+        try {
+            sut.getConfiguration()
+            fail("Expected exception to be thrown")
+        } catch (e: Exception) {
+            assertEquals(configFetchError, e)
+        }
     }
 
     @Test
@@ -131,14 +128,12 @@ class BraintreeClientUnitTest {
             testScope = testScope
         )
 
-        val callback = mockk<ConfigurationCallback>(relaxed = true)
-        sut.getConfiguration(callback)
-        advanceUntilIdle()
-
-        val authErrorSlot = slot<BraintreeException>()
-        verify { callback.onResult(isNull(), capture(authErrorSlot)) }
-
-        assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
+        try {
+            sut.getConfiguration()
+            fail("Expected exception to be thrown")
+        } catch (e: BraintreeException) {
+            assertEquals(expectedAuthException.message, e.message)
+        }
     }
 
     @Test

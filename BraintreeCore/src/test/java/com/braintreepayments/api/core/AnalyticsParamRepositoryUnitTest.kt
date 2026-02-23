@@ -1,5 +1,6 @@
 package com.braintreepayments.api.core
 
+import com.braintreepayments.api.paypal.PayPalRecurringBillingPlanType
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Before
@@ -15,6 +16,7 @@ class AnalyticsParamRepositoryUnitTest {
     private val uuid = "test-uuid"
     private val newUuid = "new-uuid"
     private val expectedFundingSource = "funding-source"
+    private val expectedBillingPlanType = PayPalRecurringBillingPlanType.RECURRING.name
 
     @Before
     fun setUp() {
@@ -26,6 +28,8 @@ class AnalyticsParamRepositoryUnitTest {
         sut.didSdkAttemptAppSwitch = true
         sut.didEnablePayPalAppSwitch = true
         sut.fundingSource = expectedFundingSource
+        sut.shouldRequestBillingAgreement = true
+        sut.recurringBillingPlanType = expectedBillingPlanType
     }
 
     @Test
@@ -46,6 +50,8 @@ class AnalyticsParamRepositoryUnitTest {
         assertEquals(true, sut.didEnablePayPalAppSwitch)
         assertEquals(true, sut.didSdkAttemptAppSwitch)
         assertEquals(expectedFundingSource, sut.fundingSource)
+        assertEquals(true, sut.shouldRequestBillingAgreement)
+        assertEquals(expectedBillingPlanType, sut.recurringBillingPlanType)
 
         sut.reset()
 
@@ -54,5 +60,7 @@ class AnalyticsParamRepositoryUnitTest {
         assertNull(sut.didEnablePayPalAppSwitch)
         assertNull(sut.didSdkAttemptAppSwitch)
         assertNull(sut.fundingSource)
+        assertNull(sut.shouldRequestBillingAgreement)
+        assertNull(sut.recurringBillingPlanType)
     }
 }
