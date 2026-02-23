@@ -41,9 +41,6 @@ fun PayPalSmartButton(
 
     var enabled by remember { mutableStateOf(true) }
 
-    val viewModel: PayPalComposeButtonViewModel =
-        viewModel { PayPalComposeButtonViewModel(PayPalPendingRequestRepository()) }
-
     val payPalLauncher = PayPalLauncher(LocalActivityResultRegistryOwner.current?.activityResultRegistry)
     val payPalClient = PayPalClient(
         context = context,
@@ -60,7 +57,7 @@ fun PayPalSmartButton(
             when (paymentAuthRequest) {
                 is PayPalPaymentAuthRequest.ReadyToLaunch -> {
                     activity?.let {
-                        completePayPalFlow(payPalLauncher, it, paymentAuthRequest, viewModel)
+                        completePayPalFlow(payPalLauncher, it, paymentAuthRequest)
                     }
                 }
 
@@ -91,8 +88,7 @@ fun PayPalSmartButton(
 internal fun completePayPalFlow(
     payPalLauncher: PayPalLauncher,
     activity: Activity,
-    paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch,
-    viewModel: PayPalComposeButtonViewModel
+    paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch
 ) {
     val payPalPendingRequest = payPalLauncher.launch(
         activity = activity as ComponentActivity,
