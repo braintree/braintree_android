@@ -23,6 +23,10 @@ import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase.ReturnLin
 import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.sharedutils.Json
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -43,7 +47,9 @@ class PayPalClient internal constructor(
         getAppLinksCompatibleBrowserUseCase
     ),
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
-    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
 
     /**
@@ -105,42 +111,30 @@ class PayPalClient internal constructor(
         shopperSessionId = payPalRequest.shopperSessionId
         isVaultRequest = payPalRequest is PayPalVaultRequest
         analyticsParamRepository.didEnablePayPalAppSwitch = payPalRequest.enablePayPalAppSwitch
-
-        braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
-            val analyticsEventParams = AnalyticsEventParams(
-                contextId = null,
-                isVaultRequest = isVaultRequest,
-                shopperSessionId = shopperSessionId
-            )
-
-            braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsEventParams)
-
-            when {
-                error != null -> {
-                    callbackCreatePaymentAuthFailure(
-                        callback,
-                        PayPalPaymentAuthRequest.Failure(error),
-                        analyticsEventParams
-                    )
-                }
-
-                configuration == null -> {
-                    callbackCreatePaymentAuthFailure(
-                        callback,
-                        PayPalPaymentAuthRequest.Failure(BraintreeException("No configuration or error returned")),
-                        analyticsEventParams
-                    )
-                }
-
-                !configuration.isPayPalEnabled -> {
+        val analyticsEventParams = AnalyticsEventParams(
+            contextId = null,
+            isVaultRequest = isVaultRequest,
+            shopperSessionId = shopperSessionId
+        )
+        braintreeClient.sendAnalyticsEvent(PayPalAnalytics.TOKENIZATION_STARTED, analyticsEventParams)
+        coroutineScope.launch {
+            try {
+                val configuration = braintreeClient.getConfiguration()
+                if (!configuration.isPayPalEnabled) {
                     callbackCreatePaymentAuthFailure(
                         callback,
                         PayPalPaymentAuthRequest.Failure(BraintreeException(PAYPAL_NOT_ENABLED_MESSAGE)),
                         analyticsEventParams
                     )
+                } else {
+                    sendPayPalRequest(context, payPalRequest, configuration, callback)
                 }
-
-                else -> sendPayPalRequest(context, payPalRequest, configuration, callback)
+            } catch (e: Exception) {
+                callbackCreatePaymentAuthFailure(
+                    callback,
+                    PayPalPaymentAuthRequest.Failure(e),
+                    analyticsEventParams
+                )
             }
         }
     }
