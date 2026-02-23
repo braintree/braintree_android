@@ -5,19 +5,16 @@ import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.mockk
 import io.mockk.slot
-import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,16 +26,12 @@ import java.io.IOException
 class SEPADirectDebitApiUnitTest {
     private val testDispatcher = StandardTestDispatcher()
 
-    private lateinit var createMandateCallback: CreateMandateCallback
-    private lateinit var sepaDirectDebitTokenizeCallback: SEPADirectDebitInternalTokenizeCallback
     private lateinit var request: SEPADirectDebitRequest
     private lateinit var billingAddress: PostalAddress
     private lateinit var returnURL: String
 
     @Before
     fun beforeEach() {
-        createMandateCallback = mockk<CreateMandateCallback>(relaxed = true)
-        sepaDirectDebitTokenizeCallback = mockk<SEPADirectDebitInternalTokenizeCallback>(relaxed = true)
         billingAddress = PostalAddress(
             streetAddress = "Kantstraße 70",
             extendedAddress = "#170",
@@ -61,23 +54,16 @@ class SEPADirectDebitApiUnitTest {
     }
 
     @Test
-    fun `creates a Mandate on successful HTTP response and calls CreateMandateResult`() = runTest(testDispatcher) {
+    fun `creates a Mandate on successful HTTP response and calls CreateMandateResult`() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .returnUrlScheme("sample-scheme")
             .sendPostSuccessfulResponse(Fixtures.SEPA_DEBIT_CREATE_MANDATE_RESPONSE)
             .build()
 
-        val sut = SEPADirectDebitApi(
-            braintreeClient,
-            dispatcher = testDispatcher,
-            coroutineScope = TestScope(testDispatcher)
-        )
-        sut.createMandate(request, returnURL, createMandateCallback)
-        advanceUntilIdle()
-        val createMandateSlot = slot<CreateMandateResult>()
-        verify { createMandateCallback.onResult(capture(createMandateSlot), isNull()) }
+        val sut = SEPADirectDebitApi(braintreeClient)
 
-        val result = createMandateSlot.captured
+        val result = sut.createMandate(request, returnURL)
 
         assertEquals("6610", result.ibanLastFour)
         assertEquals(
@@ -101,20 +87,14 @@ class SEPADirectDebitApiUnitTest {
             .sendPostSuccessfulResponse("not-json")
             .build()
 
-        val sut = SEPADirectDebitApi(
-            braintreeClient,
-            dispatcher = testDispatcher,
-            coroutineScope = TestScope(testDispatcher)
-        )
-        sut.createMandate(request, returnURL, createMandateCallback)
-        advanceUntilIdle()
-        val exceptionSlot = slot<Exception>()
-        verify { createMandateCallback.onResult(isNull(), capture(exceptionSlot)) }
-
-        val error = exceptionSlot.captured
-
-        assertNotNull(error)
-        assertTrue(error is JSONException)
+        val sut = SEPADirectDebitApi(braintreeClient)
+        try {
+            sut.createMandate(request, returnURL)
+            fail("Expected createMandate to throw an exception due to invalid JSON response")
+        } catch (e: Exception) {
+            assertNotNull(e)
+            assertTrue(e is JSONException)
+        }
     }
 
     @Test
@@ -126,40 +106,33 @@ class SEPADirectDebitApiUnitTest {
             .sendPostErrorResponse(exception)
             .build()
 
-        val sut = SEPADirectDebitApi(
-            braintreeClient,
-            dispatcher = testDispatcher,
-            coroutineScope = TestScope(testDispatcher)
-        )
-        sut.createMandate(request, returnURL, createMandateCallback)
-        advanceUntilIdle()
-        verify { createMandateCallback.onResult(null, eq(exception)) }
+        val sut = SEPADirectDebitApi(braintreeClient)
+        try {
+            sut.createMandate(request, returnURL)
+            fail("Expected createMandate to throw an exception due to HTTP error")
+        } catch (e: Exception) {
+            assertNotNull(e)
+            assertEquals(exception, e)
+        }
     }
 
     @Test
-    fun `tokenizes on successful HTTP response and calls back SEPADirectDebitNonce`() = runTest(testDispatcher) {
+    fun `tokenizes on successful HTTP response and calls back SEPADirectDebitNonce`() =
+        runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .returnUrlScheme("sample-scheme")
             .sendPostSuccessfulResponse(Fixtures.SEPA_DEBIT_TOKENIZE_RESPONSE)
             .build()
 
-        val sut = SEPADirectDebitApi(
-            braintreeClient,
-            dispatcher = testDispatcher,
-            coroutineScope = TestScope(testDispatcher)
-        )
-        sut.tokenize(
+        val sut = SEPADirectDebitApi(braintreeClient)
+
+        val result = sut.tokenize(
             ibanLastFour = "1234",
             customerId = "a-customer-id",
             bankReferenceToken = "a-bank-reference-token",
-            mandateType = "ONE_OFF",
-            sepaDirectDebitTokenizeCallback
+            mandateType = "ONE_OFF"
         )
-        advanceUntilIdle()
-        val sepaDirectDebitNonceSlot = slot<SEPADirectDebitNonce>()
-        verify { sepaDirectDebitTokenizeCallback.onResult(capture(sepaDirectDebitNonceSlot), null) }
 
-        val result = sepaDirectDebitNonceSlot.captured
         assertEquals("1234", result.ibanLastFour)
         assertEquals("a-customer-id", result.customerId)
         assertEquals(SEPADirectDebitMandateType.ONE_OFF, result.mandateType)
@@ -173,24 +146,18 @@ class SEPADirectDebitApiUnitTest {
             .sendPostSuccessfulResponse("not-json")
             .build()
 
-        val sut = SEPADirectDebitApi(
-            braintreeClient,
-            dispatcher = testDispatcher,
-            coroutineScope = TestScope(testDispatcher)
-        )
-        sut.tokenize(
-            ibanLastFour = "1234",
-            customerId = "a-customer-id",
-            bankReferenceToken = "a-bank-reference-token",
-            mandateType = "ONE_OFF",
-            sepaDirectDebitTokenizeCallback
-        )
-        advanceUntilIdle()
-        val exceptionSlot = slot<Exception>()
-        verify { sepaDirectDebitTokenizeCallback.onResult(null, capture(exceptionSlot)) }
-
-        val exception = exceptionSlot.captured
-        assertTrue(exception is JSONException)
+        val sut = SEPADirectDebitApi(braintreeClient)
+        try {
+            sut.tokenize(
+                ibanLastFour = "1234",
+                customerId = "a-customer-id",
+                bankReferenceToken = "a-bank-reference-token",
+                mandateType = "ONE_OFF")
+            fail("Expected tokenize to throw an exception due to invalid JSON response")
+        } catch (e: Exception) {
+            assertNotNull(e)
+            assertTrue(e is JSONException)
+        }
     }
 
     @Test
@@ -201,20 +168,19 @@ class SEPADirectDebitApiUnitTest {
             .sendPostErrorResponse(error)
             .build()
 
-        val sut = SEPADirectDebitApi(
-            braintreeClient,
-            dispatcher = testDispatcher,
-            coroutineScope = TestScope(testDispatcher)
-        )
-        sut.tokenize(
-            ibanLastFour = "1234",
-            customerId = "a-customer-id",
-            bankReferenceToken = "a-bank-reference-token",
-            mandateType = "ONE_OFF",
-            sepaDirectDebitTokenizeCallback
-        )
-        advanceUntilIdle()
-        verify { sepaDirectDebitTokenizeCallback.onResult(null, error) }
+        val sut = SEPADirectDebitApi(braintreeClient)
+        try {
+            sut.tokenize(
+                ibanLastFour = "1234",
+                customerId = "a-customer-id",
+                bankReferenceToken = "a-bank-reference-token",
+                mandateType = "ONE_OFF"
+            )
+            fail("Expected tokenize to throw an exception due to HTTP error")
+        } catch (e: Exception) {
+            assertNotNull(e)
+            assertEquals(error, e)
+        }
     }
 
     @Test
@@ -223,19 +189,15 @@ class SEPADirectDebitApiUnitTest {
             .returnUrlScheme("com.example")
             .build()
 
-        val sut = SEPADirectDebitApi(
-            braintreeClient,
-            dispatcher = testDispatcher,
-            coroutineScope = TestScope(testDispatcher)
-        )
+        val sut = SEPADirectDebitApi(braintreeClient)
 
         val slotString = slot<String>()
         coEvery {
             braintreeClient.sendPOST(url = eq("/v1/sepa_debit"), data = capture(slotString))
-        } returns "{}"
+        } returns Fixtures.SEPA_DEBIT_CREATE_MANDATE_RESPONSE
 
-        sut.createMandate(request, returnURL, createMandateCallback)
-        advanceUntilIdle()
+        sut.createMandate(request, returnURL)
+
         coVerify {
             braintreeClient.sendPOST(url = eq("/v1/sepa_debit"), data = capture(slotString))
         }
