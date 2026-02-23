@@ -36,6 +36,11 @@ class PayPalLauncher internal constructor(
         lazyAnalyticsClient = AnalyticsClient.lazyInstance
     )
 
+    /**
+     * Used to launch the PayPal flow in a web browser and deliver results. Use it in Compose flows or where
+     * ActivityResultCaller is not available.
+     * @param registry Optional ActivityResultRegistry parameter. If provided, it will be passed to BrowserSwitchClient
+     */
     constructor(registry: ActivityResultRegistry? = null) : this(
         browserSwitchClient = registry?.let { BrowserSwitchClient(it) } ?: BrowserSwitchClient(),
         lazyAnalyticsClient = AnalyticsClient.lazyInstance

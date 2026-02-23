@@ -24,6 +24,8 @@ import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
 
+// pendingRequest that needs to be persisted across configuration changes.
+// more it to a persistent storage when feasible.
 private var pendingRequest: String? = null
 
 @Composable
