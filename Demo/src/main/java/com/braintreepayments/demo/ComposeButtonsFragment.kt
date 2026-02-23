@@ -23,7 +23,7 @@ class ComposeButtonsFragment : BaseFragment() {
     ): View {
         super.onCreateView(inflater, container, savedInstanceState)
 
-        //PayPal flow setup
+        // PayPal flow setup
         val payPalRequest = PayPalRequestFactory.createPayPalCheckoutRequest(
             requireContext(),
             "10.0",
@@ -59,7 +59,8 @@ class ComposeButtonsFragment : BaseFragment() {
                         style = PayPalButtonColor.Blue,
                         payPalRequest = payPalRequest,
                         authorization = authStringArg,
-                        appLinkReturnUrl = "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments".toUri(),
+                        appLinkReturnUrl =
+                            "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments".toUri(),
                         deepLinkFallbackUrlScheme = "com.braintreepayments.demo.braintree",
                         paypalTokenizeCallback = paypalTokenizeCallback
                     )

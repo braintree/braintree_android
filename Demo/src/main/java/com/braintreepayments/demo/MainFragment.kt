@@ -73,7 +73,9 @@ class MainFragment : BaseFragment() {
                                 )
 
                                 PaymentModuleButton(R.string.payment_buttons_button) { launchPaymentButtons() }
-                                PaymentModuleButton(R.string.payment_buttons_compose_button) { launchComposePaymentButtons() }
+                                PaymentModuleButton(R.string.payment_buttons_compose_button) {
+                                    launchComposePaymentButtons()
+                                }
                                 PaymentModuleButton(R.string.venmo) { launchVenmo() }
                                 PaymentModuleButton(R.string.cards) { launchCards() }
                                 PaymentModuleButton(R.string.google_pay) { launchGooglePay() }
