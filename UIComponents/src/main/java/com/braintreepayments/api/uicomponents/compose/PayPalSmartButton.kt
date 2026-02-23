@@ -40,13 +40,16 @@ fun PayPalSmartButton(
 
     var enabled by remember { mutableStateOf(true) }
 
-    val payPalLauncher = PayPalLauncher(LocalActivityResultRegistryOwner.current?.activityResultRegistry)
-    val payPalClient = PayPalClient(
-        context = context,
-        authorization = authorization,
-        appLinkReturnUrl = appLinkReturnUrl,
-        deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
-    )
+    val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
+    val payPalLauncher = remember { PayPalLauncher(registry) }
+    val payPalClient = remember {
+        PayPalClient(
+            context = context,
+            authorization = authorization,
+            appLinkReturnUrl = appLinkReturnUrl,
+            deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
+        )
+    }
     PayPalButton(style = style, enabled = enabled) {
         enabled = false
         payPalClient.createPaymentAuthRequest(
@@ -79,7 +82,6 @@ fun PayPalSmartButton(
 
         onPauseOrDispose {
             // Do something on pause or dispose effect
-//            viewModel.clearPayPalPendingRequest()
         }
     }
 }
