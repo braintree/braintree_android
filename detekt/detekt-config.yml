@@ -254,10 +254,7 @@ exceptions:
       '**/jvmTest/**',
       '**/jsTest/**',
       '**/iosTest/**',
-      '**/*Client.kt',
-      '**/PayPalMessagingView.kt',
-      '**/EligiblePaymentsApi.kt',
-      '**/DataCollector.kt'
+      '**/*Client.kt'
     ]
     exceptionNames:
       - 'ArrayIndexOutOfBoundsException'

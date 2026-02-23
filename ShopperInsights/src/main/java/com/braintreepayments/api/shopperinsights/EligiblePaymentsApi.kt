@@ -15,6 +15,7 @@ internal class EligiblePaymentsApi(
     private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
     private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
+    @Suppress("TooGenericExceptionCaught")
     fun execute(request: EligiblePaymentsApiRequest, callback: EligiblePaymentsCallback) {
         val jsonBody = request.toJson()
         coroutineScope.launch {

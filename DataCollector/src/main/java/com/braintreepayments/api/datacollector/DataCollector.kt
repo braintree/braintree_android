@@ -88,6 +88,7 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
      * @param request Optional client metadata id
      * @param callback          [DataCollectorCallback]
      */
+    @Suppress("TooGenericExceptionCaught")
     fun collectDeviceData(
         context: Context,
         request: DataCollectorRequest,
@@ -139,6 +140,7 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
      *                          string on success or an error with the failure reason.
      *                          Retries are recommended on failure.
      */
+    @Suppress("TooGenericExceptionCaught")
     fun collectDeviceDataOnSuccess(
         context: Context,
         request: DataCollectorRequest,
