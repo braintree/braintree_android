@@ -14,7 +14,6 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.verify
-import io.mockk.verifyOrder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -38,9 +37,6 @@ class CardClientUnitTest {
 
     private var apiClient: ApiClient = mockk(relaxed = true)
     private val analyticsParamRepository: AnalyticsParamRepository = mockk(relaxed = true)
-
-    private val testDispatcher = StandardTestDispatcher()
-    private val testScope = TestScope(testDispatcher)
 
     private val graphQLEnabledConfig: Configuration =
         Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL)

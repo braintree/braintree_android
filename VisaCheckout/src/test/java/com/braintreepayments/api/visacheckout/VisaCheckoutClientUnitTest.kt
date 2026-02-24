@@ -36,7 +36,6 @@ class VisaCheckoutClientUnitTest {
 
     private lateinit var configurationWithVisaCheckout: Configuration
     private lateinit var visaPaymentSummary: VisaPaymentSummary
-    private val testDispatcher = StandardTestDispatcher()
 
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var testScope: TestScope

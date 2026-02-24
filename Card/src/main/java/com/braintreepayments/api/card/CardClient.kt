@@ -78,25 +78,28 @@ class CardClient internal constructor(
                     )
                 if (shouldTokenizeViaGraphQL) {
                     card.sessionId = analyticsParamRepository.sessionId
-                    val tokenizePayload = card.buildJSONForGraphQL()
+                    try {
+                        val tokenizePayload = card.buildJSONForGraphQL()
+                        coroutineScope.launch {
+                            try {
+                                val tokenizationResponse =
+                                    apiClient.tokenizeGraphQL(tokenizePayload)
+                                handleTokenizeResponse(tokenizationResponse, null, callback)
+                            } catch (e: Exception) {
+                                handleTokenizeResponse(null, e, callback)
+                            }
+                        }
+                    } catch (e: JSONException) {
+                        callbackFailure(callback, CardResult.Failure(e))
+                    }
+                } else {
                     coroutineScope.launch {
                         try {
-                            val tokenizationResponse = apiClient.tokenizeGraphQL(tokenizePayload)
+                            val tokenizationResponse = apiClient.tokenizeREST(card)
                             handleTokenizeResponse(tokenizationResponse, null, callback)
                         } catch (e: Exception) {
                             handleTokenizeResponse(null, e, callback)
                         }
-                    }
-                } catch (e: JSONException) {
-                    callbackFailure(callback, CardResult.Failure(e))
-                }
-            } else {
-                coroutineScope.launch {
-                    try {
-                        val tokenizationResponse = apiClient.tokenizeREST(card)
-                        handleTokenizeResponse(tokenizationResponse, null, callback)
-                    } catch (e: Exception) {
-                        handleTokenizeResponse(null, e, callback)
                     }
                 }
             } catch (e: Exception) {
