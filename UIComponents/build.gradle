@@ -59,6 +59,8 @@ dependencies {
     implementation libs.accompanist.drawablepainter
     implementation libs.compose.animation
     implementation libs.android.compose
+    implementation libs.androidx.compose.viewModel
+    implementation libs.androidx.datastore.preferences
 
     def composeBom = platform(libs.androidx.compose.bom)
     implementation composeBom

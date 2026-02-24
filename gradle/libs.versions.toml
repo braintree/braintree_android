@@ -46,6 +46,7 @@ leakcanary = "2.12"
 deviceAutomator = "1.0.0"
 btCardForm = "5.4.0"
 accompanist = "0.37.3"
+datastore = "1.2.0"
 
 [libraries]
 # Androidx
@@ -113,6 +114,7 @@ device-automator = { module = "com.braintreepayments:device-automator", version.
 bt-card-form = { module = "com.braintreepayments:card-form", version.ref = "btCardForm" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview"}
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling"}
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradle" }
