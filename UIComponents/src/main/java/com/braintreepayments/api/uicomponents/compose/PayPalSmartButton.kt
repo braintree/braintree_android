@@ -61,11 +61,12 @@ fun PayPalSmartButton(
             when (paymentAuthRequest) {
                 is PayPalPaymentAuthRequest.ReadyToLaunch -> {
                     activity?.let {
-                        completePayPalFlow(payPalLauncher, it, paymentAuthRequest)
+                        completePayPalFlow(payPalLauncher, it, paymentAuthRequest, paypalTokenizeCallback)
                     }
                 }
 
                 is PayPalPaymentAuthRequest.Failure -> {
+                    paypalTokenizeCallback.onPayPalResult(PayPalResult.Failure(paymentAuthRequest.error))
                 }
             }
         }
@@ -78,20 +79,18 @@ fun PayPalSmartButton(
         activity?.intent?.let { intent ->
             handleReturnToApp(payPalLauncher, payPalClient, pendingRequest, intent, paypalTokenizeCallback)
             enabled = true
-            clearPayPalPendingRequest()
             activity.intent.data = null
         }
 
-        onPauseOrDispose {
-            // Do something on pause or dispose effect
-        }
+        onPauseOrDispose { clearPayPalPendingRequest() }
     }
 }
 
 internal fun completePayPalFlow(
     payPalLauncher: PayPalLauncher,
     activity: Activity,
-    paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch
+    paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch,
+    paypalTokenizeCallback: PayPalTokenizeCallback
 ) {
     val payPalPendingRequest = payPalLauncher.launch(
         activity = activity as ComponentActivity,
@@ -103,6 +102,7 @@ internal fun completePayPalFlow(
         }
 
         is PayPalPendingRequest.Failure -> {
+            paypalTokenizeCallback.onPayPalResult(PayPalResult.Failure(payPalPendingRequest.error))
         }
     }
 }
