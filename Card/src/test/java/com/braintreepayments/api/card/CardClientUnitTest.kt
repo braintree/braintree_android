@@ -14,6 +14,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.verify
+import io.mockk.verifyOrder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -25,6 +26,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -36,6 +38,9 @@ class CardClientUnitTest {
 
     private var apiClient: ApiClient = mockk(relaxed = true)
     private val analyticsParamRepository: AnalyticsParamRepository = mockk(relaxed = true)
+
+    private val testDispatcher = StandardTestDispatcher()
+    private val testScope = TestScope(testDispatcher)
 
     private val graphQLEnabledConfig: Configuration =
         Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL)
@@ -354,7 +359,7 @@ class CardClientUnitTest {
     @Test
     fun tokenizeException_analyticsEventIsSentWithErrorDescription() = runTest(testDispatcher) {
         val errorDescription = "Configuration error."
-        val configError = Exception(errorDescription)
+        val configError = IOException(errorDescription)
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(configError)
             .build()

@@ -11,10 +11,13 @@ import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
-import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ConfigurationException
 import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.sharedutils.Json
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.Locale
@@ -26,7 +29,9 @@ class LocalPaymentClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val dataCollector: DataCollector = DataCollector(braintreeClient),
     private val localPaymentApi: LocalPaymentApi = LocalPaymentApi(braintreeClient),
-    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
     /**
      * Used for linking events from the client to server side request
@@ -72,12 +77,13 @@ class LocalPaymentClient internal constructor(
         if (exception != null) {
             authRequestFailure(exception, callback)
         } else {
-            braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
-                if (configuration != null) {
+            coroutineScope.launch {
+                try {
+                    val configuration = braintreeClient.getConfiguration()
                     if (!configuration.isPayPalEnabled) {
                         val errorMessage = "Local payments are not enabled for this merchant."
                         authRequestFailure(ConfigurationException(errorMessage), callback)
-                        return@getConfiguration
+                        return@launch
                     }
 
                     localPaymentApi.createPaymentMethod(
@@ -99,8 +105,8 @@ class LocalPaymentClient internal constructor(
                             authRequestFailure(BraintreeException(errorMessage), callback)
                         }
                     }
-                } else if (error != null) {
-                    authRequestFailure(error, callback)
+                } catch (e: Exception) {
+                    authRequestFailure(e, callback)
                 }
             }
         }
@@ -180,8 +186,9 @@ class LocalPaymentClient internal constructor(
             callbackCancel(callback)
             return
         }
-        braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
-            if (configuration != null) {
+        coroutineScope.launch {
+            try {
+                val configuration = braintreeClient.getConfiguration()
                 localPaymentApi.tokenize(
                     merchantAccountId, responseString,
                     dataCollector.getClientMetadataId(
@@ -197,8 +204,8 @@ class LocalPaymentClient internal constructor(
                         tokenizeFailure(localPaymentError, callback)
                     }
                 }
-            } else if (error != null) {
-                tokenizeFailure(error, callback)
+            } catch (e: Exception) {
+                tokenizeFailure(e, callback)
             }
         }
     }

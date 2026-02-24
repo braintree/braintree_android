@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+    * Pass `is_billing_agreement` and `billing_plan_type` to analytics events.
+
 ## 5.23.0 (2026-02-12)
 
 * Venmo

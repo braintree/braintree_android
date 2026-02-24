@@ -59,6 +59,7 @@ dependencies {
     testImplementation libs.mockito.core
     testImplementation libs.mockk
     testImplementation libs.test.parameter.injector
+    testImplementation libs.coroutines.test
 
     testImplementation project(':TestUtils')
 

@@ -7,7 +7,6 @@ import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.ApiClient
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
-import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.GraphQLConstants
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -70,20 +69,15 @@ class CardClient internal constructor(
     fun tokenize(card: Card, callback: CardTokenizeCallback) {
         analyticsParamRepository.reset()
         braintreeClient.sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_STARTED)
-        braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
-            if (error != null) {
-                callbackFailure(callback, CardResult.Failure(error))
-                return@getConfiguration
-            }
-            val shouldTokenizeViaGraphQL =
-                configuration?.isGraphQLFeatureEnabled(
-                    GraphQLConstants.Features.TOKENIZE_CREDIT_CARDS
-                ) ?: run {
-                    false
-                }
-            if (shouldTokenizeViaGraphQL) {
-                card.sessionId = analyticsParamRepository.sessionId
-                try {
+        coroutineScope.launch {
+            try {
+                val configuration = braintreeClient.getConfiguration()
+                val shouldTokenizeViaGraphQL =
+                    configuration.isGraphQLFeatureEnabled(
+                        GraphQLConstants.Features.TOKENIZE_CREDIT_CARDS
+                    )
+                if (shouldTokenizeViaGraphQL) {
+                    card.sessionId = analyticsParamRepository.sessionId
                     val tokenizePayload = card.buildJSONForGraphQL()
                     coroutineScope.launch {
                         try {
@@ -105,6 +99,8 @@ class CardClient internal constructor(
                         handleTokenizeResponse(null, e, callback)
                     }
                 }
+            } catch (e: Exception) {
+                callbackFailure(callback, CardResult.Failure(e))
             }
         }
     }
