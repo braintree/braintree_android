@@ -8,12 +8,12 @@ import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkApiClientBuilder
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
+import io.mockk.coVerifyOrder
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.verify
-import io.mockk.verifyOrder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.json.JSONArray
 import org.json.JSONObject
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -37,20 +38,31 @@ class CardClientUnitTest {
     private var apiClient: ApiClient = mockk(relaxed = true)
     private val analyticsParamRepository: AnalyticsParamRepository = mockk(relaxed = true)
 
-    private val testDispatcher = StandardTestDispatcher()
-    private val testScope = TestScope(testDispatcher)
-
     private val graphQLEnabledConfig: Configuration =
         Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL)
     private val graphQLDisabledConfig: Configuration =
         Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN)
+
+    private val testDispatcher = StandardTestDispatcher()
+    private lateinit var testScope: TestScope
+
+    @Before
+    fun beforeEach() {
+        testScope = TestScope(testDispatcher)
+    }
 
     @Test
     fun tokenize_resetsSessionId() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder().build()
         apiClient = MockkApiClientBuilder().build()
 
-        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository, testDispatcher, testScope)
+        val sut = CardClient(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
         sut.tokenize(card, cardTokenizeCallback)
         advanceUntilIdle()
 
@@ -62,8 +74,15 @@ class CardClientUnitTest {
         val braintreeClient = MockkBraintreeClientBuilder().build()
         apiClient = MockkApiClientBuilder().build()
 
-        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository, testDispatcher, testScope)
+        val sut = CardClient(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
         sut.tokenize(card, cardTokenizeCallback)
+        advanceUntilIdle()
 
         verify { braintreeClient.sendAnalyticsEvent(CardAnalytics.CARD_TOKENIZE_STARTED, any(), true) }
     }
@@ -75,15 +94,21 @@ class CardClientUnitTest {
             .build()
         every { analyticsParamRepository.sessionId } returns "session-id"
 
-        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository, testDispatcher, testScope)
+        val sut = CardClient(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
 
         val card = spyk(Card())
         sut.tokenize(card, cardTokenizeCallback)
         advanceUntilIdle()
 
-        verifyOrder {
+        coVerifyOrder {
             card.sessionId = "session-id"
-            apiClient.tokenizeGraphQL(any(), any())
+            apiClient.tokenizeGraphQL(any())
         }
     }
 
@@ -97,7 +122,13 @@ class CardClientUnitTest {
             .tokenizeGraphQLSuccess(JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD))
             .build()
 
-        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository, testDispatcher, testScope)
+        val sut = CardClient(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
 
         sut.tokenize(card, cardTokenizeCallback)
         advanceUntilIdle()
@@ -121,7 +152,13 @@ class CardClientUnitTest {
             .tokenizeRESTSuccess(JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD))
             .build()
 
-        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository, testDispatcher, testScope)
+        val sut = CardClient(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
 
         sut.tokenize(card, cardTokenizeCallback)
         advanceUntilIdle()
@@ -145,7 +182,13 @@ class CardClientUnitTest {
             .tokenizeGraphQLSuccess(JSONObject(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD))
             .build()
 
-        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository, testDispatcher, testScope)
+        val sut = CardClient(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
         sut.tokenize(card, cardTokenizeCallback)
         advanceUntilIdle()
 
@@ -162,7 +205,13 @@ class CardClientUnitTest {
             .tokenizeRESTSuccess(JSONObject(Fixtures.PAYMENT_METHODS_RESPONSE_VISA_CREDIT_CARD))
             .build()
 
-        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository, testDispatcher, testScope)
+        val sut = CardClient(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
         sut.tokenize(card, cardTokenizeCallback)
         advanceUntilIdle()
 
@@ -180,7 +229,13 @@ class CardClientUnitTest {
             .tokenizeGraphQLError(error)
             .build()
 
-        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository, testDispatcher, testScope)
+        val sut = CardClient(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
         sut.tokenize(card, cardTokenizeCallback)
         advanceUntilIdle()
 
@@ -204,7 +259,13 @@ class CardClientUnitTest {
             .tokenizeRESTError(error)
             .build()
 
-        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository, testDispatcher, testScope)
+        val sut = CardClient(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
         sut.tokenize(card, cardTokenizeCallback)
         advanceUntilIdle()
 
@@ -228,7 +289,13 @@ class CardClientUnitTest {
             .tokenizeGraphQLError(error)
             .build()
 
-        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository, testDispatcher, testScope)
+        val sut = CardClient(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
         sut.tokenize(card, cardTokenizeCallback)
         advanceUntilIdle()
 
@@ -246,7 +313,13 @@ class CardClientUnitTest {
             .tokenizeRESTError(error)
             .build()
 
-        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository, testDispatcher, testScope)
+        val sut = CardClient(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
         sut.tokenize(card, cardTokenizeCallback)
         advanceUntilIdle()
 
@@ -255,12 +328,18 @@ class CardClientUnitTest {
 
     @Test
     fun tokenize_propagatesConfigurationFetchError() = runTest(testDispatcher) {
-        val configError = IOException("Configuration error.")
+        val configError = Exception("Configuration error.")
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(configError)
             .build()
 
-        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository, testDispatcher, testScope)
+        val sut = CardClient(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
         sut.tokenize(card, cardTokenizeCallback)
         advanceUntilIdle()
 
@@ -281,7 +360,13 @@ class CardClientUnitTest {
             .configurationError(configError)
             .build()
 
-        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository, testDispatcher, testScope)
+        val sut = CardClient(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
         sut.tokenize(card, cardTokenizeCallback)
         advanceUntilIdle()
 
@@ -309,7 +394,13 @@ class CardClientUnitTest {
             .tokenizeGraphQLSuccess(responseWithErrors)
             .build()
 
-        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository, testDispatcher, testScope)
+        val sut = CardClient(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
         sut.tokenize(card, cardTokenizeCallback)
         advanceUntilIdle()
 
@@ -335,7 +426,13 @@ class CardClientUnitTest {
             .tokenizeGraphQLSuccess(responseWithEmptyErrors)
             .build()
 
-        val sut = CardClient(braintreeClient, apiClient, analyticsParamRepository, testDispatcher, testScope)
+        val sut = CardClient(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
         sut.tokenize(card, cardTokenizeCallback)
         advanceUntilIdle()
 

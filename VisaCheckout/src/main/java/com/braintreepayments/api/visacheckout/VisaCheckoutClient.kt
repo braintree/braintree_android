@@ -104,21 +104,13 @@ class VisaCheckoutClient internal constructor(
         callback: VisaCheckoutTokenizeCallback
     ) {
         braintreeClient.sendAnalyticsEvent(VisaCheckoutAnalytics.TOKENIZE_STARTED)
-        apiClient.tokenizeREST(
-            VisaCheckoutAccount(visaPaymentSummary)
-        ) { tokenizationResponse: JSONObject?, exception: Exception? ->
-            if (tokenizationResponse != null) {
-                try {
-                    val visaCheckoutNonce = fromJSON(tokenizationResponse)
-                    callbackTokenizeSuccess(
-                        callback,
-                        VisaCheckoutResult.Success(visaCheckoutNonce)
-                    )
-                } catch (e: JSONException) {
-                    callbackTokenizeFailure(callback, VisaCheckoutResult.Failure(e))
-                }
-            } else if (exception != null) {
-                callbackTokenizeFailure(callback, VisaCheckoutResult.Failure(exception))
+        coroutineScope.launch {
+            try {
+                val tokenizationResponse = apiClient.tokenizeREST(VisaCheckoutAccount(visaPaymentSummary))
+                val visaCheckoutNonce = fromJSON(tokenizationResponse)
+                callbackTokenizeSuccess(callback, VisaCheckoutResult.Success(visaCheckoutNonce))
+            } catch (e: Exception) {
+                callbackTokenizeFailure(callback, VisaCheckoutResult.Failure(e))
             }
         }
     }
