@@ -14,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleResumeEffect
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
@@ -32,7 +31,8 @@ fun PayPalSmartButton(
     authorization: String,
     appLinkReturnUrl: Uri,
     deepLinkFallbackUrlScheme: String,
-    viewModel: PayPalComposeButtonViewModel = PayPalComposeButtonViewModel(PayPalPendingRequestRepository(LocalContext.current)),
+    viewModel: PayPalComposeButtonViewModel =
+        PayPalComposeButtonViewModel(PayPalPendingRequestRepository(LocalContext.current)),
     paypalTokenizeCallback: PayPalTokenizeCallback
 ) {
     val context = LocalContext.current
