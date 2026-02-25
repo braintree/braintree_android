@@ -2,80 +2,33 @@ package com.braintreepayments.api.sepadirectdebit
 
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.sepadirectdebit.SEPADirectDebitNonce.Companion.fromJSON
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 
 internal class SEPADirectDebitApi(
-    private val braintreeClient: BraintreeClient,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
-    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
+    private val braintreeClient: BraintreeClient
 ) {
 
-    fun createMandate(
+    suspend fun createMandate(
         sepaDirectDebitRequest: SEPADirectDebitRequest,
-        returnUrlScheme: String,
-        callback: CreateMandateCallback
-    ) {
-        try {
-            val jsonObject =
-                buildCreateMandateRequest(sepaDirectDebitRequest, returnUrlScheme)
-            val url = "/v1/sepa_debit"
-            coroutineScope.launch {
-                try {
-                    val responseBody = braintreeClient.sendPOST(
-                        url,
-                        jsonObject.toString()
-                    )
-                    try {
-                        val result = parseCreateMandateResponse(responseBody)
-                        callback.onResult(result, null)
-                    } catch (e: JSONException) {
-                        callback.onResult(null, e)
-                    }
-                } catch (httpError: IOException) {
-                    callback.onResult(null, httpError)
-                }
-            }
-        } catch (e: JSONException) {
-            callback.onResult(null, e)
-        }
+        returnUrlScheme: String
+    ): CreateMandateResult {
+        val jsonObject = buildCreateMandateRequest(sepaDirectDebitRequest, returnUrlScheme)
+        val url = "/v1/sepa_debit"
+        val responseBody = braintreeClient.sendPOST(url, jsonObject.toString())
+        return parseCreateMandateResponse(responseBody)
     }
 
-    fun tokenize(
+    suspend fun tokenize(
         ibanLastFour: String,
         customerId: String,
         bankReferenceToken: String,
-        mandateType: String,
-        callback: SEPADirectDebitInternalTokenizeCallback
-    ) {
-        try {
-            val jsonObject =
-                buildTokenizeRequest(ibanLastFour, customerId, bankReferenceToken, mandateType)
-            val url = "/v1/payment_methods/sepa_debit_accounts"
-            coroutineScope.launch {
-                try {
-                    val responseBody = braintreeClient.sendPOST(
-                        url,
-                        jsonObject.toString()
-                    )
-                    try {
-                        val nonce = parseTokenizeResponse(responseBody)
-                        callback.onResult(nonce, null)
-                    } catch (e: JSONException) {
-                        callback.onResult(null, e)
-                    }
-                } catch (httpError: IOException) {
-                    callback.onResult(null, httpError)
-                }
-            }
-        } catch (e: JSONException) {
-            callback.onResult(null, e)
-        }
+        mandateType: String
+    ): SEPADirectDebitNonce {
+        val jsonObject = buildTokenizeRequest(ibanLastFour, customerId, bankReferenceToken, mandateType)
+        val url = "/v1/payment_methods/sepa_debit_accounts"
+        val responseBody = braintreeClient.sendPOST(url, jsonObject.toString())
+        return parseTokenizeResponse(responseBody)
     }
 
     @Throws(JSONException::class)

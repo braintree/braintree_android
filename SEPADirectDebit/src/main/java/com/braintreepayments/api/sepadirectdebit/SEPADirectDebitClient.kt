@@ -9,6 +9,10 @@ import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -17,7 +21,9 @@ import org.json.JSONObject
  */
 class SEPADirectDebitClient internal constructor(
     private val braintreeClient: BraintreeClient,
-    private val sepaDirectDebitApi: SEPADirectDebitApi = SEPADirectDebitApi(braintreeClient)
+    private val sepaDirectDebitApi: SEPADirectDebitApi = SEPADirectDebitApi(braintreeClient),
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
     /**
      * Initializes a new [SEPADirectDebitClient] instance
@@ -45,11 +51,13 @@ class SEPADirectDebitClient internal constructor(
         callback: SEPADirectDebitPaymentAuthRequestCallback
     ) {
         braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_STARTED)
-        sepaDirectDebitApi.createMandate(
-            sepaDirectDebitRequest,
-            braintreeClient.getReturnUrlScheme()
-        ) { result, createMandateError ->
-            if (result != null) {
+        coroutineScope.launch {
+            try {
+                val result = sepaDirectDebitApi.createMandate(
+                    sepaDirectDebitRequest,
+                    braintreeClient.getReturnUrlScheme()
+                )
+
                 if (URLUtil.isValidUrl(result.approvalUrl)) {
                     braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_CHALLENGE_REQUIRED)
                     try {
@@ -68,23 +76,22 @@ class SEPADirectDebitClient internal constructor(
                 } else if (result.approvalUrl == "null") {
                     braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_SUCCEEDED)
                     // Mandate has already been approved
-                    sepaDirectDebitApi.tokenize(
-                        ibanLastFour = result.ibanLastFour,
-                        customerId = result.customerId,
-                        bankReferenceToken = result.bankReferenceToken,
-                        mandateType = result.mandateType.toString()
-                    ) { sepaDirectDebitNonce, error ->
-                        if (sepaDirectDebitNonce != null) {
-                            callbackCreatePaymentAuthChallengeNotRequiredSuccess(
-                                callback,
-                                SEPADirectDebitPaymentAuthRequest.LaunchNotRequired(sepaDirectDebitNonce)
-                            )
-                        } else if (error != null) {
-                            callbackCreatePaymentAuthFailure(
-                                callback,
-                                SEPADirectDebitPaymentAuthRequest.Failure(error)
-                            )
-                        }
+                    try {
+                        val sepaDirectDebitNonce = sepaDirectDebitApi.tokenize(
+                            ibanLastFour = result.ibanLastFour,
+                            customerId = result.customerId,
+                            bankReferenceToken = result.bankReferenceToken,
+                            mandateType = result.mandateType.toString()
+                        )
+                        callbackCreatePaymentAuthChallengeNotRequiredSuccess(
+                            callback,
+                            SEPADirectDebitPaymentAuthRequest.LaunchNotRequired(sepaDirectDebitNonce)
+                        )
+                    } catch (error: Exception) {
+                        callbackCreatePaymentAuthFailure(
+                            callback,
+                            SEPADirectDebitPaymentAuthRequest.Failure(error)
+                        )
                     }
                 } else {
                     val errorMessage = "An unexpected error occurred."
@@ -94,7 +101,7 @@ class SEPADirectDebitClient internal constructor(
                         SEPADirectDebitPaymentAuthRequest.Failure(BraintreeException(errorMessage))
                     )
                 }
-            } else if (createMandateError != null) {
+            } catch (createMandateError: Exception) {
                 createMandateFailedAnalyticsEvent(errorDescription = createMandateError.message)
                 callbackCreatePaymentAuthFailure(
                     callback,
@@ -139,18 +146,19 @@ class SEPADirectDebitClient internal constructor(
                 val bankReferenceToken = metadata.optString(BANK_REFERENCE_TOKEN_KEY)
                 val mandateType = metadata.optString(MANDATE_TYPE_KEY)
 
-                sepaDirectDebitApi.tokenize(
-                    ibanLastFour = ibanLastFour,
-                    customerId = customerId,
-                    bankReferenceToken = bankReferenceToken,
-                    mandateType = mandateType
-                ) { sepaDirectDebitNonce, error ->
-                    if (sepaDirectDebitNonce != null) {
+                coroutineScope.launch {
+                    try {
+                        val sepaDirectDebitNonce = sepaDirectDebitApi.tokenize(
+                            ibanLastFour = ibanLastFour,
+                            customerId = customerId,
+                            bankReferenceToken = bankReferenceToken,
+                            mandateType = mandateType
+                        )
                         callbackTokenizeSuccess(
                             callback,
                             SEPADirectDebitResult.Success(sepaDirectDebitNonce)
                         )
-                    } else if (error != null) {
+                    } catch (error: Exception) {
                         callbackTokenizeFailure(callback, SEPADirectDebitResult.Failure(error))
                     }
                 }
