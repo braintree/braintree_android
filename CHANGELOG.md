@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.24.0 (2026-02-25)
 
 * PayPal
     * Pass `is_billing_agreement` and `billing_plan_type` to analytics events.

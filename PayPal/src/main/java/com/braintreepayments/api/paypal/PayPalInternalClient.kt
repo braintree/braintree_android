@@ -21,7 +21,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONException
-import org.json.JSONObject
 import java.io.IOException
 
 internal class PayPalInternalClient(
@@ -100,15 +99,13 @@ internal class PayPalInternalClient(
     }
 
     fun tokenize(payPalAccount: PayPalAccount, callback: PayPalInternalTokenizeCallback) {
-        apiClient.tokenizeREST(payPalAccount) { tokenizationResponse: JSONObject?, exception: Exception? ->
-            if (tokenizationResponse != null) {
-                try {
-                    callback.onResult(PayPalAccountNonce.fromJSON(tokenizationResponse), null)
-                } catch (e: JSONException) {
-                    callback.onResult(null, e)
-                }
-            } else {
-                callback.onResult(null, exception)
+        coroutineScope.launch {
+            try {
+                val tokenizationResponse = apiClient.tokenizeREST(payPalAccount)
+                val nonce = PayPalAccountNonce.fromJSON(tokenizationResponse)
+                callback.onResult(nonce, null)
+            } catch (e: Exception) {
+                callback.onResult(null, e)
             }
         }
     }

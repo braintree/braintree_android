@@ -1,13 +1,8 @@
 package com.braintreepayments.api.core
 
 import androidx.annotation.RestrictTo
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 
 /**
  * @suppress
@@ -16,46 +11,28 @@ import java.io.IOException
 class ApiClient(
     private val braintreeClient: BraintreeClient,
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
-    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
 
-    fun tokenizeGraphQL(tokenizePayload: JSONObject, callback: TokenizeCallback) =
-        braintreeClient.run {
-            coroutineScope.launch {
-                try {
-                    val responseBody = sendGraphQLPOST(tokenizePayload)
-                    parseResponseToJSON(responseBody)?.let { json ->
-                        callback.onResult(json, null)
-                    } ?: callback.onResult(
-                        null,
-                        BraintreeException("Unable to parse GraphQL response.")
-                    )
-                } catch (e: IOException) {
-                    callback.onResult(null, e)
-                }
-            }
-        }
+    suspend fun tokenizeGraphQL(tokenizePayload: JSONObject): JSONObject {
+        val responseBody = braintreeClient.sendGraphQLPOST(tokenizePayload)
+        val response = parseResponseToJSON(responseBody)
+            ?: throw JSONException("Invalid JSON response")
+        return response
+    }
 
-    fun tokenizeREST(paymentMethod: PaymentMethod, callback: TokenizeCallback) =
-        braintreeClient.run {
-            val url = versionedPath("$PAYMENT_METHOD_ENDPOINT/${paymentMethod.apiPath}")
-            paymentMethod.sessionId = analyticsParamRepository.sessionId
+    suspend fun tokenizeREST(paymentMethod: PaymentMethod): JSONObject {
+        val url = versionedPath("$PAYMENT_METHOD_ENDPOINT/${paymentMethod.apiPath}")
+        paymentMethod.sessionId = analyticsParamRepository.sessionId
 
-            coroutineScope.launch {
-                try {
-                    val responseBody = sendPOST(
-                        url = url,
-                        data = paymentMethod.buildJSON().toString(),
-                    )
-                    parseResponseToJSON(responseBody)?.let { json ->
-                        callback.onResult(json, null)
-                    } ?: callback.onResult(null, JSONException("Invalid JSON response"))
-                } catch (httpError: IOException) {
-                    callback.onResult(null, httpError)
-                }
-            }
-        }
+        val responseBody = braintreeClient.sendPOST(
+            url = url,
+            data = paymentMethod.buildJSON().toString(),
+        )
+
+        val response = parseResponseToJSON(responseBody)
+            ?: throw JSONException("Invalid JSON response")
+        return response
+    }
 
     private fun parseResponseToJSON(responseBody: String?): JSONObject? =
         responseBody?.let {

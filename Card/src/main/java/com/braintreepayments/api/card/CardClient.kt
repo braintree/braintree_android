@@ -78,21 +78,28 @@ class CardClient internal constructor(
                     )
                 if (shouldTokenizeViaGraphQL) {
                     card.sessionId = analyticsParamRepository.sessionId
-                    val tokenizePayload = card.buildJSONForGraphQL()
-                    apiClient.tokenizeGraphQL(
-                        tokenizePayload
-                    ) { tokenizationResponse: JSONObject?, exception: Exception? ->
-                        handleTokenizeResponse(
-                            tokenizationResponse, exception, callback
-                        )
+                    try {
+                        val tokenizePayload = card.buildJSONForGraphQL()
+                        coroutineScope.launch {
+                            try {
+                                val tokenizationResponse =
+                                    apiClient.tokenizeGraphQL(tokenizePayload)
+                                handleTokenizeResponse(tokenizationResponse, null, callback)
+                            } catch (e: Exception) {
+                                handleTokenizeResponse(null, e, callback)
+                            }
+                        }
+                    } catch (e: JSONException) {
+                        callbackFailure(callback, CardResult.Failure(e))
                     }
                 } else {
-                    apiClient.tokenizeREST(
-                        card
-                    ) { tokenizationResponse: JSONObject?, exception: Exception? ->
-                        handleTokenizeResponse(
-                            tokenizationResponse, exception, callback
-                        )
+                    coroutineScope.launch {
+                        try {
+                            val tokenizationResponse = apiClient.tokenizeREST(card)
+                            handleTokenizeResponse(tokenizationResponse, null, callback)
+                        } catch (e: Exception) {
+                            handleTokenizeResponse(null, e, callback)
+                        }
                     }
                 }
             } catch (e: Exception) {
