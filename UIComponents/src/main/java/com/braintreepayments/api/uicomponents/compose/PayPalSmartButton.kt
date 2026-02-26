@@ -72,7 +72,6 @@ fun PayPalSmartButton(
     }
 
     LifecycleResumeEffect(Unit) {
-        // Do something on resume or launch effect
         val pendingRequest = viewModel.getPendingRequest()
 
         activity?.intent?.let { intent ->
