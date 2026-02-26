@@ -14,12 +14,8 @@ class PayPalComposeButtonViewModel(
         }
     }
 
-    fun getPendingRequest(): String? {
-        var pendingRequest: String? = null
-        viewModelScope.launch {
-            pendingRequest = repository.getPendingRequest()
-        }
-        return pendingRequest
+    suspend fun getPendingRequest(): String? {
+        return repository.getPendingRequest()
     }
 
     fun clearPendingRequest() {

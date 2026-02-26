@@ -14,6 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.lifecycleScope
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
@@ -23,6 +25,7 @@ import com.braintreepayments.api.paypal.PayPalRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
+import kotlinx.coroutines.launch
 
 @Composable
 fun PayPalSmartButton(
@@ -72,13 +75,15 @@ fun PayPalSmartButton(
     }
 
     LifecycleResumeEffect(Unit) {
-        val pendingRequest = viewModel.getPendingRequest()
+        lifecycle.coroutineScope.launch {
+            val pendingRequest = viewModel.getPendingRequest()
 
-        activity?.intent?.let { intent ->
-            handleReturnToApp(payPalLauncher, payPalClient, pendingRequest, intent, paypalTokenizeCallback)
-            enabled = true
-            viewModel.clearPendingRequest()
-            activity.intent.data = null
+            activity?.intent?.let { intent ->
+                handleReturnToApp(payPalLauncher, payPalClient, pendingRequest, intent, paypalTokenizeCallback)
+                enabled = true
+                viewModel.clearPendingRequest()
+                activity.intent.data = null
+            }
         }
 
         onPauseOrDispose { lifecycle }
