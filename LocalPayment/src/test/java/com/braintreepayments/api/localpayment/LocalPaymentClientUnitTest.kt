@@ -110,10 +110,10 @@ class LocalPaymentClientUnitTest {
             testDispatcher,
             testScope
         )
-        every { localPaymentAuthRequestParams!!.approvalUrl } returns "https://"
-        every { localPaymentAuthRequestParams!!.request } returns createLocalPaymentRequest()
-        every { localPaymentAuthRequestParams!!.paymentId } returns "paymentId"
-        every { analyticsParamRepository!!.sessionId } returns "sample-session-id"
+        every { localPaymentAuthRequestParams.approvalUrl } returns "https://"
+        every { localPaymentAuthRequestParams.request } returns createLocalPaymentRequest()
+        every { localPaymentAuthRequestParams.paymentId } returns "paymentId"
+        every { analyticsParamRepository.sessionId } returns "sample-session-id"
 
         payPalEnabledConfig = fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
         payPalDisabledConfig = fromJson(Fixtures.CONFIGURATION_WITH_DISABLED_PAYPAL)

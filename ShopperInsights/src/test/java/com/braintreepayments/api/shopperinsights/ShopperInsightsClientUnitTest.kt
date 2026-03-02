@@ -137,7 +137,7 @@ class ShopperInsightsClientUnitTest {
             callback.onResult(
                 withArg { result ->
                     assertTrue(result is ShopperInsightsResult.Failure)
-                    assertEquals((result as ShopperInsightsResult.Failure).error, expectedError)
+                    assertEquals(result.error, expectedError)
                 }
             )
         }
@@ -158,11 +158,11 @@ class ShopperInsightsClientUnitTest {
                 withArg { result ->
                     assertTrue(result is ShopperInsightsResult.Failure)
                     assertTrue(
-                        (result as ShopperInsightsResult.Failure).error is BraintreeException
+                        result.error is BraintreeException
                     )
                     assertEquals(
                         "Required fields missing from API response body",
-                        (result as ShopperInsightsResult.Failure).error.message
+                        result.error.message
                     )
                 }
             )
@@ -184,11 +184,11 @@ class ShopperInsightsClientUnitTest {
                 withArg { result ->
                     assertTrue(result is ShopperInsightsResult.Failure)
                     assertTrue(
-                        (result as ShopperInsightsResult.Failure).error is BraintreeException
+                        result.error is BraintreeException
                     )
                     assertEquals(
                         "Required fields missing from API response body",
-                        (result as ShopperInsightsResult.Failure).error.message
+                        result.error.message
                     )
                 }
             )
@@ -220,9 +220,8 @@ class ShopperInsightsClientUnitTest {
             callback.onResult(
                 withArg { result ->
                     assertTrue(result is ShopperInsightsResult.Success)
-                    val success = result as ShopperInsightsResult.Success
-                    assertEquals(true, success.response.isPayPalRecommended)
-                    assertEquals(true, success.response.isVenmoRecommended)
+                    assertEquals(true, result.response.isPayPalRecommended)
+                    assertEquals(true, result.response.isVenmoRecommended)
                 }
             )
         }
@@ -252,8 +251,7 @@ class ShopperInsightsClientUnitTest {
             callback.onResult(
                 withArg { result ->
                     assertTrue(result is ShopperInsightsResult.Success)
-                    val success = result as ShopperInsightsResult.Success
-                    assertEquals(false, success.response.isPayPalRecommended)
+                    assertEquals(false, result.response.isPayPalRecommended)
                 }
             )
         }
@@ -283,8 +281,7 @@ class ShopperInsightsClientUnitTest {
             callback.onResult(
                 withArg { result ->
                     assertTrue(result is ShopperInsightsResult.Success)
-                    val success = result as ShopperInsightsResult.Success
-                    assertEquals(false, success.response.isPayPalRecommended)
+                    assertEquals(false, result.response.isPayPalRecommended)
                 }
             )
         }
@@ -314,8 +311,7 @@ class ShopperInsightsClientUnitTest {
             callback.onResult(
                 withArg { result ->
                     assertTrue(result is ShopperInsightsResult.Success)
-                    val success = result as ShopperInsightsResult.Success
-                    assertTrue(success.response.isEligibleInPayPalNetwork)
+                    assertTrue(result.response.isEligibleInPayPalNetwork)
                 }
             )
         }
@@ -345,8 +341,7 @@ class ShopperInsightsClientUnitTest {
             callback.onResult(
                 withArg { result ->
                     assertTrue(result is ShopperInsightsResult.Success)
-                    val success = result as ShopperInsightsResult.Success
-                    assertTrue(success.response.isEligibleInPayPalNetwork)
+                    assertTrue(result.response.isEligibleInPayPalNetwork)
                 }
             )
         }
@@ -381,8 +376,7 @@ class ShopperInsightsClientUnitTest {
             callback.onResult(
                 withArg { result ->
                     assertTrue(result is ShopperInsightsResult.Success)
-                    val success = result as ShopperInsightsResult.Success
-                    assertFalse(success.response.isEligibleInPayPalNetwork)
+                    assertFalse(result.response.isEligibleInPayPalNetwork)
                 }
             )
         }
@@ -428,11 +422,11 @@ class ShopperInsightsClientUnitTest {
         sut.getRecommendedPaymentMethods(request) { result ->
             assertTrue(result is ShopperInsightsResult.Failure)
             assertTrue(
-                (result as ShopperInsightsResult.Failure).error is BraintreeException
+                result.error is BraintreeException
             )
             assertEquals(
                 "Invalid authorization. This feature can only be used with a client token.",
-                (result as ShopperInsightsResult.Failure).error.message
+                result.error.message
             )
         }
     }
