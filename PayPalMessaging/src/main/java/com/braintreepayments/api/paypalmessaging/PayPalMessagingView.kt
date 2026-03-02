@@ -18,6 +18,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  *  Use [PayPalMessagingView] to display PayPal messages to promote offers such as Pay Later
@@ -56,7 +57,6 @@ class PayPalMessagingView internal constructor(
      * @property request An optional [PayPalMessagingRequest]
      * Note: **This module is in beta. It's public API may change or be removed in future releases.**
      */
-    @Suppress("TooGenericExceptionCaught")
     fun start(request: PayPalMessagingRequest = PayPalMessagingRequest()) {
         PayPalMessageConfig.setGlobalAnalytics(
             integrationName = "BT_SDK",
@@ -65,34 +65,40 @@ class PayPalMessagingView internal constructor(
 
         braintreeClient.sendAnalyticsEvent(PayPalMessagingAnalytics.STARTED)
         coroutineScope.launch {
-            try {
-                val configuration = braintreeClient.getConfiguration()
-                val clientId = configuration.payPalClientId
-                if (clientId == null) {
-                    val clientIdError = BraintreeException(
-                        "Could not find PayPal client ID in Braintree configuration."
-                    )
-                    notifyFailure(error = clientIdError)
+            startCoroutine(request)
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    private suspend fun startCoroutine(request: PayPalMessagingRequest) {
+        try {
+            val configuration = braintreeClient.getConfiguration()
+            val clientId = configuration.payPalClientId
+            if (clientId == null) {
+                val clientIdError = BraintreeException(
+                    "Could not find PayPal client ID in Braintree configuration."
+                )
+                notifyFailure(error = clientIdError)
+            } else {
+
+                val messageConfig = constructPayPalMessageViewConfig(clientId, configuration, request)
+
+                if (messageView != null) {
+                    messageView?.setConfig(messageConfig)
                 } else {
+                    val payPalMessageView = PayPalMessageView(context = context, config = messageConfig)
+                    payPalMessageView.layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
 
-                    val messageConfig = constructPayPalMessageViewConfig(clientId, configuration, request)
-
-                    if (messageView != null) {
-                        messageView?.setConfig(messageConfig)
-                    } else {
-                        val payPalMessageView = PayPalMessageView(context = context, config = messageConfig)
-                        payPalMessageView.layoutParams = ViewGroup.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT
-                        )
-
-                        addView(payPalMessageView)
-                        messageView = payPalMessageView
-                    }
+                    addView(payPalMessageView)
+                    messageView = payPalMessageView
                 }
-            } catch (e: Exception) {
-                notifyFailure(error = e)
             }
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            notifyFailure(error = e)
         }
     }
 
