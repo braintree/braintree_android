@@ -185,20 +185,17 @@ internal class VenmoApi(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun vaultVenmoAccountNonce(nonce: String?, callback: VenmoInternalCallback) {
         val venmoAccount = VenmoAccount(nonce)
 
-        apiClient.tokenizeREST(venmoAccount) { tokenizationResponse: JSONObject?, exception: Exception? ->
-            if (tokenizationResponse != null) {
-                try {
-                    val venmoAccountNonce =
-                        fromJSON(tokenizationResponse)
-                    callback.onResult(venmoAccountNonce, null)
-                } catch (e: JSONException) {
-                    callback.onResult(null, e)
-                }
-            } else {
-                callback.onResult(null, exception)
+        coroutineScope.launch {
+            try {
+                val tokenizationResponse = apiClient.tokenizeREST(venmoAccount)
+                val venmoAccountNonce = fromJSON(tokenizationResponse)
+                callback.onResult(venmoAccountNonce, null)
+            } catch (e: Exception) {
+                callback.onResult(null, e)
             }
         }
     }

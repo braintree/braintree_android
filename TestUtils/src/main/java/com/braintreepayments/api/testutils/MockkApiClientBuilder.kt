@@ -1,14 +1,8 @@
 package com.braintreepayments.api.testutils
 
 import com.braintreepayments.api.core.ApiClient
-import com.braintreepayments.api.core.TokenizeCallback
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.Job
 import org.json.JSONObject
 
 class MockkApiClientBuilder {
@@ -39,21 +33,17 @@ class MockkApiClientBuilder {
         return this
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun build(): ApiClient {
         val apiClient = mockk<ApiClient>(relaxed = true)
 
-        every { apiClient.tokenizeREST(any(), any()) } answers {
-            val listener = lastArg() as TokenizeCallback
-            listener.onResult(tokenizeRESTSuccess, tokenizeRESTError)
-            mockk<Job>(relaxed = true)
+        coEvery { apiClient.tokenizeREST(any()) } answers {
+            tokenizeRESTSuccess ?: throw tokenizeRESTError
+                ?: Exception("No response configured for tokenizeREST")
         }
 
-        every { apiClient.tokenizeGraphQL(any(), any()) } answers {
-            val listener = lastArg() as TokenizeCallback
-            GlobalScope.launch(Dispatchers.Unconfined) {
-                listener.onResult(tokenizeGraphQLSuccess, tokenizeGraphQLError)
-            }
+        coEvery { apiClient.tokenizeGraphQL(any()) } answers {
+            tokenizeGraphQLSuccess ?: throw tokenizeGraphQLError
+                ?: Exception("No response configured for tokenizeGraphQL")
         }
         return apiClient
     }
