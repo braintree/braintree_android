@@ -40,6 +40,7 @@ class LocalPaymentClientTest {
             currencyCode = "EUR",
             email = "jon@getbraintree.com",
             givenName = "Jon",
+            merchantAccountId = "altpay_eur",
             phone = "639847934",
             paymentType = "ideal", isShippingAddressRequired = true, paymentTypeCountryCode = "NL")
 
