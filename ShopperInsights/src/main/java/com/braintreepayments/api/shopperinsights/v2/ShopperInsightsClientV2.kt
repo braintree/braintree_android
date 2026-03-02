@@ -102,18 +102,25 @@ class ShopperInsightsClientV2 internal constructor(
         sessionId: String,
         customerSessionCallback: (customerSessionResult: CustomerSessionResult) -> Unit
     ) {
-        analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_STARTED)
-        updateCustomerSessionApi.execute(customerSessionRequest, sessionId) { result ->
-            when (result) {
-                is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Success -> {
-                    analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_SUCCEEDED)
-                    customerSessionCallback(CustomerSessionResult.Success(result.sessionId))
-                }
+        coroutineScope.launch { customerSessionCallback(updateCustomerSession(customerSessionRequest, sessionId)) }
+    }
 
-                is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Error -> {
-                    analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_FAILED)
-                    customerSessionCallback(CustomerSessionResult.Failure(result.error))
-                }
+    private suspend fun updateCustomerSession(
+        customerSessionRequest: CustomerSessionRequest,
+        sessionId: String
+    ): CustomerSessionResult {
+        analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_STARTED)
+        return when (
+            val updateCustomerSessionResult = updateCustomerSessionApi.execute(customerSessionRequest, sessionId)
+        ) {
+            is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Success -> {
+                analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_SUCCEEDED)
+                CustomerSessionResult.Success(updateCustomerSessionResult.sessionId)
+            }
+
+            is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Error -> {
+                analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_FAILED)
+                CustomerSessionResult.Failure(updateCustomerSessionResult.error)
             }
         }
     }

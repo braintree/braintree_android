@@ -28,12 +28,11 @@ internal class UpdateCustomerSessionApi(
         data class Error(val error: Exception) : UpdateCustomerSessionResult()
     }
 
-    fun execute(
+    suspend fun execute(
         customerSessionRequest: CustomerSessionRequest,
         sessionId: String,
-        callback: (UpdateCustomerSessionResult) -> Unit
-    ) {
-        try {
+    ): UpdateCustomerSessionResult {
+        return try {
             val params = JSONObject()
             params.put(
                 QUERY, """
@@ -47,21 +46,17 @@ internal class UpdateCustomerSessionApi(
 
             params.put(VARIABLES, assembleVariables(sessionId, customerSessionRequest))
 
-            coroutineScope.launch {
                 try {
                     val responseBody = braintreeClient.sendGraphQLPOST(params)
                     val sessionId = responseParser.parseSessionId(responseBody, UPDATE_CUSTOMER_SESSION)
-                    callback(
-                        UpdateCustomerSessionResult.Success(sessionId)
-                    )
+                    UpdateCustomerSessionResult.Success(sessionId)
                 } catch (e: IOException) {
-                    callback(UpdateCustomerSessionResult.Error(e))
+                    UpdateCustomerSessionResult.Error(e)
                 } catch (e: JSONException) {
-                    callback(UpdateCustomerSessionResult.Error(e))
+                    UpdateCustomerSessionResult.Error(e)
                 }
-            }
         } catch (e: JSONException) {
-            callback(UpdateCustomerSessionResult.Error(e))
+            UpdateCustomerSessionResult.Error(e)
         }
     }
 
