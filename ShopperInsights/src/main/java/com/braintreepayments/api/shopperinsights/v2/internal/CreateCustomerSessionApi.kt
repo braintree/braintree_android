@@ -18,9 +18,7 @@ import java.io.IOException
 internal class CreateCustomerSessionApi(
     private val braintreeClient: BraintreeClient,
     private val customerSessionRequestBuilder: CustomerSessionRequestBuilder = CustomerSessionRequestBuilder(),
-    private val responseParser: ShopperInsightsResponseParser = ShopperInsightsResponseParser(),
-    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
-    private val coroutineScope: CoroutineScope = CoroutineScope(mainDispatcher)
+    private val responseParser: ShopperInsightsResponseParser = ShopperInsightsResponseParser()
 ) {
 
     sealed class CreateCustomerSessionResult {
@@ -28,40 +26,33 @@ internal class CreateCustomerSessionApi(
         data class Error(val error: Exception) : CreateCustomerSessionResult()
     }
 
-    fun execute(
-        customerSessionRequest: CustomerSessionRequest,
-        callback: (CreateCustomerSessionResult) -> Unit
-    ) {
-        try {
-            val params = JSONObject()
-            params.put(
-                QUERY, """
+    suspend fun execute(customerSessionRequest: CustomerSessionRequest): CreateCustomerSessionResult {
+        return try {
+            val params = JSONObject().apply {
+                put(
+                    QUERY, """
                 mutation CreateCustomerSession(${'$'}input: CreateCustomerSessionInput!) {
                     createCustomerSession(input: ${'$'}input) {
                         sessionId
                     }
                 }
                 """.trimIndent()
-            )
-
-            params.put(VARIABLES, assembleVariables(customerSessionRequest))
-
-            coroutineScope.launch {
-                try {
-                    val responseBody = braintreeClient.sendGraphQLPOST(params)
-                    val sessionId =
-                        responseParser.parseSessionId(responseBody, CREATE_CUSTOMER_SESSION)
-                    callback(
-                        CreateCustomerSessionResult.Success(sessionId)
-                    )
-                } catch (e: IOException) {
-                    callback(CreateCustomerSessionResult.Error(e))
-                } catch (e: JSONException) {
-                    callback(CreateCustomerSessionResult.Error(e))
-                }
+                )
+                put(VARIABLES, assembleVariables(customerSessionRequest))
             }
+
+            try {
+                val responseBody = braintreeClient.sendGraphQLPOST(params)
+                val sessionId = responseParser.parseSessionId(responseBody, CREATE_CUSTOMER_SESSION)
+                CreateCustomerSessionResult.Success(sessionId)
+            } catch (e: IOException) {
+                CreateCustomerSessionResult.Error(e)
+            } catch (e: JSONException) {
+                CreateCustomerSessionResult.Error(e)
+            }
+
         } catch (e: JSONException) {
-            callback(CreateCustomerSessionResult.Error(e))
+            CreateCustomerSessionResult.Error(e)
         }
     }
 
