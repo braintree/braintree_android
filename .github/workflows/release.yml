@@ -8,7 +8,35 @@ on:
 env:
   SIGNING_KEY_FILE_PATH: /home/runner/secretKey.gpg
 jobs:
+  validate_version:
+    name: Validate Version Input
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate version input
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+        run: |
+          set -euo pipefail
+
+          # Validate version format: x.x.x or x.x.x-betax (e.g., 4.0.0, 4.0.0-beta1)
+          # Uses bash regex to avoid a grep subprocess and (0|[1-9][0-9]*) to prevent leading zeros.
+          PATTERN='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-beta[0-9]+)?$'
+          if ! [[ "${INPUT_VERSION}" =~ $PATTERN ]]; then
+            echo "::error::Invalid version format: ${INPUT_VERSION}"
+            echo "::error::Version must be x.x.x or x.x.x-betax (e.g., 4.0.0 or 4.0.0-beta1)"
+            exit 1
+          fi
+
+          # Check length to prevent excessively long inputs
+          if [ ${#INPUT_VERSION} -gt 50 ]; then
+            echo "::error::Version string exceeds maximum length of 50 characters"
+            exit 1
+          fi
+
+          echo "Version validated: ${INPUT_VERSION}"
+
   build_aar:
+    needs: [ validate_version ]
     name: Build
     runs-on: ubuntu-latest
     steps:
@@ -31,6 +59,7 @@ jobs:
 
   # Once building is finished, we unit test every module in parallel
   unit_test_american_express:
+    needs: [ validate_version ]
     name: AmericanExpress Unit Tests
     runs-on: ubuntu-latest
     steps:
@@ -43,6 +72,7 @@ jobs:
         with:
           module: AmericanExpress
   unit_test_braintree_core:
+    needs: [ validate_version ]
     name: BraintreeCore Unit Tests
     runs-on: ubuntu-latest
     steps:
@@ -55,6 +85,7 @@ jobs:
         with:
           module: BraintreeCore
   unit_test_data_collector:
+    needs: [ validate_version ]
     name: DataCollector Unit Tests
     runs-on: ubuntu-latest
     steps:
@@ -67,6 +98,7 @@ jobs:
         with:
           module: DataCollector
   unit_test_card:
+    needs: [ validate_version ]
     name: Card Unit Tests
     runs-on: ubuntu-latest
     steps:
@@ -79,6 +111,7 @@ jobs:
         with:
           module: Card
   unit_test_google_pay:
+    needs: [ validate_version ]
     name: GooglePay Unit Tests
     runs-on: ubuntu-latest
     steps:
@@ -91,6 +124,7 @@ jobs:
         with:
           module: GooglePay
   unit_test_local_payment:
+    needs: [ validate_version ]
     name: LocalPayment Unit Tests
     runs-on: ubuntu-latest
     steps:
@@ -103,6 +137,7 @@ jobs:
         with:
           module: LocalPayment
   unit_test_paypal:
+    needs: [ validate_version ]
     name: PayPal Unit Tests
     runs-on: ubuntu-latest
     steps:
@@ -115,6 +150,7 @@ jobs:
         with:
           module: PayPal
   unit_test_paypal_messaging:
+    needs: [ validate_version ]
     name: PayPal Messaging Unit Tests
     runs-on: ubuntu-latest
     steps:
@@ -127,6 +163,7 @@ jobs:
         with:
           module: PayPalMessaging
   unit_test_shopper_insights:
+    needs: [ validate_version ]
     name: Shopper Insights Unit Tests
     runs-on: ubuntu-latest
     steps:
@@ -139,6 +176,7 @@ jobs:
         with:
           module: ShopperInsights
   unit_test_three_d_secure:
+    needs: [ validate_version ]
     name: ThreeDSecure Unit Tests
     runs-on: ubuntu-latest
     steps:
@@ -151,6 +189,7 @@ jobs:
         with:
           module: ThreeDSecure
   unit_test_ui_components:
+    needs: [ validate_version ]
     name: UIComponents Unit Tests
     runs-on: ubuntu-latest
     steps:
@@ -163,6 +202,7 @@ jobs:
         with:
           module: UIComponents
   unit_test_venmo:
+    needs: [ validate_version ]
     name: Venmo Unit Tests
     runs-on: ubuntu-latest
     steps:
@@ -175,6 +215,7 @@ jobs:
         with:
           module: Venmo
   unit_test_visa_checkout:
+    needs: [ validate_version ]
     name: VisaCheckout Unit Tests
     runs-on: ubuntu-latest
     steps:
@@ -187,6 +228,7 @@ jobs:
         with:
           module: VisaCheckout
   unit_test_sepa_direct_debit:
+    needs: [ validate_version ]
     name: SEPA Direct Debit Unit Tests
     runs-on: ubuntu-latest
     steps:
@@ -269,21 +311,24 @@ jobs:
         uses: ./.github/actions/setup
       - name: Set GitHub User
         uses: ./.github/actions/set_github_user
+      - name: Set release version
+        run: echo "RELEASE_VERSION=${{ github.event.inputs.version }}" >> "$GITHUB_ENV"
       - name: Update Version
         run: |
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeGradleReleaseVersion
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeREADMEVersion
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} changeMigrationGuideVersion
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} updateCHANGELOGVersion
+          set -euo pipefail
+          ./gradlew -PversionParam="${RELEASE_VERSION}" changeGradleReleaseVersion
+          ./gradlew -PversionParam="${RELEASE_VERSION}" changeREADMEVersion
+          ./gradlew -PversionParam="${RELEASE_VERSION}" changeMigrationGuideVersion
+          ./gradlew -PversionParam="${RELEASE_VERSION}" updateCHANGELOGVersion
           ./gradlew dokkaHtmlMultiModule
           git add -A
-          git commit -am 'Release ${{ github.event.inputs.version }}'
-          git tag ${{ github.event.inputs.version }} -a -m 'Release ${{ github.event.inputs.version }}'
+          git commit -am "Release ${RELEASE_VERSION}"
+          git tag "${RELEASE_VERSION}" -a -m "Release ${RELEASE_VERSION}"
 
-          ./gradlew -PversionParam=${{ github.event.inputs.version }} incrementSNAPSHOTVersion
+          ./gradlew -PversionParam="${RELEASE_VERSION}" incrementSNAPSHOTVersion
           ./gradlew incrementVersionCode
           git commit -am 'Prepare for development'
-          git push origin ${GITHUB_REF_NAME} ${{ github.event.inputs.version }}
+          git push origin ${GITHUB_REF_NAME} "${RELEASE_VERSION}"
 
   create_github_release:
     needs: [ bump_version ]
