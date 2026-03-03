@@ -311,30 +311,8 @@ jobs:
         uses: ./.github/actions/setup
       - name: Set GitHub User
         uses: ./.github/actions/set_github_user
-      - name: Validate version input
-        env:
-          INPUT_VERSION: ${{ github.event.inputs.version }}
-        run: |
-          set -euo pipefail
-
-          # Validate version format: x.x.x or x.x.x-betax (e.g., 4.0.0, 4.0.0-beta1)
-          # Uses bash regex to avoid a grep subprocess and (0|[1-9][0-9]*) to prevent leading zeros.
-          PATTERN='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-beta[0-9]+)?$'
-          if ! [[ "${INPUT_VERSION}" =~ $PATTERN ]]; then
-            echo "::error::Invalid version format: ${INPUT_VERSION}"
-            echo "::error::Version must be x.x.x or x.x.x-betax (e.g., 4.0.0 or 4.0.0-beta1)"
-            exit 1
-          fi
-
-          # Check length to prevent excessively long inputs
-          if [ ${#INPUT_VERSION} -gt 50 ]; then
-            echo "::error::Version string exceeds maximum length of 50 characters"
-            exit 1
-          fi
-
-          # Store validated version for use in subsequent steps
-          echo "RELEASE_VERSION=${INPUT_VERSION}" >> "$GITHUB_ENV"
-          echo "Version validated: ${INPUT_VERSION}"
+      - name: Set release version
+        run: echo "RELEASE_VERSION=${{ github.event.inputs.version }}" >> "$GITHUB_ENV"
       - name: Update Version
         run: |
           set -euo pipefail
