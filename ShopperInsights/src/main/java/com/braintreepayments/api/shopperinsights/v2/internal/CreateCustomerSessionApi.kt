@@ -3,10 +3,6 @@ package com.braintreepayments.api.shopperinsights.v2.internal
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException

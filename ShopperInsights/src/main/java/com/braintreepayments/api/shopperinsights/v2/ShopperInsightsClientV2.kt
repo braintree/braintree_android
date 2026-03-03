@@ -15,6 +15,7 @@ import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON
 import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessionApi
 import com.braintreepayments.api.shopperinsights.v2.internal.UpdateCustomerSessionApi
 import com.braintreepayments.api.shopperinsights.v2.internal.GenerateCustomerRecommendationsApi
+import com.braintreepayments.api.shopperinsights.v2.internal.GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -140,28 +141,26 @@ class ShopperInsightsClientV2 internal constructor(
         sessionId: String? = null,
         customerRecommendationsCallback: (customerRecommendationsResult: CustomerRecommendationsResult) -> Unit
     ) {
-        analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_STARTED)
-        generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId) {
-            generateCustomerRecommendationsResult ->
-                when (generateCustomerRecommendationsResult) {
-                    is GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult.Success -> {
-                        analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_SUCCEEDED)
-                        customerRecommendationsCallback(
-                            CustomerRecommendationsResult.Success(
-                                generateCustomerRecommendationsResult.customerRecommendations
-                            )
-                        )
-                    }
+        coroutineScope.launch { customerRecommendationsCallback(generateCustomerRecommendations(customerSessionRequest, sessionId)) }
+    }
 
-                    is GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult.Error -> {
-                        analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_FAILED)
-                        customerRecommendationsCallback(
-                            CustomerRecommendationsResult.Failure(
-                                generateCustomerRecommendationsResult.error
-                            )
-                        )
-                    }
-                }
+    private suspend fun generateCustomerRecommendations(
+        customerSessionRequest: CustomerSessionRequest? = null,
+        sessionId: String? = null,
+    ): CustomerRecommendationsResult {
+        return when (
+            val generateCustomerRecommendationsResult =
+                generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId)
+        ) {
+            is GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult.Success -> {
+                analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_SUCCEEDED)
+                CustomerRecommendationsResult.Success(generateCustomerRecommendationsResult.customerRecommendations)
+            }
+
+            is GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult.Error -> {
+                analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_FAILED)
+                CustomerRecommendationsResult.Failure(generateCustomerRecommendationsResult.error)
+            }
         }
     }
 

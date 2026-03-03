@@ -3,10 +3,6 @@ package com.braintreepayments.api.shopperinsights.v2.internal
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -18,9 +14,7 @@ import java.io.IOException
 internal class UpdateCustomerSessionApi(
     private val braintreeClient: BraintreeClient,
     private val customerSessionRequestBuilder: CustomerSessionRequestBuilder = CustomerSessionRequestBuilder(),
-    private val responseParser: ShopperInsightsResponseParser = ShopperInsightsResponseParser(),
-    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
-    private val coroutineScope: CoroutineScope = CoroutineScope(mainDispatcher)
+    private val responseParser: ShopperInsightsResponseParser = ShopperInsightsResponseParser()
 ) {
 
     sealed class UpdateCustomerSessionResult {
