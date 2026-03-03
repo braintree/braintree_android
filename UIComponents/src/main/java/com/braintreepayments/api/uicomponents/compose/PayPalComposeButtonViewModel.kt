@@ -6,7 +6,7 @@ import kotlinx.coroutines.launch
 
 class PayPalComposeButtonViewModel(
     val repository: PayPalPendingRequestRepository
-): ViewModel() {
+) : ViewModel() {
 
     fun storePendingRequest(pendingRequest: String) {
         viewModelScope.launch {
