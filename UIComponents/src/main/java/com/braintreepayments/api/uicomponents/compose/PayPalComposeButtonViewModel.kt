@@ -1,9 +1,11 @@
 package com.braintreepayments.api.uicomponents.compose
 
+import androidx.annotation.RestrictTo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class PayPalComposeButtonViewModel(
     val repository: PayPalPendingRequestRepository
 ) : ViewModel() {

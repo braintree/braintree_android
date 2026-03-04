@@ -1,6 +1,7 @@
 package com.braintreepayments.api.uicomponents.compose
 
 import android.content.Context
+import androidx.annotation.RestrictTo
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
@@ -13,11 +14,12 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "ui_components")
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "ui_components")
 
 /**
  * Repository responsible for storing and retrieving the pending request using [DataStore].
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class PayPalPendingRequestRepository(
     context: Context,
     private val dataStore: DataStore<Preferences> = context.dataStore,

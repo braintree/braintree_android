@@ -41,6 +41,7 @@ fun PayPalSmartButton(
     val activity = context.findActivity()
 
     var enabled by remember { mutableStateOf(true) }
+    var flowLaunched by remember { mutableStateOf(false) }
 
     val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
     val payPalLauncher = remember { PayPalLauncher(registry) }
@@ -63,6 +64,7 @@ fun PayPalSmartButton(
                 is PayPalPaymentAuthRequest.ReadyToLaunch -> {
                     activity?.let {
                         completePayPalFlow(payPalLauncher, viewModel, it, paymentAuthRequest, paypalTokenizeCallback)
+                        flowLaunched = true
                     }
                 }
 
@@ -74,14 +76,17 @@ fun PayPalSmartButton(
     }
 
     LifecycleResumeEffect(Unit) {
-        lifecycle.coroutineScope.launch {
-            val pendingRequest = viewModel.getPendingRequest()
+        if (flowLaunched) {
+            flowLaunched = false
+            lifecycle.coroutineScope.launch {
+                val pendingRequest = viewModel.getPendingRequest()
 
-            activity?.intent?.let { intent ->
-                handleReturnToApp(payPalLauncher, payPalClient, pendingRequest, intent, paypalTokenizeCallback)
-                enabled = true
-                viewModel.clearPendingRequest()
-                activity.intent.data = null
+                activity?.intent?.let { intent ->
+                    handleReturnToApp(payPalLauncher, payPalClient, pendingRequest, intent, paypalTokenizeCallback)
+                    enabled = true
+                    viewModel.clearPendingRequest()
+                    activity.intent.data = null
+                }
             }
         }
 
