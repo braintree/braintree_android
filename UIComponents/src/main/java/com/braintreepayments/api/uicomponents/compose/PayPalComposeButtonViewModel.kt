@@ -2,16 +2,20 @@ package com.braintreepayments.api.uicomponents.compose
 
 import androidx.annotation.RestrictTo
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class PayPalComposeButtonViewModel(
-    val repository: PayPalPendingRequestRepository
+    private val repository: PayPalPendingRequestRepository,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher),
 ) : ViewModel() {
 
     fun storePendingRequest(pendingRequest: String) {
-        viewModelScope.launch {
+        coroutineScope.launch {
             repository.storePendingRequest(pendingRequest)
         }
     }
@@ -21,7 +25,7 @@ class PayPalComposeButtonViewModel(
     }
 
     fun clearPendingRequest() {
-        viewModelScope.launch {
+        coroutineScope.launch {
             repository.clearPendingRequest()
         }
     }

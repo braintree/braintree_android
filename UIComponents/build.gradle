@@ -66,6 +66,10 @@ dependencies {
     implementation composeBom
     implementation libs.androidx.material3
 
+    testImplementation libs.junit
+    testImplementation libs.mockk
+    testImplementation libs.coroutines.core
+    testImplementation libs.coroutines.test
     testImplementation libs.kotlin.test
     testImplementation project(':TestUtils')
     debugImplementation libs.androidx.ui.tooling
