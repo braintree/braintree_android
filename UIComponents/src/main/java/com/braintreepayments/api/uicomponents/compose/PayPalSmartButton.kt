@@ -11,10 +11,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.coroutineScope
+import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
@@ -24,6 +26,7 @@ import com.braintreepayments.api.paypal.PayPalRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
+import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
 import kotlinx.coroutines.launch
 
 @Composable
@@ -42,6 +45,7 @@ fun PayPalSmartButton(
 
     var enabled by remember { mutableStateOf(true) }
     var flowLaunched by remember { mutableStateOf(false) }
+    var shouldLogButtonPresentment by rememberSaveable { mutableStateOf(true) }
 
     val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
     val payPalLauncher = remember { PayPalLauncher(registry) }
@@ -53,9 +57,11 @@ fun PayPalSmartButton(
             deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
         )
     }
+    val analyticsClient = remember { AnalyticsClient.lazyInstance.value }
 
     PayPalButton(style = style, enabled = enabled) {
         enabled = false
+        analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_COMPOSE_BUTTON_SELECTED)
         payPalClient.createPaymentAuthRequest(
             context = context,
             payPalRequest = payPalRequest
@@ -73,6 +79,11 @@ fun PayPalSmartButton(
                 }
             }
         }
+    }
+
+    if (shouldLogButtonPresentment) {
+        shouldLogButtonPresentment = false
+        analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_COMPOSE_BUTTON_PRESENTED)
     }
 
     LifecycleResumeEffect(Unit) {
