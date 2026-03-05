@@ -5,13 +5,11 @@ import android.net.Uri
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.ApiClient.Companion.versionedPath
 import com.braintreepayments.api.core.BraintreeClient
-import com.braintreepayments.api.sharedutils.AuthorizationException
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONException
-import java.io.IOException
 
 /**
  * Used to integrate with Braintree's American Express API
@@ -53,7 +51,7 @@ class AmericanExpressClient internal constructor(
         }
     }
 
-    private suspend fun getRewardsBalance (
+    private suspend fun getRewardsBalance(
         nonce: String,
         currencyIsoCode: String
     ): AmericanExpressResult {
@@ -71,16 +69,11 @@ class AmericanExpressClient internal constructor(
                 AmericanExpressRewardsBalance.fromJson(responseBody)
             braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_SUCCEEDED)
             return AmericanExpressResult.Success(rewardsBalance)
-        }
-        catch (e: JSONException) {
-           return getRewardsBalanceFailure(AmericanExpressResult.Failure(e))
-        } catch (e: IOException) {
-            return getRewardsBalanceFailure(AmericanExpressResult.Failure(e))
-        } catch (e: AuthorizationException) {
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
             return getRewardsBalanceFailure(AmericanExpressResult.Failure(e))
         }
     }
-
 
     private fun getRewardsBalanceFailure(
         result: AmericanExpressResult.Failure,
