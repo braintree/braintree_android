@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.braintreepayments.api.uicomponents.util.CoroutineTestRule
 import com.braintreepayments.api.uicomponents.util.DataStoreMock
 import io.mockk.mockk
+import kotlin.test.AfterTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -66,5 +67,10 @@ class PayPalPendingRequestRepositoryTest {
 
         val storedValue = dataStore.data.first()[stringPreferencesKey("pending_request_key")]
         assertNull(storedValue)
+    }
+
+    @AfterTest
+    fun forceFailIfException() {
+        runTest { }
     }
 }
