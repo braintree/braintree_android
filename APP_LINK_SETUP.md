@@ -33,3 +33,7 @@ val payPalClient =  PayPalClient(
   Uri.parse("https://demo-app.com/braintree-payments") // Merchant App Link
 )
 ```
+
+### Verify App Link Setup
+
+Ensure app links are setup properly by [Verifying App Link Setup](https://developer.android.com/training/app-links/verify-applinks)
