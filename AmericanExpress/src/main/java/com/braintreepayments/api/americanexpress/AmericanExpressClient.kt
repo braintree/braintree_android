@@ -5,13 +5,11 @@ import android.net.Uri
 import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.ApiClient.Companion.versionedPath
 import com.braintreepayments.api.core.BraintreeClient
-import com.braintreepayments.api.sharedutils.AuthorizationException
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONException
-import java.io.IOException
 
 /**
  * Used to integrate with Braintree's American Express API
@@ -47,6 +45,16 @@ class AmericanExpressClient internal constructor(
         currencyIsoCode: String,
         callback: AmericanExpressGetRewardsBalanceCallback
     ) {
+        coroutineScope.launch {
+            val result = getRewardsBalance(nonce, currencyIsoCode)
+            callback.onAmericanExpressResult(result)
+        }
+    }
+
+    private suspend fun getRewardsBalance(
+        nonce: String,
+        currencyIsoCode: String
+    ): AmericanExpressResult {
         val getRewardsBalanceUrl = Uri.parse(AMEX_REWARDS_BALANCE_PATH)
             .buildUpon()
             .appendQueryParameter("paymentMethodNonce", nonce)
@@ -55,39 +63,26 @@ class AmericanExpressClient internal constructor(
             .toString()
 
         braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_STARTED)
-        coroutineScope.launch {
-            try {
-                val responseBody = braintreeClient.sendGET(getRewardsBalanceUrl)
-                val rewardsBalance =
-                    AmericanExpressRewardsBalance.fromJson(responseBody)
-                callbackSuccess(AmericanExpressResult.Success(rewardsBalance), callback)
-            } catch (e: JSONException) {
-                callbackFailure(AmericanExpressResult.Failure(e), callback)
-            } catch (e: IOException) {
-                callbackFailure(AmericanExpressResult.Failure(e), callback)
-            } catch (e: AuthorizationException) {
-                callbackFailure(AmericanExpressResult.Failure(e), callback)
-            }
+        try {
+            val responseBody = braintreeClient.sendGET(getRewardsBalanceUrl)
+            val rewardsBalance =
+                AmericanExpressRewardsBalance.fromJson(responseBody)
+            braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_SUCCEEDED)
+            return AmericanExpressResult.Success(rewardsBalance)
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            return getRewardsBalanceFailure(AmericanExpressResult.Failure(e))
         }
     }
 
-    private fun callbackSuccess(
-        result: AmericanExpressResult.Success,
-        callback: AmericanExpressGetRewardsBalanceCallback
-    ) {
-        callback.onAmericanExpressResult(result)
-        braintreeClient.sendAnalyticsEvent(AmericanExpressAnalytics.REWARDS_BALANCE_SUCCEEDED)
-    }
-
-    private fun callbackFailure(
+    private fun getRewardsBalanceFailure(
         result: AmericanExpressResult.Failure,
-        callback: AmericanExpressGetRewardsBalanceCallback
-    ) {
-        callback.onAmericanExpressResult(result)
+    ): AmericanExpressResult {
         braintreeClient.sendAnalyticsEvent(
             AmericanExpressAnalytics.REWARDS_BALANCE_FAILED,
             AnalyticsEventParams(errorDescription = result.error.message)
         )
+        return result
     }
 
     companion object {
