@@ -8,9 +8,11 @@ import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
@@ -36,12 +38,12 @@ fun PayPalSmartButton(
     authorization: String,
     appLinkReturnUrl: Uri,
     deepLinkFallbackUrlScheme: String,
-    viewModel: PayPalComposeButtonViewModel =
-        PayPalComposeButtonViewModel(PayPalPendingRequestRepository(LocalContext.current)),
+    pendingRequestRepository: PayPalPendingRequestRepository = PayPalPendingRequestRepository(LocalContext.current),
     paypalTokenizeCallback: PayPalTokenizeCallback
 ) {
     val context = LocalContext.current
     val activity = context.findActivity()
+    val coroutineScope = rememberCoroutineScope()
 
     var enabled by remember { mutableStateOf(true) }
     var flowLaunched by remember { mutableStateOf(false) }
@@ -69,8 +71,10 @@ fun PayPalSmartButton(
             when (paymentAuthRequest) {
                 is PayPalPaymentAuthRequest.ReadyToLaunch -> {
                     activity?.let {
-                        completePayPalFlow(payPalLauncher, viewModel, it, paymentAuthRequest, paypalTokenizeCallback)
-                        flowLaunched = true
+                        coroutineScope.launch {
+                            completePayPalFlow(payPalLauncher, pendingRequestRepository, it, paymentAuthRequest, paypalTokenizeCallback)
+                            flowLaunched = true
+                        }
                     }
                 }
 
@@ -81,21 +85,23 @@ fun PayPalSmartButton(
         }
     }
 
-    if (shouldLogButtonPresentment) {
-        shouldLogButtonPresentment = false
-        analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_COMPOSE_BUTTON_PRESENTED)
+    LaunchedEffect(Unit) {
+        if (shouldLogButtonPresentment) {
+            shouldLogButtonPresentment = false
+            analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_COMPOSE_BUTTON_PRESENTED)
+        }
     }
 
     LifecycleResumeEffect(Unit) {
         if (flowLaunched) {
             flowLaunched = false
             lifecycle.coroutineScope.launch {
-                val pendingRequest = viewModel.getPendingRequest()
+                val pendingRequest = pendingRequestRepository.getPendingRequest()
 
                 activity?.intent?.let { intent ->
                     handleReturnToApp(payPalLauncher, payPalClient, pendingRequest, intent, paypalTokenizeCallback)
                     enabled = true
-                    viewModel.clearPendingRequest()
+                    pendingRequestRepository.clearPendingRequest()
                     activity.intent.data = null
                 }
             }
@@ -105,9 +111,9 @@ fun PayPalSmartButton(
     }
 }
 
-internal fun completePayPalFlow(
+internal suspend fun completePayPalFlow(
     payPalLauncher: PayPalLauncher,
-    viewModel: PayPalComposeButtonViewModel,
+    pendingRequestRepository: PayPalPendingRequestRepository,
     activity: Activity,
     paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch,
     paypalTokenizeCallback: PayPalTokenizeCallback
@@ -118,7 +124,7 @@ internal fun completePayPalFlow(
     )
     when (payPalPendingRequest) {
         is PayPalPendingRequest.Started -> {
-            viewModel.storePendingRequest(payPalPendingRequest.pendingRequestString)
+            pendingRequestRepository.storePendingRequest(payPalPendingRequest.pendingRequestString)
         }
 
         is PayPalPendingRequest.Failure -> {
@@ -145,9 +151,11 @@ private fun handleReturnToApp(
                 callback.onPayPalResult(payPalResult)
             }
         }
+
         is PayPalPaymentAuthResult.NoResult -> {
             callback.onPayPalResult(PayPalResult.Cancel)
         }
+
         is PayPalPaymentAuthResult.Failure -> {
             callback.onPayPalResult(PayPalResult.Failure(paymentAuthResult.error))
         }
