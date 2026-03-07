@@ -72,7 +72,13 @@ fun PayPalSmartButton(
                 is PayPalPaymentAuthRequest.ReadyToLaunch -> {
                     activity?.let {
                         coroutineScope.launch {
-                            completePayPalFlow(payPalLauncher, pendingRequestRepository, it, paymentAuthRequest, paypalTokenizeCallback)
+                            completePayPalFlow(
+                                payPalLauncher,
+                                pendingRequestRepository,
+                                it,
+                                paymentAuthRequest,
+                                paypalTokenizeCallback
+                            )
                             flowLaunched = true
                         }
                     }
