@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.coroutineScope
 import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
@@ -29,6 +30,7 @@ import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
 import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
+import com.braintreepayments.api.uicomponents.UIComponentsAnalytics.UI_TYPE_COMPOSE
 import kotlinx.coroutines.launch
 
 /**
@@ -72,7 +74,7 @@ fun PayPalSmartButton(
 
     PayPalButton(style = style, enabled = enabled) {
         enabled = false
-        analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_COMPOSE_BUTTON_SELECTED)
+        logButtonSelected(analyticsClient)
         payPalClient.createPaymentAuthRequest(
             context = context,
             payPalRequest = payPalRequest
@@ -103,7 +105,7 @@ fun PayPalSmartButton(
     LaunchedEffect(Unit) {
         if (shouldLogButtonPresentment) {
             shouldLogButtonPresentment = false
-            analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_COMPOSE_BUTTON_PRESENTED)
+            logButtonPresented(analyticsClient)
         }
     }
 
@@ -175,6 +177,20 @@ private fun handleReturnToApp(
             callback.onPayPalResult(PayPalResult.Failure(paymentAuthResult.error))
         }
     }
+}
+
+private fun logButtonPresented(analyticsClient: AnalyticsClient) {
+    analyticsClient.sendEvent(
+        UIComponentsAnalytics.PAYPAL_BUTTON_PRESENTED,
+        AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
+    )
+}
+
+private fun logButtonSelected(analyticsClient: AnalyticsClient) {
+    analyticsClient.sendEvent(
+        UIComponentsAnalytics.PAYPAL_BUTTON_SELECTED,
+        AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
+    )
 }
 
 private fun Context.findActivity(): Activity? = when (this) {

@@ -27,6 +27,7 @@ class AnalyticsClientUnitTest {
     private val timestamp = 123L
     private val linkType = LinkType.APP_LINK
     private val fundingSource = "paypal"
+    private val uiType = "compose"
 
     private lateinit var sut: AnalyticsClient
 
@@ -41,7 +42,8 @@ class AnalyticsClientUnitTest {
         shopperSessionId = "shopper-session-id",
         buttonType = "button-type",
         buttonOrder = "button-order",
-        pageType = "page-type"
+        pageType = "page-type",
+        uiType = "compose"
     )
 
     private val expectedAnalyticsEvent = AnalyticsEvent(
@@ -62,7 +64,8 @@ class AnalyticsClientUnitTest {
         didEnablePayPalAppSwitch = true,
         didPayPalServerAttemptAppSwitch = true,
         didSdkAttemptAppSwitch = true,
-        fundingSource = fundingSource
+        fundingSource = fundingSource,
+        uiType = uiType
     )
 
     @Before
