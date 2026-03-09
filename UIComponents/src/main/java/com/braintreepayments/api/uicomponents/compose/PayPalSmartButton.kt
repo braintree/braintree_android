@@ -31,6 +31,15 @@ import com.braintreepayments.api.uicomponents.PayPalButtonColor
 import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
 import kotlinx.coroutines.launch
 
+/**
+ * A composable that displays PayPal button.
+ * @param style: A [PayPalButtonColor] that determines the color of the button.
+ * @param payPalRequest: A [PayPalRequest] that provides the parameters to tokenize a paypal account.
+ * @param authorization: An authorization string to use for tokenization.
+ * @param appLinkReturnUrl: A [Uri] that sends back control to the host app after PayPal flow completes.
+ * @param deepLinkFallbackUrlScheme: Fallback scheme in case [appLinkReturnUrl] doesn't work.
+ * @param paypalTokenizeCallback: A [PayPalTokenizeCallback] that handles the result of the tokenization.
+ */
 @Composable
 fun PayPalSmartButton(
     style: PayPalButtonColor,
