@@ -515,6 +515,46 @@ class ShopperInsightsClientUnitTest {
     }
 
     @Test
+    fun `test paypal pay later button presented analytics event`() {
+        val presentmentDetails = PresentmentDetails(
+            ExperimentType.TEST,
+            ButtonOrder.FIRST,
+            PageType.MINI_CART
+        )
+
+        val params = AnalyticsEventParams(
+            experiment = presentmentDetails.type.formattedExperiment(),
+            shopperSessionId = shopperSessionId,
+            buttonType = ButtonType.PAYPAL_PAY_LATER.stringValue,
+            buttonOrder = presentmentDetails.buttonOrder.stringValue,
+            pageType = presentmentDetails.pageType.stringValue
+        )
+        sut.sendPresentedEvent(
+            ButtonType.PAYPAL_PAY_LATER,
+            PresentmentDetails(
+                ExperimentType.TEST,
+                ButtonOrder.FIRST,
+                PageType.MINI_CART
+            )
+        )
+        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:button-presented",
+            params) }
+    }
+
+    @Test
+    fun `test paypal pay later selected analytics event`() {
+        val params = AnalyticsEventParams(
+            shopperSessionId = shopperSessionId,
+            buttonType = ButtonType.PAYPAL_PAY_LATER.stringValue,
+        )
+        sut.sendSelectedEvent(
+            ButtonType.PAYPAL_PAY_LATER,
+        )
+        verify { braintreeClient.sendAnalyticsEvent("shopper-insights:button-selected",
+            params) }
+    }
+
+    @Test
     fun `test isPayPalAppInstalled returns true when deviceInspector returns true`() {
         every { deviceInspector.isPayPalInstalled() } returns true
         assertTrue(sut.isPayPalAppInstalled(context))
