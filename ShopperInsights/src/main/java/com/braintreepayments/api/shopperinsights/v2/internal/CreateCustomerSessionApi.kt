@@ -5,12 +5,12 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 
 /**
  * API to create a new customer session using the `CreateCustomerSession` GraphQL mutation.
  */
 @ExperimentalBetaApi
+@Suppress("TooGenericExceptionCaught")
 internal class CreateCustomerSessionApi(
     private val braintreeClient: BraintreeClient,
     private val customerSessionRequestBuilder: CustomerSessionRequestBuilder = CustomerSessionRequestBuilder(),
@@ -41,9 +41,7 @@ internal class CreateCustomerSessionApi(
                 val responseBody = braintreeClient.sendGraphQLPOST(params)
                 val sessionId = responseParser.parseSessionId(responseBody, CREATE_CUSTOMER_SESSION)
                 CreateCustomerSessionResult.Success(sessionId)
-            } catch (e: IOException) {
-                CreateCustomerSessionResult.Error(e)
-            } catch (e: JSONException) {
+            } catch (e: Exception) {
                 CreateCustomerSessionResult.Error(e)
             }
         } catch (e: JSONException) {

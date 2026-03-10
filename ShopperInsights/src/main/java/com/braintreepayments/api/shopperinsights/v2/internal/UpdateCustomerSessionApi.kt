@@ -5,12 +5,12 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 
 /**
  * API to update an existing customer session using the `UpdateCustomerSession` GraphQL mutation.
  */
 @ExperimentalBetaApi
+@Suppress("TooGenericExceptionCaught")
 internal class UpdateCustomerSessionApi(
     private val braintreeClient: BraintreeClient,
     private val customerSessionRequestBuilder: CustomerSessionRequestBuilder = CustomerSessionRequestBuilder(),
@@ -44,9 +44,7 @@ internal class UpdateCustomerSessionApi(
                     val responseBody = braintreeClient.sendGraphQLPOST(params)
                     val sessionId = responseParser.parseSessionId(responseBody, UPDATE_CUSTOMER_SESSION)
                     UpdateCustomerSessionResult.Success(sessionId)
-                } catch (e: IOException) {
-                    UpdateCustomerSessionResult.Error(e)
-                } catch (e: JSONException) {
+                } catch (e: Exception) {
                     UpdateCustomerSessionResult.Error(e)
                 }
         } catch (e: JSONException) {

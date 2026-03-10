@@ -7,12 +7,12 @@ import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
 import com.braintreepayments.api.shopperinsights.v2.PaymentOptions
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 
 /**
  * API to return customer recommendations using the `GenerateCustomerRecommendations` GraphQL mutation.
  */
 @ExperimentalBetaApi
+@Suppress("TooGenericExceptionCaught")
 internal class GenerateCustomerRecommendationsApi(
     private val braintreeClient: BraintreeClient,
     private val customerSessionRequestBuilder: CustomerSessionRequestBuilder = CustomerSessionRequestBuilder()
@@ -53,9 +53,7 @@ internal class GenerateCustomerRecommendationsApi(
                 val responseBody = braintreeClient.sendGraphQLPOST(params)
                 val recommendationsResult = parseRecommendationsResponse(responseBody)
                 GenerateCustomerRecommendationsResult.Success(recommendationsResult)
-            } catch (e: IOException) {
-                GenerateCustomerRecommendationsResult.Error(e)
-            } catch (e: JSONException) {
+            } catch (e: Exception) {
                 GenerateCustomerRecommendationsResult.Error(e)
             }
         } catch (e: JSONException) {
