@@ -89,7 +89,7 @@ class ComposeButtonsFragment : BaseFragment() {
     @Composable
     fun SingleChoiceSegmentedButton(modifier: Modifier = Modifier, onClick: (Int) -> Unit = {}) {
         var selectedIndex by remember { mutableIntStateOf(0) }
-        val options = listOf("Primary", "Secondary", "Tertiary")
+        val options = listOf("Blue", "Black", "White")
 
         SingleChoiceSegmentedButtonRow {
             options.forEachIndexed { index, label ->
