@@ -46,7 +46,6 @@ internal class CreateCustomerSessionApi(
             } catch (e: JSONException) {
                 CreateCustomerSessionResult.Error(e)
             }
-
         } catch (e: JSONException) {
             CreateCustomerSessionResult.Error(e)
         }

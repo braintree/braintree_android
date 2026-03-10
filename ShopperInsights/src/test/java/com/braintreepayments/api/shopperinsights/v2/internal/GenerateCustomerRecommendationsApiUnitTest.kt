@@ -6,13 +6,13 @@ import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendations
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
 import com.braintreepayments.api.shopperinsights.v2.PaymentOptions
 import com.braintreepayments.api.shopperinsights.v2.PurchaseUnit
+import com.braintreepayments.api.shopperinsights.v2.internal.GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult
 import com.braintreepayments.api.shopperinsights.v2.internal.CustomerSessionRequestBuilder.JsonRequestObjects
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -25,6 +25,7 @@ import org.junit.Before
 import org.junit.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import java.io.IOException
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalBetaApi::class)
 class GenerateCustomerRecommendationsApiUnitTest {
@@ -120,14 +121,12 @@ class GenerateCustomerRecommendationsApiUnitTest {
     }
 
     private lateinit var customerSessionRequestBuilder: CustomerSessionRequestBuilder
-    private lateinit var callback: (GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult) -> Unit
     private lateinit var testScope: TestScope
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
     fun setup() {
         customerSessionRequestBuilder = mockk(relaxed = true)
-        callback = mockk(relaxed = true)
         testScope = TestScope(testDispatcher)
     }
 
@@ -159,12 +158,10 @@ class GenerateCustomerRecommendationsApiUnitTest {
 
         val generateCustomerRecommendationsApi = GenerateCustomerRecommendationsApi(
             braintreeClient = braintreeClient,
-            customerSessionRequestBuilder = customerSessionRequestBuilder,
-            mainDispatcher = testDispatcher,
-            coroutineScope = testScope
+            customerSessionRequestBuilder = customerSessionRequestBuilder
         )
 
-        generateCustomerRecommendationsApi.execute(customerSessionRequest, "test-session-id", callback)
+        val result = generateCustomerRecommendationsApi.execute(customerSessionRequest, "test-session-id")
         advanceUntilIdle()
 
         val expectedResult = CustomerRecommendations(
@@ -175,11 +172,8 @@ class GenerateCustomerRecommendationsApiUnitTest {
             )
         )
 
-        verify {
-            callback.invoke(
-                GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult.Success(expectedResult)
-            )
-        }
+        assert(result is GenerateCustomerRecommendationsResult.Success)
+        assertEquals(expectedResult, (result as GenerateCustomerRecommendationsResult.Success).customerRecommendations)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -192,17 +186,14 @@ class GenerateCustomerRecommendationsApiUnitTest {
 
         val generateCustomerRecommendationsApi = GenerateCustomerRecommendationsApi(
             braintreeClient = braintreeClient,
-            customerSessionRequestBuilder = customerSessionRequestBuilder,
-            mainDispatcher = testDispatcher,
-            coroutineScope = testScope
+            customerSessionRequestBuilder = customerSessionRequestBuilder
         )
 
-        generateCustomerRecommendationsApi.execute(customerSessionRequest, "test-session-id", callback)
+        val result = generateCustomerRecommendationsApi.execute(customerSessionRequest, "test-session-id")
         advanceUntilIdle()
 
-        verify {
-            callback.invoke(GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult.Error(error))
-        }
+        assert(result is GenerateCustomerRecommendationsResult.Error)
+        assertEquals(error, (result as GenerateCustomerRecommendationsResult.Error).error)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -216,19 +207,14 @@ class GenerateCustomerRecommendationsApiUnitTest {
 
         val generateCustomerRecommendationsApi = GenerateCustomerRecommendationsApi(
             braintreeClient = braintreeClient,
-            customerSessionRequestBuilder = customerSessionRequestBuilder,
-            mainDispatcher = testDispatcher,
-            coroutineScope = testScope
+            customerSessionRequestBuilder = customerSessionRequestBuilder
         )
 
-        generateCustomerRecommendationsApi.execute(customerSessionRequest, "test-session-id", callback)
+        val result = generateCustomerRecommendationsApi.execute(customerSessionRequest, "test-session-id")
         advanceUntilIdle()
 
-        verify {
-            callback.invoke(
-                GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult.Error(exception)
-            )
-        }
+        assert(result is GenerateCustomerRecommendationsResult.Error)
+        assertEquals(exception, (result as GenerateCustomerRecommendationsResult.Error).error)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -240,15 +226,12 @@ class GenerateCustomerRecommendationsApiUnitTest {
 
         val generateCustomerRecommendationsApi = GenerateCustomerRecommendationsApi(
             braintreeClient = braintreeClient,
-            customerSessionRequestBuilder = customerSessionRequestBuilder,
-            mainDispatcher = testDispatcher,
-            coroutineScope = testScope
+            customerSessionRequestBuilder = customerSessionRequestBuilder
         )
 
         generateCustomerRecommendationsApi.execute(
             customerSessionRequest = customerSessionRequest,
-            sessionId = "test-session-id",
-            callback = mockk(relaxed = true)
+            sessionId = "test-session-id"
         )
         advanceUntilIdle()
 

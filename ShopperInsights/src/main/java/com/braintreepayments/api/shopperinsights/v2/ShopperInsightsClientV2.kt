@@ -141,23 +141,26 @@ class ShopperInsightsClientV2 internal constructor(
         sessionId: String? = null,
         customerRecommendationsCallback: (customerRecommendationsResult: CustomerRecommendationsResult) -> Unit
     ) {
-        coroutineScope.launch { customerRecommendationsCallback(generateCustomerRecommendations(customerSessionRequest, sessionId)) }
+        coroutineScope.launch {
+            customerRecommendationsCallback(generateCustomerRecommendations(customerSessionRequest, sessionId))
+        }
     }
 
     private suspend fun generateCustomerRecommendations(
         customerSessionRequest: CustomerSessionRequest? = null,
         sessionId: String? = null,
     ): CustomerRecommendationsResult {
+        analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_STARTED)
         return when (
             val generateCustomerRecommendationsResult =
                 generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId)
         ) {
-            is GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult.Success -> {
+            is GenerateCustomerRecommendationsResult.Success -> {
                 analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_SUCCEEDED)
                 CustomerRecommendationsResult.Success(generateCustomerRecommendationsResult.customerRecommendations)
             }
 
-            is GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult.Error -> {
+            is GenerateCustomerRecommendationsResult.Error -> {
                 analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_FAILED)
                 CustomerRecommendationsResult.Failure(generateCustomerRecommendationsResult.error)
             }

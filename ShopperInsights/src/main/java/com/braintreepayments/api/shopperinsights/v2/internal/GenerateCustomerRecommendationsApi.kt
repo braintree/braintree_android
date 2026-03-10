@@ -58,7 +58,6 @@ internal class GenerateCustomerRecommendationsApi(
             } catch (e: JSONException) {
                 GenerateCustomerRecommendationsResult.Error(e)
             }
-
         } catch (e: JSONException) {
             GenerateCustomerRecommendationsResult.Error(e)
         }
