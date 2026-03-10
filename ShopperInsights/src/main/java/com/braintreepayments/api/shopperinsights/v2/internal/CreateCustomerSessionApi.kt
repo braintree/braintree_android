@@ -24,18 +24,18 @@ internal class CreateCustomerSessionApi(
 
     suspend fun execute(customerSessionRequest: CustomerSessionRequest): CreateCustomerSessionResult {
         return try {
-            val params = JSONObject().apply {
-                put(
-                    QUERY, """
-                mutation CreateCustomerSession(${'$'}input: CreateCustomerSessionInput!) {
-                    createCustomerSession(input: ${'$'}input) {
-                        sessionId
-                    }
+            val params = JSONObject()
+            params.put(
+                QUERY, """
+            mutation CreateCustomerSession(${'$'}input: CreateCustomerSessionInput!) {
+                createCustomerSession(input: ${'$'}input) {
+                    sessionId
                 }
-                """.trimIndent()
-                )
-                put(VARIABLES, assembleVariables(customerSessionRequest))
             }
+            """.trimIndent()
+            )
+
+            params.put(VARIABLES, assembleVariables(customerSessionRequest))
 
             try {
                 val responseBody = braintreeClient.sendGraphQLPOST(params)

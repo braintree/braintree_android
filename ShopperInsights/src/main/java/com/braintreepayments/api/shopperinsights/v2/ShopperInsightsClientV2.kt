@@ -71,12 +71,19 @@ class ShopperInsightsClientV2 internal constructor(
         customerSessionRequest: CustomerSessionRequest,
         customerSessionCallback: (customerSessionResult: CustomerSessionResult) -> Unit
     ) {
-        coroutineScope.launch { customerSessionCallback(createCustomerSession(customerSessionRequest)) }
+        coroutineScope.launch {
+            val result = createCustomerSession(customerSessionRequest)
+            customerSessionCallback(result)
+        }
     }
 
-    private suspend fun createCustomerSession(customerSessionRequest: CustomerSessionRequest): CustomerSessionResult {
+    private suspend fun createCustomerSession(
+        customerSessionRequest: CustomerSessionRequest
+    ): CustomerSessionResult {
         analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_STARTED)
-        return when (val createCustomerSessionResult = createCustomerSessionApi.execute(customerSessionRequest)) {
+        return when (
+            val createCustomerSessionResult = createCustomerSessionApi.execute(customerSessionRequest)
+        ) {
             is CreateCustomerSessionApi.CreateCustomerSessionResult.Success -> {
                 analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_SUCCEEDED)
                 CustomerSessionResult.Success(createCustomerSessionResult.sessionId)
@@ -103,7 +110,10 @@ class ShopperInsightsClientV2 internal constructor(
         sessionId: String,
         customerSessionCallback: (customerSessionResult: CustomerSessionResult) -> Unit
     ) {
-        coroutineScope.launch { customerSessionCallback(updateCustomerSession(customerSessionRequest, sessionId)) }
+        coroutineScope.launch {
+            val result = updateCustomerSession(customerSessionRequest, sessionId)
+            customerSessionCallback(result)
+        }
     }
 
     private suspend fun updateCustomerSession(
@@ -142,7 +152,8 @@ class ShopperInsightsClientV2 internal constructor(
         customerRecommendationsCallback: (customerRecommendationsResult: CustomerRecommendationsResult) -> Unit
     ) {
         coroutineScope.launch {
-            customerRecommendationsCallback(generateCustomerRecommendations(customerSessionRequest, sessionId))
+            val result = generateCustomerRecommendations(customerSessionRequest, sessionId)
+            customerRecommendationsCallback(result)
         }
     }
 
