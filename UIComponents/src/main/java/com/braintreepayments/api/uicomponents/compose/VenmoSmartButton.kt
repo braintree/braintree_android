@@ -107,13 +107,7 @@ fun VenmoSmartButton(
                 val pendingRequestString = pendingRequestRepository.getPendingRequest()
 
                 activity?.intent?.let { intent ->
-                    handleReturnToApp(
-                        venmoLauncher,
-                        venmoClient,
-                        pendingRequestString,
-                        intent,
-                        venmoTokenizeCallback
-                    )
+                    handleReturnToApp(venmoLauncher, venmoClient, pendingRequestString, intent, venmoTokenizeCallback)
                     enabled = true
                     pendingRequestRepository.clearPendingRequest()
                     activity.intent.data = null
