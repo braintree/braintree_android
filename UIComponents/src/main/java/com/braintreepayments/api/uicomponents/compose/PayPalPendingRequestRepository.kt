@@ -36,11 +36,12 @@ class PayPalPendingRequestRepository(
         }
     }
 
-    suspend fun getPendingRequest(): String? {
+    suspend fun getPendingRequest(): String {
         return withContext(dispatcher) {
-            dataStore.data.map { preferences: Preferences ->
+            val pendingRequest = dataStore.data.map { preferences: Preferences ->
                 preferences[pendingRequestKey]
             }.firstOrNull()
+            pendingRequest ?: ""
         }
     }
 

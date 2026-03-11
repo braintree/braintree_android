@@ -153,12 +153,16 @@ internal suspend fun completePayPalFlow(
 private fun handleReturnToApp(
     payPalLauncher: PayPalLauncher,
     payPalClient: PayPalClient,
-    pendingRequest: String?,
+    pendingRequest: String,
     intent: Intent,
     callback: PayPalTokenizeCallback
 ) {
+    if (pendingRequest.isEmpty()) {
+        callback.onPayPalResult(PayPalResult.Failure(Exception("Unable to recover pending request.")))
+        return
+    }
     val paymentAuthResult = payPalLauncher.handleReturnToApp(
-        pendingRequest = PayPalPendingRequest.Started(pendingRequest ?: ""),
+        pendingRequest = PayPalPendingRequest.Started(pendingRequest),
         intent = intent,
     )
 

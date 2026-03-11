@@ -55,7 +55,7 @@ class PayPalPendingRequestRepositoryTest {
     @Test
     fun `getPendingRequest returns null when no value is stored`() = runTest {
         val result = subject.getPendingRequest()
-        assertNull(result)
+        assertEquals("", result)
     }
 
     @Test

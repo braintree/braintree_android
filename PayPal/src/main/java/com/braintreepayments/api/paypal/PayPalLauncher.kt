@@ -41,6 +41,7 @@ class PayPalLauncher internal constructor(
      * ActivityResultCaller is not available.
      * @param registry Optional ActivityResultRegistry parameter. If provided, it will be passed to BrowserSwitchClient
      */
+    @JvmOverloads
     constructor(registry: ActivityResultRegistry? = null) : this(
         browserSwitchClient = registry?.let { BrowserSwitchClient(it) } ?: BrowserSwitchClient(),
         lazyAnalyticsClient = AnalyticsClient.lazyInstance
