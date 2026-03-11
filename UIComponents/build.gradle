@@ -58,11 +58,18 @@ dependencies {
     implementation libs.androidx.ui.tooling.preview
     implementation libs.accompanist.drawablepainter
     implementation libs.compose.animation
+    implementation libs.android.compose
+    implementation libs.androidx.compose.viewModel
+    implementation libs.androidx.datastore.preferences
 
     def composeBom = platform(libs.androidx.compose.bom)
     implementation composeBom
     implementation libs.androidx.material3
 
+    testImplementation libs.junit
+    testImplementation libs.mockk
+    testImplementation libs.coroutines.core
+    testImplementation libs.coroutines.test
     testImplementation libs.kotlin.test
     testImplementation project(':TestUtils')
     debugImplementation libs.androidx.ui.tooling

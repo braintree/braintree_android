@@ -12,6 +12,7 @@ import androidx.activity.result.ActivityResultCaller
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.paypal.PayPalClient
 import com.braintreepayments.api.paypal.PayPalLauncher
 import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
@@ -21,6 +22,7 @@ import com.braintreepayments.api.paypal.PayPalRequest
 import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayPalButtonColor.Companion.fromId
+import com.braintreepayments.api.uicomponents.UIComponentsAnalytics.UI_TYPE_XML_VIEW
 
 /**
  * A customizable PayPal branded button to initiate the PayPal flow.
@@ -103,7 +105,10 @@ class PayPalButton @JvmOverloads constructor(
         )
 
         val analyticsClient = AnalyticsClient.lazyInstance.value
-        analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_BUTTON_PRESENTED)
+        analyticsClient.sendEvent(
+            UIComponentsAnalytics.PAYPAL_BUTTON_PRESENTED,
+            AnalyticsEventParams(uiType = UI_TYPE_XML_VIEW)
+        )
     }
 
     /**
@@ -151,7 +156,10 @@ class PayPalButton @JvmOverloads constructor(
     private fun completePayPalFlow(paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch) {
         getActivity()?.let { activity ->
             val analyticsClient = AnalyticsClient.lazyInstance.value
-            analyticsClient.sendEvent(UIComponentsAnalytics.PAYPAL_BUTTON_SELECTED)
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.PAYPAL_BUTTON_SELECTED,
+                AnalyticsEventParams(uiType = UI_TYPE_XML_VIEW)
+            )
             val payPalPendingRequest = payPalLauncher.launch(
                 activity = activity,
                 paymentAuthRequest = paymentAuthRequest
