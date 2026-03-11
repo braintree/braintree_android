@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.util.LinkedList
 import java.util.Locale
 
 /**
@@ -36,6 +37,8 @@ import java.util.Locale
  * NOTE: to support Elo cards, country code must be set to "BR"
  * @property totalPriceLabel Optional. Custom label for the total price within the display items
  * @property allowCreditCards Defaults to `true`.
+ * @property displayItems Optional list of cart items shown in the payment sheet
+ * (e.g. subtotals, sales taxes, shipping charges, discounts etc.).
  */
 @Suppress("TooManyFunctions")
 @Parcelize
@@ -55,6 +58,7 @@ class GooglePayRequest @JvmOverloads constructor(
     var countryCode: String? = null,
     var totalPriceLabel: String? = null,
     var allowCreditCards: Boolean = true,
+    var displayItems: MutableList<GooglePayDisplayItem>? = null,
     private var environment: String? = null,
     private val allowedPaymentMethods: MutableMap<String, String> = HashMap(),
     private val tokenizationSpecifications: MutableMap<String, String> = HashMap(),
@@ -144,6 +148,9 @@ class GooglePayRequest @JvmOverloads constructor(
         transactionInfoJson.put("totalPrice", totalPrice)
         transactionInfoJson.put("currencyCode", currencyCode)
         transactionInfoJson.putOpt("countryCode", countryCode)
+        displayItems?.let {
+            transactionInfoJson.put("displayItems", JSONArray(it.map { item -> item.toJson() }))
+        }
         transactionInfoJson.putOpt("totalPriceLabel", totalPriceLabel)
 
         for ((key, value) in this.allowedPaymentMethods) {

@@ -2459,7 +2459,22 @@ object Fixtures {
             "totalPriceStatus": "FINAL",
             "totalPrice": "12.24",
             "currencyCode": "USD",
-            "countryCode": "US"
+            "countryCode": "US",
+            "displayItems" : [ 
+              {
+                "label" : "Item1", 
+                "type" : "LINE_ITEM",
+                "price" : "1.00",
+                "status" : "FINAL"
+              },
+              {
+                "label" : "Item2",
+                "type" : "LINE_ITEM",
+                "price" : "2.00",
+                "status" : "FINAL"
+              }
+            ],
+            "totalPriceLabel" : "Test Label"
           }
         } 
     """
