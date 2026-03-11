@@ -5,7 +5,6 @@ import androidx.annotation.RestrictTo
 import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
 
-
 /**
  * A cart item shown in the payment sheet
  * (e.g. subtotals, sales taxes, shipping charges, discounts etc.).
