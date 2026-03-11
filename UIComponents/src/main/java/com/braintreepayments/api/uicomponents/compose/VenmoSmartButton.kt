@@ -187,9 +187,3 @@ private fun logButtonSelected(analyticsClient: AnalyticsClient) {
         AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
     )
 }
-
-private fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
-}
