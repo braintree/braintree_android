@@ -32,6 +32,15 @@ import com.braintreepayments.api.venmo.VenmoTokenizeCallback
 import kotlin.text.isEmpty
 import kotlinx.coroutines.launch
 
+/**
+ * A composable that displays Venmo button.
+ * @param style: A [VenmoButtonColor] that determines the color of the button.
+ * @param venmoRequest: A [VenmoRequest] that provides the parameters to tokenize a Venmo account.
+ * @param authorization: An authorization string to use for tokenization.
+ * @param appLinkReturnUrl: A [Uri] that sends back control to the host app after Venmo flow completes.
+ * @param deepLinkFallbackUrlScheme: Fallback scheme in case [appLinkReturnUrl] doesn't work.
+ * @param venmoTokenizeCallback: A [VenmoTokenizeCallback] that handles the result of the tokenization.
+ */
 @Composable
 fun VenmoSmartButton(
     style: VenmoButtonColor,
