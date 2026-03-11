@@ -1,8 +1,6 @@
 package com.braintreepayments.api.uicomponents.compose
 
 import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
@@ -31,6 +29,7 @@ import com.braintreepayments.api.venmo.VenmoPendingRequest
 import com.braintreepayments.api.venmo.VenmoRequest
 import com.braintreepayments.api.venmo.VenmoResult
 import com.braintreepayments.api.venmo.VenmoTokenizeCallback
+import kotlin.text.isEmpty
 import kotlinx.coroutines.launch
 
 @Composable
@@ -105,13 +104,13 @@ fun VenmoSmartButton(
         if (flowLaunched) {
             flowLaunched = false
             lifecycle.coroutineScope.launch {
-                val pendingRequest = pendingRequestRepository.getPendingRequest()
+                val pendingRequestString = pendingRequestRepository.getPendingRequest()
 
                 activity?.intent?.let { intent ->
                     handleReturnToApp(
                         venmoLauncher,
                         venmoClient,
-                        VenmoPendingRequest.Started(pendingRequest ?: ""),
+                        pendingRequestString,
                         intent,
                         venmoTokenizeCallback
                     )
@@ -151,12 +150,16 @@ private suspend fun completeVenmoFlow(
 private fun handleReturnToApp(
     venmoLauncher: VenmoLauncher,
     venmoClient: VenmoClient,
-    pendingRequest: VenmoPendingRequest.Started,
+    pendingRequestString: String,
     intent: Intent,
     callback: VenmoTokenizeCallback
 ) {
+    if (pendingRequestString.isEmpty()) {
+        callback.onVenmoResult(VenmoResult.Failure(Exception("Unable to recover pending request.")))
+        return
+    }
     val paymentAuthResult = venmoLauncher.handleReturnToApp(
-        pendingRequest = pendingRequest,
+        pendingRequest = VenmoPendingRequest.Started(pendingRequestString),
         intent = intent
     )
     when (paymentAuthResult) {

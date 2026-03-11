@@ -1,8 +1,6 @@
 package com.braintreepayments.api.uicomponents.compose
 
 import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
@@ -113,10 +111,10 @@ fun PayPalSmartButton(
         if (flowLaunched) {
             flowLaunched = false
             lifecycle.coroutineScope.launch {
-                val pendingRequest = pendingRequestRepository.getPendingRequest()
+                val pendingRequestStr = pendingRequestRepository.getPendingRequest()
 
                 activity?.intent?.let { intent ->
-                    handleReturnToApp(payPalLauncher, payPalClient, pendingRequest, intent, paypalTokenizeCallback)
+                    handleReturnToApp(payPalLauncher, payPalClient, pendingRequestStr, intent, paypalTokenizeCallback)
                     enabled = true
                     pendingRequestRepository.clearPendingRequest()
                     activity.intent.data = null
@@ -153,16 +151,16 @@ internal suspend fun completePayPalFlow(
 private fun handleReturnToApp(
     payPalLauncher: PayPalLauncher,
     payPalClient: PayPalClient,
-    pendingRequest: String,
+    pendingRequestString: String,
     intent: Intent,
     callback: PayPalTokenizeCallback
 ) {
-    if (pendingRequest.isEmpty()) {
+    if (pendingRequestString.isEmpty()) {
         callback.onPayPalResult(PayPalResult.Failure(Exception("Unable to recover pending request.")))
         return
     }
     val paymentAuthResult = payPalLauncher.handleReturnToApp(
-        pendingRequest = PayPalPendingRequest.Started(pendingRequest),
+        pendingRequest = PayPalPendingRequest.Started(pendingRequestString),
         intent = intent,
     )
 
