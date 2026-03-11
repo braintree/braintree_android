@@ -167,10 +167,10 @@ class ComposeButtonsFragment : BaseFragment() {
         shouldVault = shouldVault
         collectCustomerBillingAddress = true
         collectCustomerShippingAddress = true
-        totalAmount = "20"
-        subTotalAmount = "18"
-        taxAmount = "1"
-        shippingAmount = "1"
+        totalAmount = "0.20"
+        subTotalAmount = "0.18"
+        taxAmount = "0.01"
+        shippingAmount = "0.01"
     }
 
     private val venmoTokenizeCallback = VenmoTokenizeCallback { venmoResult ->
