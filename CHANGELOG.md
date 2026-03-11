@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 5.25.0
+
+* Google Pay
+    * Optional `DisplayItems` in Google Pay request
+
 ## 5.24.0 (2026-02-25)
 
 * PayPal
