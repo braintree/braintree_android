@@ -16,7 +16,7 @@ import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class PayPalPendingRequestRepositoryTest {
+class PendingRequestRepositoryTest {
 
     @get:Rule
     val coroutineTestRule = CoroutineTestRule()
