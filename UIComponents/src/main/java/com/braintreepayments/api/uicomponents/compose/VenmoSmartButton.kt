@@ -158,7 +158,7 @@ private fun handleReturnToApp(
     callback: VenmoTokenizeCallback
 ) {
     if (pendingRequestString.isEmpty()) {
-        callback.onVenmoResult(VenmoResult.Failure(Exception("Unable to recover pending request.")))
+        callback.onVenmoResult(VenmoResult.Failure(Exception(PendingRequestException())))
         return
     }
     val paymentAuthResult = venmoLauncher.handleReturnToApp(

@@ -156,7 +156,7 @@ private fun handleReturnToApp(
     callback: PayPalTokenizeCallback
 ) {
     if (pendingRequestString.isEmpty()) {
-        callback.onPayPalResult(PayPalResult.Failure(Exception("Unable to recover pending request.")))
+        callback.onPayPalResult(PayPalResult.Failure(PendingRequestException()))
         return
     }
     val paymentAuthResult = payPalLauncher.handleReturnToApp(
