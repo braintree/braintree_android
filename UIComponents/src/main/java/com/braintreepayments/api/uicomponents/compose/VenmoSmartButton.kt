@@ -48,7 +48,7 @@ fun VenmoSmartButton(
     authorization: String,
     appLinkReturnUrl: Uri,
     deepLinkFallbackUrlScheme: String? = null,
-    pendingRequestRepository: PayPalPendingRequestRepository = PayPalPendingRequestRepository(LocalContext.current),
+    pendingRequestRepository: PendingRequestRepository = PendingRequestRepository(LocalContext.current, "venmo"),
     venmoTokenizeCallback: VenmoTokenizeCallback
 ) {
     val context = LocalContext.current
@@ -130,7 +130,7 @@ fun VenmoSmartButton(
 
 private suspend fun completeVenmoFlow(
     venmoLauncher: VenmoLauncher,
-    pendingRequestRepository: PayPalPendingRequestRepository,
+    pendingRequestRepository: PendingRequestRepository,
     activity: Activity,
     paymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch,
     venmoTokenizeCallback: VenmoTokenizeCallback

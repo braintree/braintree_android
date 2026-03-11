@@ -47,7 +47,7 @@ fun PayPalSmartButton(
     authorization: String,
     appLinkReturnUrl: Uri,
     deepLinkFallbackUrlScheme: String,
-    pendingRequestRepository: PayPalPendingRequestRepository = PayPalPendingRequestRepository(LocalContext.current),
+    pendingRequestRepository: PendingRequestRepository = PendingRequestRepository(LocalContext.current, "paypal"),
     paypalTokenizeCallback: PayPalTokenizeCallback
 ) {
     val context = LocalContext.current
@@ -128,7 +128,7 @@ fun PayPalSmartButton(
 
 internal suspend fun completePayPalFlow(
     payPalLauncher: PayPalLauncher,
-    pendingRequestRepository: PayPalPendingRequestRepository,
+    pendingRequestRepository: PendingRequestRepository,
     activity: Activity,
     paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch,
     paypalTokenizeCallback: PayPalTokenizeCallback
