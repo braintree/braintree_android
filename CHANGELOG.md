@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* ShopperInsights
+    * Add `PAYPAL_PAY_LATER` to `ButtonType` enum
+
 ## 5.24.0 (2026-02-25)
 
 * PayPal
