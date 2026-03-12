@@ -81,7 +81,7 @@ class GooglePayRequestUnitTest {
         assertTrue(request.allowCreditCards)
         assertNull(request.getEnvironment())
         assertNull(request.googleMerchantName)
-        assertNull(request.displayItems)
+        assertTrue { request.displayItems.isEmpty() }
     }
 
     @Test
@@ -155,7 +155,7 @@ class GooglePayRequestUnitTest {
         assertNull(parceled.getEnvironment())
         assertNull(parceled.googleMerchantName)
         assertNull(parceled.totalPriceLabel)
-        assertNull(parceled.displayItems)
+        assertTrue { parceled.displayItems.isEmpty() }
     }
 
     @Test
