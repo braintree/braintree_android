@@ -16,5 +16,5 @@ enum class GooglePayCheckoutOption(val stringValue: String) {
     /**
      * Complete immediate purchase.
      */
-    COMPLETE_IMMEDIATE_PURCHASE("COMPLETE_IMMEDIATE_PURCHASE");
+    COMPLETE_IMMEDIATE_PURCHASE("COMPLETE_IMMEDIATE_PURCHASE")
 }
