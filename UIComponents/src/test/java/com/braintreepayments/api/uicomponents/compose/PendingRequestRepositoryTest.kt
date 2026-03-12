@@ -16,19 +16,20 @@ import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class PayPalPendingRequestRepositoryTest {
+class PendingRequestRepositoryTest {
 
     @get:Rule
     val coroutineTestRule = CoroutineTestRule()
 
     private lateinit var dataStore: DataStore<Preferences>
-    private lateinit var subject: PayPalPendingRequestRepository
+    private lateinit var subject: PendingRequestRepository
 
     @Before
     fun setUp() {
         dataStore = DataStoreMock()
-        subject = PayPalPendingRequestRepository(
+        subject = PendingRequestRepository(
             context = mockk(),
+            moduleName = "testModule",
             dataStore = dataStore,
             dispatcher = coroutineTestRule.testDispatcher
         )
@@ -39,32 +40,32 @@ class PayPalPendingRequestRepositoryTest {
         val pendingRequest = "test-pending-request"
         subject.storePendingRequest(pendingRequest)
 
-        val storedValue = dataStore.data.first()[stringPreferencesKey("pending_request_key")]
+        val storedValue = dataStore.data.first()[stringPreferencesKey("testModule_pending_request_key")]
         assertEquals(pendingRequest, storedValue)
     }
 
     @Test
     fun `getPendingRequest returns the stored value`() = runTest {
         val pendingRequest = "test-pending-request"
-        dataStore.edit { it[stringPreferencesKey("pending_request_key")] = pendingRequest }
+        dataStore.edit { it[stringPreferencesKey("testModule_pending_request_key")] = pendingRequest }
 
         val result = subject.getPendingRequest()
         assertEquals(pendingRequest, result)
     }
 
     @Test
-    fun `getPendingRequest returns null when no value is stored`() = runTest {
+    fun `getPendingRequest returns empty value when no value is stored`() = runTest {
         val result = subject.getPendingRequest()
         assertEquals("", result)
     }
 
     @Test
     fun `clearPendingRequest removes the stored value`() = runTest {
-        dataStore.edit { it[stringPreferencesKey("pending_request_key")] = "test-pending-request" }
+        dataStore.edit { it[stringPreferencesKey("testModule_pending_request_key")] = "test-pending-request" }
 
         subject.clearPendingRequest()
 
-        val storedValue = dataStore.data.first()[stringPreferencesKey("pending_request_key")]
+        val storedValue = dataStore.data.first()[stringPreferencesKey("testModule_pending_request_key")]
         assertNull(storedValue)
     }
 }

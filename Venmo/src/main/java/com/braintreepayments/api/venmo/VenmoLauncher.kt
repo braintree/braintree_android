@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultCaller
+import androidx.activity.result.ActivityResultRegistry
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
@@ -26,6 +27,18 @@ class VenmoLauncher internal constructor(
      */
     constructor(caller: ActivityResultCaller? = null) : this(
         browserSwitchClient = if (caller != null) BrowserSwitchClient(caller) else BrowserSwitchClient(),
+        venmoRepository = VenmoRepository.instance,
+        lazyAnalyticsClient = AnalyticsClient.lazyInstance
+    )
+
+    /**
+     * Used to launch the Venmo flow in a web browser and deliver results. Use it in Compose flows or where
+     * ActivityResultCaller is not available.
+     * @param registry Optional ActivityResultRegistry parameter. If provided, it will be passed to BrowserSwitchClient
+     */
+    @JvmOverloads
+    constructor(registry: ActivityResultRegistry? = null) : this(
+        browserSwitchClient = registry?.let { BrowserSwitchClient(it) } ?: BrowserSwitchClient(),
         venmoRepository = VenmoRepository.instance,
         lazyAnalyticsClient = AnalyticsClient.lazyInstance
     )

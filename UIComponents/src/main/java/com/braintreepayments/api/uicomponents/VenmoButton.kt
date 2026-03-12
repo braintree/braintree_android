@@ -12,6 +12,7 @@ import androidx.activity.result.ActivityResultCaller
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.uicomponents.VenmoButtonColor.Companion.fromId
 import com.braintreepayments.api.venmo.VenmoClient
 import com.braintreepayments.api.venmo.VenmoLauncher
@@ -101,7 +102,10 @@ class VenmoButton @JvmOverloads constructor(
         )
 
         val analyticsClient = AnalyticsClient.lazyInstance.value
-        analyticsClient.sendEvent(UIComponentsAnalytics.VENMO_BUTTON_PRESENTED)
+        analyticsClient.sendEvent(
+            UIComponentsAnalytics.VENMO_BUTTON_PRESENTED,
+            AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
+        )
     }
 
     /**
@@ -145,7 +149,10 @@ class VenmoButton @JvmOverloads constructor(
     private fun completeVenmoFlow(venmoPaymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch) {
         getActivity()?.let { activity ->
             val analyticsClient = AnalyticsClient.lazyInstance.value
-            analyticsClient.sendEvent(UIComponentsAnalytics.VENMO_BUTTON_SELECTED)
+            analyticsClient.sendEvent(
+                UIComponentsAnalytics.VENMO_BUTTON_SELECTED,
+                AnalyticsEventParams(uiType = UIComponentsAnalytics.UI_TYPE_XML_VIEW)
+            )
             val venmoPendingRequest = venmoLauncher.launch(
                 activity = activity,
                 paymentAuthRequest = venmoPaymentAuthRequest
