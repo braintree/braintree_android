@@ -5,23 +5,17 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendations
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
 import com.braintreepayments.api.shopperinsights.v2.PaymentOptions
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 
 /**
  * API to return customer recommendations using the `GenerateCustomerRecommendations` GraphQL mutation.
  */
 @ExperimentalBetaApi
+@Suppress("TooGenericExceptionCaught")
 internal class GenerateCustomerRecommendationsApi(
     private val braintreeClient: BraintreeClient,
-    private val customerSessionRequestBuilder: CustomerSessionRequestBuilder = CustomerSessionRequestBuilder(),
-    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
-    private val coroutineScope: CoroutineScope = CoroutineScope(mainDispatcher)
+    private val customerSessionRequestBuilder: CustomerSessionRequestBuilder = CustomerSessionRequestBuilder()
 ) {
 
     sealed class GenerateCustomerRecommendationsResult {
@@ -32,12 +26,11 @@ internal class GenerateCustomerRecommendationsApi(
         data class Error(val error: Exception) : GenerateCustomerRecommendationsResult()
     }
 
-    fun execute(
+    suspend fun execute(
         customerSessionRequest: CustomerSessionRequest?,
-        sessionId: String?,
-        callback: (GenerateCustomerRecommendationsResult) -> Unit
-    ) {
-        try {
+        sessionId: String?
+    ): GenerateCustomerRecommendationsResult {
+        return try {
             val params = JSONObject()
             params.put(
                 QUERY, """
@@ -55,19 +48,16 @@ internal class GenerateCustomerRecommendationsApi(
             )
 
             params.put(VARIABLES, assembleVariables(sessionId, customerSessionRequest))
-            coroutineScope.launch {
-                try {
-                    val responseBody = braintreeClient.sendGraphQLPOST(params)
-                    val recommendationsResult = parseRecommendationsResponse(responseBody)
-                    callback(GenerateCustomerRecommendationsResult.Success(recommendationsResult))
-                } catch (e: IOException) {
-                    callback(GenerateCustomerRecommendationsResult.Error(e))
-                } catch (e: JSONException) {
-                    callback(GenerateCustomerRecommendationsResult.Error(e))
-                }
+
+            try {
+                val responseBody = braintreeClient.sendGraphQLPOST(params)
+                val recommendationsResult = parseRecommendationsResponse(responseBody)
+                GenerateCustomerRecommendationsResult.Success(recommendationsResult)
+            } catch (e: Exception) {
+                GenerateCustomerRecommendationsResult.Error(e)
             }
         } catch (e: JSONException) {
-            callback(GenerateCustomerRecommendationsResult.Error(e))
+            GenerateCustomerRecommendationsResult.Error(e)
         }
     }
 
