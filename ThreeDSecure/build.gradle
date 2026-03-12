@@ -58,6 +58,7 @@ dependencies {
     testImplementation libs.androidx.test.core
     testImplementation libs.test.parameter.injector
     testImplementation project(':TestUtils')
+    testImplementation libs.coroutines.test
 
     androidTestImplementation libs.androidx.test.rules
     androidTestImplementation libs.androidx.test.runner

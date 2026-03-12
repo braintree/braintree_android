@@ -1,8 +1,7 @@
 package com.braintreepayments.api.testutils
 
 import com.braintreepayments.api.core.ApiClient
-import com.braintreepayments.api.core.TokenizeCallback
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
 import org.json.JSONObject
 
@@ -37,14 +36,14 @@ class MockkApiClientBuilder {
     fun build(): ApiClient {
         val apiClient = mockk<ApiClient>(relaxed = true)
 
-        every { apiClient.tokenizeREST(any(), any()) } answers {
-            val listener = lastArg() as TokenizeCallback
-            listener.onResult(tokenizeRESTSuccess, tokenizeRESTError)
+        coEvery { apiClient.tokenizeREST(any()) } answers {
+            tokenizeRESTSuccess ?: throw tokenizeRESTError
+                ?: Exception("No response configured for tokenizeREST")
         }
 
-        every { apiClient.tokenizeGraphQL(any(), any()) } answers {
-            val listener = lastArg() as TokenizeCallback
-            listener.onResult(tokenizeGraphQLSuccess, tokenizeGraphQLError)
+        coEvery { apiClient.tokenizeGraphQL(any()) } answers {
+            tokenizeGraphQLSuccess ?: throw tokenizeGraphQLError
+                ?: Exception("No response configured for tokenizeGraphQL")
         }
         return apiClient
     }

@@ -3,8 +3,13 @@ package com.braintreepayments.api.shopperinsights.v2.internal
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
 
 /**
  * API to update an existing customer session using the `UpdateCustomerSession` GraphQL mutation.
@@ -13,7 +18,9 @@ import org.json.JSONObject
 internal class UpdateCustomerSessionApi(
     private val braintreeClient: BraintreeClient,
     private val customerSessionRequestBuilder: CustomerSessionRequestBuilder = CustomerSessionRequestBuilder(),
-    private val responseParser: ShopperInsightsResponseParser = ShopperInsightsResponseParser()
+    private val responseParser: ShopperInsightsResponseParser = ShopperInsightsResponseParser(),
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(mainDispatcher)
 ) {
 
     sealed class UpdateCustomerSessionResult {
@@ -40,12 +47,17 @@ internal class UpdateCustomerSessionApi(
 
             params.put(VARIABLES, assembleVariables(sessionId, customerSessionRequest))
 
-            braintreeClient.sendGraphQLPOST(params) { responseBody: String?, httpError: Exception? ->
-                if (responseBody != null) {
+            coroutineScope.launch {
+                try {
+                    val responseBody = braintreeClient.sendGraphQLPOST(params)
                     val sessionId = responseParser.parseSessionId(responseBody, UPDATE_CUSTOMER_SESSION)
-                    callback(UpdateCustomerSessionResult.Success(sessionId))
-                } else if (httpError != null) {
-                    callback(UpdateCustomerSessionResult.Error(httpError))
+                    callback(
+                        UpdateCustomerSessionResult.Success(sessionId)
+                    )
+                } catch (e: IOException) {
+                    callback(UpdateCustomerSessionResult.Error(e))
+                } catch (e: JSONException) {
+                    callback(UpdateCustomerSessionResult.Error(e))
                 }
             }
         } catch (e: JSONException) {

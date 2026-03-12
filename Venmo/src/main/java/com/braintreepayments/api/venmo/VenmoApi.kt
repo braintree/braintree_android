@@ -8,15 +8,22 @@ import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.core.MetadataBuilder
 import com.braintreepayments.api.venmo.VenmoAccountNonce.Companion.fromJSON
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
 
 internal class VenmoApi(
     private val braintreeClient: BraintreeClient,
     private val apiClient: ApiClient,
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(mainDispatcher)
 ) {
 
     @Suppress("LongMethod")
@@ -39,6 +46,7 @@ internal class VenmoApi(
             )
             val input = JSONObject()
             input.put("paymentMethodUsage", request.paymentMethodUsage.name)
+            input.put("venmoRiskCorrelationId", request.riskCorrelationId)
             input.put("merchantProfileId", venmoProfileId)
             input.put("customerClient", "MOBILE_APP")
             input.put("intent", "CONTINUE")
@@ -93,8 +101,14 @@ internal class VenmoApi(
             callback.onResult(null, BraintreeException("unexpected error"))
         }
 
-        braintreeClient.sendGraphQLPOST(params) { responseBody: String?, httpError: Exception? ->
-            paymentContextResponse(responseBody, callback, httpError)
+        coroutineScope.launch {
+            try {
+                val responseBody = braintreeClient.sendGraphQLPOST(params)
+                paymentContextResponse(responseBody, callback, null)
+            } catch (e: IOException) {
+                paymentContextResponse(null, callback, e)
+                return@launch
+            }
         }
     }
 
@@ -154,19 +168,16 @@ internal class VenmoApi(
             variables.put("id", paymentContextId)
             params.put("variables", variables)
 
-            braintreeClient.sendGraphQLPOST(params) { responseBody: String?, httpError: Exception? ->
-                if (responseBody != null) {
-                    try {
-                        val data = JSONObject(responseBody).getJSONObject("data")
-                        val nonce =
-                            fromJSON(data.getJSONObject("node"))
-
-                        callback.onResult(nonce, null)
-                    } catch (exception: JSONException) {
-                        callback.onResult(null, exception)
-                    }
-                } else {
-                    callback.onResult(null, httpError)
+            coroutineScope.launch {
+                try {
+                    val responseBody = braintreeClient.sendGraphQLPOST(params)
+                    val data = JSONObject(responseBody).getJSONObject("data")
+                    val nonce = fromJSON(data.getJSONObject("node"))
+                    callback.onResult(nonce, null)
+                } catch (e: IOException) {
+                    callback.onResult(null, e)
+                } catch (e: JSONException) {
+                    callback.onResult(null, e)
                 }
             }
         } catch (exception: JSONException) {
@@ -174,20 +185,17 @@ internal class VenmoApi(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     fun vaultVenmoAccountNonce(nonce: String?, callback: VenmoInternalCallback) {
         val venmoAccount = VenmoAccount(nonce)
 
-        apiClient.tokenizeREST(venmoAccount) { tokenizationResponse: JSONObject?, exception: Exception? ->
-            if (tokenizationResponse != null) {
-                try {
-                    val venmoAccountNonce =
-                        fromJSON(tokenizationResponse)
-                    callback.onResult(venmoAccountNonce, null)
-                } catch (e: JSONException) {
-                    callback.onResult(null, e)
-                }
-            } else {
-                callback.onResult(null, exception)
+        coroutineScope.launch {
+            try {
+                val tokenizationResponse = apiClient.tokenizeREST(venmoAccount)
+                val venmoAccountNonce = fromJSON(tokenizationResponse)
+                callback.onResult(venmoAccountNonce, null)
+            } catch (e: Exception) {
+                callback.onResult(null, e)
             }
         }
     }

@@ -134,7 +134,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                 enabled = shopperInsightsClientSuccessfullyInstantiated,
                 onClick = {
                     viewModel.resetRecommendationsCompleted()
-                    handleCreateCustomerSession(emailText, countryCodeText, nationalNumberText)
+                    handleCreateCustomerSession(emailText, nationalNumberText)
                 }
             ) {
                 Text(text = "Create customer session")
@@ -143,7 +143,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                 enabled = shopperInsightsClientSuccessfullyInstantiated,
                 onClick = {
                     viewModel.resetRecommendationsCompleted()
-                    handleUpdateCustomerSession(emailText, countryCodeText, nationalNumberText, currentSessionId)
+                    handleUpdateCustomerSession(emailText, nationalNumberText, currentSessionId)
                 }
             ) {
                 Text(text = "Update customer session")
@@ -174,7 +174,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                 if (isInPayPalNetwork && recommendations.first().paymentOption == "VENMO") {
                     Button(
                         enabled = true,
-                        onClick = { launchVenmo(emailText, countryCodeText, nationalNumberText, sessionId) }
+                        onClick = { launchVenmo(sessionId) }
                     ) {
                         Text(text = "Venmo")
                     }
@@ -303,9 +303,6 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
     }
 
     private fun launchVenmo(
-        emailText: String,
-        countryCodeText: String,
-        nationalNumberText: String,
         sessionId: String
     ) {
         viewModel.sendSelectedEvent(
@@ -348,19 +345,17 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
 
     private fun handleCreateCustomerSession(
         emailText: String,
-        countryCodeText: String,
         nationalNumberText: String
     ) {
-        viewModel.handleCreateCustomerSession(emailText, countryCodeText, nationalNumberText)
+        viewModel.handleCreateCustomerSession(emailText, nationalNumberText)
     }
 
     private fun handleUpdateCustomerSession(
         emailText: String,
-        countryCodeText: String,
         nationalNumberText: String,
         sessionId: String
     ) {
-        viewModel.handleUpdateCustomerSession(emailText, countryCodeText, nationalNumberText, sessionId)
+        viewModel.handleUpdateCustomerSession(emailText, nationalNumberText, sessionId)
     }
 
     private fun handleGetRecommendations(sessionId: String) {

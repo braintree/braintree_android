@@ -52,6 +52,7 @@ dependencies {
     testImplementation libs.androidx.junit
     testImplementation libs.test.parameter.injector
     testImplementation project(':TestUtils')
+    testImplementation libs.coroutines.test
 }
 
 // region signing and publishing

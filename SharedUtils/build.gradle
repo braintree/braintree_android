@@ -57,6 +57,8 @@ dependencies {
     androidTestImplementation libs.androidx.junit
     testImplementation libs.mockk
     testImplementation libs.kotlin.test
+    testImplementation libs.coroutines.test
+    implementation libs.coroutines.core
 }
 
 // region signing and publishing
