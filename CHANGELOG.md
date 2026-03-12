@@ -1,7 +1,10 @@
 # Braintree Android SDK Release Notes
 
-## 5.25.0
+=======
+## unreleased
 
+* ShopperInsights
+    * Add `PAYPAL_PAY_LATER` to `ButtonType` enum
 * Google Pay
     * Optional `DisplayItems` in Google Pay request
 
