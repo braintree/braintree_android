@@ -2,6 +2,9 @@
 
 ## unreleased
 
+* GooglePay
+    * Added support for `checkoutOption` to `GooglePayRequest` TransactionInfo params
+
 * ShopperInsights
     * Add `PAYPAL_PAY_LATER` to `ButtonType` enum
 
