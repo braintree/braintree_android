@@ -9,15 +9,22 @@ import com.braintreepayments.api.core.AnalyticsEventParams
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.BraintreeRequestCodes
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Used to integrate with SEPA Direct Debit.
  */
 class SEPADirectDebitClient internal constructor(
     private val braintreeClient: BraintreeClient,
-    private val sepaDirectDebitApi: SEPADirectDebitApi = SEPADirectDebitApi(braintreeClient)
+    private val sepaDirectDebitApi: SEPADirectDebitApi = SEPADirectDebitApi(braintreeClient),
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
     /**
      * Initializes a new [SEPADirectDebitClient] instance
@@ -44,64 +51,63 @@ class SEPADirectDebitClient internal constructor(
         sepaDirectDebitRequest: SEPADirectDebitRequest,
         callback: SEPADirectDebitPaymentAuthRequestCallback
     ) {
+        coroutineScope.launch {
+            val result = createPaymentAuthRequest(sepaDirectDebitRequest)
+            callback.onSEPADirectDebitPaymentAuthResult(result)
+        }
+    }
+
+    private suspend fun createPaymentAuthRequest(
+        sepaDirectDebitRequest: SEPADirectDebitRequest,
+    ): SEPADirectDebitPaymentAuthRequest {
         braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_STARTED)
-        sepaDirectDebitApi.createMandate(
-            sepaDirectDebitRequest,
-            braintreeClient.getReturnUrlScheme()
-        ) { result, createMandateError ->
-            if (result != null) {
-                if (URLUtil.isValidUrl(result.approvalUrl)) {
+        val paymentAuthRequest = try {
+            val result = sepaDirectDebitApi.createMandate(
+                sepaDirectDebitRequest,
+                braintreeClient.getReturnUrlScheme()
+            )
+
+            when {
+                URLUtil.isValidUrl(result.approvalUrl) -> {
                     braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_CHALLENGE_REQUIRED)
                     try {
                         val params = SEPADirectDebitPaymentAuthRequestParams(buildBrowserSwitchOptions(result))
                         braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_SUCCEEDED)
-                        callback.onSEPADirectDebitPaymentAuthResult(
-                            SEPADirectDebitPaymentAuthRequest.ReadyToLaunch(params)
-                        )
+                        SEPADirectDebitPaymentAuthRequest.ReadyToLaunch(params)
                     } catch (exception: JSONException) {
                         createMandateFailedAnalyticsEvent(errorDescription = exception.message)
-                        callbackCreatePaymentAuthFailure(
-                            callback,
-                            SEPADirectDebitPaymentAuthRequest.Failure(exception)
-                        )
+                        createPaymentAuthFailure(exception)
                     }
-                } else if (result.approvalUrl == "null") {
+                }
+                result.approvalUrl == "null" -> {
                     braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CREATE_MANDATE_SUCCEEDED)
                     // Mandate has already been approved
-                    sepaDirectDebitApi.tokenize(
-                        ibanLastFour = result.ibanLastFour,
-                        customerId = result.customerId,
-                        bankReferenceToken = result.bankReferenceToken,
-                        mandateType = result.mandateType.toString()
-                    ) { sepaDirectDebitNonce, error ->
-                        if (sepaDirectDebitNonce != null) {
-                            callbackCreatePaymentAuthChallengeNotRequiredSuccess(
-                                callback,
-                                SEPADirectDebitPaymentAuthRequest.LaunchNotRequired(sepaDirectDebitNonce)
-                            )
-                        } else if (error != null) {
-                            callbackCreatePaymentAuthFailure(
-                                callback,
-                                SEPADirectDebitPaymentAuthRequest.Failure(error)
-                            )
-                        }
+                    try {
+                        val sepaDirectDebitNonce = sepaDirectDebitApi.tokenize(
+                            ibanLastFour = result.ibanLastFour,
+                            customerId = result.customerId,
+                            bankReferenceToken = result.bankReferenceToken,
+                            mandateType = result.mandateType.toString()
+                        )
+                        braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_SUCCEEDED)
+                        SEPADirectDebitPaymentAuthRequest.LaunchNotRequired(sepaDirectDebitNonce)
+                    } catch (error: Exception) {
+                        if (error is CancellationException) throw error
+                        createPaymentAuthFailure(error)
                     }
-                } else {
+                }
+                else -> {
                     val errorMessage = "An unexpected error occurred."
                     createMandateFailedAnalyticsEvent(errorDescription = errorMessage)
-                    callbackCreatePaymentAuthFailure(
-                        callback,
-                        SEPADirectDebitPaymentAuthRequest.Failure(BraintreeException(errorMessage))
-                    )
+                    createPaymentAuthFailure(BraintreeException(errorMessage))
                 }
-            } else if (createMandateError != null) {
-                createMandateFailedAnalyticsEvent(errorDescription = createMandateError.message)
-                callbackCreatePaymentAuthFailure(
-                    callback,
-                    SEPADirectDebitPaymentAuthRequest.Failure(createMandateError)
-                )
             }
+        } catch (createMandateError: Exception) {
+            if (createMandateError is CancellationException) throw createMandateError
+            createMandateFailedAnalyticsEvent(errorDescription = createMandateError.message)
+            createPaymentAuthFailure(createMandateError)
         }
+        return paymentAuthRequest
     }
 
     private fun createMandateFailedAnalyticsEvent(errorDescription: String? = null) {
@@ -120,87 +126,81 @@ class SEPADirectDebitClient internal constructor(
      *
      * @param paymentAuthResult a [SEPADirectDebitPaymentAuthResult.Success] received from
      * [SEPADirectDebitLauncher.handleReturnToApp]
-     * @param callback [SEPADirectDebitInternalTokenizeCallback]
+     * @param callback [SEPADirectDebitTokenizeCallback]
      */
     fun tokenize(
         paymentAuthResult: SEPADirectDebitPaymentAuthResult.Success,
         callback: SEPADirectDebitTokenizeCallback
     ) {
+        coroutineScope.launch {
+            val result = tokenize(paymentAuthResult)
+            callback.onSEPADirectDebitResult(result)
+        }
+    }
+
+    private suspend fun tokenize(
+        paymentAuthResult: SEPADirectDebitPaymentAuthResult.Success,
+    ): SEPADirectDebitResult {
         val browserSwitchResult: BrowserSwitchFinalResult.Success =
             paymentAuthResult.browserSwitchSuccess
 
         val deepLinkUri: Uri = browserSwitchResult.returnUrl
-        if (deepLinkUri.path?.contains("success") == true && deepLinkUri.getQueryParameter("success") == "true") {
-            braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CHALLENGE_SUCCEEDED)
-            val metadata: JSONObject? = browserSwitchResult.requestMetadata
-            if (metadata != null) {
-                val ibanLastFour = metadata.optString(IBAN_LAST_FOUR_KEY)
-                val customerId = metadata.optString(CUSTOMER_ID_KEY)
-                val bankReferenceToken = metadata.optString(BANK_REFERENCE_TOKEN_KEY)
-                val mandateType = metadata.optString(MANDATE_TYPE_KEY)
-
-                sepaDirectDebitApi.tokenize(
-                    ibanLastFour = ibanLastFour,
-                    customerId = customerId,
-                    bankReferenceToken = bankReferenceToken,
-                    mandateType = mandateType
-                ) { sepaDirectDebitNonce, error ->
-                    if (sepaDirectDebitNonce != null) {
-                        callbackTokenizeSuccess(
-                            callback,
-                            SEPADirectDebitResult.Success(sepaDirectDebitNonce)
+        val sepaDirectDebitResult = when {
+            deepLinkUri.path?.contains("success") == true &&
+                deepLinkUri.getQueryParameter("success") == "true" -> {
+                braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CHALLENGE_SUCCEEDED)
+                val metadata: JSONObject? = browserSwitchResult.requestMetadata
+                if (metadata != null) {
+                    val ibanLastFour = metadata.optString(IBAN_LAST_FOUR_KEY)
+                    val customerId = metadata.optString(CUSTOMER_ID_KEY)
+                    val bankReferenceToken = metadata.optString(BANK_REFERENCE_TOKEN_KEY)
+                    val mandateType = metadata.optString(MANDATE_TYPE_KEY)
+                    try {
+                        val sepaDirectDebitNonce = sepaDirectDebitApi.tokenize(
+                            ibanLastFour = ibanLastFour,
+                            customerId = customerId,
+                            bankReferenceToken = bankReferenceToken,
+                            mandateType = mandateType
                         )
-                    } else if (error != null) {
-                        callbackTokenizeFailure(callback, SEPADirectDebitResult.Failure(error))
+                        braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_SUCCEEDED)
+                        SEPADirectDebitResult.Success(sepaDirectDebitNonce)
+                    } catch (error: Exception) {
+                        if (error is CancellationException) throw error
+                        tokenizeFailure(error)
                     }
+                } else {
+                    tokenizeFailure(BraintreeException("Browser switch return metadata is null."))
                 }
             }
-        } else if (deepLinkUri.path!!.contains("cancel")) {
-            callbackTokenizeCancel(callback)
+            deepLinkUri.path?.contains("cancel") == true -> {
+                braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CHALLENGE_CANCELED)
+                SEPADirectDebitResult.Cancel
+            }
+            else -> {
+                tokenizeFailure(BraintreeException("Unknown deep link path: ${deepLinkUri.path}"))
+            }
         }
+        return sepaDirectDebitResult
     }
 
-    private fun callbackCreatePaymentAuthFailure(
-        callback: SEPADirectDebitPaymentAuthRequestCallback,
-        result: SEPADirectDebitPaymentAuthRequest.Failure
-    ) {
+    private fun createPaymentAuthFailure(
+        error: Exception
+    ): SEPADirectDebitPaymentAuthRequest.Failure {
         braintreeClient.sendAnalyticsEvent(
             SEPADirectDebitAnalytics.TOKENIZE_FAILED,
-            AnalyticsEventParams(errorDescription = result.error.message)
+            AnalyticsEventParams(errorDescription = error.message)
         )
-        callback.onSEPADirectDebitPaymentAuthResult(result)
+        return SEPADirectDebitPaymentAuthRequest.Failure(error)
     }
 
-    private fun callbackCreatePaymentAuthChallengeNotRequiredSuccess(
-        callback: SEPADirectDebitPaymentAuthRequestCallback,
-        result: SEPADirectDebitPaymentAuthRequest.LaunchNotRequired
-    ) {
-        braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_SUCCEEDED)
-        callback.onSEPADirectDebitPaymentAuthResult(result)
-    }
-
-    private fun callbackTokenizeCancel(callback: SEPADirectDebitTokenizeCallback) {
-        braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.CHALLENGE_CANCELED)
-        callback.onSEPADirectDebitResult(SEPADirectDebitResult.Cancel)
-    }
-
-    private fun callbackTokenizeFailure(
-        callback: SEPADirectDebitTokenizeCallback,
-        result: SEPADirectDebitResult.Failure
-    ) {
+    private fun tokenizeFailure(
+        error: Exception
+    ): SEPADirectDebitResult.Failure {
         braintreeClient.sendAnalyticsEvent(
             SEPADirectDebitAnalytics.TOKENIZE_FAILED,
-            AnalyticsEventParams(errorDescription = result.error.message)
+            AnalyticsEventParams(errorDescription = error.message)
         )
-        callback.onSEPADirectDebitResult(result)
-    }
-
-    private fun callbackTokenizeSuccess(
-        callback: SEPADirectDebitTokenizeCallback,
-        result: SEPADirectDebitResult.Success
-    ) {
-        braintreeClient.sendAnalyticsEvent(SEPADirectDebitAnalytics.TOKENIZE_SUCCEEDED)
-        callback.onSEPADirectDebitResult(result)
+        return SEPADirectDebitResult.Failure(error)
     }
 
     @Throws(JSONException::class)

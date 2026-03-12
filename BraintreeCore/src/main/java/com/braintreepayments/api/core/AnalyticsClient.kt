@@ -2,6 +2,10 @@ package com.braintreepayments.api.core
 
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.Time
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
@@ -12,6 +16,8 @@ class AnalyticsClient internal constructor(
     private val analyticsEventRepository: AnalyticsEventRepository = AnalyticsEventRepository.instance,
     private val time: Time = Time(),
     private val configurationLoader: ConfigurationLoader = ConfigurationLoader.instance,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher),
 ) {
 
     fun sendEvent(
@@ -25,6 +31,8 @@ class AnalyticsClient internal constructor(
             contextId = analyticsEventParams.contextId,
             linkType = analyticsParamRepository.linkType?.stringValue,
             isVaultRequest = analyticsEventParams.isVaultRequest,
+            shouldRequestBillingAgreement = analyticsParamRepository.shouldRequestBillingAgreement,
+            recurringBillingPlanType = analyticsParamRepository.recurringBillingPlanType,
             startTime = analyticsEventParams.startTime,
             endTime = analyticsEventParams.endTime,
             endpoint = analyticsEventParams.endpoint,
@@ -35,14 +43,16 @@ class AnalyticsClient internal constructor(
             buttonOrder = analyticsEventParams.buttonOrder,
             pageType = analyticsEventParams.pageType,
             errorDescription = analyticsEventParams.errorDescription,
+            fundingSource = analyticsParamRepository.fundingSource,
             didEnablePayPalAppSwitch = analyticsParamRepository.didEnablePayPalAppSwitch,
             didPayPalServerAttemptAppSwitch = analyticsParamRepository.didPayPalServerAttemptAppSwitch,
             didSdkAttemptAppSwitch = analyticsParamRepository.didSdkAttemptAppSwitch,
         )
         if (sendImmediately) {
-            configurationLoader.loadConfiguration { result ->
-                if (result is ConfigurationLoaderResult.Success) {
-                    executeEventsApi(event, result.configuration)
+            coroutineScope.launch {
+                val configResult = configurationLoader.loadConfiguration()
+                if (configResult is ConfigurationLoaderResult.Success) {
+                    executeEventsApi(event, configResult.configuration)
                 }
             }
         } else {

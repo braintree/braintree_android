@@ -61,9 +61,10 @@ class PayPalLauncher internal constructor(
         val contextId = paymentAuthRequest.requestParams.contextId
         val analyticsEventParams = AnalyticsEventParams(
             contextId = contextId,
-            appSwitchUrl = paymentAuthRequest.requestParams.approvalUrl
+            appSwitchUrl = paymentAuthRequest.requestParams.approvalUrl,
         )
 
+        setLaunchAnalyticAttributes(paymentAuthRequest.requestParams)
         val isAppSwitch = processAppSwitchAttempt(analyticsEventParams)
 
         try {
@@ -221,6 +222,12 @@ class PayPalLauncher internal constructor(
         params: PayPalPaymentAuthRequestParams
     ) {
         browserSwitchClient.assertCanPerformBrowserSwitch(activity, params.browserSwitchOptions)
+    }
+
+    private fun setLaunchAnalyticAttributes(requestParams: PayPalPaymentAuthRequestParams) {
+        analyticsParamRepository.fundingSource = requestParams.fundingSource
+        analyticsParamRepository.shouldRequestBillingAgreement = requestParams.shouldRequestBillingAgreement
+        analyticsParamRepository.recurringBillingPlanType = requestParams.recurringBillingPlanType
     }
 
     companion object {

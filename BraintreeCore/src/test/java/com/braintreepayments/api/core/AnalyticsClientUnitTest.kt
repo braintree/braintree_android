@@ -1,11 +1,17 @@
 package com.braintreepayments.api.core
 
 import com.braintreepayments.api.core.Configuration.Companion.fromJson
+import com.braintreepayments.api.paypal.PayPalRecurringBillingPlanType
 import com.braintreepayments.api.sharedutils.Time
 import com.braintreepayments.api.testutils.Fixtures
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,6 +32,10 @@ class AnalyticsClientUnitTest {
     private val eventName = "sample-event-name"
     private val timestamp = 123L
     private val linkType = LinkType.APP_LINK
+    private val fundingSource = "paypal"
+    private val isBillingAgreement = true
+    private val isPurchase = true
+    private val billingPlanType = PayPalRecurringBillingPlanType.RECURRING.name
 
     private lateinit var sut: AnalyticsClient
 
@@ -40,7 +50,7 @@ class AnalyticsClientUnitTest {
         shopperSessionId = "shopper-session-id",
         buttonType = "button-type",
         buttonOrder = "button-order",
-        pageType = "page-type",
+        pageType = "page-type"
     )
 
     private val expectedAnalyticsEvent = AnalyticsEvent(
@@ -49,6 +59,8 @@ class AnalyticsClientUnitTest {
         contextId = analyticsEventParams.contextId,
         linkType = linkType.stringValue,
         isVaultRequest = analyticsEventParams.isVaultRequest,
+        recurringBillingPlanType = billingPlanType,
+        shouldRequestBillingAgreement = isBillingAgreement,
         startTime = analyticsEventParams.startTime,
         endTime = analyticsEventParams.endTime,
         endpoint = analyticsEventParams.endpoint,
@@ -61,6 +73,7 @@ class AnalyticsClientUnitTest {
         didEnablePayPalAppSwitch = true,
         didPayPalServerAttemptAppSwitch = true,
         didSdkAttemptAppSwitch = true,
+        fundingSource = fundingSource
     )
 
     @Before
@@ -71,6 +84,9 @@ class AnalyticsClientUnitTest {
         every { analyticsParamRepository.didEnablePayPalAppSwitch } returns true
         every { analyticsParamRepository.didPayPalServerAttemptAppSwitch } returns true
         every { analyticsParamRepository.didSdkAttemptAppSwitch } returns true
+        every { analyticsParamRepository.fundingSource } returns fundingSource
+        every { analyticsParamRepository.shouldRequestBillingAgreement } returns isBillingAgreement
+        every { analyticsParamRepository.recurringBillingPlanType } returns billingPlanType
 
         configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
@@ -96,31 +112,61 @@ class AnalyticsClientUnitTest {
         verify { analyticsEventRepository.addEvent(expectedAnalyticsEvent) }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `when sendEvent is called with sendImmediately as true, the events api is executed`() {
-        sut.sendEvent(
-            eventName = eventName,
-            analyticsEventParams = analyticsEventParams,
-            sendImmediately = true
-        )
-
-        verify {
-            analyticsApi.execute(
-                events = listOf(expectedAnalyticsEvent),
-                configuration = configuration
+    fun `when sendEvent is called with sendImmediately as true, the events api is executed`() = runTest {
+            val testDispatcher = StandardTestDispatcher(testScheduler)
+            val testScope = TestScope(testDispatcher)
+            val sut = AnalyticsClient(
+                analyticsApi = analyticsApi,
+                analyticsParamRepository = analyticsParamRepository,
+                analyticsEventRepository = analyticsEventRepository,
+                time = time,
+                configurationLoader = configurationLoader,
+                dispatcher = testDispatcher,
+                coroutineScope = testScope
             )
-        }
-    }
 
+            sut.sendEvent(
+                eventName = eventName,
+                analyticsEventParams = analyticsEventParams,
+                sendImmediately = true
+            )
+            advanceUntilIdle()
+
+            verify {
+                analyticsApi.execute(
+                    events = listOf(expectedAnalyticsEvent),
+                    configuration = configuration
+                )
+            }
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `when sendEvent is called with sendImmediately as true, all events in the analyticsEventRepository are sent`() {
+    fun `when sendEvent is called with sendImmediately as true, all events in the analyticsEventRepository are sent`() =
+    runTest {
+
         every { analyticsEventRepository.flushAndReturnEvents() } returns listOf(expectedAnalyticsEvent)
+
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        val sut = AnalyticsClient(
+            analyticsApi = analyticsApi,
+            analyticsParamRepository = analyticsParamRepository,
+            analyticsEventRepository = analyticsEventRepository,
+            time = time,
+            configurationLoader = configurationLoader,
+            dispatcher = testDispatcher,
+            coroutineScope = testScope
+        )
 
         sut.sendEvent(
             eventName = "initial-event",
             analyticsEventParams = analyticsEventParams,
             sendImmediately = true
         )
+        advanceUntilIdle()
 
         val initialEvent = expectedAnalyticsEvent.copy(name = "initial-event")
 

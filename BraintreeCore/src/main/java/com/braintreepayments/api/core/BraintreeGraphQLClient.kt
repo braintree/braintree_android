@@ -1,25 +1,27 @@
 package com.braintreepayments.api.core
 
 import com.braintreepayments.api.sharedutils.HttpClient
+import com.braintreepayments.api.sharedutils.HttpResponse
 import com.braintreepayments.api.sharedutils.Method
-import com.braintreepayments.api.sharedutils.NetworkResponseCallback
 import com.braintreepayments.api.sharedutils.OkHttpRequest
 import java.util.Locale
 
 internal class BraintreeGraphQLClient(
-    private val httpClient: HttpClient = HttpClient()
+    private val httpClient: HttpClient = HttpClient(),
 ) {
 
-    fun post(
+    /**
+     * @throws BraintreeException if authorization is invalid
+     * @throws Exception if the network request fails
+     */
+    suspend fun post(
         data: String,
         configuration: Configuration,
         authorization: Authorization,
-        callback: NetworkResponseCallback
-    ) {
+    ): HttpResponse {
         if (authorization is InvalidAuthorization) {
             val message = authorization.errorMessage
-            callback.onResult(NetworkResponseCallback.Result.Failure(BraintreeException(message)))
-            return
+            throw BraintreeException(message)
         }
 
         val request = OkHttpRequest(
@@ -32,6 +34,6 @@ internal class BraintreeGraphQLClient(
             )
         )
 
-        httpClient.sendRequest(request, callback)
+        return httpClient.sendRequest(request)
     }
 }

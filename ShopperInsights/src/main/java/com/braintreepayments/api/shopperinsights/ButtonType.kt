@@ -15,6 +15,11 @@ enum class ButtonType(internal val stringValue: String) {
     VENMO("Venmo"),
 
     /**
+     * PayPal Pay Later button
+     */
+    PAYPAL_PAY_LATER("PayPal_Pay_Later"),
+
+    /**
      * Other button
      */
     OTHER("Other")

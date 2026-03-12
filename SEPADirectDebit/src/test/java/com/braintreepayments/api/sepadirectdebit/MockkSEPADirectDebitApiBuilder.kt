@@ -1,6 +1,6 @@
 package com.braintreepayments.api.sepadirectdebit
 
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
 
 class MockkSEPADirectDebitApiBuilder {
@@ -29,29 +29,24 @@ class MockkSEPADirectDebitApiBuilder {
         return this
     }
 
+    @Suppress("ThrowsCount")
     internal fun build(): SEPADirectDebitApi {
         val api = mockk<SEPADirectDebitApi>(relaxed = true)
 
-        every {
-            api.createMandate(any(), any(), any())
+        coEvery {
+            api.createMandate(any(), any())
         } answers {
-            val callback = arg<CreateMandateCallback>(2)
-            if (createMandateResultSuccess != null) {
-                callback.onResult(createMandateResultSuccess, null)
-            } else if (createMandateError != null) {
-                callback.onResult(null, createMandateError)
-            }
+            createMandateResultSuccess?.let { return@answers it }
+            createMandateError?.let { throw it }
+            throw IllegalStateException("No mock result configured for createMandate")
         }
 
-        every {
-            api.tokenize(any(), any(), any(), any(), any())
+        coEvery {
+            api.tokenize(any(), any(), any(), any())
         } answers {
-            val callback = arg<SEPADirectDebitInternalTokenizeCallback>(4)
-            if (tokenizeSuccess != null) {
-                callback.onResult(tokenizeSuccess, null)
-            } else if (tokenizeError != null) {
-                callback.onResult(null, tokenizeError)
-            }
+            tokenizeSuccess?.let { return@answers it }
+            tokenizeError?.let { throw it }
+            throw IllegalStateException("No mock result configured for tokenize")
         }
 
         return api

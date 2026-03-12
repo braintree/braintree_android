@@ -22,6 +22,10 @@ import com.google.android.gms.wallet.PaymentDataRequest
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.android.gms.wallet.WalletConstants
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -35,6 +39,8 @@ class GooglePayClient internal constructor(
     private val internalGooglePayClient: GooglePayInternalClient = GooglePayInternalClient(),
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
     private val merchantRepository: MerchantRepository = MerchantRepository.instance,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
     /**
      * Initializes a new [GooglePayClient] instance
@@ -88,50 +94,48 @@ class GooglePayClient internal constructor(
             callback.onGooglePayReadinessResult(NotReadyToPay(null))
             return
         }
-
-        braintreeClient.getConfiguration { configuration: Configuration?, e: Exception? ->
-            if (configuration == null) {
-                callback.onGooglePayReadinessResult(NotReadyToPay(e))
-                return@getConfiguration
-            }
-            if (!configuration.isGooglePayEnabled) {
-                callback.onGooglePayReadinessResult(NotReadyToPay(null))
-                return@getConfiguration
-            }
-
-            val json = JSONObject()
-            val allowedCardNetworks = buildCardNetworks(configuration)
-
+        coroutineScope.launch {
             try {
-                json.put("apiVersion", 2).put("apiVersionMinor", 0).put(
-                    "allowedPaymentMethods",
-                    JSONArray().put(
-                        JSONObject().put("type", "CARD")
-                            .put(
-                                "parameters", JSONObject().put(
-                                    "allowedAuthMethods",
-                                    JSONArray().put("PAN_ONLY").put("CRYPTOGRAM_3DS")
-                                )
-                                    .put("allowedCardNetworks", allowedCardNetworks)
-                            )
-                    )
-                )
-
-                if (request != null) {
-                    json.put(
-                        "existingPaymentMethodRequired",
-                        request.isExistingPaymentMethodRequired
-                    )
+                val configuration = braintreeClient.getConfiguration()
+                if (!configuration.isGooglePayEnabled) {
+                    callback.onGooglePayReadinessResult(NotReadyToPay(null))
+                    return@launch
                 }
-            } catch (ignored: JSONException) {
+                val json = JSONObject()
+                val allowedCardNetworks = buildCardNetworks(configuration)
+                try {
+                    json.put("apiVersion", 2).put("apiVersionMinor", 0).put(
+                        "allowedPaymentMethods",
+                        JSONArray().put(
+                            JSONObject().put("type", "CARD")
+                                .put(
+                                    "parameters", JSONObject().put(
+                                        "allowedAuthMethods",
+                                        JSONArray().put("PAN_ONLY").put("CRYPTOGRAM_3DS")
+                                    )
+                                        .put("allowedCardNetworks", allowedCardNetworks)
+                                )
+                        )
+                    )
+
+                    if (request != null) {
+                        json.put(
+                            "existingPaymentMethodRequired",
+                            request.isExistingPaymentMethodRequired
+                        )
+                    }
+                } catch (ignored: JSONException) {
+                }
+                val readyToPayRequest = IsReadyToPayRequest.fromJson(json.toString())
+                internalGooglePayClient.isReadyToPay(
+                    context,
+                    configuration,
+                    readyToPayRequest,
+                    callback
+                )
+            } catch (e: Exception) {
+                callback.onGooglePayReadinessResult(NotReadyToPay(e))
             }
-            val readyToPayRequest = IsReadyToPayRequest.fromJson(json.toString())
-            internalGooglePayClient.isReadyToPay(
-                context,
-                configuration,
-                readyToPayRequest,
-                callback
-            )
         }
     }
 
@@ -152,23 +156,19 @@ class GooglePayClient internal constructor(
     fun getTokenizationParameters(
         callback: GooglePayGetTokenizationParametersCallback
     ) {
-        braintreeClient.getConfiguration { configuration: Configuration?, e: Exception? ->
-
-            if (configuration != null) {
+        coroutineScope.launch {
+            try {
+                val configuration = braintreeClient.getConfiguration()
                 callback.onTokenizationParametersResult(
                     GooglePayTokenizationParameters.Success(
                         getTokenizationParameters(configuration, merchantRepository.authorization),
                         getAllowedCardNetworks(configuration)
                     )
                 )
-            } else {
-                if (e != null) {
-                    callback.onTokenizationParametersResult(
-                        GooglePayTokenizationParameters.Failure(e)
-                    )
-                } else {
-                    callback.onTokenizationParametersResult(null)
-                }
+            } catch (e: Exception) {
+                callback.onTokenizationParametersResult(
+                    GooglePayTokenizationParameters.Failure(e)
+                )
             }
         }
     }
@@ -201,25 +201,25 @@ class GooglePayClient internal constructor(
             return
         }
 
-        braintreeClient.getConfiguration { configuration: Configuration?, configError: Exception? ->
+        coroutineScope.launch {
+            try {
+                val configuration = braintreeClient.getConfiguration()
+                if (configuration.isGooglePayEnabled) {
+                    setGooglePayRequestDefaults(configuration, merchantRepository.authorization, request)
 
-            if (configuration?.isGooglePayEnabled == true) {
-                setGooglePayRequestDefaults(configuration, merchantRepository.authorization, request)
+                    val paymentDataRequest =
+                        PaymentDataRequest.fromJson(request.toJson())
 
-                val paymentDataRequest =
-                    PaymentDataRequest.fromJson(request.toJson())
-
-                val params =
-                    GooglePayPaymentAuthRequestParams(
-                        getGooglePayEnvironment(configuration),
-                        paymentDataRequest
+                    val params =
+                        GooglePayPaymentAuthRequestParams(
+                            getGooglePayEnvironment(configuration),
+                            paymentDataRequest
+                        )
+                    callbackPaymentRequestSuccess(
+                        GooglePayPaymentAuthRequest.ReadyToLaunch(params),
+                        callback
                     )
-                callbackPaymentRequestSuccess(
-                    GooglePayPaymentAuthRequest.ReadyToLaunch(params),
-                    callback
-                )
-            } else {
-                if (configError == null) {
+                } else {
                     callbackPaymentRequestFailure(
                         GooglePayPaymentAuthRequest.Failure(
                             BraintreeException(
@@ -228,12 +228,12 @@ class GooglePayClient internal constructor(
                             )
                         ), callback
                     )
-                } else {
-                    callbackPaymentRequestFailure(
-                        GooglePayPaymentAuthRequest.Failure(configError),
-                        callback
-                    )
                 }
+            } catch (configError: Exception) {
+                callbackPaymentRequestFailure(
+                    GooglePayPaymentAuthRequest.Failure(configError),
+                    callback
+                )
             }
         }
     }
