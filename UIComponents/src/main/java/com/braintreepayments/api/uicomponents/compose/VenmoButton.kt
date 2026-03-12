@@ -93,7 +93,7 @@ fun VenmoButton(style: VenmoButtonColor, enabled: Boolean = true, onClick: () ->
                     Image(
                         painter = rememberDrawablePainter(drawable = logo),
                         modifier = Modifier.padding(top = ppLogoOffset),
-                        contentDescription = "PayPal",
+                        contentDescription = "Venmo",
                     )
                 } else {
                     val color = when (style) {
