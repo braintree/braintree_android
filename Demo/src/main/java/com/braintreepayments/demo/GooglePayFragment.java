@@ -98,6 +98,7 @@ public class GooglePayFragment extends BaseFragment {
         googlePayRequest.setShippingAddressRequired(
                 Settings.isGooglePayShippingAddressRequired(activity));
         googlePayRequest.setShippingAddressParameters(new GooglePayShippingAddressParameters(Settings.getGooglePayAllowedCountriesForShipping(requireContext())));
+
         googlePayRequest.setCheckoutOption(GooglePayCheckoutOption.COMPLETE_IMMEDIATE_PURCHASE);
         googlePayClient.createPaymentAuthRequest(googlePayRequest, (paymentAuthRequest) -> {
             if (paymentAuthRequest instanceof GooglePayPaymentAuthRequest.ReadyToLaunch) {
