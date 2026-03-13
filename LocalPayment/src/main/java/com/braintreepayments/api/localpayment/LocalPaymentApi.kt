@@ -4,66 +4,49 @@ import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.localpayment.LocalPaymentNonce.Companion.fromJSON
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.json.JSONException
+import kotlinx.coroutines.CancellationException
 import org.json.JSONObject
-import java.io.IOException
 
 internal class LocalPaymentApi(
     private val braintreeClient: BraintreeClient,
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
-    private val merchantRepository: MerchantRepository = MerchantRepository.instance,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
-    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
+    private val merchantRepository: MerchantRepository = MerchantRepository.instance
 ) {
 
-    fun createPaymentMethod(
-        request: LocalPaymentRequest,
-        callback: LocalPaymentInternalAuthRequestCallback
-    ) {
-        val returnUrlScheme = braintreeClient.getReturnUrlScheme()
-        val returnUrl = "$returnUrlScheme://${LocalPaymentClient.LOCAL_PAYMENT_SUCCESS}"
-        val cancel = "$returnUrlScheme://${LocalPaymentClient.LOCAL_PAYMENT_CANCEL}"
+    suspend fun createPaymentMethod(
+        request: LocalPaymentRequest
+    ): LocalPaymentAuthRequestParams {
+        try {
+            val returnUrlScheme = braintreeClient.getReturnUrlScheme()
+            val returnUrl = "$returnUrlScheme://${LocalPaymentClient.LOCAL_PAYMENT_SUCCESS}"
+            val cancel = "$returnUrlScheme://${LocalPaymentClient.LOCAL_PAYMENT_CANCEL}"
 
-        val url = "/v1/local_payments/create"
+            val url = "/v1/local_payments/create"
+            val responseBody = braintreeClient.sendPOST(
+                url,
+                request.build(returnUrl, cancel)
+            )
 
-        coroutineScope.launch {
-            try {
-                val responseBody = braintreeClient.sendPOST(
-                    url,
-                    request.build(returnUrl, cancel)
-                )
-                try {
-                    val responseJson = JSONObject(responseBody)
-                    val redirectUrl = responseJson.getJSONObject("paymentResource")
-                        .getString("redirectUrl")
-                    val paymentToken = responseJson.getJSONObject("paymentResource")
-                        .getString("paymentToken")
+            val responseJson = JSONObject(responseBody)
+            val redirectUrl = responseJson.getJSONObject("paymentResource")
+                .getString("redirectUrl")
+            val paymentToken = responseJson.getJSONObject("paymentResource")
+                .getString("paymentToken")
 
-                    val transaction =
-                        LocalPaymentAuthRequestParams(request, redirectUrl, paymentToken)
-                    callback.onLocalPaymentInternalAuthResult(transaction, null)
-                } catch (e: JSONException) {
-                    callback.onLocalPaymentInternalAuthResult(null, e)
-                }
-            } catch (httpError: IOException) {
-                callback.onLocalPaymentInternalAuthResult(null, httpError)
-            }
+            return LocalPaymentAuthRequestParams(request, redirectUrl, paymentToken)
+        } catch (error: Exception) {
+            if (error is CancellationException) throw error
+            throw error
         }
     }
 
-    fun tokenize(
+    suspend fun tokenize(
         merchantAccountId: String?,
         responseString: String?,
-        clientMetadataID: String?,
-        callback: LocalPaymentInternalTokenizeCallback
-    ) {
-        val payload = JSONObject()
-
+        clientMetadataID: String?
+    ): LocalPaymentNonce {
         try {
+            val payload = JSONObject()
             payload.put("merchant_account_id", merchantAccountId)
 
             val paypalAccount = JSONObject()
@@ -81,24 +64,15 @@ internal class LocalPaymentApi(
             payload.put("_meta", metaData)
 
             val url = "/v1/payment_methods/paypal_accounts"
-            coroutineScope.launch {
-                try {
-                    val responseBody = braintreeClient.sendPOST(
-                        url = url,
-                        data = payload.toString()
-                    )
-                    try {
-                        val result =
-                            fromJSON(JSONObject(responseBody))
-                        callback.onResult(result, null)
-                    } catch (jsonException: JSONException) {
-                        callback.onResult(null, jsonException)
-                    }
-                } catch (httpError: IOException) {
-                    callback.onResult(null, httpError)
-                }
-            }
-        } catch (ignored: JSONException) { /* do nothing */
+            val responseBody = braintreeClient.sendPOST(
+                url = url,
+                data = payload.toString()
+            )
+
+            return fromJSON(JSONObject(responseBody))
+        } catch (error: Exception) {
+            if (error is CancellationException) throw error
+            throw error
         }
     }
 }
