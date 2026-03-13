@@ -39,7 +39,7 @@ import java.util.Locale
  * @property allowCreditCards Defaults to `true`.
  * @property displayItems Optional list of cart items shown in the payment sheet
  * (e.g. subtotals, sales taxes, shipping charges, discounts etc.). If you pass non-empty list of display items
- * be sure to set the values for [totalPriceLabel].
+ * be sure to also set the value for [totalPriceLabel].
  */
 @Suppress("TooManyFunctions")
 @Parcelize
