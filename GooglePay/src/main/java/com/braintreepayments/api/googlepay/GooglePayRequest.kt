@@ -34,10 +34,12 @@ import java.util.Locale
  * @property countryCode The ISO 3166-1 alpha-2 country code where the transaction is processed.
  * This is required for merchants based in European Economic Area (EEA) countries.
  * NOTE: to support Elo cards, country code must be set to "BR"
- * @property totalPriceLabel Optional. Custom label for the total price within the display items
+ * @property totalPriceLabel Custom label for the total price within the display items.
+ * This field is required if [displayItems] are defined.
  * @property allowCreditCards Defaults to `true`.
  * @property displayItems Optional list of cart items shown in the payment sheet
- * (e.g. subtotals, sales taxes, shipping charges, discounts etc.).
+ * (e.g. subtotals, sales taxes, shipping charges, discounts etc.). If you pass non-empty list of display items
+ * be sure to set the values for [totalPriceLabel].
  */
 @Suppress("TooManyFunctions")
 @Parcelize
