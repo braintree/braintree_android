@@ -13,6 +13,7 @@ internal class LocalPaymentApi(
     private val merchantRepository: MerchantRepository = MerchantRepository.instance
 ) {
 
+    @Suppress("TooGenericExceptionCaught")
     suspend fun createPaymentMethod(
         request: LocalPaymentRequest
     ): LocalPaymentAuthRequestParams {
@@ -40,6 +41,7 @@ internal class LocalPaymentApi(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     suspend fun tokenize(
         merchantAccountId: String?,
         responseString: String?,

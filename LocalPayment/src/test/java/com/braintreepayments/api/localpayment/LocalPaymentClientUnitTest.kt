@@ -16,6 +16,7 @@ import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.localpayment.LocalPaymentNonce.Companion.fromJSON
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -175,11 +176,8 @@ class LocalPaymentClientUnitTest {
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
         advanceUntilIdle()
 
-        verify {
-            localPaymentApi.createPaymentMethod(
-                request,
-                any()
-            )
+        coVerify {
+            localPaymentApi.createPaymentMethod(request)
         }
     }
 
@@ -282,7 +280,7 @@ class LocalPaymentClientUnitTest {
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
         advanceUntilIdle()
 
-        val errorDescription = "An error occurred creating the local payment method."
+        val errorDescription = "An error occurred creating the local payment method: error"
         verify {
             braintreeClient.sendAnalyticsEvent(
                 LocalPaymentAnalytics.PAYMENT_FAILED,
@@ -384,7 +382,7 @@ class LocalPaymentClientUnitTest {
         val exception = (paymentAuthRequest as LocalPaymentAuthRequest.Failure).error
         assert(exception is BraintreeException)
         assertEquals(
-            "An error occurred creating the local payment method.",
+            "An error occurred creating the local payment method: error",
             exception.message
         )
     }
@@ -650,12 +648,11 @@ class LocalPaymentClientUnitTest {
         sut.tokenize(activity, localPaymentAuthResult, localPaymentTokenizeCallback)
         advanceUntilIdle()
 
-        verify {
+        coVerify {
             localPaymentApi.tokenize(
                 eq("local-merchant-account-id"),
                 eq(webUrl),
-                eq("sample-correlation-id"),
-                any()
+                eq("sample-correlation-id")
             )
         }
     }

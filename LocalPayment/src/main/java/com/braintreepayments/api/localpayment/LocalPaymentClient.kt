@@ -86,19 +86,23 @@ class LocalPaymentClient internal constructor(
                         return@launch
                     }
 
-                    val localPaymentResult = localPaymentApi.createPaymentMethod(request)
-                    val paymentId = localPaymentResult.paymentId
-                    if (paymentId.isNotEmpty()) {
-                        contextId = paymentId
+                    try {
+                        val localPaymentResult = localPaymentApi.createPaymentMethod(request)
+                        val paymentId = localPaymentResult.paymentId
+                        if (paymentId.isNotEmpty()) {
+                            contextId = paymentId
+                        }
+                        buildBrowserSwitchOptions(
+                            localPaymentResult,
+                            request.hasUserLocationConsent,
+                            callback
+                        )
+                    } catch (e: Exception) {
+                        val errorMessage = "An error occurred creating the local payment method: " + e.message
+                        authRequestFailure(BraintreeException(errorMessage), callback)
                     }
-                    buildBrowserSwitchOptions(
-                        localPaymentResult,
-                        request.hasUserLocationConsent,
-                        callback
-                    )
                 } catch (e: Exception) {
-                    val errorMessage = "An error occurred creating the local payment method."
-                    authRequestFailure(BraintreeException(errorMessage), callback)
+                    authRequestFailure(e, callback)
                 }
             }
         }
