@@ -3,7 +3,7 @@ package com.braintreepayments.api.googlepay
 import androidx.fragment.app.FragmentActivity
 import com.braintreepayments.api.core.Configuration
 import com.google.android.gms.wallet.IsReadyToPayRequest
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
 
 @Suppress("MagicNumber")
@@ -25,19 +25,18 @@ internal class MockkGooglePayInternalClientBuilder {
     fun build(): GooglePayInternalClient {
         val googlePayInternalClient = mockk<GooglePayInternalClient>(relaxed = true)
 
-        every {
+        coEvery {
             googlePayInternalClient.isReadyToPay(
                 any<FragmentActivity>(),
                 any<Configuration>(),
-                any<IsReadyToPayRequest>(),
-                any<GooglePayIsReadyToPayCallback>()
+                any<IsReadyToPayRequest>()
             )
         } answers { call ->
-            val callback = call.invocation.args[3] as GooglePayIsReadyToPayCallback
-            isReadyToPayError?.let { callback.onGooglePayReadinessResult(
+
+            isReadyToPayError?.let {
                 GooglePayReadinessResult.NotReadyToPay(isReadyToPayError!!)
-            ) }
-            ?: let { callback.onGooglePayReadinessResult(GooglePayReadinessResult.ReadyToPay) }
+            }
+            ?: let { GooglePayReadinessResult.ReadyToPay }
         }
 
         return googlePayInternalClient

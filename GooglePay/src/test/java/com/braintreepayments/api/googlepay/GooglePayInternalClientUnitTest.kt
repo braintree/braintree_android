@@ -16,12 +16,16 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.slot
 import junit.framework.TestCase.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.util.concurrent.Executor
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class GooglePayInternalClientUnitTest {
 
@@ -81,36 +85,37 @@ class GooglePayInternalClientUnitTest {
     }
 
     @Test
-    fun `isReadyToPay requests Test Wallet environment when configuration environment is Sandbox`() {
+    fun `isReadyToPay requests Test Wallet environment when configuration environment is Sandbox`() = runTest {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY)
-        every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns Tasks.forResult(true)
+        every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns SuccessfulBooleanTask(true)
 
         val walletOptionsSlot = slot<Wallet.WalletOptions>()
         every { Wallet.getPaymentsClient(any<Context>(), capture(walletOptionsSlot)) } returns paymentsClient
 
         val sut = GooglePayInternalClient()
-        sut.isReadyToPay(context, configuration, isReadyToPayRequest, isReadyToPayCallback)
+        sut.isReadyToPay(context, configuration, isReadyToPayRequest)
+        advanceUntilIdle()
 
         assertEquals(WalletConstants.ENVIRONMENT_TEST, walletOptionsSlot.captured.environment)
     }
 
     @Test
-    fun `isReadyToPay requests Production Wallet environment when configuration environment is Production`() {
+    fun `isReadyToPay requests Production Wallet environment when configuration environment is Production`() = runTest {
         val configuration =
             Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY_PRODUCTION)
-        every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns Tasks.forResult(true)
+        every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns SuccessfulBooleanTask(true)
 
         val walletOptionsSlot = slot<Wallet.WalletOptions>()
         every { Wallet.getPaymentsClient(any<Context>(), capture(walletOptionsSlot)) } returns paymentsClient
 
         val sut = GooglePayInternalClient()
-        sut.isReadyToPay(context, configuration, isReadyToPayRequest, isReadyToPayCallback)
+        sut.isReadyToPay(context, configuration, isReadyToPayRequest)
 
         assertEquals(WalletConstants.ENVIRONMENT_PRODUCTION, walletOptionsSlot.captured.environment)
     }
 
     @Test
-    fun `isReadyToPay forwards success result to callback`() {
+    fun `isReadyToPay forwards success result to callback`() = runTest {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY)
         every { Wallet.getPaymentsClient(any<Context>(), any()) } returns paymentsClient
 
@@ -119,13 +124,12 @@ class GooglePayInternalClientUnitTest {
         )
 
         val sut = GooglePayInternalClient()
-        sut.isReadyToPay(context, configuration, isReadyToPayRequest) { googlePayReadinessResult ->
-            assertTrue(googlePayReadinessResult is GooglePayReadinessResult.ReadyToPay)
-        }
+        val result = sut.isReadyToPay(context, configuration, isReadyToPayRequest)
+        assertTrue(result is GooglePayReadinessResult.ReadyToPay)
     }
 
     @Test
-    fun `isReadyToPay forwards failure result to callback`() {
+    fun `isReadyToPay forwards failure result to callback`() = runTest {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GOOGLE_PAY)
         every { Wallet.getPaymentsClient(any<Context>(), any()) } returns paymentsClient
 
@@ -134,9 +138,8 @@ class GooglePayInternalClientUnitTest {
         every { paymentsClient.isReadyToPay(isReadyToPayRequest) } returns failedTask
 
         val sut = GooglePayInternalClient()
-        sut.isReadyToPay(context, configuration, isReadyToPayRequest) { googlePayReadinessResult ->
-            assertTrue(googlePayReadinessResult is GooglePayReadinessResult.NotReadyToPay)
-            assertSame((googlePayReadinessResult as GooglePayReadinessResult.NotReadyToPay).error, expectedError)
-        }
+        val result = sut.isReadyToPay(context, configuration, isReadyToPayRequest)
+        assertTrue(result is GooglePayReadinessResult.NotReadyToPay)
+        assertSame((result as GooglePayReadinessResult.NotReadyToPay).error, expectedError)
     }
 }
