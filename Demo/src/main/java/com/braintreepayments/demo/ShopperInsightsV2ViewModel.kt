@@ -34,7 +34,7 @@ class ShopperInsightsV2ViewModel : ViewModel() {
         shopperInsightsClient = ShopperInsightsClientV2(context, authString)
     }
 
-    fun handleCreateCustomerSession(emailText: String, countryCodeText: String, nationalNumberText: String) {
+    fun handleCreateCustomerSession(emailText: String, nationalNumberText: String) {
         val customerSessionRequest = CustomerSessionRequest(
             hashedEmail = emailText.sha256(),
             hashedPhoneNumber = nationalNumberText.sha256()
@@ -58,7 +58,6 @@ class ShopperInsightsV2ViewModel : ViewModel() {
 
     fun handleUpdateCustomerSession(
         emailText: String,
-        countryCodeText: String,
         nationalNumberText: String,
         sessionId: String
     ) {

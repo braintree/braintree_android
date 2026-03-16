@@ -8,7 +8,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.sharedutils.HttpResponse
-import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
 import com.braintreepayments.api.testutils.Fixtures
@@ -16,7 +15,6 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -31,10 +29,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.io.IOException
-import kotlin.test.assertNotNull
 import kotlin.test.fail
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class BraintreeClientUnitTest {
 
@@ -49,6 +46,8 @@ class BraintreeClientUnitTest {
     private lateinit var browserSwitchClient: BrowserSwitchClient
     private lateinit var expectedAuthException: BraintreeException
     private lateinit var merchantRepository: MerchantRepository
+    private lateinit var testScope: TestScope
+    private val testDispatcher = StandardTestDispatcher()
 
     @Before
     fun beforeEach() {
@@ -65,6 +64,8 @@ class BraintreeClientUnitTest {
         browserSwitchClient = mockk(relaxed = true)
         merchantRepository = mockk(relaxed = true)
 
+        testScope = TestScope(testDispatcher)
+
         val clientSDKSetupURL =
             "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization"
         val message = "Valid authorization required. See $clientSDKSetupURL for more info."
@@ -76,131 +77,194 @@ class BraintreeClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun configuration_onAuthorizationAndConfigurationLoadSuccess_forwardsResult() {
+    fun configuration_onAuthorizationAndConfigurationLoadSuccess_forwardsResult() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
 
-        val sut = createBraintreeClient(configurationLoader)
-        val callback = mockk<ConfigurationCallback>(relaxed = true)
-        sut.getConfiguration(callback)
+        val sut = createBraintreeClient(
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
 
-        verify { callback.onResult(configuration, null) }
+        val result = sut.getConfiguration()
+
+        assertEquals(configuration, result)
     }
 
     @Test
-    fun configuration_forwardsConfigurationLoaderError() {
+    fun configuration_forwardsConfigurationLoaderError() = runTest(testDispatcher) {
         val configFetchError = Exception("config fetch error")
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(configFetchError)
             .build()
 
-        val sut = createBraintreeClient(configurationLoader)
+        val sut = createBraintreeClient(
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
 
-        val callback = mockk<ConfigurationCallback>(relaxed = true)
-        sut.getConfiguration(callback)
-
-        verify { callback.onResult(null, configFetchError) }
+        try {
+            sut.getConfiguration()
+            fail("Expected exception to be thrown")
+        } catch (e: Exception) {
+            assertEquals(configFetchError, e)
+        }
     }
 
     @Test
-    fun configuration_whenInvalidAuth_callsBackAuthError() {
-        val sut = BraintreeClient(context, "invalid-auth-string")
+    fun configuration_whenInvalidAuth_callsBackAuthError() = runTest(testDispatcher) {
+        val configurationLoader = MockkConfigurationLoaderBuilder()
+            .configurationError(expectedAuthException)
+            .build()
 
-        val callback = mockk<ConfigurationCallback>(relaxed = true)
-        sut.getConfiguration(callback)
+        val sut = createBraintreeClient(
+            auth = Authorization.fromString("invalid-auth-string"),
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
 
-        val authErrorSlot = slot<BraintreeException>()
-        verify { callback.onResult(isNull(), capture(authErrorSlot)) }
-
-        assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
+        try {
+            sut.getConfiguration()
+            fail("Expected exception to be thrown")
+        } catch (e: BraintreeException) {
+            assertEquals(expectedAuthException.message, e.message)
+        }
     }
 
     @Test
-    fun sendGET_onGetConfigurationSuccess_forwardsRequestToHttpClient() = runTest {
+    fun sendGET_onGetConfigurationSuccess_forwardsRequestToHttpClient() = runTest(testDispatcher) {
         val configuration = mockk<Configuration>(relaxed = true)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
 
-        val sut = createBraintreeClient(configurationLoader)
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
+        val mockResponse = HttpResponse(body = "response-body", timing = HttpResponseTiming(0, 0))
+        coEvery {
+            braintreeHttpClient.get("sample-url", configuration, authorization)
+        } returns mockResponse
 
-        sut.sendGET("sample-url", httpResponseCallback)
-        try {
-            val response = braintreeHttpClient.get("sample-url", configuration, authorization)
-            assertNotNull(response)
-        } catch (e: IOException) {
-            fail("Exception must not be thrown. Exception: $e")
+        val sut = createBraintreeClient(
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
+
+        val responseBody = sut.sendGET("sample-url")
+        assertEquals("response-body", responseBody)
+
+        coVerify {
+            braintreeHttpClient.get("sample-url", configuration, authorization)
         }
     }
 
     @Test
-    fun sendGET_onGetConfigurationFailure_forwardsErrorToCallback() {
+    fun sendGET_onGetConfigurationFailure_forwardsErrorToCallback() = runTest(testDispatcher) {
         val configError = Exception("configuration error")
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(configError)
             .build()
 
-        val sut = createBraintreeClient(configurationLoader)
+        val sut = createBraintreeClient(
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
 
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        sut.sendGET("sample-url", httpResponseCallback)
-
-        verify { httpResponseCallback.onResult(null, configError) }
+        try {
+            sut.sendGET("sample-url")
+            fail("Must throw an exception")
+        } catch (e: Exception) {
+            assertEquals("configuration error", e.message)
+        }
     }
 
     @Test
-    fun sendGET_whenInvalidAuth_callsBackAuthError() {
-        val sut = BraintreeClient(context, "invalid-auth-string")
+    fun sendGET_whenInvalidAuth_callsBackAuthError() = runTest(testDispatcher) {
+        val configurationLoader = MockkConfigurationLoaderBuilder()
+            .configurationError(expectedAuthException)
+            .build()
 
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        sut.sendGET("sample-url", httpResponseCallback)
+        val sut = createBraintreeClient(
+            auth = Authorization.fromString("invalid-auth-string"),
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
 
-        val authErrorSlot = slot<BraintreeException>()
-        verify { httpResponseCallback.onResult(isNull(), capture(authErrorSlot)) }
-
-        assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
+        try {
+            sut.sendGET("sample-url")
+            fail("Must throw an exception")
+        } catch (e: BraintreeException) {
+            assertEquals(expectedAuthException.message, e.message)
+        }
     }
 
     @Test
-    fun sendPOST_onGetConfigurationSuccess_forwardsRequestToHttpClient() = runTest {
+    fun sendPOST_onGetConfigurationSuccess_forwardsRequestToHttpClient() = runTest(testDispatcher) {
         val configuration = mockk<Configuration>(relaxed = true)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
 
-        val sut = createBraintreeClient(configurationLoader)
+        val mockResponse = HttpResponse(body = "{}", timing = HttpResponseTiming(0, 0))
+        coEvery {
+            braintreeHttpClient.post(
+                path = "sample-url",
+                data = "{}",
+                configuration = configuration,
+                authorization = authorization,
+                additionalHeaders = emptyMap()
+            )
+        } returns mockResponse
 
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        sut.sendPOST("sample-url", "{}", emptyMap(), httpResponseCallback)
+        val sut = createBraintreeClient(
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
 
-        try {
-            val response = braintreeHttpClient.post("sample-url", "{}", configuration, authorization)
-            assertNotNull(response)
-        } catch (e: IOException) {
-            fail("Exception must not be thrown. Exception: $e")
+        val result = sut.sendPOST("sample-url", "{}", emptyMap())
+
+        assertEquals("{}", result)
+        coVerify {
+            braintreeHttpClient.post(
+                path = "sample-url",
+                data = "{}",
+                configuration = configuration,
+                authorization = authorization,
+                additionalHeaders = emptyMap()
+            )
         }
     }
 
     @Test
-    fun sendPOST_onGetConfigurationFailure_forwardsErrorToCallback() {
+    fun sendPOST_onGetConfigurationFailure_throwsException() = runTest(testDispatcher) {
         val exception = Exception("configuration error")
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(exception)
             .build()
 
-        val sut = createBraintreeClient(configurationLoader)
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
+        val sut = createBraintreeClient(
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
 
-        sut.sendPOST("sample-url", "{}", emptyMap(), httpResponseCallback)
-        verify { httpResponseCallback.onResult(null, exception) }
+        try {
+            sut.sendPOST("sample-url", "{}", emptyMap())
+            fail("Expected exception to be thrown")
+        } catch (e: Exception) {
+            assertEquals("configuration error", e.message)
+        }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `sendPOST defaults additionalHeaders to an empty map`() = runTest {
+    fun `sendPOST defaults additionalHeaders to an empty map`() = runTest(testDispatcher) {
         val configuration = mockk<Configuration>(relaxed = true)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
@@ -217,21 +281,19 @@ class BraintreeClientUnitTest {
             )
         } returns mockResponse
 
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
         val sut = createBraintreeClient(
             configurationLoader = configurationLoader,
             testDispatcher = testDispatcher,
             testScope = testScope
         )
 
-        sut.sendPOST(
+        val result = sut.sendPOST(
             url = "sample-url",
-            data = "{}",
-            responseCallback = mockk(relaxed = true)
+            data = "{}"
         )
         advanceUntilIdle()
 
+        assertEquals("{}", result)
         coVerify {
             braintreeHttpClient.post(
                 path = any(),
@@ -243,9 +305,8 @@ class BraintreeClientUnitTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `sendPOST sends additionalHeaders to httpClient post`() = runTest {
+    fun `sendPOST sends additionalHeaders to httpClient post`() = runTest(testDispatcher) {
         val configuration = mockk<Configuration>(relaxed = true)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
@@ -263,22 +324,20 @@ class BraintreeClientUnitTest {
             )
         } returns mockResponse
 
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
         val sut = createBraintreeClient(
             configurationLoader = configurationLoader,
             testDispatcher = testDispatcher,
             testScope = testScope
         )
 
-        sut.sendPOST(
+        val result = sut.sendPOST(
             url = "sample-url",
             data = "{}",
-            additionalHeaders = headers,
-            responseCallback = mockk(relaxed = true)
+            additionalHeaders = headers
         )
         advanceUntilIdle()
 
+        assertEquals("{}", result)
         coVerify {
             braintreeHttpClient.post(
                 path = any(),
@@ -291,21 +350,28 @@ class BraintreeClientUnitTest {
     }
 
     @Test
-    fun sendPOST_whenInvalidAuth_callsBackAuthError() {
-        val sut = BraintreeClient(context, "invalid-auth-string")
+    fun sendPOST_whenInvalidAuth_callsBackAuthError() = runTest(testDispatcher) {
+        val configurationLoader = MockkConfigurationLoaderBuilder()
+            .configurationError(expectedAuthException)
+            .build()
 
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        sut.sendPOST("sample-url", "{}", emptyMap(), httpResponseCallback)
+        val sut = createBraintreeClient(
+            auth = Authorization.fromString("invalid-auth-string"),
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
 
-        val authErrorSlot = slot<BraintreeException>()
-        verify { httpResponseCallback.onResult(isNull(), capture(authErrorSlot)) }
-
-        assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
+        try {
+            sut.sendPOST("sample-url", "{}", emptyMap())
+            fail("Expected exception to be thrown")
+        } catch (e: BraintreeException) {
+            assertEquals(expectedAuthException.message, e.message)
+        }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun sendGraphQLPOST_onGetConfigurationSuccess_forwardsRequestToHttpClient() = runTest {
+    fun sendGraphQLPOST_onGetConfigurationSuccess_forwardsRequestToHttpClient() = runTest(testDispatcher) {
         val configuration = mockk<Configuration>(relaxed = true)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
@@ -320,16 +386,13 @@ class BraintreeClientUnitTest {
             )
         } returns mockResponse
 
-        val testDispatcher = StandardTestDispatcher(testScheduler)
-        val testScope = TestScope(testDispatcher)
         val sut = createBraintreeClient(
             configurationLoader = configurationLoader,
             testDispatcher = testDispatcher,
             testScope = testScope
         )
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
 
-        sut.sendGraphQLPOST(JSONObject(), httpResponseCallback)
+        val response = sut.sendGraphQLPOST(JSONObject())
         advanceUntilIdle()
 
         coVerify {
@@ -339,34 +402,50 @@ class BraintreeClientUnitTest {
                 authorization
             )
         }
-        verify { httpResponseCallback.onResult("{}", null) }
+        assertEquals("{}", response)
     }
 
     @Test
-    fun sendGraphQLPOST_onGetConfigurationFailure_forwardsErrorToCallback() {
+    fun sendGraphQLPOST_onGetConfigurationFailure_forwardsErrorToCallback() = runTest(testDispatcher) {
         val exception = Exception("configuration error")
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(exception)
             .build()
 
-        val sut = createBraintreeClient(configurationLoader)
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
+        val sut = createBraintreeClient(
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
 
-        sut.sendGraphQLPOST(JSONObject(), httpResponseCallback)
-        verify { httpResponseCallback.onResult(null, exception) }
+        try {
+            sut.sendGraphQLPOST(JSONObject())
+            advanceUntilIdle()
+            fail("Must throw an exception")
+        } catch (e: Exception) {
+            assertEquals("configuration error", e.message)
+        }
     }
 
     @Test
-    fun sendGraphQLPOST_whenInvalidAuth_callsBackAuthError() {
-        val sut = BraintreeClient(context, "invalid-auth-string")
+    fun sendGraphQLPOST_whenInvalidAuth_callsBackAuthError() = runTest(testDispatcher) {
+        val configurationLoader = MockkConfigurationLoaderBuilder()
+            .configurationError(expectedAuthException)
+            .build()
 
-        val httpResponseCallback = mockk<HttpResponseCallback>(relaxed = true)
-        sut.sendGraphQLPOST(JSONObject(), httpResponseCallback)
+        val sut = createBraintreeClient(
+            auth = Authorization.fromString("invalid-auth-string"),
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
 
-        val authErrorSlot = slot<BraintreeException>()
-        verify { httpResponseCallback.onResult(isNull(), capture(authErrorSlot)) }
-
-        assertEquals(expectedAuthException.message, authErrorSlot.captured.message)
+        try {
+            sut.sendGraphQLPOST(JSONObject())
+            fail("Must throw an exception")
+        } catch (e: BraintreeException) {
+            assertEquals(expectedAuthException.message, e.message)
+        }
     }
 
     @Test
@@ -417,20 +496,23 @@ class BraintreeClientUnitTest {
 
     @Test
     @Throws(JSONException::class)
-    fun reportCrash_reportsCrashViaAnalyticsClient() {
+    fun reportCrash_reportsCrashViaAnalyticsClient() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configuration(configuration)
             .build()
-        val sut = createBraintreeClient(configurationLoader)
+
+        val sut = createBraintreeClient(
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
         sut.reportCrash()
+        advanceUntilIdle()
 
-        val callbackSlots = mutableListOf<ConfigurationLoaderCallback>()
-        verify {
-            configurationLoader.loadConfiguration(capture(callbackSlots))
+        coVerify {
+            configurationLoader.loadConfiguration()
         }
-
-        callbackSlots[0].onResult(ConfigurationLoaderResult.Success(configuration))
 
         verify { analyticsClient.reportCrash(any()) }
     }
@@ -461,17 +543,17 @@ class BraintreeClientUnitTest {
         verify(exactly = 0) { merchantRepository.appLinkReturnUri = null }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun createBraintreeClient(
         configurationLoader: ConfigurationLoader = mockk(),
         appLinkReturnUri: Uri? = Uri.parse("https://example.com"),
         merchantRepository: MerchantRepository = MerchantRepository.instance,
         testDispatcher: kotlinx.coroutines.CoroutineDispatcher? = null,
-        testScope: kotlinx.coroutines.CoroutineScope? = null
+        testScope: kotlinx.coroutines.CoroutineScope? = null,
+        auth: Authorization? = null
     ) = BraintreeClient(
         applicationContext = applicationContext,
         integrationType = IntegrationType.CUSTOM,
-        authorization = authorization,
+        authorization = auth ?: authorization,
         returnUrlScheme = "sample-return-url-scheme",
         appLinkReturnUri = appLinkReturnUri,
         httpClient = braintreeHttpClient,

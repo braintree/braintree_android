@@ -22,6 +22,11 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import io.mockk.verifyOrder
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.runner.RunWith
@@ -34,9 +39,12 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @SuppressWarnings("LongMethod")
 @RunWith(RobolectricTestRunner::class)
 class GooglePayClientUnitTest {
+
+    private val testDispatcher = StandardTestDispatcher()
 
     private lateinit var activity: FragmentActivity
     private lateinit var baseRequest: GooglePayRequest
@@ -62,7 +70,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun isReadyToPay_sendsReadyToPayRequest() {
+    fun isReadyToPay_sendsReadyToPayRequest() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -77,13 +85,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.isReadyToPay(activity, null, readyToPayCallback)
+        advanceUntilIdle()
 
         val captor = slot<IsReadyToPayRequest>()
         verify {
@@ -104,7 +116,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun isReadyToPay_whenExistingPaymentMethodRequired_sendsIsReadyToPayRequestWithExistingPaymentRequired() {
+    fun isReadyToPay_whenExistingPaymentMethodRequired_sendsIsReadyToPayRequestWithExistingPaymentRequired() =
+        runTest(testDispatcher) {
         val readyForGooglePayRequest = ReadyForGooglePayRequest().apply {
             isExistingPaymentMethodRequired = true
         }
@@ -123,13 +136,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.isReadyToPay(activity, readyForGooglePayRequest, readyToPayCallback)
+        advanceUntilIdle()
 
         val captor = slot<IsReadyToPayRequest>()
         verify {
@@ -150,7 +167,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun isReadyToPay_returnsFalseWhenGooglePayIsNotEnabled() {
+    fun isReadyToPay_returnsFalseWhenGooglePayIsNotEnabled() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -169,14 +186,18 @@ class GooglePayClientUnitTest {
             .isReadyToPay(true)
             .build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
 
         sut.isReadyToPay(activity, null, readyToPayCallback)
+        advanceUntilIdle()
 
         verify { readyToPayCallback.onGooglePayReadinessResult(ofType<GooglePayReadinessResult.NotReadyToPay>()) }
     }
@@ -216,7 +237,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_callsBackIntentData() {
+    fun createPaymentAuthRequest_callsBackIntentData() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -253,13 +274,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.createPaymentAuthRequest(googlePayRequest, intentDataCallback)
+        advanceUntilIdle()
 
         val captor = slot<GooglePayPaymentAuthRequest>()
         verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }
@@ -354,7 +379,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_includesATokenizationKeyWhenPresent() {
+    fun createPaymentAuthRequest_includesATokenizationKeyWhenPresent() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -377,13 +402,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.createPaymentAuthRequest(googlePayRequest, intentDataCallback)
+        advanceUntilIdle()
 
         val captor = slot<GooglePayPaymentAuthRequest>()
         verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }
@@ -403,7 +432,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_doesNotIncludeATokenizationKeyWhenNotPresent() {
+    fun createPaymentAuthRequest_doesNotIncludeATokenizationKeyWhenNotPresent() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -426,13 +455,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.createPaymentAuthRequest(googlePayRequest, intentDataCallback)
+        advanceUntilIdle()
 
         val captor = slot<GooglePayPaymentAuthRequest>()
         verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }
@@ -452,7 +485,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_sendsAnalyticsEvent() {
+    fun createPaymentAuthRequest_sendsAnalyticsEvent() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -476,13 +509,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.createPaymentAuthRequest(googlePayRequest, intentDataCallback)
+        advanceUntilIdle()
 
         verifyOrder {
             braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_REQUEST_STARTED)
@@ -491,7 +528,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenMerchantNotConfigured_returnsExceptionToFragment() {
+    fun createPaymentAuthRequest_whenMerchantNotConfigured_returnsExceptionToFragment() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder().build())
 
         val braintreeClient = MockkBraintreeClientBuilder()
@@ -503,13 +540,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback)
+        advanceUntilIdle()
 
         val captor = slot<GooglePayPaymentAuthRequest>()
         verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }
@@ -531,7 +572,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenSandbox_setsTestEnvironment() {
+    fun createPaymentAuthRequest_whenSandbox_setsTestEnvironment() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -553,13 +594,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback)
+        advanceUntilIdle()
 
         val captor = slot<GooglePayPaymentAuthRequest>()
         verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }
@@ -576,7 +621,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenProduction_setsProductionEnvironment() {
+    fun createPaymentAuthRequest_whenProduction_setsProductionEnvironment() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -598,13 +643,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback)
+        advanceUntilIdle()
 
         val captor = slot<GooglePayPaymentAuthRequest>()
         verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }
@@ -621,7 +670,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_withGoogleMerchantName_sendGoogleMerchantName() {
+    fun createPaymentAuthRequest_withGoogleMerchantName_sendGoogleMerchantName() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -645,13 +694,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback)
+        advanceUntilIdle()
 
         val captor = slot<GooglePayPaymentAuthRequest>()
         verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }
@@ -667,7 +720,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_withMerchantInfo_sendSoftwareInfo() {
+    fun createPaymentAuthRequest_withMerchantInfo_sendSoftwareInfo() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -689,13 +742,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback)
+        advanceUntilIdle()
 
         val captor = slot<GooglePayPaymentAuthRequest>()
         verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }
@@ -711,7 +768,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenGooglePayCanProcessPayPal_tokenizationPropertiesIncludePayPal() {
+    fun createPaymentAuthRequest_whenGooglePayCanProcessPayPal_tokenizationPropertiesIncludePayPal() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -735,13 +793,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback)
+        advanceUntilIdle()
 
         val captor = slot<GooglePayPaymentAuthRequest>()
         verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }
@@ -759,7 +821,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenPayPalDisabledByRequest_tokenizationPropertiesLackPayPal() {
+    fun createPaymentAuthRequest_whenPayPalDisabledByRequest_tokenizationPropertiesLackPayPal() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -784,13 +847,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback)
+        advanceUntilIdle()
 
         val captor = slot<GooglePayPaymentAuthRequest>()
         verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }
@@ -807,7 +874,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenPayPalDisabledAndGooglePayHasPayPalClientId_tokenizationPropsContainPayPal() {
+    fun createPaymentAuthRequest_whenPayPalDisabledAndGooglePayHasPayPalClientId_tokenizationPropsContainPayPal() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -833,13 +901,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback)
+        advanceUntilIdle()
 
         val captor = slot<GooglePayPaymentAuthRequest>()
         verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }
@@ -857,7 +929,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_usesGooglePayConfigurationClientId() {
+    fun createPaymentAuthRequest_usesGooglePayConfigurationClientId() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -885,13 +957,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback)
+        advanceUntilIdle()
 
         val captor = slot<GooglePayPaymentAuthRequest>()
         verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }
@@ -923,7 +999,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenGooglePayConfigurationLacksClientId_tokenizationPropertiesLackPayPal() {
+    fun createPaymentAuthRequest_whenGooglePayConfigurationLacksClientId_tokenizationPropertiesLackPayPal() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -946,13 +1023,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback)
+        advanceUntilIdle()
 
         val captor = slot<GooglePayPaymentAuthRequest>()
         verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }
@@ -970,7 +1051,8 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenConfigurationContainsElo_addsEloAndEloDebitToAllowedPaymentMethods() {
+    fun createPaymentAuthRequest_whenConfigurationContainsElo_addsEloAndEloDebitToAllowedPaymentMethods() =
+        runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -993,13 +1075,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback)
+        advanceUntilIdle()
 
         val captor = slot<GooglePayPaymentAuthRequest>()
         verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }
@@ -1021,7 +1107,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenManifestInvalid_forwardsExceptionToListener() {
+    fun createPaymentAuthRequest_whenManifestInvalid_forwardsExceptionToListener() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -1042,13 +1128,17 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
+        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
         sut.createPaymentAuthRequest(baseRequest, intentDataCallback)
+        advanceUntilIdle()
 
         val captor = slot<GooglePayPaymentAuthRequest>()
         verify { intentDataCallback.onGooglePayPaymentAuthRequest(capture(captor)) }

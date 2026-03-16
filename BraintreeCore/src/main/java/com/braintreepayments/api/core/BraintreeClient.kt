@@ -4,14 +4,12 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import androidx.annotation.RestrictTo
-import com.braintreepayments.api.sharedutils.HttpResponseCallback
 import com.braintreepayments.api.sharedutils.HttpResponseTiming
 import com.braintreepayments.api.sharedutils.ManifestValidator
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 
@@ -89,14 +87,17 @@ class BraintreeClient internal constructor(
         prefetchConfiguration()
     }
 
+    @Suppress("SwallowedException")
     private fun prefetchConfiguration() {
         // This method is called to prefetch the configuration when the BraintreeClient is created.
         // It ensures that the configuration is loaded and ready for use in subsequent requests.
-        getConfiguration(callback = object : ConfigurationCallback {
-            override fun onResult(configuration: Configuration?, error: Exception?) {
+        coroutineScope.launch {
+            try {
+                val config = getConfiguration()
+            } catch (e: IOException) {
                 // no op
             }
-        })
+        }
     }
 
     /**
@@ -104,16 +105,15 @@ class BraintreeClient internal constructor(
      *
      * @param callback [ConfigurationCallback]
      */
-    fun getConfiguration(callback: ConfigurationCallback) {
-        configurationLoader.loadConfiguration { result ->
-            when (result) {
-                is ConfigurationLoaderResult.Success -> {
-                    callback.onResult(result.configuration, null)
-                    result.timing?.let { sendAnalyticsTimingEvent("/v1/configuration", it) }
-                }
-
-                is ConfigurationLoaderResult.Failure -> callback.onResult(null, result.error)
+    suspend fun getConfiguration(): Configuration {
+        val configResult = configurationLoader.loadConfiguration()
+        when (configResult) {
+            is ConfigurationLoaderResult.Success -> {
+                configResult.timing?.let { sendAnalyticsTimingEvent("/v1/configuration", it) }
+                return configResult.configuration
             }
+
+            is ConfigurationLoaderResult.Failure -> throw configResult.error
         }
     }
 
@@ -131,109 +131,66 @@ class BraintreeClient internal constructor(
     /**
      * @suppress
      */
-    fun sendGET(url: String, responseCallback: HttpResponseCallback) {
-        getConfiguration { configuration, configError ->
-            if (configuration != null) {
-                coroutineScope.launch {
-                    try {
-                        val response = httpClient.get(
-                            path = url,
-                            configuration = configuration,
-                            authorization = merchantRepository.authorization
-                        )
-                        try {
-                            sendAnalyticsTimingEvent(url, response.timing)
-                            responseCallback.onResult(response.body, null)
-                        } catch (jsonException: JSONException) {
-                            responseCallback.onResult(null, jsonException)
-                        }
-                    } catch (e: IOException) {
-                        responseCallback.onResult(null, e)
-                    }
-                }
-            } else {
-                responseCallback.onResult(null, configError)
-            }
-        }
+    suspend fun sendGET(url: String): String {
+        val configuration = getConfiguration()
+        val response = httpClient.get(
+            path = url,
+            configuration = configuration,
+            authorization = merchantRepository.authorization
+        )
+
+        sendAnalyticsTimingEvent(url, response.timing)
+        return response.body ?: throw IOException("Response body is null")
     }
 
     /**
      * @suppress
      */
     @JvmOverloads
-    fun sendPOST(
+    suspend fun sendPOST(
         url: String,
         data: String,
         additionalHeaders: Map<String, String> = emptyMap(),
-        responseCallback: HttpResponseCallback,
-    ) {
-        getConfiguration { configuration, configError ->
-            if (configuration != null) {
-                coroutineScope.launch {
-                    try {
-                        val response = httpClient.post(
-                            path = url,
-                            data = data,
-                            configuration = configuration,
-                            authorization = merchantRepository.authorization,
-                            additionalHeaders = additionalHeaders
-                        )
-                        try {
-                            sendAnalyticsTimingEvent(url, response.timing)
-                            responseCallback.onResult(response.body, null)
-                        } catch (jsonException: JSONException) {
-                            responseCallback.onResult(null, jsonException)
-                        }
-                    } catch (e: IOException) {
-                        responseCallback.onResult(null, e)
-                    }
-                }
-            } else {
-                responseCallback.onResult(null, configError)
-            }
-        }
+    ): String {
+        val configuration = getConfiguration()
+        val response = httpClient.post(
+            path = url,
+            data = data,
+            configuration = configuration,
+            authorization = merchantRepository.authorization,
+            additionalHeaders = additionalHeaders
+        )
+        sendAnalyticsTimingEvent(url, response.timing)
+        return response.body ?: throw IOException("Response body is null")
     }
 
     /**
      * @suppress
      */
-    fun sendGraphQLPOST(json: JSONObject, responseCallback: HttpResponseCallback) {
-        getConfiguration { configuration, configError ->
-            if (configuration != null) {
-                coroutineScope.launch {
-                    try {
-                        val response = graphQLClient.post(
-                            data = json.toString(),
-                            configuration = configuration,
-                            authorization = merchantRepository.authorization
-                        )
+    suspend fun sendGraphQLPOST(json: JSONObject): String {
+        val configuration = getConfiguration()
+        val response = graphQLClient.post(
+            data = json.toString(),
+            configuration = configuration,
+            authorization = merchantRepository.authorization
+        )
 
-                        try {
-                            val query = json.optString(GraphQLConstants.Keys.QUERY)
-                            val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
-                            val finalQuery = query.replace(queryDiscardHolder, "")
-                            val params = AnalyticsEventParams(
-                                startTime = response.timing.startTime,
-                                endTime = response.timing.endTime,
-                                endpoint = finalQuery
-                            )
-                            sendAnalyticsEvent(
-                                eventName = CoreAnalytics.API_REQUEST_LATENCY,
-                                params = params,
-                                sendImmediately = false
-                            )
-                            responseCallback.onResult(response.body, null)
-                        } catch (jsonException: JSONException) {
-                            responseCallback.onResult(null, jsonException)
-                        }
-                    } catch (e: IOException) {
-                        responseCallback.onResult(null, e)
-                    }
-                }
-            } else {
-                responseCallback.onResult(null, configError)
-            }
-        }
+        val query = json.optString(GraphQLConstants.Keys.QUERY)
+        val queryDiscardHolder = query.replace(Regex("^[^\\(]*"), "")
+        val finalQuery = query.replace(queryDiscardHolder, "")
+        val params = AnalyticsEventParams(
+            startTime = response.timing.startTime,
+            endTime = response.timing.endTime,
+            endpoint = finalQuery
+        )
+
+        sendAnalyticsEvent(
+            eventName = CoreAnalytics.API_REQUEST_LATENCY,
+            params = params,
+            sendImmediately = false
+        )
+
+        return response.body ?: throw IOException("Response body is null")
     }
 
     /**
@@ -257,10 +214,17 @@ class BraintreeClient internal constructor(
     /**
      * @suppress
      */
-    internal fun reportCrash() =
-        getConfiguration { configuration, _ ->
-            analyticsClient.reportCrash(configuration)
+    @Suppress("SwallowedException")
+    internal fun reportCrash() {
+        coroutineScope.launch {
+            try {
+                val configuration = getConfiguration()
+                analyticsClient.reportCrash(configuration)
+            } catch (e: Exception) {
+                // no op
+            }
         }
+    }
 
     // TODO: Make launches browser switch as new task a property of `BraintreeOptions`
     fun launchesBrowserSwitchAsNewTask(): Boolean {

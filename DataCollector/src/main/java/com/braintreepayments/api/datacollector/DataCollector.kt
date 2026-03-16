@@ -7,16 +7,25 @@ import androidx.annotation.RestrictTo
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.UUIDHelper
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONException
 import org.json.JSONObject
 
 /**
  * PayPalDataCollector is used to collect PayPal specific device information to aid in fraud detection and prevention.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
     private val braintreeClient: BraintreeClient,
     private val magnesInternalClient: MagnesInternalClient = MagnesInternalClient(),
-    private val uuidHelper: UUIDHelper = UUIDHelper()
+    private val uuidHelper: UUIDHelper = UUIDHelper(),
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
     /**
      * Initializes a new [DataCollector] instance
@@ -87,32 +96,105 @@ class DataCollector @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) constructor(
         request: DataCollectorRequest,
         callback: DataCollectorCallback
     ) {
-        braintreeClient.getConfiguration { configuration: Configuration?, error: Exception? ->
-            if (configuration != null) {
-                val deviceData = JSONObject()
-                try {
-                    val internalRequest =
-                        DataCollectorInternalRequest(request.hasUserLocationConsent).apply {
-                            applicationGuid = getPayPalInstallationGUID(context)
-                        }
-                    if (request.riskCorrelationId != null) {
-                        internalRequest.clientMetadataId = request.riskCorrelationId
+        coroutineScope.launch {
+            val result = collectDeviceData(context, request)
+            callback.onDataCollectorResult(result)
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    private suspend fun collectDeviceData(
+        context: Context,
+        request: DataCollectorRequest
+    ): DataCollectorResult {
+        return try {
+            val configuration = braintreeClient.getConfiguration()
+            val deviceData = JSONObject()
+            try {
+                val internalRequest =
+                    DataCollectorInternalRequest(request.hasUserLocationConsent).apply {
+                        applicationGuid = getPayPalInstallationGUID(context)
                     }
-                    val correlationId =
-                        magnesInternalClient.getClientMetadataId(
-                            context,
-                            configuration,
-                            internalRequest
-                        )
-                    if (!TextUtils.isEmpty(correlationId)) {
-                        deviceData.put(CORRELATION_ID_KEY, correlationId)
-                    }
-                } catch (ignored: JSONException) {
+                if (request.riskCorrelationId != null) {
+                    internalRequest.clientMetadataId = request.riskCorrelationId
                 }
-                callback.onDataCollectorResult(DataCollectorResult.Success(deviceData.toString()))
-            } else if (error != null) {
-                callback.onDataCollectorResult(DataCollectorResult.Failure(error))
+                val correlationId =
+                    magnesInternalClient.getClientMetadataId(
+                        context,
+                        configuration,
+                        internalRequest
+                    )
+                if (!TextUtils.isEmpty(correlationId)) {
+                    deviceData.put(CORRELATION_ID_KEY, correlationId)
+                }
+            } catch (ignored: JSONException) {
             }
+            DataCollectorResult.Success(deviceData.toString())
+        } catch (e: Exception) {
+            DataCollectorResult.Failure(e)
+        }
+    }
+
+    /**
+     * This method should be used for markets where high coverage of device data
+     * is needed (ex: Predictions Market). Collects device data based on
+     * your merchant configuration.
+     *
+     * We recommend that you call this method as early as possible, e.g. at app
+     * launch. If that's too early, calling it when the customer initiates checkout
+     * is also fine. When using this method you should only proceed if a success is
+     * returned. In cases where an error is returned, retrying this method is recommended.
+     *
+     * @param context           Android Context
+     * @param request           Optional client metadata id
+     * @param callback          [DataCollectorCallback] invoked with either a device data
+     *                          string on success or an error with the failure reason.
+     *                          Retries are recommended on failure.
+     */
+    fun collectDeviceDataOnSuccess(
+        context: Context,
+        request: DataCollectorRequest,
+        callback: DataCollectorCallback
+    ) {
+        coroutineScope.launch {
+            val result = collectDeviceDataOnSuccess(context, request)
+            callback.onDataCollectorResult(result)
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    private suspend fun collectDeviceDataOnSuccess(
+        context: Context,
+        request: DataCollectorRequest
+    ): DataCollectorResult {
+        return try {
+            val configuration = braintreeClient.getConfiguration()
+            val deviceData = JSONObject()
+            val internalRequest =
+                DataCollectorInternalRequest(request.hasUserLocationConsent).apply {
+                    applicationGuid = getPayPalInstallationGUID(context)
+                }
+            if (request.riskCorrelationId != null) {
+                internalRequest.clientMetadataId = request.riskCorrelationId
+            }
+            suspendCancellableCoroutine { continuation ->
+                magnesInternalClient.getClientMetadataIdWithCallback(
+                    context = context,
+                    configuration = configuration,
+                    request = internalRequest
+                ) { correlationId, submitError ->
+                    if (submitError != null) {
+                        continuation.resume(DataCollectorResult.Failure(submitError)) {}
+                    } else {
+                        if (!TextUtils.isEmpty(correlationId)) {
+                            deviceData.put(CORRELATION_ID_KEY, correlationId)
+                        }
+                        continuation.resume(DataCollectorResult.Success(deviceData.toString())) {}
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            DataCollectorResult.Failure(e)
         }
     }
 

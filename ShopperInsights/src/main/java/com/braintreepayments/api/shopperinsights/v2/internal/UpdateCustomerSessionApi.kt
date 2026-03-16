@@ -10,6 +10,7 @@ import org.json.JSONObject
  * API to update an existing customer session using the `UpdateCustomerSession` GraphQL mutation.
  */
 @ExperimentalBetaApi
+@Suppress("TooGenericExceptionCaught")
 internal class UpdateCustomerSessionApi(
     private val braintreeClient: BraintreeClient,
     private val customerSessionRequestBuilder: CustomerSessionRequestBuilder = CustomerSessionRequestBuilder(),
@@ -21,12 +22,11 @@ internal class UpdateCustomerSessionApi(
         data class Error(val error: Exception) : UpdateCustomerSessionResult()
     }
 
-    fun execute(
+    suspend fun execute(
         customerSessionRequest: CustomerSessionRequest,
         sessionId: String,
-        callback: (UpdateCustomerSessionResult) -> Unit
-    ) {
-        try {
+    ): UpdateCustomerSessionResult {
+        return try {
             val params = JSONObject()
             params.put(
                 QUERY, """
@@ -40,16 +40,15 @@ internal class UpdateCustomerSessionApi(
 
             params.put(VARIABLES, assembleVariables(sessionId, customerSessionRequest))
 
-            braintreeClient.sendGraphQLPOST(params) { responseBody: String?, httpError: Exception? ->
-                if (responseBody != null) {
+                try {
+                    val responseBody = braintreeClient.sendGraphQLPOST(params)
                     val sessionId = responseParser.parseSessionId(responseBody, UPDATE_CUSTOMER_SESSION)
-                    callback(UpdateCustomerSessionResult.Success(sessionId))
-                } else if (httpError != null) {
-                    callback(UpdateCustomerSessionResult.Error(httpError))
+                    UpdateCustomerSessionResult.Success(sessionId)
+                } catch (e: Exception) {
+                    UpdateCustomerSessionResult.Error(e)
                 }
-            }
         } catch (e: JSONException) {
-            callback(UpdateCustomerSessionResult.Error(e))
+            UpdateCustomerSessionResult.Error(e)
         }
     }
 

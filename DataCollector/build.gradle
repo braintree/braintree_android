@@ -47,7 +47,7 @@ android {
 }
 
 dependencies {
-    implementation files('libs/android-magnessdk-5.5.1.jar')
+    implementation files('libs/android-magnessdk-5.6.0.jar')
 
     implementation libs.androidx.annotation
     api project(':BraintreeCore')
@@ -59,6 +59,7 @@ dependencies {
     testImplementation libs.mockito.core
     testImplementation libs.mockk
     testImplementation libs.test.parameter.injector
+    testImplementation libs.coroutines.test
 
     testImplementation project(':TestUtils')
 

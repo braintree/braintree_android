@@ -10,36 +10,29 @@ import org.json.JSONObject
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class ApiClient(
     private val braintreeClient: BraintreeClient,
-    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance
+    private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
 ) {
 
-    fun tokenizeGraphQL(tokenizePayload: JSONObject, callback: TokenizeCallback) =
-        braintreeClient.run {
-            sendGraphQLPOST(tokenizePayload) { responseBody, httpError ->
-                parseResponseToJSON(responseBody)?.let { json ->
-                    callback.onResult(json, null)
-                } ?: httpError?.let { error ->
-                    callback.onResult(null, error)
-                }
-            }
-        }
+    suspend fun tokenizeGraphQL(tokenizePayload: JSONObject): JSONObject {
+        val responseBody = braintreeClient.sendGraphQLPOST(tokenizePayload)
+        val response = parseResponseToJSON(responseBody)
+            ?: throw JSONException("Invalid JSON response")
+        return response
+    }
 
-    fun tokenizeREST(paymentMethod: PaymentMethod, callback: TokenizeCallback) =
-        braintreeClient.run {
-            val url = versionedPath("$PAYMENT_METHOD_ENDPOINT/${paymentMethod.apiPath}")
-            paymentMethod.sessionId = analyticsParamRepository.sessionId
+    suspend fun tokenizeREST(paymentMethod: PaymentMethod): JSONObject {
+        val url = versionedPath("$PAYMENT_METHOD_ENDPOINT/${paymentMethod.apiPath}")
+        paymentMethod.sessionId = analyticsParamRepository.sessionId
 
-            sendPOST(
-                url = url,
-                data = paymentMethod.buildJSON().toString(),
-            ) { responseBody, httpError ->
-                parseResponseToJSON(responseBody)?.let { json ->
-                    callback.onResult(json, null)
-                } ?: httpError?.let { error ->
-                    callback.onResult(null, error)
-                }
-            }
-        }
+        val responseBody = braintreeClient.sendPOST(
+            url = url,
+            data = paymentMethod.buildJSON().toString(),
+        )
+
+        val response = parseResponseToJSON(responseBody)
+            ?: throw JSONException("Invalid JSON response")
+        return response
+    }
 
     private fun parseResponseToJSON(responseBody: String?): JSONObject? =
         responseBody?.let {

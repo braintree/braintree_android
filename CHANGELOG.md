@@ -2,6 +2,24 @@
 
 ## unreleased
 
+* ShopperInsights
+    * Add `PAYPAL_PAY_LATER` to `ButtonType` enum
+
+## 5.24.0 (2026-02-25)
+
+* PayPal
+    * Pass `is_billing_agreement` and `billing_plan_type` to analytics events.
+
+## 5.23.0 (2026-02-12)
+
+* Venmo
+    * Expose the `riskCorrelationId` property on `VenmoRequest` 
+* DataCollector
+    * Bump Magnes version to `5.6.0`
+    * Add `collectDeviceDataOnSuccess` method that ensures Magnes SDK completes data submission prior to returning device data
+
+## 5.22.0 (2026-01-29)
+
 * PayPal
     * Pass `funding_source` to the app switch url link and to analytics events.
 

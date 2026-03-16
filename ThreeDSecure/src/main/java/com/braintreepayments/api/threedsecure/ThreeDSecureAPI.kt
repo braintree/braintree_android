@@ -5,11 +5,18 @@ import com.braintreepayments.api.core.ApiClient.Companion.versionedPath
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.threedsecure.ThreeDSecureParams.Companion.fromJson
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
 
 internal class ThreeDSecureAPI(
-    private val braintreeClient: BraintreeClient
+    private val braintreeClient: BraintreeClient,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
 
     fun performLookup(
@@ -17,20 +24,21 @@ internal class ThreeDSecureAPI(
         cardinalConsumerSessionId: String?,
         callback: ThreeDSecureResultCallback
     ) {
-        braintreeClient.sendPOST(
-            url = versionedPath(
-                "${ApiClient.PAYMENT_METHOD_ENDPOINT}/${request.nonce}/three_d_secure/lookup"
-            ),
-            data = request.build(cardinalConsumerSessionId)
-        ) { responseBody: String?, httpError: Exception? ->
-            if (responseBody != null) {
+        coroutineScope.launch {
+            try {
+                val responseBody = braintreeClient.sendPOST(
+                    url = versionedPath(
+                        "${ApiClient.PAYMENT_METHOD_ENDPOINT}/${request.nonce}/three_d_secure/lookup"
+                    ),
+                    data = request.build(cardinalConsumerSessionId)
+                )
                 try {
                     val result: ThreeDSecureParams = fromJson(responseBody)
                     callback.onThreeDSecureResult(result, null)
                 } catch (e: JSONException) {
                     callback.onThreeDSecureResult(null, e)
                 }
-            } else {
+            } catch (httpError: IOException) {
                 callback.onThreeDSecureResult(null, httpError)
             }
         }
@@ -59,11 +67,12 @@ internal class ThreeDSecureAPI(
             "${ApiClient.PAYMENT_METHOD_ENDPOINT}/$lookupNonce/three_d_secure/authenticate_from_jwt"
         )
 
-        braintreeClient.sendPOST(
-            url = url,
-            data = body.toString()
-        ) { responseBody: String?, httpError: Exception? ->
-            if (responseBody != null) {
+        coroutineScope.launch {
+            try {
+                val responseBody = braintreeClient.sendPOST(
+                    url = url,
+                    data = body.toString()
+                )
                 try {
                     val result: ThreeDSecureParams = fromJson(responseBody)
                     if (result.hasError()) {
@@ -73,7 +82,7 @@ internal class ThreeDSecureAPI(
                 } catch (e: JSONException) {
                     callback.onThreeDSecureResult(null, e)
                 }
-            } else {
+            } catch (httpError: IOException) {
                 callback.onThreeDSecureResult(null, httpError)
             }
         }

@@ -85,6 +85,7 @@ dependencies {
 
     api libs.browser.switch
     api project(':SharedUtils')
+    api libs.coroutines.core
 
     androidTestImplementation libs.play.services.wallet
     androidTestImplementation libs.androidx.test.rules

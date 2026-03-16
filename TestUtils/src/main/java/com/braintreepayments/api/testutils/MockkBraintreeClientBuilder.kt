@@ -4,10 +4,10 @@ import android.content.pm.ActivityInfo
 import com.braintreepayments.api.core.Authorization
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.Configuration
-import com.braintreepayments.api.core.ConfigurationCallback
-import com.braintreepayments.api.sharedutils.HttpResponseCallback
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import java.io.IOException
 
 @Suppress("MagicNumber", "TooManyFunctions")
 class MockkBraintreeClientBuilder {
@@ -89,52 +89,49 @@ class MockkBraintreeClientBuilder {
         return this
     }
 
+    @Suppress("ThrowsCount")
     fun build(): BraintreeClient {
         val braintreeClient = mockk<BraintreeClient>(relaxed = true)
 
         every { braintreeClient.launchesBrowserSwitchAsNewTask() } returns launchesBrowserSwitchAsNewTask
 
-        every { braintreeClient.getConfiguration(any()) } answers { call ->
-            val callback = call.invocation.args[0] as ConfigurationCallback
-            callback.onResult(configurationSuccess, configurationException)
+        coEvery { braintreeClient.getConfiguration() } answers {
+            configurationSuccess ?: throw (configurationException ?: IOException("No configuration configured"))
         }
 
-        every { braintreeClient.sendGraphQLPOST(any(), any()) } answers { call ->
-            val callback = call.invocation.args[1] as HttpResponseCallback
-            sendGraphQLPostSuccess?.let { callback.onResult(it, null) }
-                ?: sendGraphQLPostError?.let { callback.onResult(null, it) }
+        coEvery { braintreeClient.sendGraphQLPOST(any()) } answers {
+            sendGraphQLPostSuccess
+                ?: sendGraphQLPostError?.let { throw it }
+                ?: throw IOException("No sendGraphQLPost response configured")
         }
 
         every { braintreeClient.getReturnUrlScheme() } returns returnUrlScheme
 
         every { braintreeClient.getManifestActivityInfo(any<Class<*>>()) } returns activityInfo
 
-        every {
-            braintreeClient.sendPOST(any<String>(), any<String>(), responseCallback = any<HttpResponseCallback>())
-        } answers { call ->
-            val callback = call.invocation.args[2] as HttpResponseCallback
-            sendPostSuccess?.let { callback.onResult(it, null) }
-                ?: sendPostError?.let { callback.onResult(null, it) }
+        val sendPostAnswer: () -> String = {
+            sendPostSuccess ?: throw (sendPostError ?: IOException("Unknown error"))
         }
 
-        every {
+        coEvery {
             braintreeClient.sendPOST(
-                any<String>(),
-                any<String>(),
-                any<Map<String, String>>(),
-                any<HttpResponseCallback>()
+                url = any<String>(),
+                data = any<String>(),
             )
-        } answers { call ->
-            val callback = call.invocation.args[3] as HttpResponseCallback
-            sendPostSuccess?.let { callback.onResult(it, null) }
-                ?: sendPostError?.let { callback.onResult(null, it) }
-        }
+        } answers { sendPostAnswer() }
 
-        every { braintreeClient.sendGET(any<String>(), responseCallback = any<HttpResponseCallback>())
-        } answers { call ->
-            val callback = call.invocation.args[1] as HttpResponseCallback
-            sendGetSuccess?.let { callback.onResult(it, null) }
-                ?: sendGetError?.let { callback.onResult(null, it) }
+        coEvery {
+            braintreeClient.sendPOST(
+                url = any<String>(),
+                data = any<String>(),
+                additionalHeaders = any<Map<String, String>>(),
+            )
+        } answers { sendPostAnswer() }
+
+        coEvery { braintreeClient.sendGET(any<String>()) } answers {
+            sendGetSuccess
+                ?: sendGetError?.let { throw it }
+                ?: throw IOException("No sendGet response configured")
         }
 
         return braintreeClient
