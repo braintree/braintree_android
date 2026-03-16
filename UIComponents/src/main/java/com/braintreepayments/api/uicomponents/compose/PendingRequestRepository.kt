@@ -20,13 +20,14 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
  * Repository responsible for storing and retrieving the pending request using [DataStore].
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class PayPalPendingRequestRepository(
+class PendingRequestRepository(
     context: Context,
+    moduleName: String,
     private val dataStore: DataStore<Preferences> = context.dataStore,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
 
-    private val pendingRequestKey = stringPreferencesKey("pending_request_key")
+    private val pendingRequestKey = stringPreferencesKey("${moduleName}_pending_request_key")
 
     suspend fun storePendingRequest(pendingRequest: String) {
         withContext(dispatcher) {

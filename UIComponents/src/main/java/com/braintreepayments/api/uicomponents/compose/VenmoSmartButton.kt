@@ -18,37 +18,38 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.coroutineScope
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
-import com.braintreepayments.api.paypal.PayPalClient
-import com.braintreepayments.api.paypal.PayPalLauncher
-import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
-import com.braintreepayments.api.paypal.PayPalPaymentAuthResult
-import com.braintreepayments.api.paypal.PayPalPendingRequest
-import com.braintreepayments.api.paypal.PayPalRequest
-import com.braintreepayments.api.paypal.PayPalResult
-import com.braintreepayments.api.paypal.PayPalTokenizeCallback
-import com.braintreepayments.api.uicomponents.PayPalButtonColor
 import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
 import com.braintreepayments.api.uicomponents.UIComponentsAnalytics.UI_TYPE_COMPOSE
+import com.braintreepayments.api.uicomponents.VenmoButtonColor
+import com.braintreepayments.api.venmo.VenmoClient
+import com.braintreepayments.api.venmo.VenmoLauncher
+import com.braintreepayments.api.venmo.VenmoPaymentAuthRequest
+import com.braintreepayments.api.venmo.VenmoPaymentAuthResult
+import com.braintreepayments.api.venmo.VenmoPendingRequest
+import com.braintreepayments.api.venmo.VenmoRequest
+import com.braintreepayments.api.venmo.VenmoResult
+import com.braintreepayments.api.venmo.VenmoTokenizeCallback
+import kotlin.text.isEmpty
 import kotlinx.coroutines.launch
 
 /**
- * A composable that displays PayPal button.
- * @param style: A [PayPalButtonColor] that determines the color of the button.
- * @param payPalRequest: A [PayPalRequest] that provides the parameters to tokenize a paypal account.
+ * A composable that displays Venmo button.
+ * @param style: A [VenmoButtonColor] that determines the color of the button.
+ * @param venmoRequest: A [VenmoRequest] that provides the parameters to tokenize a Venmo account.
  * @param authorization: An authorization string to use for tokenization.
- * @param appLinkReturnUrl: A [Uri] that sends back control to the host app after PayPal flow completes.
+ * @param appLinkReturnUrl: A [Uri] that sends back control to the host app after Venmo flow completes.
  * @param deepLinkFallbackUrlScheme: Fallback scheme in case [appLinkReturnUrl] doesn't work.
- * @param paypalTokenizeCallback: A [PayPalTokenizeCallback] that handles the result of the tokenization.
+ * @param venmoTokenizeCallback: A [VenmoTokenizeCallback] that handles the result of the tokenization.
  */
 @Composable
-fun PayPalSmartButton(
-    style: PayPalButtonColor,
-    payPalRequest: PayPalRequest,
+fun VenmoSmartButton(
+    style: VenmoButtonColor,
+    venmoRequest: VenmoRequest,
     authorization: String,
     appLinkReturnUrl: Uri,
-    deepLinkFallbackUrlScheme: String,
-    pendingRequestRepository: PendingRequestRepository = PendingRequestRepository(LocalContext.current, "paypal"),
-    paypalTokenizeCallback: PayPalTokenizeCallback
+    deepLinkFallbackUrlScheme: String? = null,
+    pendingRequestRepository: PendingRequestRepository = PendingRequestRepository(LocalContext.current, "venmo"),
+    venmoTokenizeCallback: VenmoTokenizeCallback
 ) {
     val context = LocalContext.current
     val activity = context.findActivity()
@@ -59,9 +60,10 @@ fun PayPalSmartButton(
     var shouldLogButtonPresentment by rememberSaveable { mutableStateOf(true) }
 
     val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
-    val payPalLauncher = remember { PayPalLauncher(registry) }
-    val payPalClient = remember {
-        PayPalClient(
+
+    val venmoLauncher = remember { VenmoLauncher(registry) }
+    val venmoClient = remember {
+        VenmoClient(
             context = context,
             authorization = authorization,
             appLinkReturnUrl = appLinkReturnUrl,
@@ -70,31 +72,31 @@ fun PayPalSmartButton(
     }
     val analyticsClient = remember { AnalyticsClient.lazyInstance.value }
 
-    PayPalButton(style = style, enabled = enabled) {
+    VenmoButton(style = style, enabled = enabled) {
         enabled = false
         logButtonSelected(analyticsClient)
-        payPalClient.createPaymentAuthRequest(
+        venmoClient.createPaymentAuthRequest(
             context = context,
-            payPalRequest = payPalRequest
-        ) { paymentAuthRequest: PayPalPaymentAuthRequest ->
+            request = venmoRequest
+        ) { paymentAuthRequest: VenmoPaymentAuthRequest ->
             when (paymentAuthRequest) {
-                is PayPalPaymentAuthRequest.ReadyToLaunch -> {
+                is VenmoPaymentAuthRequest.ReadyToLaunch -> {
                     activity?.let {
                         coroutineScope.launch {
-                            completePayPalFlow(
-                                payPalLauncher,
+                            completeVenmoFlow(
+                                venmoLauncher,
                                 pendingRequestRepository,
                                 it,
                                 paymentAuthRequest,
-                                paypalTokenizeCallback
+                                venmoTokenizeCallback
                             )
                             flowLaunched = true
                         }
                     }
                 }
 
-                is PayPalPaymentAuthRequest.Failure -> {
-                    paypalTokenizeCallback.onPayPalResult(PayPalResult.Failure(paymentAuthRequest.error))
+                is VenmoPaymentAuthRequest.Failure -> {
+                    venmoTokenizeCallback.onVenmoResult(VenmoResult.Failure(paymentAuthRequest.error))
                 }
             }
         }
@@ -111,10 +113,10 @@ fun PayPalSmartButton(
         if (flowLaunched) {
             flowLaunched = false
             lifecycle.coroutineScope.launch {
-                val pendingRequestStr = pendingRequestRepository.getPendingRequest()
+                val pendingRequestString = pendingRequestRepository.getPendingRequest()
 
                 activity?.intent?.let { intent ->
-                    handleReturnToApp(payPalLauncher, payPalClient, pendingRequestStr, intent, paypalTokenizeCallback)
+                    handleReturnToApp(venmoLauncher, venmoClient, pendingRequestString, intent, venmoTokenizeCallback)
                     enabled = true
                     pendingRequestRepository.clearPendingRequest()
                     activity.intent.data = null
@@ -126,71 +128,68 @@ fun PayPalSmartButton(
     }
 }
 
-internal suspend fun completePayPalFlow(
-    payPalLauncher: PayPalLauncher,
+private suspend fun completeVenmoFlow(
+    venmoLauncher: VenmoLauncher,
     pendingRequestRepository: PendingRequestRepository,
     activity: Activity,
-    paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch,
-    paypalTokenizeCallback: PayPalTokenizeCallback
+    paymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch,
+    venmoTokenizeCallback: VenmoTokenizeCallback
 ) {
-    val payPalPendingRequest = payPalLauncher.launch(
+    val venmoPendingRequest = venmoLauncher.launch(
         activity = activity as ComponentActivity,
         paymentAuthRequest = paymentAuthRequest
     )
-    when (payPalPendingRequest) {
-        is PayPalPendingRequest.Started -> {
-            pendingRequestRepository.storePendingRequest(payPalPendingRequest.pendingRequestString)
+    when (venmoPendingRequest) {
+        is VenmoPendingRequest.Started -> {
+            pendingRequestRepository.storePendingRequest(venmoPendingRequest.pendingRequestString)
         }
 
-        is PayPalPendingRequest.Failure -> {
-            paypalTokenizeCallback.onPayPalResult(PayPalResult.Failure(payPalPendingRequest.error))
+        is VenmoPendingRequest.Failure -> {
+            venmoTokenizeCallback.onVenmoResult(VenmoResult.Failure(venmoPendingRequest.error))
         }
     }
 }
 
 private fun handleReturnToApp(
-    payPalLauncher: PayPalLauncher,
-    payPalClient: PayPalClient,
+    venmoLauncher: VenmoLauncher,
+    venmoClient: VenmoClient,
     pendingRequestString: String,
     intent: Intent,
-    callback: PayPalTokenizeCallback
+    callback: VenmoTokenizeCallback
 ) {
     if (pendingRequestString.isEmpty()) {
-        callback.onPayPalResult(PayPalResult.Failure(PendingRequestException()))
+        callback.onVenmoResult(VenmoResult.Failure(Exception(PendingRequestException())))
         return
     }
-    val paymentAuthResult = payPalLauncher.handleReturnToApp(
-        pendingRequest = PayPalPendingRequest.Started(pendingRequestString),
-        intent = intent,
+    val paymentAuthResult = venmoLauncher.handleReturnToApp(
+        pendingRequest = VenmoPendingRequest.Started(pendingRequestString),
+        intent = intent
     )
-
     when (paymentAuthResult) {
-        is PayPalPaymentAuthResult.Success -> {
-            payPalClient.tokenize(paymentAuthResult) { payPalResult ->
-                callback.onPayPalResult(payPalResult)
+        is VenmoPaymentAuthResult.Success -> {
+            venmoClient.tokenize(paymentAuthResult) { venmoResult ->
+                callback.onVenmoResult(venmoResult)
             }
         }
-
-        is PayPalPaymentAuthResult.NoResult -> {
-            callback.onPayPalResult(PayPalResult.Cancel)
+        is VenmoPaymentAuthResult.Failure -> {
+            callback.onVenmoResult(VenmoResult.Failure(paymentAuthResult.error))
         }
-
-        is PayPalPaymentAuthResult.Failure -> {
-            callback.onPayPalResult(PayPalResult.Failure(paymentAuthResult.error))
+        is VenmoPaymentAuthResult.NoResult -> {
+            callback.onVenmoResult(VenmoResult.Cancel)
         }
     }
 }
 
 private fun logButtonPresented(analyticsClient: AnalyticsClient) {
     analyticsClient.sendEvent(
-        UIComponentsAnalytics.PAYPAL_BUTTON_PRESENTED,
+        UIComponentsAnalytics.VENMO_BUTTON_PRESENTED,
         AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
     )
 }
 
 private fun logButtonSelected(analyticsClient: AnalyticsClient) {
     analyticsClient.sendEvent(
-        UIComponentsAnalytics.PAYPAL_BUTTON_SELECTED,
+        UIComponentsAnalytics.VENMO_BUTTON_SELECTED,
         AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
     )
 }
