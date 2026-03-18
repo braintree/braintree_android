@@ -1,163 +1,204 @@
 package com.braintreepayments.api.uicomponents.compose
 
-import android.graphics.drawable.Drawable
-import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Surface
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import com.braintreepayments.api.uicomponents.R
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.coroutineScope
+import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
+import com.braintreepayments.api.uicomponents.UIComponentsAnalytics.UI_TYPE_COMPOSE
 import com.braintreepayments.api.uicomponents.VenmoButtonColor
-import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import com.braintreepayments.api.venmo.VenmoClient
+import com.braintreepayments.api.venmo.VenmoLauncher
+import com.braintreepayments.api.venmo.VenmoPaymentAuthRequest
+import com.braintreepayments.api.venmo.VenmoPaymentAuthResult
+import com.braintreepayments.api.venmo.VenmoPendingRequest
+import com.braintreepayments.api.venmo.VenmoRequest
+import com.braintreepayments.api.venmo.VenmoResult
+import com.braintreepayments.api.venmo.VenmoTokenizeCallback
+import kotlin.text.isEmpty
+import kotlinx.coroutines.launch
 
+/**
+ * A composable that displays Venmo button.
+ * @param style: A [VenmoButtonColor] that determines the color of the button.
+ * @param venmoRequest: A [VenmoRequest] that provides the parameters to tokenize a Venmo account.
+ * @param authorization: An authorization string to use for tokenization.
+ * @param appLinkReturnUrl: A [Uri] that sends back control to the host app after Venmo flow completes.
+ * @param deepLinkFallbackUrlScheme: Fallback scheme in case [appLinkReturnUrl] doesn't work.
+ * @param venmoTokenizeCallback: A [VenmoTokenizeCallback] that handles the result of the tokenization.
+ */
 @Composable
-fun VenmoButton(style: VenmoButtonColor, enabled: Boolean = true, onClick: () -> Unit) {
+fun VenmoButton(
+    style: VenmoButtonColor,
+    venmoRequest: VenmoRequest,
+    authorization: String,
+    appLinkReturnUrl: Uri,
+    deepLinkFallbackUrlScheme: String? = null,
+    pendingRequestRepository: PendingRequestRepository = PendingRequestRepository(LocalContext.current, "venmo"),
+    venmoTokenizeCallback: VenmoTokenizeCallback
+) {
     val context = LocalContext.current
-    val ppLogoOffset = dimensionResource(R.dimen.pp_logo_offset)
-    val desiredWidth = dimensionResource(R.dimen.pay_button_width)
-    val desiredHeight = dimensionResource(R.dimen.pay_button_height)
-    val minDesiredWidth = dimensionResource(R.dimen.pay_button_min_width)
-    val borderStroke = dimensionResource(R.dimen.pay_button_border)
-    val focusBorderWidth = dimensionResource(R.dimen.pay_button_focus_border)
-    val focusBorderPadding = dimensionResource(R.dimen.pay_button_focus_padding)
-    val buttonCornerRadius = dimensionResource(R.dimen.pay_button_corner_radius)
+    val activity = context.findActivity()
+    val coroutineScope = rememberCoroutineScope()
 
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed = interactionSource.collectIsPressedAsState()
-    val isHovered = interactionSource.collectIsHoveredAsState()
-    val isFocused = interactionSource.collectIsFocusedAsState()
+    var enabled by remember { mutableStateOf(true) }
+    var flowLaunched by remember { mutableStateOf(false) }
+    var shouldLogButtonPresentment by rememberSaveable { mutableStateOf(true) }
 
-    val containerColor = colorResource(fillColor(style, isPressed.value, isHovered.value, isFocused.value))
-    val borderColor = colorResource(borderColor(style, isPressed.value, isHovered.value, isFocused.value))
-    val focusColor = colorResource(focusColor(style, isPressed.value, isHovered.value, isFocused.value))
-
-    Surface(
-        onClick = onClick,
-        modifier = Modifier
-            .semantics { role = Role.Button }
-            .drawBehind {
-                drawRoundRect(
-                    focusColor,
-                    cornerRadius = CornerRadius(buttonCornerRadius.toPx()),
-                    style = Stroke(width = focusBorderWidth.toPx())
+    val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
+    requireNotNull(registry) {
+        venmoTokenizeCallback.onVenmoResult(
+            VenmoResult.Failure(
+                Exception(
+                    "ActivityResultRegistry is null. ActivityResultRegistry cannot be null for this flow."
                 )
-            }
-            .padding(focusBorderPadding),
-        enabled = enabled,
-        shape = RoundedCornerShape(buttonCornerRadius),
-        color = containerColor,
-        border = BorderStroke(borderStroke, borderColor),
-        interactionSource = interactionSource
-    ) {
-        Row(
-            Modifier
-                .defaultMinSize(minWidth = minDesiredWidth)
-                .width(desiredWidth)
-                .height(desiredHeight),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            content = {
-                val loading = !enabled
-                if (!loading) {
-                    val logo: Drawable? = ContextCompat.getDrawable(context, style.logoId)
-                    Image(
-                        painter = rememberDrawablePainter(drawable = logo),
-                        modifier = Modifier.padding(top = ppLogoOffset),
-                        contentDescription = "Venmo",
-                    )
-                } else {
-                    val color = when (style) {
-                        VenmoButtonColor.Blue -> Color.Black
-                        VenmoButtonColor.Black -> Color.White
-                        VenmoButtonColor.White -> Color.Black
-                    }
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(desiredHeight / 2),
-                        color = color,
-                        strokeWidth = 2.dp
-                    )
-                }
-            }
+            )
         )
     }
-}
 
-private fun fillColor(style: VenmoButtonColor, isPressed: Boolean, isHovered: Boolean, isFocused: Boolean) = when {
-    isPressed -> style.pressed.fill
-    isHovered && isFocused -> style.focusHover.fill
-    isHovered -> style.hover.fill
-    isFocused -> style.focus.fill
-    else -> style.default.fill
-}
+    val venmoLauncher = remember { VenmoLauncher(registry) }
+    val venmoClient = remember {
+        VenmoClient(
+            context = context,
+            authorization = authorization,
+            appLinkReturnUrl = appLinkReturnUrl,
+            deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
+        )
+    }
+    val analyticsClient = remember { AnalyticsClient.lazyInstance.value }
 
-private fun borderColor(style: VenmoButtonColor, isPressed: Boolean, isHovered: Boolean, isFocused: Boolean) = when {
-    isPressed -> style.pressed.border
-    isHovered && isFocused -> style.focusHover.border
-    isHovered -> style.hover.border
-    isFocused -> style.focus.border
-    else -> style.default.border
-}
+    VenmoButtonView(style = style, enabled = enabled) {
+        enabled = false
+        logButtonSelected(analyticsClient)
+        venmoClient.createPaymentAuthRequest(
+            context = context,
+            request = venmoRequest
+        ) { paymentAuthRequest: VenmoPaymentAuthRequest ->
+            when (paymentAuthRequest) {
+                is VenmoPaymentAuthRequest.ReadyToLaunch -> {
+                    activity?.let {
+                        coroutineScope.launch {
+                            completeVenmoFlow(
+                                venmoLauncher,
+                                pendingRequestRepository,
+                                it,
+                                paymentAuthRequest,
+                                venmoTokenizeCallback
+                            )
+                            flowLaunched = true
+                        }
+                    }
+                }
 
-private fun focusColor(style: VenmoButtonColor, isPressed: Boolean, isHovered: Boolean, isFocused: Boolean) = when {
-    isPressed -> style.pressed.focusIndicator
-    isHovered && isFocused -> style.focusHover.focusIndicator
-    isHovered -> style.hover.focusIndicator
-    isFocused -> style.focus.focusIndicator
-    else -> style.default.focusIndicator
-}
-
-@Preview
-@Composable
-fun PreviewVenmoButtons() {
-    val context = LocalContext.current
-    Column(modifier = Modifier.padding(16.dp).width(480.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        VenmoButton(style = VenmoButtonColor.Blue) {
-            Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
-        }
-        VenmoButton(style = VenmoButtonColor.Black) {
-            Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
-        }
-        VenmoButton(style = VenmoButtonColor.White) {
-            Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
-        }
-        VenmoButton(style = VenmoButtonColor.Blue, enabled = false) {
-            Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
-        }
-        VenmoButton(style = VenmoButtonColor.Black, enabled = false) {
-            Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
-        }
-        VenmoButton(style = VenmoButtonColor.White, enabled = false) {
-            Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+                is VenmoPaymentAuthRequest.Failure -> {
+                    venmoTokenizeCallback.onVenmoResult(VenmoResult.Failure(paymentAuthRequest.error))
+                }
+            }
         }
     }
+
+    LaunchedEffect(Unit) {
+        if (shouldLogButtonPresentment) {
+            shouldLogButtonPresentment = false
+            logButtonPresented(analyticsClient)
+        }
+    }
+
+    LifecycleResumeEffect(Unit) {
+        if (flowLaunched) {
+            flowLaunched = false
+            lifecycle.coroutineScope.launch {
+                val pendingRequestString = pendingRequestRepository.getPendingRequest()
+
+                activity?.intent?.let { intent ->
+                    handleReturnToApp(venmoLauncher, venmoClient, pendingRequestString, intent, venmoTokenizeCallback)
+                    enabled = true
+                    pendingRequestRepository.clearPendingRequest()
+                    activity.intent.data = null
+                }
+            }
+        }
+
+        onPauseOrDispose { lifecycle }
+    }
+}
+
+private suspend fun completeVenmoFlow(
+    venmoLauncher: VenmoLauncher,
+    pendingRequestRepository: PendingRequestRepository,
+    activity: Activity,
+    paymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch,
+    venmoTokenizeCallback: VenmoTokenizeCallback
+) {
+    val venmoPendingRequest = venmoLauncher.launch(
+        activity = activity as ComponentActivity,
+        paymentAuthRequest = paymentAuthRequest
+    )
+    when (venmoPendingRequest) {
+        is VenmoPendingRequest.Started -> {
+            pendingRequestRepository.storePendingRequest(venmoPendingRequest.pendingRequestString)
+        }
+
+        is VenmoPendingRequest.Failure -> {
+            venmoTokenizeCallback.onVenmoResult(VenmoResult.Failure(venmoPendingRequest.error))
+        }
+    }
+}
+
+private fun handleReturnToApp(
+    venmoLauncher: VenmoLauncher,
+    venmoClient: VenmoClient,
+    pendingRequestString: String,
+    intent: Intent,
+    callback: VenmoTokenizeCallback
+) {
+    if (pendingRequestString.isEmpty()) {
+        callback.onVenmoResult(VenmoResult.Failure(Exception(PendingRequestException())))
+        return
+    }
+    val paymentAuthResult = venmoLauncher.handleReturnToApp(
+        pendingRequest = VenmoPendingRequest.Started(pendingRequestString),
+        intent = intent
+    )
+    when (paymentAuthResult) {
+        is VenmoPaymentAuthResult.Success -> {
+            venmoClient.tokenize(paymentAuthResult) { venmoResult ->
+                callback.onVenmoResult(venmoResult)
+            }
+        }
+        is VenmoPaymentAuthResult.Failure -> {
+            callback.onVenmoResult(VenmoResult.Failure(paymentAuthResult.error))
+        }
+        is VenmoPaymentAuthResult.NoResult -> {
+            callback.onVenmoResult(VenmoResult.Cancel)
+        }
+    }
+}
+
+private fun logButtonPresented(analyticsClient: AnalyticsClient) {
+    analyticsClient.sendEvent(
+        UIComponentsAnalytics.VENMO_BUTTON_PRESENTED,
+        AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
+    )
+}
+
+private fun logButtonSelected(analyticsClient: AnalyticsClient) {
+    analyticsClient.sendEvent(
+        UIComponentsAnalytics.VENMO_BUTTON_SELECTED,
+        AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
+    )
 }
