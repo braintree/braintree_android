@@ -25,7 +25,7 @@ import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
 import com.braintreepayments.api.uicomponents.VenmoButtonColor
-import com.braintreepayments.api.uicomponents.compose.PayPalSmartButton
+import com.braintreepayments.api.uicomponents.compose.PayPalButton
 import com.braintreepayments.api.uicomponents.compose.VenmoSmartButton
 import com.braintreepayments.api.venmo.VenmoPaymentMethodUsage
 import com.braintreepayments.api.venmo.VenmoRequest
@@ -54,7 +54,7 @@ class ComposeButtonsFragment : BaseFragment() {
                             else -> PayPalButtonColor.Blue
                         }
                     })
-                    PayPalSmartButton(
+                    PayPalButton(
                         style = paypalStyle,
                         payPalRequest = paypalRequest,
                         authorization = authStringArg,

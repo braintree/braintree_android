@@ -1,163 +1,196 @@
 package com.braintreepayments.api.uicomponents.compose
 
-import android.graphics.drawable.Drawable
-import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Surface
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.coroutineScope
+import com.braintreepayments.api.core.AnalyticsClient
+import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.paypal.PayPalClient
+import com.braintreepayments.api.paypal.PayPalLauncher
+import com.braintreepayments.api.paypal.PayPalPaymentAuthRequest
+import com.braintreepayments.api.paypal.PayPalPaymentAuthResult
+import com.braintreepayments.api.paypal.PayPalPendingRequest
+import com.braintreepayments.api.paypal.PayPalRequest
+import com.braintreepayments.api.paypal.PayPalResult
+import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
-import com.braintreepayments.api.uicomponents.R
-import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
+import com.braintreepayments.api.uicomponents.UIComponentsAnalytics.UI_TYPE_COMPOSE
+import kotlinx.coroutines.launch
 
+/**
+ * A composable that displays PayPal button.
+ * @param style: A [PayPalButtonColor] that determines the color of the button.
+ * @param payPalRequest: A [PayPalRequest] that provides the parameters to tokenize a paypal account.
+ * @param authorization: An authorization string to use for tokenization.
+ * @param appLinkReturnUrl: A [Uri] that sends back control to the host app after PayPal flow completes.
+ * @param deepLinkFallbackUrlScheme: Fallback scheme in case [appLinkReturnUrl] doesn't work.
+ * @param paypalTokenizeCallback: A [PayPalTokenizeCallback] that handles the result of the tokenization.
+ */
 @Composable
-fun PayPalButton(style: PayPalButtonColor, enabled: Boolean = true, onClick: () -> Unit) {
+fun PayPalButton(
+    style: PayPalButtonColor,
+    payPalRequest: PayPalRequest,
+    authorization: String,
+    appLinkReturnUrl: Uri,
+    deepLinkFallbackUrlScheme: String,
+    pendingRequestRepository: PendingRequestRepository = PendingRequestRepository(LocalContext.current, "paypal"),
+    paypalTokenizeCallback: PayPalTokenizeCallback
+) {
     val context = LocalContext.current
-    val ppLogoOffset = dimensionResource(R.dimen.pp_logo_offset)
-    val desiredWidth = dimensionResource(R.dimen.pay_button_width)
-    val desiredHeight = dimensionResource(R.dimen.pay_button_height)
-    val minDesiredWidth = dimensionResource(R.dimen.pay_button_min_width)
-    val borderStroke = dimensionResource(R.dimen.pay_button_border)
-    val focusBorderWidth = dimensionResource(R.dimen.pay_button_focus_border)
-    val focusBorderPadding = dimensionResource(R.dimen.pay_button_focus_padding)
-    val buttonCornerRadius = dimensionResource(R.dimen.pay_button_corner_radius)
+    val activity = context.findActivity()
+    val coroutineScope = rememberCoroutineScope()
 
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed = interactionSource.collectIsPressedAsState()
-    val isHovered = interactionSource.collectIsHoveredAsState()
-    val isFocused = interactionSource.collectIsFocusedAsState()
+    var enabled by remember { mutableStateOf(true) }
+    var flowLaunched by remember { mutableStateOf(false) }
+    var shouldLogButtonPresentment by rememberSaveable { mutableStateOf(true) }
 
-    val containerColor = colorResource(fillColor(style, isPressed.value, isHovered.value, isFocused.value))
-    val borderColor = colorResource(borderColor(style, isPressed.value, isHovered.value, isFocused.value))
-    val focusColor = colorResource(focusColor(style, isPressed.value, isHovered.value, isFocused.value))
-
-    Surface(
-        onClick = onClick,
-        modifier = Modifier
-            .semantics { role = Role.Button }
-            .drawBehind {
-                drawRoundRect(
-                    focusColor,
-                    cornerRadius = CornerRadius(buttonCornerRadius.toPx()),
-                    style = Stroke(width = focusBorderWidth.toPx())
-                )
-            }
-            .padding(focusBorderPadding),
-        enabled = enabled,
-        shape = RoundedCornerShape(buttonCornerRadius),
-        color = containerColor,
-        border = BorderStroke(borderStroke, borderColor),
-        interactionSource = interactionSource
-    ) {
-        Row(
-            Modifier
-                .defaultMinSize(minWidth = minDesiredWidth)
-                .width(desiredWidth)
-                .height(desiredHeight),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            content = {
-                val loading = !enabled
-                if (!loading) {
-                    val logo: Drawable? = ContextCompat.getDrawable(context, style.logoId)
-                    Image(
-                        painter = rememberDrawablePainter(drawable = logo),
-                        modifier = Modifier.padding(top = ppLogoOffset),
-                        contentDescription = "PayPal",
-                    )
-                } else {
-                    val color = when (style) {
-                        PayPalButtonColor.Blue -> Color.Black
-                        PayPalButtonColor.Black -> Color.White
-                        PayPalButtonColor.White -> Color.Black
-                    }
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(desiredHeight / 2),
-                        color = color,
-                        strokeWidth = 2.dp
-                    )
-                }
-            }
+    val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
+    val payPalLauncher = remember { PayPalLauncher(registry) }
+    val payPalClient = remember {
+        PayPalClient(
+            context = context,
+            authorization = authorization,
+            appLinkReturnUrl = appLinkReturnUrl,
+            deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
         )
     }
-}
+    val analyticsClient = remember { AnalyticsClient.lazyInstance.value }
 
-private fun fillColor(style: PayPalButtonColor, isPressed: Boolean, isHovered: Boolean, isFocused: Boolean) = when {
-    isPressed -> style.pressed.fill
-    isHovered && isFocused -> style.focusHover.fill
-    isHovered -> style.hover.fill
-    isFocused -> style.focus.fill
-    else -> style.default.fill
-}
+    PayPalButtonView(style = style, enabled = enabled) {
+        enabled = false
+        logButtonSelected(analyticsClient)
+        payPalClient.createPaymentAuthRequest(
+            context = context,
+            payPalRequest = payPalRequest
+        ) { paymentAuthRequest: PayPalPaymentAuthRequest ->
+            when (paymentAuthRequest) {
+                is PayPalPaymentAuthRequest.ReadyToLaunch -> {
+                    activity?.let {
+                        coroutineScope.launch {
+                            completePayPalFlow(
+                                payPalLauncher,
+                                pendingRequestRepository,
+                                it,
+                                paymentAuthRequest,
+                                paypalTokenizeCallback
+                            )
+                            flowLaunched = true
+                        }
+                    }
+                }
 
-private fun borderColor(style: PayPalButtonColor, isPressed: Boolean, isHovered: Boolean, isFocused: Boolean) = when {
-    isPressed -> style.pressed.border
-    isHovered && isFocused -> style.focusHover.border
-    isHovered -> style.hover.border
-    isFocused -> style.focus.border
-    else -> style.default.border
-}
-
-private fun focusColor(style: PayPalButtonColor, isPressed: Boolean, isHovered: Boolean, isFocused: Boolean) = when {
-    isPressed -> style.pressed.focusIndicator
-    isHovered && isFocused -> style.focusHover.focusIndicator
-    isHovered -> style.hover.focusIndicator
-    isFocused -> style.focus.focusIndicator
-    else -> style.default.focusIndicator
-}
-
-@Preview
-@Composable
-fun PreviewButtons() {
-    val context = LocalContext.current
-    Column(modifier = Modifier.padding(16.dp).width(480.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        PayPalButton(style = PayPalButtonColor.Blue) {
-            Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
-        }
-        PayPalButton(style = PayPalButtonColor.Black) {
-            Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
-        }
-        PayPalButton(style = PayPalButtonColor.White) {
-            Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
-        }
-        PayPalButton(style = PayPalButtonColor.Blue, enabled = false) {
-            Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
-        }
-        PayPalButton(style = PayPalButtonColor.Black, enabled = false) {
-            Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
-        }
-        PayPalButton(style = PayPalButtonColor.White, enabled = false) {
-            Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show()
+                is PayPalPaymentAuthRequest.Failure -> {
+                    paypalTokenizeCallback.onPayPalResult(PayPalResult.Failure(paymentAuthRequest.error))
+                }
+            }
         }
     }
+
+    LaunchedEffect(Unit) {
+        if (shouldLogButtonPresentment) {
+            shouldLogButtonPresentment = false
+            logButtonPresented(analyticsClient)
+        }
+    }
+
+    LifecycleResumeEffect(Unit) {
+        if (flowLaunched) {
+            flowLaunched = false
+            lifecycle.coroutineScope.launch {
+                val pendingRequestStr = pendingRequestRepository.getPendingRequest()
+
+                activity?.intent?.let { intent ->
+                    handleReturnToApp(payPalLauncher, payPalClient, pendingRequestStr, intent, paypalTokenizeCallback)
+                    enabled = true
+                    pendingRequestRepository.clearPendingRequest()
+                    activity.intent.data = null
+                }
+            }
+        }
+
+        onPauseOrDispose { lifecycle }
+    }
+}
+
+internal suspend fun completePayPalFlow(
+    payPalLauncher: PayPalLauncher,
+    pendingRequestRepository: PendingRequestRepository,
+    activity: Activity,
+    paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch,
+    paypalTokenizeCallback: PayPalTokenizeCallback
+) {
+    val payPalPendingRequest = payPalLauncher.launch(
+        activity = activity as ComponentActivity,
+        paymentAuthRequest = paymentAuthRequest
+    )
+    when (payPalPendingRequest) {
+        is PayPalPendingRequest.Started -> {
+            pendingRequestRepository.storePendingRequest(payPalPendingRequest.pendingRequestString)
+        }
+
+        is PayPalPendingRequest.Failure -> {
+            paypalTokenizeCallback.onPayPalResult(PayPalResult.Failure(payPalPendingRequest.error))
+        }
+    }
+}
+
+private fun handleReturnToApp(
+    payPalLauncher: PayPalLauncher,
+    payPalClient: PayPalClient,
+    pendingRequestString: String,
+    intent: Intent,
+    callback: PayPalTokenizeCallback
+) {
+    if (pendingRequestString.isEmpty()) {
+        callback.onPayPalResult(PayPalResult.Failure(PendingRequestException()))
+        return
+    }
+    val paymentAuthResult = payPalLauncher.handleReturnToApp(
+        pendingRequest = PayPalPendingRequest.Started(pendingRequestString),
+        intent = intent,
+    )
+
+    when (paymentAuthResult) {
+        is PayPalPaymentAuthResult.Success -> {
+            payPalClient.tokenize(paymentAuthResult) { payPalResult ->
+                callback.onPayPalResult(payPalResult)
+            }
+        }
+
+        is PayPalPaymentAuthResult.NoResult -> {
+            callback.onPayPalResult(PayPalResult.Cancel)
+        }
+
+        is PayPalPaymentAuthResult.Failure -> {
+            callback.onPayPalResult(PayPalResult.Failure(paymentAuthResult.error))
+        }
+    }
+}
+
+private fun logButtonPresented(analyticsClient: AnalyticsClient) {
+    analyticsClient.sendEvent(
+        UIComponentsAnalytics.PAYPAL_BUTTON_PRESENTED,
+        AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
+    )
+}
+
+private fun logButtonSelected(analyticsClient: AnalyticsClient) {
+    analyticsClient.sendEvent(
+        UIComponentsAnalytics.PAYPAL_BUTTON_SELECTED,
+        AnalyticsEventParams(uiType = UI_TYPE_COMPOSE)
+    )
 }
