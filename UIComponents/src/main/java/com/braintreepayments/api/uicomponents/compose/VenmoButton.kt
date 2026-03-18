@@ -33,7 +33,7 @@ import kotlin.text.isEmpty
 import kotlinx.coroutines.launch
 
 /**
- * A composable that displays Venmo button.
+ * A composable that displays a Venmo branded button.
  * @param style: A [VenmoButtonColor] that determines the color of the button.
  * @param venmoRequest: A [VenmoRequest] that provides the parameters to tokenize a Venmo account.
  * @param authorization: An authorization string to use for tokenization.
