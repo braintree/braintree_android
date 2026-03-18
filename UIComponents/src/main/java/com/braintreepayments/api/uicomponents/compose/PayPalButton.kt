@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivityResultRegistryOwner
+import androidx.activity.result.ActivityResultRegistry
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,6 +30,7 @@ import com.braintreepayments.api.paypal.PayPalTokenizeCallback
 import com.braintreepayments.api.uicomponents.PayPalButtonColor
 import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
 import com.braintreepayments.api.uicomponents.UIComponentsAnalytics.UI_TYPE_COMPOSE
+import com.braintreepayments.api.venmo.VenmoResult
 import kotlinx.coroutines.launch
 
 /**
@@ -59,6 +61,16 @@ fun PayPalButton(
     var shouldLogButtonPresentment by rememberSaveable { mutableStateOf(true) }
 
     val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
+    requireNotNull(registry) {
+        paypalTokenizeCallback.onPayPalResult(
+            PayPalResult.Failure(
+                Exception(
+                    "ActivityResultRegistry is null. ActivityResultRegistry cannot be null for this flow."
+                )
+            )
+        )
+    }
+
     val payPalLauncher = remember { PayPalLauncher(registry) }
     val payPalClient = remember {
         PayPalClient(

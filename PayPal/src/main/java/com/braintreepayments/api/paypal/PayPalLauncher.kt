@@ -31,6 +31,7 @@ class PayPalLauncher internal constructor(
      * Used to launch the PayPal flow in a web browser and deliver results to your Activity
      * @param caller Optional ActivityResultCaller parameter. If provided, it will be passed to BrowserSwitchClient
      */
+    @JvmOverloads
     constructor(caller: ActivityResultCaller? = null) : this(
         browserSwitchClient = if (caller != null) BrowserSwitchClient(caller) else BrowserSwitchClient(),
         lazyAnalyticsClient = AnalyticsClient.lazyInstance
@@ -39,11 +40,10 @@ class PayPalLauncher internal constructor(
     /**
      * Used to launch the PayPal flow in a web browser and deliver results. Use it in Compose flows or where
      * ActivityResultCaller is not available.
-     * @param registry Optional ActivityResultRegistry parameter. If provided, it will be passed to BrowserSwitchClient
+     * @param registry ActivityResultRegistry parameter. It will be passed to BrowserSwitchClient.
      */
-    @JvmOverloads
-    constructor(registry: ActivityResultRegistry? = null) : this(
-        browserSwitchClient = registry?.let { BrowserSwitchClient(it) } ?: BrowserSwitchClient(),
+    constructor(registry: ActivityResultRegistry) : this(
+        browserSwitchClient = BrowserSwitchClient(registry),
         lazyAnalyticsClient = AnalyticsClient.lazyInstance
     )
 

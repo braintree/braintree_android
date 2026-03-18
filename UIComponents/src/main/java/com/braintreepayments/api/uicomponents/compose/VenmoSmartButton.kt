@@ -60,6 +60,15 @@ fun VenmoSmartButton(
     var shouldLogButtonPresentment by rememberSaveable { mutableStateOf(true) }
 
     val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
+    requireNotNull(registry) {
+        venmoTokenizeCallback.onVenmoResult(
+            VenmoResult.Failure(
+                Exception(
+                    "ActivityResultRegistry is null. ActivityResultRegistry cannot be null for this flow."
+                )
+            )
+        )
+    }
 
     val venmoLauncher = remember { VenmoLauncher(registry) }
     val venmoClient = remember {
