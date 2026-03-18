@@ -4,6 +4,9 @@
 
 * ShopperInsights
     * Add `PAYPAL_PAY_LATER` to `ButtonType` enum
+* UIComponents
+    * Add a compose `PayPalButton` class to generate a PayPal-branded button for launching PayPal flow
+    * Add a compose `VenmoButton` class to generate a Venmo-branded button for launching Venmo flow
 
 ## 5.24.0 (2026-02-25)
 
