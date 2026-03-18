@@ -32,7 +32,7 @@ import com.braintreepayments.api.uicomponents.UIComponentsAnalytics.UI_TYPE_COMP
 import kotlinx.coroutines.launch
 
 /**
- * A composable that displays PayPal button.
+ * A composable that displays a PayPal branded button.
  * @param style: A [PayPalButtonColor] that determines the color of the button.
  * @param payPalRequest: A [PayPalRequest] that provides the parameters to tokenize a paypal account.
  * @param authorization: An authorization string to use for tokenization.
