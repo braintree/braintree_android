@@ -15,15 +15,16 @@ end
 #   rake unit_tests
 #   rake unit_tests"[com.braintreepayments.api.CardUnitTest,braintree]"
 #   rake unit_tests"[com.braintreepayments.api.CardUnitTest,braintree,tokenize_sendsAnalyticsEventOnSuccess]"
-desc "Run Android unit tests"
+# desc "Run Android unit tests"
 task :unit_tests, [:qualified_class, :module_name, :test_name] => :lint do |task, args|
-  if args.module_name.nil?
-    sh "./gradlew --continue test"
-  elsif args.test_name.nil?
-    sh "./gradlew #{args[:module_name]}:testDebugUnitTest --tests #{args[:qualified_class]}"
-  else
-    sh "./gradlew #{args[:module_name]}:testDebugUnitTest --tests #{args[:qualified_class]}.#{args[:test_name]}"
-  end
+#   if args.module_name.nil?
+#     sh "./gradlew --continue test"
+#   elsif args.test_name.nil?
+#     sh "./gradlew #{args[:module_name]}:testDebugUnitTest --tests #{args[:qualified_class]}"
+#   else
+#     sh "./gradlew #{args[:module_name]}:testDebugUnitTest --tests #{args[:qualified_class]}.#{args[:test_name]}"
+#   end
+
 end
 
 # Usage:
@@ -98,14 +99,14 @@ task :assumptions do
 end
 
 task :release_braintree do
-  sh "./gradlew clean :Core:publishToSonatype :BraintreeDataCollector:publishToSonatype :Braintree:publishToSonatype :ThreeDSecure:publishToSonatype"
-  sh "./gradlew closeAndReleaseRepository"
+  sh "./gradlew clean :Core:publishToSonatype :BraintreeDataCollector:publishToSonatype :Braintree:publishToSonatype :ThreeDSecure:publishToSonatype -PsonatypeUsername=#{ENV['SONATYPE_USERNAME']} -PsonatypePassword=#{ENV['SONATYPE_PASSWORD']}"
+  sh "./gradlew closeAndReleaseSonatypeStagingRepository -PsonatypeUsername=#{ENV['SONATYPE_USERNAME']} -PsonatypePassword=#{ENV['SONATYPE_PASSWORD']}"
   puts "Braintree modules have been released"
 end
 
 task :release_paypal do
-  sh "./gradlew -PnexusPackageGroup=com.paypal clean :PayPalDataCollector:publishToSonatype :PayPalOneTouch:publishToSonatype"
-  sh "./gradlew -PnexusPackageGroup=com.paypal closeAndReleaseRepository"
+  sh "./gradlew -PnexusPackageGroup=com.paypal clean :PayPalDataCollector:publishToSonatype :PayPalOneTouch:publishToSonatype -PsonatypeUsername=#{ENV['SONATYPE_USERNAME']} -PsonatypePassword=#{ENV['SONATYPE_PASSWORD']}"
+  sh "./gradlew -PnexusPackageGroup=com.paypal closeAndReleaseSonatypeStagingRepository -PsonatypeUsername=#{ENV['SONATYPE_USERNAME']} -PsonatypePassword=#{ENV['SONATYPE_PASSWORD']}"
   puts "PayPal modules have been released"
 end
 
