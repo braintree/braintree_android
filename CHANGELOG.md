@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Update pinned certificates used by `BraintreeGraphQLHttpClient`, `BraintreeHttpClient` and `BraintreeApiHttpClient`
+
 ## 3.21.1
 
 * LocalPayment
