@@ -2,7 +2,7 @@
 
 ## unreleased
 
-* Update pinned certificates used by `BraintreeGraphQLHttpClient`, `BraintreeHttpClient` and `BraintreeApiHttpClient`
+* Updated expiring pinned vendor SSL certificates
 
 ## 3.21.1
 
