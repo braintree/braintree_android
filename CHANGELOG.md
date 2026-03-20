@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.22.0
 
 * Updated expiring pinned vendor SSL certificates
 
