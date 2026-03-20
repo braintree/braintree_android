@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Updated expiring pinned vendor SSL certificates
+
 ## 3.21.1
 
 * LocalPayment
