@@ -18,6 +18,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.coroutineScope
 import com.braintreepayments.api.core.AnalyticsClient
 import com.braintreepayments.api.core.AnalyticsEventParams
+import com.braintreepayments.api.paypal.PayPalResult
 import com.braintreepayments.api.uicomponents.UIComponentsAnalytics
 import com.braintreepayments.api.uicomponents.UIComponentsAnalytics.UI_TYPE_COMPOSE
 import com.braintreepayments.api.uicomponents.VenmoButtonColor
@@ -145,8 +146,15 @@ private suspend fun completeVenmoFlow(
     paymentAuthRequest: VenmoPaymentAuthRequest.ReadyToLaunch,
     venmoTokenizeCallback: VenmoTokenizeCallback
 ) {
+    val componentActivity = activity as? ComponentActivity
+        ?: run {
+            venmoTokenizeCallback.onVenmoResult(
+                VenmoResult.Failure(Exception("Parent activity is expected to be a ComponentActivity"))
+            )
+            return
+        }
     val venmoPendingRequest = venmoLauncher.launch(
-        activity = activity as ComponentActivity,
+        activity = componentActivity,
         paymentAuthRequest = paymentAuthRequest
     )
     when (venmoPendingRequest) {

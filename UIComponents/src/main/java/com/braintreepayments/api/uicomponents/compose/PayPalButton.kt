@@ -144,8 +144,15 @@ internal suspend fun completePayPalFlow(
     paymentAuthRequest: PayPalPaymentAuthRequest.ReadyToLaunch,
     paypalTokenizeCallback: PayPalTokenizeCallback
 ) {
+    val componentActivity = activity as? ComponentActivity
+        ?: run {
+            paypalTokenizeCallback.onPayPalResult(
+                PayPalResult.Failure(Exception("Parent activity is expected to be a ComponentActivity"))
+            )
+            return
+        }
     val payPalPendingRequest = payPalLauncher.launch(
-        activity = activity as ComponentActivity,
+        activity = componentActivity,
         paymentAuthRequest = paymentAuthRequest
     )
     when (payPalPendingRequest) {
