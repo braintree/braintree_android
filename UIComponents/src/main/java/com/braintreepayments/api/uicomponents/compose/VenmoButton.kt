@@ -60,7 +60,7 @@ fun VenmoButton(
     var shouldLogButtonPresentment by rememberSaveable { mutableStateOf(true) }
 
     val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
-    requireNotNull(registry) {
+    if (registry == null) {
         venmoTokenizeCallback.onVenmoResult(
             VenmoResult.Failure(
                 Exception(
@@ -68,6 +68,7 @@ fun VenmoButton(
                 )
             )
         )
+        return
     }
 
     val venmoLauncher = remember { VenmoLauncher(registry) }

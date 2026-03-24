@@ -59,7 +59,7 @@ fun PayPalButton(
     var shouldLogButtonPresentment by rememberSaveable { mutableStateOf(true) }
 
     val registry = LocalActivityResultRegistryOwner.current?.activityResultRegistry
-    requireNotNull(registry) {
+    if (registry == null) {
         paypalTokenizeCallback.onPayPalResult(
             PayPalResult.Failure(
                 Exception(
@@ -67,6 +67,7 @@ fun PayPalButton(
                 )
             )
         )
+        return
     }
 
     val payPalLauncher = remember { PayPalLauncher(registry) }
