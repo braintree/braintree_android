@@ -384,27 +384,27 @@ class ThreeDSecureClient internal constructor(
                 }
 
                 CardinalActionCode.ERROR, CardinalActionCode.TIMEOUT -> callbackTokenizeFailure(
-                callback, ThreeDSecureResult.Failure(
-                BraintreeException(validateResponse.errorDescription), null
-                )
+                    callback, ThreeDSecureResult.Failure(
+                    BraintreeException(validateResponse.errorDescription), null
+                    )
                 )
 
                 CardinalActionCode.CANCEL -> callbackCancel(callback)
 
                 else -> {
-                val errorDescription = "invalid action code"
-                braintreeClient.sendAnalyticsEvent(
-                    ThreeDSecureAnalytics.JWT_AUTH_FAILED,
-                    AnalyticsEventParams(errorDescription = errorDescription)
-                )
-                callbackTokenizeFailure(
-                    callback,
-                    ThreeDSecureResult.Failure(
-                        error = BraintreeException(errorDescription),
-                        nonce = null
+                    val errorDescription = "invalid action code"
+                    braintreeClient.sendAnalyticsEvent(
+                        ThreeDSecureAnalytics.JWT_AUTH_FAILED,
+                        AnalyticsEventParams(errorDescription = errorDescription)
                     )
-                )
-            }
+                    callbackTokenizeFailure(
+                        callback,
+                        ThreeDSecureResult.Failure(
+                            error = BraintreeException(errorDescription),
+                            nonce = null
+                        )
+                    )
+                }
             }
         }
     }
