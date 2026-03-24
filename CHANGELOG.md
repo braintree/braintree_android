@@ -2,6 +2,8 @@
 
 ## unreleased
 
+* BraintreeCore
+    * Update Browser Switch version to 3.5.1
 * PayPal
     * Add `ActivityResultRegistry` constructor to PayPalLauncher to support AuthTab integration from JetpackCompose
 * ShopperInsights
