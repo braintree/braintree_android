@@ -164,7 +164,7 @@ class ComposeButtonsFragment : BaseFragment() {
 
     private val venmoRequest = VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE).apply {
         profileId = null
-        shouldVault = shouldVault
+        shouldVault = false
         collectCustomerBillingAddress = true
         collectCustomerShippingAddress = true
         totalAmount = "0.20"
