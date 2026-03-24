@@ -81,7 +81,7 @@ task :release => :unit_tests do
 
   prompt_for_sonatype_username_and_password
 
-  Rake::Task["release_braintree"].invoke
+#   Rake::Task["release_braintree"].invoke
   Rake::Task["release_paypal"].invoke
 
   post_release(version)
@@ -105,8 +105,7 @@ task :release_braintree do
 end
 
 task :release_paypal do
-  sh "./gradlew -PnexusPackageGroup=com.paypal clean :PayPalDataCollector:publishToSonatype :PayPalOneTouch:publishToSonatype -PsonatypeUsername=#{ENV['SONATYPE_USERNAME']} -PsonatypePassword=#{ENV['SONATYPE_PASSWORD']}"
-  sh "./gradlew -PnexusPackageGroup=com.paypal closeAndReleaseSonatypeStagingRepository -PsonatypeUsername=#{ENV['SONATYPE_USERNAME']} -PsonatypePassword=#{ENV['SONATYPE_PASSWORD']}"
+  sh "./gradlew -PnexusPackageGroup=com.paypal clean :PayPalDataCollector:publishToSonatype closeAndReleaseSonatypeStagingRepository -PsonatypeUsername=#{ENV['SONATYPE_USERNAME']} -PsonatypePassword=#{ENV['SONATYPE_PASSWORD']}"
   puts "PayPal modules have been released"
 end
 
