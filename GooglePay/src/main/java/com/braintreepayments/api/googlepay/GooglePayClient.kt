@@ -25,15 +25,18 @@ import com.google.android.gms.wallet.WalletConstants
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import kotlin.toString
 
 /**
  * Used to create and tokenize Google Pay payment methods. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/google-pay/overview)
  */
 @SuppressWarnings("TooManyFunctions")
+@OptIn(ExperimentalCoroutinesApi::class)
 class GooglePayClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val internalGooglePayClient: GooglePayInternalClient = GooglePayInternalClient(),
@@ -85,22 +88,19 @@ class GooglePayClient internal constructor(
         request: ReadyForGooglePayRequest?,
         callback: GooglePayIsReadyToPayCallback
     ) {
-        try {
-            Class.forName(PaymentsClient::class.java.name)
-        } catch (e: ClassNotFoundException) {
-            callback.onGooglePayReadinessResult(NotReadyToPay(null))
-            return
-        } catch (e: NoClassDefFoundError) {
-            callback.onGooglePayReadinessResult(NotReadyToPay(null))
-            return
-        }
         coroutineScope.launch {
-            try {
-                val configuration = braintreeClient.getConfiguration()
-                if (!configuration.isGooglePayEnabled) {
-                    callback.onGooglePayReadinessResult(NotReadyToPay(null))
-                    return@launch
-                }
+            val result = isReadyToPay(context, request)
+            callback.onGooglePayReadinessResult(result)
+        }
+    }
+
+    private suspend fun isReadyToPay(context: Context, request: ReadyForGooglePayRequest?): GooglePayReadinessResult {
+        return try {
+            Class.forName(PaymentsClient::class.java.name)
+            val configuration = braintreeClient.getConfiguration()
+            if (!configuration.isGooglePayEnabled) {
+                NotReadyToPay(null)
+            } else {
                 val json = JSONObject()
                 val allowedCardNetworks = buildCardNetworks(configuration)
                 try {
@@ -130,12 +130,11 @@ class GooglePayClient internal constructor(
                 internalGooglePayClient.isReadyToPay(
                     context,
                     configuration,
-                    readyToPayRequest,
-                    callback
+                    readyToPayRequest
                 )
-            } catch (e: Exception) {
-                callback.onGooglePayReadinessResult(NotReadyToPay(e))
             }
+        } catch (e: Exception) {
+            NotReadyToPay(e)
         }
     }
 
@@ -157,19 +156,20 @@ class GooglePayClient internal constructor(
         callback: GooglePayGetTokenizationParametersCallback
     ) {
         coroutineScope.launch {
-            try {
-                val configuration = braintreeClient.getConfiguration()
-                callback.onTokenizationParametersResult(
-                    GooglePayTokenizationParameters.Success(
-                        getTokenizationParameters(configuration, merchantRepository.authorization),
-                        getAllowedCardNetworks(configuration)
-                    )
-                )
-            } catch (e: Exception) {
-                callback.onTokenizationParametersResult(
-                    GooglePayTokenizationParameters.Failure(e)
-                )
-            }
+            val result = getTokenizationParameters()
+            callback.onTokenizationParametersResult(result)
+        }
+    }
+
+    private suspend fun getTokenizationParameters(): GooglePayTokenizationParameters {
+        return try {
+            val configuration = braintreeClient.getConfiguration()
+            GooglePayTokenizationParameters.Success(
+                getTokenizationParameters(configuration, merchantRepository.authorization),
+                getAllowedCardNetworks(configuration)
+            )
+        } catch (e: Exception) {
+            GooglePayTokenizationParameters.Failure(e)
         }
     }
 
@@ -181,60 +181,63 @@ class GooglePayClient internal constructor(
      * @param request  The [GooglePayRequest] containing options for the transaction.
      * @param callback [GooglePayPaymentAuthRequestCallback]
      */
-    @SuppressWarnings("LongMethod")
     fun createPaymentAuthRequest(
         request: GooglePayRequest,
         callback: GooglePayPaymentAuthRequestCallback
     ) {
+        coroutineScope.launch {
+            val result = createPaymentAuthRequest(request)
+            when (result) {
+                is GooglePayPaymentAuthRequest.ReadyToLaunch -> callbackPaymentRequestSuccess(
+                    result,
+                    callback
+                )
+                is GooglePayPaymentAuthRequest.Failure -> callbackPaymentRequestFailure(
+                    result,
+                    callback
+                )
+            }
+        }
+    }
+
+    private suspend fun createPaymentAuthRequest(request: GooglePayRequest): GooglePayPaymentAuthRequest {
         analyticsParamRepository.reset()
         braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.PAYMENT_REQUEST_STARTED)
 
         if (!validateManifest()) {
-            callbackPaymentRequestFailure(
-                GooglePayPaymentAuthRequest.Failure(
-                    BraintreeException(
-                        "GooglePayActivity was not found in the Android " +
+            return GooglePayPaymentAuthRequest.Failure(
+                BraintreeException(
+                    "GooglePayActivity was not found in the Android " +
                             "manifest, or did not have a theme of R.style.bt_transparent_activity"
-                    )
-                ), callback
+                )
             )
-            return
         }
 
-        coroutineScope.launch {
-            try {
-                val configuration = braintreeClient.getConfiguration()
-                if (configuration.isGooglePayEnabled) {
-                    setGooglePayRequestDefaults(configuration, merchantRepository.authorization, request)
+        try {
+            val configuration = braintreeClient.getConfiguration()
+            if (configuration.isGooglePayEnabled) {
+                setGooglePayRequestDefaults(configuration, merchantRepository.authorization, request)
 
-                    val paymentDataRequest =
-                        PaymentDataRequest.fromJson(request.toJson())
+                val paymentDataRequest =
+                    PaymentDataRequest.fromJson(request.toJson())
 
-                    val params =
-                        GooglePayPaymentAuthRequestParams(
-                            getGooglePayEnvironment(configuration),
-                            paymentDataRequest
-                        )
-                    callbackPaymentRequestSuccess(
-                        GooglePayPaymentAuthRequest.ReadyToLaunch(params),
-                        callback
+                val params =
+                    GooglePayPaymentAuthRequestParams(
+                        getGooglePayEnvironment(configuration),
+                        paymentDataRequest
                     )
-                } else {
-                    callbackPaymentRequestFailure(
-                        GooglePayPaymentAuthRequest.Failure(
-                            BraintreeException(
-                                "Google Pay is not enabled for your Braintree account, " +
-                                    "or Google Play Services are not configured correctly."
-                            )
-                        ), callback
+
+                return GooglePayPaymentAuthRequest.ReadyToLaunch(params)
+            } else {
+                return GooglePayPaymentAuthRequest.Failure(
+                    BraintreeException(
+                        "Google Pay is not enabled for your Braintree account, " +
+                                "or Google Play Services are not configured correctly."
                     )
-                }
-            } catch (configError: Exception) {
-                callbackPaymentRequestFailure(
-                    GooglePayPaymentAuthRequest.Failure(configError),
-                    callback
                 )
             }
+        } catch (configError: Exception) {
+            return GooglePayPaymentAuthRequest.Failure(configError)
         }
     }
 
@@ -247,32 +250,37 @@ class GooglePayClient internal constructor(
      * Services through [PaymentsClient.loadPaymentData]
      * @param callback    [GooglePayTokenizeCallback]
      */
-    @SuppressWarnings("TooGenericExceptionCaught")
     fun tokenize(paymentData: PaymentData, callback: GooglePayTokenizeCallback) {
-        try {
+        val result = tokenize(paymentData)
+        when (result) {
+            is GooglePayResult.Success -> callbackTokenizeSuccess(result, callback)
+            is GooglePayResult.Failure -> callbackTokenizeFailure(result, callback)
+            is GooglePayResult.Cancel -> callbackTokenizeCancel(callback)
+        }
+    }
+
+    @SuppressWarnings("TooGenericExceptionCaught")
+    private fun tokenize(paymentData: PaymentData): GooglePayResult {
+        return try {
             val result = JSONObject(paymentData.toJson())
-            callbackTokenizeSuccess(GooglePayResult.Success(fromJSON(result)), callback)
+            GooglePayResult.Success(fromJSON(result))
         } catch (e: JSONException) {
             try {
                 val token =
                     JSONObject(paymentData.toJson()).getJSONObject("paymentMethodData")
                         .getJSONObject("tokenizationData").getString("token")
-                callbackTokenizeFailure(GooglePayResult.Failure(fromJson(token)), callback)
-            } catch (e1: JSONException) {
-                callbackTokenizeFailure(GooglePayResult.Failure(e1), callback)
-            } catch (e1: NullPointerException) {
-                callbackTokenizeFailure(GooglePayResult.Failure(e1), callback)
+                GooglePayResult.Failure(fromJson(token))
+            } catch (e: Exception) {
+                GooglePayResult.Failure(e)
             }
         } catch (e: NullPointerException) {
             try {
                 val token =
                     JSONObject(paymentData.toJson()).getJSONObject("paymentMethodData")
                         .getJSONObject("tokenizationData").getString("token")
-                callbackTokenizeFailure(GooglePayResult.Failure(fromJson(token)), callback)
-            } catch (e1: JSONException) {
-                callbackTokenizeFailure(GooglePayResult.Failure(e1), callback)
-            } catch (e1: NullPointerException) {
-                callbackTokenizeFailure(GooglePayResult.Failure(e1), callback)
+                GooglePayResult.Failure(fromJson(token))
+            } catch (e: Exception) {
+                GooglePayResult.Failure(e)
             }
         }
     }
@@ -290,16 +298,26 @@ class GooglePayClient internal constructor(
         paymentAuthResult: GooglePayPaymentAuthResult,
         callback: GooglePayTokenizeCallback
     ) {
+        val result = tokenize(paymentAuthResult)
+        when (result) {
+            is GooglePayResult.Success -> callbackTokenizeSuccess(result, callback)
+            is GooglePayResult.Failure -> callbackTokenizeFailure(result, callback)
+            is GooglePayResult.Cancel -> callbackTokenizeCancel(callback)
+        }
+    }
+
+    private fun tokenize(paymentAuthResult: GooglePayPaymentAuthResult): GooglePayResult {
         braintreeClient.sendAnalyticsEvent(GooglePayAnalytics.TOKENIZE_STARTED)
         val paymentData = paymentAuthResult.paymentData
         if (paymentData != null) {
-            tokenize(paymentData, callback)
+            return tokenize(paymentData)
         } else if (paymentAuthResult.error != null) {
             if (paymentAuthResult.error is UserCanceledException) {
-                callbackTokenizeCancel(callback)
-                return
+                return GooglePayResult.Cancel
             }
-            callbackTokenizeFailure(GooglePayResult.Failure(paymentAuthResult.error), callback)
+            return GooglePayResult.Failure(paymentAuthResult.error)
+        } else {
+            return GooglePayResult.Failure(BraintreeException("Unknown error occurred during tokenization"))
         }
     }
 

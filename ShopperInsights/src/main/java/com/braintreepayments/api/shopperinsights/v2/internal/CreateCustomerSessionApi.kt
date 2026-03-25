@@ -3,24 +3,18 @@ package com.braintreepayments.api.shopperinsights.v2.internal
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.IOException
 
 /**
  * API to create a new customer session using the `CreateCustomerSession` GraphQL mutation.
  */
 @ExperimentalBetaApi
+@Suppress("TooGenericExceptionCaught")
 internal class CreateCustomerSessionApi(
     private val braintreeClient: BraintreeClient,
     private val customerSessionRequestBuilder: CustomerSessionRequestBuilder = CustomerSessionRequestBuilder(),
-    private val responseParser: ShopperInsightsResponseParser = ShopperInsightsResponseParser(),
-    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
-    private val coroutineScope: CoroutineScope = CoroutineScope(mainDispatcher)
+    private val responseParser: ShopperInsightsResponseParser = ShopperInsightsResponseParser()
 ) {
 
     sealed class CreateCustomerSessionResult {
@@ -28,40 +22,30 @@ internal class CreateCustomerSessionApi(
         data class Error(val error: Exception) : CreateCustomerSessionResult()
     }
 
-    fun execute(
-        customerSessionRequest: CustomerSessionRequest,
-        callback: (CreateCustomerSessionResult) -> Unit
-    ) {
-        try {
+    suspend fun execute(customerSessionRequest: CustomerSessionRequest): CreateCustomerSessionResult {
+        return try {
             val params = JSONObject()
             params.put(
                 QUERY, """
-                mutation CreateCustomerSession(${'$'}input: CreateCustomerSessionInput!) {
-                    createCustomerSession(input: ${'$'}input) {
-                        sessionId
-                    }
+            mutation CreateCustomerSession(${'$'}input: CreateCustomerSessionInput!) {
+                createCustomerSession(input: ${'$'}input) {
+                    sessionId
                 }
-                """.trimIndent()
+            }
+            """.trimIndent()
             )
 
             params.put(VARIABLES, assembleVariables(customerSessionRequest))
 
-            coroutineScope.launch {
-                try {
-                    val responseBody = braintreeClient.sendGraphQLPOST(params)
-                    val sessionId =
-                        responseParser.parseSessionId(responseBody, CREATE_CUSTOMER_SESSION)
-                    callback(
-                        CreateCustomerSessionResult.Success(sessionId)
-                    )
-                } catch (e: IOException) {
-                    callback(CreateCustomerSessionResult.Error(e))
-                } catch (e: JSONException) {
-                    callback(CreateCustomerSessionResult.Error(e))
-                }
+            try {
+                val responseBody = braintreeClient.sendGraphQLPOST(params)
+                val sessionId = responseParser.parseSessionId(responseBody, CREATE_CUSTOMER_SESSION)
+                CreateCustomerSessionResult.Success(sessionId)
+            } catch (e: Exception) {
+                CreateCustomerSessionResult.Error(e)
             }
         } catch (e: JSONException) {
-            callback(CreateCustomerSessionResult.Error(e))
+            CreateCustomerSessionResult.Error(e)
         }
     }
 

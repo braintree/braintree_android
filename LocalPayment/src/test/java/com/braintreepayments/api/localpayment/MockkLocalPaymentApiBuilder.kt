@@ -1,6 +1,6 @@
 package com.braintreepayments.api.localpayment
 
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
 
 class MockkLocalPaymentApiBuilder {
@@ -29,26 +29,20 @@ class MockkLocalPaymentApiBuilder {
     internal fun build(): LocalPaymentApi {
         val localPaymentApi = mockk<LocalPaymentApi>(relaxed = true)
 
-        every {
-            localPaymentApi.tokenize(any(), any(), any(), any())
+        coEvery {
+            localPaymentApi.tokenize(any(), any(), any())
         } answers {
-            val callback = arg<LocalPaymentInternalTokenizeCallback>(3)
-            when {
-                tokenizeSuccess != null -> callback.onResult(tokenizeSuccess, null)
-                tokenizeError != null -> callback.onResult(null, tokenizeError)
-            }
+            tokenizeSuccess
+                ?: throw (tokenizeError
+                    ?: IllegalStateException("No mock result configured for tokenize"))
         }
 
-        every {
-            localPaymentApi.createPaymentMethod(any(), any())
+        coEvery {
+            localPaymentApi.createPaymentMethod(any())
         } answers {
-            val callback = arg<LocalPaymentInternalAuthRequestCallback>(1)
-            when {
-                createPaymentMethodSuccess != null ->
-                    callback.onLocalPaymentInternalAuthResult(createPaymentMethodSuccess, null)
-                createPaymentMethodError != null ->
-                    callback.onLocalPaymentInternalAuthResult(null, createPaymentMethodError)
-            }
+            createPaymentMethodSuccess
+                ?: throw (createPaymentMethodError
+                    ?: IllegalStateException("No mock result configured for createPaymentMethod"))
         }
 
         return localPaymentApi
