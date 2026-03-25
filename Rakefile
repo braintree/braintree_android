@@ -15,15 +15,15 @@ end
 #   rake unit_tests
 #   rake unit_tests"[com.braintreepayments.api.CardUnitTest,braintree]"
 #   rake unit_tests"[com.braintreepayments.api.CardUnitTest,braintree,tokenize_sendsAnalyticsEventOnSuccess]"
-# desc "Run Android unit tests"
+desc "Run Android unit tests"
 task :unit_tests, [:qualified_class, :module_name, :test_name] => :lint do |task, args|
-#   if args.module_name.nil?
-#     sh "./gradlew --continue test"
-#   elsif args.test_name.nil?
-#     sh "./gradlew #{args[:module_name]}:testDebugUnitTest --tests #{args[:qualified_class]}"
-#   else
-#     sh "./gradlew #{args[:module_name]}:testDebugUnitTest --tests #{args[:qualified_class]}.#{args[:test_name]}"
-#   end
+  if args.module_name.nil?
+    sh "./gradlew --continue test"
+  elsif args.test_name.nil?
+    sh "./gradlew #{args[:module_name]}:testDebugUnitTest --tests #{args[:qualified_class]}"
+  else
+    sh "./gradlew #{args[:module_name]}:testDebugUnitTest --tests #{args[:qualified_class]}.#{args[:test_name]}"
+  end
 
 end
 
@@ -81,12 +81,12 @@ task :release => :unit_tests do
 
   prompt_for_sonatype_username_and_password
 
-#   Rake::Task["release_braintree"].invoke
+  Rake::Task["release_braintree"].invoke
   Rake::Task["release_braintree_zscaler"].invoke
-#   Rake::Task["release_paypal"].invoke
+  Rake::Task["release_paypal"].invoke
   Rake::Task["release_paypal_zscaler"].invoke
 
-#   post_release(version)
+  post_release(version)
 end
 
 task :assumptions do
