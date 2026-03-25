@@ -142,6 +142,10 @@ Each client tracks events using constants on the module's analytics object (e.g.
 ### Configuration Management
 `BraintreeClient` prefetches and caches configuration at construction time via `MerchantRepository` (singleton). Do not fetch configuration manually from within payment clients — call `braintreeClient.getConfiguration()` which returns the cached value.
 
+### Browser Switch
+Several modules (`PayPal`, `Venmo`, `LocalPayment`, `SEPADirectDebit`) use a browser switch flow powered by the external browser-switch library (v3.4.0). The library uses Chrome Custom Tabs (CCT) internally, with AuthTab support added in v3.4.0. Each module follows a Launcher/Client split: the Client builds a BrowserSwitchOptions request and tokenizes the result, while the Launcher wraps BrowserSwitchClient to start the switch and handle the return via App Links (preferred) or deep link fallback. The merchant app is responsible for persisting the pendingRequestString returned by the Launcher and passing it back in onResume/onNewIntent.
+
+
 ## Coding Conventions
 
 - **Packages**: `com.braintreepayments.api.<module>` (e.g., `com.braintreepayments.api.card`)
