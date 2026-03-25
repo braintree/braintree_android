@@ -12,6 +12,7 @@ import com.braintreepayments.api.testutils.TestConfigurationBuilder
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -138,12 +139,11 @@ class ThreeDSecureClientUnitTest {
 
         advanceUntilIdle()
 
-        verify {
+        coVerify {
             cardinalClient.initialize(
                 activity,
                 threeDSecureEnabledConfig,
-                basicRequest,
-                any<CardinalInitializeCallback>()
+                basicRequest
             )
         }
     }
@@ -462,7 +462,7 @@ class ThreeDSecureClientUnitTest {
 
         advanceUntilIdle()
 
-        verify { cardinalClient.initialize(activity, threeDSecureEnabledConfig, basicRequest, any()) }
+        coVerify { cardinalClient.initialize(activity, threeDSecureEnabledConfig, basicRequest) }
     }
 
     @Test

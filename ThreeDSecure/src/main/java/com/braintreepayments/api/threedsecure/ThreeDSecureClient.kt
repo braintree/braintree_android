@@ -110,7 +110,7 @@ class ThreeDSecureClient internal constructor(
         }
     }
 
-    private fun initializeCardinalClient(
+    private suspend fun initializeCardinalClient(
         context: Context,
         configuration: Configuration,
         request: ThreeDSecureRequest,
@@ -121,25 +121,22 @@ class ThreeDSecureClient internal constructor(
                 context = context,
                 configuration = configuration,
                 request = request
-            ) { _, _ ->
-                coroutineScope.launch {
-                        try {
-                            val threeDSecureResult = api.performLookup(
-                                request = request,
-                                cardinalConsumerSessionId = cardinalClient.consumerSessionId
-                            )
-                            braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED)
-                            sendAnalyticsAndCallbackResult(threeDSecureResult, callback)
-                        } catch (performLookupError: Exception) {
-                            braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_FAILED)
-                            callbackCreatePaymentAuthFailure(
-                                callback,
-                                ThreeDSecurePaymentAuthRequest.Failure(
-                                    BraintreeException("3DS lookup failed", performLookupError)
-                                )
-                            )
-                        }
-                }
+            )
+            try {
+                val threeDSecureResult = api.performLookup(
+                    request = request,
+                    cardinalConsumerSessionId = cardinalClient.consumerSessionId
+                )
+                braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED)
+                sendAnalyticsAndCallbackResult(threeDSecureResult, callback)
+            } catch (performLookupError: Exception) {
+                braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_FAILED)
+                callbackCreatePaymentAuthFailure(
+                    callback,
+                    ThreeDSecurePaymentAuthRequest.Failure(
+                        BraintreeException("3DS lookup failed", performLookupError)
+                    )
+                )
             }
         } catch (initializeException: BraintreeException) {
             callbackCreatePaymentAuthFailure(
@@ -200,27 +197,26 @@ class ThreeDSecureClient internal constructor(
                         context,
                         configuration,
                         request
-                    ) { consumerSessionId: String?, _ ->
-                        if (!consumerSessionId.isNullOrEmpty()) {
-                            lookupJSON.put("dfReferenceId", consumerSessionId)
-                        } else {
-                            callbackPrepareLookupFailure(
-                                callback,
-                                ThreeDSecurePrepareLookupResult.Failure(
-                                    BraintreeException("There was an error retrieving the dfReferenceId.")
-                                )
-                            )
-
-                            return@initialize
-                        }
-                        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED)
-                        callback.onPrepareLookupResult(
-                            ThreeDSecurePrepareLookupResult.Success(
-                                request,
-                                lookupJSON.toString()
+                    )
+                    val consumerSessionId = cardinalClient.consumerSessionId
+                    if (!consumerSessionId.isNullOrEmpty()) {
+                        lookupJSON.put("dfReferenceId", consumerSessionId)
+                    } else {
+                        callbackPrepareLookupFailure(
+                            callback,
+                            ThreeDSecurePrepareLookupResult.Failure(
+                                BraintreeException("There was an error retrieving the dfReferenceId.")
                             )
                         )
+                        return@launch
                     }
+                    braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED)
+                    callback.onPrepareLookupResult(
+                        ThreeDSecurePrepareLookupResult.Success(
+                            request,
+                            lookupJSON.toString()
+                        )
+                    )
                 } catch (initializeException: BraintreeException) {
                     callbackPrepareLookupFailure(
                         callback,

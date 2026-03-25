@@ -20,6 +20,7 @@ import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertSame
 import junit.framework.TestCase.assertTrue
 import junit.framework.TestCase.fail
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 
@@ -29,7 +30,6 @@ class CardinalClientUnitTest {
     private lateinit var activity: FragmentActivity
     private lateinit var configuration: Configuration
     private lateinit var context: Context
-    private lateinit var cardinalInitializeCallback: CardinalInitializeCallback
     private lateinit var cardinalValidateReceiver: CardinalValidateReceiver
     private lateinit var cardinalChallengeObserver: CardinalChallengeObserver
 
@@ -39,7 +39,6 @@ class CardinalClientUnitTest {
 
         context = mockk(relaxed = true)
         configuration = mockk(relaxed = true)
-        cardinalInitializeCallback = mockk(relaxed = true)
         cardinalInstance = mockk(relaxed = true)
         activity = mockk(relaxed = true)
         cardinalValidateReceiver = mockk(relaxed = true)
@@ -48,12 +47,15 @@ class CardinalClientUnitTest {
 
     @Test
     @Throws(BraintreeException::class)
-    fun initialize_configuresDefaultCardinalConfigurationParameters() {
+    fun initialize_configuresDefaultCardinalConfigurationParameters() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
+        every { cardinalInstance.init(any(), any()) } answers {
+            secondArg<CardinalInitService>().onSetupCompleted("session-id")
+        }
 
         val sut = CardinalClient()
         val request = ThreeDSecureRequest()
-        sut.initialize(context, configuration, request, cardinalInitializeCallback)
+        sut.initialize(context, configuration, request)
 
         val parametersSlot = slot<CardinalConfigurationParameters>()
         verify { cardinalInstance.configure(context, capture(parametersSlot)) }
@@ -66,14 +68,17 @@ class CardinalClientUnitTest {
 
     @Test
     @Throws(BraintreeException::class)
-    fun initialize_whenV2UiCustomizationNotNull_setsCardinalConfigurationParameters() {
+    fun initialize_whenV2UiCustomizationNotNull_setsCardinalConfigurationParameters() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
+        every { cardinalInstance.init(any(), any()) } answers {
+            secondArg<CardinalInitService>().onSetupCompleted("session-id")
+        }
 
         val sut = CardinalClient()
         val v2UiCustomization = ThreeDSecureV2UiCustomization()
         val request = ThreeDSecureRequest()
         request.v2UiCustomization = v2UiCustomization
-        sut.initialize(context, configuration, request, cardinalInitializeCallback)
+        sut.initialize(context, configuration, request)
 
         val parametersSlot = slot<CardinalConfigurationParameters>()
         verify { cardinalInstance.configure(context, capture(parametersSlot)) }
@@ -87,13 +92,16 @@ class CardinalClientUnitTest {
 
     @Test
     @Throws(BraintreeException::class)
-    fun initialize_whenEnvironmentProduction_configuresCardinalEnvironmentProduction() {
+    fun initialize_whenEnvironmentProduction_configuresCardinalEnvironmentProduction() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
         every { configuration.environment } returns "production"
+        every { cardinalInstance.init(any(), any()) } answers {
+            secondArg<CardinalInitService>().onSetupCompleted("session-id")
+        }
 
         val sut = CardinalClient()
         val request = ThreeDSecureRequest()
-        sut.initialize(context, configuration, request, cardinalInitializeCallback)
+        sut.initialize(context, configuration, request)
 
         val parametersSlot = slot<CardinalConfigurationParameters>()
         verify { cardinalInstance.configure(context, capture(parametersSlot)) }
@@ -104,14 +112,17 @@ class CardinalClientUnitTest {
 
     @Test
     @Throws(BraintreeException::class)
-    fun initialize_whenUiTypeNotNull_setsCardinalConfigurationParameters() {
+    fun initialize_whenUiTypeNotNull_setsCardinalConfigurationParameters() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
+        every { cardinalInstance.init(any(), any()) } answers {
+            secondArg<CardinalInitService>().onSetupCompleted("session-id")
+        }
 
         val sut = CardinalClient()
         val request = ThreeDSecureRequest().apply {
             uiType = ThreeDSecureUiType.BOTH
         }
-        sut.initialize(context, configuration, request, cardinalInitializeCallback)
+        sut.initialize(context, configuration, request)
 
         val parametersSlot = slot<CardinalConfigurationParameters>()
         verify { cardinalInstance.configure(context, capture(parametersSlot)) }
@@ -122,8 +133,11 @@ class CardinalClientUnitTest {
 
     @Test
     @Throws(BraintreeException::class)
-    fun initialize_whenRenderTypeNotNull_setsCardinalConfigurationParameters() {
+    fun initialize_whenRenderTypeNotNull_setsCardinalConfigurationParameters() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
+        every { cardinalInstance.init(any(), any()) } answers {
+            secondArg<CardinalInitService>().onSetupCompleted("session-id")
+        }
 
         val sut = CardinalClient()
         val request = ThreeDSecureRequest().apply {
@@ -135,7 +149,7 @@ class CardinalClientUnitTest {
                 ThreeDSecureRenderType.RENDER_HTML,
             )
         }
-        sut.initialize(context, configuration, request, cardinalInitializeCallback)
+        sut.initialize(context, configuration, request)
 
         val parametersSlot = slot<CardinalConfigurationParameters>()
         verify { cardinalInstance.configure(context, capture(parametersSlot)) }
@@ -146,53 +160,55 @@ class CardinalClientUnitTest {
 
     @Test
     @Throws(BraintreeException::class)
-    fun initialize_returnsConsumerSessionIdToListener() {
+    fun initialize_returnsConsumerSessionId() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
         every { configuration.cardinalAuthenticationJwt } returns "token"
 
+        every { cardinalInstance.init(any(), any()) } answers {
+            val service = secondArg<CardinalInitService>()
+            service.onSetupCompleted("session-id")
+        }
+
         val sut = CardinalClient()
         val request = ThreeDSecureRequest()
-        sut.initialize(context, configuration, request, cardinalInitializeCallback)
+        val result = sut.initialize(context, configuration, request)
 
-        val cardinalInitServiceSlot = slot<CardinalInitService>()
-        verify { cardinalInstance.init("token", capture(cardinalInitServiceSlot)) }
-
-        val cardinalInitService = cardinalInitServiceSlot.captured
-        cardinalInitService.onSetupCompleted("session-id")
-
-        verify { cardinalInitializeCallback.onResult(sut.consumerSessionId, null) }
+        assertEquals("session-id", result)
         assertEquals("session-id", sut.consumerSessionId)
     }
 
     @Test
     @Throws(BraintreeException::class)
-    fun initialize_whenConsumerSessionIdIsNull_returnsBraintreeExceptionToListener() {
+    fun initialize_whenConsumerSessionIdIsNull_throwsBraintreeException() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
         every { configuration.cardinalAuthenticationJwt } returns "token"
 
+        every { cardinalInstance.init(any(), any()) } answers {
+            val service = secondArg<CardinalInitService>()
+            service.onValidated(null, null)
+        }
+
         val sut = CardinalClient()
         val request = ThreeDSecureRequest()
-        sut.initialize(context, configuration, request, cardinalInitializeCallback)
-
-        val cardinalInitServiceSlot = slot<CardinalInitService>()
-        verify { cardinalInstance.init("token", capture(cardinalInitServiceSlot)) }
-
-        val cardinalInitService = cardinalInitServiceSlot.captured
-        cardinalInitService.onValidated(null, null)
-
-        val exceptionSlot = slot<BraintreeException>()
-        verify { cardinalInitializeCallback.onResult(isNull(), capture(exceptionSlot)) }
-        assertEquals(exceptionSlot.captured.message, "consumer session id not available")
+        try {
+            sut.initialize(context, configuration, request)
+            fail("should not get here")
+        } catch (e: BraintreeException) {
+            assertEquals("consumer session id not available", e.message)
+        }
     }
 
     @Test
-    fun `when cardinal configuration is called with a requestorAppUrl, sets threeDSRequestorAppURL`() {
+    fun `when cardinal configuration is called with a requestorAppUrl, sets threeDSRequestorAppURL`() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
+        every { cardinalInstance.init(any(), any()) } answers {
+            secondArg<CardinalInitService>().onSetupCompleted("session-id")
+        }
 
         val sut = CardinalClient()
         val request = ThreeDSecureRequest()
         request.requestorAppUrl = "www.paypal.com"
-        sut.initialize(context, configuration, request, cardinalInitializeCallback)
+        sut.initialize(context, configuration, request)
 
         val parametersSlot = slot<CardinalConfigurationParameters>()
         verify { cardinalInstance.configure(context, capture(parametersSlot)) }
@@ -202,7 +218,7 @@ class CardinalClientUnitTest {
     }
 
     @Test
-    fun initialize_onCardinalConfigureRuntimeException_throwsError() {
+    fun initialize_onCardinalConfigureRuntimeException_throwsError() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
         every { configuration.cardinalAuthenticationJwt } returns "token"
 
@@ -212,7 +228,7 @@ class CardinalClientUnitTest {
 
         val request = ThreeDSecureRequest()
         try {
-            sut.initialize(context, configuration, request, cardinalInitializeCallback)
+            sut.initialize(context, configuration, request)
             fail("should not get here")
         } catch (e: BraintreeException) {
             assertEquals("Cardinal SDK configure Error.", e.message)
@@ -221,7 +237,7 @@ class CardinalClientUnitTest {
     }
 
     @Test
-    fun initialize_onCardinalInitRuntimeException_throwsError() {
+    fun initialize_onCardinalInitRuntimeException_throwsError() = runTest {
         every { Cardinal.getInstance() } returns cardinalInstance
         every { configuration.cardinalAuthenticationJwt } returns "token"
 
@@ -231,7 +247,7 @@ class CardinalClientUnitTest {
 
         val request = ThreeDSecureRequest()
         try {
-            sut.initialize(context, configuration, request, cardinalInitializeCallback)
+            sut.initialize(context, configuration, request)
             fail("should not get here")
         } catch (e: BraintreeException) {
             assertEquals("Cardinal SDK init Error.", e.message)
