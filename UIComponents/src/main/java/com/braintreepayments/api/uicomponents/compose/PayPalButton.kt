@@ -106,6 +106,7 @@ fun PayPalButton(
 
                 is PayPalPaymentAuthRequest.Failure -> {
                     paypalTokenizeCallback.onPayPalResult(PayPalResult.Failure(paymentAuthRequest.error))
+                    enabled = true
                 }
             }
         }
