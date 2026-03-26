@@ -107,6 +107,7 @@ fun VenmoButton(
 
                 is VenmoPaymentAuthRequest.Failure -> {
                     venmoTokenizeCallback.onVenmoResult(VenmoResult.Failure(paymentAuthRequest.error))
+                    enabled = true
                 }
             }
         }
