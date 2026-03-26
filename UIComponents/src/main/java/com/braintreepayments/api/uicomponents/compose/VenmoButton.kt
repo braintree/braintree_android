@@ -102,6 +102,9 @@ fun VenmoButton(
                             )
                             flowLaunched = true
                         }
+                    } ?: run {
+                        enabled = true
+                        venmoTokenizeCallback.onVenmoResult(VenmoResult.Failure(Exception("Activity is null")))
                     }
                 }
 
@@ -131,6 +134,11 @@ fun VenmoButton(
                     enabled = true
                     pendingRequestRepository.clearPendingRequest()
                     activity.intent.data = null
+                } ?: run {
+                    enabled = true
+                    venmoTokenizeCallback.onVenmoResult(
+                        VenmoResult.Failure(Exception("Activity or Intent is null. Unable to restore state."))
+                    )
                 }
             }
         }

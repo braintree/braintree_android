@@ -101,6 +101,9 @@ fun PayPalButton(
                             )
                             flowLaunched = true
                         }
+                    } ?: run {
+                        enabled = true
+                        paypalTokenizeCallback.onPayPalResult(PayPalResult.Failure(Exception("Activity is null")))
                     }
                 }
 
@@ -130,6 +133,11 @@ fun PayPalButton(
                     enabled = true
                     pendingRequestRepository.clearPendingRequest()
                     activity.intent.data = null
+                } ?: run {
+                    enabled = true
+                    paypalTokenizeCallback.onPayPalResult(
+                        PayPalResult.Failure(Exception("Activity or Intent is null. Unable to restore state."))
+                    )
                 }
             }
         }
