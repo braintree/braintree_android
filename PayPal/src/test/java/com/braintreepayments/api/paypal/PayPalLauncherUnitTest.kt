@@ -159,6 +159,45 @@ class PayPalLauncherUnitTest {
     }
 
     @Test
+    fun `launch includes isVaultRequest in analytics events when request is vault`(
+        @TestParameter isAppSwitch: Boolean
+    ) {
+        every { paymentAuthRequestParams.isVaultRequest } returns true
+        val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
+        every { browserSwitchClient.start(activity, options, any()) } returns startedPendingRequest
+        every { getAppSwitchUseCase() } returns isAppSwitch
+        every { resolvePayPalUseCase() } returns isAppSwitch
+
+        sut.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        verify {
+            analyticsClient.sendEvent(
+                if (isAppSwitch) PayPalAnalytics.APP_SWITCH_STARTED else PayPalAnalytics.BROWSER_PRESENTATION_STARTED,
+                AnalyticsEventParams(
+                    contextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                    isVaultRequest = true,
+                )
+            )
+        }
+
+        verify {
+            analyticsClient.sendEvent(
+                if (isAppSwitch) {
+                    PayPalAnalytics.APP_SWITCH_SUCCEEDED
+                } else {
+                    PayPalAnalytics.BROWSER_PRESENTATION_SUCCEEDED
+                },
+                AnalyticsEventParams(
+                    contextId = paymentToken,
+                    appSwitchUrl = approvalUrl,
+                    isVaultRequest = true,
+                )
+            )
+        }
+    }
+
+    @Test
     fun `launch sends APP_SWITCH_FAILED analytics event when browser switch cannot be performed`(
         @TestParameter isAppSwitch: Boolean
     ) {
