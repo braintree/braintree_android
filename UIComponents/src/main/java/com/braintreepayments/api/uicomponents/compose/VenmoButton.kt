@@ -133,7 +133,6 @@ fun VenmoButton(
                     handleReturnToApp(venmoLauncher, venmoClient, pendingRequestString, intent, venmoTokenizeCallback)
                     enabled = true
                     pendingRequestRepository.clearPendingRequest()
-                    activity.intent.data = null
                 } ?: run {
                     enabled = true
                     venmoTokenizeCallback.onVenmoResult(

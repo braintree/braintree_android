@@ -132,7 +132,6 @@ fun PayPalButton(
                     handleReturnToApp(payPalLauncher, payPalClient, pendingRequestStr, intent, paypalTokenizeCallback)
                     enabled = true
                     pendingRequestRepository.clearPendingRequest()
-                    activity.intent.data = null
                 } ?: run {
                     enabled = true
                     paypalTokenizeCallback.onPayPalResult(
