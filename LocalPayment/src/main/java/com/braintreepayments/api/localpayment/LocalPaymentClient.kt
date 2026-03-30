@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.Locale
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Used to integrate with local payments.
@@ -64,47 +65,50 @@ class LocalPaymentClient internal constructor(
         request: LocalPaymentRequest,
         callback: LocalPaymentAuthCallback
     ) {
+        coroutineScope.launch {
+            val result = createPaymentAuthRequest(request)
+            callback.onLocalPaymentAuthRequest(result)
+        }
+    }
+
+    private suspend fun createPaymentAuthRequest(
+        request: LocalPaymentRequest,
+    ): LocalPaymentAuthRequest {
         analyticsParamRepository.reset()
         braintreeClient.sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_STARTED)
 
-        var exception: Exception? = null
         if (request.paymentType == null || request.amount == null) {
-            exception = BraintreeException(
-                "LocalPaymentRequest is invalid, paymentType and amount are required."
+            return authRequestFailure(
+                BraintreeException(
+                    "LocalPaymentRequest is invalid, paymentType and amount are required."
+                )
             )
         }
 
-        if (exception != null) {
-            authRequestFailure(exception, callback)
-        } else {
-            coroutineScope.launch {
-                try {
-                    val configuration = braintreeClient.getConfiguration()
-                    if (!configuration.isPayPalEnabled) {
-                        val errorMessage = "Local payments are not enabled for this merchant."
-                        authRequestFailure(ConfigurationException(errorMessage), callback)
-                        return@launch
-                    }
-
-                    try {
-                        val localPaymentResult = localPaymentApi.createPaymentMethod(request)
-                        val paymentId = localPaymentResult.paymentId
-                        if (paymentId.isNotEmpty()) {
-                            contextId = paymentId
-                        }
-                        buildBrowserSwitchOptions(
-                            localPaymentResult,
-                            request.hasUserLocationConsent,
-                            callback
-                        )
-                    } catch (e: Exception) {
-                        val errorMessage = "An error occurred creating the local payment method: " + e.message
-                        authRequestFailure(BraintreeException(errorMessage), callback)
-                    }
-                } catch (e: Exception) {
-                    authRequestFailure(e, callback)
-                }
+        return try {
+            val configuration = braintreeClient.getConfiguration()
+            if (!configuration.isPayPalEnabled) {
+                return authRequestFailure(
+                    ConfigurationException("Local payments are not enabled for this merchant.")
+                )
             }
+
+            try {
+                val localPaymentResult = localPaymentApi.createPaymentMethod(request)
+                val paymentId = localPaymentResult.paymentId
+                if (paymentId.isNotEmpty()) {
+                    contextId = paymentId
+                }
+                buildBrowserSwitchOptions(localPaymentResult, request.hasUserLocationConsent)
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                val errorMessage =
+                    "An error occurred creating the local payment method: " + e.message
+                authRequestFailure(BraintreeException(errorMessage))
+            }
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            authRequestFailure(e)
         }
     }
 
@@ -112,8 +116,7 @@ class LocalPaymentClient internal constructor(
     fun buildBrowserSwitchOptions(
         localPaymentAuthRequestParams: LocalPaymentAuthRequestParams,
         hasUserLocationConsent: Boolean,
-        callback: LocalPaymentAuthCallback
-    ) {
+    ): LocalPaymentAuthRequest {
         val browserSwitchOptions = BrowserSwitchOptions()
             .requestCode(BraintreeRequestCodes.LOCAL_PAYMENT.code)
             .returnUrlScheme(braintreeClient.getReturnUrlScheme())
@@ -131,23 +134,22 @@ class LocalPaymentClient internal constructor(
                     .put("has-user-location-consent", hasUserLocationConsent)
             )
         } catch (e: JSONException) {
-            authRequestFailure(
-                BraintreeException("Error parsing local payment request"),
-                callback
+            return authRequestFailure(
+                BraintreeException("Error parsing local payment request")
             )
-            return
         }
 
         localPaymentAuthRequestParams.browserSwitchOptions = browserSwitchOptions
-        callback.onLocalPaymentAuthRequest(
-            LocalPaymentAuthRequest.ReadyToLaunch(localPaymentAuthRequestParams)
-        )
         sendAnalyticsEvent(LocalPaymentAnalytics.BROWSER_SWITCH_SUCCEEDED)
+        return LocalPaymentAuthRequest.ReadyToLaunch(localPaymentAuthRequestParams)
     }
 
-    private fun authRequestFailure(error: Exception, callback: LocalPaymentAuthCallback) {
-        sendAnalyticsEvent(eventName = LocalPaymentAnalytics.PAYMENT_FAILED, errorDescription = error.message)
-        callback.onLocalPaymentAuthRequest(LocalPaymentAuthRequest.Failure(error))
+    private fun authRequestFailure(error: Exception): LocalPaymentAuthRequest.Failure {
+        sendAnalyticsEvent(
+            eventName = LocalPaymentAnalytics.PAYMENT_FAILED,
+            errorDescription = error.message
+        )
+        return LocalPaymentAuthRequest.Failure(error)
     }
 
     /**
@@ -166,12 +168,23 @@ class LocalPaymentClient internal constructor(
         localPaymentAuthResult: LocalPaymentAuthResult.Success,
         callback: LocalPaymentTokenizeCallback
     ) {
+        coroutineScope.launch {
+            val result = tokenize(context, localPaymentAuthResult)
+            callback.onLocalPaymentResult(result)
+        }
+    }
+
+    private suspend fun tokenize(
+        context: Context,
+        localPaymentAuthResult: LocalPaymentAuthResult.Success,
+    ): LocalPaymentResult {
         val browserSwitchResult: BrowserSwitchFinalResult.Success = localPaymentAuthResult
             .browserSwitchSuccess
 
         val metadata: JSONObject? = browserSwitchResult.requestMetadata
         val merchantAccountId = Json.optString(metadata, "merchant-account-id", null)
-        val hasUserLocationConsent = Json.optBoolean(metadata, "has-user-location-consent", false)
+        val hasUserLocationConsent =
+            Json.optBoolean(metadata, "has-user-location-consent", false)
 
         val deepLinkUri: Uri = browserSwitchResult.returnUrl
         val responseString = deepLinkUri.toString()
@@ -179,38 +192,33 @@ class LocalPaymentClient internal constructor(
                 LOCAL_PAYMENT_CANCEL.lowercase(Locale.getDefault())
             )
         ) {
-            callbackCancel(callback)
-            return
+            sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_CANCELED)
+            return LocalPaymentResult.Cancel
         }
-        coroutineScope.launch {
-            try {
-                val configuration = braintreeClient.getConfiguration()
-                val clientMetadataID = dataCollector.getClientMetadataId(
-                    context,
-                    configuration,
-                    hasUserLocationConsent
-                )
-                val localPaymentNonce = localPaymentApi.tokenize(
-                    merchantAccountId,
-                    responseString,
-                    clientMetadataID
-                )
-                sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_SUCCEEDED)
-                callback.onLocalPaymentResult(LocalPaymentResult.Success(localPaymentNonce))
-            } catch (e: Exception) {
-                tokenizeFailure(e, callback)
-            }
+
+        return try {
+            val configuration = braintreeClient.getConfiguration()
+            val clientMetadataID = dataCollector.getClientMetadataId(
+                context,
+                configuration,
+                hasUserLocationConsent
+            )
+            val localPaymentNonce = localPaymentApi.tokenize(
+                merchantAccountId,
+                responseString,
+                clientMetadataID
+            )
+            sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_SUCCEEDED)
+            LocalPaymentResult.Success(localPaymentNonce)
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            tokenizeFailure(e)
         }
     }
 
-    private fun callbackCancel(callback: LocalPaymentTokenizeCallback) {
-        sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_CANCELED)
-        callback.onLocalPaymentResult(LocalPaymentResult.Cancel)
-    }
-
-    private fun tokenizeFailure(error: Exception, callback: LocalPaymentTokenizeCallback) {
+    private fun tokenizeFailure(error: Exception): LocalPaymentResult.Failure {
         sendAnalyticsEvent(LocalPaymentAnalytics.PAYMENT_FAILED, errorDescription = error.message)
-        callback.onLocalPaymentResult(LocalPaymentResult.Failure(error))
+        return LocalPaymentResult.Failure(error)
     }
 
     private fun sendAnalyticsEvent(eventName: String, errorDescription: String? = null) {
