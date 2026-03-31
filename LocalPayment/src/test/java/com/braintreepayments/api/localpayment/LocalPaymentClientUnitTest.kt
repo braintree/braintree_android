@@ -494,13 +494,8 @@ class LocalPaymentClientUnitTest {
         val approvalUrl = "https://sample.com/approval?token=sample-token"
         val transaction = LocalPaymentAuthRequestParams(request, approvalUrl, "payment-id")
 
-        sut.buildBrowserSwitchOptions(transaction, true, localPaymentAuthCallback)
-        advanceUntilIdle()
+        val paymentAuthRequest = sut.buildBrowserSwitchOptions(transaction, true)
 
-        val slot = slot<LocalPaymentAuthRequest>()
-        verify { localPaymentAuthCallback.onLocalPaymentAuthRequest(capture(slot)) }
-
-        val paymentAuthRequest = slot.captured
         assert(paymentAuthRequest is LocalPaymentAuthRequest.ReadyToLaunch)
         val params = (paymentAuthRequest as LocalPaymentAuthRequest.ReadyToLaunch).requestParams
         val browserSwitchOptions = params.browserSwitchOptions
@@ -525,12 +520,8 @@ class LocalPaymentClientUnitTest {
         val approvalUrl = "https://sample.com/approval?token=sample-token"
         val transaction = createLocalPaymentAuthRequestParams(request, approvalUrl, "payment-id")
 
-        sut.buildBrowserSwitchOptions(transaction, true, localPaymentAuthCallback)
-        advanceUntilIdle()
+        val paymentAuthRequest = sut.buildBrowserSwitchOptions(transaction, true)
 
-        val slot = slot<LocalPaymentAuthRequest>()
-        verify { localPaymentAuthCallback.onLocalPaymentAuthRequest(capture(slot)) }
-        val paymentAuthRequest = slot.captured
         assertTrue(paymentAuthRequest is LocalPaymentAuthRequest.ReadyToLaunch)
         val params = (paymentAuthRequest as LocalPaymentAuthRequest.ReadyToLaunch).requestParams
         val browserSwitchOptions = params.browserSwitchOptions
@@ -544,8 +535,7 @@ class LocalPaymentClientUnitTest {
         val approvalUrl = "https://sample.com/approval?token=sample-token"
         val transaction = createLocalPaymentAuthRequestParams(request, approvalUrl, "payment-id")
 
-        sut.buildBrowserSwitchOptions(transaction, true, localPaymentAuthCallback)
-        advanceUntilIdle()
+        sut.buildBrowserSwitchOptions(transaction, true)
 
         verify {
             braintreeClient.sendAnalyticsEvent(

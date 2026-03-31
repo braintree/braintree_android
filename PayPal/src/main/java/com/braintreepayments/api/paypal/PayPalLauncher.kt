@@ -3,6 +3,7 @@ package com.braintreepayments.api.paypal
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultCaller
+import androidx.activity.result.ActivityResultRegistry
 import com.braintreepayments.api.BrowserSwitchClient
 import com.braintreepayments.api.BrowserSwitchException
 import com.braintreepayments.api.BrowserSwitchFinalResult
@@ -30,8 +31,19 @@ class PayPalLauncher internal constructor(
      * Used to launch the PayPal flow in a web browser and deliver results to your Activity
      * @param caller Optional ActivityResultCaller parameter. If provided, it will be passed to BrowserSwitchClient
      */
+    @JvmOverloads
     constructor(caller: ActivityResultCaller? = null) : this(
         browserSwitchClient = if (caller != null) BrowserSwitchClient(caller) else BrowserSwitchClient(),
+        lazyAnalyticsClient = AnalyticsClient.lazyInstance
+    )
+
+    /**
+     * Used to launch the PayPal flow in a web browser and deliver results. Use it in Compose flows or where
+     * ActivityResultCaller is not available.
+     * @param registry ActivityResultRegistry parameter. It will be passed to BrowserSwitchClient.
+     */
+    constructor(registry: ActivityResultRegistry) : this(
+        browserSwitchClient = BrowserSwitchClient(registry),
         lazyAnalyticsClient = AnalyticsClient.lazyInstance
     )
 
