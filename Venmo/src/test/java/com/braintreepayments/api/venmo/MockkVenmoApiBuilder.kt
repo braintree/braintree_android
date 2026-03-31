@@ -1,6 +1,6 @@
 package com.braintreepayments.api.venmo
 
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
 
 internal class MockkVenmoApiBuilder {
@@ -51,41 +51,28 @@ internal class MockkVenmoApiBuilder {
     fun build(): VenmoApi {
         val venmoApi = mockk<VenmoApi>(relaxed = true)
 
-        every { venmoApi.createPaymentContext(
-            any<VenmoRequest>(),
-            any<String>(),
-            any<VenmoApiCallback>())
-        } answers { call ->
-            val callback = call.invocation.args[2] as VenmoApiCallback
-            if (venmoPaymentContextId != null) {
-                callback.onResult(venmoPaymentContextId, null)
-            } else if (createPaymentContextError != null) {
-                callback.onResult(null, createPaymentContextError)
-            }
+        coEvery {
+            venmoApi.createPaymentContext(any(), any())
+        } answers {
+            venmoPaymentContextId?.let { return@answers it }
+            createPaymentContextError?.let { throw it }
+            throw IllegalStateException("No mock result configured for createPaymentContext")
         }
 
-        every { venmoApi.createNonceFromPaymentContext(
-            any<String>(),
-            any<VenmoInternalCallback>())
-        } answers { call ->
-            val callback = call.invocation.args[1] as VenmoInternalCallback
-            if (createNonceFromPaymentContextSuccess != null) {
-                callback.onResult(createNonceFromPaymentContextSuccess, null)
-            } else if (createNonceFromPaymentContextError != null) {
-                callback.onResult(null, createNonceFromPaymentContextError)
-            }
+        coEvery {
+            venmoApi.createNonceFromPaymentContext(any())
+        } answers {
+            createNonceFromPaymentContextSuccess?.let { return@answers it }
+            createNonceFromPaymentContextError?.let { throw it }
+            throw IllegalStateException("No mock result configured for createNonceFromPaymentContext")
         }
 
-        every { venmoApi.vaultVenmoAccountNonce(
-            any<String>(),
-            any<VenmoInternalCallback>())
-        } answers { call ->
-            val callback = call.invocation.args[1] as VenmoInternalCallback
-            if (vaultVenmoAccountNonceSuccess != null) {
-                callback.onResult(vaultVenmoAccountNonceSuccess, null)
-            } else if (vaultVenmoAccountNonceError != null) {
-                callback.onResult(null, vaultVenmoAccountNonceError)
-            }
+        coEvery {
+            venmoApi.vaultVenmoAccountNonce(any())
+        } answers {
+            vaultVenmoAccountNonceSuccess?.let { return@answers it }
+            vaultVenmoAccountNonceError?.let { throw it }
+            throw IllegalStateException("No mock result configured for vaultVenmoAccountNonce")
         }
 
         return venmoApi

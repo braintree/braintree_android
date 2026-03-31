@@ -32,6 +32,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.Objects
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Used to create and tokenize Venmo accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/venmo/overview)
@@ -172,33 +173,15 @@ class VenmoClient internal constructor(
                     venmoProfileId = configuration.venmoMerchantId
                 }
 
-                val finalVenmoProfileId = venmoProfileId
-                venmoApi.createPaymentContext(
-                    request, venmoProfileId
-                ) { paymentContextId: String?, exception: Exception? ->
-                    if (exception == null) {
-                        if (!paymentContextId.isNullOrEmpty()) {
-                            contextId = paymentContextId
-                        }
-                        try {
-                            createPaymentAuthRequest(
-                                context, request, configuration,
-                                merchantRepository.authorization, finalVenmoProfileId,
-                                paymentContextId, callback
-                            )
-                        } catch (e: Exception) {
-                            when (e) {
-                                is JSONException, is BraintreeException -> {
-                                    callbackPaymentAuthFailure(callback, VenmoPaymentAuthRequest.Failure(e))
-                                }
-
-                                else -> throw e
-                            }
-                        }
-                    } else {
-                        callbackPaymentAuthFailure(callback, VenmoPaymentAuthRequest.Failure(exception))
-                    }
+                val paymentContextId = venmoApi.createPaymentContext(request, venmoProfileId)
+                if (!paymentContextId.isNullOrEmpty()) {
+                    contextId = paymentContextId
                 }
+                createPaymentAuthRequest(
+                    context, request, configuration,
+                    merchantRepository.authorization, venmoProfileId,
+                    paymentContextId, callback
+                )
             } catch (e: Exception) {
                 callbackPaymentAuthFailure(callback, VenmoPaymentAuthRequest.Failure(e))
             }
@@ -292,7 +275,7 @@ class VenmoClient internal constructor(
      * [VenmoAccountNonce].
      *
      * @param paymentAuthResult the result of [VenmoLauncher.handleReturnToApp]
-     * @param callback a [VenmoInternalCallback] to receive a [VenmoAccountNonce] or
+     * @param callback a [VenmoTokenizeCallback] to receive a [VenmoAccountNonce] or
      * error from Venmo tokenization
      */
     fun tokenize(
@@ -305,7 +288,9 @@ class VenmoClient internal constructor(
         val deepLinkUri: Uri = browserSwitchResultInfo.returnUrl
         braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED, analyticsParams)
         if (Objects.requireNonNull(deepLinkUri.path?.contains("success")) == true) {
-            callbackTokenizeSuccess(deepLinkUri, callback)
+            coroutineScope.launch {
+                callbackTokenizeSuccess(deepLinkUri, callback)
+            }
         } else if (deepLinkUri.path?.contains("cancel") == true) {
             callbackTokenizeCancel(callback)
         } else if (deepLinkUri.path?.contains("error") == true) {
@@ -316,75 +301,52 @@ class VenmoClient internal constructor(
         }
     }
 
-    @Suppress("LongMethod")
-    private fun callbackTokenizeSuccess(deepLinkUri: Uri, callback: VenmoTokenizeCallback) {
+    @Suppress("LongMethod", "TooGenericExceptionCaught")
+    private suspend fun callbackTokenizeSuccess(deepLinkUri: Uri, callback: VenmoTokenizeCallback) {
         val paymentContextId = parse(deepLinkUri.toString(), "resource_id")
         val paymentMethodNonce = parse(deepLinkUri.toString(), "payment_method_nonce")
         val username = parse(deepLinkUri.toString(), "username")
 
         val isClientTokenAuth = (merchantRepository.authorization is ClientToken)
-        if (paymentContextId != null) {
-
-            venmoApi.createNonceFromPaymentContext(paymentContextId) { nonce: VenmoAccountNonce?, error: Exception? ->
-
-                if (nonce != null) {
-                    isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(
-                        merchantRepository.applicationContext
-                    )
-                    if (isVaultRequest && isClientTokenAuth) {
-                        vaultVenmoAccountNonce(
-                            nonce.string
-                        ) { venmoAccountNonce: VenmoAccountNonce?, vaultError: Exception? ->
-                            if (venmoAccountNonce != null) {
-                                callbackSuccess(
-                                    callback,
-                                    VenmoResult.Success(venmoAccountNonce)
-                                )
-                            } else if (vaultError != null) {
-                                callbackTokenizeFailure(
-                                    callback,
-                                    VenmoResult.Failure(vaultError)
-                                )
-                            }
-                        }
-                    } else {
-                        callbackSuccess(callback, VenmoResult.Success(nonce))
-                    }
-                } else if (error != null) {
-                    callbackTokenizeFailure(callback, VenmoResult.Failure(error))
-                }
-            }
-        } else if (paymentMethodNonce != null && username != null) {
-            isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(
-                merchantRepository.applicationContext
-            )
-
-            if (isVaultRequest && isClientTokenAuth) {
-                vaultVenmoAccountNonce(
-                    paymentMethodNonce
-                ) { venmoAccountNonce: VenmoAccountNonce?, error: Exception? ->
-
-                    if (venmoAccountNonce != null) {
-                        callbackSuccess(callback, VenmoResult.Success(venmoAccountNonce))
-                    } else if (error != null) {
-                        callbackTokenizeFailure(callback, VenmoResult.Failure(error))
-                    }
-                }
-            } else {
-                val venmoAccountNonce = VenmoAccountNonce(
-                    paymentMethodNonce,
-                    isDefault = false,
-                    email = null,
-                    externalId = null,
-                    firstName = null,
-                    lastName = null,
-                    phoneNumber = null,
-                    username,
-                    billingAddress = null,
-                    shippingAddress = null
+        try {
+            if (paymentContextId != null) {
+                val nonce = venmoApi.createNonceFromPaymentContext(paymentContextId)
+                isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(
+                    merchantRepository.applicationContext
                 )
-                callbackSuccess(callback, VenmoResult.Success(venmoAccountNonce))
+                if (isVaultRequest && isClientTokenAuth) {
+                    val vaultedNonce = venmoApi.vaultVenmoAccountNonce(nonce.string)
+                    callbackSuccess(callback, VenmoResult.Success(vaultedNonce))
+                } else {
+                    callbackSuccess(callback, VenmoResult.Success(nonce))
+                }
+            } else if (paymentMethodNonce != null && username != null) {
+                isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(
+                    merchantRepository.applicationContext
+                )
+
+                if (isVaultRequest && isClientTokenAuth) {
+                    val vaultedNonce = venmoApi.vaultVenmoAccountNonce(paymentMethodNonce)
+                    callbackSuccess(callback, VenmoResult.Success(vaultedNonce))
+                } else {
+                    val venmoAccountNonce = VenmoAccountNonce(
+                        paymentMethodNonce,
+                        isDefault = false,
+                        email = null,
+                        externalId = null,
+                        firstName = null,
+                        lastName = null,
+                        phoneNumber = null,
+                        username,
+                        billingAddress = null,
+                        shippingAddress = null
+                    )
+                    callbackSuccess(callback, VenmoResult.Success(venmoAccountNonce))
+                }
             }
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            callbackTokenizeFailure(callback, VenmoResult.Failure(e))
         }
     }
 
@@ -396,10 +358,6 @@ class VenmoClient internal constructor(
             val cleanedAppSwitchUri = deepLinkUri.replaceFirst("&".toRegex(), "?")
             return Uri.parse(cleanedAppSwitchUri).getQueryParameter(key)
         }
-    }
-
-    private fun vaultVenmoAccountNonce(nonce: String, callback: VenmoInternalCallback) {
-        venmoApi.vaultVenmoAccountNonce(nonce, callback)
     }
 
     private fun callbackPaymentAuthFailure(
