@@ -122,22 +122,23 @@ class ThreeDSecureClient internal constructor(
                 configuration = configuration,
                 request = request
             ) { _, _ ->
-                api.performLookup(
-                    request = request,
-                    cardinalConsumerSessionId = cardinalClient.consumerSessionId
-                ) { threeDSecureResult: ThreeDSecureParams?, performLookupError: Exception? ->
-                    if (threeDSecureResult != null) {
-                        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED)
-                        sendAnalyticsAndCallbackResult(threeDSecureResult, callback)
-                    } else {
-                        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_FAILED)
-                        callbackCreatePaymentAuthFailure(
-                            callback,
-                            ThreeDSecurePaymentAuthRequest.Failure(
-                                performLookupError ?: BraintreeException("3DS lookup failed")
+                coroutineScope.launch {
+                        try {
+                            val threeDSecureResult = api.performLookup(
+                                request = request,
+                                cardinalConsumerSessionId = cardinalClient.consumerSessionId
                             )
-                        )
-                    }
+                            braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED)
+                            sendAnalyticsAndCallbackResult(threeDSecureResult, callback)
+                        } catch (performLookupError: Exception) {
+                            braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_FAILED)
+                            callbackCreatePaymentAuthFailure(
+                                callback,
+                                ThreeDSecurePaymentAuthRequest.Failure(
+                                    BraintreeException("3DS lookup failed", performLookupError)
+                                )
+                            )
+                        }
                 }
             }
         } catch (initializeException: BraintreeException) {
@@ -340,11 +341,12 @@ class ThreeDSecureClient internal constructor(
             when (validateResponse?.actionCode) {
                 CardinalActionCode.FAILURE,
                 CardinalActionCode.NOACTION,
-                CardinalActionCode.SUCCESS -> api.authenticateCardinalJWT(
-                    threeDSecureParams = threeDSecureParams,
-                    cardinalJWT = jwt
-                ) { threeDSecureResult: ThreeDSecureParams?, error: Exception? ->
-                    if (threeDSecureResult != null) {
+                CardinalActionCode.SUCCESS -> coroutineScope.launch {
+                    try {
+                        val threeDSecureResult = api.authenticateCardinalJWT(
+                            threeDSecureParams = threeDSecureParams,
+                            cardinalJWT = jwt
+                        )
                         if (threeDSecureResult.hasError()) {
                             braintreeClient.sendAnalyticsEvent(
                                 ThreeDSecureAnalytics.JWT_AUTH_FAILED,
@@ -360,10 +362,13 @@ class ThreeDSecureClient internal constructor(
                         } else {
                             threeDSecureResult.threeDSecureNonce?.let {
                                 braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_SUCCEEDED)
-                                callbackTokenizeSuccess(callback, ThreeDSecureResult.Success(it))
+                                callbackTokenizeSuccess(
+                                    callback,
+                                    ThreeDSecureResult.Success(it)
+                                )
                             }
                         }
-                    } else if (error != null) {
+                    } catch (error: Exception) {
                         braintreeClient.sendAnalyticsEvent(
                             ThreeDSecureAnalytics.JWT_AUTH_FAILED,
                             AnalyticsEventParams(errorDescription = error.message)
@@ -380,7 +385,7 @@ class ThreeDSecureClient internal constructor(
 
                 CardinalActionCode.ERROR, CardinalActionCode.TIMEOUT -> callbackTokenizeFailure(
                     callback, ThreeDSecureResult.Failure(
-                        BraintreeException(validateResponse.errorDescription), null
+                    BraintreeException(validateResponse.errorDescription), null
                     )
                 )
 

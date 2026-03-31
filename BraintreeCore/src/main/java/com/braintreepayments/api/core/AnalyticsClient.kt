@@ -43,6 +43,7 @@ class AnalyticsClient internal constructor(
             buttonOrder = analyticsEventParams.buttonOrder,
             pageType = analyticsEventParams.pageType,
             errorDescription = analyticsEventParams.errorDescription,
+            uiType = analyticsEventParams.uiType,
             fundingSource = analyticsParamRepository.fundingSource,
             didEnablePayPalAppSwitch = analyticsParamRepository.didEnablePayPalAppSwitch,
             didPayPalServerAttemptAppSwitch = analyticsParamRepository.didPayPalServerAttemptAppSwitch,

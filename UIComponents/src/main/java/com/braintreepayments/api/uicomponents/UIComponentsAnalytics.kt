@@ -7,4 +7,7 @@ internal object UIComponentsAnalytics {
 
     const val VENMO_BUTTON_PRESENTED = "ui-components:venmo-button:presented"
     const val VENMO_BUTTON_SELECTED = "ui-components:venmo-button:selected"
+
+    const val UI_TYPE_COMPOSE = "compose"
+    const val UI_TYPE_XML_VIEW = "xml"
 }
