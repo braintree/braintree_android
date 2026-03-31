@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.25.0 (2026-03-31)
 
 * BraintreeCore
     * Update Browser Switch version to 3.5.1
