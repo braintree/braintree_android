@@ -210,6 +210,25 @@ SDK. You are no longer required to add this logic to your code.
 
 For PayPal button, you should invoke the PayPalButton composable like this:
 ```kotlin
+
+private val paypalTokenizeCallback = PayPalTokenizeCallback { payPalResult ->
+    when (payPalResult) {
+        is PayPalResult.Success -> {
+            handlePayPalResult(payPalResult.nonce)
+        }
+
+        is PayPalResult.Cancel -> {
+            handleError(Exception("User did not complete PayPal payment flow"))
+        }
+
+        is PayPalResult.Failure -> {
+            handleError(payPalResult.error)
+        }
+    }
+    // clear intent data
+    // requireActivity().intent.data = null
+}
+
 PayPalButton(
     style = paypalStyle,
     payPalRequest = paypalRequest,
@@ -222,6 +241,24 @@ PayPalButton(
 
 For Venmo button, you should invoke the PayPalButton composable like this:
 ```kotlin
+private val venmoTokenizeCallback = VenmoTokenizeCallback { venmoResult ->
+    when (venmoResult) {
+        is VenmoResult.Success -> {
+            handleVenmoResult(venmoResult.nonce)
+        }
+
+        is VenmoResult.Cancel -> {
+            handleError(Exception("User did not complete Venmo payment flow"))
+        }
+
+        is VenmoResult.Failure -> {
+            handleError(venmoResult.error)
+        }
+    }
+    // clear intent data
+    // requireActivity().intent.data = null
+}
+
 VenmoButton(
     style = venmoStyle,
     venmoRequest = venmoRequest,
