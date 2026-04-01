@@ -200,8 +200,15 @@ class ExampleFragment : Fragment() {
 ```
 
 ### Compose support for Buttons
-We now offer support for Jetpack Compose buttons.
+We now offer support for Jetpack Compose composable buttons.
+Similar to the XML buttons, the Braintree Android SDK now allows merchants to draw and render both PayPal and Venmo 
+payment buttons using a discrete set of parameters. The SDK will handle the loading and disable state of the button 
+and allow you to display and offer buttons meeting the current brand guidelines versus maintaining responsibility on 
+your own. We will call the `tokenize` methods with your request and allow you a seamless branded experience in your 
+mobile apps. The call to `handleReturnToApp` when the control is returned to the merchant app is handled within the 
+SDK. You are no longer required to add this logic to your code.
 
+For PayPal button, you should invoke the PayPalButton composable like this:
 ```kotlin
 PayPalButton(
     style = paypalStyle,
@@ -214,6 +221,7 @@ PayPalButton(
 )
 ```
 
+For Venmo button, you should invoke the PayPalButton composable like this:
 ```kotlin
 VenmoButton(
     style = venmoStyle,
@@ -226,9 +234,11 @@ VenmoButton(
 )
 ```
 
-The call to `handleReturnToApp` is handled within the compose buttons. You are no longer required to add this logic 
-to your code. However, after the you've received a result, we request you to clear out the `intent.data` by setting 
-it to null.
+After you've received a result, clear out the `intent.data` by setting it to null.
+
+```kotlin
+intent.data = null
+```
 
 ## Help
 
