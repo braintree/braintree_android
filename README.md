@@ -199,6 +199,37 @@ class ExampleFragment : Fragment() {
 }
 ```
 
+### Compose support for Buttons
+We now offer support for Jetpack Compose buttons.
+
+```kotlin
+PayPalButton(
+    style = paypalStyle,
+    payPalRequest = paypalRequest,
+    authorization = authStringArg,
+    appLinkReturnUrl =
+        "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments".toUri(),
+    deepLinkFallbackUrlScheme = "com.braintreepayments.demo.braintree",
+    paypalTokenizeCallback = paypalTokenizeCallback
+)
+```
+
+```kotlin
+VenmoButton(
+    style = venmoStyle,
+    venmoRequest = venmoRequest,
+    authorization = authStringArg,
+    appLinkReturnUrl =
+        "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments".toUri(),
+    deepLinkFallbackUrlScheme = "com.braintreepayments.demo.braintree",
+    venmoTokenizeCallback = venmoTokenizeCallback
+)
+```
+
+The call to `handleReturnToApp` is handled within the compose buttons. You are no longer required to add this logic 
+to your code. However, after the you've received a result, we request you to clear out the `intent.data` by setting 
+it to null.
+
 ## Help
 
 * [Read the docs](https://developer.paypal.com/braintree/docs/guides/overview)
