@@ -214,9 +214,8 @@ PayPalButton(
     style = paypalStyle,
     payPalRequest = paypalRequest,
     authorization = authStringArg,
-    appLinkReturnUrl =
-        "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments".toUri(),
-    deepLinkFallbackUrlScheme = "com.braintreepayments.demo.braintree",
+    appLinkReturnUrl = "https://merchant-app.com".toUri(),
+    deepLinkFallbackUrlScheme = "com.merchant.app.payments",
     paypalTokenizeCallback = paypalTokenizeCallback
 )
 ```
@@ -227,9 +226,8 @@ VenmoButton(
     style = venmoStyle,
     venmoRequest = venmoRequest,
     authorization = authStringArg,
-    appLinkReturnUrl =
-        "https://mobile-sdk-demo-site-838cead5d3ab.herokuapp.com/braintree-payments".toUri(),
-    deepLinkFallbackUrlScheme = "com.braintreepayments.demo.braintree",
+    appLinkReturnUrl = "https://merchant-app.com".toUri(),
+    deepLinkFallbackUrlScheme = "com.merchant.app.payments",
     venmoTokenizeCallback = venmoTokenizeCallback
 )
 ```
