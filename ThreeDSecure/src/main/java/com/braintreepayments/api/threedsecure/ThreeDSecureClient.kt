@@ -153,13 +153,23 @@ class ThreeDSecureClient internal constructor(
      * customization.
      * @param callback [ThreeDSecurePrepareLookupCallback]
      */
-    @Suppress("LongMethod")
     fun prepareLookup(
         context: Context,
         request: ThreeDSecureRequest,
         callback: ThreeDSecurePrepareLookupCallback
     ) {
         braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_STARTED)
+
+        coroutineScope.launch {
+            val result = prepareLookup(context, request)
+            callback.onPrepareLookupResult(result)
+        }
+    }
+
+    private suspend fun prepareLookup(
+        context: Context,
+        request: ThreeDSecureRequest
+    ): ThreeDSecurePrepareLookupResult {
         val lookupJSON = JSONObject()
         try {
             lookupJSON
@@ -175,59 +185,37 @@ class ThreeDSecureClient internal constructor(
         } catch (ignored: JSONException) {
         }
 
-        coroutineScope.launch {
-            try {
-                val configuration = braintreeClient.getConfiguration()
-                if (configuration.cardinalAuthenticationJwt == null) {
-                    callbackPrepareLookupFailure(
-                        callback,
-                        ThreeDSecurePrepareLookupResult.Failure(
-                            BraintreeException(
-                                "Merchant is not configured for 3DS 2.0. " +
-                                    "Please contact Braintree Support for assistance."
-                            )
-                        )
+        try {
+            val configuration = braintreeClient.getConfiguration()
+            if (configuration.cardinalAuthenticationJwt == null) {
+                return prepareLookupFailure(
+                    BraintreeException(
+                        "Merchant is not configured for 3DS 2.0. " +
+                                "Please contact Braintree Support for assistance."
                     )
-                    return@launch
-                }
-
-                try {
-                    cardinalClient.initialize(
-                        context,
-                        configuration,
-                        request
-                    )
-                    val consumerSessionId = cardinalClient.consumerSessionId
-                    if (!consumerSessionId.isNullOrEmpty()) {
-                        lookupJSON.put("dfReferenceId", consumerSessionId)
-                    } else {
-                        callbackPrepareLookupFailure(
-                            callback,
-                            ThreeDSecurePrepareLookupResult.Failure(
-                                BraintreeException("There was an error retrieving the dfReferenceId.")
-                            )
-                        )
-                        return@launch
-                    }
-                    braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED)
-                    callback.onPrepareLookupResult(
-                        ThreeDSecurePrepareLookupResult.Success(
-                            request,
-                            lookupJSON.toString()
-                        )
-                    )
-                } catch (initializeException: BraintreeException) {
-                    callbackPrepareLookupFailure(
-                        callback,
-                        ThreeDSecurePrepareLookupResult.Failure(initializeException)
-                    )
-                }
-            } catch (configError: Exception) {
-                callbackPrepareLookupFailure(
-                    callback,
-                    ThreeDSecurePrepareLookupResult.Failure(configError)
                 )
             }
+
+            cardinalClient.initialize(
+                context,
+                configuration,
+                request
+            )
+            val consumerSessionId = cardinalClient.consumerSessionId
+            if (!consumerSessionId.isNullOrEmpty()) {
+                lookupJSON.put("dfReferenceId", consumerSessionId)
+            } else {
+                return prepareLookupFailure(
+                        BraintreeException("There was an error retrieving the dfReferenceId.")
+                    )
+            }
+            braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED)
+            return ThreeDSecurePrepareLookupResult.Success(
+                    request,
+                    lookupJSON.toString()
+                )
+        } catch (error: Exception) {
+            return prepareLookupFailure(error)
         }
     }
 
@@ -390,19 +378,18 @@ class ThreeDSecureClient internal constructor(
         return ThreeDSecurePaymentAuthRequest.Failure(error)
     }
 
-    private fun callbackPrepareLookupFailure(
-        callback: ThreeDSecurePrepareLookupCallback,
-        result: ThreeDSecurePrepareLookupResult.Failure
-    ) {
+    private fun prepareLookupFailure(
+        error: Exception
+    ): ThreeDSecurePrepareLookupResult.Failure {
         braintreeClient.sendAnalyticsEvent(
             ThreeDSecureAnalytics.LOOKUP_FAILED,
-            AnalyticsEventParams(errorDescription = result.error.message)
+            AnalyticsEventParams(errorDescription = error.message)
         )
         braintreeClient.sendAnalyticsEvent(
             ThreeDSecureAnalytics.VERIFY_FAILED,
-            AnalyticsEventParams(errorDescription = result.error.message)
+            AnalyticsEventParams(errorDescription = error.message)
         )
-        callback.onPrepareLookupResult(result)
+        return ThreeDSecurePrepareLookupResult.Failure(error)
     }
 
     private fun tokenizeFailure(
