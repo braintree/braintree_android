@@ -24,6 +24,7 @@ task :unit_tests, [:qualified_class, :module_name, :test_name] => :lint do |task
   else
     sh "./gradlew #{args[:module_name]}:testDebugUnitTest --tests #{args[:qualified_class]}.#{args[:test_name]}"
   end
+
 end
 
 # Usage:
@@ -81,7 +82,9 @@ task :release => :unit_tests do
   prompt_for_sonatype_username_and_password
 
   Rake::Task["release_braintree"].invoke
+  Rake::Task["release_braintree_zscaler"].invoke
   Rake::Task["release_paypal"].invoke
+  Rake::Task["release_paypal_zscaler"].invoke
 
   post_release(version)
 end
@@ -98,14 +101,25 @@ task :assumptions do
 end
 
 task :release_braintree do
-  sh "./gradlew clean :Core:publishToSonatype :BraintreeDataCollector:publishToSonatype :Braintree:publishToSonatype :ThreeDSecure:publishToSonatype"
-  sh "./gradlew closeAndReleaseRepository"
+  sh "./gradlew clean :ThreeDSecure:publishToSonatype closeAndReleaseSonatypeStagingRepository \
+  -PsonatypeUsername=#{ENV['SONATYPE_USERNAME']} -PsonatypePassword=#{ENV['SONATYPE_PASSWORD']}"
+  puts "Braintree modules have been released"
+end
+
+task :release_braintree_zscaler do
+  sh "./gradlew clean :Core:publishToSonatype :BraintreeDataCollector:publishToSonatype :Braintree:publishToSonatype \
+  closeAndReleaseSonatypeStagingRepository -PsonatypeUsername=#{ENV['SONATYPE_USERNAME']} \
+  -PsonatypePassword=#{ENV['SONATYPE_PASSWORD']}"
   puts "Braintree modules have been released"
 end
 
 task :release_paypal do
-  sh "./gradlew -PnexusPackageGroup=com.paypal clean :PayPalDataCollector:publishToSonatype :PayPalOneTouch:publishToSonatype"
-  sh "./gradlew -PnexusPackageGroup=com.paypal closeAndReleaseRepository"
+  sh "./gradlew -PnexusPackageGroup=com.paypal clean :PayPalDataCollector:publishToSonatype closeAndReleaseSonatypeStagingRepository -PsonatypeUsername=#{ENV['SONATYPE_USERNAME']} -PsonatypePassword=#{ENV['SONATYPE_PASSWORD']}"
+  puts "PayPal modules have been released"
+end
+
+task :release_paypal_zscaler do
+  sh "./gradlew -PnexusPackageGroup=com.paypal clean :PayPalOneTouch:publishToSonatype closeAndReleaseSonatypeStagingRepository -PsonatypeUsername=#{ENV['SONATYPE_USERNAME']} -PsonatypePassword=#{ENV['SONATYPE_PASSWORD']}"
   puts "PayPal modules have been released"
 end
 

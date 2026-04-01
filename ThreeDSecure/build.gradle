@@ -1,6 +1,6 @@
- plugins {
+plugins {
     id 'com.android.library'
-    id 'de.marcphilipp.nexus-publish'
+    id 'maven-publish'
     id 'signing'
 }
 
@@ -50,22 +50,14 @@ dependencies {
      from android.sourceSets.main.java.srcDirs
  }
 
- signing {
-     required {
-         !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
-     }
-     sign publishing.publications
- }
-
- nexusPublishing {
-     // give nexus sonatype more time to initialize the staging repository
-     clientTimeout = Duration.ofMinutes(3)
-     repositories {
-         sonatype()
-     }
- }
-
 afterEvaluate {
+    signing {
+        required {
+            !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
+        }
+        sign publishing.publications
+    }
+
     publishing {
         publications {
             release(MavenPublication) {
