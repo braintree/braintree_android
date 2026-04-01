@@ -48,6 +48,7 @@ internal class MockkVenmoApiBuilder {
         return this
     }
 
+    @Suppress("ThrowsCount")
     fun build(): VenmoApi {
         val venmoApi = mockk<VenmoApi>(relaxed = true)
 

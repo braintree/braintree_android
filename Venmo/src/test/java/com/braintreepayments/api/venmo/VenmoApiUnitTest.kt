@@ -314,7 +314,6 @@ class VenmoApiUnitTest {
 
         val nonce = sut.createNonceFromPaymentContext("payment-context-id")
 
-
         assertEquals("@somebody", nonce.username)
     }
 
@@ -330,7 +329,6 @@ class VenmoApiUnitTest {
             analyticsParamRepository,
             merchantRepository
         )
-
 
         assertFailsWith<JSONException> {
             sut.createNonceFromPaymentContext("payment-context-id")
