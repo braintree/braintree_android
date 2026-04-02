@@ -11,7 +11,10 @@ import com.cardinalcommerce.cardinalmobilesdk.models.CardinalChallengeObserver
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONArray
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 internal class CardinalClient {
     var consumerSessionId: String? = null
@@ -19,29 +22,27 @@ internal class CardinalClient {
 
     @Throws(BraintreeException::class)
     @Suppress("TooGenericExceptionCaught")
-    fun initialize(
+    suspend fun initialize(
         context: Context,
         configuration: Configuration,
-        request: ThreeDSecureRequest,
-        callback: CardinalInitializeCallback
-    ) {
+        request: ThreeDSecureRequest
+    ): String? = suspendCancellableCoroutine { continuation ->
         configureCardinal(context, configuration, request)
 
         try {
             val cardinalInitService = object : CardinalInitService {
                 override fun onSetupCompleted(sessionId: String) {
                     consumerSessionId = sessionId
-                    callback.onResult(consumerSessionId, null)
+                    continuation.resume(consumerSessionId)
                 }
 
                 override fun onValidated(validateResponse: ValidateResponse?, serverJWT: String?) {
                     if (consumerSessionId == null) {
-                        callback.onResult(
-                            consumerSessionId = null,
-                            error = BraintreeException("consumer session id not available")
+                        continuation.resumeWithException(
+                            BraintreeException("consumer session id not available")
                         )
                     } else {
-                        callback.onResult(consumerSessionId, null)
+                        continuation.resume(consumerSessionId)
                     }
                 }
             }
