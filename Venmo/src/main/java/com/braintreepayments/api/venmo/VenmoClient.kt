@@ -37,6 +37,7 @@ import kotlin.coroutines.cancellation.CancellationException
 /**
  * Used to create and tokenize Venmo accounts. For more information see the [documentation](https://developer.paypal.com/braintree/docs/guides/venmo/overview)
  */
+@Suppress("TooManyFunctions")
 class VenmoClient internal constructor(
     private val braintreeClient: BraintreeClient,
     private val apiClient: ApiClient = ApiClient(braintreeClient),
@@ -132,7 +133,6 @@ class VenmoClient internal constructor(
      * @param request  [VenmoRequest]
      * @param callback [VenmoPaymentAuthRequestCallback]
      */
-    @Suppress("LongMethod", "CyclomaticComplexMethod", "TooGenericExceptionCaught")
     fun createPaymentAuthRequest(
         context: Context,
         request: VenmoRequest,
@@ -140,50 +140,53 @@ class VenmoClient internal constructor(
     ) {
         braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_STARTED)
         coroutineScope.launch {
-            try {
-                val configuration = braintreeClient.getConfiguration()
-                val isVenmoEnabled = configuration.isVenmoEnabled
-                if (!isVenmoEnabled) {
-                    callbackPaymentAuthFailure(
-                        callback,
-                        VenmoPaymentAuthRequest.Failure(AppSwitchNotAvailableException("Venmo is not enabled"))
-                    )
-                    return@launch
-                }
+            val result = createPaymentAuthRequest(context, request)
+            callback.onVenmoPaymentAuthRequest(result)
+        }
+    }
 
-                // Merchants are not allowed to collect user addresses unless ECD (Enriched Customer
-                // Data) is enabled on the BT Control Panel.
-                val customerDataEnabled = configuration.venmoEnrichedCustomerDataEnabled
-                if ((request.collectCustomerShippingAddress ||
-                            request.collectCustomerBillingAddress) && !customerDataEnabled
-                ) {
-                    callbackPaymentAuthFailure(
-                        callback, VenmoPaymentAuthRequest.Failure(
-                            BraintreeException(
-                                "Cannot collect customer data when ECD is disabled. Enable this feature " +
-                                        "in the Control Panel to collect this data."
-                            )
-                        )
-                    )
-                    return@launch
-                }
-
-                var venmoProfileId = request.profileId
-                if (TextUtils.isEmpty(venmoProfileId)) {
-                    venmoProfileId = configuration.venmoMerchantId
-                }
-
-                val paymentContextId = venmoApi.createPaymentContext(request, venmoProfileId)
-                contextId = paymentContextId
-                createPaymentAuthRequest(
-                    context, request, configuration,
-                    merchantRepository.authorization, venmoProfileId,
-                    paymentContextId, callback
+    private suspend fun createPaymentAuthRequest(
+        context: Context,
+        request: VenmoRequest
+    ): VenmoPaymentAuthRequest {
+        try {
+            val configuration = braintreeClient.getConfiguration()
+            val isVenmoEnabled = configuration.isVenmoEnabled
+            if (!isVenmoEnabled) {
+                return paymentAuthFailure(
+                    AppSwitchNotAvailableException("Venmo is not enabled")
                 )
-            } catch (e: Exception) {
-                if (e is CancellationException) throw e
-                callbackPaymentAuthFailure(callback, VenmoPaymentAuthRequest.Failure(e))
             }
+
+            // Merchants are not allowed to collect user addresses unless ECD (Enriched Customer
+            // Data) is enabled on the BT Control Panel.
+            val customerDataEnabled = configuration.venmoEnrichedCustomerDataEnabled
+            if ((request.collectCustomerShippingAddress ||
+                        request.collectCustomerBillingAddress) && !customerDataEnabled
+            ) {
+                return paymentAuthFailure(
+                    BraintreeException(
+                        "Cannot collect customer data when ECD is disabled. Enable this feature " +
+                                "in the Control Panel to collect this data."
+                    )
+                )
+            }
+
+            var venmoProfileId = request.profileId
+            if (TextUtils.isEmpty(venmoProfileId)) {
+                venmoProfileId = configuration.venmoMerchantId
+            }
+
+            val paymentContextId = venmoApi.createPaymentContext(request, venmoProfileId)
+            contextId = paymentContextId
+            return createPaymentAuthRequest(
+                context, request, configuration,
+                merchantRepository.authorization, venmoProfileId,
+                paymentContextId
+            )
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            return paymentAuthFailure(e)
         }
     }
 
@@ -195,8 +198,7 @@ class VenmoClient internal constructor(
         authorization: Authorization,
         venmoProfileId: String?,
         paymentContextId: String?,
-        callback: VenmoPaymentAuthRequestCallback
-    ) {
+    ): VenmoPaymentAuthRequest.ReadyToLaunch {
         val isClientTokenAuth = (authorization is ClientToken)
         isVaultRequest = request.shouldVault && isClientTokenAuth
         sharedPrefsWriter.persistVenmoVaultOption(context, isVaultRequest)
@@ -265,7 +267,7 @@ class VenmoClient internal constructor(
             }
         val params = VenmoPaymentAuthRequestParams(browserSwitchOptions)
 
-        callback.onVenmoPaymentAuthRequest(VenmoPaymentAuthRequest.ReadyToLaunch(params))
+        return VenmoPaymentAuthRequest.ReadyToLaunch(params)
     }
 
     /**
@@ -281,54 +283,39 @@ class VenmoClient internal constructor(
         paymentAuthResult: VenmoPaymentAuthResult.Success,
         callback: VenmoTokenizeCallback
     ) {
-        val browserSwitchResultInfo: BrowserSwitchFinalResult.Success =
-            paymentAuthResult.browserSwitchSuccess
-
-        val deepLinkUri: Uri = browserSwitchResultInfo.returnUrl
-        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED, analyticsParams)
-        if (Objects.requireNonNull(deepLinkUri.path?.contains("success")) == true) {
-            coroutineScope.launch {
-                tokenizeSuccess(deepLinkUri, callback)
-            }
-        } else if (deepLinkUri.path?.contains("cancel") == true) {
-            callbackTokenizeCancel(callback)
-        } else if (deepLinkUri.path?.contains("error") == true) {
-            callbackTokenizeFailure(
-                callback,
-                VenmoResult.Failure(Exception("Error returned from Venmo."))
-            )
+        coroutineScope.launch {
+            val result = tokenize(paymentAuthResult)
+            callback.onVenmoResult(result)
         }
     }
 
-    @Suppress("LongMethod", "TooGenericExceptionCaught")
-    private suspend fun tokenizeSuccess(deepLinkUri: Uri, callback: VenmoTokenizeCallback) {
+    private suspend fun tokenize(
+        paymentAuthResult: VenmoPaymentAuthResult.Success
+    ): VenmoResult {
+        val browserSwitchResultInfo: BrowserSwitchFinalResult.Success =
+            paymentAuthResult.browserSwitchSuccess
+        val deepLinkUri: Uri = browserSwitchResultInfo.returnUrl
+        braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED, analyticsParams)
+        return when {
+            Objects.requireNonNull(deepLinkUri.path?.contains("success")) == true -> tokenizeSuccess(deepLinkUri)
+            deepLinkUri.path?.contains("cancel") == true -> tokenizeCancel()
+            else -> tokenizeFailure(Exception("Error returned from Venmo."))
+        }
+    }
+
+    private suspend fun tokenizeSuccess(deepLinkUri: Uri): VenmoResult {
         val paymentContextId = parse(deepLinkUri.toString(), "resource_id")
         val paymentMethodNonce = parse(deepLinkUri.toString(), "payment_method_nonce")
         val username = parse(deepLinkUri.toString(), "username")
 
         val isClientTokenAuth = (merchantRepository.authorization is ClientToken)
         try {
-            if (paymentContextId != null) {
-                val nonce = venmoApi.createNonceFromPaymentContext(paymentContextId)
-                isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(
-                    merchantRepository.applicationContext
-                )
-                if (isVaultRequest && isClientTokenAuth) {
-                    val vaultedNonce = venmoApi.vaultVenmoAccountNonce(nonce.string)
-                    callbackSuccess(callback, VenmoResult.Success(vaultedNonce))
-                } else {
-                    callbackSuccess(callback, VenmoResult.Success(nonce))
+            val nonce = when {
+                paymentContextId != null -> {
+                    venmoApi.createNonceFromPaymentContext(paymentContextId)
                 }
-            } else if (paymentMethodNonce != null && username != null) {
-                isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(
-                    merchantRepository.applicationContext
-                )
-
-                if (isVaultRequest && isClientTokenAuth) {
-                    val vaultedNonce = venmoApi.vaultVenmoAccountNonce(paymentMethodNonce)
-                    callbackSuccess(callback, VenmoResult.Success(vaultedNonce))
-                } else {
-                    val venmoAccountNonce = VenmoAccountNonce(
+                paymentMethodNonce != null && username != null -> {
+                    VenmoAccountNonce(
                         paymentMethodNonce,
                         isDefault = false,
                         email = null,
@@ -340,12 +327,25 @@ class VenmoClient internal constructor(
                         billingAddress = null,
                         shippingAddress = null
                     )
-                    callbackSuccess(callback, VenmoResult.Success(venmoAccountNonce))
                 }
+                else -> return tokenizeFailure(
+                    BraintreeException("Failed to tokenize Venmo account.")
+                )
             }
+
+            isVaultRequest = sharedPrefsWriter.getVenmoVaultOption(
+                merchantRepository.applicationContext
+            )
+
+            val finalNonce = if (isVaultRequest && isClientTokenAuth) {
+                venmoApi.vaultVenmoAccountNonce(nonce.string)
+            } else {
+                nonce
+            }
+            return tokenizeSuccess(finalNonce)
         } catch (e: Exception) {
             if (e is CancellationException) throw e
-            callbackTokenizeFailure(callback, VenmoResult.Failure(e))
+            return tokenizeFailure(e)
         }
     }
 
@@ -359,37 +359,36 @@ class VenmoClient internal constructor(
         }
     }
 
-    private fun callbackPaymentAuthFailure(
-        callback: VenmoPaymentAuthRequestCallback,
-        request: VenmoPaymentAuthRequest.Failure
-    ) {
+    private fun paymentAuthFailure(
+        error: Exception
+    ): VenmoPaymentAuthRequest.Failure {
         braintreeClient.sendAnalyticsEvent(
             VenmoAnalytics.TOKENIZE_FAILED,
-            analyticsParams.copy(errorDescription = request.error.message)
+            analyticsParams.copy(errorDescription = error.message)
         )
-        callback.onVenmoPaymentAuthRequest(request)
         analyticsParamRepository.reset()
+        return VenmoPaymentAuthRequest.Failure(error)
     }
 
-    private fun callbackSuccess(callback: VenmoTokenizeCallback, venmoResult: VenmoResult) {
+    private fun tokenizeSuccess(nonce: VenmoAccountNonce): VenmoResult.Success {
         braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_SUCCEEDED, analyticsParams)
-        callback.onVenmoResult(venmoResult)
         analyticsParamRepository.reset()
+        return VenmoResult.Success(nonce)
     }
 
-    private fun callbackTokenizeCancel(callback: VenmoTokenizeCallback) {
+    private fun tokenizeCancel(): VenmoResult.Cancel {
         braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_CANCELED, analyticsParams)
-        callback.onVenmoResult(VenmoResult.Cancel)
         analyticsParamRepository.reset()
+        return VenmoResult.Cancel
     }
 
-    private fun callbackTokenizeFailure(callback: VenmoTokenizeCallback, venmoResult: VenmoResult.Failure) {
+    private fun tokenizeFailure(error: Exception): VenmoResult.Failure {
         braintreeClient.sendAnalyticsEvent(
             VenmoAnalytics.TOKENIZE_FAILED,
-            analyticsParams.copy(errorDescription = venmoResult.error.message)
+            analyticsParams.copy(errorDescription = error.message)
         )
-        callback.onVenmoResult(venmoResult)
         analyticsParamRepository.reset()
+        return VenmoResult.Failure(error)
     }
 
     private val analyticsParams: AnalyticsEventParams
