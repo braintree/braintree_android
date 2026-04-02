@@ -3,7 +3,7 @@ package com.braintreepayments.api.threedsecure
 import android.content.Context
 import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.core.Configuration
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
 
 internal class MockkCardinalClientBuilder {
@@ -30,33 +30,24 @@ internal class MockkCardinalClientBuilder {
     fun build(): CardinalClient {
         val cardinalClient = mockk<CardinalClient>(relaxed = true)
 
-        every { cardinalClient.consumerSessionId } returns successReferenceId
+        coEvery { cardinalClient.consumerSessionId } returns successReferenceId
 
         if (initializeRuntimeError != null) {
-            every {
+            coEvery {
                 cardinalClient.initialize(
                     any<Context>(),
                     any<Configuration>(),
-                    any<ThreeDSecureRequest>(),
-                    any<CardinalInitializeCallback>()
+                    any<ThreeDSecureRequest>()
                 )
             } throws initializeRuntimeError!!
         } else {
-            every {
+            coEvery {
                 cardinalClient.initialize(
                     any<Context>(),
                     any<Configuration>(),
-                    any<ThreeDSecureRequest>(),
-                    any<CardinalInitializeCallback>()
+                    any<ThreeDSecureRequest>()
                 )
-            } answers { call ->
-                val callback = call.invocation.args[3] as CardinalInitializeCallback
-                if (successReferenceId != null) {
-                    callback.onResult(successReferenceId, null)
-                } else if (error != null) {
-                    callback.onResult(null, error)
-                }
-            }
+            } returns successReferenceId
         }
 
         return cardinalClient
