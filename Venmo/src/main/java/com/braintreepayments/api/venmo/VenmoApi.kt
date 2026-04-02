@@ -22,7 +22,7 @@ internal class VenmoApi(
     suspend fun createPaymentContext(
         request: VenmoRequest,
         venmoProfileId: String?
-    ): String? {
+    ): String {
         val params = JSONObject()
         params.put(
             "query", """

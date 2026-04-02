@@ -174,15 +174,14 @@ class VenmoClient internal constructor(
                 }
 
                 val paymentContextId = venmoApi.createPaymentContext(request, venmoProfileId)
-                if (!paymentContextId.isNullOrEmpty()) {
-                    contextId = paymentContextId
-                }
+                contextId = paymentContextId
                 createPaymentAuthRequest(
                     context, request, configuration,
                     merchantRepository.authorization, venmoProfileId,
                     paymentContextId, callback
                 )
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 callbackPaymentAuthFailure(callback, VenmoPaymentAuthRequest.Failure(e))
             }
         }
@@ -289,7 +288,7 @@ class VenmoClient internal constructor(
         braintreeClient.sendAnalyticsEvent(VenmoAnalytics.APP_SWITCH_SUCCEEDED, analyticsParams)
         if (Objects.requireNonNull(deepLinkUri.path?.contains("success")) == true) {
             coroutineScope.launch {
-                callbackTokenizeSuccess(deepLinkUri, callback)
+                tokenizeSuccess(deepLinkUri, callback)
             }
         } else if (deepLinkUri.path?.contains("cancel") == true) {
             callbackTokenizeCancel(callback)
@@ -302,7 +301,7 @@ class VenmoClient internal constructor(
     }
 
     @Suppress("LongMethod", "TooGenericExceptionCaught")
-    private suspend fun callbackTokenizeSuccess(deepLinkUri: Uri, callback: VenmoTokenizeCallback) {
+    private suspend fun tokenizeSuccess(deepLinkUri: Uri, callback: VenmoTokenizeCallback) {
         val paymentContextId = parse(deepLinkUri.toString(), "resource_id")
         val paymentMethodNonce = parse(deepLinkUri.toString(), "payment_method_nonce")
         val username = parse(deepLinkUri.toString(), "username")
