@@ -64,32 +64,6 @@ guidelines from CHANGELOG_STYLE.md
 
 **User**: "Create a changelog for commits from the past 7 days"
 
-**Output**:
-```markdown
-# Updates - Week of March 10, 2024
-
-## ✨ New Features
-
-- **Team Workspaces**: Create separate workspaces for different 
-  projects. Invite team members and keep everything organized.
-
-- **Keyboard Shortcuts**: Press ? to see all available shortcuts. 
-  Navigate faster without touching your mouse.
-
-## 🔧 Improvements
-
-- **Faster Sync**: Files now sync 2x faster across devices
-- **Better Search**: Search now includes file contents, not just titles
-
-## 🐛 Fixes
-
-- Fixed issue where large images wouldn't upload
-- Resolved timezone confusion in scheduled posts
-- Corrected notification badge count
-```
-
-**Inspired by:** Manik Aggarwal's use case from Lenny's Newsletter
-
 ## Tips
 
 - Run from your git repository root
