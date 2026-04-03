@@ -2,9 +2,9 @@ package com.braintreepayments.api.venmo
 
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.ApiClient
-import com.braintreepayments.api.core.BuildConfig
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.BraintreeException
+import com.braintreepayments.api.core.BuildConfig
 import com.braintreepayments.api.core.MerchantRepository
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkApiClientBuilder
@@ -13,23 +13,20 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
 import java.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertNotNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -39,30 +36,26 @@ class VenmoApiUnitTest {
     private lateinit var apiClient: ApiClient
     private lateinit var analyticsParamRepository: AnalyticsParamRepository
 
-    private lateinit var testScope: TestScope
-    private val testDispatcher = StandardTestDispatcher()
-
     private val merchantRepository: MerchantRepository = mockk(relaxed = true)
 
     @Before
     fun beforeEach() {
-        braintreeClient = mockk<BraintreeClient>(relaxed = true)
+        braintreeClient = MockkBraintreeClientBuilder()
+            .sendGraphQLPostSuccessfulResponse(
+                Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
+            .build()
         apiClient = mockk<ApiClient>(relaxed = true)
         analyticsParamRepository = mockk<AnalyticsParamRepository>(relaxed = true)
-        testScope = TestScope(testDispatcher)
-
         every { analyticsParamRepository.sessionId } returns "session-id"
     }
 
     @Test
-    fun createPaymentContext_createsPaymentContextViaGraphQL() = runTest(testDispatcher) {
+    fun createPaymentContext_createsPaymentContextViaGraphQL() = runTest {
         val sut = VenmoApi(
             braintreeClient,
             apiClient,
             analyticsParamRepository,
-            merchantRepository,
-            testDispatcher,
-            testScope
+            merchantRepository
         )
         val lineItems = ArrayList<VenmoLineItem>()
         lineItems.add(VenmoLineItem(VenmoLineItemKind.DEBIT, "Some Item", 1, "1"))
@@ -81,8 +74,7 @@ class VenmoApiUnitTest {
             lineItems = lineItems
         )
 
-        sut.createPaymentContext(request, request.profileId, mockk(relaxed = true))
-        advanceUntilIdle()
+        sut.createPaymentContext(request, request.profileId)
 
         val captor = slot<JSONObject>()
         coVerify { braintreeClient.sendGraphQLPOST(capture(captor)) }
@@ -117,14 +109,12 @@ class VenmoApiUnitTest {
     }
 
     @Test
-    fun createPaymentContext_whenTransactionAmountOptionsMissing() = runTest(testDispatcher) {
+    fun createPaymentContext_whenTransactionAmountOptionsMissing() = runTest {
         val sut = VenmoApi(
             braintreeClient,
             apiClient,
             analyticsParamRepository,
-            merchantRepository,
-            testDispatcher,
-            testScope
+            merchantRepository
         )
 
         val request = VenmoRequest(
@@ -134,8 +124,7 @@ class VenmoApiUnitTest {
             collectCustomerBillingAddress = true
         )
 
-        sut.createPaymentContext(request, request.profileId, mockk(relaxed = true))
-        advanceUntilIdle()
+        sut.createPaymentContext(request, request.profileId)
 
         val captor = slot<JSONObject>()
         coVerify { braintreeClient.sendGraphQLPOST(capture(captor)) }
@@ -155,7 +144,7 @@ class VenmoApiUnitTest {
     }
 
     @Test
-    fun createPaymentContext_whenGraphQLPostSuccess_includesPaymentContextID_callsBackNull() = runTest(testDispatcher) {
+    fun createPaymentContext_whenGraphQLPostSuccess_includesPaymentContextID_returnsId() = runTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendGraphQLPostSuccessfulResponse(Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_CONTEXT_RESPONSE)
             .build()
@@ -164,9 +153,7 @@ class VenmoApiUnitTest {
             braintreeClient,
             apiClient,
             analyticsParamRepository,
-            merchantRepository,
-            testDispatcher,
-            testScope
+            merchantRepository
         )
 
         val request = VenmoRequest(
@@ -174,15 +161,12 @@ class VenmoApiUnitTest {
             profileId = "sample-venmo-merchant"
         )
 
-        val callback = mockk<VenmoApiCallback>(relaxed = true)
-        sut.createPaymentContext(request, request.profileId, callback)
-        advanceUntilIdle()
-
-        verify { callback.onResult(any(), isNull()) }
+        val contextPaymentResponse = sut.createPaymentContext(request, request.profileId)
+        assertNotNull(contextPaymentResponse)
     }
 
     @Test
-    fun createPaymentContext_whenGraphQLPostSuccess_missingPaymentContextID_callsBackError() = runTest(testDispatcher) {
+    fun createPaymentContext_whenGraphQLPostSuccess_missingPaymentContextID_throwsException() = runTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendGraphQLPostSuccessfulResponse(
                 Fixtures.VENMO_GRAPHQL_CREATE_PAYMENT_METHOD_RESPONSE_WITHOUT_PAYMENT_CONTEXT_ID
@@ -193,9 +177,7 @@ class VenmoApiUnitTest {
             braintreeClient,
             apiClient,
             analyticsParamRepository,
-            merchantRepository,
-            testDispatcher,
-            testScope
+            merchantRepository
         )
 
         val request = VenmoRequest(
@@ -203,20 +185,14 @@ class VenmoApiUnitTest {
             profileId = "sample-venmo-merchant"
         )
 
-        val callback = mockk<VenmoApiCallback>(relaxed = true)
-        sut.createPaymentContext(request, request.profileId, callback)
-        advanceUntilIdle()
-
-        val captor = slot<Exception>()
-        verify { callback.onResult(null, capture(captor)) }
-
-        val error = captor.captured
-        assertTrue(error is BraintreeException)
+        val error = assertFailsWith<BraintreeException> {
+            sut.createPaymentContext(request, request.profileId)
+        }
         assertEquals("Failed to fetch a Venmo paymentContextId while constructing the requestURL.", error.message)
     }
 
     @Test
-    fun createPaymentContext_whenGraphQLPostError_forwardsErrorToCallback() = runTest(testDispatcher) {
+    fun createPaymentContext_whenGraphQLPostError_throwsError() = runTest {
         val error = IOException("error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendGraphQLPostErrorResponse(error)
@@ -226,32 +202,25 @@ class VenmoApiUnitTest {
             braintreeClient,
             apiClient,
             analyticsParamRepository,
-            merchantRepository,
-            testDispatcher,
-            testScope
+            merchantRepository
         )
 
         val request = VenmoRequest(
             paymentMethodUsage = VenmoPaymentMethodUsage.SINGLE_USE,
             profileId = "sample-venmo-merchant"
         )
-
-        val callback = mockk<VenmoApiCallback>(relaxed = true)
-        sut.createPaymentContext(request, request.profileId, callback)
-        advanceUntilIdle()
-
-        verify { callback.onResult(null, error) }
+        assertFailsWith<IOException> {
+            sut.createPaymentContext(request, request.profileId)
+        }
     }
 
     @Test
-    fun createPaymentContext_withTotalAmountAndSetsFinalAmountToTrue() = runTest(testDispatcher) {
+    fun createPaymentContext_withTotalAmountAndSetsFinalAmountToTrue() = runTest {
         val sut = VenmoApi(
             braintreeClient,
             apiClient,
             analyticsParamRepository,
-            merchantRepository,
-            testDispatcher,
-            testScope
+            merchantRepository
         )
 
         val request = VenmoRequest(
@@ -261,8 +230,7 @@ class VenmoApiUnitTest {
             totalAmount = "5.99"
         )
 
-        sut.createPaymentContext(request, request.profileId, mockk(relaxed = true))
-        advanceUntilIdle()
+        sut.createPaymentContext(request, request.profileId)
 
         val captor = slot<JSONObject>()
         coVerify { braintreeClient.sendGraphQLPOST(capture(captor)) }
@@ -280,14 +248,12 @@ class VenmoApiUnitTest {
     }
 
     @Test
-    fun createPaymentContext_withTotalAmountAndSetsFinalAmountToFalse() = runTest(testDispatcher) {
+    fun createPaymentContext_withTotalAmountAndSetsFinalAmountToFalse() = runTest {
         val sut = VenmoApi(
             braintreeClient,
             apiClient,
             analyticsParamRepository,
-            merchantRepository,
-            testDispatcher,
-            testScope
+            merchantRepository
         )
 
         val request = VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE).apply {
@@ -296,9 +262,7 @@ class VenmoApiUnitTest {
             totalAmount = "5.99"
         }
 
-        sut.createPaymentContext(request, request.profileId, mockk(relaxed = true))
-        advanceUntilIdle()
-
+        sut.createPaymentContext(request, request.profileId)
         val captor = slot<JSONObject>()
         coVerify { braintreeClient.sendGraphQLPOST(capture(captor)) }
 
@@ -315,17 +279,17 @@ class VenmoApiUnitTest {
     }
 
     @Test
-    fun createNonceFromPaymentContext_queriesGraphQLPaymentContext() = runTest(testDispatcher) {
+    fun createNonceFromPaymentContext_queriesGraphQLPaymentContext() = runTest {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .sendGraphQLPostSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
+            .build()
         val sut = VenmoApi(
             braintreeClient,
             apiClient,
             analyticsParamRepository,
-            merchantRepository,
-            testDispatcher,
-            testScope
+            merchantRepository
         )
-        sut.createNonceFromPaymentContext("payment-context-id", mockk(relaxed = true))
-        advanceUntilIdle()
+        sut.createNonceFromPaymentContext("payment-context-id")
 
         val captor = slot<JSONObject>()
         coVerify { braintreeClient.sendGraphQLPOST(capture(captor)) }
@@ -335,7 +299,7 @@ class VenmoApiUnitTest {
     }
 
     @Test
-    fun createNonceFromPaymentContext_whenGraphQLPostSuccess_forwardsNonceToCallback() = runTest(testDispatcher) {
+    fun createNonceFromPaymentContext_whenGraphQLPostSuccess_returnsNonce() = runTest {
         val graphQLResponse = Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendGraphQLPostSuccessfulResponse(graphQLResponse)
@@ -345,22 +309,16 @@ class VenmoApiUnitTest {
             braintreeClient,
             apiClient,
             analyticsParamRepository,
-            merchantRepository,
-            testDispatcher,
-            testScope
+            merchantRepository
         )
 
-        val callback = mockk<VenmoInternalCallback>(relaxed = true)
-        sut.createNonceFromPaymentContext("payment-context-id", callback)
-        advanceUntilIdle()
+        val nonce = sut.createNonceFromPaymentContext("payment-context-id")
 
-        val captor = slot<VenmoAccountNonce>()
-        verify { callback.onResult(capture(captor), isNull()) }
-        assertEquals("@somebody", captor.captured.username)
+        assertEquals("@somebody", nonce.username)
     }
 
     @Test
-    fun createNonceFromPaymentContext_whenGraphQLPostResponseMalformed_callsBackError() = runTest(testDispatcher) {
+    fun createNonceFromPaymentContext_whenGraphQLPostResponseMalformed_throwsError() = runTest {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendGraphQLPostSuccessfulResponse("not-json")
             .build()
@@ -369,22 +327,16 @@ class VenmoApiUnitTest {
             braintreeClient,
             apiClient,
             analyticsParamRepository,
-            merchantRepository,
-            testDispatcher,
-            testScope
+            merchantRepository
         )
 
-        val callback = mockk<VenmoInternalCallback>(relaxed = true)
-        sut.createNonceFromPaymentContext("payment-context-id", callback)
-        advanceUntilIdle()
-
-        val captor = slot<Exception>()
-        verify { callback.onResult(null, capture(captor)) }
-        assertTrue(captor.captured is JSONException)
+        assertFailsWith<JSONException> {
+            sut.createNonceFromPaymentContext("payment-context-id")
+        }
     }
 
     @Test
-    fun createNonceFromPaymentContext_whenGraphQLPostError_forwardsErrorToCallback() = runTest(testDispatcher) {
+    fun createNonceFromPaymentContext_whenGraphQLPostError_throwsError() = runTest {
         val error = IOException("error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendGraphQLPostErrorResponse(error)
@@ -394,30 +346,23 @@ class VenmoApiUnitTest {
             braintreeClient,
             apiClient,
             analyticsParamRepository,
-            merchantRepository,
-            testDispatcher,
-            testScope
+            merchantRepository
         )
 
-        val callback = mockk<VenmoInternalCallback>(relaxed = true)
-        sut.createNonceFromPaymentContext("payment-context-id", callback)
-        advanceUntilIdle()
-
-        verify { callback.onResult(null, error) }
+        assertFailsWith<IOException> {
+            sut.createNonceFromPaymentContext("payment-context-id")
+        }
     }
 
     @Test
-    fun vaultVenmoAccountNonce_performsVaultRequest() = runTest(testDispatcher) {
+    fun vaultVenmoAccountNonce_performsVaultRequest() = runTest {
         val sut = VenmoApi(
             braintreeClient,
             apiClient,
             analyticsParamRepository,
-            merchantRepository,
-            testDispatcher,
-            testScope
+            merchantRepository
         )
-        sut.vaultVenmoAccountNonce("nonce", mockk(relaxed = true))
-        advanceUntilIdle()
+        sut.vaultVenmoAccountNonce("nonce")
 
         val captor = slot<VenmoAccount>()
         coVerify { apiClient.tokenizeREST(capture(captor)) }
@@ -428,7 +373,7 @@ class VenmoApiUnitTest {
     }
 
     @Test
-    fun vaultVenmoAccountNonce_tokenizeRESTSuccess_callsBackNonce() = runTest(testDispatcher) {
+    fun vaultVenmoAccountNonce_tokenizeRESTSuccess_returnsNonce() = runTest {
         val apiClient = MockkApiClientBuilder()
             .tokenizeRESTSuccess(JSONObject(Fixtures.VENMO_PAYMENT_METHOD_CONTEXT_WITH_NULL_PAYER_INFO_JSON))
             .build()
@@ -436,24 +381,15 @@ class VenmoApiUnitTest {
             braintreeClient,
             apiClient,
             analyticsParamRepository,
-            merchantRepository,
-            testDispatcher,
-            testScope
+            merchantRepository
         )
 
-        val callback = mockk<VenmoInternalCallback>(relaxed = true)
-        sut.vaultVenmoAccountNonce("nonce", callback)
-        advanceUntilIdle()
-
-        val captor = slot<VenmoAccountNonce>()
-        verify { callback.onResult(capture(captor), isNull()) }
-
-        val nonce = captor.captured
+        val nonce = sut.vaultVenmoAccountNonce("nonce")
         assertEquals("@sampleuser", nonce.username)
     }
 
     @Test
-    fun vaultVenmoAccountNonce_tokenizeRESTError_forwardsErrorToCallback() = runTest(testDispatcher) {
+    fun vaultVenmoAccountNonce_tokenizeRESTError_throwsError() = runTest {
         val error = Exception("error")
         val apiClient = MockkApiClientBuilder()
             .tokenizeRESTError(error)
@@ -462,15 +398,11 @@ class VenmoApiUnitTest {
             braintreeClient,
             apiClient,
             analyticsParamRepository,
-            merchantRepository,
-            testDispatcher,
-            testScope
+            merchantRepository
         )
 
-        val callback = mockk<VenmoInternalCallback>(relaxed = true)
-        sut.vaultVenmoAccountNonce("nonce", callback)
-        advanceUntilIdle()
-
-        verify { callback.onResult(null, error) }
+        assertFailsWith<Exception> {
+            sut.vaultVenmoAccountNonce("nonce")
+        }
     }
 }
