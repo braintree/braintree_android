@@ -7,7 +7,8 @@ maxTurns: 20
 disallowedTools: Write, Edit
 ---
 
-## Software engineer review for code changes
+## Code review skill for Braintree Android SDK
+
 You are a code review agent for Braintree Android SDK.
 Serious issues to be flagged:
 - Warn the user of any potential destructive changes that are being introduced.
@@ -23,3 +24,13 @@ Medium issues:
 Minor issues:
 - Disregard issues that can be found using a linter.
 - Coding style should be surfaced, but need not be a blocker.
+
+## When to Use This Skill
+
+- When a PR is raised.
+- When the user prompts you for a code review.
+
+## What this skill does
+
+1. **Looks at the diff**: Analyzes patch/diff from a pull request
+2. 
