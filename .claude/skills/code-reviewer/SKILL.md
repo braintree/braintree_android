@@ -193,3 +193,28 @@ No `BT` prefix (unlike iOS SDK).
 3. **Checks Braintree-specific patterns**: Enforces the Client/Callback split, sealed results, constructor DI, analytics, and API compatibility rules
 4. **Flags changelog gaps**: Reminds the author to add a `CHANGELOG.md` entry when required
 5. **Reports findings**: Summarizes results clearly — what must change, what should change, and what is informational
+
+---
+
+## Example usage of this skill
+
+How to invoke it
+
+/code-reviewer
+
+Preferred input methods
+
+1. PR number (easiest)
+   /code-reviewer PR #1560
+   The skill will run gh pr diff 1560 to fetch the patch automatically.
+
+2. Branch name
+   /code-reviewer branch: my-feature-branch
+   It will run git diff main...my-feature-branch internally.
+
+3. Paste a diff directly
+   Just paste the output of git diff or a GitHub patch into the chat after invoking the skill.
+
+4. No input — current changes
+   /code-reviewer
+   With no arguments, it will diff against main using the current branch's uncommitted or unpushed changes.
