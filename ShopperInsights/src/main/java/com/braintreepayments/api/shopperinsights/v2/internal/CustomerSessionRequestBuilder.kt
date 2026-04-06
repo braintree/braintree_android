@@ -2,6 +2,7 @@ package com.braintreepayments.api.shopperinsights.v2.internal
 
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
+import com.braintreepayments.api.shopperinsights.v2.PayPalCampaign
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -14,6 +15,7 @@ class CustomerSessionRequestBuilder {
     internal data class JsonRequestObjects(
         val customer: JSONObject,
         val purchaseUnits: JSONArray?,
+        val payPalCampaigns: JSONArray? = null,
     )
 
     internal fun createRequestObjects(customerSessionRequest: CustomerSessionRequest): JsonRequestObjects {
@@ -42,7 +44,22 @@ class CustomerSessionRequestBuilder {
                 }
             }
 
-        return JsonRequestObjects(customer, purchaseUnits)
+        val payPalCampaigns = payPalCampaignsToJson(customerSessionRequest.payPalCampaigns)
+
+        return JsonRequestObjects(customer, purchaseUnits, payPalCampaigns)
+    }
+
+    /**
+     * Builds the JSON array for `paypal_campaigns` (each element `{ "id": "..." }`, same as iOS `BTPayPalCampaign`).
+     */
+    internal fun payPalCampaignsToJson(payPalCampaigns: List<PayPalCampaign>?): JSONArray? {
+        return payPalCampaigns?.takeIf { it.isNotEmpty() }?.let { campaigns ->
+            JSONArray().apply {
+                campaigns.forEach { campaign ->
+                    put(JSONObject().put(CAMPAIGN_ID_KEY, campaign.id))
+                }
+            }
+        }
     }
 
     private companion object {
@@ -53,5 +70,6 @@ class CustomerSessionRequestBuilder {
         private const val AMOUNT = "amount"
         private const val VALUE = "value"
         private const val CURRENCY_CODE = "currencyCode"
+        private const val CAMPAIGN_ID_KEY = "id"
     }
 }

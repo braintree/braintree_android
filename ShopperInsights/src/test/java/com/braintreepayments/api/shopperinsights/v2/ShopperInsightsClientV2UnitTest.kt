@@ -226,7 +226,7 @@ class ShopperInsightsClientV2UnitTest {
         val recommendations = mockk<CustomerRecommendations>()
 
         coEvery {
-            generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId)
+            generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId, null)
         } answers {
             GenerateCustomerRecommendationsResult.Success(recommendations)
         }
@@ -247,7 +247,7 @@ class ShopperInsightsClientV2UnitTest {
         val error = Exception("Test error")
 
         coEvery {
-            generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId)
+            generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId, null)
         } answers {
             GenerateCustomerRecommendationsResult.Error(error)
         }
@@ -348,7 +348,7 @@ class ShopperInsightsClientV2UnitTest {
         val recommendations = mockk<CustomerRecommendations>()
 
         coEvery {
-            generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId)
+            generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId, null)
         } answers {
             GenerateCustomerRecommendationsResult.Success(recommendations)
         }
@@ -370,7 +370,7 @@ class ShopperInsightsClientV2UnitTest {
         val error = Exception("Test error")
 
         coEvery {
-            generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId)
+            generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId, null)
         } answers {
             GenerateCustomerRecommendationsResult.Error(error)
         }

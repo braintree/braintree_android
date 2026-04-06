@@ -3,6 +3,7 @@ package com.braintreepayments.api.shopperinsights.v2.internal
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
+import com.braintreepayments.api.shopperinsights.v2.PayPalCampaign
 import com.braintreepayments.api.shopperinsights.v2.PurchaseUnit
 import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessionApi.CreateCustomerSessionResult
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
@@ -221,4 +222,79 @@ class CreateCustomerSessionApiUnitTest {
             })
         }
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `when execute is called with payPalCampaigns, GraphQL variables include paypalCampaigns`() =
+        runTest(testDispatcher) {
+            val requestWithCampaigns = customerSessionRequest.copy(
+                payPalCampaigns = listOf(PayPalCampaign(id = "PPL-MOCK-CAMPAIGN"))
+            )
+
+            val responseBody = """
+            {
+                "data": {
+                    "createCustomerSession": {
+                        "sessionId": "test-session-id"
+                    }
+                }
+            }
+            """.trimIndent()
+
+            val braintreeClient = MockkBraintreeClientBuilder()
+                .sendGraphQLPostSuccessfulResponse(responseBody)
+                .build()
+
+            val createCustomerSessionApi = CreateCustomerSessionApi(
+                braintreeClient = braintreeClient,
+                responseParser = mockk {
+                    every { parseSessionId(responseBody, "createCustomerSession") } returns "test-session-id"
+                }
+            )
+
+            createCustomerSessionApi.execute(requestWithCampaigns)
+            advanceUntilIdle()
+
+            val expectedRequestBody = JSONObject().apply {
+                put(
+                    "query",
+                    """
+                mutation CreateCustomerSession(${'$'}input: CreateCustomerSessionInput!) {
+                    createCustomerSession(input: ${'$'}input) {
+                        sessionId
+                    }
+                }
+                    """.trimIndent()
+                )
+                put(
+                    "variables",
+                    JSONObject().apply {
+                        put("input", JSONObject().apply {
+                            put("customer", JSONObject().apply {
+                                put("hashedEmail", "hashedEmail")
+                                put("hashedPhoneNumber", "hashedPhoneNumber")
+                                put("paypalAppInstalled", true)
+                                put("venmoAppInstalled", false)
+                            })
+                            put(
+                                "paypal_campaigns",
+                                JSONArray().apply {
+                                    put(
+                                        JSONObject().apply {
+                                            put("id", "PPL-MOCK-CAMPAIGN")
+                                        }
+                                    )
+                                }
+                            )
+                        })
+                    }
+                )
+            }
+
+            coVerify {
+                braintreeClient.sendGraphQLPOST(withArg { actualRequestBody ->
+                    JSONAssert.assertEquals(expectedRequestBody, actualRequestBody, false)
+                })
+            }
+        }
 }

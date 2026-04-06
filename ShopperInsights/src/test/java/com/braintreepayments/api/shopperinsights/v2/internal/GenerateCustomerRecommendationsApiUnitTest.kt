@@ -4,6 +4,7 @@ import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendations
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
+import com.braintreepayments.api.shopperinsights.v2.PayPalCampaign
 import com.braintreepayments.api.shopperinsights.v2.PaymentOptions
 import com.braintreepayments.api.shopperinsights.v2.PurchaseUnit
 import com.braintreepayments.api.shopperinsights.v2.internal.GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult
@@ -241,4 +242,64 @@ class GenerateCustomerRecommendationsApiUnitTest {
             })
         }
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `when execute is called with sessionId and payPalCampaigns only, GraphQL variables include campaigns`() =
+        runTest(testDispatcher) {
+            val braintreeClient = mockk<BraintreeClient>(relaxed = true)
+            val realBuilder = CustomerSessionRequestBuilder()
+            val generateApi = GenerateCustomerRecommendationsApi(
+                braintreeClient = braintreeClient,
+                customerSessionRequestBuilder = realBuilder
+            )
+
+            generateApi.execute(
+                customerSessionRequest = null,
+                sessionId = "test-session-id",
+                payPalCampaigns = listOf(PayPalCampaign(id = "RECOMMENDED_OFFER_1"))
+            )
+            advanceUntilIdle()
+
+            val expectedBody = JSONObject().apply {
+                put(
+                    "query",
+                    """
+                mutation GenerateCustomerRecommendations(${'$'}input: GenerateCustomerRecommendationsInput!) {
+                    generateCustomerRecommendations(input: ${'$'}input) {
+                        sessionId
+                        isInPayPalNetwork
+                        paymentRecommendations {
+                            paymentOption
+                            recommendedPriority
+                        }
+                    }
+                }
+                    """.trimIndent()
+                )
+                put(
+                    "variables",
+                    JSONObject().apply {
+                        put(
+                            "input",
+                            JSONObject().apply {
+                                put("sessionId", "test-session-id")
+                                put(
+                                    "paypal_campaigns",
+                                    JSONArray().apply {
+                                        put(JSONObject().put("id", "RECOMMENDED_OFFER_1"))
+                                    }
+                                )
+                            }
+                        )
+                    }
+                )
+            }
+
+            coVerify {
+                braintreeClient.sendGraphQLPOST(withArg { actual ->
+                    JSONAssert.assertEquals(expectedBody, actual, false)
+                })
+            }
+        }
 }

@@ -2,6 +2,7 @@ package com.braintreepayments.api.shopperinsights.v2.internal
 
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
+import com.braintreepayments.api.shopperinsights.v2.PayPalCampaign
 import com.braintreepayments.api.shopperinsights.v2.PurchaseUnit
 import org.json.JSONArray
 import org.json.JSONObject
@@ -76,5 +77,45 @@ class CustomerSessionRequestBuilderUnitTest {
 
         JSONAssert.assertEquals(expectedCustomer, result.customer, false)
         assertNull(result.purchaseUnits)
+    }
+
+    @Test
+    fun `createRequestObjects includes payPalCampaigns when provided`() {
+        val customerSessionRequest = CustomerSessionRequest(
+            hashedEmail = "hashedEmail",
+            hashedPhoneNumber = "hashedPhoneNumber",
+            payPalAppInstalled = true,
+            venmoAppInstalled = false,
+            purchaseUnits = null,
+            payPalCampaigns = listOf(
+                PayPalCampaign(id = "PPL-TT-10OFF"),
+                PayPalCampaign(id = "PPL-OTHER-MOCK")
+            )
+        )
+
+        val result = requestBuilder.createRequestObjects(customerSessionRequest)
+
+        val expectedCampaigns = JSONArray().apply {
+            put(JSONObject().put("id", "PPL-TT-10OFF"))
+            put(JSONObject().put("id", "PPL-OTHER-MOCK"))
+        }
+
+        JSONAssert.assertEquals(expectedCampaigns, result.payPalCampaigns, false)
+    }
+
+    @Test
+    fun `createRequestObjects omits payPalCampaigns when null or empty`() {
+        val withNull = CustomerSessionRequest(
+            hashedEmail = "e",
+            hashedPhoneNumber = "p",
+            payPalAppInstalled = false,
+            venmoAppInstalled = false,
+            purchaseUnits = null,
+            payPalCampaigns = null
+        )
+        assertNull(requestBuilder.createRequestObjects(withNull).payPalCampaigns)
+
+        val withEmpty = withNull.copy(payPalCampaigns = emptyList())
+        assertNull(requestBuilder.createRequestObjects(withEmpty).payPalCampaigns)
     }
 }
