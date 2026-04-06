@@ -57,7 +57,7 @@ Create a changelog for all commits between March 1 and March 15
 
 ```
 Create a changelog for commits since v2.4.0, using my changelog 
-guidelines from CHANGELOG_STYLE.md
+guidelines from CHANGELOG.md
 ```
 
 ## Example
@@ -68,7 +68,7 @@ guidelines from CHANGELOG_STYLE.md
 
 - Run from your git repository root
 - Specify date ranges for focused changelogs
-- Use your CHANGELOG_STYLE.md for consistent formatting
+- Use existing CHANGELOG.md for consistent formatting
 - Review and adjust the generated changelog before publishing
 - Save output directly to CHANGELOG.md
 
