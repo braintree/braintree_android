@@ -8,4 +8,8 @@
     <dimen name="pay_button_focus_border">2dp</dimen>
     <dimen name="pay_button_focus_padding">4dp</dimen>
     <dimen name="pay_button_border">1dp</dimen>
+
+    <dimen name="card_field_corner_radius">8dp</dimen>
+    <dimen name="card_field_border_width">1dp</dimen>
+    <dimen name="card_field_border_focused_width">2dp</dimen>
 </resources>

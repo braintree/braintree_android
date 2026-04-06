@@ -50,11 +50,14 @@ android {
 
 dependencies {
     api project(':BraintreeCore')
+    api project(':Card')
     api project(':PayPal')
     api project(':Venmo')
 
+
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
+    implementation libs.material
     implementation libs.androidx.ui.tooling.preview
     implementation libs.accompanist.drawablepainter
     implementation libs.compose.animation
@@ -68,6 +71,8 @@ dependencies {
 
     testImplementation libs.junit
     testImplementation libs.mockk
+    testImplementation libs.robolectric
+    testImplementation libs.androidx.test.core
     testImplementation libs.coroutines.core
     testImplementation libs.coroutines.test
     testImplementation libs.kotlin.test
