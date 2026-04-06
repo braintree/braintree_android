@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* GooglePay
+   * Add optional `DisplayItems` in GooglePay request
+    
 ## 5.25.0 (2026-03-31)
 
 * BraintreeCore
@@ -9,8 +14,6 @@
     * Fix isVaultRequest missing from PayPalLauncher app switch analytics events
 * ShopperInsights
     * Add `PAYPAL_PAY_LATER` to `ButtonType` enum
-* GooglePay
-    * Add optional `DisplayItems` in GooglePay request
 * UIComponents
     * Add a compose `PayPalButton` class to generate a PayPal-branded button for launching PayPal flow
     * Add a compose `VenmoButton` class to generate a Venmo-branded button for launching Venmo flow
