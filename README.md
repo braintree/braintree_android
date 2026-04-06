@@ -24,7 +24,7 @@ For an integration offering card payments, add the following dependency in your 
 
 ```groovy
 dependencies {
-    implementation 'com.braintreepayments.api:card:5.24.0'
+    implementation 'com.braintreepayments.api:card:5.25.0'
 }
 ```
 
@@ -197,6 +197,82 @@ class ExampleFragment : Fragment() {
         // clear pending request
     }
 }
+```
+
+### Compose support for Buttons
+We now offer support for Jetpack Compose composable buttons.
+Similar to the XML buttons, the Braintree Android SDK now allows merchants to draw and render both PayPal and Venmo 
+payment buttons using a discrete set of parameters. The SDK will handle the loading and disable state of the button 
+and allow you to display and offer buttons meeting the current brand guidelines versus maintaining responsibility on 
+your own. We will call the `tokenize` methods with your request and allow you a seamless branded experience in your 
+mobile apps. The call to `handleReturnToApp` when the control is returned to the merchant app is handled within the 
+SDK. You are no longer required to add this logic to your code.
+
+For PayPal button, you should invoke the PayPalButton composable like this:
+```kotlin
+
+private val paypalTokenizeCallback = PayPalTokenizeCallback { payPalResult ->
+    when (payPalResult) {
+        is PayPalResult.Success -> {
+            handlePayPalResult(payPalResult.nonce)
+        }
+
+        is PayPalResult.Cancel -> {
+            handleError(Exception("User did not complete PayPal payment flow"))
+        }
+
+        is PayPalResult.Failure -> {
+            handleError(payPalResult.error)
+        }
+    }
+    // clear intent data
+    // requireActivity().intent.data = null
+}
+
+PayPalButton(
+    style = paypalStyle,
+    payPalRequest = paypalRequest,
+    authorization = authStringArg,
+    appLinkReturnUrl = "https://merchant-app.com".toUri(),
+    deepLinkFallbackUrlScheme = "com.merchant.app.payments",
+    paypalTokenizeCallback = paypalTokenizeCallback
+)
+```
+
+For Venmo button, you should invoke the PayPalButton composable like this:
+```kotlin
+private val venmoTokenizeCallback = VenmoTokenizeCallback { venmoResult ->
+    when (venmoResult) {
+        is VenmoResult.Success -> {
+            handleVenmoResult(venmoResult.nonce)
+        }
+
+        is VenmoResult.Cancel -> {
+            handleError(Exception("User did not complete Venmo payment flow"))
+        }
+
+        is VenmoResult.Failure -> {
+            handleError(venmoResult.error)
+        }
+    }
+    // clear intent data
+    // requireActivity().intent.data = null
+}
+
+VenmoButton(
+    style = venmoStyle,
+    venmoRequest = venmoRequest,
+    authorization = authStringArg,
+    appLinkReturnUrl = "https://merchant-app.com".toUri(),
+    deepLinkFallbackUrlScheme = "com.merchant.app.payments",
+    venmoTokenizeCallback = venmoTokenizeCallback
+)
+```
+
+After you've received a result, clear out the `intent.data` by setting it to null.
+
+```kotlin
+intent.data = null
 ```
 
 ## Help

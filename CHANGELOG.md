@@ -1,11 +1,12 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.25.0 (2026-03-31)
 
 * BraintreeCore
     * Update Browser Switch version to 3.5.1
 * PayPal
     * Add `ActivityResultRegistry` constructor to PayPalLauncher to support AuthTab integration from JetpackCompose
+    * Fix isVaultRequest missing from PayPalLauncher app switch analytics events
 * ShopperInsights
     * Add `PAYPAL_PAY_LATER` to `ButtonType` enum
 * GooglePay

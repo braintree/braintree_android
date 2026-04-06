@@ -74,6 +74,7 @@ class PayPalLauncher internal constructor(
         val analyticsEventParams = AnalyticsEventParams(
             contextId = contextId,
             appSwitchUrl = paymentAuthRequest.requestParams.approvalUrl,
+            isVaultRequest = paymentAuthRequest.requestParams.isVaultRequest,
         )
 
         setLaunchAnalyticAttributes(paymentAuthRequest.requestParams)
