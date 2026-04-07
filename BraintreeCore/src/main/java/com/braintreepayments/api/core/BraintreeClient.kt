@@ -93,8 +93,8 @@ class BraintreeClient internal constructor(
         // It ensures that the configuration is loaded and ready for use in subsequent requests.
         coroutineScope.launch {
             try {
-                val config = getConfiguration()
-            } catch (e: IOException) {
+                getConfiguration()
+            } catch (e: Exception) {
                 // no op
             }
         }

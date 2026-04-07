@@ -1,5 +1,6 @@
 package com.braintreepayments.api.core
 
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -8,6 +9,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import java.net.UnknownHostException
 import org.json.JSONObject
 import org.junit.Before
 import org.junit.Test
@@ -174,6 +176,21 @@ class AnalyticsApiUnitTest {
                 authorization = tokenizationKey
             )
         }
+    }
+
+    @Test
+    fun `when httpClient post throws UnknownHostException, execute does not crash`() = runTest {
+        every { merchantRepository.authorization } returns tokenizationKey
+        coEvery {
+            httpClient.post(any(), any(), any(), any())
+        } throws UnknownHostException("Unable to resolve host \"api-m.paypal.com\"")
+
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        sut = createAnalyticsApi(testDispatcher, testScope)
+
+        sut.execute(listOf(tokenizationKeyEvent), configuration)
+        advanceUntilIdle()
     }
 
     @Suppress("LongMethod")
