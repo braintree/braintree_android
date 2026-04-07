@@ -34,8 +34,12 @@ import java.util.Locale
  * @property countryCode The ISO 3166-1 alpha-2 country code where the transaction is processed.
  * This is required for merchants based in European Economic Area (EEA) countries.
  * NOTE: to support Elo cards, country code must be set to "BR"
- * @property totalPriceLabel Optional. Custom label for the total price within the display items
+ * @property totalPriceLabel Custom label for the total price within the display items.
+ * This field is required if [displayItems] are defined.
  * @property allowCreditCards Defaults to `true`.
+ * @property displayItems Optional list of cart items shown in the payment sheet
+ * (e.g. subtotals, sales taxes, shipping charges, discounts etc.). If you pass non-empty list of display items
+ * be sure to also set the value for [totalPriceLabel].
  */
 @Suppress("TooManyFunctions")
 @Parcelize
@@ -55,6 +59,7 @@ class GooglePayRequest @JvmOverloads constructor(
     var countryCode: String? = null,
     var totalPriceLabel: String? = null,
     var allowCreditCards: Boolean = true,
+    var displayItems: MutableList<GooglePayDisplayItem> = ArrayList(),
     var checkoutOption: GooglePayCheckoutOption? = GooglePayCheckoutOption.DEFAULT,
     private var environment: String? = null,
     private val allowedPaymentMethods: MutableMap<String, String> = HashMap(),
@@ -145,6 +150,9 @@ class GooglePayRequest @JvmOverloads constructor(
         transactionInfoJson.put("totalPrice", totalPrice)
         transactionInfoJson.put("currencyCode", currencyCode)
         transactionInfoJson.putOpt("countryCode", countryCode)
+        displayItems.takeIf { it.isNotEmpty() }?.let {
+            transactionInfoJson.put("displayItems", JSONArray(it.map { item -> item.toJson() }))
+        }
         transactionInfoJson.putOpt("totalPriceLabel", totalPriceLabel)
         transactionInfoJson.putOpt("checkoutOption", checkoutOption?.stringValue)
 

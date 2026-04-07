@@ -9,33 +9,36 @@ import com.google.android.gms.wallet.IsReadyToPayRequest
 import com.google.android.gms.wallet.Wallet
 import com.google.android.gms.wallet.Wallet.WalletOptions
 import com.google.android.gms.wallet.WalletConstants
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 internal class GooglePayInternalClient {
-    fun isReadyToPay(
+    suspend fun isReadyToPay(
         context: Context,
         configuration: Configuration,
-        isReadyToPayRequest: IsReadyToPayRequest,
-        callback: GooglePayIsReadyToPayCallback
-    ) {
-        val paymentsClient = Wallet.getPaymentsClient(
-            context,
-            WalletOptions.Builder()
-                .setEnvironment(getGooglePayEnvironment(configuration))
-                .build()
-        )
-        paymentsClient.isReadyToPay(isReadyToPayRequest)
-            .addOnCompleteListener { task: Task<Boolean> ->
-                try {
-                    val isReady = task.getResult(ApiException::class.java)
-                    if (isReady) {
-                        callback.onGooglePayReadinessResult(GooglePayReadinessResult.ReadyToPay)
-                    } else {
-                        callback.onGooglePayReadinessResult(NotReadyToPay(null))
+        isReadyToPayRequest: IsReadyToPayRequest
+    ): GooglePayReadinessResult {
+        return suspendCoroutine { continuation ->
+            val paymentsClient = Wallet.getPaymentsClient(
+                context,
+                WalletOptions.Builder()
+                    .setEnvironment(getGooglePayEnvironment(configuration))
+                    .build()
+            )
+            paymentsClient.isReadyToPay(isReadyToPayRequest)
+                .addOnCompleteListener { task: Task<Boolean> ->
+                    try {
+                        val isReady = task.getResult(ApiException::class.java)
+                        if (isReady) {
+                            continuation.resume(GooglePayReadinessResult.ReadyToPay)
+                        } else {
+                            continuation.resume(NotReadyToPay(null))
+                        }
+                    } catch (e: ApiException) {
+                        continuation.resume(NotReadyToPay(e))
                     }
-                } catch (e: ApiException) {
-                    callback.onGooglePayReadinessResult(NotReadyToPay(e))
                 }
-            }
+        }
     }
 
     private fun getGooglePayEnvironment(configuration: Configuration): Int {

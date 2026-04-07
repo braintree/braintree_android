@@ -5,8 +5,24 @@
 * GooglePay
     * Added support for `checkoutOption` to `GooglePayRequest` TransactionInfo params
 
+* GooglePay
+   * Add optional `DisplayItems` in GooglePay request
+    
+## 5.25.0 (2026-03-31)
+
+* BraintreeCore
+    * Update Browser Switch version to 3.5.1
+* PayPal
+    * Add `ActivityResultRegistry` constructor to PayPalLauncher to support AuthTab integration from JetpackCompose
+    * Fix isVaultRequest missing from PayPalLauncher app switch analytics events
+
 * ShopperInsights
     * Add `PAYPAL_PAY_LATER` to `ButtonType` enum
+* UIComponents
+    * Add a compose `PayPalButton` class to generate a PayPal-branded button for launching PayPal flow
+    * Add a compose `VenmoButton` class to generate a Venmo-branded button for launching Venmo flow
+* Venmo
+    * Add `ActivityResultRegistry` constructor to VenmoLauncher to support AuthTab integration from JetpackCompose
 
 ## 5.24.0 (2026-02-25)
 

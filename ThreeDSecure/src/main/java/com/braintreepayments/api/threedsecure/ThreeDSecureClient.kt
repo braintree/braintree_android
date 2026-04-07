@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * 3D Secure is a protocol that enables cardholders and issuers to add a layer of security to
@@ -69,82 +70,78 @@ class ThreeDSecureClient internal constructor(
         callback: ThreeDSecurePaymentAuthRequestCallback
     ) {
         braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_STARTED)
-        if (request.amount == null || request.nonce == null) {
-            callbackCreatePaymentAuthFailure(
-                callback,
-                ThreeDSecurePaymentAuthRequest.Failure(
-                    InvalidArgumentException(
-                        "The ThreeDSecureRequest nonce and amount cannot be null"
-                    )
-                )
-            )
-            return
-        }
-        coroutineScope.launch {
-            try {
-                val configuration = braintreeClient.getConfiguration()
-                when {
-                    !configuration.isThreeDSecureEnabled -> {
-                        val failure = BraintreeException(
-                            "Three D Secure is not enabled for this account. " +
-                                    "Please contact Braintree Support for assistance."
-                        )
-                        callbackCreatePaymentAuthFailure(callback, ThreeDSecurePaymentAuthRequest.Failure(failure))
-                    }
-                    configuration.cardinalAuthenticationJwt == null -> {
-                        val failure = BraintreeException(
-                            "Merchant is not configured for 3DS 2.0. " +
-                                    "Please contact Braintree Support for assistance."
-                        )
-                        callbackCreatePaymentAuthFailure(callback, ThreeDSecurePaymentAuthRequest.Failure(failure))
-                    }
 
-                    else -> initializeCardinalClient(context, configuration, request, callback)
-                }
-            } catch (e: Exception) {
-                callbackCreatePaymentAuthFailure(
-                    callback,
-                    ThreeDSecurePaymentAuthRequest.Failure(e)
-                )
-            }
+        coroutineScope.launch {
+            val result = createPaymentAuthRequest(context, request)
+            callback.onThreeDSecurePaymentAuthRequest(result)
         }
     }
 
-    private fun initializeCardinalClient(
+    private suspend fun createPaymentAuthRequest(
+        context: Context,
+        request: ThreeDSecureRequest
+    ): ThreeDSecurePaymentAuthRequest {
+        if (request.amount == null || request.nonce == null) {
+            return createPaymentAuthFailure(
+                InvalidArgumentException(
+                    "The ThreeDSecureRequest nonce and amount cannot be null"
+                )
+            )
+        }
+        try {
+            val configuration = braintreeClient.getConfiguration()
+            return when {
+                !configuration.isThreeDSecureEnabled -> {
+                    createPaymentAuthFailure(
+                        BraintreeException(
+                            "Three D Secure is not enabled for this account. " +
+                                    "Please contact Braintree Support for assistance."
+                        )
+                    )
+                }
+                configuration.cardinalAuthenticationJwt == null -> {
+                    createPaymentAuthFailure(
+                        BraintreeException(
+                            "Merchant is not configured for 3DS 2.0. " +
+                                    "Please contact Braintree Support for assistance."
+                        )
+                    )
+                }
+                else -> {
+                    initializeCardinalClient(context, configuration, request)
+                }
+            }
+        } catch (e: Exception) {
+            return createPaymentAuthFailure(e)
+        }
+    }
+
+    private suspend fun initializeCardinalClient(
         context: Context,
         configuration: Configuration,
-        request: ThreeDSecureRequest,
-        callback: ThreeDSecurePaymentAuthRequestCallback
-    ) {
+        request: ThreeDSecureRequest
+    ): ThreeDSecurePaymentAuthRequest {
         try {
             cardinalClient.initialize(
                 context = context,
                 configuration = configuration,
                 request = request
-            ) { _, _ ->
-                api.performLookup(
+            )
+            try {
+                val threeDSecureResult = api.performLookup(
                     request = request,
                     cardinalConsumerSessionId = cardinalClient.consumerSessionId
-                ) { threeDSecureResult: ThreeDSecureParams?, performLookupError: Exception? ->
-                    if (threeDSecureResult != null) {
-                        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED)
-                        sendAnalyticsAndCallbackResult(threeDSecureResult, callback)
-                    } else {
-                        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_FAILED)
-                        callbackCreatePaymentAuthFailure(
-                            callback,
-                            ThreeDSecurePaymentAuthRequest.Failure(
-                                performLookupError ?: BraintreeException("3DS lookup failed")
-                            )
-                        )
-                    }
-                }
+                )
+                return sendAnalyticsAndResult(threeDSecureResult)
+            } catch (performLookupError: Exception) {
+                if (performLookupError is CancellationException) throw performLookupError
+                braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_FAILED)
+                return createPaymentAuthFailure(
+                    BraintreeException("3DS lookup failed", performLookupError)
+                )
             }
         } catch (initializeException: BraintreeException) {
-            callbackCreatePaymentAuthFailure(
-                callback,
-                ThreeDSecurePaymentAuthRequest.Failure(initializeException)
-            )
+            return createPaymentAuthFailure(initializeException)
         }
     }
 
@@ -156,13 +153,23 @@ class ThreeDSecureClient internal constructor(
      * customization.
      * @param callback [ThreeDSecurePrepareLookupCallback]
      */
-    @Suppress("LongMethod")
     fun prepareLookup(
         context: Context,
         request: ThreeDSecureRequest,
         callback: ThreeDSecurePrepareLookupCallback
     ) {
         braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_STARTED)
+
+        coroutineScope.launch {
+            val result = prepareLookup(context, request)
+            callback.onPrepareLookupResult(result)
+        }
+    }
+
+    private suspend fun prepareLookup(
+        context: Context,
+        request: ThreeDSecureRequest
+    ): ThreeDSecurePrepareLookupResult {
         val lookupJSON = JSONObject()
         try {
             lookupJSON
@@ -178,60 +185,37 @@ class ThreeDSecureClient internal constructor(
         } catch (ignored: JSONException) {
         }
 
-        coroutineScope.launch {
-            try {
-                val configuration = braintreeClient.getConfiguration()
-                if (configuration.cardinalAuthenticationJwt == null) {
-                    callbackPrepareLookupFailure(
-                        callback,
-                        ThreeDSecurePrepareLookupResult.Failure(
-                            BraintreeException(
-                                "Merchant is not configured for 3DS 2.0. " +
-                                    "Please contact Braintree Support for assistance."
-                            )
-                        )
+        try {
+            val configuration = braintreeClient.getConfiguration()
+            if (configuration.cardinalAuthenticationJwt == null) {
+                return prepareLookupFailure(
+                    BraintreeException(
+                        "Merchant is not configured for 3DS 2.0. " +
+                                "Please contact Braintree Support for assistance."
                     )
-                    return@launch
-                }
-
-                try {
-                    cardinalClient.initialize(
-                        context,
-                        configuration,
-                        request
-                    ) { consumerSessionId: String?, _ ->
-                        if (!consumerSessionId.isNullOrEmpty()) {
-                            lookupJSON.put("dfReferenceId", consumerSessionId)
-                        } else {
-                            callbackPrepareLookupFailure(
-                                callback,
-                                ThreeDSecurePrepareLookupResult.Failure(
-                                    BraintreeException("There was an error retrieving the dfReferenceId.")
-                                )
-                            )
-
-                            return@initialize
-                        }
-                        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED)
-                        callback.onPrepareLookupResult(
-                            ThreeDSecurePrepareLookupResult.Success(
-                                request,
-                                lookupJSON.toString()
-                            )
-                        )
-                    }
-                } catch (initializeException: BraintreeException) {
-                    callbackPrepareLookupFailure(
-                        callback,
-                        ThreeDSecurePrepareLookupResult.Failure(initializeException)
-                    )
-                }
-            } catch (configError: Exception) {
-                callbackPrepareLookupFailure(
-                    callback,
-                    ThreeDSecurePrepareLookupResult.Failure(configError)
                 )
             }
+
+            cardinalClient.initialize(
+                context,
+                configuration,
+                request
+            )
+            val consumerSessionId = cardinalClient.consumerSessionId
+            if (!consumerSessionId.isNullOrEmpty()) {
+                lookupJSON.put("dfReferenceId", consumerSessionId)
+            } else {
+                return prepareLookupFailure(
+                        BraintreeException("There was an error retrieving the dfReferenceId.")
+                    )
+            }
+            braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED)
+            return ThreeDSecurePrepareLookupResult.Success(
+                    request,
+                    lookupJSON.toString()
+                )
+        } catch (error: Exception) {
+            return prepareLookupFailure(error)
         }
     }
 
@@ -247,30 +231,22 @@ class ThreeDSecureClient internal constructor(
         callback: ThreeDSecurePaymentAuthRequestCallback
     ) {
         coroutineScope.launch {
-            try {
+            val result = try {
                 braintreeClient.getConfiguration()
-                sendAnalyticsAndCallbackResult(fromJson(lookupResponse), callback)
-            } catch (e: JSONException) {
-                braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_FAILED)
-                callbackCreatePaymentAuthFailure(
-                    callback,
-                    ThreeDSecurePaymentAuthRequest.Failure(e)
-                )
+                sendAnalyticsAndResult(fromJson(lookupResponse))
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_FAILED)
-                callbackCreatePaymentAuthFailure(
-                    callback,
-                    ThreeDSecurePaymentAuthRequest.Failure(e)
-                )
+                createPaymentAuthFailure(e)
             }
+            callback.onThreeDSecurePaymentAuthRequest(result)
         }
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    fun sendAnalyticsAndCallbackResult(
-        result: ThreeDSecureParams,
-        callback: ThreeDSecurePaymentAuthRequestCallback
-    ) {
+    fun sendAnalyticsAndResult(
+        result: ThreeDSecureParams
+    ): ThreeDSecurePaymentAuthRequest {
         braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.LOOKUP_SUCCEEDED)
         val lookup = result.lookup
         val threeDSecureNonce = result.threeDSecureNonce
@@ -279,21 +255,15 @@ class ThreeDSecureClient internal constructor(
 
         if (!showChallenge) {
             if (threeDSecureNonce != null && lookup != null) {
-                callback.onThreeDSecurePaymentAuthRequest(
-                    ThreeDSecurePaymentAuthRequest.LaunchNotRequired(
-                        threeDSecureNonce,
-                        lookup
-                    )
+                 return ThreeDSecurePaymentAuthRequest.LaunchNotRequired(
+                    threeDSecureNonce,
+                    lookup
                 )
             } else {
-                callbackCreatePaymentAuthFailure(
-                    callback,
-                    ThreeDSecurePaymentAuthRequest.Failure(
-                        BraintreeException("lookup and threeDSecureNonce are null")
-                    )
+                return createPaymentAuthFailure(
+                    BraintreeException("lookup and threeDSecureNonce are null")
                 )
             }
-            return
         }
 
         braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.CHALLENGE_REQUIRED)
@@ -303,18 +273,12 @@ class ThreeDSecureClient internal constructor(
                 "3D Secure v1 is deprecated and no longer supported. See " +
                     "https://developer.paypal.com/braintree/docs/guides/3d-secure/client-side/android/v4 " +
                     "for more information."
-            callbackCreatePaymentAuthFailure(
-                callback,
-                ThreeDSecurePaymentAuthRequest.Failure(
-                    BraintreeException(threeDSecureV1UnsupportedMessage)
-                )
+             return createPaymentAuthFailure(
+                     BraintreeException(threeDSecureV1UnsupportedMessage)
             )
-            return
         }
 
-        callback.onThreeDSecurePaymentAuthRequest(
-            ThreeDSecurePaymentAuthRequest.ReadyToLaunch(result)
-        )
+        return ThreeDSecurePaymentAuthRequest.ReadyToLaunch(result)
     }
 
     /**
@@ -324,133 +288,125 @@ class ThreeDSecureClient internal constructor(
      * @param paymentAuthResult a [ThreeDSecurePaymentAuthResult] received in [ThreeDSecureLauncherCallback]
      * @param callback       a [ThreeDSecureResultCallback]
      */
-    @Suppress("LongMethod")
     fun tokenize(
         paymentAuthResult: ThreeDSecurePaymentAuthResult,
         callback: ThreeDSecureTokenizeCallback
     ) {
+        coroutineScope.launch {
+            val result = tokenize(paymentAuthResult)
+            callback.onThreeDSecureResult(result)
+        }
+    }
+
+    @Suppress("LongMethod")
+    private suspend fun tokenize(
+        paymentAuthResult: ThreeDSecurePaymentAuthResult
+    ): ThreeDSecureResult {
         val threeDSecureError = paymentAuthResult.error
         if (threeDSecureError != null) {
-            callbackTokenizeFailure(callback, ThreeDSecureResult.Failure(threeDSecureError, null))
-        } else {
-            val threeDSecureParams = paymentAuthResult.threeDSecureParams
-            val validateResponse = paymentAuthResult.validateResponse
-            val jwt = paymentAuthResult.jwt
+            return tokenizeFailure(threeDSecureError, null)
+        }
 
-            when (validateResponse?.actionCode) {
-                CardinalActionCode.FAILURE,
-                CardinalActionCode.NOACTION,
-                CardinalActionCode.SUCCESS -> api.authenticateCardinalJWT(
-                    threeDSecureParams = threeDSecureParams,
-                    cardinalJWT = jwt
-                ) { threeDSecureResult: ThreeDSecureParams?, error: Exception? ->
-                    if (threeDSecureResult != null) {
-                        if (threeDSecureResult.hasError()) {
-                            braintreeClient.sendAnalyticsEvent(
-                                ThreeDSecureAnalytics.JWT_AUTH_FAILED,
-                                AnalyticsEventParams(errorDescription = threeDSecureResult.errorMessage)
-                            )
-                            callbackTokenizeFailure(
-                                callback,
-                                ThreeDSecureResult.Failure(
-                                    BraintreeException(threeDSecureResult.errorMessage),
-                                    threeDSecureResult.threeDSecureNonce
-                                )
-                            )
-                        } else {
-                            threeDSecureResult.threeDSecureNonce?.let {
-                                braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_SUCCEEDED)
-                                callbackTokenizeSuccess(callback, ThreeDSecureResult.Success(it))
-                            }
-                        }
-                    } else if (error != null) {
+        val threeDSecureParams = paymentAuthResult.threeDSecureParams
+        val validateResponse = paymentAuthResult.validateResponse
+        val jwt = paymentAuthResult.jwt
+
+        return when (validateResponse?.actionCode) {
+            CardinalActionCode.FAILURE,
+            CardinalActionCode.NOACTION,
+            CardinalActionCode.SUCCESS -> {
+                try {
+                    val threeDSecureResult = api.authenticateCardinalJWT(
+                        threeDSecureParams = threeDSecureParams,
+                        cardinalJWT = jwt
+                    )
+                    if (threeDSecureResult.hasError()) {
                         braintreeClient.sendAnalyticsEvent(
                             ThreeDSecureAnalytics.JWT_AUTH_FAILED,
-                            AnalyticsEventParams(errorDescription = error.message)
+                            AnalyticsEventParams(errorDescription = threeDSecureResult.errorMessage)
                         )
-                        callbackTokenizeFailure(
-                            callback,
-                            ThreeDSecureResult.Failure(
-                                error,
-                                null
-                            )
+                        tokenizeFailure(
+                            BraintreeException(threeDSecureResult.errorMessage),
+                            threeDSecureResult.threeDSecureNonce
+                        )
+                    } else {
+                        threeDSecureResult.threeDSecureNonce?.let {
+                            braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.JWT_AUTH_SUCCEEDED)
+                            tokenizeSuccess(it)
+                        } ?: tokenizeFailure(
+                            BraintreeException("ThreeDSecure nonce was null"),
+                            null
                         )
                     }
-                }
-
-                CardinalActionCode.ERROR, CardinalActionCode.TIMEOUT -> callbackTokenizeFailure(
-                    callback, ThreeDSecureResult.Failure(
-                        BraintreeException(validateResponse.errorDescription), null
-                    )
-                )
-
-                CardinalActionCode.CANCEL -> callbackCancel(callback)
-
-                else -> {
-                    val errorDescription = "invalid action code"
+                } catch (error: Exception) {
+                    if (error is CancellationException) throw error
                     braintreeClient.sendAnalyticsEvent(
                         ThreeDSecureAnalytics.JWT_AUTH_FAILED,
-                        AnalyticsEventParams(errorDescription = errorDescription)
+                        AnalyticsEventParams(errorDescription = error.message)
                     )
-                    callbackTokenizeFailure(
-                        callback,
-                        ThreeDSecureResult.Failure(
-                            error = BraintreeException(errorDescription),
-                            nonce = null
-                        )
-                    )
+                    tokenizeFailure(error, null)
                 }
+            }
+
+            CardinalActionCode.ERROR, CardinalActionCode.TIMEOUT -> {
+                tokenizeFailure(BraintreeException(validateResponse.errorDescription), null)
+            }
+
+            CardinalActionCode.CANCEL -> {
+                braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_CANCELED)
+                ThreeDSecureResult.Cancel
+            }
+
+            else -> {
+                val errorDescription = "invalid action code"
+                braintreeClient.sendAnalyticsEvent(
+                    ThreeDSecureAnalytics.JWT_AUTH_FAILED,
+                    AnalyticsEventParams(errorDescription = errorDescription)
+                )
+                tokenizeFailure(BraintreeException(errorDescription), null)
             }
         }
     }
 
-    private fun callbackCreatePaymentAuthFailure(
-        callback: ThreeDSecurePaymentAuthRequestCallback,
-        failure: ThreeDSecurePaymentAuthRequest.Failure
-    ) {
+    private fun createPaymentAuthFailure(
+       error: Exception
+    ): ThreeDSecurePaymentAuthRequest.Failure {
         braintreeClient.sendAnalyticsEvent(
             ThreeDSecureAnalytics.VERIFY_FAILED,
-            AnalyticsEventParams(errorDescription = failure.error.message)
+            AnalyticsEventParams(errorDescription = error.message)
         )
-        callback.onThreeDSecurePaymentAuthRequest(failure)
+        return ThreeDSecurePaymentAuthRequest.Failure(error)
     }
 
-    private fun callbackPrepareLookupFailure(
-        callback: ThreeDSecurePrepareLookupCallback,
-        result: ThreeDSecurePrepareLookupResult.Failure
-    ) {
+    private fun prepareLookupFailure(
+        error: Exception
+    ): ThreeDSecurePrepareLookupResult.Failure {
         braintreeClient.sendAnalyticsEvent(
             ThreeDSecureAnalytics.LOOKUP_FAILED,
-            AnalyticsEventParams(errorDescription = result.error.message)
+            AnalyticsEventParams(errorDescription = error.message)
         )
         braintreeClient.sendAnalyticsEvent(
             ThreeDSecureAnalytics.VERIFY_FAILED,
-            AnalyticsEventParams(errorDescription = result.error.message)
+            AnalyticsEventParams(errorDescription = error.message)
         )
-        callback.onPrepareLookupResult(result)
+        return ThreeDSecurePrepareLookupResult.Failure(error)
     }
 
-    private fun callbackTokenizeFailure(
-        callback: ThreeDSecureTokenizeCallback,
-        result: ThreeDSecureResult.Failure
-    ) {
+    private fun tokenizeFailure(
+        error: Exception,
+        nonce: ThreeDSecureNonce?
+    ): ThreeDSecureResult.Failure {
         braintreeClient.sendAnalyticsEvent(
             ThreeDSecureAnalytics.VERIFY_FAILED,
-            AnalyticsEventParams(errorDescription = result.error.message)
+            AnalyticsEventParams(errorDescription = error.message)
         )
-        callback.onThreeDSecureResult(result)
+        return ThreeDSecureResult.Failure(error, nonce)
     }
 
-    private fun callbackTokenizeSuccess(
-        callback: ThreeDSecureTokenizeCallback,
-        result: ThreeDSecureResult.Success
-    ) {
+    private fun tokenizeSuccess(
+        nonce: ThreeDSecureNonce
+    ): ThreeDSecureResult.Success {
         braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_SUCCEEDED)
-        callback.onThreeDSecureResult(result)
-    }
-
-    private fun callbackCancel(callback: ThreeDSecureTokenizeCallback) {
-        braintreeClient.sendAnalyticsEvent(ThreeDSecureAnalytics.VERIFY_CANCELED)
-        callback.onThreeDSecureResult(ThreeDSecureResult.Cancel)
+        return ThreeDSecureResult.Success(nonce)
     }
 }

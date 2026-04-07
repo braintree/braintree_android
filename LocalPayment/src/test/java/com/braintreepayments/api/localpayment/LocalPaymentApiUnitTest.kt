@@ -10,18 +10,15 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,17 +31,12 @@ import java.io.IOException
 class LocalPaymentApiUnitTest {
     private val testDispatcher = StandardTestDispatcher()
 
-    private lateinit var localPaymentInternalAuthRequestCallback: LocalPaymentInternalAuthRequestCallback
-    private lateinit var localPaymentInternalTokenizeCallback: LocalPaymentInternalTokenizeCallback
-
     private lateinit var analyticsParamRepository: AnalyticsParamRepository
     private lateinit var merchantRepository: MerchantRepository
 
     @Before
     fun beforeEach() {
         analyticsParamRepository = mockk(relaxed = true)
-        localPaymentInternalAuthRequestCallback = mockk(relaxed = true)
-        localPaymentInternalTokenizeCallback = mockk(relaxed = true)
         merchantRepository = mockk(relaxed = true)
 
         every { analyticsParamRepository.sessionId } returns "sample-session-id"
@@ -69,16 +61,9 @@ class LocalPaymentApiUnitTest {
         val sut = LocalPaymentApi(
             braintreeClient,
             analyticsParamRepository,
-            merchantRepository,
-            dispatcher = testDispatcher,
-            coroutineScope = TestScope(testDispatcher)
+            merchantRepository
         )
-        sut.createPaymentMethod(
-            getIdealLocalPaymentRequest(),
-            localPaymentInternalAuthRequestCallback
-        )
-
-        advanceUntilIdle()
+        sut.createPaymentMethod(getIdealLocalPaymentRequest())
 
         val requestBody = captor.captured
 
@@ -110,7 +95,7 @@ class LocalPaymentApiUnitTest {
     }
 
     @Test
-    fun createPaymentMethod_onPOSTError_forwardsErrorToCallback() = runTest(testDispatcher) {
+    fun createPaymentMethod_onPOSTError_throwsException() = runTest(testDispatcher) {
         val error = IOException("error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostErrorResponse(error)
@@ -119,23 +104,20 @@ class LocalPaymentApiUnitTest {
         val sut = LocalPaymentApi(
             braintreeClient,
             analyticsParamRepository,
-            merchantRepository,
-            dispatcher = testDispatcher,
-            coroutineScope = TestScope(testDispatcher)
+            merchantRepository
         )
 
-        sut.createPaymentMethod(
-            getIdealLocalPaymentRequest(),
-            localPaymentInternalAuthRequestCallback
-        )
-
-        advanceUntilIdle()
-
-        verify { localPaymentInternalAuthRequestCallback.onLocalPaymentInternalAuthResult(null, error) }
+        try {
+            sut.createPaymentMethod(getIdealLocalPaymentRequest())
+            fail("Expected createPaymentMethod to throw an exception due to HTTP error")
+        } catch (e: Exception) {
+            assertNotNull(e)
+            assertEquals(error, e)
+        }
     }
 
     @Test
-    fun createPaymentMethod_onJSONError_forwardsJSONErrorToCallback() = runTest(testDispatcher) {
+    fun createPaymentMethod_onJSONError_throwsException() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse(Fixtures.ERROR_RESPONSE)
             .build()
@@ -143,27 +125,19 @@ class LocalPaymentApiUnitTest {
         val sut = LocalPaymentApi(
             braintreeClient,
             analyticsParamRepository,
-            merchantRepository,
-            dispatcher = testDispatcher,
-            coroutineScope = TestScope(testDispatcher)
+            merchantRepository
         )
 
-        sut.createPaymentMethod(
-            getIdealLocalPaymentRequest(),
-            localPaymentInternalAuthRequestCallback
-        )
-
-        advanceUntilIdle()
-
-        val captor = slot<Exception>()
-        verify { localPaymentInternalAuthRequestCallback.onLocalPaymentInternalAuthResult(null, capture(captor)) }
-
-        // Accept any Exception, or check for the actual type thrown by your implementation
-        assertNotNull(captor.captured)
+        try {
+            sut.createPaymentMethod(getIdealLocalPaymentRequest())
+            fail("Expected createPaymentMethod to throw an exception due to invalid JSON response")
+        } catch (e: Exception) {
+            assertNotNull(e)
+        }
     }
 
     @Test
-    fun createPaymentMethod_onPOSTSuccess_returnsResultWithOriginalRequestToCallback() = runTest(testDispatcher) {
+    fun createPaymentMethod_onPOSTSuccess_returnsResultWithOriginalRequest() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_CREATE_RESPONSE)
             .build()
@@ -171,22 +145,14 @@ class LocalPaymentApiUnitTest {
         val sut = LocalPaymentApi(
             braintreeClient,
             analyticsParamRepository,
-            merchantRepository,
-            dispatcher = testDispatcher,
-            coroutineScope = TestScope(testDispatcher)
+            merchantRepository
         )
 
         val request = getIdealLocalPaymentRequest()
-        sut.createPaymentMethod(request, localPaymentInternalAuthRequestCallback)
+        val result = sut.createPaymentMethod(request)
 
-        advanceUntilIdle()
-
-        val captor = slot<LocalPaymentAuthRequestParams>()
-        verify { localPaymentInternalAuthRequestCallback.onLocalPaymentInternalAuthResult(capture(captor), null) }
-
-        val result = captor.captured
         assertNotNull(result)
-        assertSame(request, result.request)
+        assertEquals(request, result.request)
         assertEquals(
             "https://checkout.paypal.com/latinum?token=payment-token",
             result.approvalUrl
@@ -211,18 +177,11 @@ class LocalPaymentApiUnitTest {
         val sut = LocalPaymentApi(
             braintreeClient,
             analyticsParamRepository,
-            merchantRepository,
-            dispatcher = testDispatcher,
-            coroutineScope = TestScope(testDispatcher)
+            merchantRepository
         )
 
         val webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId"
-        sut.tokenize(
-            "local-merchant-account-id", webUrl, "sample-correlation-id",
-            localPaymentInternalTokenizeCallback
-        )
-
-        advanceUntilIdle()
+        sut.tokenize("local-merchant-account-id", webUrl, "sample-correlation-id")
 
         val requestBody = captor.captured
 
@@ -247,7 +206,7 @@ class LocalPaymentApiUnitTest {
     }
 
     @Test
-    fun tokenize_onPOSTError_forwardsErrorToCallback() = runTest(testDispatcher) {
+    fun tokenize_onPOSTError_throwsException() = runTest(testDispatcher) {
         val error = IOException("error")
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostErrorResponse(error)
@@ -256,24 +215,21 @@ class LocalPaymentApiUnitTest {
         val sut = LocalPaymentApi(
             braintreeClient,
             analyticsParamRepository,
-            merchantRepository,
-            dispatcher = testDispatcher,
-            coroutineScope = TestScope(testDispatcher)
+            merchantRepository
         )
 
         val webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId"
-        sut.tokenize(
-            "local-merchant-account-id", webUrl, "sample-correlation-id",
-            localPaymentInternalTokenizeCallback
-        )
-
-        advanceUntilIdle()
-
-        verify { localPaymentInternalTokenizeCallback.onResult(null, error) }
+        try {
+            sut.tokenize("local-merchant-account-id", webUrl, "sample-correlation-id")
+            fail("Expected tokenize to throw an exception due to HTTP error")
+        } catch (e: Exception) {
+            assertNotNull(e)
+            assertEquals(error, e)
+        }
     }
 
     @Test
-    fun tokenize_onJSONError_forwardsErrorToCallback() = runTest(testDispatcher) {
+    fun tokenize_onJSONError_throwsException() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse("not-json")
             .build()
@@ -281,27 +237,21 @@ class LocalPaymentApiUnitTest {
         val sut = LocalPaymentApi(
             braintreeClient,
             analyticsParamRepository,
-            merchantRepository,
-            dispatcher = testDispatcher,
-            coroutineScope = TestScope(testDispatcher)
+            merchantRepository
         )
 
         val webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId"
-        sut.tokenize(
-            "local-merchant-account-id", webUrl, "sample-correlation-id",
-            localPaymentInternalTokenizeCallback
-        )
-
-        advanceUntilIdle()
-
-        val captor = slot<Exception>()
-        verify { localPaymentInternalTokenizeCallback.onResult(null, capture(captor)) }
-
-        assertTrue(captor.captured is JSONException)
+        try {
+            sut.tokenize("local-merchant-account-id", webUrl, "sample-correlation-id")
+            fail("Expected tokenize to throw an exception due to invalid JSON response")
+        } catch (e: Exception) {
+            assertNotNull(e)
+            assertTrue(e is JSONException)
+        }
     }
 
     @Test
-    fun tokenize_onPOSTSuccess_returnsResultToCallback() = runTest(testDispatcher) {
+    fun tokenize_onPOSTSuccess_returnsResult() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .sendPostSuccessfulResponse(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE)
             .build()
@@ -309,23 +259,12 @@ class LocalPaymentApiUnitTest {
         val sut = LocalPaymentApi(
             braintreeClient,
             analyticsParamRepository,
-            merchantRepository,
-            dispatcher = testDispatcher,
-            coroutineScope = TestScope(testDispatcher)
+            merchantRepository
         )
 
         val webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId"
-        sut.tokenize(
-            "local-merchant-account-id", webUrl, "sample-correlation-id",
-            localPaymentInternalTokenizeCallback
-        )
+        val result = sut.tokenize("local-merchant-account-id", webUrl, "sample-correlation-id")
 
-        advanceUntilIdle()
-
-        val captor = slot<LocalPaymentNonce>()
-        verify { localPaymentInternalTokenizeCallback.onResult(capture(captor), null) }
-
-        val result = captor.captured
         assertNotNull(result)
         assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", result.string)
         assertEquals("084afbf1db15445587d30bc120a23b09", result.clientMetadataId)

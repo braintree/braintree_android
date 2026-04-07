@@ -16,6 +16,7 @@ import com.braintreepayments.api.datacollector.DataCollector
 import com.braintreepayments.api.localpayment.LocalPaymentNonce.Companion.fromJSON
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -175,11 +176,8 @@ class LocalPaymentClientUnitTest {
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
         advanceUntilIdle()
 
-        verify {
-            localPaymentApi.createPaymentMethod(
-                request,
-                any()
-            )
+        coVerify {
+            localPaymentApi.createPaymentMethod(request)
         }
     }
 
@@ -282,7 +280,7 @@ class LocalPaymentClientUnitTest {
         sut.createPaymentAuthRequest(request, localPaymentAuthCallback)
         advanceUntilIdle()
 
-        val errorDescription = "An error occurred creating the local payment method."
+        val errorDescription = "An error occurred creating the local payment method: error"
         verify {
             braintreeClient.sendAnalyticsEvent(
                 LocalPaymentAnalytics.PAYMENT_FAILED,
@@ -384,7 +382,7 @@ class LocalPaymentClientUnitTest {
         val exception = (paymentAuthRequest as LocalPaymentAuthRequest.Failure).error
         assert(exception is BraintreeException)
         assertEquals(
-            "An error occurred creating the local payment method.",
+            "An error occurred creating the local payment method: error",
             exception.message
         )
     }
@@ -496,13 +494,8 @@ class LocalPaymentClientUnitTest {
         val approvalUrl = "https://sample.com/approval?token=sample-token"
         val transaction = LocalPaymentAuthRequestParams(request, approvalUrl, "payment-id")
 
-        sut.buildBrowserSwitchOptions(transaction, true, localPaymentAuthCallback)
-        advanceUntilIdle()
+        val paymentAuthRequest = sut.buildBrowserSwitchOptions(transaction, true)
 
-        val slot = slot<LocalPaymentAuthRequest>()
-        verify { localPaymentAuthCallback.onLocalPaymentAuthRequest(capture(slot)) }
-
-        val paymentAuthRequest = slot.captured
         assert(paymentAuthRequest is LocalPaymentAuthRequest.ReadyToLaunch)
         val params = (paymentAuthRequest as LocalPaymentAuthRequest.ReadyToLaunch).requestParams
         val browserSwitchOptions = params.browserSwitchOptions
@@ -527,12 +520,8 @@ class LocalPaymentClientUnitTest {
         val approvalUrl = "https://sample.com/approval?token=sample-token"
         val transaction = createLocalPaymentAuthRequestParams(request, approvalUrl, "payment-id")
 
-        sut.buildBrowserSwitchOptions(transaction, true, localPaymentAuthCallback)
-        advanceUntilIdle()
+        val paymentAuthRequest = sut.buildBrowserSwitchOptions(transaction, true)
 
-        val slot = slot<LocalPaymentAuthRequest>()
-        verify { localPaymentAuthCallback.onLocalPaymentAuthRequest(capture(slot)) }
-        val paymentAuthRequest = slot.captured
         assertTrue(paymentAuthRequest is LocalPaymentAuthRequest.ReadyToLaunch)
         val params = (paymentAuthRequest as LocalPaymentAuthRequest.ReadyToLaunch).requestParams
         val browserSwitchOptions = params.browserSwitchOptions
@@ -546,8 +535,7 @@ class LocalPaymentClientUnitTest {
         val approvalUrl = "https://sample.com/approval?token=sample-token"
         val transaction = createLocalPaymentAuthRequestParams(request, approvalUrl, "payment-id")
 
-        sut.buildBrowserSwitchOptions(transaction, true, localPaymentAuthCallback)
-        advanceUntilIdle()
+        sut.buildBrowserSwitchOptions(transaction, true)
 
         verify {
             braintreeClient.sendAnalyticsEvent(
@@ -650,12 +638,11 @@ class LocalPaymentClientUnitTest {
         sut.tokenize(activity, localPaymentAuthResult, localPaymentTokenizeCallback)
         advanceUntilIdle()
 
-        verify {
+        coVerify {
             localPaymentApi.tokenize(
                 eq("local-merchant-account-id"),
                 eq(webUrl),
-                eq("sample-correlation-id"),
-                any()
+                eq("sample-correlation-id")
             )
         }
     }

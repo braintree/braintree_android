@@ -17,6 +17,7 @@ import com.braintreepayments.api.testutils.TestConfigurationBuilder
 import com.google.android.gms.wallet.IsReadyToPayRequest
 import com.google.android.gms.wallet.PaymentData
 import com.google.android.gms.wallet.WalletConstants
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -54,6 +55,7 @@ class GooglePayClientUnitTest {
     private lateinit var activityInfo: ActivityInfo
     private lateinit var analyticsParamRepository: AnalyticsParamRepository
     private lateinit var merchantRepository: MerchantRepository
+    private lateinit var testScope: TestScope
 
     @Before
     fun beforeEach() {
@@ -64,6 +66,7 @@ class GooglePayClientUnitTest {
         activityInfo = mockk(relaxed = true)
         analyticsParamRepository = mockk(relaxed = true)
         merchantRepository = mockk(relaxed = true)
+        testScope = TestScope(testDispatcher)
 
         baseRequest = GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL)
         every { activityInfo.themeResource } returns R.style.bt_transparent_activity
@@ -85,7 +88,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -98,12 +100,11 @@ class GooglePayClientUnitTest {
         advanceUntilIdle()
 
         val captor = slot<IsReadyToPayRequest>()
-        verify {
+        coVerify {
             internalGooglePayClient.isReadyToPay(
                 activity,
                 configuration,
-                capture(captor),
-                any<GooglePayIsReadyToPayCallback>()
+                capture(captor)
             )
         }
 
@@ -136,7 +137,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -149,12 +149,11 @@ class GooglePayClientUnitTest {
         advanceUntilIdle()
 
         val captor = slot<IsReadyToPayRequest>()
-        verify {
+        coVerify {
             internalGooglePayClient.isReadyToPay(
                 activity,
                 configuration,
-                capture(captor),
-                any<GooglePayIsReadyToPayCallback>()
+                capture(captor)
             )
         }
 
@@ -186,7 +185,6 @@ class GooglePayClientUnitTest {
             .isReadyToPay(true)
             .build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -203,7 +201,7 @@ class GooglePayClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_resetsSessionId() {
+    fun createPaymentAuthRequest_resetsSessionId() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
                 TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
@@ -226,12 +224,15 @@ class GooglePayClientUnitTest {
             braintreeClient,
             internalGooglePayClient,
             analyticsParamRepository,
-            merchantRepository
+            merchantRepository,
+            testDispatcher,
+            testScope
         )
 
         val googlePayRequest = mockk<GooglePayRequest>(relaxed = true)
         val requestCallback = mockk<GooglePayPaymentAuthRequestCallback>(relaxed = true)
         sut.createPaymentAuthRequest(googlePayRequest, requestCallback)
+        advanceUntilIdle()
 
         verify { analyticsParamRepository.reset() }
     }
@@ -274,7 +275,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -402,7 +402,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -455,7 +454,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -509,7 +507,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -540,7 +537,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -594,7 +590,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -643,7 +638,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -694,7 +688,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -742,7 +735,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -793,7 +785,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -847,7 +838,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -901,7 +891,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -957,7 +946,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -1023,7 +1011,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -1075,7 +1062,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,
@@ -1128,7 +1114,6 @@ class GooglePayClientUnitTest {
 
         val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
 
-        val testScope = TestScope(testDispatcher)
         val sut = GooglePayClient(
             braintreeClient,
             internalGooglePayClient,

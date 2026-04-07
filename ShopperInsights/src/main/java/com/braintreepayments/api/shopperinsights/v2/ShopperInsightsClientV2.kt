@@ -15,6 +15,11 @@ import com.braintreepayments.api.shopperinsights.ShopperInsightsAnalytics.BUTTON
 import com.braintreepayments.api.shopperinsights.v2.internal.CreateCustomerSessionApi
 import com.braintreepayments.api.shopperinsights.v2.internal.UpdateCustomerSessionApi
 import com.braintreepayments.api.shopperinsights.v2.internal.GenerateCustomerRecommendationsApi
+import com.braintreepayments.api.shopperinsights.v2.internal.GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * Use [ShopperInsightsClientV2] to optimize your checkout experience by prioritizing the customer’s preferred payment
@@ -36,7 +41,9 @@ class ShopperInsightsClientV2 internal constructor(
     private val generateCustomerRecommendationsApi: GenerateCustomerRecommendationsApi =
         GenerateCustomerRecommendationsApi(braintreeClient),
     private val deviceInspector: DeviceInspector = DeviceInspectorProvider().deviceInspector,
-    lazyAnalyticsClient: Lazy<AnalyticsClient> = AnalyticsClient.lazyInstance
+    lazyAnalyticsClient: Lazy<AnalyticsClient> = AnalyticsClient.lazyInstance,
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
+    private val coroutineScope: CoroutineScope = CoroutineScope(mainDispatcher)
 ) {
 
     /**
@@ -64,18 +71,27 @@ class ShopperInsightsClientV2 internal constructor(
         customerSessionRequest: CustomerSessionRequest,
         customerSessionCallback: (customerSessionResult: CustomerSessionResult) -> Unit
     ) {
-        analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_STARTED)
-        createCustomerSessionApi.execute(customerSessionRequest) { createCustomerSessionResult ->
-            when (createCustomerSessionResult) {
-                is CreateCustomerSessionApi.CreateCustomerSessionResult.Success -> {
-                    analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_SUCCEEDED)
-                    customerSessionCallback(CustomerSessionResult.Success(createCustomerSessionResult.sessionId))
-                }
+        coroutineScope.launch {
+            val result = createCustomerSession(customerSessionRequest)
+            customerSessionCallback(result)
+        }
+    }
 
-                is CreateCustomerSessionApi.CreateCustomerSessionResult.Error -> {
-                    analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_FAILED)
-                    customerSessionCallback(CustomerSessionResult.Failure(createCustomerSessionResult.error))
-                }
+    private suspend fun createCustomerSession(
+        customerSessionRequest: CustomerSessionRequest
+    ): CustomerSessionResult {
+        analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_STARTED)
+        return when (
+            val createCustomerSessionResult = createCustomerSessionApi.execute(customerSessionRequest)
+        ) {
+            is CreateCustomerSessionApi.CreateCustomerSessionResult.Success -> {
+                analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_SUCCEEDED)
+                CustomerSessionResult.Success(createCustomerSessionResult.sessionId)
+            }
+
+            is CreateCustomerSessionApi.CreateCustomerSessionResult.Error -> {
+                analyticsClient.sendEvent(ShopperInsightsAnalytics.CREATE_CUSTOMER_SESSION_FAILED)
+                CustomerSessionResult.Failure(createCustomerSessionResult.error)
             }
         }
     }
@@ -94,18 +110,28 @@ class ShopperInsightsClientV2 internal constructor(
         sessionId: String,
         customerSessionCallback: (customerSessionResult: CustomerSessionResult) -> Unit
     ) {
-        analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_STARTED)
-        updateCustomerSessionApi.execute(customerSessionRequest, sessionId) { result ->
-            when (result) {
-                is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Success -> {
-                    analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_SUCCEEDED)
-                    customerSessionCallback(CustomerSessionResult.Success(result.sessionId))
-                }
+        coroutineScope.launch {
+            val result = updateCustomerSession(customerSessionRequest, sessionId)
+            customerSessionCallback(result)
+        }
+    }
 
-                is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Error -> {
-                    analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_FAILED)
-                    customerSessionCallback(CustomerSessionResult.Failure(result.error))
-                }
+    private suspend fun updateCustomerSession(
+        customerSessionRequest: CustomerSessionRequest,
+        sessionId: String
+    ): CustomerSessionResult {
+        analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_STARTED)
+        return when (
+            val updateCustomerSessionResult = updateCustomerSessionApi.execute(customerSessionRequest, sessionId)
+        ) {
+            is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Success -> {
+                analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_SUCCEEDED)
+                CustomerSessionResult.Success(updateCustomerSessionResult.sessionId)
+            }
+
+            is UpdateCustomerSessionApi.UpdateCustomerSessionResult.Error -> {
+                analyticsClient.sendEvent(ShopperInsightsAnalytics.UPDATE_CUSTOMER_SESSION_FAILED)
+                CustomerSessionResult.Failure(updateCustomerSessionResult.error)
             }
         }
     }
@@ -125,28 +151,30 @@ class ShopperInsightsClientV2 internal constructor(
         sessionId: String? = null,
         customerRecommendationsCallback: (customerRecommendationsResult: CustomerRecommendationsResult) -> Unit
     ) {
-        analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_STARTED)
-        generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId) {
-            generateCustomerRecommendationsResult ->
-                when (generateCustomerRecommendationsResult) {
-                    is GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult.Success -> {
-                        analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_SUCCEEDED)
-                        customerRecommendationsCallback(
-                            CustomerRecommendationsResult.Success(
-                                generateCustomerRecommendationsResult.customerRecommendations
-                            )
-                        )
-                    }
+        coroutineScope.launch {
+            val result = generateCustomerRecommendations(customerSessionRequest, sessionId)
+            customerRecommendationsCallback(result)
+        }
+    }
 
-                    is GenerateCustomerRecommendationsApi.GenerateCustomerRecommendationsResult.Error -> {
-                        analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_FAILED)
-                        customerRecommendationsCallback(
-                            CustomerRecommendationsResult.Failure(
-                                generateCustomerRecommendationsResult.error
-                            )
-                        )
-                    }
-                }
+    private suspend fun generateCustomerRecommendations(
+        customerSessionRequest: CustomerSessionRequest? = null,
+        sessionId: String? = null,
+    ): CustomerRecommendationsResult {
+        analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_STARTED)
+        return when (
+            val generateCustomerRecommendationsResult =
+                generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId)
+        ) {
+            is GenerateCustomerRecommendationsResult.Success -> {
+                analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_SUCCEEDED)
+                CustomerRecommendationsResult.Success(generateCustomerRecommendationsResult.customerRecommendations)
+            }
+
+            is GenerateCustomerRecommendationsResult.Error -> {
+                analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_FAILED)
+                CustomerRecommendationsResult.Failure(generateCustomerRecommendationsResult.error)
+            }
         }
     }
 
