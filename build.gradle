@@ -134,14 +134,15 @@ subprojects {
 
 tasks.dokkaHtmlMultiModule {
     // redirect dokka output to GitHub pages root directory
-    outputDirectory.set(project.file("docs/currentVersion"))
+    outputDirectory.set(project.file("docs/"))
 
 //     In Groovy, we use a JSON string to configure the VersioningPlugin
 //     because the type-safe <T, V> syntax is only for Kotlin DSL (.kts)
     def versioningConfig = """
     {
         "version": "${project.version}",
-        "olderVersionsDir": "${project.file("docs/previousVersions")}"
+        "olderVersionsDir": "${project.file("docs/previousVersions")}",
+        "renderVersionsNavigationOnAllPages": true
     }
     """
 

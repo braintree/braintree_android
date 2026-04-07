@@ -23,4 +23,5 @@ fi
 cd docs
 cd previousVersions || mkdir previousVersions
 mkdir $version
-cp -r ../currentVersion/* $version
+cd ..
+rsync -a --exclude 'previousVersions' ./ previousVersions/$version
