@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* GooglePay
+   * Add optional `DisplayItems` in GooglePay request
+    
 ## 5.25.0 (2026-03-31)
 
 * BraintreeCore
