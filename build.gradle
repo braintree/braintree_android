@@ -1,3 +1,6 @@
+import org.jetbrains.dokka.versioning.VersioningConfiguration
+import org.jetbrains.dokka.versioning.VersioningPlugin
+
 buildscript {
     repositories {
         mavenCentral()
@@ -20,6 +23,7 @@ buildscript {
         classpath libs.androidx.navigation.safe.args.gradle.plugin
         classpath libs.dokka.gradle.plugin
         classpath libs.dokka.android.documentation.plugin
+        classpath libs.dokka.versioning.plugin
     }
 }
 
@@ -128,9 +132,22 @@ subprojects {
     }
 }
 
-dokkaHtmlMultiModule.configure {
+tasks.dokkaHtmlMultiModule {
     // redirect dokka output to GitHub pages root directory
-    outputDirectory.set(project.file("docs"))
+    outputDirectory.set(project.file("docs/currentVersion"))
+
+//     In Groovy, we use a JSON string to configure the VersioningPlugin
+//     because the type-safe <T, V> syntax is only for Kotlin DSL (.kts)
+    def versioningConfig = """
+    {
+        "version": "${project.version}",
+        "olderVersionsDir": "${project.file("docs/previousVersions")}"
+    }
+    """
+
+    pluginsMapConfiguration.set([
+            "org.jetbrains.dokka.versioning.VersioningPlugin": versioningConfig
+    ])
 }
 
 task changeGradleReleaseVersion {
