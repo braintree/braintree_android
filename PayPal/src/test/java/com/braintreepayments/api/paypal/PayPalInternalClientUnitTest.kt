@@ -30,10 +30,9 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import kotlin.test.assertFailsWith
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.json.JSONObject
@@ -64,8 +63,6 @@ class PayPalInternalClientUnitTest {
     private lateinit var apiClient: ApiClient
     private lateinit var deviceInspector: DeviceInspector
 
-    private lateinit var payPalInternalClientCallback: PayPalInternalClientCallback
-
     private val merchantRepository: MerchantRepository = mockk(relaxed = true)
     private val getReturnLinkUseCase: GetReturnLinkUseCase = mockk(relaxed = true)
     private val setAppSwitchUseCase: SetAppSwitchUseCase = mockk(relaxed = true)
@@ -87,7 +84,6 @@ class PayPalInternalClientUnitTest {
         dataCollector = mockk(relaxed = true)
         apiClient = mockk(relaxed = true)
         deviceInspector = mockk(relaxed = true)
-        payPalInternalClientCallback = mockk(relaxed = true)
 
         every { getReturnLinkUseCase.invoke(any()) } returns ReturnLinkResult.AppLink(
             Uri.parse("https://example.com")
@@ -241,9 +237,7 @@ class PayPalInternalClientUnitTest {
             setAppSwitchUseCase,
             getAppSwitchUseCase,
             resolvePayPalUseCase,
-            analyticsParamRepository,
-            dispatcher = testDispatcher,
-            coroutineScope = TestScope(testDispatcher)
+            analyticsParamRepository
         )
         return sut
     }
@@ -295,8 +289,7 @@ class PayPalInternalClientUnitTest {
 
         val payPalRequest = createPayPalVaultRequestWithShipping()
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         val result = slot.captured
         val actual = JSONObject(result)
 
@@ -342,8 +335,7 @@ class PayPalInternalClientUnitTest {
 
         val payPalRequest = createPayPalVaultRequestWithShipping()
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         val result = slot.captured
         val actual = JSONObject(result)
 
@@ -387,8 +379,7 @@ class PayPalInternalClientUnitTest {
         val item = createPayPalLineItem()
         val payPalRequest = createPayPalCheckoutRequestWithAllParams(shippingAddressOverride, item)
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         val actual = JSONObject(slot.captured)
         val expected = expectedPayPalCheckoutRequestJson()
         JSONAssert.assertEquals(expected, actual, true)
@@ -405,8 +396,7 @@ class PayPalInternalClientUnitTest {
         every { merchantRepository.authorization } returns tokenizationKey
 
         val payPalRequest = PayPalVaultRequest(true)
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         val result = slot.captured
         val actual = JSONObject(result)
 
@@ -424,8 +414,7 @@ class PayPalInternalClientUnitTest {
 
         val payPalRequest = PayPalVaultRequest(false)
         payPalRequest.displayName = ""
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         val result = slot.captured
         val actual = JSONObject(result)
 
@@ -445,8 +434,7 @@ class PayPalInternalClientUnitTest {
 
         val payPalRequest = PayPalVaultRequest(true)
         payPalRequest.localeCode = null
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         val result = slot.captured
         val actual = JSONObject(result)
         assertFalse((actual["experience_profile"] as JSONObject).has("locale_code"))
@@ -462,8 +450,7 @@ class PayPalInternalClientUnitTest {
 
         val payPalRequest = PayPalVaultRequest(true)
         payPalRequest.merchantAccountId = null
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         val result = slot.captured
         val actual = JSONObject(result)
 
@@ -480,8 +467,7 @@ class PayPalInternalClientUnitTest {
 
         val payPalRequest = PayPalVaultRequest(true)
         payPalRequest.shippingAddressOverride = null
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         val result = slot.captured
         val actual = JSONObject(result)
 
@@ -505,8 +491,7 @@ class PayPalInternalClientUnitTest {
         payPalRequest.isShippingAddressEditable = false
         payPalRequest.shippingAddressOverride = PostalAddress()
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         val result = slot.captured
         val actual = JSONObject(result)
 
@@ -526,8 +511,7 @@ class PayPalInternalClientUnitTest {
 
         val payPalRequest = PayPalVaultRequest(true)
         payPalRequest.billingAgreementDescription = ""
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         val result = slot.captured
         val actual = JSONObject(result)
 
@@ -544,8 +528,7 @@ class PayPalInternalClientUnitTest {
         val sut = createSutWithMocks(captureRequestBody = slot)
 
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         val result = slot.captured
         val actual = JSONObject(result)
 
@@ -563,8 +546,7 @@ class PayPalInternalClientUnitTest {
 
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
         payPalRequest.lineItems = ArrayList()
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         val result = slot.captured
         val actual = JSONObject(result)
         assertFalse(actual.has("line_items"))
@@ -587,13 +569,7 @@ class PayPalInternalClientUnitTest {
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
         payPalRequest.riskCorrelationId = "risk-correlation-id"
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
-        val slot = slot<PayPalPaymentAuthRequestParams>()
-        verify {
-            payPalInternalClientCallback.onResult(capture(slot), null)
-        }
-        val payPalPaymentAuthRequestParams = slot.captured
+        val payPalPaymentAuthRequestParams = sut.sendRequest(context, payPalRequest, configuration)
         assertEquals("risk-correlation-id", payPalPaymentAuthRequestParams.clientMetadataId)
     }
 
@@ -612,18 +588,9 @@ class PayPalInternalClientUnitTest {
 
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
-        val slot = slot<PayPalPaymentAuthRequestParams>()
-        verify {
-            payPalInternalClientCallback.onResult(capture(slot), null)
-        }
-        val payPalPaymentAuthRequestParams = slot.captured
+        val payPalPaymentAuthRequestParams = sut.sendRequest(context, payPalRequest, configuration)
         assertNull(payPalRequest.riskCorrelationId)
-        assertEquals(
-            "sample-client-metadata-id",
-            payPalPaymentAuthRequestParams.clientMetadataId
-        )
+        assertEquals("sample-client-metadata-id", payPalPaymentAuthRequestParams.clientMetadataId)
     }
 
     @Test
@@ -641,10 +608,7 @@ class PayPalInternalClientUnitTest {
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://example.com")
 
         val payPalRequest = createVaultRequest()
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
-        val slot = slot<PayPalPaymentAuthRequestParams>()
-        verify { payPalInternalClientCallback.onResult(capture(slot), null) }
+        val result = sut.sendRequest(context, payPalRequest, configuration)
 
         val expectedUrl = "https://checkout.paypal.com/one-touch-login-sandbox/index.html?" +
             "ba_token=fake-ba-token&action=create_payment_resource&amount=1.00&" +
@@ -658,7 +622,7 @@ class PayPalInternalClientUnitTest {
             "merchant_id=dcpspy2brwdjr3qn&" +
             "return_url=com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&" +
             "offer_paypal_credit=true&version=1"
-        assertPayPalVaultParams(slot.captured, expectedUrl)
+        assertPayPalVaultParams(result, expectedUrl)
     }
 
     @Test
@@ -681,8 +645,7 @@ class PayPalInternalClientUnitTest {
         payPalRequest.merchantAccountId = "sample-merchant-account-id"
         payPalRequest.riskCorrelationId = "sample-client-metadata-id"
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         verify { analyticsParamRepository.didPayPalServerAttemptAppSwitch = false }
     }
 
@@ -703,8 +666,7 @@ class PayPalInternalClientUnitTest {
         payPalRequest.userAuthenticationEmail = "example@mail.com"
         payPalRequest.enablePayPalAppSwitch = true
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        val payPalPaymentAuthRequestParams = sut.sendRequest(context, payPalRequest, configuration)
         verify {
             setAppSwitchUseCase.invoke(
                 merchantEnabledAppSwitch = true,
@@ -712,9 +674,6 @@ class PayPalInternalClientUnitTest {
             )
         }
 
-        val slot = slot<PayPalPaymentAuthRequestParams>()
-        verify { payPalInternalClientCallback.onResult(capture(slot), null) }
-        val payPalPaymentAuthRequestParams = slot.captured
         assertTrue(payPalPaymentAuthRequestParams.isVaultRequest)
 
         val approvalUri = Uri.parse(payPalPaymentAuthRequestParams.approvalUrl)
@@ -739,15 +698,9 @@ class PayPalInternalClientUnitTest {
 
         val payPalRequest = PayPalVaultRequest(true)
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
-        val slot = slot<PayPalPaymentAuthRequestParams>()
-        verify {
-            payPalInternalClientCallback.onResult(capture(slot), null)
-        }
+        val payPalPaymentAuthRequestParams = sut.sendRequest(context, payPalRequest, configuration)
 
         val expectedUrl = "https://www.example.com/some?ba_token=fake-ba-token"
-        val payPalPaymentAuthRequestParams = slot.captured
         assertTrue(payPalPaymentAuthRequestParams.isVaultRequest)
         assertEquals("fake-ba-token", payPalPaymentAuthRequestParams.contextId)
         assertEquals(expectedUrl, payPalPaymentAuthRequestParams.approvalUrl)
@@ -763,10 +716,7 @@ class PayPalInternalClientUnitTest {
             fixture = Fixtures.PAYPAL_HERMES_RESPONSE_WITH_TOKEN_PARAM
         )
         val payPalRequest = createCheckoutRequest()
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
-        val slot = slot<PayPalPaymentAuthRequestParams>()
-        verify { payPalInternalClientCallback.onResult(capture(slot), null) }
+        val result = sut.sendRequest(context, payPalRequest, configuration)
 
         val expectedUrl =
             "https://checkout.paypal.com/one-touch-login-sandbox/index.html?" +
@@ -780,7 +730,7 @@ class PayPalInternalClientUnitTest {
                 "Bno_shipping%5D=false&merchant_id=dcpspy2brwdjr3qn&return_url=" +
                 "com.braintreepayments.api.test.braintree%3A%2F%2Fonetouch%2Fv1%2Fsuccess&" +
                 "offer_paypal_credit=true&version=1"
-        assertPayPalCheckoutParams(slot.captured, expectedUrl)
+        assertPayPalCheckoutParams(result, expectedUrl)
     }
 
     @Test
@@ -791,9 +741,10 @@ class PayPalInternalClientUnitTest {
         val sut = createSutWithMocks(error = httpError)
 
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
-        verify { payPalInternalClientCallback.onResult(null, httpError) }
+        val thrown = assertFailsWith<IOException> {
+            sut.sendRequest(context, payPalRequest, configuration)
+        }
+        assertEquals(httpError, thrown)
     }
 
     @Test
@@ -802,18 +753,13 @@ class PayPalInternalClientUnitTest {
         val sut = createSutWithMocks(fixture = "{bad:")
 
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
-        verify {
-            payPalInternalClientCallback.onResult(
-                null,
-                ofType(JSONException::class)
-            )
+        assertFailsWith<JSONException> {
+            sut.sendRequest(context, payPalRequest, configuration)
         }
     }
 
     @Test
-    fun sendRequest_returnLinkResultFailure_forwardsError() {
+    fun sendRequest_returnLinkResultFailure_forwardsError() = runTest(testDispatcher) {
         val exception = BraintreeException()
         every { getReturnLinkUseCase.invoke() } returns ReturnLinkResult.Failure(exception)
         every { merchantRepository.authorization } returns clientToken
@@ -821,72 +767,58 @@ class PayPalInternalClientUnitTest {
         val sut = createSutWithMocks(fixture = "{bad:")
 
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-
-        verify { payPalInternalClientCallback.onResult(null, eq(exception)) }
+        val thrown = assertFailsWith<BraintreeException> {
+            sut.sendRequest(context, payPalRequest, configuration)
+        }
+        assertEquals(exception, thrown)
     }
 
     @Test
     fun tokenize_tokenizesWithApiClient() = runTest(testDispatcher) {
         val payPalAccount = mockk<PayPalAccount>(relaxed = true)
-        val callback = mockk<PayPalInternalTokenizeCallback>(relaxed = true)
         val apiClient = mockk<ApiClient>(relaxed = true)
+        coEvery { apiClient.tokenizeREST(any()) } returns
+            JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE)
 
         val sut = createSutWithMocks(apiClient = apiClient)
 
-        sut.tokenize(payPalAccount, callback)
-        advanceUntilIdle()
+        sut.tokenize(payPalAccount)
 
-        coVerify {
-            apiClient.tokenizeREST(eq(payPalAccount))
-        }
+        coVerify { apiClient.tokenizeREST(eq(payPalAccount)) }
     }
 
     @Test
     @Throws(JSONException::class)
-    fun tokenize_onTokenizeResult_returnsAccountNonceToCallback() = runTest(testDispatcher) {
+    fun tokenize_returnsAccountNonce() = runTest(testDispatcher) {
         val apiClient = MockkApiClientBuilder()
             .tokenizeRESTSuccess(
                 JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE)
             )
             .build()
         val payPalAccount = mockk<PayPalAccount>(relaxed = true)
-        val callback = mockk<PayPalInternalTokenizeCallback>(relaxed = true)
 
         val sut = createSutWithMocks(apiClient = apiClient)
 
-        sut.tokenize(payPalAccount, callback)
-        advanceUntilIdle()
+        val result = sut.tokenize(payPalAccount)
 
-        val slot = slot<PayPalAccountNonce>()
-        coVerify {
-            callback.onResult(capture(slot), null)
-        }
-
-        val expectedNonce = fromJSON(
-            JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE)
-        )
-        val result = slot.captured
+        val expectedNonce = fromJSON(JSONObject(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE))
         assertEquals(expectedNonce.string, result.string)
     }
 
     @Test
-    fun tokenize_onTokenizeError_returnsErrorToCallback() = runTest(testDispatcher) {
+    fun tokenize_whenApiClientThrows_propagatesError() = runTest(testDispatcher) {
         val error = IOException("error")
         val apiClient = MockkApiClientBuilder()
             .tokenizeRESTError(error)
             .build()
         val payPalAccount = mockk<PayPalAccount>(relaxed = true)
-        val callback = mockk<PayPalInternalTokenizeCallback>(relaxed = true)
 
         val sut = createSutWithMocks(apiClient = apiClient)
 
-        sut.tokenize(payPalAccount, callback)
-        advanceUntilIdle()
-
-        coVerify {
-            callback.onResult(null, error)
+        val thrown = assertFailsWith<IOException> {
+            sut.tokenize(payPalAccount)
         }
+        assertEquals(error, thrown)
     }
 
     @Test
@@ -902,8 +834,7 @@ class PayPalInternalClientUnitTest {
         payPalRequest.intent = PayPalPaymentIntent.AUTHORIZE
         payPalRequest.merchantAccountId = "sample-merchant-account-id"
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         val slot = slot<DataCollectorInternalRequest>()
         verify {
             dataCollector.getClientMetadataId(
@@ -931,12 +862,9 @@ class PayPalInternalClientUnitTest {
         val payPalRequest = PayPalVaultRequest(true)
         payPalRequest.enablePayPalAppSwitch = true
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
-        val slot = slot<PayPalPaymentAuthRequestParams>()
-        verify { payPalInternalClientCallback.onResult(capture(slot), null) }
+        val result = sut.sendRequest(context, payPalRequest, configuration)
 
-        val approvalUri = Uri.parse(slot.captured.approvalUrl)
+        val approvalUri = Uri.parse(result.approvalUrl)
         assertEquals("braintree_sdk", approvalUri.getQueryParameter("source"))
         assertEquals("va", approvalUri.getQueryParameter("flow_type"))
         assertEquals(configuration.merchantId, approvalUri.getQueryParameter("merchant"))
@@ -959,12 +887,9 @@ class PayPalInternalClientUnitTest {
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
         payPalRequest.enablePayPalAppSwitch = true
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
-        val slot = slot<PayPalPaymentAuthRequestParams>()
-        verify { payPalInternalClientCallback.onResult(capture(slot), null) }
+        val result = sut.sendRequest(context, payPalRequest, configuration)
 
-        val approvalUri = Uri.parse(slot.captured.approvalUrl)
+        val approvalUri = Uri.parse(result.approvalUrl)
         assertEquals("braintree_sdk", approvalUri.getQueryParameter("source"))
         assertEquals("ecs", approvalUri.getQueryParameter("flow_type"))
         assertEquals(PayPalFundingSource.PAYPAL.value, approvalUri.getQueryParameter("funding_source"))
@@ -989,12 +914,9 @@ class PayPalInternalClientUnitTest {
         payPalRequest.enablePayPalAppSwitch = true
         payPalRequest.shouldOfferCredit = true
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
-        val slot = slot<PayPalPaymentAuthRequestParams>()
-        verify { payPalInternalClientCallback.onResult(capture(slot), null) }
+        val result = sut.sendRequest(context, payPalRequest, configuration)
 
-        val approvalUri = Uri.parse(slot.captured.approvalUrl)
+        val approvalUri = Uri.parse(result.approvalUrl)
         assertEquals(PayPalFundingSource.CREDIT.value, approvalUri.getQueryParameter("funding_source"))
     }
 
@@ -1014,12 +936,9 @@ class PayPalInternalClientUnitTest {
         payPalRequest.enablePayPalAppSwitch = true
         payPalRequest.shouldOfferPayLater = true
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
-        val slot = slot<PayPalPaymentAuthRequestParams>()
-        verify { payPalInternalClientCallback.onResult(capture(slot), null) }
+        val result = sut.sendRequest(context, payPalRequest, configuration)
 
-        val approvalUri = Uri.parse(slot.captured.approvalUrl)
+        val approvalUri = Uri.parse(result.approvalUrl)
         assertEquals(PayPalFundingSource.PAY_LATER.value, approvalUri.getQueryParameter("funding_source"))
     }
 
@@ -1035,8 +954,7 @@ class PayPalInternalClientUnitTest {
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
         payPalRequest.enablePayPalAppSwitch = true
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         verify {
             setAppSwitchUseCase.invoke(
                 merchantEnabledAppSwitch = false,
@@ -1057,8 +975,7 @@ class PayPalInternalClientUnitTest {
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
         payPalRequest.enablePayPalAppSwitch = true
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         verify {
             setAppSwitchUseCase.invoke(
                 merchantEnabledAppSwitch = false,
@@ -1079,8 +996,7 @@ class PayPalInternalClientUnitTest {
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
         payPalRequest.enablePayPalAppSwitch = true
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         verify {
             setAppSwitchUseCase.invoke(
                 merchantEnabledAppSwitch = true,
@@ -1099,8 +1015,7 @@ class PayPalInternalClientUnitTest {
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
         payPalRequest.enablePayPalAppSwitch = false
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         verify(exactly = 0) { deviceInspector.isPayPalInstalled() }
         verify(exactly = 0) { resolvePayPalUseCase() }
         verify {
@@ -1126,8 +1041,7 @@ class PayPalInternalClientUnitTest {
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
         payPalRequest.enablePayPalAppSwitch = true
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         verify { analyticsParamRepository.didPayPalServerAttemptAppSwitch = true }
         verify {
             setAppSwitchUseCase.invoke(
@@ -1152,8 +1066,7 @@ class PayPalInternalClientUnitTest {
         val payPalRequest = PayPalCheckoutRequest("1.00", true)
         payPalRequest.enablePayPalAppSwitch = true
 
-        sut.sendRequest(context, payPalRequest, configuration, payPalInternalClientCallback)
-        advanceUntilIdle()
+        sut.sendRequest(context, payPalRequest, configuration)
         verify { analyticsParamRepository.didPayPalServerAttemptAppSwitch = false }
 
         verify {
