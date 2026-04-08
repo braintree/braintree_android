@@ -29,9 +29,6 @@ jobs:
       - name: Build docs
         run: ./gradlew dokkaHtmlMultiModule
 
-      - name: Archive version
-        run: ./create_docs.sh ${{ github.ref_name }}
-
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
