@@ -23,6 +23,7 @@ import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase.ReturnLin
 import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.paypal.PayPalPaymentIntent.Companion.fromString
 import com.braintreepayments.api.sharedutils.Json
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -110,16 +111,8 @@ class PayPalClient internal constructor(
         callback: PayPalPaymentAuthCallback
     ) {
         coroutineScope.launch {
-            try {
-                val result = createPaymentAuthRequest(context, payPalRequest)
-                callback.onPayPalPaymentAuthRequest(result)
-            } catch (e: Exception) {
-                sendCreatePaymentAuthFailureEvent(
-                    PayPalPaymentAuthRequest.Failure(e),
-                    AnalyticsEventParams(isVaultRequest = isVaultRequest, shopperSessionId = shopperSessionId)
-                )
-                callback.onPayPalPaymentAuthRequest(PayPalPaymentAuthRequest.Failure(e))
-            }
+            val result = createPaymentAuthRequest(context, payPalRequest)
+            callback.onPayPalPaymentAuthRequest(result)
         }
     }
 
@@ -151,6 +144,7 @@ class PayPalClient internal constructor(
                 return sendPayPalRequest(context, payPalRequest, configuration)
             }
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             sendCreatePaymentAuthFailureEvent(
                 PayPalPaymentAuthRequest.Failure(e),
                 analyticsEventParams
@@ -192,6 +186,7 @@ class PayPalClient internal constructor(
                 }
             }
         } catch (exception: Exception) {
+            if (exception is CancellationException) throw exception
             val failure = PayPalPaymentAuthRequest.Failure(exception)
             sendCreatePaymentAuthFailureEvent(
                 failure,
@@ -316,6 +311,7 @@ class PayPalClient internal constructor(
             sendBrowserSwitchCancelEvent(isAppSwitchFlow, analyticsEventParams)
             PayPalResult.Cancel
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             sendTokenizeFailureEvent(PayPalResult.Failure(e), analyticsEventParams)
             PayPalResult.Failure(e)
         }
