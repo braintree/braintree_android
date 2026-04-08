@@ -26,9 +26,10 @@
     <color name="venmo_white_main_active">#E9E9E9</color>
     <color name="venmo_white_border">#555555</color>
 
-    <color name="card_field_border_default">#BDBDBD</color>
+    <color name="card_field_border_default">#29000000</color>
     <color name="card_field_border_focused">#0066F5</color>
-    <color name="card_field_hint_text">#757575</color>
+    <color name="card_field_hint_text">#A1000000</color>
     <color name="card_field_text">#212121</color>
+    <color name="card_field_background">#FFFFFF</color>
     <color name="card_field_error">#B00020</color>
 </resources>
