@@ -18,10 +18,28 @@ import kotlin.test.assertTrue
 @RunWith(RobolectricTestRunner::class)
 class GooglePayRequestUnitTest {
 
+    private val displayItems = mutableListOf(
+        GooglePayDisplayItem(
+            label = "Item1",
+            type = GooglePayDisplayItemType.LINE_ITEM,
+            price = "1.00"
+        ),
+        GooglePayDisplayItem(
+            label = "Item2",
+            type = GooglePayDisplayItemType.LINE_ITEM,
+            price = "2.00"
+        )
+    )
+
     @Test
     fun `returns all assigned values`() {
         val shippingAddressRequirements = GooglePayShippingAddressParameters()
-        val request = GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL)
+        val request = GooglePayRequest(
+            currencyCode = "USD",
+            totalPrice = "1.00",
+            totalPriceStatus = GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL,
+            displayItems = displayItems
+        )
 
         request.totalPriceLabel = "test"
         request.allowPrepaidCards = true
@@ -47,6 +65,7 @@ class GooglePayRequestUnitTest {
         assertEquals("PRODUCTION", request.getEnvironment())
         assertEquals("google-merchant-name", request.googleMerchantName)
         assertEquals("test", request.totalPriceLabel)
+        assertEquals(displayItems, request.displayItems)
     }
 
     @Test
@@ -62,11 +81,17 @@ class GooglePayRequestUnitTest {
         assertTrue(request.allowCreditCards)
         assertNull(request.getEnvironment())
         assertNull(request.googleMerchantName)
+        assertTrue { request.displayItems.isEmpty() }
     }
 
     @Test
     fun `parcels GooglePay request with all fields populated`() {
-        val request = GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL)
+        val request = GooglePayRequest(
+            currencyCode = "USD",
+            totalPrice = "1.00",
+            totalPriceStatus = GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL,
+            displayItems = displayItems
+        )
 
         request.totalPriceLabel = "test"
         request.isEmailRequired = true
@@ -99,6 +124,7 @@ class GooglePayRequestUnitTest {
         assertTrue { parceled.shippingAddressParameters?.allowedCountryCodes?.contains("US") == true }
         assertTrue(parceled.allowPrepaidCards)
         assertEquals("PRODUCTION", parceled.getEnvironment())
+        assertEquals(displayItems, parceled.displayItems)
     }
 
     @Test
@@ -129,12 +155,18 @@ class GooglePayRequestUnitTest {
         assertNull(parceled.getEnvironment())
         assertNull(parceled.googleMerchantName)
         assertNull(parceled.totalPriceLabel)
+        assertTrue { parceled.displayItems.isEmpty() }
     }
 
     @Test
     @Throws(JSONException::class)
     fun `generates GooglePay request and produces correct JSON output`() {
-        val request = GooglePayRequest("USD", "12.24", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL)
+        val request = GooglePayRequest(
+            currencyCode = "USD",
+            totalPrice = "12.24",
+            totalPriceStatus = GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL,
+            displayItems = displayItems
+        )
         val expected = Fixtures.PAYMENT_METHODS_GOOGLE_PAY_REQUEST
         val shippingAllowedCountryCodes = listOf("US", "CA", "MX", "GB")
 

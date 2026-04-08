@@ -800,7 +800,7 @@ class VenmoClientUnitTest {
     }
 
     @Test
-    fun tokenize_withPaymentAuthResult_whenUserCanceled_returnsCancelAndSendsAnalytics() {
+    fun tokenize_withPaymentAuthResult_whenUserCanceled_returnsCancelAndSendsAnalytics() = runTest(testDispatcher) {
         val braintreeClient = MockkBraintreeClientBuilder()
             .configurationSuccess(venmoEnabledConfiguration)
             .build()
@@ -819,9 +819,12 @@ class VenmoClientUnitTest {
             getDefaultAppUseCase,
             getAppLinksCompatibleBrowserUseCase,
             getReturnLinkTypeUseCase,
-            getReturnLinkUseCase
+            getReturnLinkUseCase,
+            testDispatcher,
+            this
         )
         sut.tokenize(paymentAuthResult, venmoTokenizeCallback)
+        advanceUntilIdle()
 
         val resultSlot = slot<VenmoResult>()
         verify { venmoTokenizeCallback.onVenmoResult(capture(resultSlot)) }
