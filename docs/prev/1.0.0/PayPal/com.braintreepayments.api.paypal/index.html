@@ -1,0 +1,564 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>com.braintreepayments.api.paypal</title>
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../styles/style.css" rel="Stylesheet">
+<link href="../../styles/main.css" rel="Stylesheet">
+<link href="../../styles/prism.css" rel="Stylesheet">
+<link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../index.html">
+                            braintree_android
+                    </a>            </div>
+            <div class="library-version">5.25.0
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":PayPal:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="package" id="content" pageids="PayPal::com.braintreepayments.api.paypal////PointingToDeclaration//-2016316736">
+  <div class="breadcrumbs"><a href="../index.html">PayPal</a><span class="delimiter">/</span><span class="current">com.braintreepayments.api.paypal</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="TYPE">Types</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="2103834678%2FClasslikes%2F-2016316736" anchor-label="AmountBreakdown" id="2103834678%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-amount-breakdown/index.html"><span>Amount</span><wbr><span><span>Breakdown</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2103834678%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-amount-breakdown/index.html">AmountBreakdown</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>itemTotal<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>taxTotal<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>shippingTotal<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>handlingTotal<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>insuranceTotal<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>shippingDiscount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>discountTotal<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">A recurring billing amount breakdown.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1347103154%2FClasslikes%2F-2016316736" anchor-label="PayPalAccountNonce" id="-1347103154%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-account-nonce/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Account</span><wbr><span><span>Nonce</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1347103154%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-pay-pal-account-nonce/index.html">PayPalAccountNonce</a> : <a href="../../BraintreeCore/com.braintreepayments.api.core/-payment-method-nonce/index.html">PaymentMethodNonce</a></div><div class="brief "><p class="paragraph"><a href="../../BraintreeCore/com.braintreepayments.api.core/-payment-method-nonce/index.html">PaymentMethodNonce</a> representing a PayPal account.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1380301563%2FClasslikes%2F-2016316736" anchor-label="PayPalBillingCycle" id="-1380301563%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-billing-cycle/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Billing</span><wbr><span><span>Cycle</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1380301563%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-pay-pal-billing-cycle/index.html">PayPalBillingCycle</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>isTrial<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>numberOfExecutions<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>interval<span class="token operator">: </span><a href="-pay-pal-billing-interval/index.html">PayPalBillingInterval</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>intervalCount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>sequence<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>startDate<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>pricing<span class="token operator">: </span><a href="-pay-pal-billing-pricing/index.html">PayPalBillingPricing</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">PayPal recurring billing cycle details.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1825748434%2FClasslikes%2F-2016316736" anchor-label="PayPalBillingInterval" id="1825748434%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-billing-interval/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Billing</span><wbr><span><span>Interval</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1825748434%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-pay-pal-billing-interval/index.html">PayPalBillingInterval</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-pay-pal-billing-interval/index.html">PayPalBillingInterval</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">The interval at which the payment is charged or billed.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="72770469%2FClasslikes%2F-2016316736" anchor-label="PayPalBillingPricing" id="72770469%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-billing-pricing/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Billing</span><wbr><span><span>Pricing</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="72770469%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-pay-pal-billing-pricing/index.html">PayPalBillingPricing</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>pricingModel<span class="token operator">: </span><a href="-pay-pal-pricing-model/index.html">PayPalPricingModel</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>amount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>reloadThresholdAmount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">PayPal Recurring Billing Agreement pricing details.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1232737085%2FClasslikes%2F-2016316736" anchor-label="PayPalBrowserSwitchException" id="1232737085%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-browser-switch-exception/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Browser</span><wbr><span>Switch</span><wbr><span><span>Exception</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1232737085%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-pay-pal-browser-switch-exception/index.html">PayPalBrowserSwitchException</a> : <a href="https://developer.android.com/reference/kotlin/java/lang/Exception.html">Exception</a></div><div class="brief "><p class="paragraph">Exception for whenever the browser has returned an 'error' in its response.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-388972567%2FClasslikes%2F-2016316736" anchor-label="PayPalCheckoutRequest" id="-388972567%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-checkout-request/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Checkout</span><wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-388972567%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-pay-pal-checkout-request/index.html">PayPalCheckoutRequest</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>amount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>hasUserLocationConsent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>intent<span class="token operator">: </span><a href="-pay-pal-payment-intent/index.html">PayPalPaymentIntent</a><span class="token operator"> = </span>PayPalPaymentIntent.AUTHORIZE<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>userAction<span class="token operator">: </span><a href="-pay-pal-payment-user-action/index.html">PayPalPaymentUserAction</a><span class="token operator"> = </span>PayPalPaymentUserAction.USER_ACTION_DEFAULT<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>currencyCode<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>shouldRequestBillingAgreement<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>shouldOfferPayLater<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>enablePayPalAppSwitch<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>shippingCallbackUrl<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/net/Uri.html">Uri</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>contactInformation<span class="token operator">: </span><a href="-pay-pal-contact-information/index.html">PayPalContactInformation</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>contactPreference<span class="token operator">: </span><a href="-pay-pal-contact-preference/index.html">PayPalContactPreference</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>localeCode<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>billingAgreementDescription<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>isShippingAddressRequired<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>isShippingAddressEditable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>shippingAddressOverride<span class="token operator">: </span><a href="../../BraintreeCore/com.braintreepayments.api.core/-postal-address/index.html">PostalAddress</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>landingPageType<span class="token operator">: </span><a href="-pay-pal-landing-page-type/index.html">PayPalLandingPageType</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>displayName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>merchantAccountId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>riskCorrelationId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>userAuthenticationEmail<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>userPhoneNumber<span class="token operator">: </span><a href="-pay-pal-phone-number/index.html">PayPalPhoneNumber</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>lineItems<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-pay-pal-line-item/index.html">PayPalLineItem</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>recurringBillingDetails<span class="token operator">: </span><a href="-pay-pal-recurring-billing-details/index.html">PayPalRecurringBillingDetails</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>recurringBillingPlanType<span class="token operator">: </span><a href="-pay-pal-recurring-billing-plan-type/index.html">PayPalRecurringBillingPlanType</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>amountBreakdown<span class="token operator">: </span><a href="-amount-breakdown/index.html">AmountBreakdown</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>shouldOfferCredit<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span> : <a href="-pay-pal-request/index.html">PayPalRequest</a></div><div class="brief "><p class="paragraph">Represents the parameters that are needed to start the PayPal Checkout flow</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1229915045%2FClasslikes%2F-2016316736" anchor-label="PayPalClient" id="1229915045%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-client/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span><span>Client</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1229915045%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-pay-pal-client/index.html">PayPalClient</a></div><div class="brief "><p class="paragraph">Used to tokenize PayPal accounts. For more information see the <a href="https://developer.paypal.com/braintree/docs/guides/paypal/overview/android/v4">documentation</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1384207140%2FClasslikes%2F-2016316736" anchor-label="PayPalContactInformation" id="1384207140%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-contact-information/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Contact</span><wbr><span><span>Information</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1384207140%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-pay-pal-contact-information/index.html">PayPalContactInformation</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>recipientEmail<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>recipentPhoneNumber<span class="token operator">: </span><a href="-pay-pal-phone-number/index.html">PayPalPhoneNumber</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Representation of a recipient Contact Information for the order.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-394617545%2FClasslikes%2F-2016316736" anchor-label="PayPalContactPreference" id="-394617545%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-contact-preference/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Contact</span><wbr><span><span>Preference</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-394617545%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-pay-pal-contact-preference/index.html">PayPalContactPreference</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-pay-pal-contact-preference/index.html">PayPalContactPreference</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">Contact information section preference within the payment flow</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2083861292%2FClasslikes%2F-2016316736" anchor-label="PayPalCreditFinancing" id="-2083861292%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-credit-financing/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Credit</span><wbr><span><span>Financing</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2083861292%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-pay-pal-credit-financing/index.html">PayPalCreditFinancing</a> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Represents the PayPal credit financing response.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1926054172%2FClasslikes%2F-2016316736" anchor-label="PayPalCreditFinancingAmount" id="1926054172%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-credit-financing-amount/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Credit</span><wbr><span>Financing</span><wbr><span><span>Amount</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1926054172%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-pay-pal-credit-financing-amount/index.html">PayPalCreditFinancingAmount</a> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">The currency and amount in a PayPal credit financing response</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1910685842%2FClasslikes%2F-2016316736" anchor-label="PayPalLandingPageType" id="1910685842%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-landing-page-type/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Landing</span><wbr><span>Page</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1910685842%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-pay-pal-landing-page-type/index.html">PayPalLandingPageType</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-pay-pal-landing-page-type/index.html">PayPalLandingPageType</a><span class="token operator">&gt; </span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-169921104%2FClasslikes%2F-2016316736" anchor-label="PayPalLauncher" id="-169921104%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-launcher/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span><span>Launcher</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-169921104%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-pay-pal-launcher/index.html">PayPalLauncher</a></div><div class="brief "><p class="paragraph">Responsible for launching PayPal user authentication in a web browser</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1386072567%2FClasslikes%2F-2016316736" anchor-label="PayPalLineItem" id="-1386072567%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-line-item/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Line</span><wbr><span><span>Item</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1386072567%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-pay-pal-line-item/index.html">PayPalLineItem</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>kind<span class="token operator">: </span><a href="-pay-pal-line-item-kind/index.html">PayPalLineItemKind</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>name<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>quantity<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>unitAmount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>description<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>imageUrl<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>productCode<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>unitTaxAmount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>upcCode<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>upcType<span class="token operator">: </span><a href="-pay-pal-line-item-upc-type/index.html">PayPalLineItemUpcType</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>url<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Line item for PayPal checkout flows.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1508102955%2FClasslikes%2F-2016316736" anchor-label="PayPalLineItemKind" id="-1508102955%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-line-item-kind/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Line</span><wbr><span>Item</span><wbr><span><span>Kind</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1508102955%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-pay-pal-line-item-kind/index.html">PayPalLineItemKind</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-pay-pal-line-item-kind/index.html">PayPalLineItemKind</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">The type of PayPal line item.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-830260937%2FClasslikes%2F-2016316736" anchor-label="PayPalLineItemUpcType" id="-830260937%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-line-item-upc-type/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Line</span><wbr><span>Item</span><wbr><span>Upc</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-830260937%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-pay-pal-line-item-upc-type/index.html">PayPalLineItemUpcType</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-pay-pal-line-item-upc-type/index.html">PayPalLineItemUpcType</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">The upc type of PayPal line item.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-468981281%2FClasslikes%2F-2016316736" anchor-label="PayPalPaymentAuthCallback" id="-468981281%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-payment-auth-callback/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Payment</span><wbr><span>Auth</span><wbr><span><span>Callback</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-468981281%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-pay-pal-payment-auth-callback/index.html">PayPalPaymentAuthCallback</a></div><div class="brief "><p class="paragraph">Callback for receiving result of <a href="-pay-pal-client/create-payment-auth-request.html">PayPalClient.createPaymentAuthRequest</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1402630095%2FClasslikes%2F-2016316736" anchor-label="PayPalPaymentAuthRequest" id="1402630095%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-payment-auth-request/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Payment</span><wbr><span>Auth</span><wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1402630095%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">sealed </span><span class="token keyword">class </span><a href="-pay-pal-payment-auth-request/index.html">PayPalPaymentAuthRequest</a></div><div class="brief "><p class="paragraph">A request used to launch the continuation of the PayPal payment flow.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="479453801%2FClasslikes%2F-2016316736" anchor-label="PayPalPaymentAuthRequestParams" id="479453801%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-payment-auth-request-params/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Payment</span><wbr><span>Auth</span><wbr><span>Request</span><wbr><span><span>Params</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="479453801%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.html"><span class="token annotation builtin">RestrictTo</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.Scope.LIBRARY_GROUP.html">RestrictTo.Scope.LIBRARY_GROUP</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">data </span><span class="token keyword">class </span><a href="-pay-pal-payment-auth-request-params/index.html">PayPalPaymentAuthRequestParams</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1225835065%2FClasslikes%2F-2016316736" anchor-label="PayPalPaymentAuthResult" id="-1225835065%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-payment-auth-result/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Payment</span><wbr><span>Auth</span><wbr><span><span>Result</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1225835065%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">sealed </span><span class="token keyword">class </span><a href="-pay-pal-payment-auth-result/index.html">PayPalPaymentAuthResult</a></div><div class="brief "><p class="paragraph">Result of the PayPal web flow received from <a href="-pay-pal-launcher/handle-return-to-app.html">PayPalLauncher.handleReturnToApp</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1571517328%2FClasslikes%2F-2016316736" anchor-label="PayPalPaymentIntent" id="-1571517328%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-payment-intent/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Payment</span><wbr><span><span>Intent</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1571517328%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-pay-pal-payment-intent/index.html">PayPalPaymentIntent</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-pay-pal-payment-intent/index.html">PayPalPaymentIntent</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">The payment intent in the PayPal Checkout flow</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1399673675%2FClasslikes%2F-2016316736" anchor-label="PayPalPaymentUserAction" id="1399673675%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-payment-user-action/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Payment</span><wbr><span>User</span><wbr><span><span>Action</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1399673675%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-pay-pal-payment-user-action/index.html">PayPalPaymentUserAction</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-pay-pal-payment-user-action/index.html">PayPalPaymentUserAction</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">The call-to-action in the PayPal flow</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1666944024%2FClasslikes%2F-2016316736" anchor-label="PayPalPendingRequest" id="1666944024%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-pending-request/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Pending</span><wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1666944024%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">sealed </span><span class="token keyword">class </span><a href="-pay-pal-pending-request/index.html">PayPalPendingRequest</a></div><div class="brief "><p class="paragraph">A pending request for the PayPal web-based authentication flow created by invoking <a href="-pay-pal-launcher/launch.html">PayPalLauncher.launch</a>. This pending request should be stored locally within the app or on-device and used to deliver a result of the browser flow in <a href="-pay-pal-launcher/handle-return-to-app.html">PayPalLauncher.handleReturnToApp</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-570869701%2FClasslikes%2F-2016316736" anchor-label="PayPalPhoneNumber" id="-570869701%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-phone-number/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Phone</span><wbr><span><span>Number</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-570869701%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-pay-pal-phone-number/index.html">PayPalPhoneNumber</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">var </span>countryCode<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>nationalNumber<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Representation of a user phone number.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1386433581%2FClasslikes%2F-2016316736" anchor-label="PayPalPricingModel" id="1386433581%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-pricing-model/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Pricing</span><wbr><span><span>Model</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1386433581%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-pay-pal-pricing-model/index.html">PayPalPricingModel</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-pay-pal-pricing-model/index.html">PayPalPricingModel</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">The interval at which the payment is charged or billed.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1980347858%2FClasslikes%2F-2016316736" anchor-label="PayPalRecurringBillingDetails" id="-1980347858%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-recurring-billing-details/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Recurring</span><wbr><span>Billing</span><wbr><span><span>Details</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1980347858%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-pay-pal-recurring-billing-details/index.html">PayPalRecurringBillingDetails</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>billingCycles<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-pay-pal-billing-cycle/index.html">PayPalBillingCycle</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>totalAmount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>currencyISOCode<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>productName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>oneTimeFeeAmount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>productDescription<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>productAmount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>productQuantity<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>shippingAmount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>taxAmount<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">PayPal recurring billing product details</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-601651857%2FClasslikes%2F-2016316736" anchor-label="PayPalRecurringBillingPlanType" id="-601651857%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-recurring-billing-plan-type/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Recurring</span><wbr><span>Billing</span><wbr><span>Plan</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-601651857%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-pay-pal-recurring-billing-plan-type/index.html">PayPalRecurringBillingPlanType</a> : <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-enum/index.html">Enum</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-pay-pal-recurring-billing-plan-type/index.html">PayPalRecurringBillingPlanType</a><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">PayPal recurring billing plan type, or charge pattern.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="801412995%2FClasslikes%2F-2016316736" anchor-label="PayPalRequest" id="801412995%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-request/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="801412995%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="-pay-pal-request/index.html">PayPalRequest</a> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><div class="brief "><p class="paragraph">Represents the parameters that are needed to tokenize a PayPal account. See <a href="-pay-pal-checkout-request/index.html">PayPalCheckoutRequest</a> and <a href="-pay-pal-vault-request/index.html">PayPalVaultRequest</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1245229165%2FClasslikes%2F-2016316736" anchor-label="PayPalResult" id="-1245229165%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-result/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span><span>Result</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1245229165%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">sealed </span><span class="token keyword">class </span><a href="-pay-pal-result/index.html">PayPalResult</a></div><div class="brief "><p class="paragraph">Result of tokenizing a PayPal account</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="362445872%2FClasslikes%2F-2016316736" anchor-label="PayPalTokenizeCallback" id="362445872%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-tokenize-callback/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Tokenize</span><wbr><span><span>Callback</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="362445872%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-pay-pal-tokenize-callback/index.html">PayPalTokenizeCallback</a></div><div class="brief "><p class="paragraph">Callback for receiving result of <a href="-pay-pal-client/tokenize.html">PayPalClient.tokenize</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1811614605%2FClasslikes%2F-2016316736" anchor-label="PayPalVaultRequest" id="-1811614605%2FClasslikes%2F-2016316736" data-filterable-set=":PayPal:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":PayPal:dokkaHtmlPartial/release" data-filterable-set=":PayPal:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-pay-pal-vault-request/index.html"><span>Pay</span><wbr><span>Pal</span><wbr><span>Vault</span><wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1811614605%2FClasslikes%2F-2016316736"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":PayPal:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-pay-pal-vault-request/index.html">PayPalVaultRequest</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>hasUserLocationConsent<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>shouldOfferCredit<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>recurringBillingDetails<span class="token operator">: </span><a href="-pay-pal-recurring-billing-details/index.html">PayPalRecurringBillingDetails</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>recurringBillingPlanType<span class="token operator">: </span><a href="-pay-pal-recurring-billing-plan-type/index.html">PayPalRecurringBillingPlanType</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>enablePayPalAppSwitch<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>localeCode<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>billingAgreementDescription<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>isShippingAddressRequired<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>isShippingAddressEditable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>shippingAddressOverride<span class="token operator">: </span><a href="../../BraintreeCore/com.braintreepayments.api.core/-postal-address/index.html">PostalAddress</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>landingPageType<span class="token operator">: </span><a href="-pay-pal-landing-page-type/index.html">PayPalLandingPageType</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>displayName<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>merchantAccountId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>riskCorrelationId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>userAuthenticationEmail<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>userPhoneNumber<span class="token operator">: </span><a href="-pay-pal-phone-number/index.html">PayPalPhoneNumber</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>lineItems<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-pay-pal-line-item/index.html">PayPalLineItem</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>userAction<span class="token operator">: </span><a href="-pay-pal-payment-user-action/index.html">PayPalPaymentUserAction</a><span class="token operator"> = </span>PayPalPaymentUserAction.USER_ACTION_DEFAULT</span></span><span class="token punctuation">)</span> : <a href="-pay-pal-request/index.html">PayPalRequest</a></div><div class="brief "><p class="paragraph">Represents the parameters that are needed to start the PayPal Vault flow</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2026 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

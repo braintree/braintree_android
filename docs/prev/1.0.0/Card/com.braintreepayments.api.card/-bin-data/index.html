@@ -1,0 +1,273 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>BinData</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            braintree_android
+                    </a>            </div>
+            <div class="library-version">5.25.0
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":Card:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="Card::com.braintreepayments.api.card/BinData///PointingToDeclaration//1795318307">
+  <div class="breadcrumbs"><a href="../../index.html">Card</a><span class="delimiter">/</span><a href="../index.html">com.braintreepayments.api.card</a><span class="delimiter">/</span><span class="current">BinData</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Bin</span><wbr><span><span>Data</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Card:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">BinData</a> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div><p class="paragraph">A class to contain BIN data for the card number</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="532941267%2FClasslikes%2F1795318307" anchor-label="Companion" id="532941267%2FClasslikes%2F1795318307" data-filterable-set=":Card:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":Card:dokkaHtmlPartial/release" data-filterable-set=":Card:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="532941267%2FClasslikes%2F1795318307"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Card:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="2115785924%2FProperties%2F1795318307" anchor-label="commercial" id="2115785924%2FProperties%2F1795318307" data-filterable-set=":Card:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":Card:dokkaHtmlPartial/release" data-filterable-set=":Card:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="commercial.html"><span><span>commercial</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2115785924%2FProperties%2F1795318307"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Card:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="commercial.html">commercial</a><span class="token operator">: </span><a href="../-bin-type/index.html">BinType</a></div><div class="brief "><p class="paragraph">Whether the card type is a commercial card and is capable of processing Level 2 transactions.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-571714812%2FProperties%2F1795318307" anchor-label="countryOfIssuance" id="-571714812%2FProperties%2F1795318307" data-filterable-set=":Card:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":Card:dokkaHtmlPartial/release" data-filterable-set=":Card:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="country-of-issuance.html"><span>country</span><wbr><span>Of</span><wbr><span><span>Issuance</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-571714812%2FProperties%2F1795318307"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Card:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="country-of-issuance.html">countryOfIssuance</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">The country that issued the credit card.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1141996384%2FProperties%2F1795318307" anchor-label="debit" id="-1141996384%2FProperties%2F1795318307" data-filterable-set=":Card:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":Card:dokkaHtmlPartial/release" data-filterable-set=":Card:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="debit.html"><span><span>debit</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1141996384%2FProperties%2F1795318307"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Card:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="debit.html">debit</a><span class="token operator">: </span><a href="../-bin-type/index.html">BinType</a></div><div class="brief "><p class="paragraph">Whether the card is a debit card.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="41619765%2FProperties%2F1795318307" anchor-label="durbinRegulated" id="41619765%2FProperties%2F1795318307" data-filterable-set=":Card:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":Card:dokkaHtmlPartial/release" data-filterable-set=":Card:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="durbin-regulated.html"><span>durbin</span><wbr><span><span>Regulated</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="41619765%2FProperties%2F1795318307"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Card:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="durbin-regulated.html">durbinRegulated</a><span class="token operator">: </span><a href="../-bin-type/index.html">BinType</a></div><div class="brief "><p class="paragraph">A value indicating whether the issuing bank's card range is regulated by the Durbin Amendment due to the bank's assets.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="479919617%2FProperties%2F1795318307" anchor-label="healthcare" id="479919617%2FProperties%2F1795318307" data-filterable-set=":Card:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":Card:dokkaHtmlPartial/release" data-filterable-set=":Card:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="healthcare.html"><span><span>healthcare</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="479919617%2FProperties%2F1795318307"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Card:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="healthcare.html">healthcare</a><span class="token operator">: </span><a href="../-bin-type/index.html">BinType</a></div><div class="brief "><p class="paragraph">Whether the card is a healthcare card.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1033927258%2FProperties%2F1795318307" anchor-label="issuingBank" id="1033927258%2FProperties%2F1795318307" data-filterable-set=":Card:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":Card:dokkaHtmlPartial/release" data-filterable-set=":Card:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="issuing-bank.html"><span>issuing</span><wbr><span><span>Bank</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1033927258%2FProperties%2F1795318307"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Card:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="issuing-bank.html">issuingBank</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">The bank that issued the credit card.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1702438599%2FProperties%2F1795318307" anchor-label="payroll" id="1702438599%2FProperties%2F1795318307" data-filterable-set=":Card:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":Card:dokkaHtmlPartial/release" data-filterable-set=":Card:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="payroll.html"><span><span>payroll</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1702438599%2FProperties%2F1795318307"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Card:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="payroll.html">payroll</a><span class="token operator">: </span><a href="../-bin-type/index.html">BinType</a></div><div class="brief "><p class="paragraph">Whether the card is a payroll card.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2103111875%2FProperties%2F1795318307" anchor-label="prepaid" id="-2103111875%2FProperties%2F1795318307" data-filterable-set=":Card:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":Card:dokkaHtmlPartial/release" data-filterable-set=":Card:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="prepaid.html"><span><span>prepaid</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2103111875%2FProperties%2F1795318307"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Card:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="prepaid.html">prepaid</a><span class="token operator">: </span><a href="../-bin-type/index.html">BinType</a></div><div class="brief "><p class="paragraph">Whether the card is a prepaid card.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="262278498%2FProperties%2F1795318307" anchor-label="productId" id="262278498%2FProperties%2F1795318307" data-filterable-set=":Card:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":Card:dokkaHtmlPartial/release" data-filterable-set=":Card:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="product-id.html"><span>product</span><wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="262278498%2FProperties%2F1795318307"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Card:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="product-id.html">productId</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">The code for the product type of the card (e.g. <code class="lang-kotlin">D</code> (Visa Signature Preferred), <code class="lang-kotlin">G</code> (Visa Business)).</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1578325224%2FFunctions%2F1795318307" anchor-label="describeContents" id="-1578325224%2FFunctions%2F1795318307" data-filterable-set=":Card:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":Card:dokkaHtmlPartial/release" data-filterable-set=":Card:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-card-nonce/index.html#-1578325224%2FFunctions%2F1795318307"><span>describe</span><wbr><span><span>Contents</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1578325224%2FFunctions%2F1795318307"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Card:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-card-nonce/index.html#-1578325224%2FFunctions%2F1795318307"><span class="token function">describeContents</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1754457655%2FFunctions%2F1795318307" anchor-label="writeToParcel" id="-1754457655%2FFunctions%2F1795318307" data-filterable-set=":Card:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":Card:dokkaHtmlPartial/release" data-filterable-set=":Card:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-card-nonce/index.html#-1754457655%2FFunctions%2F1795318307"><span>write</span><wbr><span>To</span><wbr><span><span>Parcel</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1754457655%2FFunctions%2F1795318307"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":Card:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-card-nonce/index.html#-1754457655%2FFunctions%2F1795318307"><span class="token function">writeToParcel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcel.html">Parcel</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2026 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
