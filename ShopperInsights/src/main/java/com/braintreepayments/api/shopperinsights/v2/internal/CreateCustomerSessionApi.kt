@@ -56,6 +56,7 @@ internal class CreateCustomerSessionApi(
         val input = JSONObject().apply {
             put(CUSTOMER, jsonRequestObjects.customer)
             putOpt(PURCHASE_UNITS, jsonRequestObjects.purchaseUnits)
+            putOpt(PAYPAL_CAMPAIGNS, jsonRequestObjects.payPalCampaigns)
         }
 
         return JSONObject().put(INPUT, input)
@@ -67,6 +68,8 @@ internal class CreateCustomerSessionApi(
         private const val INPUT = "input"
         private const val CUSTOMER = "customer"
         private const val PURCHASE_UNITS = "purchaseUnits"
+        /** Matches iOS `Variables` encoding key; wire name is snake_case. */
+        private const val PAYPAL_CAMPAIGNS = "paypal_campaigns"
         private const val CREATE_CUSTOMER_SESSION = "createCustomerSession"
     }
 }

@@ -141,6 +141,8 @@ class ShopperInsightsClientV2 internal constructor(
      *
      * @param customerSessionRequest Optional: a [CustomerSessionRequest] object containing the request parameters
      * @param sessionId Optional: The shopper session ID
+     * @param payPalCampaigns Optional: PayPal campaigns (`paypal_campaigns` on the wire); if null, uses
+     * [CustomerSessionRequest.payPalCampaigns] when [customerSessionRequest] is non-null.
      * @param customerRecommendationsCallback: a callback that returns the result of the
      * customer recommendation generation
      *
@@ -149,10 +151,15 @@ class ShopperInsightsClientV2 internal constructor(
     fun generateCustomerRecommendations(
         customerSessionRequest: CustomerSessionRequest? = null,
         sessionId: String? = null,
+        payPalCampaigns: List<PayPalCampaign>? = null,
         customerRecommendationsCallback: (customerRecommendationsResult: CustomerRecommendationsResult) -> Unit
     ) {
         coroutineScope.launch {
-            val result = generateCustomerRecommendations(customerSessionRequest, sessionId)
+            val result = generateCustomerRecommendations(
+                customerSessionRequest,
+                sessionId,
+                payPalCampaigns
+            )
             customerRecommendationsCallback(result)
         }
     }
@@ -160,11 +167,16 @@ class ShopperInsightsClientV2 internal constructor(
     private suspend fun generateCustomerRecommendations(
         customerSessionRequest: CustomerSessionRequest? = null,
         sessionId: String? = null,
+        payPalCampaigns: List<PayPalCampaign>? = null,
     ): CustomerRecommendationsResult {
         analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_STARTED)
         return when (
             val generateCustomerRecommendationsResult =
-                generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId)
+                generateCustomerRecommendationsApi.execute(
+                    customerSessionRequest,
+                    sessionId,
+                    payPalCampaigns
+                )
         ) {
             is GenerateCustomerRecommendationsResult.Success -> {
                 analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_SUCCEEDED)

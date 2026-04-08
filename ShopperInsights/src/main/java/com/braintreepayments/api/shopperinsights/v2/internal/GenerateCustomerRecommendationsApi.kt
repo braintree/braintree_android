@@ -4,6 +4,7 @@ import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendations
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
+import com.braintreepayments.api.shopperinsights.v2.PayPalCampaign
 import com.braintreepayments.api.shopperinsights.v2.PaymentOptions
 import org.json.JSONException
 import org.json.JSONObject
@@ -28,7 +29,8 @@ internal class GenerateCustomerRecommendationsApi(
 
     suspend fun execute(
         customerSessionRequest: CustomerSessionRequest?,
-        sessionId: String?
+        sessionId: String?,
+        payPalCampaigns: List<PayPalCampaign>? = null,
     ): GenerateCustomerRecommendationsResult {
         return try {
             val params = JSONObject()
@@ -47,7 +49,10 @@ internal class GenerateCustomerRecommendationsApi(
                 """.trimIndent()
             )
 
-            params.put(VARIABLES, assembleVariables(sessionId, customerSessionRequest))
+            params.put(
+                VARIABLES,
+                assembleVariables(sessionId, customerSessionRequest, payPalCampaigns)
+            )
 
             try {
                 val responseBody = braintreeClient.sendGraphQLPOST(params)
@@ -64,10 +69,16 @@ internal class GenerateCustomerRecommendationsApi(
     @Throws(JSONException::class)
     private fun assembleVariables(
         sessionId: String?,
-        customerSessionRequest: CustomerSessionRequest?
+        customerSessionRequest: CustomerSessionRequest?,
+        payPalCampaigns: List<PayPalCampaign>?,
     ): JSONObject {
         val input = JSONObject().apply {
             putOpt(SESSION_ID, sessionId)
+
+            val campaignsJson = customerSessionRequestBuilder.payPalCampaignsToJson(
+                payPalCampaigns ?: customerSessionRequest?.payPalCampaigns
+            )
+            putOpt(PAYPAL_CAMPAIGNS, campaignsJson)
 
             if (customerSessionRequest != null) {
                 val jsonRequestObjects = customerSessionRequestBuilder.createRequestObjects(customerSessionRequest)
@@ -114,6 +125,8 @@ internal class GenerateCustomerRecommendationsApi(
         private const val SESSION_ID = "sessionId"
         private const val CUSTOMER = "customer"
         private const val PURCHASE_UNITS = "purchaseUnits"
+        /** Matches iOS `Variables` encoding key; wire name is snake_case. */
+        private const val PAYPAL_CAMPAIGNS = "paypal_campaigns"
         private const val GENERATE_CUSTOMER_RECOMMENDATIONS = "generateCustomerRecommendations"
     }
 }

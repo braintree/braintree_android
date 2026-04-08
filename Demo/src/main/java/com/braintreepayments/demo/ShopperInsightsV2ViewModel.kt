@@ -2,6 +2,7 @@ package com.braintreepayments.demo
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.ButtonOrder
 import com.braintreepayments.api.shopperinsights.ButtonType
@@ -11,12 +12,17 @@ import com.braintreepayments.api.shopperinsights.PresentmentDetails
 import com.braintreepayments.api.shopperinsights.v2.CustomerRecommendationsResult
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionResult
+import com.braintreepayments.api.shopperinsights.v2.PayPalCampaign
 import com.braintreepayments.api.shopperinsights.v2.PaymentOptions
 import com.braintreepayments.api.shopperinsights.v2.ShopperInsightsClientV2
 import java.security.MessageDigest
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalBetaApi::class)
 class ShopperInsightsV2ViewModel : ViewModel() {
@@ -24,11 +30,16 @@ class ShopperInsightsV2ViewModel : ViewModel() {
 
     private val _sessionId = MutableStateFlow<String>("94f0b2db-5323-4d86-add3-paypal000000")
     val sessionId: StateFlow<String> = _sessionId
+
+    private val _payPalCampaigns = MutableStateFlow<List<String>>(emptyList())
+    val payPalCampaigns: StateFlow<List<String>> = _payPalCampaigns
     @OptIn(ExperimentalBetaApi::class)
     var recommendations = MutableStateFlow<List<PaymentOptions>>(emptyList())
     var isInPayPalNetwork = MutableStateFlow<Boolean>(false)
-    var error = MutableStateFlow<String>("")
     var recommendationsCompleted = MutableStateFlow<Boolean>(false)
+
+    private val _userErrors = MutableSharedFlow<String>()
+    val userErrors: SharedFlow<String> = _userErrors.asSharedFlow()
 
     fun initShopperInsightsClient(context: Context, authString: String) {
         shopperInsightsClient = ShopperInsightsClientV2(context, authString)
@@ -36,8 +47,9 @@ class ShopperInsightsV2ViewModel : ViewModel() {
 
     fun handleCreateCustomerSession(emailText: String, nationalNumberText: String) {
         val customerSessionRequest = CustomerSessionRequest(
-            hashedEmail = emailText.sha256(),
-            hashedPhoneNumber = nationalNumberText.sha256()
+            hashedEmail = emailText.sha256Hex(),
+            hashedPhoneNumber = nationalNumberText.sha256Hex(),
+            payPalCampaigns = _payPalCampaigns.value.map { PayPalCampaign(it) }
         )
 
         _sessionId.update { "" }
@@ -48,8 +60,8 @@ class ShopperInsightsV2ViewModel : ViewModel() {
                     _sessionId.update { result.sessionId }
                 }
                 is CustomerSessionResult.Failure -> {
-                    this@ShopperInsightsV2ViewModel.error.update {
-                        "CreateCustomerSession failed: ${result.error}"
+                    viewModelScope.launch {
+                        _userErrors.emit("CreateCustomerSession failed: ${result.error}")
                     }
                 }
             }
@@ -62,8 +74,8 @@ class ShopperInsightsV2ViewModel : ViewModel() {
         sessionId: String
     ) {
         val customerSessionRequest = CustomerSessionRequest(
-            hashedEmail = emailText.sha256(),
-            hashedPhoneNumber = nationalNumberText.sha256()
+            hashedEmail = emailText.sha256Hex(),
+            hashedPhoneNumber = nationalNumberText.sha256Hex()
         )
 
         _sessionId.update { "" }
@@ -74,7 +86,9 @@ class ShopperInsightsV2ViewModel : ViewModel() {
                     _sessionId.update { result.sessionId }
                 }
                 is CustomerSessionResult.Failure -> {
-                    error.update { "UpdateCustomerSession failed: ${result.error}" }
+                    viewModelScope.launch {
+                        _userErrors.emit("UpdateCustomerSession failed: ${result.error}")
+                    }
                 }
             }
         }
@@ -106,7 +120,9 @@ class ShopperInsightsV2ViewModel : ViewModel() {
                 is CustomerRecommendationsResult.Failure -> {
                     recommendationsCompleted.value = true
 
-                    this@ShopperInsightsV2ViewModel.error.update { "GetRecommendations failed: ${result.error}" }
+                    viewModelScope.launch {
+                        _userErrors.emit("GetRecommendations failed: ${result.error}")
+                    }
                 }
             }
         }
@@ -130,15 +146,20 @@ class ShopperInsightsV2ViewModel : ViewModel() {
     fun resetRecommendationsCompleted() {
         recommendationsCompleted.value = false
     }
+
+    fun addPayPalCampaign(campaign: String) {
+        val trimmed = campaign.trim()
+        if (trimmed.isNotEmpty()) {
+            _payPalCampaigns.update { it + trimmed }
+        }
+    }
+
+    fun removePayPalCampaignAt(index: Int) {
+        _payPalCampaigns.update { list -> list.filterIndexed { i, _ -> i != index } }
+    }
 }
 
-private fun String.sha256(): String {
-    return hashString(this, "SHA-256")
-}
-
-private fun hashString(input: String, algorithm: String = "SHA-256"): String {
-    return MessageDigest
-        .getInstance(algorithm)
-        .digest(input.toByteArray())
-        .toString()
+private fun String.sha256Hex(): String {
+    val digest = MessageDigest.getInstance("SHA-256").digest(toByteArray(Charsets.UTF_8))
+    return digest.joinToString("") { byte -> "%02x".format(0xFF and byte.toInt()) }
 }

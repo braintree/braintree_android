@@ -4,6 +4,9 @@
 
 * GooglePay
    * Add optional `DisplayItems` in GooglePay request
+
+* ShopperInsights
+    * Add optional PayPal co-marketing campaign support (`PayPalCampaign` / `paypal_campaigns`) for Shopper Insights v2 customer session and recommendations APIs
     
 ## 5.25.0 (2026-03-31)
 

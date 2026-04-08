@@ -40,13 +40,13 @@ internal class UpdateCustomerSessionApi(
 
             params.put(VARIABLES, assembleVariables(sessionId, customerSessionRequest))
 
-                try {
-                    val responseBody = braintreeClient.sendGraphQLPOST(params)
-                    val sessionId = responseParser.parseSessionId(responseBody, UPDATE_CUSTOMER_SESSION)
-                    UpdateCustomerSessionResult.Success(sessionId)
-                } catch (e: Exception) {
-                    UpdateCustomerSessionResult.Error(e)
-                }
+            try {
+                val responseBody = braintreeClient.sendGraphQLPOST(params)
+                val sessionId = responseParser.parseSessionId(responseBody, UPDATE_CUSTOMER_SESSION)
+                UpdateCustomerSessionResult.Success(sessionId)
+            } catch (e: Exception) {
+                UpdateCustomerSessionResult.Error(e)
+            }
         } catch (e: JSONException) {
             UpdateCustomerSessionResult.Error(e)
         }
@@ -63,6 +63,7 @@ internal class UpdateCustomerSessionApi(
             put(SESSION_ID, sessionId)
             put(CUSTOMER, jsonRequestObjects.customer)
             putOpt(PURCHASE_UNITS, jsonRequestObjects.purchaseUnits)
+            putOpt(PAYPAL_CAMPAIGNS, jsonRequestObjects.payPalCampaigns)
         }
 
         return JSONObject().put(INPUT, input)
@@ -75,6 +76,7 @@ internal class UpdateCustomerSessionApi(
         private const val SESSION_ID = "sessionId"
         private const val CUSTOMER = "customer"
         private const val PURCHASE_UNITS = "purchaseUnits"
+        private const val PAYPAL_CAMPAIGNS = "paypal_campaigns"
         private const val UPDATE_CUSTOMER_SESSION = "updateCustomerSession"
     }
 }
