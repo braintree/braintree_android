@@ -75,7 +75,8 @@ class ShopperInsightsV2ViewModel : ViewModel() {
     ) {
         val customerSessionRequest = CustomerSessionRequest(
             hashedEmail = emailText.sha256Hex(),
-            hashedPhoneNumber = nationalNumberText.sha256Hex()
+            hashedPhoneNumber = nationalNumberText.sha256Hex(),
+            payPalCampaigns = _payPalCampaigns.value.map { PayPalCampaign(it) }
         )
 
         _sessionId.update { "" }
@@ -95,7 +96,10 @@ class ShopperInsightsV2ViewModel : ViewModel() {
     }
 
     fun handleGetRecommendations(sessionId: String) {
-        shopperInsightsClient.generateCustomerRecommendations(sessionId = sessionId) { result ->
+        shopperInsightsClient.generateCustomerRecommendations(
+            sessionId = sessionId,
+            payPalCampaigns = _payPalCampaigns.value.map { PayPalCampaign(it) }
+        ) { result ->
             when (result) {
                 is CustomerRecommendationsResult.Success -> {
                     isInPayPalNetwork.update { result.customerRecommendations.isInPayPalNetwork == true }
