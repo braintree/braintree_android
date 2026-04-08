@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.IOException
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Core Braintree class that handles network requests.
@@ -95,7 +96,7 @@ class BraintreeClient internal constructor(
             try {
                 getConfiguration()
             } catch (e: Exception) {
-                // no op
+                if (e is CancellationException) throw e
             }
         }
     }

@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * This API call sends analytic events to FPTI.
@@ -43,7 +44,7 @@ internal class AnalyticsApi(
                     authorization = merchantRepository.authorization,
                 )
             } catch (e: Exception) {
-                // no op - failure to send analytics should not impact the user experience
+                if (e is CancellationException) throw e
             }
         }
     }
