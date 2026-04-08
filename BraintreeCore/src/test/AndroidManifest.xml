@@ -1,6 +1,0 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-     xmlns:tools="http://schemas.android.com/tools">
-
-    <!-- replace Cardinal android:label from manifest merge for unit testing purposes -->
-    <application android:label="Test Application" tools:replace="android:label" />
-</manifest>

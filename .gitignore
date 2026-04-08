@@ -1,8 +1,0 @@
-.gradle
-/local.properties
-/.idea
-Gemfile.lock
-.DS_Store
-.bundle
-*.iml
-build
