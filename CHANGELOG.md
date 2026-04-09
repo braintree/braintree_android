@@ -5,6 +5,7 @@
 * GooglePay
    * Add optional `DisplayItems` in GooglePay request
    * Add support for `checkoutOption` to `GooglePayRequest` TransactionInfo params
+
 ## 5.25.0 (2026-03-31)
 
 * BraintreeCore
