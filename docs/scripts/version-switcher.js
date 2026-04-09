@@ -8,7 +8,9 @@
    *  - the page path relative to the docs root (e.g. "Card/index.html")
    */
   function getVersionInfo() {
-    var pathname = window.location.pathname;
+    // Normalize: treat trailing slash as pointing to index.html
+    var pathname = window.location.pathname.replace(/\/$/, "/index.html");
+
     var prevMatch = pathname.match(/\/prev\/([\w.-]+)\//);
     if (prevMatch) {
       var version = prevMatch[1];
