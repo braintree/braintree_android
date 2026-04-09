@@ -12,7 +12,6 @@
 * PayPal
     * Add `ActivityResultRegistry` constructor to PayPalLauncher to support AuthTab integration from JetpackCompose
     * Fix isVaultRequest missing from PayPalLauncher app switch analytics events
-
 * ShopperInsights
     * Add `PAYPAL_PAY_LATER` to `ButtonType` enum
 * UIComponents
