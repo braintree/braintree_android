@@ -40,13 +40,13 @@ internal class UpdateCustomerSessionApi(
 
             params.put(VARIABLES, assembleVariables(sessionId, customerSessionRequest))
 
-        try {
-            val responseBody = braintreeClient.sendGraphQLPOST(params)
-            val sessionId = responseParser.parseSessionId(responseBody, UPDATE_CUSTOMER_SESSION)
-            UpdateCustomerSessionResult.Success(sessionId)
-        } catch (e: Exception) {
-            UpdateCustomerSessionResult.Error(e)
-        }
+            try {
+                val responseBody = braintreeClient.sendGraphQLPOST(params)
+                val sessionId = responseParser.parseSessionId(responseBody, UPDATE_CUSTOMER_SESSION)
+                UpdateCustomerSessionResult.Success(sessionId)
+            } catch (e: Exception) {
+                UpdateCustomerSessionResult.Error(e)
+            }
         } catch (e: JSONException) {
             UpdateCustomerSessionResult.Error(e)
         }
