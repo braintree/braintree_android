@@ -136,129 +136,129 @@ class ShopperInsightsClientV2UnitTest {
 
     @Test
     fun `when createCustomerSession is called and succeeds, callback is invoked with Success`() =
-        runTest(testDispatcher) {
-            val customerSessionRequest = mockk<CustomerSessionRequest>()
-            val sessionId = "test-session-id"
+    runTest(testDispatcher) {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val sessionId = "test-session-id"
 
-            coEvery {
-                createCustomerSessionApi.execute(customerSessionRequest)
-            } answers {
-                CreateCustomerSessionResult.Success(sessionId)
-            }
-
-            var result: CustomerSessionResult? = null
-            subject.createCustomerSession(customerSessionRequest) { result = it }
-            advanceUntilIdle()
-
-            assert(result is CustomerSessionResult.Success)
-            assertEquals(sessionId, (result as CustomerSessionResult.Success).sessionId)
+        coEvery {
+            createCustomerSessionApi.execute(customerSessionRequest)
+        } answers {
+            CreateCustomerSessionResult.Success(sessionId)
         }
+
+        var result: CustomerSessionResult? = null
+        subject.createCustomerSession(customerSessionRequest) { result = it }
+        advanceUntilIdle()
+
+        assert(result is CustomerSessionResult.Success)
+        assertEquals(sessionId, (result as CustomerSessionResult.Success).sessionId)
+    }
 
     @Test
     fun `when createCustomerSession is called and fails, callback is invoked with Failure`() =
-        runTest(testDispatcher) {
-            val customerSessionRequest = mockk<CustomerSessionRequest>()
-            val error = Exception("Test error")
+    runTest(testDispatcher) {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val error = Exception("Test error")
 
-            coEvery {
-                createCustomerSessionApi.execute(customerSessionRequest)
-            } answers {
-                CreateCustomerSessionResult.Error(error)
-            }
-
-            var result: CustomerSessionResult? = null
-            subject.createCustomerSession(customerSessionRequest) { result = it }
-            advanceUntilIdle()
-
-            assert(result is CustomerSessionResult.Failure)
-            assertEquals(error, (result as CustomerSessionResult.Failure).error)
+        coEvery {
+            createCustomerSessionApi.execute(customerSessionRequest)
+        } answers {
+            CreateCustomerSessionResult.Error(error)
         }
+
+        var result: CustomerSessionResult? = null
+        subject.createCustomerSession(customerSessionRequest) { result = it }
+        advanceUntilIdle()
+
+        assert(result is CustomerSessionResult.Failure)
+        assertEquals(error, (result as CustomerSessionResult.Failure).error)
+    }
 
     @Test
     fun `when updateCustomerSession is called and succeeds, callback is invoked with Success`() =
-        runTest(testDispatcher) {
-            val customerSessionRequest = mockk<CustomerSessionRequest>()
-            val sessionId = "test-session-id"
+    runTest(testDispatcher) {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val sessionId = "test-session-id"
 
-            coEvery {
-                updateCustomerSessionApi.execute(customerSessionRequest, sessionId)
-            } answers {
-                UpdateCustomerSessionResult.Success(sessionId)
-            }
-
-            var result: CustomerSessionResult? = null
-            subject.updateCustomerSession(customerSessionRequest, sessionId) { result = it }
-            advanceUntilIdle()
-
-            assert(result is CustomerSessionResult.Success)
-            assertEquals(sessionId, (result as CustomerSessionResult.Success).sessionId)
+        coEvery {
+            updateCustomerSessionApi.execute(customerSessionRequest, sessionId)
+        } answers {
+            UpdateCustomerSessionResult.Success(sessionId)
         }
+
+        var result: CustomerSessionResult? = null
+        subject.updateCustomerSession(customerSessionRequest, sessionId) { result = it }
+        advanceUntilIdle()
+
+        assert(result is CustomerSessionResult.Success)
+        assertEquals(sessionId, (result as CustomerSessionResult.Success).sessionId)
+    }
 
     @Test
     fun `when updateCustomerSession is called and fails, callback is invoked with Failure`() =
-        runTest(testDispatcher) {
-            val customerSessionRequest = mockk<CustomerSessionRequest>()
-            val sessionId = "test-session-id"
-            val error = Exception("Test error")
+    runTest(testDispatcher) {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val sessionId = "test-session-id"
+        val error = Exception("Test error")
 
-            coEvery {
-                updateCustomerSessionApi.execute(
-                    customerSessionRequest,
-                    sessionId
-                )
-            } answers {
-                UpdateCustomerSessionResult.Error(error)
-            }
-
-            var result: CustomerSessionResult? = null
-            subject.updateCustomerSession(customerSessionRequest, sessionId) { result = it }
-            advanceUntilIdle()
-
-            assert(result is CustomerSessionResult.Failure)
-            assertEquals(error, (result as CustomerSessionResult.Failure).error)
+        coEvery {
+            updateCustomerSessionApi.execute(
+                customerSessionRequest,
+                sessionId
+            )
+        } answers {
+            UpdateCustomerSessionResult.Error(error)
         }
+
+        var result: CustomerSessionResult? = null
+        subject.updateCustomerSession(customerSessionRequest, sessionId) { result = it }
+        advanceUntilIdle()
+
+        assert(result is CustomerSessionResult.Failure)
+        assertEquals(error, (result as CustomerSessionResult.Failure).error)
+    }
 
     @Test
     fun `when generateCustomerRecommendations is called and succeeds, callback is invoked with Success`() =
-        runTest(testDispatcher) {
-            val customerSessionRequest = mockk<CustomerSessionRequest>()
-            val sessionId = "test-session-id"
-            val recommendations = mockk<CustomerRecommendations>()
+    runTest(testDispatcher) {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val sessionId = "test-session-id"
+        val recommendations = mockk<CustomerRecommendations>()
 
-            coEvery {
-                generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId, null)
-            } answers {
-                GenerateCustomerRecommendationsResult.Success(recommendations)
-            }
-
-            var result: CustomerRecommendationsResult? = null
-            subject.generateCustomerRecommendations(customerSessionRequest, sessionId) { result = it }
-            advanceUntilIdle()
-
-            assert(result is CustomerRecommendationsResult.Success)
-            assertEquals(recommendations, (result as CustomerRecommendationsResult.Success).customerRecommendations)
+        coEvery {
+            generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId, null)
+        } answers {
+            GenerateCustomerRecommendationsResult.Success(recommendations)
         }
+
+        var result: CustomerRecommendationsResult? = null
+        subject.generateCustomerRecommendations(customerSessionRequest, sessionId) { result = it }
+        advanceUntilIdle()
+
+        assert(result is CustomerRecommendationsResult.Success)
+        assertEquals(recommendations, (result as CustomerRecommendationsResult.Success).customerRecommendations)
+    }
 
     @Test
     fun `when generateCustomerRecommendations is called and fails, callback is invoked with Failure`() =
-        runTest(testDispatcher) {
-            val customerSessionRequest = mockk<CustomerSessionRequest>()
-            val sessionId = "test-session-id"
-            val error = Exception("Test error")
+    runTest(testDispatcher) {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val sessionId = "test-session-id"
+        val error = Exception("Test error")
 
-            coEvery {
-                generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId, null)
-            } answers {
-                GenerateCustomerRecommendationsResult.Error(error)
-            }
-
-            var result: CustomerRecommendationsResult? = null
-            subject.generateCustomerRecommendations(customerSessionRequest, sessionId) { result = it }
-            advanceUntilIdle()
-
-            assert(result is CustomerRecommendationsResult.Failure)
-            assertEquals(error, (result as CustomerRecommendationsResult.Failure).error)
+        coEvery {
+            generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId, null)
+        } answers {
+            GenerateCustomerRecommendationsResult.Error(error)
         }
+
+        var result: CustomerRecommendationsResult? = null
+        subject.generateCustomerRecommendations(customerSessionRequest, sessionId) { result = it }
+        advanceUntilIdle()
+
+        assert(result is CustomerRecommendationsResult.Failure)
+        assertEquals(error, (result as CustomerRecommendationsResult.Failure).error)
+    }
 
     @Test
     fun `createCustomerSession sends started and succeeded analytics events`() = runTest(testDispatcher) {
@@ -364,23 +364,23 @@ class ShopperInsightsClientV2UnitTest {
 
     @Test
     fun `generateCustomerRecommendations sends started and failed analytics events on error`() =
-        runTest(testDispatcher) {
-            val customerSessionRequest = mockk<CustomerSessionRequest>()
-            val sessionId = "test-session-id"
-            val error = Exception("Test error")
+    runTest(testDispatcher) {
+        val customerSessionRequest = mockk<CustomerSessionRequest>()
+        val sessionId = "test-session-id"
+        val error = Exception("Test error")
 
-            coEvery {
-                generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId, null)
-            } answers {
-                GenerateCustomerRecommendationsResult.Error(error)
-            }
-
-            subject.generateCustomerRecommendations(customerSessionRequest, sessionId) {}
-            advanceUntilIdle()
-
-            verifyOrder {
-                analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_STARTED)
-                analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_FAILED)
-            }
+        coEvery {
+            generateCustomerRecommendationsApi.execute(customerSessionRequest, sessionId, null)
+        } answers {
+            GenerateCustomerRecommendationsResult.Error(error)
         }
+
+        subject.generateCustomerRecommendations(customerSessionRequest, sessionId) {}
+        advanceUntilIdle()
+
+        verifyOrder {
+            analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_STARTED)
+            analyticsClient.sendEvent(ShopperInsightsAnalytics.GET_CUSTOMER_RECOMMENDATIONS_FAILED)
+        }
+    }
 }
