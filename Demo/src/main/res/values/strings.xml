@@ -2,6 +2,8 @@
 <resources>
     <string name="app_name">Braintree Demo</string>
 
+    <string name="card_fields">Card Fields</string>
+
     <!-- MainActivity -->
     <string name="reset">Reset</string>
     <string name="settings">Settings</string>

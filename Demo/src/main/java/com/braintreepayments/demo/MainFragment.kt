@@ -72,6 +72,7 @@ class MainFragment : BaseFragment() {
                                     style = MaterialTheme.typography.headlineSmall
                                 )
 
+                                PaymentModuleButton(R.string.card_fields) { launchCardFields() }
                                 PaymentModuleButton(R.string.payment_buttons_button) { launchPaymentButtons() }
                                 PaymentModuleButton(R.string.payment_buttons_compose_button) {
                                     launchComposePaymentButtons()
@@ -217,6 +218,11 @@ class MainFragment : BaseFragment() {
                 .setAuthString(authString)
             findNavController().navigate(action)
         }
+    }
+
+    private fun launchCardFields() {
+        val action = MainFragmentDirections.actionMainFragmentToCardFieldsFragment()
+        findNavController().navigate(action)
     }
 
     private fun launchPaymentButtons() {
