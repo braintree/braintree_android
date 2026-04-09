@@ -110,6 +110,12 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
             var nationalNumberText by rememberSaveable { mutableStateOf("4082321001") }
             var payPalCampaignInput by rememberSaveable { mutableStateOf("") }
 
+            val vmSessionId by viewModel.sessionId.collectAsState()
+            var sessionIdText by rememberSaveable { mutableStateOf("") }
+            LaunchedEffect(vmSessionId) {
+                sessionIdText = vmSessionId
+            }
+
             TextField(
                 value = emailText,
                 onValueChange = { newValue -> emailText = newValue },
@@ -135,12 +141,10 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                 )
             }
 
-            val currentSessionId = viewModel.sessionId.collectAsState().value
             TextField(
-                value = currentSessionId,
-                onValueChange = {},
+                value = sessionIdText,
+                onValueChange = { sessionIdText = it },
                 label = { Text("Session ID") },
-                enabled = true,
                 modifier = Modifier.padding(4.dp)
             )
 
@@ -215,7 +219,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                 enabled = shopperInsightsClientSuccessfullyInstantiated,
                 onClick = {
                     viewModel.resetRecommendationsCompleted()
-                    handleUpdateCustomerSession(emailText, nationalNumberText, currentSessionId)
+                    handleUpdateCustomerSession(emailText, nationalNumberText, sessionIdText)
                 }
             ) {
                 Text(text = "Update customer session")
@@ -223,12 +227,11 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
             Button(
                 enabled = shopperInsightsClientSuccessfullyInstantiated,
                 onClick = {
-                    handleGetRecommendations(viewModel.sessionId.value)
+                    handleGetRecommendations(sessionIdText)
                 }
             ) {
                 Text(text = "Get recommendations")
             }
-            val sessionId = viewModel.sessionId.collectAsState().value
             val recommendations = viewModel.recommendations.collectAsState().value
 
             val recommendationsCompleted = viewModel.recommendationsCompleted.collectAsState().value
@@ -238,7 +241,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                 if (isInPayPalNetwork && recommendations.first().paymentOption == "PAYPAL") {
                     Button(
                         enabled = true,
-                        onClick = { launchPayPalVault(emailText, countryCodeText, nationalNumberText, sessionId) }
+                        onClick = { launchPayPalVault(emailText, countryCodeText, nationalNumberText, sessionIdText) }
                     ) {
                         Text(text = "PayPal")
                     }
@@ -246,7 +249,7 @@ class ShopperInsightsFragmentV2 : BaseFragment() {
                 if (isInPayPalNetwork && recommendations.first().paymentOption == "VENMO") {
                     Button(
                         enabled = true,
-                        onClick = { launchVenmo(sessionId) }
+                        onClick = { launchVenmo(sessionIdText) }
                     ) {
                         Text(text = "Venmo")
                     }
