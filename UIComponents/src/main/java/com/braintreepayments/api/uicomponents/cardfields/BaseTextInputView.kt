@@ -85,7 +85,6 @@ class BaseTextInputView @JvmOverloads constructor(
             shape = GradientDrawable.RECTANGLE
             setCornerRadius(this@BaseTextInputView.cornerRadius)
             setStroke(borderWidth, defaultBorderColor)
-            // TODO: replace with ?android:attr/colorSurface when dark mode is supported
             setColor(ContextCompat.getColor(context, R.color.card_field_background))
         }
         inputContainer.background = borderDrawable
