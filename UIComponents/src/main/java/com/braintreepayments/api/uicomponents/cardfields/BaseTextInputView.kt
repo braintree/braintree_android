@@ -181,6 +181,10 @@ class BaseTextInputView @JvmOverloads constructor(
         editText.addTextChangedListener(watcher)
     }
 
+    fun removeTextChangedListener(watcher: TextWatcher) {
+        editText.removeTextChangedListener(watcher)
+    }
+
     fun setError(error: CharSequence?) {
         if (currentError == error) return
         currentError = error

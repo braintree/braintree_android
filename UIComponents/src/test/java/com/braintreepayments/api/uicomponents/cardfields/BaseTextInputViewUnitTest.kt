@@ -1,7 +1,10 @@
 package com.braintreepayments.api.uicomponents.cardfields
 
 import android.content.Context
+import android.view.View
+import android.widget.TextView
 import androidx.test.core.app.ApplicationProvider
+import com.braintreepayments.api.uicomponents.R
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -26,10 +29,23 @@ class BaseTextInputViewUnitTest {
     }
 
     @Test
-    fun `setHint does not throw`() {
+    fun `setHint sets hint label text`() {
         val view = BaseTextInputView(context)
 
         view.setHint("Card number")
+
+        val hintLabel = view.findViewById<TextView>(R.id.hint_label)
+        assertEquals("Card number", hintLabel.text.toString())
+    }
+
+    @Test
+    fun `setHint sets editText contentDescription for accessibility`() {
+        val view = BaseTextInputView(context)
+
+        view.setHint("Card number")
+
+        val editText = view.findViewById<View>(R.id.text_input_edit_text)
+        assertEquals("Card number", editText.contentDescription.toString())
     }
 
     @Test
@@ -49,17 +65,24 @@ class BaseTextInputViewUnitTest {
     }
 
     @Test
-    fun `setError does not throw`() {
+    fun `setError shows error label with message`() {
         val view = BaseTextInputView(context)
 
         view.setError("Invalid card number")
+
+        val errorLabel = view.findViewById<TextView>(R.id.error_label)
+        assertEquals(View.VISIBLE, errorLabel.visibility)
+        assertEquals("Invalid card number", errorLabel.text.toString())
     }
 
     @Test
-    fun `setError with null does not throw`() {
+    fun `setError with null hides error label`() {
         val view = BaseTextInputView(context)
         view.setError("Invalid card number")
 
         view.setError(null)
+
+        val errorLabel = view.findViewById<TextView>(R.id.error_label)
+        assertEquals(View.GONE, errorLabel.visibility)
     }
 }

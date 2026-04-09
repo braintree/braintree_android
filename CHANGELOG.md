@@ -4,6 +4,8 @@
 
 * GooglePay
    * Add optional `DisplayItems` in GooglePay request
+* UIComponents
+   * Add `BaseTextInputView` for CardFields input components
     
 ## 5.25.0 (2026-03-31)
 
