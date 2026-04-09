@@ -23,7 +23,8 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.widget.doAfterTextChanged
 import com.braintreepayments.api.uicomponents.R
 
-//TODO change class to internal before releasing
+// TODO change class to internal before releasing
+@Suppress("TooManyFunctions")
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 class BaseTextInputView @JvmOverloads constructor(
     context: Context,
