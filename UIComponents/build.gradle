@@ -50,6 +50,7 @@ android {
 
 dependencies {
     api project(':BraintreeCore')
+    api project(':Card')
     api project(':PayPal')
     api project(':Venmo')
 
@@ -68,6 +69,8 @@ dependencies {
 
     testImplementation libs.junit
     testImplementation libs.mockk
+    testImplementation libs.robolectric
+    testImplementation libs.androidx.test.core
     testImplementation libs.coroutines.core
     testImplementation libs.coroutines.test
     testImplementation libs.kotlin.test
