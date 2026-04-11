@@ -8,6 +8,7 @@ import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkApiClientBuilder
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
+import io.mockk.coEvery
 import io.mockk.coVerifyOrder
 import io.mockk.every
 import io.mockk.mockk
@@ -410,6 +411,30 @@ class CardClientUnitTest {
         val result = captor.captured
         assertTrue(result is CardResult.Failure)
         assertTrue(result.error is BraintreeException)
+    }
+
+    @Test
+    fun tokenize_whenApiClientThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(graphQLEnabledConfig)
+            .build()
+
+        apiClient = MockkApiClientBuilder().build()
+        coEvery {
+            apiClient.tokenizeGraphQL(any())
+        } throws kotlin.coroutines.cancellation.CancellationException("cancelled")
+
+        val sut = CardClient(
+            braintreeClient,
+            apiClient,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
+        sut.tokenize(card, cardTokenizeCallback)
+        advanceUntilIdle()
+
+        verify(exactly = 0) { cardTokenizeCallback.onCardResult(any()) }
     }
 
     @Test

@@ -893,4 +893,59 @@ class ThreeDSecureClientUnitTest {
         assertEquals(exceptionMessage, jwtCaptor.captured.errorDescription)
         assertEquals(exceptionMessage, verifyCaptor.captured.errorDescription)
     }
+
+    @Test
+    fun createPaymentAuthRequest_whenThreeDSecureAPIThrowsCancellationException_callbackIsNotInvoked() =
+    runTest(testDispatcher) {
+        val cardinalClient = MockkCardinalClientBuilder()
+            .successReferenceId("fake-df")
+            .build()
+
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(threeDSecureEnabledConfig)
+            .build()
+
+        coEvery {
+            threeDSecureAPI.performLookup(any(), any())
+        } throws kotlin.coroutines.cancellation.CancellationException("cancelled")
+
+        val sut = ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            threeDSecureAPI,
+            merchantRepository,
+            dispatcher = testDispatcher,
+            coroutineScope = this
+        )
+        sut.createPaymentAuthRequest(activity, basicRequest, paymentAuthRequestCallback)
+        advanceUntilIdle()
+
+        verify(exactly = 0) { paymentAuthRequestCallback.onThreeDSecurePaymentAuthRequest(any()) }
+    }
+
+    @Test
+    fun prepareLookup_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
+            .build()
+
+        val cardinalClient = MockkCardinalClientBuilder()
+            .successReferenceId("fake-df")
+            .build()
+
+        val sut = ThreeDSecureClient(
+            braintreeClient,
+            cardinalClient,
+            threeDSecureAPI,
+            merchantRepository,
+            dispatcher = testDispatcher,
+            coroutineScope = this
+        )
+
+        val callback = mockk<ThreeDSecurePrepareLookupCallback>(relaxed = true)
+        sut.prepareLookup(activity, basicRequest, callback)
+        advanceUntilIdle()
+
+        verify(exactly = 0) { callback.onPrepareLookupResult(any()) }
+    }
 }

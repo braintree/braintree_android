@@ -534,6 +534,25 @@ class BraintreeClientUnitTest {
     }
 
     @Test
+    fun reportCrash_whenConfigurationLoaderThrowsCancellationException_doesNotCrash() =
+    runTest(testDispatcher) {
+        val configurationLoader = mockk<ConfigurationLoader>(relaxed = true)
+        coEvery {
+            configurationLoader.loadConfiguration()
+        } throws kotlin.coroutines.cancellation.CancellationException("cancelled")
+
+        val sut = createBraintreeClient(
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
+        // CancellationException is re-thrown in the catch block, not swallowed.
+        // This ensures the coroutine cooperates with structured cancellation at runtime.
+        sut.reportCrash()
+        advanceUntilIdle()
+    }
+
+    @Test
     fun `when BraintreeClient is initialized, merchantRepository properties are set`() {
         val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
         val configurationLoader = MockkConfigurationLoaderBuilder()

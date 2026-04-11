@@ -112,6 +112,7 @@ class ThreeDSecureClient internal constructor(
                 }
             }
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             return createPaymentAuthFailure(e)
         }
     }
@@ -215,6 +216,7 @@ class ThreeDSecureClient internal constructor(
                     lookupJSON.toString()
                 )
         } catch (error: Exception) {
+            if (error is CancellationException) throw error
             return prepareLookupFailure(error)
         }
     }

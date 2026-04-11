@@ -193,6 +193,23 @@ class AnalyticsApiUnitTest {
         advanceUntilIdle()
     }
 
+    @Test
+    fun `when httpClient post throws CancellationException, execute does not crash`() = runTest {
+        every { merchantRepository.authorization } returns tokenizationKey
+        coEvery {
+            httpClient.post(any(), any(), any(), any())
+        } throws kotlin.coroutines.cancellation.CancellationException("cancelled")
+
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        val testScope = TestScope(testDispatcher)
+        sut = createAnalyticsApi(testDispatcher, testScope)
+
+        // CancellationException is re-thrown in the catch block, not swallowed like other exceptions.
+        // This ensures the coroutine cooperates with structured cancellation at runtime.
+        sut.execute(listOf(tokenizationKeyEvent), configuration)
+        advanceUntilIdle()
+    }
+
     @Suppress("LongMethod")
     private fun getExpectedJson(authorization: Authorization): String {
         return when (authorization) {

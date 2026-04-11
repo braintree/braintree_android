@@ -261,4 +261,34 @@ class VisaCheckoutClientUnitTest {
             )
         }
     }
+
+    @Test
+    fun createProfileBuilder_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+        val apiClient = MockkApiClientBuilder().build()
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
+            .build()
+        val sut = VisaCheckoutClient(braintreeClient, apiClient, testDispatcher, testScope)
+        val listener = mockk<VisaCheckoutCreateProfileBuilderCallback>(relaxed = true)
+        sut.createProfileBuilder(listener)
+        advanceUntilIdle()
+
+        verify(exactly = 0) { listener.onVisaCheckoutProfileBuilderResult(any()) }
+    }
+
+    @Test
+    fun tokenize_whenApiClientThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+        val apiClient = MockkApiClientBuilder()
+            .tokenizeRESTError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
+            .build()
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configurationWithVisaCheckout)
+            .build()
+        val sut = VisaCheckoutClient(braintreeClient, apiClient, testDispatcher, testScope)
+        val listener = mockk<VisaCheckoutTokenizeCallback>(relaxed = true)
+        sut.tokenize(visaPaymentSummary, listener)
+        advanceUntilIdle()
+
+        verify(exactly = 0) { listener.onVisaCheckoutResult(any()) }
+    }
 }

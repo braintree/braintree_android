@@ -22,6 +22,7 @@ import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -1256,6 +1257,71 @@ class VenmoClientUnitTest {
         }
         assertEquals(expectedVaultAnalyticsParams.appSwitchUrl, analyticsSlot.captured.appSwitchUrl)
         assertEquals(error.message, analyticsSlot.captured.errorDescription)
+    }
+
+    @Test
+    fun createPaymentAuthRequest_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() =
+    runTest(testDispatcher) {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
+            .build()
+
+        sut = VenmoClient(
+            braintreeClient,
+            apiClient,
+            venmoApi,
+            sharedPrefsWriter,
+            analyticsParamRepository,
+            merchantRepository,
+            venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
+            getReturnLinkTypeUseCase,
+            getReturnLinkUseCase,
+            testDispatcher,
+            this
+        )
+        sut.createPaymentAuthRequest(
+            context,
+            VenmoRequest(VenmoPaymentMethodUsage.SINGLE_USE),
+            venmoPaymentAuthRequestCallback
+        )
+        advanceUntilIdle()
+
+        verify(exactly = 0) { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(any()) }
+    }
+
+    @Test
+    fun tokenize_whenVenmoApiThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .sendGraphQLPostSuccessfulResponse(Fixtures.VENMO_GRAPHQL_GET_PAYMENT_CONTEXT_RESPONSE)
+            .build()
+
+        every { browserSwitchResult.returnUrl } returns SUCCESS_URL
+
+        coEvery {
+            venmoApi.createNonceFromPaymentContext(any())
+        } throws kotlin.coroutines.cancellation.CancellationException("cancelled")
+
+        sut = VenmoClient(
+            braintreeClient,
+            apiClient,
+            venmoApi,
+            sharedPrefsWriter,
+            analyticsParamRepository,
+            merchantRepository,
+            venmoRepository,
+            getDefaultAppUseCase,
+            getAppLinksCompatibleBrowserUseCase,
+            getReturnLinkTypeUseCase,
+            getReturnLinkUseCase,
+            testDispatcher,
+            this
+        )
+        sut.tokenize(paymentAuthResult, venmoTokenizeCallback)
+        advanceUntilIdle()
+
+        verify(exactly = 0) { venmoTokenizeCallback.onVenmoResult(any()) }
     }
 
     @Test
