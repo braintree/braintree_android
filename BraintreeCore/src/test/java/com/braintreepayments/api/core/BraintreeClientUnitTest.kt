@@ -116,6 +116,22 @@ class BraintreeClientUnitTest {
     }
 
     @Test
+    fun prefetchConfiguration_whenConfigurationLoaderThrowsJSONException_doesNotCrash() = runTest(testDispatcher) {
+        val jsonException = JSONException("malformed JSON")
+        val configurationLoader = MockkConfigurationLoaderBuilder()
+            .configurationError(jsonException)
+            .build()
+
+        createBraintreeClient(
+            configurationLoader = configurationLoader,
+            testDispatcher = testDispatcher,
+            testScope = testScope
+        )
+
+        advanceUntilIdle()
+    }
+
+    @Test
     fun configuration_whenInvalidAuth_callsBackAuthError() = runTest(testDispatcher) {
         val configurationLoader = MockkConfigurationLoaderBuilder()
             .configurationError(expectedAuthException)
