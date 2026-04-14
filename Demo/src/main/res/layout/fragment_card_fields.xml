@@ -6,21 +6,9 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <com.braintreepayments.api.uicomponents.cardfields.BaseTextInputView
+    <com.braintreepayments.api.uicomponents.cardfields.CardNumberTextInputView
         android:id="@+id/card_number_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-
-    <com.braintreepayments.api.uicomponents.cardfields.BaseTextInputView
-        android:id="@+id/cvv_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp" />
-
-    <com.braintreepayments.api.uicomponents.cardfields.BaseTextInputView
-        android:id="@+id/expiration_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp" />
 
 </LinearLayout>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="card_number_hint">Card number</string>
+    <string name="card_icon_unknown">Unknown Card Brand</string>
+    <string name="card_icon_visa">Visa</string>
+    <string name="card_icon_mastercard">Mastercard</string>
+    <string name="card_icon_amex">American Express</string>
+    <string name="card_icon_diners_club">Diners Club</string>
+    <string name="card_icon_discover">Discover</string>
+    <string name="card_icon_jcb">JCB</string>
+    <string name="card_icon_unionpay">UnionPay</string>
+    <string name="card_icon_maestro">Maestro</string>
+    <string name="card_icon_elo">Elo</string>
+    <string name="card_icon_mir">Mir</string>
+    <string name="card_icon_hiper">Hiper</string>
+    <string name="card_icon_hipercard">Hipercard</string>
+    <string name="card_icon_verve">Verve</string>
+</resources>
