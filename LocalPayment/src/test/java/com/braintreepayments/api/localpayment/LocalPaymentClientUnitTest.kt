@@ -28,9 +28,9 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.json.JSONObject
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -870,7 +870,7 @@ class LocalPaymentClientUnitTest {
     @Test
     fun createPaymentAuthRequest_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() =
     runTest(testDispatcher) {
-        braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
             .build()
 
@@ -892,7 +892,7 @@ class LocalPaymentClientUnitTest {
     @Test
     fun tokenize_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() =
     runTest(testDispatcher) {
-        braintreeClient = MockkBraintreeClientBuilder()
+        val braintreeClient = MockkBraintreeClientBuilder()
             .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
             .build()
 

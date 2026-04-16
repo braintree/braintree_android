@@ -204,8 +204,6 @@ class AnalyticsApiUnitTest {
         val testScope = TestScope(testDispatcher)
         sut = createAnalyticsApi(testDispatcher, testScope)
 
-        // CancellationException is re-thrown in the catch block, not swallowed like other exceptions.
-        // This ensures the coroutine cooperates with structured cancellation at runtime.
         sut.execute(listOf(tokenizationKeyEvent), configuration)
         advanceUntilIdle()
     }

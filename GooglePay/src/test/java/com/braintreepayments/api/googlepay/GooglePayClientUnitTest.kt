@@ -202,6 +202,39 @@ class GooglePayClientUnitTest {
     }
 
     @Test
+    fun isReadyToPay_whenInternalClientThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+        val configuration = Configuration.fromJson(TestConfigurationBuilder()
+            .googlePay(
+                TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
+                    .supportedNetworks(arrayOf("visa"))
+                    .enabled(true)
+            )
+            .build())
+
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
+            .build()
+
+        val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
+        coEvery {
+            internalGooglePayClient.isReadyToPay(any(), any(), any())
+        } throws kotlin.coroutines.cancellation.CancellationException("cancelled")
+
+        val sut = GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository,
+            testDispatcher,
+            testScope
+        )
+        sut.isReadyToPay(activity, null, readyToPayCallback)
+        advanceUntilIdle()
+
+        verify(exactly = 0) { readyToPayCallback.onGooglePayReadinessResult(any()) }
+    }
+
+    @Test
     fun createPaymentAuthRequest_resetsSessionId() = runTest(testDispatcher) {
         val configuration = Configuration.fromJson(TestConfigurationBuilder()
             .googlePay(
@@ -1451,39 +1484,6 @@ class GooglePayClientUnitTest {
 
         val tokenizationParameters = sut.getTokenizationParameters(configuration, authorization).parameters
         assertEquals(Fixtures.TOKENIZATION_KEY, tokenizationParameters.getString("braintree:clientKey"))
-    }
-
-    @Test
-    fun isReadyToPay_whenInternalClientThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
-        val configuration = Configuration.fromJson(TestConfigurationBuilder()
-            .googlePay(
-                TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
-                    .supportedNetworks(arrayOf("visa"))
-                    .enabled(true)
-            )
-            .build())
-
-        val braintreeClient = MockkBraintreeClientBuilder()
-            .configurationSuccess(configuration)
-            .build()
-
-        val internalGooglePayClient = mockk<GooglePayInternalClient>(relaxed = true)
-        coEvery {
-            internalGooglePayClient.isReadyToPay(any(), any(), any())
-        } throws kotlin.coroutines.cancellation.CancellationException("cancelled")
-
-        val sut = GooglePayClient(
-            braintreeClient,
-            internalGooglePayClient,
-            analyticsParamRepository,
-            merchantRepository,
-            testDispatcher,
-            testScope
-        )
-        sut.isReadyToPay(activity, null, readyToPayCallback)
-        advanceUntilIdle()
-
-        verify(exactly = 0) { readyToPayCallback.onGooglePayReadinessResult(any()) }
     }
 
     @Test

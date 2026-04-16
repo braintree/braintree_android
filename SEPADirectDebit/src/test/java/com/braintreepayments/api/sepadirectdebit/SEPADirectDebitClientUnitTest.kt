@@ -18,10 +18,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlin.test.assertNull
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.json.JSONException
 import org.json.JSONObject
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -253,6 +254,21 @@ class SEPADirectDebitClientUnitTest {
     }
 
     @Test
+    fun createPaymentAuthRequest_whenApiThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+        val sepaDirectDebitApi = MockkSEPADirectDebitApiBuilder()
+            .createMandateError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
+            .build()
+
+        val sut = SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi, testDispatcher)
+
+        var result: SEPADirectDebitPaymentAuthRequest? = null
+        sut.createPaymentAuthRequest(sepaDirectDebitRequest) { result = it }
+        advanceUntilIdle()
+
+        assertNull(result)
+    }
+
+    @Test
     @Throws(JSONException::class)
     fun tokenize_whenDeepLinkContainsSuccess_callsTokenize_andSendsAnalytics() =
         runTest(testDispatcher) {
@@ -445,21 +461,6 @@ class SEPADirectDebitClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_whenApiThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
-        val sepaDirectDebitApi = MockkSEPADirectDebitApiBuilder()
-            .createMandateError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
-            .build()
-
-        val sut = SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi, testDispatcher)
-
-        var result: SEPADirectDebitPaymentAuthRequest? = null
-        sut.createPaymentAuthRequest(sepaDirectDebitRequest) { result = it }
-        advanceUntilIdle()
-
-        org.junit.Assert.assertNull(result)
-    }
-
-    @Test
     @Throws(JSONException::class)
     fun tokenize_whenApiThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
         val sepaDirectDebitApi = MockkSEPADirectDebitApiBuilder()
@@ -485,6 +486,6 @@ class SEPADirectDebitClientUnitTest {
         sut.tokenize(sepaBrowserSwitchResult) { result = it }
         advanceUntilIdle()
 
-        org.junit.Assert.assertNull(result)
+        assertNull(result)
     }
 }

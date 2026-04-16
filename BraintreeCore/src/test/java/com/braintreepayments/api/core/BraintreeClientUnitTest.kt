@@ -23,13 +23,13 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.json.JSONObject
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertSame
+import kotlin.test.assertEquals
+import kotlin.test.assertSame
+import kotlin.test.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.test.fail
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -536,7 +536,10 @@ class BraintreeClientUnitTest {
     @Test
     fun reportCrash_whenConfigurationLoaderThrowsCancellationException_doesNotCrash() =
     runTest(testDispatcher) {
-        val configurationLoader = mockk<ConfigurationLoader>(relaxed = true)
+        val configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
+        val configurationLoader = MockkConfigurationLoaderBuilder()
+            .configuration(configuration)
+            .build()
         coEvery {
             configurationLoader.loadConfiguration()
         } throws kotlin.coroutines.cancellation.CancellationException("cancelled")
@@ -546,8 +549,7 @@ class BraintreeClientUnitTest {
             testDispatcher = testDispatcher,
             testScope = testScope
         )
-        // CancellationException is re-thrown in the catch block, not swallowed.
-        // This ensures the coroutine cooperates with structured cancellation at runtime.
+
         sut.reportCrash()
         advanceUntilIdle()
     }
