@@ -19,7 +19,7 @@ class CardNumberTextInputView @JvmOverloads constructor(
     init {
         setInputType(InputType.TYPE_CLASS_NUMBER)
         setHint(context.getString(R.string.card_number_hint))
-        setLeadingDrawable(R.drawable.card_fields_unknown_cc, context.getString(R.string.card_icon_unknown))
+        setLeadingDrawable(R.drawable.card_fields_cc_jcb, context.getString(R.string.card_icon_unknown))
     }
 
     internal fun setCardIcon(@DrawableRes iconRes: Int, contentDescription: String) {

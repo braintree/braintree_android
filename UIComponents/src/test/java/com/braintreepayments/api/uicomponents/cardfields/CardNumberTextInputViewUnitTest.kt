@@ -52,7 +52,7 @@ class CardNumberTextInputViewUnitTest {
     fun `setCardIcon updates icon content description`() {
         val view = CardNumberTextInputView(context)
 
-        view.setCardIcon(R.drawable.card_fields_visa_cc, "Visa")
+        view.setCardIcon(R.drawable.card_fields_cc_visa, "Visa")
 
         val leadingIcon = findLeadingIconView(view)
         assertEquals("Visa", leadingIcon?.contentDescription.toString())
