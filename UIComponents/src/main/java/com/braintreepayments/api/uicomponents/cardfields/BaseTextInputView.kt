@@ -216,7 +216,7 @@ open class BaseTextInputView @JvmOverloads constructor(
         updateBorderState()
     }
 
-    internal fun setLeadingDrawable(@DrawableRes iconRes: Int, contentDescription: String) {
+    internal fun setCardBrandIcon(@DrawableRes iconRes: Int, contentDescription: String) {
         val iconView = leadingIconView ?: ImageView(context).apply {
             layoutParams = FrameLayout.LayoutParams(iconWidth, iconHeight).apply {
                 gravity = Gravity.START or Gravity.CENTER_VERTICAL
