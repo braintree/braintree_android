@@ -70,6 +70,50 @@ The individual components may be of interest for advanced integrations and are e
 * Commits should be small but atomic. Tests should always be passing; the product should always function appropriately.
 * Commit messages should be concise and descriptive.
 
+## Git Hooks
+ 
+We use a `commit-msg` hook to enforce consistent commit message formatting.
+ 
+### Install (Manual — recommended)
+ 
+Run the following once from the repo root after cloning:
+ 
+```
+mkdir -p .git/hooks
+cp scripts/commit-msg .git/hooks/commit-msg
+chmod +x .git/hooks/commit-msg
+```
+ 
+### Install (via `pre-commit` framework)
+ 
+If you have `pre-commit` installed (or install it via `pip3 install pre-commit`):
+ 
+```
+pre-commit install --hook-type commit-msg
+```
+ 
+### Commit format
+ 
+Commits must follow `<type>: <description>` (or `<type>(scope): <description>`), where `<description>` starts. Allowed types:
+ 
+| Type | When to use |
+|------|-------------|
+| `fix` | Patches a bug |
+| `feature` | Introduces a new feature |
+| `docs` | Documentation changes only |
+| `style` | Formatting changes that don't affect behavior |
+| `refactor` | Code restructuring that is neither a fix nor a feature |
+| `test` | Adding or updating tests |
+ 
+**Examples:**
+```
+feature: add paypal vaulting support
+fix(venmo): resolve null pointer on auth
+docs: update README installation steps
+refactor(BraintreeCore): simplify token parsing logic
+test: add unit tests for 3DS flow
+```
+
 ## Deployment and Code Organization
 
 * Code on main is assumed to be in a relatively good state at all times
