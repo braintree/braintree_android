@@ -5,6 +5,7 @@ import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.shopperinsights.v2.CustomerSessionRequest
 import org.json.JSONException
 import org.json.JSONObject
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * API to update an existing customer session using the `UpdateCustomerSession` GraphQL mutation.
@@ -45,6 +46,7 @@ internal class UpdateCustomerSessionApi(
                     val sessionId = responseParser.parseSessionId(responseBody, UPDATE_CUSTOMER_SESSION)
                     UpdateCustomerSessionResult.Success(sessionId)
                 } catch (e: Exception) {
+                    if (e is CancellationException) throw e
                     UpdateCustomerSessionResult.Error(e)
                 }
         } catch (e: JSONException) {
