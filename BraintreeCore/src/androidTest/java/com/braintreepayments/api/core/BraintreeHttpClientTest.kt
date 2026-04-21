@@ -7,7 +7,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
-import org.junit.Assert.assertFalse
 import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,7 +27,7 @@ class BraintreeHttpClientTest {
             fail("Must throw an exception")
         } catch (e: IOException) {
             // Make sure exception is due to authorization not SSL handshake
-            assertFalse(e.message?.contains("code=403") == true)
+            assertTrue(e.message?.contains("code=403") == true)
         }
     }
 
