@@ -4,6 +4,7 @@
 
 * GooglePay
    * Add optional `DisplayItems` in GooglePay request
+   * Add support for `checkoutOption` to `GooglePayRequest` TransactionInfo params
 * BraintreeCore
   * Fix crashes caused by uncaught exceptions in the configuration and analytics flows
     
