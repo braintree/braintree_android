@@ -40,7 +40,7 @@ fi
 # Warn about vague descriptions
 VAGUE_TERMS="cleanup|fix stuff|update|changes|misc|wip|temp"
 if echo "$COMMIT_MSG" | grep -qiE ": ($VAGUE_TERMS)$"; then
-  echo "⚠️  Warning: commit description looks vague. Consider being more specific."
+  echo "⚠️  Warning: commit description looks vague (i.e. cleanup). Consider being more specific."
 fi
 
 exit 0
