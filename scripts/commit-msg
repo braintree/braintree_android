@@ -9,7 +9,7 @@ if echo "$COMMIT_MSG" | grep -qE "^Merge "; then
 fi
 
 # Allowed type prefixes
-TYPES="fix|feat|docs|style|refactor|test|pr-feedback"
+TYPES="fix|feature|docs|style|refactor|test|pr-feedback"
 
 # Pattern: <type>[optional (scope)]: <description> (any case)
 PATTERN="^($TYPES)(\([a-zA-Z0-9_-]+\))?: .+"
