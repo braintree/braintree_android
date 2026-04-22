@@ -72,7 +72,7 @@ The individual components may be of interest for advanced integrations and are e
 
 ## Git Hooks
  
-We use a `commit-msg` hook to enforce consistent commit message formatting.
+We use a `commit-msg` hook to enforce consistent commit message formatting. Follow the guidelines below to prevent issues with improperly formatted messages.
  
 ### Install (Manual — recommended)
  
