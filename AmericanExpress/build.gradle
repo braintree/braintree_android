@@ -52,6 +52,12 @@ dependencies {
 
     implementation libs.androidx.annotation
 
+    androidTestImplementation libs.androidx.test.rules
+    androidTestImplementation libs.androidx.test.runner
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.coroutines.test
+    androidTestImplementation project(':TestUtils')
+
     testImplementation libs.robolectric
     testImplementation libs.mockito.core
     testImplementation libs.json.assert
