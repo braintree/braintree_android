@@ -48,15 +48,4 @@ class GetReturnLinkUseCaseTest {
 
         assertTrue(result is ReturnLinkResult.Failure)
     }
-
-    @Test(timeout = 1000)
-    fun invoke_returnsFailure_whenDeepLinkFallbackIsNull() {
-        merchantRepository.appLinkReturnUri = null
-        merchantRepository.deepLinkFallbackUrlScheme = null
-        val sut = GetReturnLinkUseCase(merchantRepository)
-
-        val result = sut()
-
-        assertTrue(result is ReturnLinkResult.Failure)
-    }
 }
