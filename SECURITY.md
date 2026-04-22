@@ -20,40 +20,29 @@ Please include the following in your report:
 * Step-by-step instructions to reproduce the issue
 * Impact of the issue and how an attacker might exploit it
 
-## Supported Versions
-
-### New Features
-
-New features are only added to the latest major release and will not be backported to older versions.
-
-### Bug Fixes
-
-Only the latest release series receives bug fixes. When enough bugs are fixed and a new release is warranted, it is cut from the main branch.
+## Supported Security Updates
 
 ### Security Issues
 
-Only the latest release series receives patches and new versions in the case of a security issue.
+Only the latest release series receives patches and new versions in the case of a security issue. See our [deprecation policy](https://developer.paypal.com/braintree/docs/guides/client-sdk/deprecation-policy/android/v5/) for details.
 
 ### Severe Security Issues
 
 For severe security issues, we will provide new versions as above. Additionally, the last major release series may receive patches at our discretion. Severity classification is determined by the Braintree SDK team.
 
-### Unsupported Release Series
-
-When a release series is no longer supported, it is your responsibility to manage bugs and security issues. If you are not comfortable maintaining your own versions, we strongly recommend upgrading to a supported release.
-
 ### Platform Support
 
-| Platform | Supported Versions      |
-| -------- | ----------------------- |
-| Android  | Latest 2 major versions |
+| Platform | Supported Versions                                    |
+| -------- | ----------------------------------------------------- |
+| Android  | Most widely used versions at the time of SDK release  |
+
+For details on supported platform versions, see our [deprecation policy](https://developer.paypal.com/braintree/docs/guides/client-sdk/deprecation-policy/android/v5/).
 
 ## Disclosure Policy
 
 We are committed to working with security researchers in good faith. To support responsible disclosure, our team will:
 
-- Acknowledge your report within **2 business days**
-- Provide a triage update within **5 business days**
+- Acknowledge your report in a timely manner
 - Keep you informed of our progress toward a fix
 - Notify you before any public disclosure
 
