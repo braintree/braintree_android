@@ -317,6 +317,21 @@ class DataCollectorUnitTest {
         Assert.assertTrue(captor.captured.hasUserLocationConsent)
     }
 
+    @Test
+    fun collectDeviceData_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() =
+    runTest(testDispatcher) {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
+            .build()
+
+        val testScope = TestScope(testDispatcher)
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
+        sut.collectDeviceData(context, dataCollectorRequest, callback)
+        advanceUntilIdle()
+
+        verify(exactly = 0) { callback.onDataCollectorResult(any()) }
+    }
+
     // Tests for collectDeviceDataOnSuccess
 
     @Test
@@ -504,5 +519,20 @@ class DataCollectorUnitTest {
             )
         }
         Assert.assertTrue(captor.captured.hasUserLocationConsent)
+    }
+
+    @Test
+    fun collectDeviceDataOnSuccess_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() =
+    runTest(testDispatcher) {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
+            .build()
+
+        val testScope = TestScope(testDispatcher)
+        val sut = DataCollector(braintreeClient, magnesInternalClient, uuidHelper, testDispatcher, testScope)
+        sut.collectDeviceDataOnSuccess(context, dataCollectorRequest, callback)
+        advanceUntilIdle()
+
+        verify(exactly = 0) { callback.onDataCollectorResult(any()) }
     }
 }
