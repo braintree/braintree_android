@@ -25,6 +25,7 @@ import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase.ReturnLinkRes
 import com.braintreepayments.api.core.usecase.GetReturnLinkUseCase.ReturnLinkResult.DeepLink
 import com.braintreepayments.api.testutils.Fixtures
 import com.braintreepayments.api.testutils.MockkBraintreeClientBuilder
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -40,8 +41,8 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.json.JSONObject
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -888,6 +889,50 @@ class PayPalClientUnitTest {
             )
         }
         verify { analyticsParamRepository.reset() }
+    }
+
+    @Test
+    fun createPaymentAuthRequest_whenInternalClientThrowsCancellationException_callbackIsNotInvoked() =
+    runTest(testDispatcher) {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(payPalEnabledConfig)
+            .build()
+
+        val payPalInternalClient = MockkPayPalInternalClientBuilder()
+            .sendRequestError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
+            .build()
+
+        val sut = testPaypalClient(braintreeClient, payPalInternalClient, testDispatcher, this)
+        sut.createPaymentAuthRequest(activity, PayPalVaultRequest(true), paymentAuthCallback)
+        advanceUntilIdle()
+
+        verify(exactly = 0) { paymentAuthCallback.onPayPalPaymentAuthRequest(any()) }
+    }
+
+    @Test
+    fun tokenize_whenInternalClientThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+        val approvalUrl = "sample-scheme://onetouch/v1/success?token=EC-HERMES-SANDBOX-EC-TOKEN"
+
+        val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>(relaxed = true)
+        every { browserSwitchResult.requestMetadata } returns
+            JSONObject().put("client-metadata-id", "sample-client-metadata-id")
+                .put("merchant-account-id", "sample-merchant-account-id")
+                .put("intent", "authorize").put("approval-url", approvalUrl)
+                .put("success-url", "sample-scheme://onetouch/v1/success")
+                .put("payment-type", "single-payment")
+        every { browserSwitchResult.returnUrl } returns Uri.parse(approvalUrl)
+
+        val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
+        coEvery {
+            payPalInternalClient.tokenize(any())
+        } throws kotlin.coroutines.cancellation.CancellationException("cancelled")
+
+        val braintreeClient = MockkBraintreeClientBuilder().build()
+        val sut = testPaypalClient(braintreeClient, payPalInternalClient, testDispatcher, this)
+        sut.tokenize(PayPalPaymentAuthResult.Success(browserSwitchResult), payPalTokenizeCallback)
+        advanceUntilIdle()
+
+        verify(exactly = 0) { payPalTokenizeCallback.onPayPalResult(any()) }
     }
 
     private fun testPaypalClient(
