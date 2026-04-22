@@ -17,6 +17,7 @@ import com.braintreepayments.api.testutils.TestConfigurationBuilder
 import com.google.android.gms.wallet.IsReadyToPayRequest
 import com.google.android.gms.wallet.PaymentData
 import com.google.android.gms.wallet.WalletConstants
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -198,6 +199,39 @@ class GooglePayClientUnitTest {
         advanceUntilIdle()
 
         verify { readyToPayCallback.onGooglePayReadinessResult(ofType<GooglePayReadinessResult.NotReadyToPay>()) }
+    }
+
+    @Test
+    fun isReadyToPay_whenInternalClientThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+        val configuration = Configuration.fromJson(TestConfigurationBuilder()
+            .googlePay(
+                TestConfigurationBuilder.TestGooglePayConfigurationBuilder()
+                    .supportedNetworks(arrayOf("visa"))
+                    .enabled(true)
+            )
+            .build())
+
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationSuccess(configuration)
+            .build()
+
+        val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
+        coEvery {
+            internalGooglePayClient.isReadyToPay(any(), any(), any())
+        } throws kotlin.coroutines.cancellation.CancellationException("cancelled")
+
+        val sut = GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository,
+            testDispatcher,
+            testScope
+        )
+        sut.isReadyToPay(activity, null, readyToPayCallback)
+        advanceUntilIdle()
+
+        verify(exactly = 0) { readyToPayCallback.onGooglePayReadinessResult(any()) }
     }
 
     @Test
@@ -1450,6 +1484,30 @@ class GooglePayClientUnitTest {
 
         val tokenizationParameters = sut.getTokenizationParameters(configuration, authorization).parameters
         assertEquals(Fixtures.TOKENIZATION_KEY, tokenizationParameters.getString("braintree:clientKey"))
+    }
+
+    @Test
+    fun getTokenizationParameters_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() =
+    runTest(testDispatcher) {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
+            .build()
+
+        val internalGooglePayClient = MockkGooglePayInternalClientBuilder().build()
+        val sut = GooglePayClient(
+            braintreeClient,
+            internalGooglePayClient,
+            analyticsParamRepository,
+            merchantRepository,
+            testDispatcher,
+            testScope
+        )
+
+        val callback = mockk<GooglePayGetTokenizationParametersCallback>(relaxed = true)
+        sut.getTokenizationParameters(callback)
+        advanceUntilIdle()
+
+        verify(exactly = 0) { callback.onTokenizationParametersResult(any()) }
     }
 
     @Test
