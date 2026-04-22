@@ -29,7 +29,7 @@ class BraintreeGraphQLClientTest {
         countDownLatch = CountDownLatch(1)
     }
 
-    @Test(timeout = 5000)
+    @Test(timeout = 10000)
     @Throws(InterruptedException::class, JSONException::class)
     fun postRequestSslCertificateSuccessfulInSandbox() {
         val context = ApplicationProvider.getApplicationContext<Context>()
@@ -48,7 +48,7 @@ class BraintreeGraphQLClientTest {
         countDownLatch.await()
     }
 
-    @Test(timeout = 5000)
+    @Test(timeout = 10000)
     @Throws(InterruptedException::class, JSONException::class)
     fun postRequestSslCertificateSuccessfulInProduction() {
         val context = ApplicationProvider.getApplicationContext<Context>()
