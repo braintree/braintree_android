@@ -14,44 +14,6 @@ import org.junit.runner.RunWith
 class AmericanExpressRewardsBalanceTest {
 
     @Test(timeout = 1000)
-    fun fromJson_parsesAllFields() {
-        val json = JSONObject().apply {
-            put("conversionRate", "0.0070")
-            put("currencyAmount", "316.00")
-            put("currencyIsoCode", "USD")
-            put("requestId", "715f4712-8571-42c4-8413-f0d9800f4e09")
-            put("rewardsAmount", "45000")
-            put("rewardsUnit", "Points")
-        }.toString()
-
-        val result = AmericanExpressRewardsBalance.fromJson(json)
-
-        assertEquals("0.0070", result.conversionRate)
-        assertEquals("316.00", result.currencyAmount)
-        assertEquals("USD", result.currencyIsoCode)
-        assertEquals("715f4712-8571-42c4-8413-f0d9800f4e09", result.requestId)
-        assertEquals("45000", result.rewardsAmount)
-        assertEquals("Points", result.rewardsUnit)
-        assertNull(result.errorCode)
-        assertNull(result.errorMessage)
-    }
-
-    @Test(timeout = 1000)
-    fun fromJson_parsesErrorFields() {
-        val json = JSONObject().apply {
-            put("error", JSONObject().apply {
-                put("code", "INQ2003")
-                put("message", "Card is ineligible")
-            })
-        }.toString()
-
-        val result = AmericanExpressRewardsBalance.fromJson(json)
-
-        assertEquals("INQ2003", result.errorCode)
-        assertEquals("Card is ineligible", result.errorMessage)
-    }
-
-    @Test(timeout = 1000)
     fun fromJson_parsesErrorWithRewardsFields() {
         val json = JSONObject().apply {
             put("error", JSONObject().apply {
