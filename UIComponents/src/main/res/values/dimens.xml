@@ -20,4 +20,9 @@
     <dimen name="card_field_hint_float_top_margin">6dp</dimen>
     <dimen name="card_field_input_margin_bottom">10dp</dimen>
     <dimen name="card_field_error_margin_top">4dp</dimen>
+
+    <dimen name="card_icon_width">42dp</dimen>
+    <dimen name="card_icon_height">28dp</dimen>
+    <dimen name="card_icon_margin">8dp</dimen>
+    <dimen name="card_icon_corner_radius">4dp</dimen>
 </resources>

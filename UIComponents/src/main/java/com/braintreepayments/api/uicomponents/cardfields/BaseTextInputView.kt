@@ -9,12 +9,17 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewOutlineProvider
 import android.view.accessibility.AccessibilityEvent
 import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.annotation.RestrictTo
 import androidx.core.content.ContextCompat
 import androidx.core.view.AccessibilityDelegateCompat
@@ -26,15 +31,15 @@ import com.braintreepayments.api.uicomponents.R
 // TODO change class to internal before releasing
 @Suppress("TooManyFunctions")
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class BaseTextInputView @JvmOverloads constructor(
+open class BaseTextInputView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    private val editText: EditText
-    private val inputContainer: View
-    private val hintLabel: TextView
+    internal val editText: EditText
+    internal val inputContainer: FrameLayout
+    internal val hintLabel: TextView
     private val errorLabel: TextView
     private val borderDrawable: GradientDrawable
 
@@ -48,6 +53,13 @@ class BaseTextInputView @JvmOverloads constructor(
     private val hintFloatTextSize: Float
     private val hintFloatTopMargin: Float
 
+    private val iconWidth: Int
+    private val iconHeight: Int
+    private val iconMargin: Int
+    private val iconCornerRadius: Float
+    private val defaultPaddingHorizontal: Int
+
+    private var leadingIconView: ImageView? = null
     private var currentError: CharSequence? = null
     private var isHintFloating: Boolean = false
     private var hintAnimator: AnimatorSet? = null
@@ -81,6 +93,11 @@ class BaseTextInputView @JvmOverloads constructor(
         hintRestTextSize = resources.getDimension(R.dimen.card_field_hint_text_size)
         hintFloatTextSize = resources.getDimension(R.dimen.card_field_hint_float_text_size)
         hintFloatTopMargin = resources.getDimension(R.dimen.card_field_hint_float_top_margin)
+        iconWidth = resources.getDimensionPixelSize(R.dimen.card_icon_width)
+        iconHeight = resources.getDimensionPixelSize(R.dimen.card_icon_height)
+        iconMargin = resources.getDimensionPixelSize(R.dimen.card_icon_margin)
+        iconCornerRadius = resources.getDimension(R.dimen.card_icon_corner_radius)
+        defaultPaddingHorizontal = resources.getDimensionPixelSize(R.dimen.card_field_padding_horizontal)
 
         borderDrawable = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
@@ -197,6 +214,32 @@ class BaseTextInputView @JvmOverloads constructor(
         }
         editText.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED)
         updateBorderState()
+    }
+
+    internal fun setCardBrandIcon(@DrawableRes iconRes: Int, contentDescription: String) {
+        val iconView = leadingIconView ?: ImageView(context).apply {
+            layoutParams = FrameLayout.LayoutParams(iconWidth, iconHeight).apply {
+                gravity = Gravity.START or Gravity.CENTER_VERTICAL
+                marginStart = defaultPaddingHorizontal
+            }
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_YES
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            clipToOutline = true
+            outlineProvider = ViewOutlineProvider.BACKGROUND
+            background = GradientDrawable().apply {
+                setCornerRadius(iconCornerRadius)
+                setColor(android.graphics.Color.TRANSPARENT)
+            }
+            inputContainer.addView(this)
+            leadingIconView = this
+
+            val newPaddingStart = defaultPaddingHorizontal + iconWidth + iconMargin
+            editText.setPadding(newPaddingStart, editText.paddingTop, editText.paddingEnd, editText.paddingBottom)
+            (hintLabel.layoutParams as FrameLayout.LayoutParams).marginStart = newPaddingStart
+            hintLabel.requestLayout()
+        }
+        iconView.setImageResource(iconRes)
+        iconView.contentDescription = contentDescription
     }
 
     companion object {
