@@ -25,6 +25,12 @@ android {
         }
     }
 
+    buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
+    }
+
     compileOptions {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
