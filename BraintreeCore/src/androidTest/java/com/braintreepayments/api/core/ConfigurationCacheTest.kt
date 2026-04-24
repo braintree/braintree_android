@@ -79,7 +79,7 @@ class ConfigurationCacheTest {
     @Test(timeout = 1000)
     fun saveConfiguration_overwritesPreviousValue() {
         val configA = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ENVIRONMENT)
-        val configB = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_MERCHANT_ID)
+        val configB = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL)
         val cacheKey = "test_cache_key_overwrite"
         val timestamp = 1000L
 
@@ -89,7 +89,7 @@ class ConfigurationCacheTest {
         val result = sut.getConfiguration(cacheKey, timestamp + 1)
         requireNotNull(result)
         val resultConfig = Configuration.fromJson(result)
-        assertEquals("integration_merchant_id", resultConfig.merchantId)
+        assertEquals("merchant-id", resultConfig.merchantId)
     }
 
     @Test(timeout = 1000)
