@@ -30,7 +30,6 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
-            testCoverageEnabled true
         }
     }
 
