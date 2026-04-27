@@ -61,6 +61,9 @@ dependencies {
 
     androidTestImplementation libs.androidx.test.runner
     androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.okhttp.mockwebserver
+    androidTestImplementation libs.okhttp.tls
+    androidTestImplementation libs.coroutines.test
     testImplementation libs.mockk
     testImplementation libs.kotlin.test
     testImplementation libs.coroutines.test
