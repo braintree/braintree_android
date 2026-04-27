@@ -13,6 +13,8 @@ android {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
 
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+
         consumerProguardFiles 'proguard.pro'
 
         buildConfigField "String", "VERSION_NAME", "\"${rootProject.versionName}\""
@@ -75,6 +77,11 @@ dependencies {
     testImplementation libs.mockk
     testImplementation libs.test.parameter.injector
     testImplementation libs.androidx.test.core
+
+    androidTestImplementation project(':TestUtils')
+    androidTestImplementation libs.androidx.test.rules
+    androidTestImplementation libs.androidx.test.runner
+    androidTestImplementation libs.androidx.junit
 }
 
 // region signing and publishing
