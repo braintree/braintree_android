@@ -47,6 +47,7 @@ class PayPalCheckoutRequestTest {
         assertFalse(json.getBoolean("offer_pay_later"))
     }
 
+    @Suppress("LongMethod")
     @Test
     fun createRequestBody_withAllFields_returnsValidJson() {
         val shippingAddress = PostalAddress().apply {
@@ -356,6 +357,7 @@ class PayPalCheckoutRequestTest {
         assertFalse(json.has("merchant_app_return_url"))
     }
 
+    @Suppress("LongMethod")
     @Test
     fun createRequestBody_withRecurringBillingDetails_includesPlanMetadata() {
         val billingCycle = PayPalBillingCycle(
