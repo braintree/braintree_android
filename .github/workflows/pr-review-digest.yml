@@ -1,0 +1,169 @@
+name: PR Review Digest
+
+on:
+  schedule:
+    # 9:00 AM Central (CDT = UTC-5). Update to '0 15 * * 1-5' when clocks fall back to CST (UTC-6) in November.
+    - cron: '0 14 * * 1-5'
+    # 3:00 PM Central (CDT = UTC-5). Update to '0 21 * * 1-5' when clocks fall back to CST (UTC-6) in November.
+    - cron: '0 20 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  digest:
+    name: Post PR review digest to Slack
+    runs-on: ubuntu-latest
+    steps:
+      # ── Step 1: Authenticate as the GitHub App ─────────────────────────────
+      # This action handles JWT generation and token exchange automatically.
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+          # Scopes the token to the whole org so it can read any repo with our GH app installed.
+          owner: ${{ github.repository_owner }}
+
+      # ── Step 2: Find PRs needing review and post digest to Slack ───────────
+      - name: Find PRs needing review and post to Slack
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          # Stored as Actions Variables
+          REPOS: ${{ vars.REPOS }}
+          OPEN_THRESHOLD_HOURS: ${{ vars.OPEN_THRESHOLD_HOURS }}
+        run: |
+          set -euo pipefail
+          
+          THRESHOLD="${OPEN_THRESHOLD_HOURS:-12}"
+          NOW=$(date +%s)
+          TOTAL=0
+          SLACK_BODY=""
+          
+          if [[ -z "$REPOS" ]]; then
+            echo "REPOS variable is empty — Please set it to a comma-separated list of repositories (e.g. 'org/repo1, org/repo2') in Actions Variables."
+            exit 0
+          fi
+          
+          IFS=',' read -ra REPO_LIST <<< "$REPOS"
+          
+          for REPO in "${REPO_LIST[@]}"; do
+            REPO="${REPO// /}"
+            [[ -z "$REPO" ]] && continue
+            echo "Scanning: $REPO"
+          
+            # Fetch all open PRs with the fields we need.
+            # latestReviews   = most recent review state per reviewer
+            # mergeStateStatus= CLEAN means approved, checks pass, no conflicts
+            # updatedAt       = last time the PR was updated (push, comment, review, etc.)
+            PRS=$(gh pr list \
+              --repo "$REPO" \
+              --state open \
+              --limit 100 \
+              --json number,title,url,author,createdAt,updatedAt,isDraft,latestReviews,mergeStateStatus,labels)
+          
+            PR_COUNT=$(echo "$PRS" | jq 'length')
+            REPO_TEXT=""
+          
+            for i in $(seq 0 $((PR_COUNT - 1))); do
+              PR=$(echo "$PRS" | jq ".[$i]")
+          
+              # Skip draft PRs — not ready for review
+              IS_DRAFT=$(echo "$PR" | jq -r '.isDraft')
+              [[ "$IS_DRAFT" == "true" ]] && continue
+          
+              NUMBER=$(echo "$PR"  | jq -r '.number')
+              TITLE=$(echo "$PR"   | jq -r '.title' | sed 's/[|>]/ /g')
+              URL=$(echo "$PR"     | jq -r '.url')
+              AUTHOR=$(echo "$PR"  | jq -r '.author.login')
+              CREATED=$(echo "$PR" | jq -r '.createdAt')
+              UPDATED=$(echo "$PR" | jq -r '.updatedAt')
+          
+              CREATED_EPOCH=$(date -d "$CREATED" +%s)
+              UPDATED_EPOCH=$(date -d "$UPDATED" +%s)
+              AGE_HOURS=$(( (NOW - CREATED_EPOCH) / 3600 ))
+              STALE_HOURS=$(( (NOW - UPDATED_EPOCH) / 3600 ))
+          
+              if [[ $AGE_HOURS -lt 24 ]]; then
+                AGE_LABEL="${AGE_HOURS}h"
+              else
+                AGE_LABEL="$((AGE_HOURS / 24))d"
+              fi
+          
+              REVIEW_COUNT=$(echo "$PR" | jq '.latestReviews | length')
+              MERGE_STATE=$(echo "$PR" | jq -r '.mergeStateStatus')
+          
+              REASONS=()
+          
+              # ── Criterion 1: fewer than 2 reviews ──────────────────────
+              if [[ $REVIEW_COUNT -lt 2 ]]; then
+                NEEDED=$(( 2 - REVIEW_COUNT ))
+                REASONS+=("${REVIEW_COUNT}/2 reviews — needs ${NEEDED} more")
+              fi
+          
+              # ── Criterion 2: ready to merge ─────────────────────────────
+              # CLEAN = approved, all checks pass, no conflicts
+              if [[ "$MERGE_STATE" == "CLEAN" ]]; then
+                REASONS+=("ready to merge")
+              fi
+          
+              # ── Criterion 3: 2+ reviews but no activity for >12 hours ──
+              if [[ $REVIEW_COUNT -ge 2 && $STALE_HOURS -ge $THRESHOLD ]]; then
+                if [[ $STALE_HOURS -lt 24 ]]; then
+                  STALE_LABEL="${STALE_HOURS}h"
+                else
+                  STALE_LABEL="$((STALE_HOURS / 24))d"
+                fi
+                REASONS+=("${REVIEW_COUNT} reviews but no activity for ${STALE_LABEL}")
+              fi
+          
+              # Only surface this PR if at least one criterion matches
+              [[ ${#REASONS[@]} -eq 0 ]] && continue
+          
+              REASON_STR=$(printf '%s; ' "${REASONS[@]}")
+              REASON_STR="${REASON_STR%; }"   # strip trailing semicolon
+          
+              # Labels
+              LABELS=$(echo "$PR" | jq -r '[.labels[].name] | join(", ")')
+              if [[ -n "$LABELS" ]]; then
+                LABEL_STR="\n  🏷️  ${LABELS}"
+              else
+                LABEL_STR=""
+              fi
+          
+              # Approvers
+              APPROVERS=$(echo "$PR" | jq -r \
+                '[.latestReviews[] | select(.state == "APPROVED") | .author.login] | join(", ")')
+              if [[ -n "$APPROVERS" ]]; then
+                APPROVAL_STR="\n  ✅ Approved by: $APPROVERS"
+              else
+                APPROVAL_STR=""
+              fi
+          
+              REPO_TEXT+="• <${URL}|#${NUMBER}: ${TITLE}> — @${AUTHOR} · ${AGE_LABEL} old\n  _${REASON_STR}_${LABEL_STR}${APPROVAL_STR}\n"
+              ((TOTAL++)) || true
+            done
+          
+            if [[ -n "$REPO_TEXT" ]]; then
+              SLACK_BODY+="*${REPO}*\n${REPO_TEXT}\n"
+            fi
+          done
+          
+          # ── Build and send Slack message ──────────────────────────────────
+          DATE_LABEL=$(date '+%A, %B %-d')
+          
+          if [[ $TOTAL -eq 0 ]]; then
+            SLACK_TEXT="✅ *PR Review Digest — ${DATE_LABEL}* — All clear! There are no PRs currently needing attention."
+          else
+            SLACK_TEXT="🔍 *PR Review Digest — ${DATE_LABEL}*\n${TOTAL} PR(s) need attention:\n\n${SLACK_BODY}"
+          fi
+          
+          # Slack Workflow expects a variable named "message" in the payload.
+          PAYLOAD=$(jq -n --arg message "$SLACK_TEXT" '{"message": $message}')
+          
+          curl -sf -X POST \
+            -H "Content-Type: application/json" \
+            --data "$PAYLOAD" \
+            "$SLACK_WEBHOOK_URL" > /dev/null
+          
+          echo "Done. Posted $TOTAL PR(s) to Slack."
