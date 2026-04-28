@@ -29,7 +29,9 @@ class SEPADirectDebitClientTest {
 
     companion object {
         private const val SANDBOX_TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
-        private const val SANDBOX_IBAN = "FR7630006000019876543210173" //generated using the same algorithm as the demo app
+
+        // generated using the same algorithm as the demo app
+        private const val SANDBOX_IBAN = "FR7630006000019876543210173"
     }
 
     @Before
@@ -435,5 +437,4 @@ class SEPADirectDebitClientTest {
             locale = "en-US"
         )
     }
-
 }
