@@ -39,11 +39,7 @@ jobs:
           NOW=$(date +%s)
           TOTAL=0
           SLACK_BODY=""
-          
-          if [[ -z "$REPOS" ]]; then
-            echo "REPOS variable is empty — Please set it to a comma-separated list of repositories (e.g. 'org/repo1, org/repo2') in Actions Variables."
-            exit 0
-          fi
+          NL=$'\n'
           
           IFS=',' read -ra REPO_LIST <<< "$REPOS"
           
@@ -126,7 +122,7 @@ jobs:
               # Labels
               LABELS=$(echo "$PR" | jq -r '[.labels[].name] | join(", ")')
               if [[ -n "$LABELS" ]]; then
-                LABEL_STR="\n  🏷️  ${LABELS}"
+                LABEL_STR="${NL}  🏷️  ${LABELS}"
               else
                 LABEL_STR=""
               fi
@@ -135,17 +131,17 @@ jobs:
               APPROVERS=$(echo "$PR" | jq -r \
                 '[.latestReviews[] | select(.state == "APPROVED") | .author.login] | join(", ")')
               if [[ -n "$APPROVERS" ]]; then
-                APPROVAL_STR="\n  ✅ Approved by: $APPROVERS"
+                APPROVAL_STR="${NL}  ✅ Approved by: $APPROVERS"
               else
                 APPROVAL_STR=""
               fi
           
-              REPO_TEXT+="• <${URL}|#${NUMBER}: ${TITLE}> — @${AUTHOR} · ${AGE_LABEL} old\n  _${REASON_STR}_${LABEL_STR}${APPROVAL_STR}\n"
+              REPO_TEXT+="• <${URL}|#${NUMBER}: ${TITLE}> — @${AUTHOR} · ${AGE_LABEL} old${NL}  _${REASON_STR}_${LABEL_STR}${APPROVAL_STR}${NL}"
               ((TOTAL++)) || true
             done
           
             if [[ -n "$REPO_TEXT" ]]; then
-              SLACK_BODY+="*${REPO}*\n${REPO_TEXT}\n"
+              SLACK_BODY+="*${REPO}*${NL}${REPO_TEXT}${NL}"
             fi
           done
           
@@ -155,7 +151,7 @@ jobs:
           if [[ $TOTAL -eq 0 ]]; then
             SLACK_TEXT="✅ *PR Review Digest — ${DATE_LABEL}* — All clear! There are no PRs currently needing attention."
           else
-            SLACK_TEXT="🔍 *PR Review Digest — ${DATE_LABEL}*\n${TOTAL} PR(s) need attention:\n\n${SLACK_BODY}"
+            SLACK_TEXT="🔍 *PR Review Digest — ${DATE_LABEL}*${NL}${TOTAL} PR(s) need attention:${NL}${NL}${SLACK_BODY}"
           fi
           
           # Slack Workflow expects a variable named "message" in the payload.
