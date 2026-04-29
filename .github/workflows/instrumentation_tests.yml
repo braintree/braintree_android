@@ -27,8 +27,7 @@ jobs:
           target: ${{ matrix.target }}
           arch: x86_64
           profile: pixel_7_pro
-          script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :ThreeDSecure:connectedCheck --stacktrace
-
+          script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ThreeDSecure:connectedCheck --stacktrace
 
       - name: retry tests
         if: steps.run_tests.outcome == 'failure'
@@ -38,5 +37,4 @@ jobs:
           target: ${{ matrix.target }}
           arch: x86_64
           profile: pixel_7_pro
-          script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :ThreeDSecure:connectedCheck --stacktrace
-
+          script: ./gradlew :BraintreeCore:connectedCheck :Card:connectedCheck :SharedUtils:connectedCheck :LocalPayment:connectedCheck :DataCollector:connectedCheck :GooglePay:connectedCheck :Demo:connectedCheck :PayPal:connectedCheck :PayPalMessaging:connectedCheck :AmericanExpress:connectedCheck :SEPADirectDebit:connectedCheck :ThreeDSecure:connectedCheck --stacktrace
