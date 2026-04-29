@@ -141,12 +141,12 @@ jobs:
                 APPROVAL_STR=""
               fi
           
-              REPO_TEXT+="• <${URL}|#${NUMBER}: ${TITLE}> — @${AUTHOR} · ${AGE_LABEL} old${NL}  _${REASON_STR}_${LABEL_STR}${APPROVAL_STR}${NL}"
+              REPO_TEXT+="• <${URL}|#${NUMBER}: ${TITLE}> — @${AUTHOR} · ${AGE_LABEL} old${NL}  ${REASON_STR}${LABEL_STR}${APPROVAL_STR}${NL}"
               ((TOTAL++)) || true
             done
           
             if [[ -n "$REPO_TEXT" ]]; then
-              SLACK_BODY+="*${REPO}*${NL}${REPO_TEXT}${NL}"
+              SLACK_BODY+="${REPO}${NL}${REPO_TEXT}${NL}"
             fi
           done
           
@@ -154,9 +154,9 @@ jobs:
           DATE_LABEL=$(date '+%A, %B %-d')
           
           if [[ $TOTAL -eq 0 ]]; then
-            SLACK_TEXT="✅ *PR Review Digest — ${DATE_LABEL}* — All clear! There are no PRs currently needing attention."
+            SLACK_TEXT="✅ PR Review Digest — ${DATE_LABEL} — All clear! There are no PRs currently needing attention."
           else
-            SLACK_TEXT="🔍 *PR Review Digest — ${DATE_LABEL}*${NL}${TOTAL} PR(s) need attention:${NL}${NL}${SLACK_BODY}"
+            SLACK_TEXT="🔍 PR Review Digest — ${DATE_LABEL}${NL}${TOTAL} PR(s) need attention:${NL}${NL}${SLACK_BODY}"
           fi
           
           # Slack Workflow expects a variable named "message" in the payload.
