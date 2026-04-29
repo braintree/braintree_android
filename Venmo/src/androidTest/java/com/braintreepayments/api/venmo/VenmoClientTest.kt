@@ -161,7 +161,8 @@ class VenmoClientTest {
     @Throws(InterruptedException::class)
     fun tokenize_whenSuccessUrlUsesAmpersandSeparator_returnsSuccess() {
         val sut = createVenmoClient()
-        val returnPath = "x-callback-url/vzero/auth/venmo/success&payment_method_nonce=fake-venmo-nonce&username=venmojoe"
+        val returnPath = "x-callback-url/vzero/auth/venmo/success" +
+            "&payment_method_nonce=fake-venmo-nonce&username=venmojoe"
         val paymentAuthResult = simulateVenmoReturn(returnPath)
         assertTrue(paymentAuthResult is VenmoPaymentAuthResult.Success)
 
