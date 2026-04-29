@@ -41,6 +41,11 @@ jobs:
           SLACK_BODY=""
           NL=$'\n'
           
+          if [[ -z "$REPOS" ]]; then
+            echo "REPOS variable is empty — Please set it to a comma-separated list of repositories (e.g. 'org/repo1, org/repo2') in Actions Variables."
+            exit 0
+          fi
+          
           IFS=',' read -ra REPO_LIST <<< "$REPOS"
           
           for REPO in "${REPO_LIST[@]}"; do
