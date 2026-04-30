@@ -79,6 +79,11 @@ dependencies {
     testImplementation libs.kotlin.test
     testImplementation project(':TestUtils')
     debugImplementation libs.androidx.ui.tooling
+
+    androidTestImplementation project(':TestUtils')
+    androidTestImplementation libs.androidx.test.rules
+    androidTestImplementation libs.androidx.test.runner
+    androidTestImplementation libs.androidx.junit
 }
 
 // region signing and publishing
