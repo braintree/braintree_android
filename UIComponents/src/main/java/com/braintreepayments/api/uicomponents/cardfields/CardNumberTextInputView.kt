@@ -16,10 +16,28 @@ class CardNumberTextInputView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : BaseTextInputView(context, attrs, defStyleAttr) {
 
+    internal fun interface CardBrandChangeListener {
+        fun onCardBrandChanged(brand: CardBrand)
+    }
+
+    internal var cardBrandChangeListener: CardBrandChangeListener? = null
+
+    private val formatter = CardNumberFormatter { brand ->
+        setCardIcon(brand.iconRes, context.getString(brand.iconContentDescriptionRes))
+        cardBrandChangeListener?.onCardBrandChanged(brand)
+    }
+
+    internal val currentBrand: CardBrand
+        get() = formatter.currentBrand
+
     init {
         setInputType(InputType.TYPE_CLASS_NUMBER)
         setHint(context.getString(R.string.card_number_hint))
-        setCardBrandIcon(R.drawable.card_fields_unknown_cc, context.getString(R.string.card_icon_unknown))
+        setCardBrandIcon(
+            CardBrand.UNKNOWN.iconRes,
+            context.getString(CardBrand.UNKNOWN.iconContentDescriptionRes)
+        )
+        editText.addTextChangedListener(formatter)
     }
 
     internal fun setCardIcon(@DrawableRes iconRes: Int, contentDescription: String) {

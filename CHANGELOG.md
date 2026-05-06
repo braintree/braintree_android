@@ -5,7 +5,8 @@
 * GooglePay
    * Add optional `DisplayItems` in GooglePay request
 * UIComponents
-   * Add `BaseTextInputView` for CardFields input components
+   * Add `BaseTextInputView` for CardFields input components 
+   * Add `CardNumberTextInputView`, a specialized card number input with dynamic card brand icon display
     
 ## 5.25.0 (2026-03-31)
 
