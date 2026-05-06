@@ -107,27 +107,29 @@ internal class CardNumberFormatter(
             }
         }
 
+        /** Inserts spaces into raw [digits] at the positions specified by [formatGaps]. */
         fun formatCardNumber(digits: String, formatGaps: IntArray): String {
             if (digits.isEmpty()) return ""
-            val sb = StringBuilder(digits.length + formatGaps.size)
-            for (i in digits.indices) {
-                if (i in formatGaps) sb.append(' ')
-                sb.append(digits[i])
+            val formattedCCNumber = StringBuilder(digits.length + formatGaps.size)
+            for (cardDigitPosition in digits.indices) {
+                if (cardDigitPosition in formatGaps) formattedCCNumber.append(' ')
+                formattedCCNumber.append(digits[cardDigitPosition])
             }
-            return sb.toString()
+            return formattedCCNumber.toString()
         }
 
         fun countDigitsBeforeIndex(text: String, index: Int): Int {
             return text.take(index).count { it.isDigit() }
         }
 
+        /** Returns the character index in formatted [text] that follows the Nth digit, used for cursor placement. */
         fun findIndexForDigitPosition(text: String, digitPosition: Int): Int {
             if (digitPosition == 0) return 0
             var count = 0
-            for (i in text.indices) {
-                if (text[i].isDigit()) {
+            for (charIndex in text.indices) {
+                if (text[charIndex].isDigit()) {
                     count++
-                    if (count == digitPosition) return i + 1
+                    if (count == digitPosition) return charIndex + 1
                 }
             }
             return text.length
