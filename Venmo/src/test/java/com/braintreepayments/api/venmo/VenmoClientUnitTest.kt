@@ -278,6 +278,8 @@ class VenmoClientUnitTest {
         val authRequestSlot = slot<VenmoPaymentAuthRequest>()
         verifyOrder {
             braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_STARTED, AnalyticsEventParams(), true)
+            braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_STARTED, any(), any())
+            braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_SUCCEEDED, any(), any())
             venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot))
         }
 
@@ -744,6 +746,16 @@ class VenmoClientUnitTest {
         verify { venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot)) }
         assertTrue(authRequestSlot.captured is VenmoPaymentAuthRequest.Failure)
         assertEquals(graphQLError, (authRequestSlot.captured as VenmoPaymentAuthRequest.Failure).error)
+
+        verify {
+            braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_STARTED, any(), any())
+        }
+        verify {
+            braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_FAILED, any(), any())
+        }
+        verify(exactly = 0) {
+            braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_SUCCEEDED, any(), any())
+        }
 
         val analyticsSlot = slot<AnalyticsEventParams>()
         verify {

@@ -145,6 +145,7 @@ class VenmoClient internal constructor(
         }
     }
 
+    @Suppress("ThrowsCount")
     private suspend fun createPaymentAuthRequest(
         context: Context,
         request: VenmoRequest
@@ -177,7 +178,15 @@ class VenmoClient internal constructor(
                 venmoProfileId = configuration.venmoMerchantId
             }
 
-            val paymentContextId = venmoApi.createPaymentContext(request, venmoProfileId)
+            braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_STARTED, analyticsParams)
+            val paymentContextId = try {
+                venmoApi.createPaymentContext(request, venmoProfileId)
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_FAILED, analyticsParams)
+                throw e
+            }
+            braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_SUCCEEDED, analyticsParams)
             contextId = paymentContextId
             return createPaymentAuthRequest(
                 context, request, configuration,
