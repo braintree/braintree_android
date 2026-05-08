@@ -186,8 +186,8 @@ class VenmoClient internal constructor(
                 braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_FAILED, analyticsParams)
                 throw e
             }
-            braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_SUCCEEDED, analyticsParams)
             contextId = paymentContextId
+            braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_SUCCEEDED, analyticsParams)
             return createPaymentAuthRequest(
                 context, request, configuration,
                 merchantRepository.authorization, venmoProfileId,

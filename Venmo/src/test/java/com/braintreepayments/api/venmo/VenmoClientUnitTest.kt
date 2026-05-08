@@ -276,12 +276,14 @@ class VenmoClientUnitTest {
         advanceUntilIdle()
 
         val authRequestSlot = slot<VenmoPaymentAuthRequest>()
+        val succeededAnalyticsSlot = slot<AnalyticsEventParams>()
         verifyOrder {
             braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_STARTED, AnalyticsEventParams(), true)
             braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_STARTED, any(), any())
-            braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_SUCCEEDED, any(), any())
+            braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_SUCCEEDED, capture(succeededAnalyticsSlot), any())
             venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot))
         }
+        assertEquals("venmo-payment-context-id", succeededAnalyticsSlot.captured.contextId)
 
         val paymentAuthRequest = authRequestSlot.captured
         assertTrue(paymentAuthRequest is VenmoPaymentAuthRequest.ReadyToLaunch)
