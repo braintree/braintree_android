@@ -280,7 +280,8 @@ class VenmoClientUnitTest {
         verifyOrder {
             braintreeClient.sendAnalyticsEvent(VenmoAnalytics.TOKENIZE_STARTED, AnalyticsEventParams(), true)
             braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_STARTED, any(), any())
-            braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_SUCCEEDED, capture(succeededAnalyticsSlot), any())
+            braintreeClient.sendAnalyticsEvent(
+                VenmoAnalytics.CREATE_PAYMENT_CONTEXT_SUCCEEDED, capture(succeededAnalyticsSlot), any())
             venmoPaymentAuthRequestCallback.onVenmoPaymentAuthRequest(capture(authRequestSlot))
         }
         assertEquals("venmo-payment-context-id", succeededAnalyticsSlot.captured.contextId)
