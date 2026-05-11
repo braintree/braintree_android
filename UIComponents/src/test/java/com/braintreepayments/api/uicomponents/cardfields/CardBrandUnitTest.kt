@@ -119,16 +119,68 @@ class CardBrandUnitTest {
         assertEquals(listOf(CardBrand.HIPERCARD), CardBrand.detect("606282"))
     }
 
+    // region Brand detection - ELO
+
+    @Test
+    fun `detect returns ELO for prefix 401178`() {
+        val result = CardBrand.detect("401178")
+        assertTrue(result.contains(CardBrand.ELO))
+    }
+
+    @Test
+    fun `detect returns ELO for prefix 509123`() {
+        assertEquals(listOf(CardBrand.ELO), CardBrand.detect("509123"))
+    }
+
+    // endregion
+
+    // region Brand detection - MIR
+
+    @Test
+    fun `detect returns MIR for prefix 2200`() {
+        assertEquals(listOf(CardBrand.MIR), CardBrand.detect("2200"))
+    }
+
+    @Test
+    fun `detect does not return MIR for prefix 2205`() {
+        val result = CardBrand.detect("2205")
+        assertTrue(!result.contains(CardBrand.MIR))
+    }
+
+    // endregion
+
+    // region Brand detection - VERVE
+
+    @Test
+    fun `detect returns VERVE for prefix 506099`() {
+        val result = CardBrand.detect("506099")
+        assertTrue(result.contains(CardBrand.VERVE))
+    }
+
+    @Test
+    fun `detect returns VERVE for prefix 507865`() {
+        assertEquals(listOf(CardBrand.VERVE), CardBrand.detect("507865"))
+    }
+
+    // endregion
+
+    // region Brand detection - ELO and UNIONPAY overlap
+
+    @Test
+    fun `detect returns ELO and UNIONPAY for prefix 627780`() {
+        val result = CardBrand.detect("627780")
+        assertTrue(result.contains(CardBrand.ELO))
+        assertTrue(result.contains(CardBrand.UNIONPAY))
+    }
+
     // endregion
 
     // region Brand detection - ambiguous prefixes
 
     @Test
-    fun `detect returns DISCOVER and UNIONPAY for prefix 622`() {
+    fun `detect returns only DISCOVER for prefix 622`() {
         val result = CardBrand.detect("622")
-        assertTrue(result.contains(CardBrand.DISCOVER))
-        assertTrue(result.contains(CardBrand.UNIONPAY))
-        assertEquals(2, result.size)
+        assertEquals(listOf(CardBrand.DISCOVER), result)
     }
 
     @Test

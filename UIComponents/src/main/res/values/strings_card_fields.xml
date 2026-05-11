@@ -12,4 +12,7 @@
     <string name="card_icon_maestro">Maestro</string>
     <string name="card_icon_hiper">Hiper</string>
     <string name="card_icon_hipercard">Hipercard</string>
+    <string name="card_icon_elo">Elo</string>
+    <string name="card_icon_mir">Mir</string>
+    <string name="card_icon_verve">Verve</string>
 </resources>
