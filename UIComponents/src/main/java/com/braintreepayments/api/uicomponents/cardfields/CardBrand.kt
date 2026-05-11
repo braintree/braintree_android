@@ -65,7 +65,7 @@ internal enum class CardBrand(
     ),
 
     UNIONPAY(
-        prefixPatterns = listOf("^62\\d*".toRegex()),
+        prefixPatterns = listOf("^62(?!2)\\d*".toRegex()),
         validLengths = setOf(16, 17, 18, 19),
         cvvLength = 3
     ),

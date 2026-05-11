@@ -178,11 +178,9 @@ class CardBrandUnitTest {
     // region Brand detection - ambiguous prefixes
 
     @Test
-    fun `detect returns DISCOVER and UNIONPAY for prefix 622`() {
+    fun `detect returns only DISCOVER for prefix 622`() {
         val result = CardBrand.detect("622")
-        assertTrue(result.contains(CardBrand.DISCOVER))
-        assertTrue(result.contains(CardBrand.UNIONPAY))
-        assertEquals(2, result.size)
+        assertEquals(listOf(CardBrand.DISCOVER), result)
     }
 
     @Test
