@@ -48,6 +48,10 @@ allprojects {
 }
 ```
 
+## Dependencies
+
+See [DEPENDENCIES.md](DEPENDENCIES.md) for a full list of third-party runtime dependencies used by each module.
+
 ## Documentation
 
 Start with [**'Hello, Client!'**](https://developer.paypal.com/braintree/docs/start/hello-client/android/v4) for instructions on basic setup and usage.
