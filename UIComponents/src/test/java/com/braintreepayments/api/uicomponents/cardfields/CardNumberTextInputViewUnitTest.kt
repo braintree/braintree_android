@@ -123,13 +123,13 @@ class CardNumberTextInputViewUnitTest {
     }
 
     @Test
-    fun `ambiguous prefix shows unknown icon`() {
+    fun `prefix 622 shows discover icon`() {
         val view = CardNumberTextInputView(context)
 
         view.setText("622")
 
         val leadingIcon = findLeadingIconView(view)
-        assertEquals("Unknown Card Brand", leadingIcon?.contentDescription.toString())
+        assertEquals("Discover", leadingIcon?.contentDescription.toString())
     }
 
     @Test

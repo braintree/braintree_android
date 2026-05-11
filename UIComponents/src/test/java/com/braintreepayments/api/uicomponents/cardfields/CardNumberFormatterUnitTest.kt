@@ -56,8 +56,8 @@ class CardNumberFormatterUnitTest {
     }
 
     @Test
-    fun `resolveBrand returns UNKNOWN for ambiguous prefix 622`() {
-        assertEquals(CardBrand.UNKNOWN, CardNumberFormatter.resolveBrand("622"))
+    fun `resolveBrand returns DISCOVER for prefix 622`() {
+        assertEquals(CardBrand.DISCOVER, CardNumberFormatter.resolveBrand("622"))
     }
 
     @Test
