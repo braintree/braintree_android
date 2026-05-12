@@ -1,6 +1,6 @@
 # Braintree Android SDK Dependencies
 
-This document lists the third-party runtime dependencies for each module in the Braintree Android SDK. For exact versions, see [`gradle/libs.versions.toml`](gradle/libs.versions.toml).
+This document lists the runtime dependencies (both internal module dependencies and third-party libraries) for each module in the Braintree Android SDK. For most dependency versions, see [`gradle/libs.versions.toml`](gradle/libs.versions.toml). Exception: the Magnes SDK is a bundled JAR in `DataCollector/libs/`.
 
 ## Key Third-Party Libraries
 
@@ -85,7 +85,7 @@ This document lists the third-party runtime dependencies for each module in the 
 | Dependency | Scope |
 |---|---|
 | `:BraintreeCore` | api |
-| Magnes SDK (local JAR) | implementation |
+| `DataCollector/libs/android-magnessdk-5.6.0.jar` | implementation |
 | `androidx.annotation:annotation` | implementation |
 
 ### LocalPayment
@@ -137,15 +137,6 @@ This document lists the third-party runtime dependencies for each module in the 
 | `androidx.compose.animation:animation-graphics` | implementation |
 | `androidx.appcompat:appcompat` | implementation |
 | `androidx.core:core-ktx` | implementation |
-
-### VisaCheckout (Deprecated)
-
-| Dependency | Scope |
-|---|---|
-| `:BraintreeCore` | api |
-| `:Card` | api |
-| `com.visa.checkout:visacheckout-android-sdk` | api |
-| `androidx.appcompat:appcompat` | implementation |
 
 ### SharedUtils
 

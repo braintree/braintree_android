@@ -50,7 +50,7 @@ allprojects {
 
 ## Dependencies
 
-See [DEPENDENCIES.md](DEPENDENCIES.md) for a full list of third-party runtime dependencies used by each module.
+See [DEPENDENCIES.md](DEPENDENCIES.md) for a full list of runtime dependencies used by each module.
 
 ## Documentation
 
