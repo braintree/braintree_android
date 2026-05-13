@@ -182,8 +182,10 @@ class VenmoClient internal constructor(
             val paymentContextId = try {
                 venmoApi.createPaymentContext(request, venmoProfileId)
             } catch (e: Exception) {
+                braintreeClient.sendAnalyticsEvent(
+                    VenmoAnalytics.CREATE_PAYMENT_CONTEXT_FAILED,
+                    analyticsParams.copy(errorDescription = e.message))
                 if (e is CancellationException) throw e
-                braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_FAILED, analyticsParams)
                 throw e
             }
             contextId = paymentContextId
@@ -327,9 +329,10 @@ class VenmoClient internal constructor(
                     try {
                         venmoApi.createNonceFromPaymentContext(paymentContextId)
                     } catch (e: Exception) {
-                        if (e is CancellationException) throw e
                         braintreeClient.sendAnalyticsEvent(
-                            VenmoAnalytics.QUERY_PAYMENT_CONTEXT_FAILED, analyticsParams)
+                            VenmoAnalytics.QUERY_PAYMENT_CONTEXT_FAILED,
+                            analyticsParams.copy(errorDescription = e.message))
+                        if (e is CancellationException) throw e
                         throw e
                     }.also {
                         braintreeClient.sendAnalyticsEvent(
