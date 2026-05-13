@@ -4,6 +4,7 @@
 
 * Venmo
     * Add analytics tracking for `createPaymentContext` GraphQL calls
+    * Add analytics tracking for `queryPaymentContext` GraphQL calls
 
 ## 5.26.0 (2026-04-17)
 

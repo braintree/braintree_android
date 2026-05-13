@@ -900,9 +900,25 @@ class VenmoClientUnitTest {
                 true
             )
         }
+        verify {
+            braintreeClient.sendAnalyticsEvent(
+                VenmoAnalytics.QUERY_PAYMENT_CONTEXT_STARTED, any(), any()
+            )
+        }
+        verify {
+            braintreeClient.sendAnalyticsEvent(
+                VenmoAnalytics.QUERY_PAYMENT_CONTEXT_SUCCEEDED, any(), any()
+            )
+        }
+        verify(exactly = 0) {
+            braintreeClient.sendAnalyticsEvent(
+                VenmoAnalytics.QUERY_PAYMENT_CONTEXT_FAILED, any(), any()
+            )
+        }
         verify { analyticsParamRepository.reset() }
     }
 
+    @Suppress("LongMethod")
     @Test
     fun tokenize_onGraphQLPostFailure_forwardsExceptionToListener_andSendsAnalytics() = runTest(testDispatcher) {
         val graphQLError = BraintreeException("GraphQL error")
@@ -951,6 +967,21 @@ class VenmoClientUnitTest {
         assertFalse(analyticsSlot.captured.isVaultRequest)
         assertEquals(expectedAnalyticsParams.appSwitchUrl, analyticsSlot.captured.appSwitchUrl)
         assertEquals(graphQLError.message, analyticsSlot.captured.errorDescription)
+        verify {
+            braintreeClient.sendAnalyticsEvent(
+                VenmoAnalytics.QUERY_PAYMENT_CONTEXT_STARTED, any(), any()
+            )
+        }
+        verify {
+            braintreeClient.sendAnalyticsEvent(
+                VenmoAnalytics.QUERY_PAYMENT_CONTEXT_FAILED, any(), any()
+            )
+        }
+        verify(exactly = 0) {
+            braintreeClient.sendAnalyticsEvent(
+                VenmoAnalytics.QUERY_PAYMENT_CONTEXT_SUCCEEDED, any(), any()
+            )
+        }
         verify { analyticsParamRepository.reset() }
     }
 

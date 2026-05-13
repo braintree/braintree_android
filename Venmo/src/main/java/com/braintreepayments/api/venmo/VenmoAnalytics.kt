@@ -23,4 +23,9 @@ internal object VenmoAnalytics {
     const val CREATE_PAYMENT_CONTEXT_STARTED = "venmo:create-payment-context:started"
     const val CREATE_PAYMENT_CONTEXT_SUCCEEDED = "venmo:create-payment-context:succeeded"
     const val CREATE_PAYMENT_CONTEXT_FAILED = "venmo:create-payment-context:failed"
+
+    // Query Payment Context events
+    const val QUERY_PAYMENT_CONTEXT_STARTED = "venmo:query-payment-context:started"
+    const val QUERY_PAYMENT_CONTEXT_SUCCEEDED = "venmo:query-payment-context:succeeded"
+    const val QUERY_PAYMENT_CONTEXT_FAILED = "venmo:query-payment-context:failed"
 }
