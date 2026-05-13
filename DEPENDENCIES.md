@@ -18,131 +18,131 @@ This document lists the runtime dependencies (both internal module dependencies 
 
 ### BraintreeCore
 
-| Dependency | Scope |
+| Dependency | Version |
 |---|---|
-| `:SharedUtils` | api |
-| `com.braintreepayments.api:browser-switch` | api |
-| `org.jetbrains.kotlinx:kotlinx-coroutines-core` | api |
-| `androidx.appcompat:appcompat` | implementation |
-| `androidx.work:work-runtime` | implementation |
-| `androidx.core:core-ktx` | implementation |
-| `androidx.room:room-runtime` | implementation |
-| `org.jetbrains.kotlin:kotlin-stdlib` | implementation |
+| `:SharedUtils` | — |
+| `com.braintreepayments.api:browser-switch` | 3.5.1 |
+| `org.jetbrains.kotlinx:kotlinx-coroutines-core` | 1.7.1 |
+| `androidx.appcompat:appcompat` | 1.6.0 |
+| `androidx.work:work-runtime` | 2.8.1 |
+| `androidx.core:core-ktx` | 1.12.0 |
+| `androidx.room:room-runtime` | 2.6.1 |
+| `org.jetbrains.kotlin:kotlin-stdlib` | 1.9.10 |
 
 ### Card
 
-| Dependency | Scope |
+| Dependency | Version |
 |---|---|
-| `:BraintreeCore` | api |
-| `androidx.annotation:annotation` | implementation |
-| `org.jetbrains.kotlinx:kotlinx-coroutines-core` | implementation |
+| `:BraintreeCore` | — |
+| `androidx.annotation:annotation` | 1.7.0 |
+| `org.jetbrains.kotlinx:kotlinx-coroutines-core` | 1.7.1 |
 
 ### PayPal
 
-| Dependency | Scope |
+| Dependency | Version |
 |---|---|
-| `:BraintreeCore` | api |
-| `:DataCollector` | implementation |
-| `androidx.appcompat:appcompat` | implementation |
+| `:BraintreeCore` | — |
+| `:DataCollector` | — |
+| `androidx.appcompat:appcompat` | 1.6.0 |
 
 ### Venmo
 
-| Dependency | Scope |
+| Dependency | Version |
 |---|---|
-| `:BraintreeCore` | api |
-| `androidx.appcompat:appcompat` | implementation |
+| `:BraintreeCore` | — |
+| `androidx.appcompat:appcompat` | 1.6.0 |
 
 ### GooglePay
 
-| Dependency | Scope |
+| Dependency | Version |
 |---|---|
-| `:BraintreeCore` | api |
-| `:PayPal` | api |
-| `:Card` | api |
-| `com.google.android.gms:play-services-wallet` | api |
-| `androidx.appcompat:appcompat` | implementation |
+| `:BraintreeCore` | — |
+| `:PayPal` | — |
+| `:Card` | — |
+| `com.google.android.gms:play-services-wallet` | 19.4.0 |
+| `androidx.appcompat:appcompat` | 1.6.0 |
 
 ### ThreeDSecure
 
-| Dependency | Scope |
+| Dependency | Version |
 |---|---|
-| `:BraintreeCore` | api |
-| `:Card` | api |
-| `org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk` | implementation |
-| `androidx.appcompat:appcompat` | implementation |
-| `androidx.lifecycle:lifecycle-runtime` | implementation |
+| `:BraintreeCore` | — |
+| `:Card` | — |
+| `org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk` | 2.2.7-7 |
+| `androidx.appcompat:appcompat` | 1.6.0 |
+| `androidx.lifecycle:lifecycle-runtime` | 2.6.2 |
 
 ### AmericanExpress
 
-| Dependency | Scope |
+| Dependency | Version |
 |---|---|
-| `:BraintreeCore` | api |
-| `androidx.annotation:annotation` | implementation |
-| `org.jetbrains.kotlinx:kotlinx-coroutines-core` | implementation |
+| `:BraintreeCore` | — |
+| `androidx.annotation:annotation` | 1.7.0 |
+| `org.jetbrains.kotlinx:kotlinx-coroutines-core` | 1.7.1 |
 
 ### DataCollector
 
-| Dependency | Scope |
+| Dependency | Version |
 |---|---|
-| `:BraintreeCore` | api |
-| `DataCollector/libs/android-magnessdk-5.6.0.jar` | implementation |
-| `androidx.annotation:annotation` | implementation |
+| `:BraintreeCore` | — |
+| `android-magnessdk` (bundled JAR) | 5.6.0 |
+| `androidx.annotation:annotation` | 1.7.0 |
 
 ### LocalPayment
 
-| Dependency | Scope |
+| Dependency | Version |
 |---|---|
-| `:BraintreeCore` | api |
-| `:DataCollector` | implementation |
-| `androidx.appcompat:appcompat` | implementation |
+| `:BraintreeCore` | — |
+| `:DataCollector` | — |
+| `androidx.appcompat:appcompat` | 1.6.0 |
 
 ### SEPADirectDebit
 
-| Dependency | Scope |
+| Dependency | Version |
 |---|---|
-| `:BraintreeCore` | api |
-| `androidx.appcompat:appcompat` | implementation |
+| `:BraintreeCore` | — |
+| `androidx.appcompat:appcompat` | 1.6.0 |
 
 ### ShopperInsights
 
-| Dependency | Scope |
+| Dependency | Version |
 |---|---|
-| `:BraintreeCore` | api |
-| `androidx.core:core-ktx` | implementation |
+| `:BraintreeCore` | — |
+| `androidx.core:core-ktx` | 1.12.0 |
 
 ### PayPalMessaging
 
-| Dependency | Scope |
+| Dependency | Version |
 |---|---|
-| `:BraintreeCore` | api |
-| `com.paypal.messages:paypal-messages` | implementation |
-| `androidx.appcompat:appcompat` | implementation |
-| `androidx.core:core-ktx` | implementation |
-| `org.jetbrains.kotlin:kotlin-stdlib` | implementation |
+| `:BraintreeCore` | — |
+| `com.paypal.messages:paypal-messages` | 1.1.13 |
+| `androidx.appcompat:appcompat` | 1.6.0 |
+| `androidx.core:core-ktx` | 1.12.0 |
+| `org.jetbrains.kotlin:kotlin-stdlib` | 1.9.10 |
 
 ### UIComponents
 
-| Dependency | Scope |
+| Dependency | Version |
 |---|---|
-| `:BraintreeCore` | api |
-| `:PayPal` | api |
-| `:Venmo` | api |
-| `com.google.accompanist:accompanist-drawablepainter` | implementation |
-| `androidx.activity:activity-compose` | implementation |
-| `androidx.lifecycle:lifecycle-viewmodel-compose` | implementation |
-| `androidx.datastore:datastore-preferences` | implementation |
-| `androidx.compose:compose-bom` | implementation (BOM) |
-| `androidx.compose.material3:material3` | implementation |
-| `androidx.compose.ui:ui-tooling-preview` | implementation |
-| `androidx.compose.animation:animation-graphics` | implementation |
-| `androidx.appcompat:appcompat` | implementation |
-| `androidx.core:core-ktx` | implementation |
+| `:BraintreeCore` | — |
+| `:PayPal` | — |
+| `:Venmo` | — |
+| `com.google.accompanist:accompanist-drawablepainter` | 0.37.3 |
+| `androidx.activity:activity-compose` | 1.12.0 |
+| `androidx.lifecycle:lifecycle-viewmodel-compose` | 2.5.1 |
+| `androidx.datastore:datastore-preferences` | 1.2.0 |
+| `androidx.compose:compose-bom` | 2025.06.01 |
+| `androidx.compose.material3:material3` | 1.3.2 (BOM-managed) |
+| `androidx.compose.ui:ui-tooling-preview` | 1.9.2 (BOM-managed) |
+| `androidx.compose.animation:animation-graphics` | 1.8.3 (BOM-managed) |
+| `androidx.appcompat:appcompat` | 1.6.0 |
+| `androidx.core:core-ktx` | 1.12.0 |
 
 ### SharedUtils
 
-| Dependency | Scope |
+| Dependency | Version |
 |---|---|
-| `com.squareup.okhttp3:okhttp` | implementation |
-| `androidx.annotation:annotation` | implementation |
-| `org.jetbrains.kotlin:kotlin-stdlib` | implementation |
-| `org.jetbrains.kotlinx:kotlinx-coroutines-core` | implementation |
+| `com.squareup.okhttp3:okhttp` | 4.12.0 |
+| `androidx.annotation:annotation` | 1.7.0 |
+| `org.jetbrains.kotlin:kotlin-stdlib` | 1.9.10 |
+| `org.jetbrains.kotlinx:kotlinx-coroutines-core` | 1.7.1 |
