@@ -5,6 +5,7 @@ import android.text.InputFilter
 import android.text.Selection
 import android.text.TextWatcher
 
+@Suppress("MagicNumber")
 internal class ExpirationDateFormatter : TextWatcher {
 
     private var isFormatting = false
