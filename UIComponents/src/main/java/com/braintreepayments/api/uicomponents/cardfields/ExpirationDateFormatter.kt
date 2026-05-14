@@ -8,6 +8,8 @@ import android.text.TextWatcher
 @Suppress("MagicNumber")
 internal class ExpirationDateFormatter : TextWatcher {
 
+    var onMonthRejected: (() -> Unit)? = null
+
     private var isFormatting = false
     private var lastActionWasDelete = false
 
@@ -34,6 +36,7 @@ internal class ExpirationDateFormatter : TextWatcher {
         if (!isValidMonth(digits)) {
             digits = digits.take(1)
             cursorDigitIndex = minOf(cursorDigitIndex, 1)
+            onMonthRejected?.invoke()
         }
 
         val formatted = formatExpiration(digits)

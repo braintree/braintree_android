@@ -2,7 +2,9 @@ package com.braintreepayments.api.uicomponents.cardfields
 
 import android.content.Context
 import android.text.InputType
+import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import androidx.test.core.app.ApplicationProvider
 import com.braintreepayments.api.uicomponents.R
 import org.junit.Assert.assertEquals
@@ -30,11 +32,18 @@ class ExpirationTextInputViewUnitTest {
     }
 
     @Test
-    fun `constructor sets expiration hint`() {
+    fun `constructor sets accessible content description on edit text`() {
         val view = ExpirationTextInputView(context)
 
         val editText = view.findViewById<EditText>(R.id.text_input_edit_text)
-        assertEquals("Expiration (MM/YY)", editText.contentDescription.toString())
+        assertEquals("Expiration date, two digit month and two digit year", editText.contentDescription.toString())
+    }
+
+    @Test
+    fun `constructor sets visual hint label to MM slash YY format`() {
+        val view = ExpirationTextInputView(context)
+
+        assertEquals("Expiration (MM/YY)", view.hintLabel.text.toString())
     }
 
     @Test
@@ -123,6 +132,60 @@ class ExpirationTextInputViewUnitTest {
         view.setText("123456")
 
         assertEquals("12/34", view.getText().toString())
+    }
+
+    @Test
+    fun `invalid month triggers onMonthRejected callback`() {
+        val view = ExpirationTextInputView(context)
+        var callCount = 0
+        view.formatter.onMonthRejected = { callCount++ }
+
+        view.setText("13")
+
+        assertEquals(1, callCount)
+    }
+
+    @Test
+    fun `valid month does not trigger onMonthRejected callback`() {
+        val view = ExpirationTextInputView(context)
+        var callCount = 0
+        view.formatter.onMonthRejected = { callCount++ }
+
+        view.setText("12")
+
+        assertEquals(0, callCount)
+    }
+
+    @Test
+    fun `invalid month shows error label`() {
+        val view = ExpirationTextInputView(context)
+
+        view.setText("13")
+
+        val errorLabel = view.findViewById<TextView>(R.id.error_label)
+        assertEquals(View.VISIBLE, errorLabel.visibility)
+    }
+
+    @Test
+    fun `error clears after typing a valid month`() {
+        val view = ExpirationTextInputView(context)
+        view.setText("13")
+
+        view.setText("12")
+
+        val errorLabel = view.findViewById<TextView>(R.id.error_label)
+        assertEquals(View.GONE, errorLabel.visibility)
+    }
+
+    @Test
+    fun `error clears when field is emptied`() {
+        val view = ExpirationTextInputView(context)
+        view.setText("13")
+
+        view.setText("")
+
+        val errorLabel = view.findViewById<TextView>(R.id.error_label)
+        assertEquals(View.GONE, errorLabel.visibility)
     }
 
     @Test

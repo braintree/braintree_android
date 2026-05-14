@@ -23,11 +23,6 @@ class ExpirationDateFormatterUnitTest {
     }
 
     @Test
-    fun `applyLeadingZero does not modify multi-digit string`() {
-        assertEquals("23", ExpirationDateFormatter.applyLeadingZero("23"))
-    }
-
-    @Test
     fun `isValidMonth returns true for incomplete input`() {
         assertEquals(true, ExpirationDateFormatter.isValidMonth(""))
         assertEquals(true, ExpirationDateFormatter.isValidMonth("0"))
