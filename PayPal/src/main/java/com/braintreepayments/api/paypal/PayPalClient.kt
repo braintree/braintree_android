@@ -232,7 +232,9 @@ class PayPalClient internal constructor(
                     is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> {
                         appLinkUri(returnLinkResult.appLinkReturnUri)
                         successAppLinkUri(paymentAuthRequest.successUrl?.toUri())
-                        returnUrlScheme(returnLinkResult.deepLinkFallbackUrlScheme)
+                        merchantRepository.deepLinkFallbackUrlScheme?.let {
+                            returnUrlScheme(it)
+                        }
                     }
 
                     is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> {

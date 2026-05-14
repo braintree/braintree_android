@@ -73,6 +73,7 @@ class PayPalClientUnitTest {
     @Throws(JSONException::class)
     fun beforeEach() {
         every { merchantRepository.returnUrlScheme } returns "com.braintreepayments.demo"
+        every { merchantRepository.deepLinkFallbackUrlScheme } returns "com.braintreepayments.demo"
         every { getReturnLinkUseCase.invoke() } returns AppLink(
             appLinkReturnUri = Uri.parse("www.example.com"),
             deepLinkFallbackUrlScheme = "com.braintreepayments.demo"
