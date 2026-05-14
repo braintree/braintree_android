@@ -49,6 +49,16 @@ Skip deprecated or legacy modules — they should NOT appear in `DEPENDENCIES.md
 
 If a deprecated module is found in `DEPENDENCIES.md`, flag it for removal. If a deprecated module is missing from the doc, do not report it as a missing entry.
 
+## browser-switch Dependencies
+
+`DEPENDENCIES.md` has a dedicated section for `browser-switch` transitive dependencies (between "Key Third-Party Libraries" and "Per-Module Dependencies"). This section lists the direct runtime dependencies of `com.braintreepayments.api:browser-switch`.
+
+To verify this section:
+1. Run `./gradlew :BraintreeCore:dependencies --configuration releaseRuntimeClasspath` and find the `browser-switch` subtree
+2. Extract the direct dependencies (first-level children under `browser-switch`)
+3. Compare the dependency names and versions against what `DEPENDENCIES.md` lists
+4. Report mismatches, missing, or stale entries the same way as per-module checks
+
 ## Tips
 
 - The source of truth for versions is `gradle/libs.versions.toml` and the Gradle dependency resolution, not `DEPENDENCIES.md`

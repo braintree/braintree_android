@@ -14,6 +14,16 @@ This document lists the runtime dependencies (both internal module dependencies 
 | [Magnes SDK](https://developer.paypal.com/braintree/docs/guides/premium-fraud-management-tools/device-data-collection/android/v5) | DataCollector |
 | [Accompanist](https://google.github.io/accompanist/)                                                                              | UIComponents |
 
+## browser-switch Dependencies
+
+`com.braintreepayments.api:browser-switch:3.5.1` is declared as a dependency of `BraintreeCore`. Its own runtime dependencies are:
+
+| Dependency | Version |
+|---|---|
+| `androidx.annotation:annotation` | 1.7.0 |
+| `androidx.appcompat:appcompat` | 1.6.0 |
+| `androidx.browser:browser` | 1.10.0-alpha02 |
+
 ## Per-Module Dependencies
 
 ### BraintreeCore
