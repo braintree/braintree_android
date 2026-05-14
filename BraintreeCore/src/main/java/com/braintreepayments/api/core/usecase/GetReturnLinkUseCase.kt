@@ -30,7 +30,10 @@ class GetReturnLinkUseCase(
 ) {
 
     sealed class ReturnLinkResult {
-        data class AppLink(val appLinkReturnUri: Uri) : ReturnLinkResult()
+        data class AppLink(
+            val appLinkReturnUri: Uri,
+            val deepLinkFallbackUrlScheme: String
+        ) : ReturnLinkResult()
 
         data class DeepLink(val deepLinkFallbackUrlScheme: String) : ReturnLinkResult()
 
@@ -40,8 +43,12 @@ class GetReturnLinkUseCase(
     operator fun invoke(@CheckoutUri uri: Uri = "https://www.paypal.com/checkout".toUri()): ReturnLinkResult {
         return when (getReturnLinkTypeUseCase(uri)) {
             GetReturnLinkTypeUseCase.ReturnLinkTypeResult.APP_LINK -> {
-                merchantRepository.appLinkReturnUri?.let { ReturnLinkResult.AppLink(it) }
-                    ?: ReturnLinkResult.Failure(BraintreeException("App Link Return Uri is null"))
+                merchantRepository.appLinkReturnUri?.let {
+                    ReturnLinkResult.AppLink(
+                        appLinkReturnUri = it,
+                        deepLinkFallbackUrlScheme = merchantRepository.resolvedDeepLinkFallbackUrlScheme
+                    )
+                } ?: ReturnLinkResult.Failure(BraintreeException("App Link Return Uri is null"))
             }
 
             GetReturnLinkTypeUseCase.ReturnLinkTypeResult.DEEP_LINK -> {

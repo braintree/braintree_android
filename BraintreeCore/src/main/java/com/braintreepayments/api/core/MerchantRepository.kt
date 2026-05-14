@@ -18,6 +18,9 @@ class MerchantRepository {
 
     var deepLinkFallbackUrlScheme: String? = null
 
+    val resolvedDeepLinkFallbackUrlScheme: String
+        get() = deepLinkFallbackUrlScheme ?: returnUrlScheme
+
     companion object {
 
         /**
