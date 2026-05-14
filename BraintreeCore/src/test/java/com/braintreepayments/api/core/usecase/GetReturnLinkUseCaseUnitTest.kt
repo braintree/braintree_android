@@ -27,6 +27,7 @@ class GetReturnLinkUseCaseUnitTest {
     fun setUp() {
         every { merchantRepository.appLinkReturnUri } returns appLinkReturnUri
         every { merchantRepository.deepLinkFallbackUrlScheme } returns deepLinkFallbackUrlScheme
+        every { merchantRepository.resolvedDeepLinkFallbackUrlScheme } returns deepLinkFallbackUrlScheme
 
         sut = GetReturnLinkUseCase(
             merchantRepository,
@@ -42,7 +43,13 @@ class GetReturnLinkUseCaseUnitTest {
 
         val result = sut()
 
-        assertEquals(GetReturnLinkUseCase.ReturnLinkResult.AppLink(appLinkReturnUri), result)
+        assertEquals(
+            GetReturnLinkUseCase.ReturnLinkResult.AppLink(
+                appLinkReturnUri = appLinkReturnUri,
+                deepLinkFallbackUrlScheme = deepLinkFallbackUrlScheme
+            ),
+            result
+        )
     }
 
     @Test
@@ -52,6 +59,25 @@ class GetReturnLinkUseCaseUnitTest {
         val result = sut()
 
         assertEquals(GetReturnLinkUseCase.ReturnLinkResult.DeepLink(deepLinkFallbackUrlScheme), result)
+    }
+
+    @Test
+    fun `when app link available and deepLinkFallbackUrlScheme is null, falls back to returnUrlScheme`() {
+        every { getReturnLinkTypeUseCase() } returns GetReturnLinkTypeUseCase.ReturnLinkTypeResult.APP_LINK
+        every { merchantRepository.deepLinkFallbackUrlScheme } returns null
+        val returnUrlScheme = "com.braintreepayments.demo.fallback"
+        every { merchantRepository.returnUrlScheme } returns returnUrlScheme
+        every { merchantRepository.resolvedDeepLinkFallbackUrlScheme } returns returnUrlScheme
+
+        val result = sut()
+
+        assertEquals(
+            GetReturnLinkUseCase.ReturnLinkResult.AppLink(
+                appLinkReturnUri = appLinkReturnUri,
+                deepLinkFallbackUrlScheme = returnUrlScheme
+            ),
+            result
+        )
     }
 
     @Test

@@ -86,7 +86,8 @@ class PayPalInternalClientUnitTest {
         deviceInspector = mockk(relaxed = true)
 
         every { getReturnLinkUseCase.invoke(any()) } returns ReturnLinkResult.AppLink(
-            Uri.parse("https://example.com")
+            appLinkReturnUri = Uri.parse("https://example.com"),
+            deepLinkFallbackUrlScheme = "com.example.deeplink"
         )
     }
 
@@ -160,8 +161,8 @@ class PayPalInternalClientUnitTest {
                 "currency_iso_code": "USD",
                 "intent": "authorize",
                 "authorization_fingerprint": "client-token-bearer",
-                "return_url": "https://example.com://onetouch/v1/success",
-                "cancel_url": "https://example.com://onetouch/v1/cancel",
+                "return_url": "com.example.deeplink://onetouch/v1/success",
+                "cancel_url": "com.example.deeplink://onetouch/v1/cancel",
                 "offer_pay_later": true,
                 "offer_paypal_credit": true,
                 "request_billing_agreement": true,
@@ -255,7 +256,7 @@ class PayPalInternalClientUnitTest {
         assertFalse(params.isVaultRequest)
         assertEquals(PayPalPaymentIntent.AUTHORIZE, params.intent)
         assertEquals("sample-merchant-account-id", params.merchantAccountId)
-        assertEquals("https://example.com://onetouch/v1/success", params.successUrl)
+        assertEquals("com.example.deeplink://onetouch/v1/success", params.successUrl)
         assertEquals("fake-token", params.contextId)
         assertEquals("sample-client-metadata-id", params.clientMetadataId)
         assertEquals(expectedUrl, params.approvalUrl)
@@ -271,7 +272,7 @@ class PayPalInternalClientUnitTest {
     private fun assertPayPalVaultParams(params: PayPalPaymentAuthRequestParams, expectedUrl: String) {
         assertTrue(params.isVaultRequest)
         assertEquals("sample-merchant-account-id", params.merchantAccountId)
-        assertEquals("https://example.com://onetouch/v1/success", params.successUrl)
+        assertEquals("com.example.deeplink://onetouch/v1/success", params.successUrl)
         assertEquals("fake-ba-token", params.contextId)
         assertEquals("sample-client-metadata-id", params.clientMetadataId)
         assertEquals(expectedUrl, params.approvalUrl)
@@ -295,8 +296,8 @@ class PayPalInternalClientUnitTest {
 
         val expected = JSONObject()
             .put("authorization_fingerprint", "client-token-bearer")
-            .put("return_url", "https://example.com://onetouch/v1/success")
-            .put("cancel_url", "https://example.com://onetouch/v1/cancel")
+            .put("return_url", "com.example.deeplink://onetouch/v1/success")
+            .put("cancel_url", "com.example.deeplink://onetouch/v1/cancel")
             .put("offer_paypal_credit", true)
             .put("description", "Billing Agreement Description")
             .put(
@@ -736,7 +737,10 @@ class PayPalInternalClientUnitTest {
     @Test
     fun sendRequest_propagatesHttpErrors() = runTest(testDispatcher) {
         val httpError = IOException("http error")
-        every { getReturnLinkUseCase.invoke() } returns ReturnLinkResult.AppLink(Uri.parse("https://example.com"))
+        every { getReturnLinkUseCase.invoke() } returns ReturnLinkResult.AppLink(
+            appLinkReturnUri = Uri.parse("https://example.com"),
+            deepLinkFallbackUrlScheme = "com.example.deeplink"
+        )
         every { merchantRepository.authorization } returns clientToken
         val sut = createSutWithMocks(error = httpError)
 

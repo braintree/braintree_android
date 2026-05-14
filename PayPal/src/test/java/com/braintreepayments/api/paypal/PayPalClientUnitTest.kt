@@ -73,7 +73,10 @@ class PayPalClientUnitTest {
     @Throws(JSONException::class)
     fun beforeEach() {
         every { merchantRepository.returnUrlScheme } returns "com.braintreepayments.demo"
-        every { getReturnLinkUseCase.invoke() } returns AppLink(Uri.parse("www.example.com"))
+        every { getReturnLinkUseCase.invoke() } returns AppLink(
+            appLinkReturnUri = Uri.parse("www.example.com"),
+            deepLinkFallbackUrlScheme = "com.braintreepayments.demo"
+        )
         every { getReturnLinkTypeUseCase.invoke() } returns ReturnLinkTypeResult.APP_LINK
     }
 
@@ -246,7 +249,10 @@ class PayPalClientUnitTest {
 
     @Test
     fun createPaymentAuthRequest_setsAppLinkReturnUrl() = runTest(testDispatcher) {
-        every { getReturnLinkUseCase.invoke(any()) } returns AppLink("www.example.com".toUri())
+        every { getReturnLinkUseCase.invoke(any()) } returns AppLink(
+            appLinkReturnUri = "www.example.com".toUri(),
+            deepLinkFallbackUrlScheme = "com.braintreepayments.demo"
+        )
         val payPalVaultRequest = PayPalVaultRequest(true)
         payPalVaultRequest.merchantAccountId = "sample-merchant-account-id"
 
@@ -285,6 +291,10 @@ class PayPalClientUnitTest {
         assertEquals(
             merchantRepository.appLinkReturnUri,
             (request as PayPalPaymentAuthRequest.ReadyToLaunch).requestParams.browserSwitchOptions!!.appLinkUri
+        )
+        assertEquals(
+            "com.braintreepayments.demo",
+            (request as PayPalPaymentAuthRequest.ReadyToLaunch).requestParams.browserSwitchOptions!!.returnUrlScheme
         )
     }
 
