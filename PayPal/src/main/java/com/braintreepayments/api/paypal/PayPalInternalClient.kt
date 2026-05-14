@@ -51,7 +51,7 @@ internal class PayPalInternalClient(
         val returnLinkResult = getReturnLinkUseCase()
         val navigationLink: String = when (returnLinkResult) {
             is GetReturnLinkUseCase.ReturnLinkResult.AppLink ->
-                returnLinkResult.appLinkReturnUri.toString()
+                returnLinkResult.deepLinkFallbackUrlScheme
 
             is GetReturnLinkUseCase.ReturnLinkResult.DeepLink ->
                 returnLinkResult.deepLinkFallbackUrlScheme
@@ -125,15 +125,10 @@ internal class PayPalInternalClient(
             dataCollector.getClientMetadataId(context, dataCollectorRequest, configuration)
         }
 
-        val returnLink: String = when (val returnLinkResult = getReturnLinkUseCase(parsedRedirectUri)) {
-            is GetReturnLinkUseCase.ReturnLinkResult.AppLink ->
-                returnLinkResult.appLinkReturnUri.toString()
-
-            is GetReturnLinkUseCase.ReturnLinkResult.DeepLink ->
-                returnLinkResult.deepLinkFallbackUrlScheme
-
-            is GetReturnLinkUseCase.ReturnLinkResult.Failure ->
-                throw returnLinkResult.exception
+        val returnLink: String = when (val result = getReturnLinkUseCase(parsedRedirectUri)) {
+            is GetReturnLinkUseCase.ReturnLinkResult.AppLink -> result.deepLinkFallbackUrlScheme
+            is GetReturnLinkUseCase.ReturnLinkResult.DeepLink -> result.deepLinkFallbackUrlScheme
+            is GetReturnLinkUseCase.ReturnLinkResult.Failure -> throw result.exception
         }
 
         val paymentAuthRequest = PayPalPaymentAuthRequestParams(
