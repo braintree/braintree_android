@@ -341,6 +341,55 @@ class PayPalClientUnitTest {
     }
 
     @Test
+    fun createPaymentAuthRequest_deepLinkBranch_setsAppLinkUriWhenAppLinkReturnUriIsConfigured() = runTest(testDispatcher) {
+        every { getReturnLinkUseCase.invoke(any()) } returns DeepLink("myapp")
+        every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://merchant.com/braintree")
+
+        val payPalVaultRequest = PayPalVaultRequest(true)
+        payPalVaultRequest.merchantAccountId = "sample-merchant-account-id"
+
+        val paymentAuthRequest = PayPalPaymentAuthRequestParams(
+            payPalVaultRequest,
+            null,
+            "https://example.com/approval/url",
+            "sample-client-metadata-id",
+            null,
+            "https://example.com/success/url"
+        )
+
+        val payPalInternalClient =
+            MockkPayPalInternalClientBuilder().sendRequestSuccess(paymentAuthRequest)
+                .build()
+
+        val braintreeClient = MockkBraintreeClientBuilder().configurationSuccess(payPalEnabledConfig)
+            .build()
+
+        val sut = testPaypalClient(
+            braintreeClient,
+            payPalInternalClient,
+            testDispatcher,
+            this
+        )
+        sut.createPaymentAuthRequest(activity, payPalVaultRequest, paymentAuthCallback)
+        advanceUntilIdle()
+
+        val slot = slot<PayPalPaymentAuthRequest>()
+        verify { paymentAuthCallback.onPayPalPaymentAuthRequest(capture(slot)) }
+
+        val request = slot.captured
+        assertTrue(request is PayPalPaymentAuthRequest.ReadyToLaunch)
+        val browserSwitchOptions = (request as PayPalPaymentAuthRequest.ReadyToLaunch).requestParams.browserSwitchOptions!!
+        assertEquals(
+            "myapp",
+            browserSwitchOptions.returnUrlScheme
+        )
+        assertEquals(
+            Uri.parse("https://merchant.com/braintree"),
+            browserSwitchOptions.appLinkUri
+        )
+    }
+
+    @Test
     fun createPaymentAuthRequest_returnsAnErrorWhen_getReturnLinkUseCase_returnsAFailure() = runTest(testDispatcher) {
         val exception = BraintreeException()
         every { getReturnLinkUseCase.invoke(any()) } returns ReturnLinkResult.Failure(exception)
