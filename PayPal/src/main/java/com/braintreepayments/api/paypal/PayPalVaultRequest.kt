@@ -100,9 +100,13 @@ class PayPalVaultRequest
 
         if (enablePayPalAppSwitch && !appLink.isNullOrEmpty()) {
             parameters.put(ENABLE_APP_SWITCH_KEY, enablePayPalAppSwitch)
-            parameters.put(OS_VERSION_KEY, Build.VERSION.SDK_INT.toString())
-            parameters.put(OS_TYPE_KEY, "Android")
-            parameters.put(MERCHANT_APP_RETURN_URL_KEY, appLink)
+            parameters.put(APP_SWITCH_CONTEXT_KEY, JSONObject().apply {
+                put(NATIVE_APP_KEY, JSONObject().apply {
+                    put(APP_URL_KEY, appLink)
+                    put(OS_TYPE_KEY, "ANDROID")
+                    put(OS_VERSION_KEY, Build.VERSION.SDK_INT.toString())
+                })
+            })
         }
 
         val experienceProfile = JSONObject()
