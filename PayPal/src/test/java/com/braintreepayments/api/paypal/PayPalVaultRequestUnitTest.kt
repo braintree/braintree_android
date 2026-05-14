@@ -263,10 +263,12 @@ class PayPalVaultRequestUnitTest {
             appLink = "universal_url"
         )
 
-        assertTrue(requestBody.contains("\"launch_paypal_app\":true"))
-        assertTrue(requestBody.contains("\"os_type\":" + "\"Android\""))
-        assertTrue(requestBody.contains("\"os_version\":\"$versionSDK\""))
-        assertTrue(requestBody.contains("\"merchant_app_return_url\":" + "\"universal_url\""))
+        val jsonObject = JSONObject(requestBody)
+        assertTrue(jsonObject.getBoolean("launch_paypal_app"))
+        val nativeApp = jsonObject.getJSONObject("app_switch_context").getJSONObject("native_app")
+        assertEquals("ANDROID", nativeApp.getString("os_type"))
+        assertEquals(versionSDK.toString(), nativeApp.getString("os_version"))
+        assertEquals("universal_url", nativeApp.getString("app_url"))
     }
 
     @OptIn(ExperimentalBetaApi::class)
@@ -375,9 +377,10 @@ class PayPalVaultRequestUnitTest {
 
         val jsonObject = JSONObject(requestBody)
         assertTrue(jsonObject.getBoolean("launch_paypal_app"))
-        assertEquals("Android", jsonObject.getString("os_type"))
-        assertEquals(appLink, jsonObject.getString("merchant_app_return_url"))
-        assertNotNull(jsonObject.getString("os_version"))
+        val nativeApp = jsonObject.getJSONObject("app_switch_context").getJSONObject("native_app")
+        assertEquals("ANDROID", nativeApp.getString("os_type"))
+        assertEquals(appLink, nativeApp.getString("app_url"))
+        assertNotNull(nativeApp.getString("os_version"))
     }
 
     @Test
