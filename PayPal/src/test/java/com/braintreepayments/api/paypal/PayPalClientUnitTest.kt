@@ -342,7 +342,8 @@ class PayPalClientUnitTest {
     }
 
     @Test
-    fun createPaymentAuthRequest_deepLinkBranch_setsAppLinkUriWhenAppLinkReturnUriIsConfigured() = runTest(testDispatcher) {
+    fun createPaymentAuthRequest_deepLinkBranch_setsAppLinkUriWhenAppLinkReturnUriIsConfigured() =
+        runTest(testDispatcher) {
         every { getReturnLinkUseCase.invoke(any()) } returns DeepLink("myapp")
         every { merchantRepository.appLinkReturnUri } returns Uri.parse("https://merchant.com/braintree")
 
@@ -379,7 +380,8 @@ class PayPalClientUnitTest {
 
         val request = slot.captured
         assertTrue(request is PayPalPaymentAuthRequest.ReadyToLaunch)
-        val browserSwitchOptions = (request as PayPalPaymentAuthRequest.ReadyToLaunch).requestParams.browserSwitchOptions!!
+        val browserSwitchOptions =
+            (request as PayPalPaymentAuthRequest.ReadyToLaunch).requestParams.browserSwitchOptions!!
         assertEquals(
             "myapp",
             browserSwitchOptions.returnUrlScheme
