@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="card_number_hint">Card number</string>
+    <string name="cvv_hint">CVV</string>
+    <string name="cvv_hint_icon_description">CVV security code hint</string>
+    <string name="cvv_overlay_close_description">Close CVV hint</string>
+    <string name="cvv_overlay_header">CVV</string>
+    <string name="cvv_overlay_body">The CVV is the 3-digit number on the back of your card</string>
     <string name="card_icon_unknown">Unknown Card Brand</string>
     <string name="card_icon_visa">Visa</string>
     <string name="card_icon_mastercard">Mastercard</string>
