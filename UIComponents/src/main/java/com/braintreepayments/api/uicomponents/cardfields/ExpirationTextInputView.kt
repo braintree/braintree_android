@@ -1,11 +1,11 @@
 package com.braintreepayments.api.uicomponents.cardfields
 
 import android.content.Context
-import android.os.Build
 import android.text.InputType
 import android.util.AttributeSet
-import android.view.View
 import androidx.annotation.RestrictTo
+import androidx.autofill.HintConstants
+import androidx.core.view.ViewCompat
 import androidx.core.widget.doAfterTextChanged
 import com.braintreepayments.api.uicomponents.R
 
@@ -26,9 +26,7 @@ class ExpirationTextInputView @JvmOverloads constructor(
         setInputType(InputType.TYPE_CLASS_NUMBER)
         setHint(context.getString(R.string.expiration_hint))
         editText.contentDescription = context.getString(R.string.expiration_hint_accessibility)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            editText.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE)
-        }
+        ViewCompat.setAutofillHints(editText, HintConstants.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE)
         editText.addTextChangedListener(formatter)
         editText.doAfterTextChanged { editable ->
             val digits = editable?.filter { it.isDigit() }?.toString() ?: ""

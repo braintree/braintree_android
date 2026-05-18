@@ -78,10 +78,10 @@ internal class ExpirationDateFormatter : TextWatcher {
         fun findCursorPosition(formatted: String, digitIndex: Int): Int {
             if (digitIndex == 0) return 0
             var count = 0
-            for (i in formatted.indices) {
-                if (formatted[i].isDigit()) {
+            for (expirationDigit in formatted.indices) {
+                if (formatted[expirationDigit].isDigit()) {
                     count++
-                    if (count == digitIndex) return i + 1
+                    if (count == digitIndex) return expirationDigit + 1
                 }
             }
             return formatted.length
