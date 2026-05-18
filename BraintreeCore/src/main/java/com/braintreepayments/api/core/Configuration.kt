@@ -72,6 +72,9 @@ class Configuration internal constructor(configurationString: String) {
         /**
          * Fetches the Braintree [Configuration] for the given authorization.
          *
+         * Note: The [callback] may be invoked after the calling Activity or Fragment
+         * has been destroyed. Callers should guard against this if needed.
+         *
          * @param context Android Context
          * @param authorization A tokenization key or client token
          * @param callback [ConfigurationCallback]
@@ -100,7 +103,7 @@ class Configuration internal constructor(configurationString: String) {
                 try {
                     val configuration = braintreeClient.getConfiguration()
                     callback.onResult(configuration, null)
-                } catch ( e: Exception) {
+                } catch (e: Exception) {
                     if (e is CancellationException) throw e
                     callback.onResult(null, e)
                 }
