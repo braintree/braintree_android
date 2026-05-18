@@ -1,9 +1,14 @@
 package com.braintreepayments.api.core
 
+import android.content.Context
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.Json
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Contains the remote configuration for the Braintree Android SDK.
@@ -62,6 +67,44 @@ class Configuration internal constructor(configurationString: String) {
         @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         fun fromJson(configurationString: String): Configuration {
             return Configuration(configurationString)
+        }
+
+        /**
+         * Fetches the Braintree [Configuration] for the given authorization.
+         *
+         * @param context Android Context
+         * @param authorization A tokenization key or client token
+         * @param callback [ConfigurationCallback]
+         */
+        @JvmStatic
+        fun fetch(
+            context: Context,
+            authorization: String,
+            callback: ConfigurationCallback
+        ) {
+            fetch(
+                BraintreeClient(context, authorization),
+                CoroutineScope(Dispatchers.Main),
+                callback
+            )
+        }
+
+        @Suppress("TooGenericExceptionCaught")
+        @JvmStatic
+        internal fun fetch(
+            braintreeClient: BraintreeClient,
+            coroutineScope: CoroutineScope,
+            callback: ConfigurationCallback
+        ) {
+            coroutineScope.launch {
+                try {
+                    val configuration = braintreeClient.getConfiguration()
+                    callback.onResult(configuration, null)
+                } catch ( e: Exception) {
+                    if (e is CancellationException) throw e
+                    callback.onResult(null, e)
+                }
+            }
         }
     }
 
