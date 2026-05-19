@@ -25,7 +25,6 @@ class ConfigurationUnitTest {
     private val configurationLoader: ConfigurationLoader = mockk(relaxed = true)
     private val authorization: Authorization = mockk(relaxed = true)
 
-
     @Test(expected = JSONException::class)
     fun fromJson_throwsForEmptyString() {
         Configuration.fromJson("")
