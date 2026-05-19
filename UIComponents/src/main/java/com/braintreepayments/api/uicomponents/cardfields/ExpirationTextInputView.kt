@@ -30,7 +30,7 @@ class ExpirationTextInputView @JvmOverloads constructor(
         editText.addTextChangedListener(formatter)
         editText.doAfterTextChanged { editable ->
             val digits = editable?.filter { it.isDigit() }?.toString() ?: ""
-            if (digits.isEmpty() || (digits.length == 2 && ExpirationDateFormatter.isValidMonth(digits))) {
+            if (digits.isEmpty() || (digits.length == 2 && ExpirationDateFormatter.isValidMonthNumber(digits))) {
                 setError(null)
             }
         }

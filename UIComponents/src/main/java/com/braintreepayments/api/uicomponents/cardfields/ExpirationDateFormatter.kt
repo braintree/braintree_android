@@ -33,7 +33,7 @@ internal class ExpirationDateFormatter : TextWatcher {
             cursorDigitIndex += 1
         }
 
-        if (!isValidMonth(digits)) {
+        if (!isValidMonthNumber(digits)) {
             digits = digits.take(1)
             cursorDigitIndex = minOf(cursorDigitIndex, 1)
             onMonthRejected?.invoke()
@@ -64,7 +64,7 @@ internal class ExpirationDateFormatter : TextWatcher {
         fun applyLeadingZero(digits: String): String =
             if (digits.length == 1 && digits[0] > '1') "0$digits" else digits
 
-        fun isValidMonth(digits: String): Boolean {
+        fun isValidMonthNumber(digits: String): Boolean {
             if (digits.length < 2) return true
             val month = digits.take(2).toIntOrNull() ?: return false
             return month in 1..12
