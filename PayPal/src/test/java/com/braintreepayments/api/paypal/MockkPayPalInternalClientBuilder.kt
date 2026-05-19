@@ -2,9 +2,10 @@ package com.braintreepayments.api.paypal
 
 import android.content.Context
 import com.braintreepayments.api.core.Configuration
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
 
+@Suppress("ThrowsCount")
 class MockkPayPalInternalClientBuilder {
 
     private var error: Exception? = null
@@ -29,32 +30,25 @@ class MockkPayPalInternalClientBuilder {
     internal fun build(): PayPalInternalClient {
         val payPalInternalClient = mockk<PayPalInternalClient>(relaxed = true)
 
-        every {
+        coEvery {
             payPalInternalClient.sendRequest(
                 any<Context>(),
                 any<PayPalRequest>(),
-                any<Configuration>(),
-                any<PayPalInternalClientCallback>()
+                any<Configuration>()
             )
         } answers {
-            val callback = invocation.args[3] as PayPalInternalClientCallback
-            if (successResponse != null) {
-                callback.onResult(successResponse, null)
-            } else if (error != null) {
-                callback.onResult(null, error)
-            }
-            null
+            successResponse?.let { return@answers it }
+            error?.let { throw it }
+            throw IllegalStateException("No mock result configured for sendRequest")
         }
 
-        every {
+        coEvery {
             payPalInternalClient.tokenize(
-                any<PayPalAccount>(),
-                any<PayPalInternalTokenizeCallback>()
+                any<PayPalAccount>()
             )
         } answers {
-            val callback = invocation.args[1] as PayPalInternalTokenizeCallback
-            callback.onResult(tokenizeSuccess, null)
-            null
+            tokenizeSuccess
+                ?: throw IllegalStateException("No mock result configured for tokenize")
         }
 
         return payPalInternalClient
