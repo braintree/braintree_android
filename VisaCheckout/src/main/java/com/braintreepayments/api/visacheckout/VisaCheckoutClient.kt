@@ -10,6 +10,7 @@ import com.visa.checkout.Environment
 import com.visa.checkout.Profile
 import com.visa.checkout.Profile.ProfileBuilder
 import com.visa.checkout.VisaPaymentSummary
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -86,6 +87,7 @@ class VisaCheckoutClient internal constructor(
                     VisaCheckoutProfileBuilderResult.Success(profileBuilder)
                 )
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 callback.onVisaCheckoutProfileBuilderResult(
                     VisaCheckoutProfileBuilderResult.Failure(e)
                 )
@@ -110,6 +112,7 @@ class VisaCheckoutClient internal constructor(
                 val visaCheckoutNonce = fromJSON(tokenizationResponse)
                 callbackTokenizeSuccess(callback, VisaCheckoutResult.Success(visaCheckoutNonce))
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 callbackTokenizeFailure(callback, VisaCheckoutResult.Failure(e))
             }
         }

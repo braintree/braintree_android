@@ -25,6 +25,12 @@ android {
         }
     }
 
+    buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
+    }
+
     compileOptions {
         sourceCompatibility versions.javaSourceCompatibility
         targetCompatibility versions.javaTargetCompatibility
@@ -51,6 +57,7 @@ dependencies {
     testImplementation libs.mockito.core
     testImplementation libs.json.assert
     testImplementation libs.mockk
+    testImplementation libs.kotlin.test
     testImplementation libs.test.parameter.injector
     testImplementation project(':TestUtils')
     testImplementation libs.coroutines.test

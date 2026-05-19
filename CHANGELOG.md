@@ -1,9 +1,18 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.27.0 (2026-05-18)
+
+* Venmo
+    * Add analytics tracking for `createPaymentContext` GraphQL calls
+    * Add analytics tracking for `queryPaymentContext` GraphQL calls
+
+## 5.26.0 (2026-04-17)
 
 * GooglePay
    * Add optional `DisplayItems` in GooglePay request
+   * Add support for `checkoutOption` to `GooglePayRequest` TransactionInfo params
+* BraintreeCore
+  * Fix crashes caused by uncaught exceptions in the configuration and analytics flows
     
 ## 5.25.0 (2026-03-31)
 

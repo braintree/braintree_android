@@ -145,6 +145,7 @@ class VenmoClient internal constructor(
         }
     }
 
+    @Suppress("ThrowsCount")
     private suspend fun createPaymentAuthRequest(
         context: Context,
         request: VenmoRequest
@@ -177,8 +178,19 @@ class VenmoClient internal constructor(
                 venmoProfileId = configuration.venmoMerchantId
             }
 
-            val paymentContextId = venmoApi.createPaymentContext(request, venmoProfileId)
+            braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_STARTED, analyticsParams)
+            val paymentContextId = try {
+                venmoApi.createPaymentContext(request, venmoProfileId)
+            } catch (e: Exception) {
+                braintreeClient.sendAnalyticsEvent(
+                    VenmoAnalytics.CREATE_PAYMENT_CONTEXT_FAILED,
+                    analyticsParams.copy(errorDescription = e.message)
+                )
+                if (e is CancellationException) throw e
+                throw e
+            }
             contextId = paymentContextId
+            braintreeClient.sendAnalyticsEvent(VenmoAnalytics.CREATE_PAYMENT_CONTEXT_SUCCEEDED, analyticsParams)
             return createPaymentAuthRequest(
                 context, request, configuration,
                 merchantRepository.authorization, venmoProfileId,
@@ -303,6 +315,7 @@ class VenmoClient internal constructor(
         }
     }
 
+    @Suppress("ThrowsCount")
     private suspend fun tokenizeSuccess(deepLinkUri: Uri): VenmoResult {
         val paymentContextId = parse(deepLinkUri.toString(), "resource_id")
         val paymentMethodNonce = parse(deepLinkUri.toString(), "payment_method_nonce")
@@ -312,7 +325,23 @@ class VenmoClient internal constructor(
         try {
             val nonce = when {
                 paymentContextId != null -> {
-                    venmoApi.createNonceFromPaymentContext(paymentContextId)
+                    braintreeClient.sendAnalyticsEvent(
+                        VenmoAnalytics.QUERY_PAYMENT_CONTEXT_STARTED, analyticsParams
+                    )
+                    try {
+                        venmoApi.createNonceFromPaymentContext(paymentContextId)
+                    } catch (e: Exception) {
+                        braintreeClient.sendAnalyticsEvent(
+                            VenmoAnalytics.QUERY_PAYMENT_CONTEXT_FAILED,
+                            analyticsParams.copy(errorDescription = e.message)
+                        )
+                        if (e is CancellationException) throw e
+                        throw e
+                    }.also {
+                        braintreeClient.sendAnalyticsEvent(
+                            VenmoAnalytics.QUERY_PAYMENT_CONTEXT_SUCCEEDED, analyticsParams
+                        )
+                    }
                 }
                 paymentMethodNonce != null && username != null -> {
                     VenmoAccountNonce(

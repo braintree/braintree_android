@@ -7,10 +7,12 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * This API call sends analytic events to FPTI.
  */
+@Suppress("SwallowedException", "TooGenericExceptionCaught")
 internal class AnalyticsApi(
     private val httpClient: BraintreeHttpClient = BraintreeHttpClient(),
     private val deviceInspector: DeviceInspector = DeviceInspectorProvider().deviceInspector,
@@ -34,12 +36,16 @@ internal class AnalyticsApi(
         val analyticsRequest =
             createFPTIPayload(merchantRepository.authorization, jsonEvents, metadata)
         coroutineScope.launch {
-            httpClient.post(
-                path = FPTI_ANALYTICS_URL,
-                data = analyticsRequest.toString(),
-                configuration = null,
-                authorization = merchantRepository.authorization,
-            )
+            try {
+                httpClient.post(
+                    path = FPTI_ANALYTICS_URL,
+                    data = analyticsRequest.toString(),
+                    configuration = null,
+                    authorization = merchantRepository.authorization,
+                )
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+            }
         }
     }
 
