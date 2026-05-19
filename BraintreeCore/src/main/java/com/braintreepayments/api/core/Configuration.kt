@@ -72,6 +72,10 @@ class Configuration internal constructor(configurationString: String) {
         /**
          * Fetches the Braintree [Configuration] for the given authorization.
          *
+         * This method initializes [SdkComponent] as a side effect, which is required
+         * by [ConfigurationLoader] for configuration caching. If a [BraintreeClient]
+         * is already initialized, this is a no-op.
+         *
          * Note: The [callback] may be invoked after the calling Activity or Fragment
          * has been destroyed. Callers should guard against this if needed.
          *
@@ -85,8 +89,10 @@ class Configuration internal constructor(configurationString: String) {
             authorization: String,
             callback: ConfigurationCallback
         ) {
+            SdkComponent.create(context.applicationContext)
             fetch(
-                BraintreeClient(context, authorization),
+                ConfigurationLoader(),
+                Authorization.fromString(authorization),
                 CoroutineScope(Dispatchers.Main),
                 callback
             )
@@ -95,14 +101,20 @@ class Configuration internal constructor(configurationString: String) {
         @Suppress("TooGenericExceptionCaught")
         @JvmStatic
         internal fun fetch(
-            braintreeClient: BraintreeClient,
+            configurationLoader: ConfigurationLoader,
+            authorization: Authorization,
             coroutineScope: CoroutineScope,
             callback: ConfigurationCallback
         ) {
             coroutineScope.launch {
                 try {
-                    val configuration = braintreeClient.getConfiguration()
-                    callback.onResult(configuration, null)
+                    val result = configurationLoader.loadConfiguration(authorization)
+                    when (result) {
+                        is ConfigurationLoaderResult.Success ->
+                            callback.onResult(result.configuration, null)
+                        is ConfigurationLoaderResult.Failure ->
+                            callback.onResult(null, result.error)
+                    }
                 } catch (e: Exception) {
                     if (e is CancellationException) throw e
                     callback.onResult(null, e)
