@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.27.0 (2026-05-18)
 
 * Venmo
     * Add analytics tracking for `createPaymentContext` GraphQL calls
