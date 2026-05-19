@@ -18,10 +18,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlin.test.assertNull
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.json.JSONException
 import org.json.JSONObject
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -253,6 +254,21 @@ class SEPADirectDebitClientUnitTest {
     }
 
     @Test
+    fun createPaymentAuthRequest_whenApiThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+        val sepaDirectDebitApi = MockkSEPADirectDebitApiBuilder()
+            .createMandateError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
+            .build()
+
+        val sut = SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi, testDispatcher)
+
+        var result: SEPADirectDebitPaymentAuthRequest? = null
+        sut.createPaymentAuthRequest(sepaDirectDebitRequest) { result = it }
+        advanceUntilIdle()
+
+        assertNull(result)
+    }
+
+    @Test
     @Throws(JSONException::class)
     fun tokenize_whenDeepLinkContainsSuccess_callsTokenize_andSendsAnalytics() =
         runTest(testDispatcher) {
@@ -442,5 +458,34 @@ class SEPADirectDebitClientUnitTest {
                 sendImmediately = true
             )
         }
+    }
+
+    @Test
+    @Throws(JSONException::class)
+    fun tokenize_whenApiThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
+        val sepaDirectDebitApi = MockkSEPADirectDebitApiBuilder()
+            .tokenizeError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
+            .build()
+
+        val metadata = JSONObject()
+            .put("ibanLastFour", "1234")
+            .put("customerId", "customer-id")
+            .put("bankReferenceToken", "bank-reference-token")
+            .put("mandateType", "ONE_OFF")
+
+        val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>()
+        every { browserSwitchResult.returnUrl } returns Uri.parse(
+            "com.braintreepayments.demo.braintree://sepa/success?success=true"
+        )
+        every { browserSwitchResult.requestMetadata } returns metadata
+        val sepaBrowserSwitchResult = SEPADirectDebitPaymentAuthResult.Success(browserSwitchResult)
+
+        val sut = SEPADirectDebitClient(braintreeClient, sepaDirectDebitApi, testDispatcher)
+
+        var result: SEPADirectDebitResult? = null
+        sut.tokenize(sepaBrowserSwitchResult) { result = it }
+        advanceUntilIdle()
+
+        assertNull(result)
     }
 }

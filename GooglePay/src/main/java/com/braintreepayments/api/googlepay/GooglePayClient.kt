@@ -22,6 +22,7 @@ import com.google.android.gms.wallet.PaymentDataRequest
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.android.gms.wallet.WalletConstants
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -134,6 +135,7 @@ class GooglePayClient internal constructor(
                 )
             }
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             NotReadyToPay(e)
         }
     }
@@ -169,6 +171,7 @@ class GooglePayClient internal constructor(
                 getAllowedCardNetworks(configuration)
             )
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             GooglePayTokenizationParameters.Failure(e)
         }
     }

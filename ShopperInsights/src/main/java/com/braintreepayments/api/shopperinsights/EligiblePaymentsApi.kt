@@ -3,6 +3,7 @@ package com.braintreepayments.api.shopperinsights
 import com.braintreepayments.api.core.AnalyticsParamRepository
 import com.braintreepayments.api.core.BraintreeClient
 import com.braintreepayments.api.shopperinsights.EligiblePaymentsApiRequest.Companion.toJson
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,6 +43,7 @@ internal class EligiblePaymentsApi(
                     callback.onResult(null, e)
                 }
             } catch (e: Exception) {
+                if (e is CancellationException) throw e
                 callback.onResult(null, e)
             }
         }

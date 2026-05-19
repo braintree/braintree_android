@@ -28,9 +28,9 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.json.JSONObject
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -817,7 +817,7 @@ class LocalPaymentClientUnitTest {
     @Test
     @Throws(JSONException::class)
     fun onBrowserSwitchResult_sends_the_correct_value_of_hasUserLocationConsent_to_getClientMetadataId() =
-        runTest(testDispatcher) {
+    runTest(testDispatcher) {
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>(relaxed = true)
         every { browserSwitchResult.requestMetadata } returns JSONObject()
             .put("payment-type", "ideal")
@@ -865,5 +865,54 @@ class LocalPaymentClientUnitTest {
                 eq(true)
             )
         }
+    }
+
+    @Test
+    fun createPaymentAuthRequest_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() =
+    runTest(testDispatcher) {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
+            .build()
+
+        val testScope = TestScope(testDispatcher)
+        sut = LocalPaymentClient(
+            braintreeClient,
+            dataCollector,
+            localPaymentApi,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
+        sut.createPaymentAuthRequest(createLocalPaymentRequest(), localPaymentAuthCallback)
+        advanceUntilIdle()
+
+        verify(exactly = 0) { localPaymentAuthCallback.onLocalPaymentAuthRequest(any()) }
+    }
+
+    @Test
+    fun tokenize_whenBraintreeClientThrowsCancellationException_callbackIsNotInvoked() =
+    runTest(testDispatcher) {
+        val braintreeClient = MockkBraintreeClientBuilder()
+            .configurationError(kotlin.coroutines.cancellation.CancellationException("cancelled"))
+            .build()
+
+        val testScope = TestScope(testDispatcher)
+        sut = LocalPaymentClient(
+            braintreeClient,
+            dataCollector,
+            localPaymentApi,
+            analyticsParamRepository,
+            testDispatcher,
+            testScope
+        )
+
+        val successUrl = Uri.parse("https://example.com/local-payment-success?token=token")
+        val browserSwitchFinalResult = mockk<BrowserSwitchFinalResult.Success>(relaxed = true)
+        every { browserSwitchFinalResult.returnUrl } returns successUrl
+        val localPaymentAuthResult = LocalPaymentAuthResult.Success(browserSwitchFinalResult)
+        sut.tokenize(activity, localPaymentAuthResult, localPaymentTokenizeCallback)
+        advanceUntilIdle()
+
+        verify(exactly = 0) { localPaymentTokenizeCallback.onLocalPaymentResult(any()) }
     }
 }

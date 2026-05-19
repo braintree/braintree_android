@@ -24,7 +24,7 @@ For an integration offering card payments, add the following dependency in your 
 
 ```groovy
 dependencies {
-    implementation 'com.braintreepayments.api:card:5.25.0'
+    implementation 'com.braintreepayments.api:card:5.27.0'
 }
 ```
 
@@ -47,6 +47,10 @@ allprojects {
     }
 }
 ```
+
+## Dependencies
+
+See [DEPENDENCIES.md](DEPENDENCIES.md) for a full list of runtime dependencies used by each module.
 
 ## Documentation
 

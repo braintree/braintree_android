@@ -51,6 +51,7 @@ class GooglePayRequestUnitTest {
         request.shippingAddressParameters = shippingAddressRequirements
         request.setEnvironment("production")
         request.googleMerchantName = "google-merchant-name"
+        request.checkoutOption = GooglePayCheckoutOption.COMPLETE_IMMEDIATE_PURCHASE
 
         assertTrue(request.allowPrepaidCards)
         assertEquals(GooglePayBillingAddressFormat.FULL, request.billingAddressFormat)
@@ -66,6 +67,7 @@ class GooglePayRequestUnitTest {
         assertEquals("google-merchant-name", request.googleMerchantName)
         assertEquals("test", request.totalPriceLabel)
         assertEquals(displayItems, request.displayItems)
+        assertEquals(GooglePayCheckoutOption.COMPLETE_IMMEDIATE_PURCHASE, request.checkoutOption)
     }
 
     @Test
@@ -82,6 +84,7 @@ class GooglePayRequestUnitTest {
         assertNull(request.getEnvironment())
         assertNull(request.googleMerchantName)
         assertTrue { request.displayItems.isEmpty() }
+        assertEquals(GooglePayCheckoutOption.DEFAULT, request.checkoutOption)
     }
 
     @Test
@@ -105,6 +108,7 @@ class GooglePayRequestUnitTest {
         request.shippingAddressParameters = requirements
         request.allowPrepaidCards = true
         request.setEnvironment("production")
+        request.checkoutOption = GooglePayCheckoutOption.COMPLETE_IMMEDIATE_PURCHASE
 
         val parcel = Parcel.obtain()
         request.writeToParcel(parcel, 0)
@@ -125,6 +129,7 @@ class GooglePayRequestUnitTest {
         assertTrue(parceled.allowPrepaidCards)
         assertEquals("PRODUCTION", parceled.getEnvironment())
         assertEquals(displayItems, parceled.displayItems)
+        assertEquals(GooglePayCheckoutOption.COMPLETE_IMMEDIATE_PURCHASE, parceled.checkoutOption)
     }
 
     @Test
@@ -294,7 +299,7 @@ class GooglePayRequestUnitTest {
                 "\"shippingAddressRequired\":true," +
                 "\"merchantInfo\":{},\"transactionInfo\":" +
                 "{\"totalPriceStatus\":\"FINAL\",\"totalPrice\":\"12.24\"," +
-                "\"currencyCode\":\"USD\"},\"shippingAddressParameters\":{}}"
+                "\"currencyCode\":\"USD\",\"checkoutOption\":\"DEFAULT\"},\"shippingAddressParameters\":{}}"
 
         val nullyShippingAddressRequirements = GooglePayShippingAddressParameters()
 
@@ -304,5 +309,20 @@ class GooglePayRequestUnitTest {
         val actual = request.toJson()
 
         JSONAssert.assertEquals(expected, actual, false)
+    }
+
+    @Test
+    fun `toJson includes checkoutOption when set`() {
+        val request = GooglePayRequest("USD", "1.00", GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL)
+        request.checkoutOption = GooglePayCheckoutOption.DEFAULT
+
+        val json = JSONObject(request.toJson())
+        val transactionInfo = json.getJSONObject("transactionInfo")
+        assertEquals("DEFAULT", transactionInfo.optString("checkoutOption"))
+
+        request.checkoutOption = GooglePayCheckoutOption.COMPLETE_IMMEDIATE_PURCHASE
+        val json2 = JSONObject(request.toJson())
+        val transactionInfo2 = json2.getJSONObject("transactionInfo")
+        assertEquals("COMPLETE_IMMEDIATE_PURCHASE", transactionInfo2.optString("checkoutOption"))
     }
 }
