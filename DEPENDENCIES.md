@@ -135,6 +135,7 @@ This document lists the runtime dependencies (both internal module dependencies 
 | Dependency | Version |
 |---|---|
 | `:BraintreeCore` | — |
+| `:Card` | — |
 | `:PayPal` | — |
 | `:Venmo` | — |
 | `com.google.accompanist:accompanist-drawablepainter` | 0.37.3 |
@@ -145,6 +146,7 @@ This document lists the runtime dependencies (both internal module dependencies 
 | `androidx.compose.material3:material3` | 1.3.2 (BOM-managed) |
 | `androidx.compose.ui:ui-tooling-preview` | 1.9.2 (BOM-managed) |
 | `androidx.compose.animation:animation-graphics` | 1.8.3 (BOM-managed) |
+| `androidx.autofill:autofill` | 1.3.0 |
 | `androidx.appcompat:appcompat` | 1.6.0 |
 | `androidx.core:core-ktx` | 1.12.0 |
 
