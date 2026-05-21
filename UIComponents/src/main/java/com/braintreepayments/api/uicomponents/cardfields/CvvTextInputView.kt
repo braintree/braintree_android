@@ -19,12 +19,22 @@ class CvvTextInputView @JvmOverloads constructor(
     init {
         setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD)
         setHint(context.getString(R.string.cvv_hint))
+        val cvvIconSize = resources.getDimensionPixelSize(R.dimen.card_field_min_height) / 3
         setTrailingIcon(
             R.drawable.cvv_hint_image,
-            context.getString(R.string.cvv_hint_icon_description)
+            context.getString(R.string.cvv_hint_icon_description),
+            width = cvvIconSize,
+            height = cvvIconSize
         )
-        setTrailingIconClickListener { CvvHintOverlay(context).show() }
+        setTrailingIconClickListener { anchor -> CvvHintOverlay(context).show(anchor) }
         editText.addTextChangedListener(formatter)
+    }
+
+    fun linkTo(cardNumberView: CardNumberTextInputView) {
+        cardNumberView.cardBrandChangeListener = CardNumberTextInputView.CardBrandChangeListener { brand ->
+            updateCardBrand(brand)
+        }
+        updateCardBrand(cardNumberView.currentBrand)
     }
 
     internal fun updateCardBrand(brand: CardBrand) {

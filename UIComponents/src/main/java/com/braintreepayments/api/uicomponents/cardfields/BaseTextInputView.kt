@@ -247,9 +247,14 @@ open class BaseTextInputView @JvmOverloads constructor(
         trailingIconView?.setOnClickListener(listener)
     }
 
-    internal fun setTrailingIcon(@DrawableRes iconRes: Int, contentDescription: String) {
+    internal fun setTrailingIcon(
+        @DrawableRes iconRes: Int,
+        contentDescription: String,
+        width: Int = iconWidth,
+        height: Int = iconHeight
+    ) {
         val iconView = trailingIconView ?: ImageView(context).apply {
-            layoutParams = FrameLayout.LayoutParams(iconWidth, iconHeight).apply {
+            layoutParams = FrameLayout.LayoutParams(width, height).apply {
                 gravity = Gravity.END or Gravity.CENTER_VERTICAL
                 marginEnd = defaultPaddingHorizontal
             }
@@ -264,7 +269,7 @@ open class BaseTextInputView @JvmOverloads constructor(
             inputContainer.addView(this)
             trailingIconView = this
 
-            val newPaddingEnd = defaultPaddingHorizontal + iconWidth + iconMargin
+            val newPaddingEnd = defaultPaddingHorizontal + width + iconMargin
             editText.setPadding(editText.paddingStart, editText.paddingTop, newPaddingEnd, editText.paddingBottom)
         }
         iconView.setImageResource(iconRes)

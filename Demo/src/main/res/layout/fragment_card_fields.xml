@@ -11,10 +11,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <com.braintreepayments.api.uicomponents.cardfields.ExpirationTextInputView
-        android:id="@+id/expiration_input"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp" />
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <com.braintreepayments.api.uicomponents.cardfields.ExpirationTextInputView
+            android:id="@+id/expiration_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <com.braintreepayments.api.uicomponents.cardfields.CvvTextInputView
+            android:id="@+id/cvv_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
 
 </LinearLayout>
