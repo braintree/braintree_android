@@ -42,6 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/card_field_error_margin_top"
         android:drawablePadding="4dp"
+        app:drawableStartCompat="@drawable/ic_card_field_error"
         android:gravity="center_vertical"
         android:textColor="@color/card_field_text"
         android:textSize="12sp"
