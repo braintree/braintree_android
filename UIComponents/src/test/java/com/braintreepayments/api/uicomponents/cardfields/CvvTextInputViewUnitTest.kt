@@ -16,7 +16,8 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.shadows.ShadowDialog
+import android.app.Application
+import org.robolectric.Shadows
 
 @RunWith(RobolectricTestRunner::class)
 class CvvTextInputViewUnitTest {
@@ -134,6 +135,43 @@ class CvvTextInputViewUnitTest {
     }
 
     @Test
+    fun `updateCardBrand from VISA to AMEX immediately allows typing 4th digit when field is full`() {
+        val view = CvvTextInputView(context)
+        view.updateCardBrand(CardBrand.VISA)
+        view.setText("123")
+
+        view.updateCardBrand(CardBrand.AMEX)
+        view.editText.text.append("4")
+
+        assertEquals("1234", view.getRawCvv())
+    }
+
+    @Test
+    fun `linkTo initializes cvv length from current card number brand`() {
+        val cvvView = CvvTextInputView(context)
+        val cardNumberView = CardNumberTextInputView(context)
+        cardNumberView.setText("37")
+
+        cvvView.linkTo(cardNumberView)
+        cvvView.setText("12345")
+
+        assertEquals("1234", cvvView.getRawCvv())
+    }
+
+    @Test
+    fun `linkTo updates cvv length filter when linked card number brand changes`() {
+        val cvvView = CvvTextInputView(context)
+        val cardNumberView = CardNumberTextInputView(context)
+        cvvView.linkTo(cardNumberView)
+        cvvView.setText("123")
+
+        cardNumberView.setText("37")
+        cvvView.editText.text.append("4")
+
+        assertEquals("1234", cvvView.getRawCvv())
+    }
+
+    @Test
     fun `constructor adds trailing icon with cvv hint content description`() {
         val view = CvvTextInputView(context)
 
@@ -148,20 +186,20 @@ class CvvTextInputViewUnitTest {
 
         findTrailingIconView(view)?.performClick()
 
-        val dialog = ShadowDialog.getLatestDialog()
-        assertNotNull(dialog)
-        assertTrue(dialog!!.isShowing)
+        val popup = Shadows.shadowOf(context as Application).latestPopupWindow
+        assertNotNull(popup)
+        assertTrue(popup!!.isShowing)
     }
 
     @Test
     fun `clicking close button dismisses cvv hint overlay`() {
         val view = CvvTextInputView(context)
         findTrailingIconView(view)?.performClick()
-        val dialog = ShadowDialog.getLatestDialog()!!
+        val popup = Shadows.shadowOf(context as Application).latestPopupWindow!!
 
-        dialog.findViewById<View>(R.id.close_button).performClick()
+        popup.contentView.findViewById<View>(R.id.close_button).performClick()
 
-        assertFalse(dialog.isShowing)
+        assertFalse(popup.isShowing)
     }
 
     private fun findTrailingIconView(parent: CvvTextInputView): ImageView? {

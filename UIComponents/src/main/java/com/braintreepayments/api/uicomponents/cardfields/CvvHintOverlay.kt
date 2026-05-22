@@ -3,10 +3,12 @@ package com.braintreepayments.api.uicomponents.cardfields
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupWindow
+import androidx.core.content.ContextCompat
 import com.braintreepayments.api.uicomponents.R
 
 internal class CvvHintOverlay(context: Context) {
@@ -17,6 +19,16 @@ internal class CvvHintOverlay(context: Context) {
     init {
         val view = LayoutInflater.from(context).inflate(R.layout.cvv_hint_overlay, null)
         popupWidth = context.resources.getDimensionPixelSize(R.dimen.cvv_overlay_max_width)
+
+        view.background = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = context.resources.getDimension(R.dimen.card_field_corner_radius)
+            setStroke(
+                context.resources.getDimensionPixelSize(R.dimen.card_field_border_width),
+                ContextCompat.getColor(context, R.color.card_field_border_default)
+            )
+            setColor(ContextCompat.getColor(context, R.color.card_field_background))
+        }
 
         popupWindow = PopupWindow(view, popupWidth, ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))

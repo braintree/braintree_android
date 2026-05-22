@@ -1,6 +1,7 @@
 package com.braintreepayments.api.uicomponents.cardfields
 
 import android.content.Context
+import android.text.InputFilter
 import android.text.InputType
 import android.util.AttributeSet
 import androidx.annotation.RestrictTo
@@ -19,12 +20,9 @@ class CvvTextInputView @JvmOverloads constructor(
     init {
         setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD)
         setHint(context.getString(R.string.cvv_hint))
-        val cvvIconSize = resources.getDimensionPixelSize(R.dimen.card_field_min_height) / 3
         setTrailingIcon(
-            R.drawable.cvv_hint_image,
-            context.getString(R.string.cvv_hint_icon_description),
-            width = cvvIconSize,
-            height = cvvIconSize
+            R.drawable.cvv_hint,
+            context.getString(R.string.cvv_hint_icon_description)
         )
         setTrailingIconClickListener { anchor -> CvvHintOverlay(context).show(anchor) }
         editText.addTextChangedListener(formatter)
@@ -42,6 +40,9 @@ class CvvTextInputView @JvmOverloads constructor(
         val currentCvv = getRawCvv()
         if (currentCvv.length > brand.cvvLength) {
             setText(currentCvv.take(brand.cvvLength))
+        } else {
+            editText.filters = (editText.filters.filterNot { it is InputFilter.LengthFilter } +
+                InputFilter.LengthFilter(brand.cvvLength)).toTypedArray()
         }
     }
 

@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/cvv_overlay_background"
     android:orientation="vertical"
     android:padding="12dp">
 
@@ -28,7 +27,7 @@
             android:background="@null"
             android:contentDescription="@string/cvv_overlay_close_description"
             android:padding="4dp"
-            android:src="@drawable/ic_cvv_overlay_close" />
+            android:src="@drawable/cvv_hint_close" />
 
     </LinearLayout>
 
