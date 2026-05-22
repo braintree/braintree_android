@@ -13,6 +13,9 @@ import kotlin.coroutines.cancellation.CancellationException
 /**
  * Contains the remote configuration for the Braintree Android SDK.
  *
+ * This class is exposed for internal Braintree use only. Do not use. It is not covered by
+ * Semantic Versioning and may change or be removed at any time.
+ *
  * @property assetsUrl The assets URL of the current environment.
  * @property cardinalAuthenticationJwt the JWT for Cardinal
  * @property clientApiUrl The url of the Braintree client API for the current environment.
@@ -28,7 +31,7 @@ import kotlin.coroutines.cancellation.CancellationException
  * @property isPostalCodeChallengePresent `true` if postal code is required for card transactions,
  * `false` otherwise.
  * @property isThreeDSecureEnabled `true` if 3D Secure is enabled and supported for the current
- * merchant account, * `false` otherwise.
+ * merchant account, `false` otherwise.
  * @property isVenmoEnabled `true` if Venmo is enabled for the merchant account; `false` otherwise.
  * @property isVisaCheckoutEnabled `true` if Visa Checkout is enabled for the merchant account;
  * `false` otherwise.
