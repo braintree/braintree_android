@@ -20,14 +20,32 @@ internal class ConfigurationLoader(
 ) {
     private val analyticsClient: AnalyticsClient by lazyAnalyticsClient
 
+    /**
+     * Loads configuration using the authorization from [MerchantRepository].
+     * Sends analytics on successful API fetch.
+     */
     suspend fun loadConfiguration(): ConfigurationLoaderResult {
-        val authorization = merchantRepository.authorization
+        return loadConfiguration(merchantRepository.authorization, sendAnalytics = true)
+    }
+
+    /**
+     * Loads configuration for a standalone [authorization], without sending analytics.
+     * Used by [Configuration.fetch] to support merchant-facing configuration queries
+     * outside the normal SDK lifecycle.
+     */
+    suspend fun loadConfiguration(authorization: Authorization): ConfigurationLoaderResult {
+        return loadConfiguration(authorization, sendAnalytics = false)
+    }
+
+    private suspend fun loadConfiguration(
+        authorization: Authorization,
+        sendAnalytics: Boolean
+    ): ConfigurationLoaderResult {
         if (authorization is InvalidAuthorization) {
             val clientSDKSetupURL =
                 "https://developer.paypal.com/braintree/docs/guides/client-sdk/setup/android/v4#initialization"
             val message = "Valid authorization required. See $clientSDKSetupURL for more info."
 
-            // NOTE: timing information is null when configuration comes from cache
             return ConfigurationLoaderResult.Failure(BraintreeException(message))
         }
         val configUrl = Uri.parse(authorization.configUrl)
@@ -41,12 +59,13 @@ internal class ConfigurationLoader(
             return ConfigurationLoaderResult.Success(cachedConfig)
         }
 
-        return executeConfigurationApi(configUrl, authorization)
+        return executeConfigurationApi(configUrl, authorization, sendAnalytics)
     }
 
     private suspend fun executeConfigurationApi(
         configUrl: String,
-        authorization: Authorization
+        authorization: Authorization,
+        sendAnalytics: Boolean
     ): ConfigurationLoaderResult {
         try {
             val response = httpClient.get(
@@ -65,15 +84,17 @@ internal class ConfigurationLoader(
             try {
                 val configuration = Configuration.fromJson(responseBody)
                 saveConfigurationToCache(configuration, authorization, configUrl)
-                analyticsClient.sendEvent(
-                    eventName = CoreAnalytics.API_REQUEST_LATENCY,
-                    analyticsEventParams = AnalyticsEventParams(
-                        startTime = timing.startTime,
-                        endTime = timing.endTime,
-                        endpoint = "/v1/configuration"
-                    ),
-                    sendImmediately = false
-                )
+                if (sendAnalytics) {
+                    analyticsClient.sendEvent(
+                        eventName = CoreAnalytics.API_REQUEST_LATENCY,
+                        analyticsEventParams = AnalyticsEventParams(
+                            startTime = timing.startTime,
+                            endTime = timing.endTime,
+                            endpoint = "/v1/configuration"
+                        ),
+                        sendImmediately = false
+                    )
+                }
                 return ConfigurationLoaderResult.Success(configuration, timing)
             } catch (jsonException: JSONException) {
                 return ConfigurationLoaderResult.Failure(jsonException)

@@ -1,12 +1,20 @@
 package com.braintreepayments.api.core
 
+import android.content.Context
 import androidx.annotation.RestrictTo
 import com.braintreepayments.api.sharedutils.Json
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Contains the remote configuration for the Braintree Android SDK.
+ *
+ * This class is exposed for internal Braintree use only. Do not use. It is not covered by
+ * Semantic Versioning and may change or be removed at any time.
  *
  * @property assetsUrl The assets URL of the current environment.
  * @property cardinalAuthenticationJwt the JWT for Cardinal
@@ -23,7 +31,7 @@ import org.json.JSONObject
  * @property isPostalCodeChallengePresent `true` if postal code is required for card transactions,
  * `false` otherwise.
  * @property isThreeDSecureEnabled `true` if 3D Secure is enabled and supported for the current
- * merchant account, * `false` otherwise.
+ * merchant account, `false` otherwise.
  * @property isVenmoEnabled `true` if Venmo is enabled for the merchant account; `false` otherwise.
  * @property isVisaCheckoutEnabled `true` if Visa Checkout is enabled for the merchant account;
  * `false` otherwise.
@@ -62,6 +70,59 @@ class Configuration internal constructor(configurationString: String) {
         @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
         fun fromJson(configurationString: String): Configuration {
             return Configuration(configurationString)
+        }
+
+        /**
+         * Fetches the Braintree [Configuration] for the given authorization.
+         *
+         * This method initializes [SdkComponent] as a side effect, which is required
+         * by [ConfigurationLoader] for configuration caching. If a [BraintreeClient]
+         * is already initialized, this is a no-op.
+         *
+         * Note: The [callback] may be invoked after the calling Activity or Fragment
+         * has been destroyed. Callers should guard against this if needed.
+         *
+         * @param context Android Context
+         * @param authorization A tokenization key or client token
+         * @param callback [ConfigurationCallback]
+         */
+        @JvmStatic
+        fun fetch(
+            context: Context,
+            authorization: String,
+            callback: ConfigurationCallback
+        ) {
+            SdkComponent.create(context.applicationContext)
+            fetch(
+                ConfigurationLoader(),
+                Authorization.fromString(authorization),
+                CoroutineScope(Dispatchers.Main),
+                callback
+            )
+        }
+
+        @Suppress("TooGenericExceptionCaught")
+        @JvmStatic
+        internal fun fetch(
+            configurationLoader: ConfigurationLoader,
+            authorization: Authorization,
+            coroutineScope: CoroutineScope,
+            callback: ConfigurationCallback
+        ) {
+            coroutineScope.launch {
+                try {
+                    val result = configurationLoader.loadConfiguration(authorization)
+                    when (result) {
+                        is ConfigurationLoaderResult.Success ->
+                            callback.onResult(result.configuration, null)
+                        is ConfigurationLoaderResult.Failure ->
+                            callback.onResult(null, result.error)
+                    }
+                } catch (e: Exception) {
+                    if (e is CancellationException) throw e
+                    callback.onResult(null, e)
+                }
+            }
         }
     }
 
