@@ -164,6 +164,14 @@ internal enum class CardBrand(
         }
 
     companion object {
+        fun resolveBrand(cardNumber: String): CardBrand {
+            val matches = detect(cardNumber)
+            return when {
+                matches.size == 1 -> matches[0]
+                else -> UNKNOWN
+            }
+        }
+
         /**
          * Detects which card brands could match the given card number.
          *

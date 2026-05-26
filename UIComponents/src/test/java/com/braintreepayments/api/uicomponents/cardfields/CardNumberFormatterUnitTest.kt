@@ -52,17 +52,17 @@ class CardNumberFormatterUnitTest {
 
     @Test
     fun `resolveBrand returns VISA for prefix 4`() {
-        assertEquals(CardBrand.VISA, CardNumberFormatter.resolveBrand("4"))
+        assertEquals(CardBrand.VISA, CardBrand.resolveBrand("4"))
     }
 
     @Test
     fun `resolveBrand returns DISCOVER for prefix 622`() {
-        assertEquals(CardBrand.DISCOVER, CardNumberFormatter.resolveBrand("622"))
+        assertEquals(CardBrand.DISCOVER, CardBrand.resolveBrand("622"))
     }
 
     @Test
     fun `resolveBrand returns UNKNOWN for no match`() {
-        assertEquals(CardBrand.UNKNOWN, CardNumberFormatter.resolveBrand("0"))
+        assertEquals(CardBrand.UNKNOWN, CardBrand.resolveBrand("0"))
     }
 
     @Test

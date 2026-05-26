@@ -55,7 +55,7 @@ internal class CardNumberFormatter(
         isFormatting = true
 
         val digits = editable.toString().filter { it.isDigit() }
-        val detected = resolveBrand(digits)
+        val detected = CardBrand.resolveBrand(digits)
 
         if (detected != currentBrand) {
             currentBrand = detected
@@ -99,14 +99,6 @@ internal class CardNumberFormatter(
     }
 
     companion object {
-        fun resolveBrand(digits: String): CardBrand {
-            val matches = CardBrand.detect(digits)
-            return when {
-                matches.size == 1 -> matches[0]
-                else -> CardBrand.UNKNOWN
-            }
-        }
-
         /** Inserts spaces into raw [digits] at the positions specified by [formatGaps]. */
         fun formatCardNumber(digits: String, formatGaps: IntArray): String {
             if (digits.isEmpty()) return ""
