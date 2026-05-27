@@ -46,6 +46,7 @@ class CvvTextInputViewUnitTest {
 
         val editText = view.findViewById<EditText>(R.id.text_input_edit_text)
         assertEquals(context.getString(R.string.cvv_hint), editText.contentDescription.toString())
+    }
 
     @Test
     fun `getRawCvv returns empty string when no text`() {
@@ -180,6 +181,7 @@ class CvvTextInputViewUnitTest {
             context.getString(R.string.cvv_hint_icon_description),
             trailingIcon?.contentDescription.toString()
         )
+    }
 
     @Test
     fun `clicking trailing icon shows cvv hint overlay`() {
@@ -204,10 +206,11 @@ class CvvTextInputViewUnitTest {
     }
 
     private fun findTrailingIconView(parent: CvvTextInputView): ImageView? {
+        val expectedDescription = parent.context.getString(R.string.cvv_hint_icon_description)
         val container = parent.findViewById<FrameLayout>(R.id.input_container)
         for (i in 0 until container.childCount) {
             val child = container.getChildAt(i)
-            if (child is ImageView) return child
+            if (child is ImageView && child.contentDescription == expectedDescription) return child
         }
         return null
     }
