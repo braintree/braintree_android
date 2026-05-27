@@ -3,6 +3,8 @@ on: [pull_request, workflow_dispatch]
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      ORG_GRADLE_PROJECT_org.gradle.jvmargs: "-Xmx4096m -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
     strategy:
       fail-fast: false
       matrix:

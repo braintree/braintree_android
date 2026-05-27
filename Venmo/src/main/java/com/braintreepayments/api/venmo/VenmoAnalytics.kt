@@ -18,4 +18,14 @@ internal object VenmoAnalytics {
     const val HANDLE_RETURN_SUCCEEDED = "venmo:tokenize:handle-return:succeeded"
     const val HANDLE_RETURN_FAILED = "venmo:tokenize:handle-return:failed"
     const val HANDLE_RETURN_NO_RESULT = "venmo:tokenize:handle-return:no-result"
+
+    // Create Payment Context events
+    const val CREATE_PAYMENT_CONTEXT_STARTED = "venmo:create-payment-context:started"
+    const val CREATE_PAYMENT_CONTEXT_SUCCEEDED = "venmo:create-payment-context:succeeded"
+    const val CREATE_PAYMENT_CONTEXT_FAILED = "venmo:create-payment-context:failed"
+
+    // Query Payment Context events
+    const val QUERY_PAYMENT_CONTEXT_STARTED = "venmo:query-payment-context:started"
+    const val QUERY_PAYMENT_CONTEXT_SUCCEEDED = "venmo:query-payment-context:succeeded"
+    const val QUERY_PAYMENT_CONTEXT_FAILED = "venmo:query-payment-context:failed"
 }

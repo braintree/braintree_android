@@ -1,5 +1,16 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* BraintreeCore
+    * Allow fetching of `Configuration` to query supported integrations and card types (fixes #1302)
+
+## 5.27.0 (2026-05-18)
+
+* Venmo
+    * Add analytics tracking for `createPaymentContext` GraphQL calls
+    * Add analytics tracking for `queryPaymentContext` GraphQL calls
+
 ## 5.26.0 (2026-04-17)
 
 * GooglePay

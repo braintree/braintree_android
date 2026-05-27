@@ -2,14 +2,28 @@ package com.braintreepayments.api.core
 
 import android.text.TextUtils
 import com.braintreepayments.api.testutils.Fixtures
+import io.mockk.coEvery
+import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.coroutines.cancellation.CancellationException
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class ConfigurationUnitTest {
+
+    private val configurationLoader: ConfigurationLoader = mockk(relaxed = true)
+    private val authorization: Authorization = mockk(relaxed = true)
 
     @Test(expected = JSONException::class)
     fun fromJson_throwsForEmptyString() {
@@ -376,5 +390,79 @@ class ConfigurationUnitTest {
     fun graphQLUrl_forwardsValueFromConfiguration() {
         val sut = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_GRAPHQL)
         assertEquals("https://example-graphql.com/graphql", sut.graphQLUrl)
+    }
+
+    @Test
+    fun `fetch on success calls back with configuration`() = runTest {
+        val expectedConfiguration: Configuration = mockk()
+        coEvery {
+            configurationLoader.loadConfiguration(authorization)
+        } returns ConfigurationLoaderResult.Success(expectedConfiguration)
+
+        var capturedConfiguration: Configuration? = null
+        var capturedError: Exception? = null
+
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        Configuration.fetch(
+            configurationLoader,
+            authorization,
+            TestScope(testDispatcher),
+            ConfigurationCallback { configuration, error ->
+                capturedConfiguration = configuration
+                capturedError = error
+            }
+        )
+
+        advanceUntilIdle()
+
+        assertEquals(expectedConfiguration, capturedConfiguration)
+        assertNull(capturedError)
+    }
+
+    @Test
+    fun `fetch on failure calls back with error`() = runTest {
+        val expectedError = ConfigurationException("configuration fetch failed")
+        coEvery {
+            configurationLoader.loadConfiguration(authorization)
+        } returns ConfigurationLoaderResult.Failure(expectedError)
+
+        var capturedConfiguration: Configuration? = null
+        var capturedError: Exception? = null
+
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        Configuration.fetch(
+            configurationLoader,
+            authorization,
+            TestScope(testDispatcher),
+            ConfigurationCallback { configuration, error ->
+                capturedConfiguration = configuration
+                capturedError = error
+            }
+        )
+
+        advanceUntilIdle()
+
+        assertNull(capturedConfiguration)
+        assertEquals(expectedError, capturedError)
+    }
+
+    @Test
+    fun `fetch on cancellation does not call back`() = runTest {
+        coEvery {
+            configurationLoader.loadConfiguration(authorization)
+        } throws CancellationException()
+
+        var callbackInvoked = false
+        val testDispatcher = StandardTestDispatcher(testScheduler)
+        Configuration.fetch(
+            configurationLoader,
+            authorization,
+            TestScope(testDispatcher),
+            ConfigurationCallback { _, _ -> callbackInvoked = true }
+        )
+
+        advanceUntilIdle()
+
+        assertFalse(callbackInvoked)
     }
 }
