@@ -4,6 +4,8 @@
 
 * BraintreeCore
     * Allow fetching of `Configuration` to query supported integrations and card types (fixes #1302)
+* Google Pay
+  * Update Google Pay dependency (play-services-wallet) to version 19.5.0
 
 ## 5.27.0 (2026-05-18)
 
