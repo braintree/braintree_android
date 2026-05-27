@@ -49,7 +49,7 @@ internal class PayPalInternalClient(
         }
 
         val returnLinkResult = getReturnLinkUseCase()
-        val navigationLink: String = when (returnLinkResult) {
+        var navigationLink: String = when (returnLinkResult) {
             is GetReturnLinkUseCase.ReturnLinkResult.AppLink ->
                 returnLinkResult.appLinkReturnUri.toString()
 
@@ -59,15 +59,17 @@ internal class PayPalInternalClient(
             is GetReturnLinkUseCase.ReturnLinkResult.Failure ->
                 throw returnLinkResult.exception
         }
+        val useSimplifiedReturnUrl = true // TODO: Use payPalConfiguration.simplifiedReturnUrl
+        if (useSimplifiedReturnUrl) navigationLink += ONE_TOUCH_V1
+
+        val successUrl = "$navigationLink/success"
+        val cancelUrl = "$navigationLink/cancel"
 
         val appLinkParam = if (returnLinkResult is GetReturnLinkUseCase.ReturnLinkResult.AppLink) {
             merchantRepository.appLinkReturnUri?.toString()
         } else {
             null
         }
-
-        val cancelUrl = "$navigationLink://onetouch/v1/cancel"
-        val successUrl = "$navigationLink://onetouch/v1/success"
 
         val requestBody = payPalRequest.createRequestBody(
             configuration = configuration,
@@ -125,7 +127,7 @@ internal class PayPalInternalClient(
             dataCollector.getClientMetadataId(context, dataCollectorRequest, configuration)
         }
 
-        val returnLink: String = when (val returnLinkResult = getReturnLinkUseCase(parsedRedirectUri)) {
+        var returnLink: String = when (val returnLinkResult = getReturnLinkUseCase(parsedRedirectUri)) {
             is GetReturnLinkUseCase.ReturnLinkResult.AppLink ->
                 returnLinkResult.appLinkReturnUri.toString()
 
@@ -135,13 +137,15 @@ internal class PayPalInternalClient(
             is GetReturnLinkUseCase.ReturnLinkResult.Failure ->
                 throw returnLinkResult.exception
         }
+        val useSimplifiedReturnUrl = true // TODO: Use payPalConfiguration.simplifiedReturnUrl
+        if (!useSimplifiedReturnUrl) returnLink += ONE_TOUCH_V1
 
         val paymentAuthRequest = PayPalPaymentAuthRequestParams(
             payPalRequest = payPalRequest,
             browserSwitchOptions = null,
             clientMetadataId = clientMetadataId,
             contextId = contextId,
-            successUrl = "$returnLink://onetouch/v1/success"
+            successUrl = "$returnLink/success"
         )
 
         if (getAppSwitchUseCase()) {
@@ -197,5 +201,6 @@ internal class PayPalInternalClient(
     companion object {
         private const val CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource"
         private const val SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement"
+        private const val ONE_TOUCH_V1 = "://onetouch/v1"
     }
 }
