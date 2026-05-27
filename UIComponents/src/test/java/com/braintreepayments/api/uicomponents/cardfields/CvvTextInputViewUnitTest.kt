@@ -45,8 +45,7 @@ class CvvTextInputViewUnitTest {
         val view = CvvTextInputView(context)
 
         val editText = view.findViewById<EditText>(R.id.text_input_edit_text)
-        assertEquals("CVV", editText.contentDescription.toString())
-    }
+        assertEquals(context.getString(R.string.cvv_hint), editText.contentDescription.toString())
 
     @Test
     fun `getRawCvv returns empty string when no text`() {
