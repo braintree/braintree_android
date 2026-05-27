@@ -176,8 +176,10 @@ class CvvTextInputViewUnitTest {
 
         val trailingIcon = findTrailingIconView(view)
         assertNotNull(trailingIcon)
-        assertEquals("CVV security code hint", trailingIcon?.contentDescription.toString())
-    }
+        assertEquals(
+            context.getString(R.string.cvv_hint_icon_description),
+            trailingIcon?.contentDescription.toString()
+        )
 
     @Test
     fun `clicking trailing icon shows cvv hint overlay`() {
