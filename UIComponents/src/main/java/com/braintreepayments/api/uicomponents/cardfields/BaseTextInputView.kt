@@ -243,11 +243,11 @@ open class BaseTextInputView @JvmOverloads constructor(
         iconView.contentDescription = contentDescription
     }
 
-    internal fun setTrailingIconClickListener(listener: View.OnClickListener?) {
+    internal fun setCvvHintClickListener(listener: View.OnClickListener?) {
         trailingIconView?.setOnClickListener(listener)
     }
 
-    internal fun setTrailingIcon(
+    internal fun setCvvHintIcon(
         @DrawableRes iconRes: Int,
         contentDescription: String,
         width: Int = iconWidth,
