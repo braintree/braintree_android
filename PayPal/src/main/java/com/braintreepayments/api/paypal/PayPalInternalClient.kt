@@ -49,7 +49,7 @@ internal class PayPalInternalClient(
         }
 
         val returnLinkResult = getReturnLinkUseCase()
-        var navigationLink: String = when (returnLinkResult) {
+        val navigationLink: String = when (returnLinkResult) {
             is GetReturnLinkUseCase.ReturnLinkResult.AppLink ->
                 returnLinkResult.appLinkReturnUri.toString()
 
@@ -59,8 +59,6 @@ internal class PayPalInternalClient(
             is GetReturnLinkUseCase.ReturnLinkResult.Failure ->
                 throw returnLinkResult.exception
         }
-        val useSimplifiedReturnUrl = true // TODO: Use payPalConfiguration.simplifiedReturnUrl
-        if (useSimplifiedReturnUrl) navigationLink += ONE_TOUCH_V1
 
         val successUrl = "$navigationLink/success"
         val cancelUrl = "$navigationLink/cancel"
@@ -127,7 +125,7 @@ internal class PayPalInternalClient(
             dataCollector.getClientMetadataId(context, dataCollectorRequest, configuration)
         }
 
-        var returnLink: String = when (val returnLinkResult = getReturnLinkUseCase(parsedRedirectUri)) {
+        val returnLink: String = when (val returnLinkResult = getReturnLinkUseCase(parsedRedirectUri)) {
             is GetReturnLinkUseCase.ReturnLinkResult.AppLink ->
                 returnLinkResult.appLinkReturnUri.toString()
 
@@ -137,8 +135,6 @@ internal class PayPalInternalClient(
             is GetReturnLinkUseCase.ReturnLinkResult.Failure ->
                 throw returnLinkResult.exception
         }
-        val useSimplifiedReturnUrl = true // TODO: Use payPalConfiguration.simplifiedReturnUrl
-        if (!useSimplifiedReturnUrl) returnLink += ONE_TOUCH_V1
 
         val paymentAuthRequest = PayPalPaymentAuthRequestParams(
             payPalRequest = payPalRequest,
@@ -201,6 +197,5 @@ internal class PayPalInternalClient(
     companion object {
         private const val CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource"
         private const val SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement"
-        private const val ONE_TOUCH_V1 = "://onetouch/v1"
     }
 }
