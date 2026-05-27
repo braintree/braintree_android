@@ -150,7 +150,7 @@ class PayPalClientTest {
         val paymentAuthResult = simulateBrowserSwitchReturn(
             approvalUrl = approvalUrl,
             successUrl = successUrl,
-            returnPath = "onetouch/v1/success?token=$token&PayerID=FakePayerID"
+            returnPath = "success?token=$token&PayerID=FakePayerID"
         )
         assertTrue(paymentAuthResult is PayPalPaymentAuthResult.Success)
 
@@ -171,12 +171,12 @@ class PayPalClientTest {
         val sut = createPayPalClient()
 
         val approvalUrl = "https://www.sandbox.paypal.com/checkout?token=EC-FAKETOKEN123"
-        val successUrl = "$returnUrlScheme://onetouch/v1/success"
+        val successUrl = "$returnUrlScheme/success"
 
         val paymentAuthResult = simulateBrowserSwitchReturn(
             approvalUrl = approvalUrl,
             successUrl = successUrl,
-            returnPath = "onetouch/v1/cancel?token=EC-FAKETOKEN123"
+            returnPath = "/cancel?token=EC-FAKETOKEN123"
         )
         assertTrue(paymentAuthResult is PayPalPaymentAuthResult.Success)
 
@@ -197,12 +197,12 @@ class PayPalClientTest {
         val sut = createPayPalClient()
 
         val approvalUrl = "https://www.sandbox.paypal.com/checkout?token=EC-ORIGINALTOKEN"
-        val successUrl = "$returnUrlScheme://onetouch/v1/success"
+        val successUrl = "$returnUrlScheme/success"
 
         val paymentAuthResult = simulateBrowserSwitchReturn(
             approvalUrl = approvalUrl,
             successUrl = successUrl,
-            returnPath = "onetouch/v1/success?token=EC-DIFFERENTTOKEN"
+            returnPath = "success?token=EC-DIFFERENTTOKEN"
         )
         assertTrue(paymentAuthResult is PayPalPaymentAuthResult.Success)
 
