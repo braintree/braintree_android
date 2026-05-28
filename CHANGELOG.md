@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.28.0 (2026-05-28)
 
 * BraintreeCore
     * Allow fetching of `Configuration` to query supported integrations and card types (fixes #1302)
