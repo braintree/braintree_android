@@ -10,7 +10,7 @@
  @Suppress("TooManyFunctions")
  internal class CardFieldsViewModel(
     private val cardNumberValidationUseCase: CardNumberValidationUseCase = CardNumberValidationUseCase(),
-    private val expiryValidationUseCase: ExpiryValidationUseCase = ExpiryValidationUseCase(),
+    private val expirationValidationUseCase: ExpirationValidationUseCase = ExpirationValidationUseCase(),
     private val cvvValidationUseCase: CvvValidationUseCase = CvvValidationUseCase(),
     private val currentDateProvider: () -> Pair<Int, Int> = {
         val cal = Calendar.getInstance()
@@ -22,8 +22,8 @@
     private val _cardNumberError = MutableStateFlow<Int?>(null)
     // The UI collects from this StateFlow to get its state updates
     val cardNumberError: StateFlow<Int?> = _cardNumberError
-    private val _expiryError = MutableStateFlow<Int?>(null)
-    val expiryError: StateFlow<Int?> = _expiryError
+    private val _expirationError = MutableStateFlow<Int?>(null)
+    val expirationError: StateFlow<Int?> = _expirationError
     private val _cvvError = MutableStateFlow<Int?>(null)
     val cvvError: StateFlow<Int?> = _cvvError
     private val _detectedCardBrand = MutableStateFlow(CardBrand.UNKNOWN)
@@ -31,11 +31,11 @@
     private val _isValid = MutableStateFlow(false)
     val isValid: StateFlow<Boolean> = _isValid
     private var cardNumberTouched = false
-    private var expiryTouched = false
+    private var expirationTouched = false
     private var cvvTouched = false
 
     private var cardNumberIsValid = false
-    private var expiryIsValid = false
+    private var expirationIsValid = false
     private var cvvIsValid = false
 
     private var currentCardNumber = ""
@@ -65,13 +65,13 @@
 
     fun onExpiryChanged(rawExpiration: String) {
         val (currentMonth, currentYear) = currentDateProvider()
-        expiryIsValid = expiryValidationUseCase(rawExpiration, currentMonth, currentYear)
+        expirationIsValid = expirationValidationUseCase(rawExpiration, currentMonth, currentYear)
 
         updateFieldError(
-            isTouched = expiryTouched,
-            isValid = expiryIsValid,
+            isTouched = expirationTouched,
+            isValid = expirationIsValid,
             isEmpty = rawExpiration.isEmpty(),
-            errorFlow = _expiryError,
+            errorFlow = _expirationError,
             errorRes = R.string.expiration_error
         )
 
@@ -105,8 +105,8 @@
                 )
             }
             CardField.EXPIRY -> {
-                expiryTouched = true
-                showErrorIfInvalid(expiryIsValid, false, _expiryError, R.string.expiration_error)
+                expirationTouched = true
+                showErrorIfInvalid(expirationIsValid, false, _expirationError, R.string.expiration_error)
             }
             CardField.CVV -> {
                 cvvTouched = true
@@ -151,6 +151,6 @@
     }
 
     private fun updateIsValid() {
-        _isValid.value = cardNumberIsValid && expiryIsValid && cvvIsValid
+        _isValid.value = cardNumberIsValid && expirationIsValid && cvvIsValid
     }
  }

@@ -90,7 +90,7 @@ class CardFieldsViewModelUnitTest {
         val sut = createViewModel()
         sut.onExpiryChanged("1227")
         sut.onFieldFocusChanged(CardField.EXPIRY, hasFocus = false)
-        assertNull(sut.expiryError.value)
+        assertNull(sut.expirationError.value)
     }
 
     @Test
@@ -98,14 +98,14 @@ class CardFieldsViewModelUnitTest {
         val sut = createViewModel()
         sut.onExpiryChanged("0125")
         sut.onFieldFocusChanged(CardField.EXPIRY, hasFocus = false)
-        assertEquals(R.string.expiration_error, sut.expiryError.value)
+        assertEquals(R.string.expiration_error, sut.expirationError.value)
     }
 
     @Test
     fun `invalid expiry does not show error before focus out`() {
         val sut = createViewModel()
         sut.onExpiryChanged("0125")
-        assertNull(sut.expiryError.value)
+        assertNull(sut.expirationError.value)
     }
 
     @Test
@@ -113,10 +113,10 @@ class CardFieldsViewModelUnitTest {
         val sut = createViewModel()
         sut.onExpiryChanged("0125")
         sut.onFieldFocusChanged(CardField.EXPIRY, hasFocus = false)
-        assertEquals(R.string.expiration_error, sut.expiryError.value)
+        assertEquals(R.string.expiration_error, sut.expirationError.value)
 
         sut.onExpiryChanged("1227")
-        assertNull(sut.expiryError.value)
+        assertNull(sut.expirationError.value)
     }
 
     @Test
@@ -124,7 +124,7 @@ class CardFieldsViewModelUnitTest {
         val sut = createViewModel()
         sut.onExpiryChanged("0626")
         sut.onFieldFocusChanged(CardField.EXPIRY, hasFocus = false)
-        assertNull(sut.expiryError.value)
+        assertNull(sut.expirationError.value)
     }
 
     @Test
@@ -132,7 +132,7 @@ class CardFieldsViewModelUnitTest {
         val sut = createViewModel()
         sut.onExpiryChanged("12")
         sut.onFieldFocusChanged(CardField.EXPIRY, hasFocus = false)
-        assertEquals(R.string.expiration_error, sut.expiryError.value)
+        assertEquals(R.string.expiration_error, sut.expirationError.value)
     }
 
     // endregion
@@ -326,7 +326,7 @@ class CardFieldsViewModelUnitTest {
     fun `initial state has no errors`() {
         val sut = createViewModel()
         assertNull(sut.cardNumberError.value)
-        assertNull(sut.expiryError.value)
+        assertNull(sut.expirationError.value)
         assertNull(sut.cvvError.value)
     }
 
