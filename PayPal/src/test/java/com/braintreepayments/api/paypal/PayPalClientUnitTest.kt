@@ -567,7 +567,7 @@ class PayPalClientUnitTest {
         val payPalInternalClient =
             MockkPayPalInternalClientBuilder().tokenizeSuccess(payPalAccountNonce).build()
         val approvalUrl =
-            "sample-scheme/success?" +
+            "sample-scheme://onetouch/v1/success?" +
                 "PayerID=HERMES-SANDBOX-PAYER-ID" +
                 "&paymentId=HERMES-SANDBOX-PAYMENT-ID" +
                 "&ba_token=EC-HERMES-SANDBOX-EC-TOKEN"
@@ -617,7 +617,7 @@ class PayPalClientUnitTest {
         val payPalInternalClient =
             MockkPayPalInternalClientBuilder().tokenizeSuccess(payPalAccountNonce).build()
         val approvalUrl =
-            "sample-scheme/success?" +
+            "sample-scheme://onetouch/v1/success?" +
                 "PayerID=HERMES-SANDBOX-PAYER-ID" +
                 "&paymentId=HERMES-SANDBOX-PAYMENT-ID" +
                 "&token=EC-HERMES-SANDBOX-EC-TOKEN"
@@ -667,7 +667,7 @@ class PayPalClientUnitTest {
     fun tokenize_whenCancelUriReceived_notifiesCancellationAndSendsAnalyticsEvent() = runTest(testDispatcher) {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
 
-        val approvalUrl = "sample-scheme/cancel"
+        val approvalUrl = "sample-scheme://onetouch/v1/cancel"
 
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>()
 
@@ -711,7 +711,7 @@ class PayPalClientUnitTest {
             MockkPayPalInternalClientBuilder().tokenizeSuccess(payPalAccountNonce).build()
 
         val approvalUrl =
-            "sample-scheme/success?" +
+            "sample-scheme://onetouch/v1/success?" +
                 "PayerID=HERMES-SANDBOX-PAYER-ID" +
                 "&paymentId=HERMES-SANDBOX-PAYMENT-ID" +
                 "&token=EC-HERMES-SANDBOX-EC-TOKEN"
@@ -857,14 +857,14 @@ class PayPalClientUnitTest {
         val payPalInternalClient = MockkPayPalInternalClientBuilder().build()
 
         val approvalUrl =
-            "sample-scheme/success?token=EC-HERMES-SANDBOX-EC-TOKEN"
+            "sample-scheme://onetouch/v1/success?token=EC-HERMES-SANDBOX-EC-TOKEN"
 
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>(relaxed = true)
         every { browserSwitchResult.requestMetadata } returns
             JSONObject().put("client-metadata-id", "sample-client-metadata-id")
                 .put("merchant-account-id", "sample-merchant-account-id")
                 .put("intent", "authorize").put("approval-url", approvalUrl)
-                .put("success-url", "sample-scheme/success")
+                .put("success-url", "sample-scheme://onetouch/v1/success")
                 .put("payment-type", "single-payment")
         every { browserSwitchResult.returnUrl } returns Uri.parse(approvalUrl)
 
@@ -911,14 +911,14 @@ class PayPalClientUnitTest {
 
     @Test
     fun tokenize_whenInternalClientThrowsCancellationException_callbackIsNotInvoked() = runTest(testDispatcher) {
-        val approvalUrl = "sample-scheme/success?token=EC-HERMES-SANDBOX-EC-TOKEN"
+        val approvalUrl = "sample-scheme://onetouch/v1/success?token=EC-HERMES-SANDBOX-EC-TOKEN"
 
         val browserSwitchResult = mockk<BrowserSwitchFinalResult.Success>(relaxed = true)
         every { browserSwitchResult.requestMetadata } returns
             JSONObject().put("client-metadata-id", "sample-client-metadata-id")
                 .put("merchant-account-id", "sample-merchant-account-id")
                 .put("intent", "authorize").put("approval-url", approvalUrl)
-                .put("success-url", "sample-scheme/success")
+                .put("success-url", "sample-scheme://onetouch/v1/success")
                 .put("payment-type", "single-payment")
         every { browserSwitchResult.returnUrl } returns Uri.parse(approvalUrl)
 
