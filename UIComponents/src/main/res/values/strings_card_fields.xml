@@ -23,4 +23,7 @@
     <string name="card_icon_elo">Elo</string>
     <string name="card_icon_mir">Mir</string>
     <string name="card_icon_verve">Verve</string>
+    <string name="card_number_error">Invalid card number</string>
+    <string name="expiration_error">Invalid expiration date</string>
+    <string name="cvv_error">Invalid security code</string>
 </resources>
