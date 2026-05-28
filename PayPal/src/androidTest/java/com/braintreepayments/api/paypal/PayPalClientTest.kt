@@ -150,7 +150,7 @@ class PayPalClientTest {
         val paymentAuthResult = simulateBrowserSwitchReturn(
             approvalUrl = approvalUrl,
             successUrl = successUrl,
-            returnPath = "success?token=$token&PayerID=FakePayerID"
+            returnPath = "/success?token=$token&PayerID=FakePayerID"
         )
         assertTrue(paymentAuthResult is PayPalPaymentAuthResult.Success)
 
