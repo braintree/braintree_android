@@ -54,7 +54,7 @@ internal class PayPalInternalClient(
                 returnLinkResult.appLinkReturnUri.toString()
 
             is GetReturnLinkUseCase.ReturnLinkResult.DeepLink ->
-                returnLinkResult.deepLinkFallbackUrlScheme
+                returnLinkResult.deepLinkFallbackUrlScheme + "://"
 
             is GetReturnLinkUseCase.ReturnLinkResult.Failure ->
                 throw returnLinkResult.exception

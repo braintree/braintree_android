@@ -150,7 +150,7 @@ class PayPalClientTest {
         val paymentAuthResult = simulateBrowserSwitchReturn(
             approvalUrl = approvalUrl,
             successUrl = successUrl,
-            returnPath = "success?token=$token&PayerID=FakePayerID"
+            returnPath = "/success?token=$token&PayerID=FakePayerID"
         )
         assertTrue(paymentAuthResult is PayPalPaymentAuthResult.Success)
 
@@ -176,7 +176,7 @@ class PayPalClientTest {
         val paymentAuthResult = simulateBrowserSwitchReturn(
             approvalUrl = approvalUrl,
             successUrl = successUrl,
-            returnPath = "/cancel?token=EC-FAKETOKEN123"
+            returnPath = "cancel?token=EC-FAKETOKEN123"
         )
         assertTrue(paymentAuthResult is PayPalPaymentAuthResult.Success)
 
@@ -202,7 +202,7 @@ class PayPalClientTest {
         val paymentAuthResult = simulateBrowserSwitchReturn(
             approvalUrl = approvalUrl,
             successUrl = successUrl,
-            returnPath = "success?token=EC-DIFFERENTTOKEN"
+            returnPath = "/success?token=EC-DIFFERENTTOKEN"
         )
         assertTrue(paymentAuthResult is PayPalPaymentAuthResult.Success)
 
