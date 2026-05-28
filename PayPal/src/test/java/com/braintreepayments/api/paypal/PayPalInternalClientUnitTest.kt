@@ -341,8 +341,8 @@ class PayPalInternalClientUnitTest {
 
         val expected = JSONObject()
             .put("authorization_fingerprint", "client-token-bearer")
-            .put("return_url", "com.braintreepayments.demo/success")
-            .put("cancel_url", "com.braintreepayments.demo/cancel")
+            .put("return_url", "com.braintreepayments.demo://success")
+            .put("cancel_url", "com.braintreepayments.demo://cancel")
             .put("offer_paypal_credit", true)
             .put("description", "Billing Agreement Description")
             .put(
