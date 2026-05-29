@@ -564,4 +564,135 @@ class PayPalLauncherUnitTest {
 
         verify { browserSwitchClient.start(activity, options, false) }
     }
+
+    // region auto-link tests
+
+    @Test
+    fun `handleReturnToApp returns Success with autoLinkNonce when nonce is pre-resolved`() {
+        val store = PendingPaymentStore()
+        val expectedNonce = mockk<PayPalAccountNonce>(relaxed = true)
+        store.autoLinkNonce = expectedNonce
+
+        val sutWithStore = PayPalLauncher(
+            browserSwitchClient = browserSwitchClient,
+            getAppSwitchUseCase = getAppSwitchUseCase,
+            resolvePayPalUseCase = resolvePayPalUseCase,
+            lazyAnalyticsClient = lazy { analyticsClient },
+            analyticsParamRepository = analyticsParamRepository,
+            pendingPaymentStore = store
+        )
+
+        val result = sutWithStore.handleReturnToApp(
+            PayPalPendingRequest.Started(pendingRequestString),
+            intent
+        )
+
+        assertTrue(result is PayPalPaymentAuthResult.Success)
+        assertEquals(expectedNonce, (result as PayPalPaymentAuthResult.Success).autoLinkNonce)
+        verify(exactly = 0) { browserSwitchClient.completeRequest(any(), any()) }
+    }
+
+    @Test
+    fun `handleReturnToApp sends AUTO_LINK_HANDLE_RETURN_SUCCEEDED analytics when nonce is pre-resolved`() {
+        val store = PendingPaymentStore()
+        store.autoLinkNonce = mockk(relaxed = true)
+
+        val sutWithStore = PayPalLauncher(
+            browserSwitchClient = browserSwitchClient,
+            getAppSwitchUseCase = getAppSwitchUseCase,
+            resolvePayPalUseCase = resolvePayPalUseCase,
+            lazyAnalyticsClient = lazy { analyticsClient },
+            analyticsParamRepository = analyticsParamRepository,
+            pendingPaymentStore = store
+        )
+
+        sutWithStore.handleReturnToApp(PayPalPendingRequest.Started(pendingRequestString), intent)
+
+        verify {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.AUTO_LINK_HANDLE_RETURN_SUCCEEDED,
+                any()
+            )
+        }
+    }
+
+    @Test
+    fun `handleReturnToApp clears store on normal URL success`() {
+        val store = PendingPaymentStore().apply {
+            pendingSession = PendingPaymentStore.PendingSession(
+                baToken = "BA-123",
+                clientMetadataId = null,
+                merchantAccountId = null,
+                intent = null,
+                paymentType = "billing-agreement"
+            )
+            state = PendingPaymentStore.State.AWAITING_RETURN
+        }
+        val browserSwitchFinalResult = mockk<BrowserSwitchFinalResult.Success>()
+        every { browserSwitchClient.completeRequest(intent, pendingRequestString) } returns browserSwitchFinalResult
+
+        val sutWithStore = PayPalLauncher(
+            browserSwitchClient = browserSwitchClient,
+            getAppSwitchUseCase = getAppSwitchUseCase,
+            resolvePayPalUseCase = resolvePayPalUseCase,
+            lazyAnalyticsClient = lazy { analyticsClient },
+            analyticsParamRepository = analyticsParamRepository,
+            pendingPaymentStore = store
+        )
+
+        sutWithStore.handleReturnToApp(PayPalPendingRequest.Started(pendingRequestString), intent)
+
+        assertEquals(PendingPaymentStore.State.IDLE, store.state)
+        assertTrue(store.pendingSession == null)
+    }
+
+    @Test
+    fun `launch stores originalPendingRequestString when pendingSession exists`() {
+        val store = PendingPaymentStore().apply {
+            pendingSession = PendingPaymentStore.PendingSession(
+                baToken = "BA-123",
+                clientMetadataId = null,
+                merchantAccountId = null,
+                intent = null,
+                paymentType = "billing-agreement"
+            )
+        }
+        val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
+        every { browserSwitchClient.start(activity, options, any()) } returns startedPendingRequest
+
+        val sutWithStore = PayPalLauncher(
+            browserSwitchClient = browserSwitchClient,
+            getAppSwitchUseCase = getAppSwitchUseCase,
+            resolvePayPalUseCase = resolvePayPalUseCase,
+            lazyAnalyticsClient = lazy { analyticsClient },
+            analyticsParamRepository = analyticsParamRepository,
+            pendingPaymentStore = store
+        )
+
+        sutWithStore.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        assertEquals(pendingRequestString, store.originalPendingRequestString)
+    }
+
+    @Test
+    fun `launch does not store originalPendingRequestString when no pendingSession`() {
+        val store = PendingPaymentStore()
+        val startedPendingRequest = BrowserSwitchStartResult.Started(pendingRequestString)
+        every { browserSwitchClient.start(activity, options, any()) } returns startedPendingRequest
+
+        val sutWithStore = PayPalLauncher(
+            browserSwitchClient = browserSwitchClient,
+            getAppSwitchUseCase = getAppSwitchUseCase,
+            resolvePayPalUseCase = resolvePayPalUseCase,
+            lazyAnalyticsClient = lazy { analyticsClient },
+            analyticsParamRepository = analyticsParamRepository,
+            pendingPaymentStore = store
+        )
+
+        sutWithStore.launch(activity, PayPalPaymentAuthRequest.ReadyToLaunch(paymentAuthRequestParams))
+
+        assertTrue(store.originalPendingRequestString == null)
+    }
+
+    // endregion
 }
