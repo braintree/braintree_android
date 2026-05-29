@@ -54,20 +54,20 @@ internal class PayPalInternalClient(
                 returnLinkResult.appLinkReturnUri.toString()
 
             is GetReturnLinkUseCase.ReturnLinkResult.DeepLink ->
-                returnLinkResult.deepLinkFallbackUrlScheme
+                returnLinkResult.deepLinkFallbackUrlScheme + "://onetouch/v1"
 
             is GetReturnLinkUseCase.ReturnLinkResult.Failure ->
                 throw returnLinkResult.exception
         }
+
+        val successUrl = "$navigationLink/success"
+        val cancelUrl = "$navigationLink/cancel"
 
         val appLinkParam = if (returnLinkResult is GetReturnLinkUseCase.ReturnLinkResult.AppLink) {
             merchantRepository.appLinkReturnUri?.toString()
         } else {
             null
         }
-
-        val cancelUrl = "$navigationLink://onetouch/v1/cancel"
-        val successUrl = "$navigationLink://onetouch/v1/success"
 
         val requestBody = payPalRequest.createRequestBody(
             configuration = configuration,
@@ -130,7 +130,7 @@ internal class PayPalInternalClient(
                 returnLinkResult.appLinkReturnUri.toString()
 
             is GetReturnLinkUseCase.ReturnLinkResult.DeepLink ->
-                returnLinkResult.deepLinkFallbackUrlScheme
+                returnLinkResult.deepLinkFallbackUrlScheme + "://onetouch/v1"
 
             is GetReturnLinkUseCase.ReturnLinkResult.Failure ->
                 throw returnLinkResult.exception
@@ -141,7 +141,7 @@ internal class PayPalInternalClient(
             browserSwitchOptions = null,
             clientMetadataId = clientMetadataId,
             contextId = contextId,
-            successUrl = "$returnLink://onetouch/v1/success"
+            successUrl = "$returnLink/success"
         )
 
         if (getAppSwitchUseCase()) {
