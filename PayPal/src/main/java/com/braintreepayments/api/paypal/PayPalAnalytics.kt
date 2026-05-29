@@ -24,14 +24,20 @@ internal object PayPalAnalytics {
     const val APP_SWITCH_FAILED = "paypal:tokenize:app-switch:failed"
     const val APP_SWITCH_CANCELED = "paypal:tokenize:app-switch:canceled"
 
-    // Auto-Link events
+    // Auto-Link events — tokenization via stored BA token when App Link return fails
     const val AUTO_LINK_TOKENIZE_STARTED = "paypal:tokenize:auto-link:started"
     const val AUTO_LINK_TOKENIZE_SUCCEEDED = "paypal:tokenize:auto-link:succeeded"
     const val AUTO_LINK_TOKENIZE_FAILED = "paypal:tokenize:auto-link:failed"
     const val AUTO_LINK_EXPIRED = "paypal:tokenize:auto-link:expired"
+
+    // Auto-Link Path 1 — foreground return detected by ProcessLifecycleOwner
     const val AUTO_LINK_HANDLE_RETURN_SUCCEEDED = "paypal:tokenize:auto-link:handle-return:succeeded"
+
+    // Auto-Link Path 2 — user re-clicks PayPal before normal return completes
     const val AUTO_LINK_PATH2_STARTED = "paypal:tokenize:auto-link:path2:started"
     const val AUTO_LINK_PATH2_SUCCEEDED = "paypal:tokenize:auto-link:path2:succeeded"
     const val AUTO_LINK_PATH2_FAILED = "paypal:tokenize:auto-link:path2:failed"
+
+    // Auto-Link launch — pending request string stored for later handleReturnToApp
     const val AUTO_LINK_LAUNCH_STORED = "paypal:tokenize:auto-link:launch:stored"
 }

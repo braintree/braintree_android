@@ -3,10 +3,41 @@ package com.braintreepayments.api.paypal
 import androidx.lifecycle.ProcessLifecycleOwner
 import kotlinx.coroutines.CompletableDeferred
 
+/**
+ * Process-level singleton that holds state for the auto-link on manual return flow.
+ *
+ * When a PayPal app switch completes but the App Link return fails, the user manually
+ * switches back to the merchant app. This store persists the billing agreement token and
+ * session metadata across that round trip so the SDK can tokenize directly with BTGW
+ * without a URL return.
+ *
+ * A [CompletableDeferred] ensures exactly one BTGW tokenization call is made, even when
+ * both Path 1 (foreground detection) and Path 2 (user re-click) race to tokenize.
+ *
+ * This class must outlive individual [PayPalClient] instances because the client is
+ * per-Fragment and may be GC'd during the app switch.
+ */
 internal class PendingPaymentStore {
 
+    /**
+     * State machine for tracking app switch lifecycle.
+     * - [IDLE]: no active app switch session
+     * - [SWITCH_LAUNCHED]: browser/app switch started, app still in foreground
+     * - [AWAITING_RETURN]: app went to background after launch, waiting for user to return
+     */
     enum class State { IDLE, SWITCH_LAUNCHED, AWAITING_RETURN }
 
+    /**
+     * Captured session data needed to tokenize a billing agreement without a URL return.
+     *
+     * @property baToken the billing agreement token from the PayPal approval URL
+     * @property clientMetadataId correlation ID for fraud detection
+     * @property merchantAccountId optional merchant account override
+     * @property intent the PayPal payment intent string value (e.g. "authorize", "sale")
+     * @property paymentType always "billing-agreement" for auto-link flows
+     * @property timestampMs creation time for TTL expiry checks
+     * @property ttlMs time-to-live in milliseconds (default 30 minutes)
+     */
     data class PendingSession(
         val baToken: String,
         val clientMetadataId: String?,
@@ -16,6 +47,7 @@ internal class PendingPaymentStore {
         val timestampMs: Long = System.currentTimeMillis(),
         val ttlMs: Long = TTL_MS
     ) {
+        /** Returns true if this session has exceeded its time-to-live. */
         fun isExpired(): Boolean = System.currentTimeMillis() - timestampMs > ttlMs
     }
 
@@ -23,12 +55,28 @@ internal class PendingPaymentStore {
     var pendingSession: PendingSession? = null
     var tokenizeDeferred: CompletableDeferred<PayPalAccountNonce>? = null
 
+    /** Resolved nonce from auto-link tokenization. Volatile for safe cross-thread reads. */
     @Volatile
     var autoLinkNonce: PayPalAccountNonce? = null
+
+    /** Original pending request string from [PayPalLauncher.launch], preserved for handleReturnToApp. */
     var originalPendingRequestString: String? = null
 
+    /**
+     * Callback invoked by [AppForegroundDetector] when the app returns to foreground.
+     * Set by each [PayPalClient] in its init block — always points to the latest instance.
+     */
     var onReturnFromAppSwitch: (suspend () -> Unit)? = null
 
+    /**
+     * Returns an existing or newly created [CompletableDeferred] along with a flag
+     * indicating whether this caller is the initiator (created the deferred).
+     *
+     * The initiator is responsible for making the BTGW call and completing the deferred.
+     * Subsequent callers receive the same deferred and should await it.
+     *
+     * @return pair of (deferred, isInitiator)
+     */
     @Synchronized
     fun getOrCreateDeferred(): Pair<CompletableDeferred<PayPalAccountNonce>, Boolean> {
         val existing = tokenizeDeferred
@@ -38,6 +86,7 @@ internal class PendingPaymentStore {
         return Pair(new, true)
     }
 
+    /** Resets all state and cancels any in-flight deferred. */
     fun clear() {
         state = State.IDLE
         pendingSession = null
@@ -48,6 +97,7 @@ internal class PendingPaymentStore {
     }
 
     companion object {
+        /** Default session TTL: 30 minutes. */
         internal const val TTL_MS = 30 * 60 * 1000L
 
         val instance by lazy {
