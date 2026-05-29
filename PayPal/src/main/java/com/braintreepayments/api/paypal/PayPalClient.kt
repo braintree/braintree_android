@@ -15,8 +15,10 @@ import com.braintreepayments.api.core.Configuration
 import com.braintreepayments.api.core.ExperimentalBetaApi
 import com.braintreepayments.api.core.LinkType
 import com.braintreepayments.api.core.MerchantRepository
+import com.braintreepayments.api.core.AppSwitchRepository
 import com.braintreepayments.api.core.UserCanceledException
 import com.braintreepayments.api.core.usecase.GetAppLinksCompatibleBrowserUseCase
+import com.braintreepayments.api.core.usecase.GetAppSwitchUseCase
 import com.braintreepayments.api.core.usecase.GetDefaultAppUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase
 import com.braintreepayments.api.core.usecase.GetReturnLinkTypeUseCase.ReturnLinkTypeResult
@@ -50,6 +52,11 @@ class PayPalClient internal constructor(
     ),
     private val getReturnLinkUseCase: GetReturnLinkUseCase = GetReturnLinkUseCase(merchantRepository),
     private val analyticsParamRepository: AnalyticsParamRepository = AnalyticsParamRepository.instance,
+    private val appSwitchRepository: AppSwitchRepository = AppSwitchRepository.instance,
+    private val getAppSwitchUseCase: GetAppSwitchUseCase = GetAppSwitchUseCase(appSwitchRepository),
+    private val pendingPaymentStore: PendingPaymentStore = PendingPaymentStore.instance,
+    private val autoLinkTokenizeUseCase: AutoLinkTokenizeUseCase =
+        AutoLinkTokenizeUseCase(internalPayPalClient),
     private val dispatcher: CoroutineDispatcher = Dispatchers.Main,
     private val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 ) {
@@ -93,6 +100,7 @@ class PayPalClient internal constructor(
             ReturnLinkTypeResult.APP_LINK -> LinkType.APP_LINK
             ReturnLinkTypeResult.DEEP_LINK -> LinkType.DEEP_LINK
         }
+        pendingPaymentStore.onReturnFromAppSwitch = ::attemptAutoLinkTokenization
     }
 
     /**
@@ -114,7 +122,66 @@ class PayPalClient internal constructor(
         payPalRequest: PayPalRequest,
         callback: PayPalPaymentAuthCallback
     ) {
+        createPaymentAuthRequest(context, payPalRequest, callback, tokenizeCallback = null)
+    }
+
+    /**
+     * Starts the PayPal payment flow with auto-link Path 2 support.
+     *
+     * If a previous app switch session exists (BA approved but App Link return failed) and the
+     * user taps PayPal again, the SDK will attempt to tokenize the stored BA token directly.
+     * On success, the nonce is delivered via [tokenizeCallback] — skipping launch,
+     * handleReturnToApp, and tokenize entirely.
+     *
+     * If auto-link fails or no pending session exists, the normal flow proceeds via [callback].
+     *
+     * @param context          Android Context
+     * @param payPalRequest    a [PayPalRequest] used to customize the request
+     * @param callback         [PayPalPaymentAuthCallback] for the normal flow
+     * @param tokenizeCallback optional [PayPalTokenizeCallback] for auto-link Path 2 delivery
+     */
+    @OptIn(ExperimentalBetaApi::class)
+    fun createPaymentAuthRequest(
+        context: Context,
+        payPalRequest: PayPalRequest,
+        callback: PayPalPaymentAuthCallback,
+        tokenizeCallback: PayPalTokenizeCallback?
+    ) {
         coroutineScope.launch {
+            if (tokenizeCallback != null) {
+                val session = pendingPaymentStore.pendingSession
+                if (session != null && !session.isExpired() && getAppSwitchUseCase()) {
+                    val analyticsParams = AnalyticsEventParams(
+                        contextId = session.baToken,
+                        isVaultRequest = true,
+                        shopperSessionId = payPalRequest.shopperSessionId
+                    )
+                    braintreeClient.sendAnalyticsEvent(
+                        PayPalAnalytics.AUTO_LINK_PATH2_STARTED, analyticsParams
+                    )
+
+                    try {
+                        attemptAutoLinkTokenization()
+                        val nonce = pendingPaymentStore.autoLinkNonce
+                        if (nonce != null) {
+                            pendingPaymentStore.clear()
+                            braintreeClient.sendAnalyticsEvent(
+                                PayPalAnalytics.AUTO_LINK_PATH2_SUCCEEDED, analyticsParams
+                            )
+                            tokenizeCallback.onPayPalResult(PayPalResult.Success(nonce))
+                            return@launch
+                        }
+                    } catch (e: Exception) {
+                        if (e is CancellationException) throw e
+                        pendingPaymentStore.clear()
+                        braintreeClient.sendAnalyticsEvent(
+                            PayPalAnalytics.AUTO_LINK_PATH2_FAILED,
+                            analyticsParams.copy(errorDescription = e.message)
+                        )
+                    }
+                }
+            }
+
             val result = createPaymentAuthRequest(context, payPalRequest)
             callback.onPayPalPaymentAuthRequest(result)
         }
@@ -190,6 +257,7 @@ class PayPalClient internal constructor(
 
             try {
                 payPalResponse.browserSwitchOptions = buildBrowserSwitchOptions(payPalResponse)
+                storePendingSessionIfEligible(payPalResponse)
                 PayPalPaymentAuthRequest.ReadyToLaunch(payPalResponse)
             } catch (exception: Exception) {
                 when (exception) {
@@ -293,7 +361,20 @@ class PayPalClient internal constructor(
     suspend fun tokenize(
         paymentAuthResult: PayPalPaymentAuthResult.Success
     ): PayPalResult {
+        // Auto-link path: nonce already resolved — short-circuit
+        paymentAuthResult.autoLinkNonce?.let { nonce ->
+            pendingPaymentStore.clear()
+            sendTokenizeSuccessEvent(
+                AnalyticsEventParams(
+                    isVaultRequest = true,
+                    shopperSessionId = shopperSessionId
+                )
+            )
+            return PayPalResult.Success(nonce)
+        }
+
         val browserSwitchResult = paymentAuthResult.browserSwitchSuccess
+            ?: return PayPalResult.Failure(BraintreeException("Missing browser switch result"))
         val metadata = browserSwitchResult.requestMetadata
         val clientMetadataId = Json.optString(metadata, "client-metadata-id", null)
         val merchantAccountId = Json.optString(metadata, "merchant-account-id", null)
@@ -378,6 +459,94 @@ class PayPalClient internal constructor(
             return urlResponseData
         } else {
             throw PayPalBrowserSwitchException(BROWSER_SWITCH_EXCEPTION_MESSAGE)
+        }
+    }
+
+    /**
+     * Stores a [PendingPaymentStore.PendingSession] when the current request is an app switch
+     * vault flow. The stored session enables auto-link tokenization if the App Link return fails.
+     */
+    private fun storePendingSessionIfEligible(payPalResponse: PayPalPaymentAuthRequestParams) {
+        if (getAppSwitchUseCase() && payPalResponse.isVaultRequest) {
+            val baToken = payPalResponse.approvalUrl
+                ?.toUri()?.getQueryParameter("ba_token")
+            if (baToken != null) {
+                pendingPaymentStore.pendingSession = PendingPaymentStore.PendingSession(
+                    baToken = baToken,
+                    clientMetadataId = payPalResponse.clientMetadataId,
+                    merchantAccountId = payPalResponse.merchantAccountId,
+                    intent = payPalResponse.intent?.stringValue,
+                    paymentType = "billing-agreement"
+                )
+                pendingPaymentStore.state = PendingPaymentStore.State.SWITCH_LAUNCHED
+            }
+        }
+    }
+
+    /**
+     * Attempts to tokenize a stored BA token directly with BTGW via [AutoLinkTokenizeUseCase].
+     *
+     * Uses [PendingPaymentStore.getOrCreateDeferred] to ensure exactly one BTGW call:
+     * - If this caller is the initiator, it makes the call and completes the deferred
+     * - If another path already started the call, this caller awaits the same deferred
+     *
+     * On failure, resets state to [IDLE][PendingPaymentStore.State.IDLE] and clears the deferred
+     * so a subsequent Path 2 attempt can create a fresh one. The [pendingSession] is preserved
+     * to allow retry.
+     */
+    @Suppress("TooGenericExceptionCaught")
+    private suspend fun attemptAutoLinkTokenization() {
+        val session = pendingPaymentStore.pendingSession ?: return
+        if (session.isExpired()) {
+            pendingPaymentStore.clear()
+            braintreeClient.sendAnalyticsEvent(
+                PayPalAnalytics.AUTO_LINK_EXPIRED,
+                AnalyticsEventParams(
+                    contextId = session.baToken,
+                    isVaultRequest = true,
+                    shopperSessionId = shopperSessionId
+                )
+            )
+            return
+        }
+
+        val (deferred, isInitiator) = pendingPaymentStore.getOrCreateDeferred()
+
+        if (isInitiator) {
+            val analyticsParams = AnalyticsEventParams(
+                contextId = session.baToken,
+                isVaultRequest = true,
+                shopperSessionId = shopperSessionId
+            )
+            braintreeClient.sendAnalyticsEvent(
+                PayPalAnalytics.AUTO_LINK_TOKENIZE_STARTED, analyticsParams
+            )
+
+            try {
+                val nonce = autoLinkTokenizeUseCase(session)
+                pendingPaymentStore.autoLinkNonce = nonce
+                deferred.complete(nonce)
+                braintreeClient.sendAnalyticsEvent(
+                    PayPalAnalytics.AUTO_LINK_TOKENIZE_SUCCEEDED, analyticsParams
+                )
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                deferred.completeExceptionally(e)
+                pendingPaymentStore.autoLinkNonce = null
+                pendingPaymentStore.state = PendingPaymentStore.State.IDLE
+                pendingPaymentStore.tokenizeDeferred = null
+                braintreeClient.sendAnalyticsEvent(
+                    PayPalAnalytics.AUTO_LINK_TOKENIZE_FAILED,
+                    analyticsParams.copy(errorDescription = e.message)
+                )
+            }
+        } else {
+            try {
+                val nonce = deferred.await()
+                pendingPaymentStore.autoLinkNonce = nonce
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+            }
         }
     }
 

@@ -125,6 +125,16 @@ class PayPalLauncher internal constructor(
                     eventName = event,
                     analyticsEventParams = analyticsEventParams
                 )
+
+                // Store pending request string for auto-link handleReturnToApp path
+                val store = PendingPaymentStore.instance
+                if (store.pendingSession != null) {
+                    store.originalPendingRequestString = request.pendingRequest
+                    analyticsClient.sendEvent(
+                        PayPalAnalytics.AUTO_LINK_LAUNCH_STORED, analyticsEventParams
+                    )
+                }
+
                 PayPalPendingRequest.Started(request.pendingRequest)
             }
         }
@@ -162,10 +172,21 @@ class PayPalLauncher internal constructor(
 
         analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_STARTED, analyticsEventParams)
 
+        // Auto-link: check for resolved nonce before calling completeRequest
+        val store = PendingPaymentStore.instance
+        val autoNonce = store.autoLinkNonce
+        if (autoNonce != null) {
+            analyticsClient.sendEvent(
+                PayPalAnalytics.AUTO_LINK_HANDLE_RETURN_SUCCEEDED, analyticsEventParams
+            )
+            return PayPalPaymentAuthResult.Success(autoNonce)
+        }
+
         return when (
             val browserSwitchResult = browserSwitchClient.completeRequest(intent, pendingRequest.pendingRequestString)
         ) {
             is BrowserSwitchFinalResult.Success -> {
+                store.clear()
                 analyticsClient.sendEvent(PayPalAnalytics.HANDLE_RETURN_SUCCEEDED, analyticsEventParams)
                 PayPalPaymentAuthResult.Success(browserSwitchResult)
             }
