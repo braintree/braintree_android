@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="card_number_hint">Card number</string>
+    <string name="cvv_hint">CVV</string>
+    <string name="cvv_hint_icon_description">CVV security code hint</string>
+    <string name="cvv_overlay_close_description">Close CVV hint</string>
+    <string name="cvv_overlay_header">CVV</string>
+    <string name="cvv_overlay_body">The CVV is the 3 or 4-digit number on the back of your card</string>
     <string name="expiration_hint">Expiration (MM/YY)</string>
     <string name="expiration_hint_accessibility">Expiration date, two digit month and two digit year</string>
     <string name="expiration_invalid_month_error">Invalid month. Enter a value between 01 and 12.</string>

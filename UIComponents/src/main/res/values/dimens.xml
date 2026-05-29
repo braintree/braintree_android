@@ -25,4 +25,7 @@
     <dimen name="card_icon_height">28dp</dimen>
     <dimen name="card_icon_margin">8dp</dimen>
     <dimen name="card_icon_corner_radius">4dp</dimen>
+
+    <dimen name="cvv_overlay_elevation">8dp</dimen>
+    <dimen name="cvv_overlay_max_width">261dp</dimen>
 </resources>

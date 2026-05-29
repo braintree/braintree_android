@@ -60,6 +60,7 @@ open class BaseTextInputView @JvmOverloads constructor(
     private val defaultPaddingHorizontal: Int
 
     private var leadingIconView: ImageView? = null
+    private var trailingIconView: ImageView? = null
     private var currentError: CharSequence? = null
     private var isHintFloating: Boolean = false
     private var hintAnimator: AnimatorSet? = null
@@ -237,6 +238,39 @@ open class BaseTextInputView @JvmOverloads constructor(
             editText.setPadding(newPaddingStart, editText.paddingTop, editText.paddingEnd, editText.paddingBottom)
             (hintLabel.layoutParams as FrameLayout.LayoutParams).marginStart = newPaddingStart
             hintLabel.requestLayout()
+        }
+        iconView.setImageResource(iconRes)
+        iconView.contentDescription = contentDescription
+    }
+
+    internal fun setCvvHintClickListener(listener: View.OnClickListener?) {
+        trailingIconView?.setOnClickListener(listener)
+    }
+
+    internal fun setCvvHintIcon(
+        @DrawableRes iconRes: Int,
+        contentDescription: String,
+        width: Int = iconWidth,
+        height: Int = iconHeight
+    ) {
+        val iconView = trailingIconView ?: ImageView(context).apply {
+            layoutParams = FrameLayout.LayoutParams(width, height).apply {
+                gravity = Gravity.END or Gravity.CENTER_VERTICAL
+                marginEnd = defaultPaddingHorizontal
+            }
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_YES
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            clipToOutline = true
+            outlineProvider = ViewOutlineProvider.BACKGROUND
+            background = GradientDrawable().apply {
+                setCornerRadius(iconCornerRadius)
+                setColor(android.graphics.Color.TRANSPARENT)
+            }
+            inputContainer.addView(this)
+            trailingIconView = this
+
+            val newPaddingEnd = defaultPaddingHorizontal + width + iconMargin
+            editText.setPadding(editText.paddingStart, editText.paddingTop, newPaddingEnd, editText.paddingBottom)
         }
         iconView.setImageResource(iconRes)
         iconView.contentDescription = contentDescription
