@@ -23,4 +23,15 @@ internal object PayPalAnalytics {
     const val APP_SWITCH_SUCCEEDED = "paypal:tokenize:app-switch:succeeded"
     const val APP_SWITCH_FAILED = "paypal:tokenize:app-switch:failed"
     const val APP_SWITCH_CANCELED = "paypal:tokenize:app-switch:canceled"
+
+    // Auto-Link events
+    const val AUTO_LINK_TOKENIZE_STARTED = "paypal:tokenize:auto-link:started"
+    const val AUTO_LINK_TOKENIZE_SUCCEEDED = "paypal:tokenize:auto-link:succeeded"
+    const val AUTO_LINK_TOKENIZE_FAILED = "paypal:tokenize:auto-link:failed"
+    const val AUTO_LINK_EXPIRED = "paypal:tokenize:auto-link:expired"
+    const val AUTO_LINK_HANDLE_RETURN_SUCCEEDED = "paypal:tokenize:auto-link:handle-return:succeeded"
+    const val AUTO_LINK_PATH2_STARTED = "paypal:tokenize:auto-link:path2:started"
+    const val AUTO_LINK_PATH2_SUCCEEDED = "paypal:tokenize:auto-link:path2:succeeded"
+    const val AUTO_LINK_PATH2_FAILED = "paypal:tokenize:auto-link:path2:failed"
+    const val AUTO_LINK_LAUNCH_STORED = "paypal:tokenize:auto-link:launch:stored"
 }

@@ -51,6 +51,7 @@ dependencies {
     api project(':BraintreeCore')
 
     implementation libs.androidx.appcompat
+    implementation libs.androidx.lifecycle.process
     implementation project(':DataCollector')
 
     testImplementation libs.robolectric
