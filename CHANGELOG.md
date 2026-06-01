@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 5.28.1 (2026-06-01)
 
 * PayPal
     * Simplify return URLs used during PayPal browser switch flows
