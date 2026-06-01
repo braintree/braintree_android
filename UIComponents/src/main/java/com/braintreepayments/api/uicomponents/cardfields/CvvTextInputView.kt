@@ -20,11 +20,11 @@ class CvvTextInputView @JvmOverloads constructor(
     init {
         setInputType(InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_PASSWORD)
         setHint(context.getString(R.string.cvv_hint))
-        setTrailingIcon(
+        setCvvHintIcon(
             R.drawable.cvv_hint,
             context.getString(R.string.cvv_hint_icon_description)
         )
-        setTrailingIconClickListener { anchor -> CvvHintOverlay(context).show(anchor) }
+        setCvvHintClickListener { anchor -> CvvHintOverlay(context).show(anchor) }
         editText.addTextChangedListener(formatter)
     }
 

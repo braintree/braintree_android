@@ -2,7 +2,6 @@ package com.braintreepayments.api.uicomponents.cardfields
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
@@ -20,18 +19,28 @@ internal class CvvHintOverlay(context: Context) {
         val view = LayoutInflater.from(context).inflate(R.layout.cvv_hint_overlay, null)
         popupWidth = context.resources.getDimensionPixelSize(R.dimen.cvv_overlay_max_width)
 
+        val cornerRadius = context.resources.getDimension(R.dimen.card_field_corner_radius)
+        val backgroundColor = ContextCompat.getColor(context, R.color.card_field_background)
+
         view.background = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
-            cornerRadius = context.resources.getDimension(R.dimen.card_field_corner_radius)
+            this.cornerRadius = cornerRadius
             setStroke(
                 context.resources.getDimensionPixelSize(R.dimen.card_field_border_width),
-                ContextCompat.getColor(context, R.color.card_field_border_default)
+                Color.WHITE
             )
-            setColor(ContextCompat.getColor(context, R.color.card_field_background))
+            setColor(backgroundColor)
+        }
+        view.clipToOutline = true
+
+        val popupBackground = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            this.cornerRadius = cornerRadius
+            setColor(backgroundColor)
         }
 
         popupWindow = PopupWindow(view, popupWidth, ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
-            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            setBackgroundDrawable(popupBackground)
             isOutsideTouchable = true
             elevation = context.resources.getDimension(R.dimen.cvv_overlay_elevation)
         }

@@ -45,7 +45,7 @@ class CvvTextInputViewUnitTest {
         val view = CvvTextInputView(context)
 
         val editText = view.findViewById<EditText>(R.id.text_input_edit_text)
-        assertEquals("CVV", editText.contentDescription.toString())
+        assertEquals(context.getString(R.string.cvv_hint), editText.contentDescription.toString())
     }
 
     @Test
@@ -177,7 +177,10 @@ class CvvTextInputViewUnitTest {
 
         val trailingIcon = findTrailingIconView(view)
         assertNotNull(trailingIcon)
-        assertEquals("CVV security code hint", trailingIcon?.contentDescription.toString())
+        assertEquals(
+            context.getString(R.string.cvv_hint_icon_description),
+            trailingIcon?.contentDescription.toString()
+        )
     }
 
     @Test
@@ -203,10 +206,11 @@ class CvvTextInputViewUnitTest {
     }
 
     private fun findTrailingIconView(parent: CvvTextInputView): ImageView? {
+        val expectedDescription = parent.context.getString(R.string.cvv_hint_icon_description)
         val container = parent.findViewById<FrameLayout>(R.id.input_container)
         for (i in 0 until container.childCount) {
             val child = container.getChildAt(i)
-            if (child is ImageView) return child
+            if (child is ImageView && child.contentDescription == expectedDescription) return child
         }
         return null
     }
