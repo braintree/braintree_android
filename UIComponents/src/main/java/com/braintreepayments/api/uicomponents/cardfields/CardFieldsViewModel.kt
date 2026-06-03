@@ -59,7 +59,7 @@ internal class CardFieldsViewModel(
 
         updateIsValid()
     }
-    
+
     fun onExpiryChanged(rawExpiration: String) {
         currentExpiration = rawExpiration
         val (currentMonth, currentYear) = currentDateProvider()
