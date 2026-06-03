@@ -24,9 +24,9 @@
     <string name="card_icon_mir">Mir</string>
     <string name="card_icon_verve">Verve</string>
     <string name="card_number_required">Card number is required</string>
-    <string name="card_number_error">Invalid card number</string>
+    <string name="card_number_error">Card number is invalid</string>
     <string name="expiration_required">Expiration date is required</string>
-    <string name="expiration_error">Invalid expiration date</string>
-    <string name="cvv_required">Security code is required</string>
-    <string name="cvv_error">Invalid security code</string>
+    <string name="expiration_error">Expiration date is invalid</string>
+    <string name="cvv_required">CVV is required</string>
+    <string name="cvv_error">CVV is invalid</string>
 </resources>
