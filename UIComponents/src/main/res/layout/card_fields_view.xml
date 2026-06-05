@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.braintreepayments.api.uicomponents.cardfields.CardNumberTextInputView
+        android:id="@+id/card_fields_card_number_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/card_field_field_spacing">
+
+        <com.braintreepayments.api.uicomponents.cardfields.ExpirationTextInputView
+            android:id="@+id/card_fields_expiration_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <com.braintreepayments.api.uicomponents.cardfields.CvvTextInputView
+            android:id="@+id/card_fields_cvv_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/card_field_field_spacing"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+</LinearLayout>

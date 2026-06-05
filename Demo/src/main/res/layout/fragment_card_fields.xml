@@ -2,34 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_vertical"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <com.braintreepayments.api.uicomponents.cardfields.CardNumberTextInputView
-        android:id="@+id/card_number_input"
+    <com.braintreepayments.api.uicomponents.cardfields.CardFields
+        android:id="@+id/card_fields"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <LinearLayout
+    <Button
+        android:id="@+id/pay_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:orientation="horizontal">
-
-        <com.braintreepayments.api.uicomponents.cardfields.ExpirationTextInputView
-            android:id="@+id/expiration_input"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <com.braintreepayments.api.uicomponents.cardfields.CvvTextInputView
-            android:id="@+id/cvv_input"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1" />
-
-    </LinearLayout>
+        android:layout_marginTop="16dp"
+        android:enabled="false"
+        android:text="@string/card_fields_pay" />
 
 </LinearLayout>

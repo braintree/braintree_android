@@ -3,6 +3,8 @@
     <string name="app_name">Braintree Demo</string>
 
     <string name="card_fields">Card Fields</string>
+    <string name="card_fields_pay">Pay</string>
+    <string name="card_fields_valid_toast">Card is valid</string>
 
     <!-- MainActivity -->
     <string name="reset">Reset</string>
