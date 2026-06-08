@@ -9,7 +9,7 @@ import org.junit.Test
 class CardFieldsViewModelUnitTest {
 
     private fun createViewModel() = CardFieldsViewModel(
-        currentDateProvider = { Pair(6, 2026) }
+        currentDateProvider = { Pair(1, 2020) }
     )
 
     // region Initial State
@@ -171,7 +171,7 @@ class CardFieldsViewModelUnitTest {
     @Test
     fun `expired date does not show error during typing`() {
         val vm = createViewModel()
-        vm.onExpiryChanged("0325")
+        vm.onExpiryChanged("0119")
         assertEquals(ValidationResult.Validating, vm.expirationValidation.value)
     }
 
@@ -204,7 +204,7 @@ class CardFieldsViewModelUnitTest {
     @Test
     fun `expired date shows invalid error on blur`() {
         val vm = createViewModel()
-        vm.onExpiryChanged("0325")
+        vm.onExpiryChanged("0119")
         vm.onFieldFocusChanged(CardField.EXPIRY, hasFocus = false)
         assertEquals(
             ValidationResult.Invalid(R.string.expiration_error),
