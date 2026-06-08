@@ -35,6 +35,7 @@ import com.braintreepayments.api.googlepay.GooglePayTotalPriceStatus
 import com.google.pay.button.ButtonType
 import com.google.pay.button.PayButton
 import androidx.compose.foundation.layout.Column
+import org.json.JSONArray
 import org.json.JSONObject
 
 class GooglePayFragment : BaseFragment() {
@@ -76,20 +77,22 @@ class GooglePayFragment : BaseFragment() {
             googlePayClient.isReadyToPay(requireActivity()) { result ->
                 if (result is GooglePayReadinessResult.ReadyToPay) {
                     isReadyToPay = true
-                    val request = GooglePayRequest(
-                        "USD",
-                        "1.00",
-                        GooglePayTotalPriceStatus.TOTAL_PRICE_STATUS_FINAL,
-                        isPayPalEnabled = false
-                    )
-                    googlePayClient.createPaymentAuthRequest(request) { authRequest ->
-                        if (authRequest is GooglePayPaymentAuthRequest.ReadyToLaunch) {
-                            val json =
-                                JSONObject(authRequest.requestParams.paymentDataRequest.toJson())
-                            allowedPaymentMethods =
-                                json.getJSONArray("allowedPaymentMethods").toString()
-                        }
-                    }
+                    // Note: We avoid createPaymentAuthRequest here to prevent unnecessary analytics noise.
+                    // Instead, we assume common card networks are supported for the demo.
+                    val cardParams = JSONObject()
+                        .put(
+                            "allowedAuthMethods",
+                            JSONArray().put("PAN_ONLY").put("CRYPTOGRAM_3DS")
+                        )
+                        .put(
+                            "allowedCardNetworks",
+                            JSONArray().put("VISA").put("MASTERCARD").put("AMEX").put("DISCOVER")
+                                .put("JCB")
+                        )
+
+                    allowedPaymentMethods = JSONArray().put(
+                        JSONObject().put("type", "CARD").put("parameters", cardParams)
+                    ).toString()
                 } else {
                     showDialog(
                         "Google Pay is not available. The following issues could be the cause:\n\n" +

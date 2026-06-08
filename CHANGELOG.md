@@ -1,11 +1,18 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+* Google Pay
+    * Update Google Pay dependency (play-services-wallet) to version 19.5.0
+
+## 5.28.1 (2026-06-01)
+
+* PayPal
+    * Simplify return URLs used during PayPal browser switch flows
+
+## 5.28.0 (2026-05-28)
 
 * BraintreeCore
     * Allow fetching of `Configuration` to query supported integrations and card types (fixes #1302)
-* Google Pay
-  * Update Google Pay dependency (play-services-wallet) to version 19.5.0
 
 ## 5.27.0 (2026-05-18)
 
