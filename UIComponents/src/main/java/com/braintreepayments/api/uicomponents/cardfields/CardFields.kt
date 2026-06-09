@@ -10,6 +10,7 @@ import com.braintreepayments.api.uicomponents.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
 class CardFields internal constructor(
@@ -104,7 +105,8 @@ class CardFields internal constructor(
             }
         }
         scope.launch {
-            viewModel.isFormValid.collect { isValid ->
+            // drop(1) discards State Flow's replayed first value
+            viewModel.isFormValid.drop(1).collect { isValid ->
                 validationChangedListener?.onValidationChanged(isValid)
             }
         }

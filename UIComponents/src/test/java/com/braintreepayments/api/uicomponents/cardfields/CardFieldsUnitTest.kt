@@ -78,7 +78,9 @@ class CardFieldsUnitTest {
     fun `inflates all three child input views`() {
         val cardFields = createCardFields()
 
-        assertEquals(3, cardFields.run { listOf(cardNumberView(), expirationView(), cvvView()) }.size)
+        assertTrue(cardFields.cardNumberView() != null)
+        assertTrue(cardFields.expirationView() != null)
+        assertTrue(cardFields.cvvView() != null)
     }
 
     // endregion
@@ -225,6 +227,39 @@ class CardFieldsUnitTest {
 
         assertEquals(listOf(true), received)
     }
+
+    @Test
+    fun `listener set before attach receives the initial value exactly once`() =
+        runTest(coroutineTestRule.testDispatcher) {
+            // isFormValid stays at its default of false the whole time.
+            val cardFields = createCardFields()
+            val received = mutableListOf<Boolean>()
+
+            // Common merchant ordering: register the listener, THEN the view attaches.
+            cardFields.setOnValidationChangedListener { received.add(it) }
+            cardFields.attach()
+            advanceUntilIdle()
+
+            // Setter delivers the initial value; drop(1) suppresses the StateFlow replay on attach.
+            assertEquals(listOf(false), received)
+        }
+
+    @Test
+    fun `listener set before attach still receives later validity changes`() =
+        runTest(coroutineTestRule.testDispatcher) {
+            val cardFields = createCardFields()
+            val received = mutableListOf<Boolean>()
+
+            cardFields.setOnValidationChangedListener { received.add(it) }
+            cardFields.attach()
+            advanceUntilIdle()
+
+            isFormValid.value = true
+            advanceUntilIdle()
+
+            // Initial false (setter), then true (collector) — the replay is dropped, the change is not.
+            assertEquals(listOf(false, true), received)
+        }
 
     @Test
     fun `validity changes are pushed to the listener`() =
