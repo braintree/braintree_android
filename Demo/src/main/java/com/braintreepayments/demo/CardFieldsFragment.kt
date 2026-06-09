@@ -21,7 +21,7 @@ class CardFieldsFragment : Fragment() {
         val cardFields = view.findViewById<CardFields>(R.id.card_fields)
         val payButton = view.findViewById<Button>(R.id.pay_button)
 
-        //Card fields will tell the merchant if the card is valid, and they can enable the button
+        // Card fields will tell the merchant if the card is valid, and they can enable the button
         cardFields.setOnValidationChangedListener { isFormValid ->
             payButton.isEnabled = isFormValid
         }

@@ -17,7 +17,7 @@ class CardFields internal constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     private val viewModel: CardFieldsViewModel = CardFieldsViewModel()
-): FrameLayout(context, attrs, defStyleAttr) {
+) : FrameLayout(context, attrs, defStyleAttr) {
 
     @JvmOverloads
     constructor(
@@ -76,6 +76,10 @@ class CardFields internal constructor(
         observerScope = null
     }
 
+    /**
+     * Wires each of the ViewModel's `StateFlow`s to the corresponding child view. Every flow is
+     * collected in its own coroutine. The scope is cancelled in [onDetachedFromWindow].
+     */
     private fun observeViewModel(scope: CoroutineScope) {
         scope.launch {
             viewModel.cardNumberValidation.collect { result ->
@@ -106,17 +110,26 @@ class CardFields internal constructor(
         }
     }
 
+    /**
+     * Maps a [ValidationResult] to the error string the child view should display, or `null` to
+     * clear it.
+     */
     private fun ValidationResult.requiredOrInvalidError(): String? =
         if (this is ValidationResult.Invalid) context.getString(errorMessageRes) else null
 
     private fun BaseTextInputView.onTextChanged(block: () -> Unit) {
-        addTextChangedListener(object: TextWatcher {
+        addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
             override fun afterTextChanged(s: Editable?) = block()
         })
     }
 
+    /**
+     * Auto-advances focus to the next field once [from] becomes valid.
+     * Focus only advances if [from] has focus, so the user can still tap back into a previous field
+     * and edit it without being forced forward again.
+     */
     private fun advanceFocusIfFieldIsValid(
         result: ValidationResult,
         from: BaseTextInputView,
