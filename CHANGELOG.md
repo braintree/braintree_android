@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* PayPal
+    * Collect and send device information (`model`, `memory_available_mb`, `memory_total_mb`) in PayPal Hermes requests when PayPal app switch is enabled, to improve app switch eligibility determination
+
 ## 5.30.0 (2026-07-21)
 
 * General
