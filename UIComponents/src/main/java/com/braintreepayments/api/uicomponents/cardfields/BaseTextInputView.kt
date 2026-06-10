@@ -40,6 +40,7 @@ open class BaseTextInputView @JvmOverloads constructor(
     internal val editText: EditText
     internal val inputContainer: FrameLayout
     internal val hintLabel: TextView
+    internal var focusChangeCallback: ((Boolean) -> Unit)? = null
     private val errorLabel: TextView
     private val borderDrawable: GradientDrawable
 
@@ -110,9 +111,10 @@ open class BaseTextInputView @JvmOverloads constructor(
 
         ViewCompat.setAccessibilityDelegate(editText, accessibilityDelegate)
 
-        editText.setOnFocusChangeListener { _, _ ->
+        editText.setOnFocusChangeListener { _, hasFocus ->
             updateBorderState()
             updateHintPosition(animate = true)
+            focusChangeCallback?.invoke(hasFocus)
         }
 
         editText.doAfterTextChanged {
