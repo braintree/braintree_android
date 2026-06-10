@@ -619,6 +619,13 @@ class GooglePayClient internal constructor(
     }
 
     companion object {
+        @Deprecated("This constant is no longer used and will be removed in a future release.")
+        const val EXTRA_ENVIRONMENT: String = "com.braintreepayments.api.EXTRA_ENVIRONMENT"
+
+        @Deprecated("This constant is no longer used and will be removed in a future release.")
+        const val EXTRA_PAYMENT_DATA_REQUEST: String =
+            "com.braintreepayments.api.EXTRA_PAYMENT_DATA_REQUEST"
+
         private const val VISA_NETWORK = "visa"
         private const val MASTERCARD_NETWORK = "mastercard"
         private const val AMEX_NETWORK = "amex"

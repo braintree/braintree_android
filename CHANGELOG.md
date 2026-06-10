@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* GooglePay
+    * Remove requirement for `GooglePayActivity` to be declared in the Android manifest
+
 ## 5.28.1 (2026-06-01)
 
 * PayPal

@@ -18,10 +18,12 @@ import com.google.android.gms.wallet.contract.TaskResultContracts
 class GooglePayLauncher internal constructor(
     registry: ActivityResultRegistry,
     lifecycleOwner: LifecycleOwner,
-    private val context: Context,
+    context: Context,
     private val internalGooglePayClient: GooglePayInternalClient = GooglePayInternalClient(),
     callback: GooglePayLauncherCallback
 ) {
+
+    private val appContext: Context = context.applicationContext
 
     private val activityLauncher: ActivityResultLauncher<Task<PaymentData>> = registry.register(
         GOOGLE_PAY_RESULT, lifecycleOwner,
@@ -85,7 +87,7 @@ class GooglePayLauncher internal constructor(
      * received from invoking [GooglePayClient.createPaymentAuthRequest]
      */
     fun launch(paymentAuthRequest: GooglePayPaymentAuthRequest.ReadyToLaunch) {
-        internalGooglePayClient.loadPaymentData(context, paymentAuthRequest.requestParams)
+        internalGooglePayClient.loadPaymentData(appContext, paymentAuthRequest.requestParams)
             .addOnCompleteListener { completedTask ->
                 activityLauncher.launch(completedTask)
             }
