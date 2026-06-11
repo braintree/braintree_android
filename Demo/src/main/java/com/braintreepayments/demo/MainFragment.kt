@@ -221,8 +221,11 @@ class MainFragment : BaseFragment() {
     }
 
     private fun launchCardFields() {
-        val action = MainFragmentDirections.actionMainFragmentToCardFieldsFragment()
-        findNavController().navigate(action)
+       fetchAuthorizationAndHandleError { authString ->
+           val action = MainFragmentDirections.actionMainFragmentToCardFieldsFragment()
+           action.setAuthString(authString)
+           findNavController().navigate(action)
+       }
     }
 
     private fun launchPaymentButtons() {
