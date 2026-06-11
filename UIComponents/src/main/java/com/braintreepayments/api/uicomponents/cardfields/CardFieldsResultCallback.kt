@@ -8,7 +8,7 @@ import com.braintreepayments.api.card.CardNonce
 fun interface CardFieldsResultCallback {
 
     /**
-     * @param cardFieldsResult a [cardFieldsResult] containing a [CardNonce] or [Exception]
+     * @param cardFieldsResult a [CardFieldsResult] containing a [CardNonce] or [Exception]
      */
     fun onCardFieldsResult(cardFieldsResult: CardFieldsResult)
 }
