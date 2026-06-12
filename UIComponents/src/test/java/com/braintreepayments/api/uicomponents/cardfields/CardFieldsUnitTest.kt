@@ -5,10 +5,19 @@ import android.text.InputFilter
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import com.braintreepayments.api.card.Card
+import com.braintreepayments.api.card.CardClient
+import com.braintreepayments.api.card.CardNonce
+import com.braintreepayments.api.card.CardResult
+import com.braintreepayments.api.card.CardTokenizeCallback
+import com.braintreepayments.api.core.BraintreeException
 import com.braintreepayments.api.uicomponents.R
 import com.braintreepayments.api.uicomponents.util.CoroutineTestRule
+import io.mockk.Runs
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +25,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -33,6 +43,7 @@ class CardFieldsUnitTest {
 
     private lateinit var activity: Activity
     private lateinit var viewModel: CardFieldsViewModel
+    private val cardClient: CardClient = mockk(relaxed = true)
 
     // Controllable backing flows so each test can drive the ViewModel's outputs directly.
     private val cardNumberValidation = MutableStateFlow<ValidationResult>(ValidationResult.Validating)
@@ -54,6 +65,9 @@ class CardFieldsUnitTest {
     }
 
     private fun createCardFields() = CardFields(activity, viewModel = viewModel)
+
+    private fun createCardFieldsWithClient() =
+        CardFields(activity, viewModel = viewModel, cardClient = cardClient)
 
     private fun CardFields.attach() = activity.setContentView(this)
 
@@ -335,6 +349,130 @@ class CardFieldsUnitTest {
 
             assertEquals(View.GONE, errorLabel.visibility)
         }
+
+    // endregion
+
+    // region Tokenization
+
+    @Test
+    fun `submit before initialize delivers a Failure to the callback`() {
+        // No injected client and initialize() never called, so cardClient is null.
+        val cardFields = createCardFields()
+        var result: CardFieldsResult? = null
+        cardFields.setCardFieldsResultCallback { result = it }
+
+        cardFields.submit()
+
+        assertTrue(result is CardFieldsResult.Failure)
+        assertTrue((result as CardFieldsResult.Failure).error is BraintreeException)
+    }
+
+    @Test
+    fun `submit before initialize does not tokenize`() {
+        // No client is injected (null cardClient), so submit() hits the pre-init guard and
+        // skips tokenization entirely — cardClient.tokenize is never reached.
+        val cardFields = createCardFields()
+        cardFields.setCardFieldsResultCallback { }
+
+        cardFields.submit()
+
+        verify(exactly = 0) { cardClient.tokenize(any(), any()) }
+    }
+
+    @Test
+    fun `submit maps a CardResult Success to a CardFieldsResult Success`() {
+        val nonce = mockk<CardNonce>()
+        val successResult = mockk<CardResult.Success>()
+        every { successResult.nonce } returns nonce
+        every { cardClient.tokenize(any(), any()) } answers {
+            secondArg<CardTokenizeCallback>().onCardResult(successResult)
+        }
+        val cardFields = createCardFieldsWithClient()
+        var result: CardFieldsResult? = null
+        cardFields.setCardFieldsResultCallback { result = it }
+
+        cardFields.submit()
+
+        assertTrue(result is CardFieldsResult.Success)
+        assertEquals(nonce, (result as CardFieldsResult.Success).nonce)
+    }
+
+    @Test
+    fun `submit maps a CardResult Failure to a CardFieldsResult Failure`() {
+        val error = BraintreeException("tokenization failed")
+        val failureResult = mockk<CardResult.Failure>()
+        every { failureResult.error } returns error
+        every { cardClient.tokenize(any(), any()) } answers {
+            secondArg<CardTokenizeCallback>().onCardResult(failureResult)
+        }
+        val cardFields = createCardFieldsWithClient()
+        var result: CardFieldsResult? = null
+        cardFields.setCardFieldsResultCallback { result = it }
+
+        cardFields.submit()
+
+        assertTrue(result is CardFieldsResult.Failure)
+        assertEquals(error, (result as CardFieldsResult.Failure).error)
+    }
+
+    @Test
+    fun `submit tokenizes the user-entered card fields`() {
+        val cardSlot = slot<Card>()
+        every { cardClient.tokenize(capture(cardSlot), any()) } just Runs
+        val cardFields = createCardFieldsWithClient()
+        cardFields.cardNumberView().setText("4111111111111111")
+        cardFields.expirationView().setText("12/26")
+        cardFields.cvvView().setText("123")
+
+        cardFields.submit()
+
+        val captured = cardSlot.captured
+        assertEquals("4111111111111111", captured.number)
+        assertEquals("12", captured.expirationMonth)
+        assertEquals("26", captured.expirationYear)
+        assertEquals("123", captured.cvv)
+    }
+
+    @Test
+    fun `submit merges UI fields over the payment request, with all fields correctly preserved`() {
+        val cardSlot = slot<Card>()
+        every { cardClient.tokenize(capture(cardSlot), any()) } just Runs
+        val cardFields = createCardFieldsWithClient()
+        cardFields.cardNumberView().setText("4111111111111111")
+        cardFields.expirationView().setText("12/26")
+        cardFields.cvvView().setText("123")
+        // The merchant card carries metadata AND a number the user did not type.
+        cardFields.setPaymentRequest(
+            Card(cardholderName = "Jane Doe", postalCode = "94107", number = "0000")
+        )
+
+        cardFields.submit()
+
+        val captured = cardSlot.captured
+        // UI-entered number overrides the merchant-supplied "0000".
+        assertEquals("4111111111111111", captured.number)
+        // Merchant-only metadata is preserved by copy().
+        assertEquals("Jane Doe", captured.cardholderName)
+        assertEquals("94107", captured.postalCode)
+    }
+
+    @Test
+    fun `submit without a payment request still tokenizes the UI fields`() {
+        val cardSlot = slot<Card>()
+        every { cardClient.tokenize(capture(cardSlot), any()) } just Runs
+        val cardFields = createCardFieldsWithClient()
+        cardFields.cardNumberView().setText("4111111111111111")
+        cardFields.expirationView().setText("12/26")
+        cardFields.cvvView().setText("123")
+
+        cardFields.submit()
+
+        val captured = cardSlot.captured
+        assertEquals("4111111111111111", captured.number)
+        // No payment request was set, so metadata fields fall back to the empty Card() defaults.
+        assertNull(captured.cardholderName)
+        assertNull(captured.postalCode)
+    }
 
     // endregion
 
